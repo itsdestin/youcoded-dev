@@ -53,7 +53,7 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 80 | 31 | 2 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 81 | 31 | 2 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 55 | 10 | 1 | 19 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 29 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 7 | 0 | 9 |
@@ -64,7 +64,7 @@ Target: `v1.3`
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 14 | 4 | 0 | 2 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 12 | 1 | 3 | 2 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 12 | 2 | 3 | 2 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 

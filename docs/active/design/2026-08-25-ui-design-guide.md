@@ -309,8 +309,9 @@ then a card grid; empty → `EmptyState` centred in the sheet.
 - **G-22 Expandable rows** (2026-09-05): a section that opens below its row is a `SettingRow`
   with `onClick` + `expanded` — the same right-hand chevron every navigating row has, turned to
   point down while open. Never a leading “›” glyph beside a word, never a bare text toggle.
-  Filed in `docs/roadmap/user-interface.md` for the three places that still do it (Sync log,
-  the recommended-model card, the system marker).
+  Filed in `docs/roadmap/user-interface.md` for the two places that still do it (Sync log,
+  the system marker). The recommended-model card was fixed in the local-engine mockup's
+  round 2, along with the engine card and the model rows.
 - **G-19 Counts**: a count next to a label is always `label` + space + muted numeral
   ("Files 9", "Session Files 4", "Results 0"); never parentheses, never "9 files" in a
   tab, never "+9" without a tooltip naming what.

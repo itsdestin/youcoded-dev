@@ -43,9 +43,9 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
 - [ ] Parity with LM Studio / Ollama / Jan — what is LEFT after the 2026-09-05 upgrades. Shipped:
       per-model context length, keep-loaded, GPU layers and extra engine options, and a live line
       on the engine card saying what hardware is in use, how much is loaded and how fast the last
-      reply ran. Still missing: loading and unloading a model by hand, embeddings for local
-      search, a draft-model picker, and a real hardware page rather than that one line. Inventory
-      and order in the report.
+      reply ran, plus loading a model by hand (the unloaded row's Reload button). Still missing:
+      UNLOADING one by hand, embeddings for local search, a draft-model picker, and a real
+      hardware page rather than that one line. Inventory and order in the report.
       `settings/local-models` `desktop` `decision` `checked 2026-09-06` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] Whole publishers' models are invisible in search because of how they punctuate filenames.
@@ -82,11 +82,12 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       downloads with nothing outside the app. Worth sharing that
       `settings/local-models` `all` `needs-verify` `checked 2026-09-05`
 
-- [ ] The Local Models list would crash a phone or a browser the day either one gets a local
-      engine. Asking "what have I downloaded?" is the one engine question whose failure is still
-      handed back as a success: a phone answers "not supported on mobile" as an object, the screen
-      is written to expect a list, and the first thing it does is filter it — which throws and
-      takes the whole screen down. Six sibling questions were fixed for exactly this on
-      2026-09-05 and this one was knowingly left out. Nobody can see it today because the whole
-      section is hidden off the desktop; it is a trap sprung by opening that gate.
-      `settings/local-models` `android` `confirmed` `checked 2026-09-06`
+- [ ] The Local Models list would crash a phone the day phones get a local engine. Asking "what
+      have I downloaded?" is the one engine question whose failure is still handed back as a
+      success: a phone answers "not supported on mobile" as an object, the screen expects a list,
+      and the first thing it does is filter it — which throws and takes the whole screen down.
+      Six sibling questions were fixed for exactly this on 2026-09-05 and this one was knowingly
+      left out. Not a browser problem: a remote browser talks to a desktop, which answers
+      properly. Nobody can observe it today either, because the whole section is hidden off the
+      desktop — it is a trap sprung by opening that gate, so it cannot be reproduced until then.
+      `settings/local-models` `android` `needs-verify` `checked 2026-09-06`

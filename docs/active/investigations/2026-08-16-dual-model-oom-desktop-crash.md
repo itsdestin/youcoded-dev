@@ -11,7 +11,17 @@ tags: [local-models, memory, strix-halo, oom, engine]
 Loading Qwen3.5-122B and Qwen3.6-35B concurrently exhausted the machine's memory,
 triggered the kernel OOM killer, and killed YouCoded, Chrome, Steam, and Plasma's
 desktop shell. Root cause verified from kernel logs; YouCoded's memory guard was
-reached but is structurally unable to prevent this class of event.
+reached but, **as it stood in August 2026**, was structurally unable to prevent this class
+of event.
+
+> **PARTLY ADDRESSED 2026-09-05 (`feat/local-engine-upgrades`).** The guard's NUMBERS are no
+> longer the problem: it reads the model file's own header instead of charging a flat 2 GB,
+> scores against the pool the engine itself reports rather than a dedicated-VRAM guess, and
+> counts only models actually holding memory. What this report says about the guard's
+> ARITHMETIC is therefore historical. What it says about the DECISION is still open and is
+> why this report is still live: with honest numbers, two models that cannot both fit should
+> be met with a silent unload, an unload plus a toast, or a refusal — Destin has not chosen.
+> Do not read the sentence above as a statement about the code that ships today.
 
 > **STILL UNFIXED — verified against `origin/master` 2026-08-26, ten days after the crash.**
 > All four defects are untouched: `MODELS_MAX = 2` is unchanged (`engine-supervisor.ts:47`);

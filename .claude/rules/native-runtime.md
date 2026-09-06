@@ -10,7 +10,7 @@ paths:
   - "**/desktop/src/main/providers/**"
   - "**/desktop/src/main/native-home.ts"
   - "**/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-09-01
+last_verified: 2026-09-06
 verify:
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/harness-session.ts

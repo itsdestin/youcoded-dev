@@ -270,6 +270,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
+      own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
+      ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.
+      Do not renumber a guide Destin has signed off; the fix is his call (rename one, or add a
+      suffix). Found 2026-09-06 while shrinking the expandable-rows item.
+      `n/a` `confirmed` `checked 2026-09-06`
+
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
       then recommend deleting its worktree; it should notice unfinished edits before declaring success
       `n/a` `needs-verify` `checked 2026-09-05`
