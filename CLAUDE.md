@@ -34,6 +34,8 @@ Registries are fetched at runtime. Bundled plugin definitions must agree across 
 
 **Never touch Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/theme/hook installation or modification of files it holds open. Read-only inspection from outside is allowed. Full boundaries: `.claude/rules/live-app-safety.md`.
 
+Ordinary workspace docs, guidance, roadmap and source edits are allowed under the usual authorization/worktree rules; they do not require closing the app. Do not equate editing a repository with modifying the running app. Active configuration, integrations and live reloads remain subject to the safety rule.
+
 Runtime verification goes through an isolated dev worktree and `bash scripts/run-dev.sh`, never production. Ask before building an interactive or repeated-relaunch verification rig; Destin can often check motion, hover and drag directly. Unit tests, DOM assertions and static screenshots remain appropriate automation.
 
 **Stay within the authorized task.** A read-only review yields findings, not surprise edits. "Fix on sight" and retrospective duties apply within authorized editing work; otherwise report the issue and ask. Shipping, live configuration changes and paid evaluations are separate decisions.
