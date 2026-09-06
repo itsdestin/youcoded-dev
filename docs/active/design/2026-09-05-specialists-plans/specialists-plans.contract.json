@@ -1,0 +1,152 @@
+{
+ "title": "Specialists plans — contract",
+ "key": "specialists-plans-contract",
+ "out": "specialists-plans.contract.html",
+ "themes": ["midnight"],
+ "branch": "feat/specialists-plans-ui",
+ "sources": {
+  "specialists-plans-questions": "specialists-plans.questions.json",
+  "specialists-plans-review": "specialists-plans.review.json",
+  "specialists-plans-review3": "specialists-plans.review3.json",
+  "specialists-plans-review5": "specialists-plans.review5.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Chat · plan card",
+   "path": "A conversation, after the assistant proposes a plan",
+   "headline": "This is what done means for the plan card.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The assistant can offer a plan on any cloud model and on local models from the 9B class up.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "Progress shows on the plan card itself: each step ticks off and each specialist is a line inside its step.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-questions#Q-5"
+    },
+    {
+     "id": "R3",
+     "statement": "A plan that hits its limit pauses in place: finished work stays, the stuck step says why, Add budget or Stop.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-questions#Q-6"
+    },
+    {
+     "id": "R4",
+     "statement": "One card shows the whole plan before anything is spent: the steps, who does them, the limit, Approve and Comment.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-1"
+    },
+    {
+     "id": "R5",
+     "statement": "A model with no published price shows the limit as an amount of work only, never a made-up dollar figure.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-2"
+    },
+    {
+     "id": "R6",
+     "statement": "Comment opens a note box under the plan; the assistant rewrites the plan and posts a new card.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-3"
+    },
+    {
+     "id": "R7",
+     "statement": "A plan under your limit starts on its own and says so on the card, with the limit still printed.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-6"
+    },
+    {
+     "id": "R8",
+     "statement": "Add budget asks for one number, shows what it is worth in dollars, and continues from where the plan stopped.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-8",
+     "note": "out of curiosity, does pausing/resuming after credit limit is reached itself consume tokens? or is it no-cost pause/resume?"
+    },
+    {
+     "id": "R9",
+     "statement": "After a restart the card returns as interrupted, showing the steps already done, and nothing runs until you press Continue.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-9",
+     "note": "move buttons to right side. also, stop should be to the left of the whie button on this and the previous card."
+    },
+    {
+     "id": "R10",
+     "statement": "A finished plan folds to its step list and one line: how long it took and what it used.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-10"
+    },
+    {
+     "id": "R11",
+     "statement": "After a Comment the old plan greys out and points to the new one below it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-11"
+    },
+    {
+     "id": "R12",
+     "statement": "Settings has a Plans section with 'Run small plans without asking', off by default, showing the limit once on.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-12"
+    },
+    {
+     "id": "R13",
+     "statement": "While the plan is being written the card is exactly one row tall, like every other collapsed card.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review3#S-1"
+    },
+    {
+     "id": "R14",
+     "statement": "Each step is its own bordered container with its specialists inside it, so plan, step and specialist read by shape.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review3#S-2"
+    },
+    {
+     "id": "R15",
+     "statement": "Add budget opens on the same row and reads 'Allow 9,000 tokens ($0.03)', with no extra words like 'about'.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review3#S-4",
+     "note": "same as before, maybe put warning+buttons in container together?"
+    },
+    {
+     "id": "R16",
+     "statement": "The paused plan's sentence and both buttons sit together in one filled, outlined amber pill.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review5#T-1"
+    },
+    {
+     "id": "R17",
+     "statement": "Raising the limit happens inside that same amber pill, with the reason for the pause still readable beside it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review5#T-2"
+    },
+    {
+     "id": "R18",
+     "statement": "An interrupted plan gets the same pill, filled and outlined in neutral grey.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review5#T-3"
+    }
+   ]
+  }
+ ]
+}

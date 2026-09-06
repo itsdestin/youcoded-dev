@@ -220,6 +220,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+
+- [ ] A product-decisions deck (the questions/serve.py kind, the one used for four-or-more
+      decisions) cannot be cited as the source of a contract row — the contract checker only
+      resolves review-deck steps, so decisions answered that way leave the contract with no
+      trace of them. Found 2026-09-06 writing the plan card's contract: four answered product
+      decisions had to be dropped
+      `n/a` `confirmed` `checked 2026-09-06`
 - [ ] roadmap-check verifies a report's claim against whatever copy of the sub-repo happens to
       be on disk beside it, so a stale main checkout can keep a fixed bug "confirmed" for days
       (two specialist bugs fixed 2026-09-02 were re-listed as open on 2026-09-04), and from a
