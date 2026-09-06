@@ -26,17 +26,17 @@
      "settle": 900
     }
    ],
-   "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.includes('Local models'))"
+   "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.includes('Cloud providers'))"
   },
   {
-   "name": "narrow-claude",
+   "name": "narrow-permissions",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
      "settle": 900
     },
     {
-     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Claude Code'))",
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Permissions'))",
      "settle": 900
     }
    ],
