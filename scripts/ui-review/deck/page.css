@@ -208,6 +208,11 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    slivers (measured on the ChatGPT acceptance deck the same day). A source id is one token he
    reads; let it ask for its width. */
 .words .cards:has(.contract){grid-template-columns:1fr}
+/* A question on a screen of its OWN (a mixed deck, not a question page): the three
+   explanations are one full-width row, exactly as they are on a question page. Before this
+   `.parts` was just another 260px grid item and the three cards inside it collapsed to about
+   90px each — one word per line. Destin saw it on 2026-09-06. */
+.words .cards .parts{grid-column:1/-1}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
    answer buttons stay reachable in a narrow window, and sticky needs room to move inside its

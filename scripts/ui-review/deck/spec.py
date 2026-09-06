@@ -41,6 +41,8 @@ INLINE_TARGET = {'today:': "the step's today field", 'problem:': "the step's pro
 RECOMMENDED_RE = re.compile(r'\(?recommended\)?', re.I)
 COUNT_WORD = {2: 'two', 3: 'three', 4: 'four'}
 HEADLINE_MAX = 25
+# The only capture names a deck or a slide may use. `today` is one picture; `before`+`after` is a pair.
+RUN_NAMES = ('today', 'before', 'after')
 RISK_WARN = 40
 # A contract row's `checkedBy` — who resolves it: a guard script, this deck's own answers,
 # a running app probe, or a person. Task 4 reads this to pick its resolver.
@@ -128,8 +130,11 @@ def load_spec(path):
         for k in ('images', 'runs'):
             if k not in spec or spec[k] is None:
                 raise SpecError(f'spec is missing "{k}"')
-    if not 1 <= len(spec['runs']) <= 2:
-        raise SpecError('runs must have one entry (today) or two (before, after)')
+    bad = [r for r in spec['runs'] if r not in RUN_NAMES]
+    if bad:
+        raise SpecError('runs may only be named ' + ', '.join(RUN_NAMES) + ' — not ' + ', '.join(bad))
+    if not spec['runs']:
+        raise SpecError('runs must name at least one capture (today, or before and after)')
     spec['_base'] = os.path.dirname(os.path.abspath(path))
     spec['_stem'] = os.path.splitext(os.path.basename(path))[0]
     with open(os.path.join(UI_REVIEW, 'crops.json')) as f:
@@ -167,7 +172,6 @@ def captured(spec, theme):
     list is only checked in those), because that is the check that would fail the build if we
     opened on a theme nothing was shot in."""
     from .crops import image_name   # imported here: crops.py imports this module at load time
-    runs = run_names(spec)
     base = os.path.join(spec['_base'], spec.get('images') or '')
     for st in spec['steps']:
         if is_page(st) or is_live(st) or is_words(st) or is_clip(st):
@@ -178,6 +182,7 @@ def captured(spec, theme):
         # that mixes a broad theme list with one narrowly-themed step (chatsearch-gate has one).
         if st.get('themes') and theme not in st['themes']:
             continue
+        runs = step_runs(spec, st)
         if is_choice(st):
             if not all(os.path.exists(os.path.join(base, image_name(v['crop'], theme, runs[-1]))) for v in st['variants']):
                 return False
@@ -370,7 +375,7 @@ def no_pictures(spec):
 def clip_files(spec, step):
     """{run: relative path to the .webm} for a clip step, and the same for posters (.webp)."""
     c = step['clip']
-    runs = run_names(spec)
+    runs = step_runs(spec, step)
     if isinstance(c, str):
         vids = {r: f"{spec['images']}/clips/{c}--{r}.webm" for r in runs}
     else:
@@ -380,9 +385,24 @@ def clip_files(spec, step):
 
 
 def run_names(spec):
-    """Display order of the runs: before then after when both exist, else as written."""
+    """Display order of the deck's runs: before then after when both exist, else as written."""
     r = list(spec['runs'].keys())
     return ['before', 'after'] if set(r) == {'before', 'after'} else r
+
+
+def step_runs(spec, st):
+    """Which captures THIS slide shows — its own `runs` list, or the deck's when it names none.
+
+    WHY a slide may choose (Destin, 2026-09-06): `runs` used to be a property of the DECK, so a
+    "here is today, build it?" point and a "here is before and after, keep it?" point could never
+    sit together, and an author had to hand him two links for one ask. The run set is a property
+    of the picture, not of the deck, so it lives on the slide. Kept in the deck's own order, so
+    before still reads left of after however the slide lists them."""
+    names = st.get('runs')
+    if not names:
+        return run_names(spec)
+    order = run_names(spec)
+    return [r for r in order if r in names]
 
 
 def word_count(s):
@@ -412,8 +432,10 @@ def _headline_and_words(st, sid, errors):
 def validate(spec):
     """Returns (errors, warnings) as 'step-id: message' lines. Errors block crop/build."""
     errors, warnings, ids = [], [], set()
-    two_runs = len(spec['runs']) == 2
     for i, st in enumerate(spec['steps']):
+        # A slide may show fewer captures than the deck holds, so "is this a before/after?" is
+        # asked per slide rather than once for the whole deck.
+        two_runs = len(step_runs(spec, st)) == 2
         sid = st.get('id') or f'step {i + 1}'
         if not st.get('id'):
             errors.append(f'{sid}: missing id')
@@ -428,6 +450,16 @@ def validate(spec):
             if isinstance(v, str) and v.strip().startswith(TODO):
                 errors.append(f'{sid}: {k} is still a placeholder — replace the "{TODO} …" line '
                               'with what actually changed on this page and what Destin will notice')
+        # A slide's own `runs` must be captures the deck actually holds, or its pictures would
+        # be looked for in a folder nobody named.
+        if 'runs' in st:
+            if not isinstance(st['runs'], list) or not st['runs']:
+                errors.append(f'{sid}: runs must be a list naming the captures this slide shows')
+            else:
+                unknown = [r for r in st['runs'] if r not in spec['runs']]
+                if unknown:
+                    errors.append(f'{sid}: runs names {", ".join(unknown)}, which the deck does not '
+                                  f'capture (it has {", ".join(run_names(spec))})')
         # A PAGE MARKER first of all: it is not a step, so none of the step rules apply to it.
         if is_page(st):
             _validate_page(spec, st, sid, i, errors)
@@ -457,7 +489,7 @@ def validate(spec):
         _headline_and_words(st, sid, errors)
         hl = st.get('highlight', 'auto' if two_runs else None)
         if hl is None:
-            errors.append(f'{sid}: a one-run deck needs a highlight (selector or text)')
+            errors.append(f'{sid}: one picture and nothing to compare it with — this slide needs a highlight (selector or text)')
         elif hl == 'auto':
             if not two_runs:
                 errors.append(f'{sid}: "auto" highlight needs a before and an after run')

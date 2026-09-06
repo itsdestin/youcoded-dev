@@ -8,7 +8,7 @@ import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
 from .live import is_live
-from .spec import AUTO_WARN_FRACTION, is_choice, is_page, is_words, no_pictures, run_names, step_themes, is_clip
+from .spec import AUTO_WARN_FRACTION, is_choice, is_page, is_words, no_pictures, step_runs, step_themes, is_clip
 
 
 def image_name(crop, theme, run):
@@ -42,10 +42,11 @@ def crop_images(spec, log=print):
         return {'boxes': {}, 'missing': [], 'warnings': [], 'count': 0}
     out_dir = os.path.join(spec['_base'], spec['images'])
     os.makedirs(out_dir, exist_ok=True)
-    runs = run_names(spec)
-    two = len(runs) == 2
     boxes, missing, warnings, cut = {}, [], [], set()
     for st in spec['steps']:
+        # Per slide, not per deck: one deck may hold a one-picture slide and a before/after one.
+        runs = step_runs(spec, st)
+        two = len(runs) == 2
         # LIVE FIRST, before is_choice: a live pick-one has `variants` too, so is_choice()
         # claims it and _crop_choice then dies on the crop those variants deliberately lack.
         # (Same reason validate() dispatches live first.)

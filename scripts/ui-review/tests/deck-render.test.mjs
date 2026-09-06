@@ -760,3 +760,43 @@ print(page_count(load_spec(${JSON.stringify(spec)})))`], { encoding: 'utf8' });
     }
   } finally { if (srv.exitCode === null) srv.kill(); }
 });
+
+// One deck, three slides that used to need two decks. Destin, 2026-09-06: the capture set is a
+// property of the PICTURE, not of the deck, and he should never be handed two links for one ask.
+test('one deck holds a single-picture slide, a before/after slide and a written question', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-mixed-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import mixed_spec; print(mixed_spec(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('mixed.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  const open = async step => {
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/mixed.html?step=${step}` });
+    for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true').catch(() => false)); i++) await sleep(150);
+    await sleep(300);
+  };
+  try {
+    await sleep(800);
+    // Slide 1 names one capture out of the deck's pair: one frame, its own caption, and the
+    // buttons of something not built yet.
+    await open(1);
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner .frame').length"), 1, 'a one-capture slide shows one frame');
+    assert.match(await c.evaluate("document.querySelector('#inner .frame figcaption').textContent"), /Today/, 'the slide captions its own capture');
+    assert.match(await c.evaluate("document.querySelector('.ans[data-v=\"yes\"]').textContent"), /build it/, 'one picture asks whether to build it');
+    // Slide 2 names none, so it shows the deck's pair and asks whether to keep it.
+    await open(2);
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner .frame').length"), 2, 'a slide with no runs of its own shows the pair');
+    assert.match(await c.evaluate("document.querySelector('.ans[data-v=\"yes\"]').textContent"), /keep it/, 'two pictures ask whether to keep it');
+    // Slide 3 is a written question on a screen of its own: the three explanations are one
+    // full-width row, not three slivers beside the options (Destin saw ~90px columns).
+    await open(3);
+    const parts = JSON.parse(await c.evaluate("JSON.stringify([...document.querySelectorAll('.parts .card.part')].map(e => Math.round(e.getBoundingClientRect().width)))"));
+    assert.equal(parts.length, 3, 'today, the problem and the proposal');
+    for (const w of parts) assert.ok(w > 240, `each explanation should be readable, got ${JSON.stringify(parts)}`);
+    const partsW = await c.evaluate("document.querySelector('.parts').getBoundingClientRect().width");
+    const cardsW = await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width");
+    assert.ok(partsW > cardsW * 0.9, `the explanations take the full row (${partsW} of ${cardsW})`);
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});

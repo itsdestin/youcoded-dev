@@ -9,7 +9,7 @@ import os
 from .crops import image_name
 from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
-                    is_decide, is_page, is_question, is_words, pages, run_names, step_themes, validate,
+                    is_decide, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -94,6 +94,8 @@ def _decide_step(spec, st, boxes, runs):
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
         'boxes': boxes.get(st['id'], {}),
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
+        **({'runs': runs} if st.get('runs') else {}),
+        **({'labels': st['labels']} if st.get('labels') else {}),
     }
 
 
@@ -133,7 +135,8 @@ def _clip_step(spec, st, runs):
     return {'id': st['id'], 'kind': 'clip', 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
             'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
             'clips': {r: vids[r] for r in runs},
-            'posters': {r: (posters[r] if posters[r] and os.path.exists(os.path.join(spec['_base'], posters[r])) else '') for r in runs}}
+            'posters': {r: (posters[r] if posters[r] and os.path.exists(os.path.join(spec['_base'], posters[r])) else '') for r in runs},
+            **({'runs': runs} if st.get('runs') else {})}
 
 
 def _live_step(spec, st):
@@ -171,20 +174,32 @@ def _live_step(spec, st):
     }
 
 
-def deck_data(spec, boxes):
-    runs = run_names(spec)
-    steps = [_live_step(spec, st) if is_live(st)
-             else _words_step(spec, st) if is_words(st)
-             else _choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
-             else _decide_step(spec, st, boxes, runs) if is_decide(st)
-             else _clip_step(spec, st, runs) if is_clip(st) else {
+def _still_step(spec, st, boxes):
+    runs = step_runs(spec, st)
+    return {
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
         'boxes': boxes.get(st['id'], {}),
         # Only when the step narrows the deck's list — page.js falls back to DECK.themes otherwise.
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
-    } for st in spec['steps'] if not is_page(st)]
+        # Only when the slide shows fewer captures than the deck holds; page.js falls back to
+        # DECK.runs. This is what lets one deck ask "build it?" about one picture and "keep it?"
+        # about a pair.
+        **({'runs': runs} if st.get('runs') else {}),
+        **({'labels': st['labels']} if st.get('labels') else {}),
+    }
+
+
+def deck_data(spec, boxes):
+    runs = run_names(spec)
+    steps = [_live_step(spec, st) if is_live(st)
+             else _words_step(spec, st) if is_words(st)
+             else _choice_step(spec, st, boxes, step_runs(spec, st)[-1]) if is_choice(st)
+             else _decide_step(spec, st, boxes, step_runs(spec, st)) if is_decide(st)
+             else _clip_step(spec, st, step_runs(spec, st)) if is_clip(st)
+             else _still_step(spec, st, boxes)
+             for st in spec['steps'] if not is_page(st)]
     every = all_themes(spec)
     # `command` is spelled HERE, where the offset and the worktree are both known, so the
     # "server isn't running" card can name the exact thing to run instead of guessing.
@@ -208,8 +223,8 @@ def deck_data(spec, boxes):
 
 def build_page(spec, boxes):
     errors, warnings = validate(spec)
-    runs = run_names(spec)
     for st in spec['steps']:
+        runs = step_runs(spec, st)
         if is_page(st):
             continue   # a page marker names a page — it has no picture and no answer
         if is_live(st):

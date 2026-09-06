@@ -2,7 +2,8 @@
   "_comment": [
     "BRIEF — one picture of how it is TODAY, and he answers Yes, build it / No, leave it / Other.",
     "Same shape as approve.json, with ONE run instead of two. Because nothing is built yet there is nothing to diff, so every step must say what to box.",
-    "Use it before you write any code: the point he signs off is the change, described, over a picture of what it replaces."
+    "Use it before you write any code: the point he signs off is the change, described, over a picture of what it replaces.",
+    "A brief slide can also live in a deck that captures a before and an after: give the slide \"runs\": [\"after\"] (and \"labels\": {\"after\": \"Today\"}) and it shows one picture and asks \"build it?\" while the slides around it ask \"keep it?\". One deck, one ask."
   ],
   "title": "Model name in the bottom strip — build it?",
   "_comment_title": "title: what this deck is about, in his words. It heads every page.",
@@ -20,7 +21,10 @@
     "_comment": "labels (optional): what the picture is called above it. Default is Before / After / Today.",
     "today": "Today"
   },
-  "themes": ["midnight", "light"],
+  "themes": [
+    "midnight",
+    "light"
+  ],
   "_comment_themes": "themes: which palettes the picture is shown in.",
   "steps": [
     {

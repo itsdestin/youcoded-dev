@@ -28,13 +28,17 @@
   // A LIVE pane is NOT pickable: a click inside it is an interaction with the candidate
   // (hover, drag, open a menu), not an answer. Picking stays on the lettered card and the
   // answer button. `open on its own` is the same address in a new tab — room and quiet.
+  // Which captures THIS slide shows. A slide that names its own wins; otherwise the deck's.
+  // WHY per slide (Destin, 2026-09-06): one deck can now hold a single-picture "build it?" point
+  // and a before/after "keep it?" point, so neither the frames nor the buttons can be decided once.
+  const stepRuns = st => (st && st.runs && st.runs.length ? st.runs : runs);
   const popout = url => `<a class="popout" href="${esc(url)}" target="_blank" rel="noopener" title="Open this design alone in a new browser window">Open in New Window ↗</a>`;
   const frames = st => st.kind === 'choice'
     ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}.</span>${esc(v.label)}`, pickable: true }))
     : st.kind === 'live'
     ? st.panes.map(p => ({ key: p.id, url: p.url, pickable: false,
         caption: (p.label ? `<span class="key">${esc(p.id)}.</span>${esc(p.label)}` : '<span class="live-dot"></span>Live') + popout(p.url) }))
-    : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
+    : stepRuns(st).map(r => ({ key: r, caption: esc((st.labels || {})[r] || DECK.runLabels[r] || r), pickable: false }));
   // CLIP step: one <video> per run instead of a still. They start PAUSED on their poster
   // (Destin, 2026-08-28) — ↻ or `r` plays both from the start together; native controls
   // so a bug can be paused and scrubbed; muted + looping once started.
@@ -194,16 +198,18 @@
     : st.kind === 'decide' ? partCards(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
     : changedCard(st) + noticeCard(st) + riskCard(st);
 
-  // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
-  const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
+  // does not exist. Decided per slide, because a deck may hold both kinds.
+  const YES = st => stepRuns(st).length === 1 ? 'Yes, build it' : 'Yes, keep it',
+    NO = st => stepRuns(st).length === 1 ? 'No, leave it' : 'No, revert it';
   // A words step may relabel the buttons ("Holds / Fails" on an acceptance row): the deck's
   // build/keep wording is about a picture, and a statement has none.
   // Fix: a question (`kind === 'question'`) has no picture to keep or revert either, so its
   // fallback is the plain "Yes" / "No" the buttons already show — not "Yes, keep it". This is
   // now the ONLY place that decides the default; renderAnswers calls it instead of repeating
   // its own `st.yes || 'Yes'`, so the finish-screen read-back can never disagree with the button.
-  const yesLabel = st => st.yes || (st.kind === 'question' ? 'Yes' : YES),
-    noLabel = st => st.no || (st.kind === 'question' ? 'No' : NO);
+  const yesLabel = st => st.yes || (st.kind === 'question' ? 'Yes' : YES(st)),
+    noLabel = st => st.no || (st.kind === 'question' ? 'No' : NO(st));
   // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
   // question shape rides in `shape`, because `kind` already says where its picture comes
   // from — so a live pick-one answers exactly like a picture pick-one.

@@ -28,8 +28,8 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `out` | yes | the HTML file `build` writes, beside the spec |
 | `steps` | yes | the steps, in the order he reads them |
 | `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
-| `runs` | pictures only | one entry (`{"today": …}` — a brief) or two (`{"before": …, "after": …}`), each a `run-review.sh` output folder |
-| `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}` |
+| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. A slide shows all of them unless it names its own (below) |
+| `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
 | `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json` |
@@ -40,6 +40,23 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 Fields on every step: `id` (unique, never reused), `surface` (the part of the app, in his
 words), `path` (how he would get there), `headline` (one sentence, 25 words max, no code
 words). A step may carry its own `themes` when its picture exists in one palette only.
+
+### A slide names the pictures it shows
+
+`runs` on a SLIDE — a list of names the deck captures — says which pictures that slide puts on
+screen; without one it shows all of them. `labels` on a slide renames its own captions.
+
+    {"id": "B-1", "crop": "themes", "runs": ["after"], "labels": {"after": "Today"}, …}
+
+One picture is a BRIEF wherever it appears: the buttons read *Yes build it / No leave it* and
+`highlight` is required, because there is nothing to diff. Two are an APPROVE: *Yes keep it /
+No revert it*, `highlight` defaults to `"auto"`. So one deck now holds a "should we build
+this?" slide, a "keep it or revert it?" slide, a written question and the contract — the ask
+decides where a deck ends, not the screenshot rule.
+
+WHY it moved (Destin, 2026-09-06): the capture set is a property of the picture, not of the
+deck. While it sat on the deck, a brief slide and an approve slide could never share a page and
+he was handed two links for one ask.
 
 ## The step kinds
 
@@ -60,8 +77,9 @@ He answers **Yes keep it / No revert it / Other**.
 
 ### Brief — something not built yet (`brief.json`)
 
-The same fields with ONE run (`runs: {"today": …}`), so the buttons read **Yes build it / No
-leave it / Other**. `highlight` is required: with one picture there is nothing to diff.
+The same fields over ONE picture — the deck captures one run, or the slide names one of the
+deck's with `runs` — so the buttons read **Yes build it / No leave it / Other**. `highlight` is
+required: with one picture there is nothing to diff.
 
 ### Choice — several pictures of one thing (`choice.json`)
 
@@ -189,8 +207,9 @@ Placeholders: `… headline is still a placeholder — replace the "TODO: …" l
 changed on this page and what Destin will notice`. Any field of any step whose text starts
 `TODO:` blocks the build. `selfie` writes them on purpose — see below.
 
-Pictures: a missing crop file, an unknown crop name, an unresolved highlight box, `a one-run
-deck needs a highlight`, `"auto" highlight needs a before and an after run`.
+Pictures: a missing crop file, an unknown crop name, an unresolved highlight box, `one picture
+and nothing to compare it with — this slide needs a highlight`, `"auto" highlight needs a before
+and an after run`, `runs names <x>, which the deck does not capture`.
 
 Warnings (printed, but the page is still written): more than three options; a hand-placed
 `box`; a `measured` with no digit; a `risk` over 40 words; an `images` folder that does not

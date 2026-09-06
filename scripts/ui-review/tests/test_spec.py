@@ -1,7 +1,7 @@
 import json, os, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
-from deck.spec import load_spec, validate, run_names, word_count, banned_in, workspace_root, SpecError
+from deck.spec import load_spec, validate, run_names, step_runs, word_count, banned_in, workspace_root, SpecError
 
 def write_spec(d, **over):
     # images/deck names the spec stem ('deck.json'), which is what validate() wants — see
@@ -314,3 +314,51 @@ class CommentStrippingTests(unittest.TestCase):
                                'highlight': {'_comment': 'what the box goes around', 'text': 'Send'}}])
         self.assertNotIn('_comment', s['live'])
         self.assertNotIn('_comment', s['steps'][0]['highlight'])
+
+
+class SlideRunsTests(unittest.TestCase):
+    """A slide may name the captures it shows, so one deck holds a "build it?" point and a
+    "keep it?" point. Destin, 2026-09-06: he was handed two links for one ask."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+
+    def _two_run_deck(self, **step_over):
+        st = {'id': 'S-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c', 'headline': 'Short headline.',
+              'changed': 'What changed.', 'notice': 'You will notice.'}
+        st.update(step_over)
+        return load_spec(write_spec(self.d, steps=[st]))
+
+    def test_a_slide_with_no_runs_shows_the_decks(self):
+        s = self._two_run_deck()
+        self.assertEqual(step_runs(s, s['steps'][0]), ['before', 'after'])
+        self.assertEqual(step_runs(s, s['steps'][0]), run_names(s))
+
+    def test_a_slide_may_show_one_capture_out_of_a_pair(self):
+        s = self._two_run_deck(runs=['after'], highlight={'text': 'Send'})
+        self.assertEqual(step_runs(s, s['steps'][0]), ['after'])
+        self.assertEqual(validate(s), ([], []))
+
+    def test_one_picture_still_needs_a_highlight_even_in_a_two_run_deck(self):
+        # The "auto" default only exists when there are two pictures to compare.
+        s = self._two_run_deck(runs=['after'])
+        errors, _ = validate(s)
+        self.assertTrue(any('needs a highlight' in e for e in errors), errors)
+
+    def test_a_slide_cannot_name_a_capture_the_deck_does_not_have(self):
+        s = self._two_run_deck(runs=['today'], highlight={'text': 'Send'})
+        errors, _ = validate(s)
+        self.assertTrue(any('the deck does not' in e for e in errors), errors)
+
+    def test_runs_order_follows_the_deck_not_the_slide(self):
+        s = self._two_run_deck(runs=['after', 'before'])
+        self.assertEqual(step_runs(s, s['steps'][0]), ['before', 'after'])
+
+    def test_a_deck_may_hold_all_three_captures(self):
+        s = load_spec(write_spec(self.d, runs={'today': '/t', 'before': '/a', 'after': '/b'}))
+        self.assertEqual(len(s['runs']), 3)
+
+    def test_a_capture_name_outside_the_three_is_refused(self):
+        with self.assertRaises(SpecError):
+            load_spec(write_spec(self.d, runs={'yesterday': '/a'}))
+
+
+if __name__ == '__main__': unittest.main()

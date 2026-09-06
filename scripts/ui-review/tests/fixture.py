@@ -276,3 +276,38 @@ def contract_spec(tmp, **over):
     with open(p, 'w') as f:
         json.dump(spec, f, indent=1)
     return p
+
+
+def mixed_spec(tmp, **over):
+    """ONE deck holding slides that used to need two: a single-picture "build it?" slide, a
+    before/after "keep it?" slide, and a written question with options.
+
+    WHY it exists (Destin, 2026-09-06): the capture set used to belong to the DECK, so these
+    three could never share a page and he was handed two links for one ask."""
+    make_runs(os.path.join(tmp, 'runs'), ('midnight',))
+    deck = os.path.join(tmp, 'mixed'); os.makedirs(deck, exist_ok=True)
+    spec = {'title': 'Mixed fixture', 'key': 'mixed-fixture', 'out': 'mixed.html', 'images': 'images/mixed',
+            'runs': {'before': os.path.join(tmp, 'runs', 'before'), 'after': os.path.join(tmp, 'runs', 'after')},
+            'themes': ['midnight'], 'theme': 'fixed', 'crops': {'c': ['main', 'home', GEO]},
+            'steps': [
+                {'id': 'B-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c', 'runs': ['after'],
+                 'labels': {'after': 'Today'}, 'highlight': {'selector': '#send'},
+                 'headline': 'Paint the strip red.', 'changed': 'The strip would be red.',
+                 'notice': 'The strip stops being empty.'},
+                {'id': 'S-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+                 'headline': 'A red block appeared.', 'changed': 'A red block was painted.',
+                 'notice': 'You see red.'},
+                {'id': 'Q-1', 'words': True, 'surface': 'Home', 'path': 'Chat',
+                 'headline': 'How loud should the block be?',
+                 'today': 'The block is painted in the strongest colour the palette has.',
+                 'problem': 'On a pale palette it is the first thing your eye lands on.',
+                 'proposal': 'Settle one strength and use it everywhere.',
+                 'options': [
+                     {'id': 'loud', 'label': 'Leave it loud', 'pros': ['Impossible to miss.'], 'cons': ['Shouts on a pale palette.']},
+                     {'id': 'quiet', 'label': 'Quieten it', 'pros': ['Stops shouting.'], 'cons': ['Slower to spot.'], 'recommended': True}]},
+            ]}
+    spec.update(over)
+    p = os.path.join(deck, 'mixed.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f)
+    return p
