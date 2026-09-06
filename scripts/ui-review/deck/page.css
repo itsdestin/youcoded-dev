@@ -142,19 +142,15 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
 /* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
 .card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
 .card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}
-/* Fix (2026-09-05): `white-space:nowrap` on the narrow columns was the wrong tool — a
-   Threshold written as a sentence ("pass/fail — the ask happens once, at the switch…") took the
-   whole row, squeezed Statement to a strip and pushed Verdict off the right edge (seen on the
-   buddy acceptance deck). Fixed column shares instead: the prose columns (Statement, Verdict)
-   get the width, the short ones get what a short value needs, and a long source id breaks
-   rather than widening its column. Only the Verdict column exists on a graded deck, so the
-   shares are set per header count via the two :has() rules. */
-.card.contract table{table-layout:fixed}
-.card.contract th:nth-child(1){width:2.6em} .card.contract th:nth-child(3){width:7.5em}
-.card.contract th:nth-child(4){width:18%} .card.contract th:nth-child(5){width:14%}   /* From is an id that breaks anywhere; a fixed em width starved Verdict at 1024px */
-.card.contract td:nth-child(5),.card.contract .src{overflow-wrap:anywhere}
-/* ungraded: five columns — Statement takes the rest; graded: Statement and Verdict split it */
-.card.contract table:has(th:nth-child(6)) th:nth-child(2){width:32%} .card.contract table:has(th:nth-child(6)) th:nth-child(6){width:26%}
+/* Fix (2026-09-06): fixed column shares were the wrong tool too. They were added when a
+   contract sat inside the 760px question-reading column; a contract deck is one step per
+   screen again, so the table has the deck's full width and the browser's own sizing reads
+   better than any guess — a guard path under "Checked by" was being broken into five slivers
+   by a 7.5em share (measured on the fixture, 2026-09-06). Auto layout, and nothing else: an
+   earlier `overflow-wrap:anywhere` here was just as wrong, because telling the From column it
+   may break mid-word let auto layout starve it to 63px and shred every source id into five
+   slivers (measured on the ChatGPT acceptance deck the same day). A source id is one token he
+   reads; let it ask for its width. */
 .words .cards:has(.contract){grid-template-columns:1fr}
 .compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
 /* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
