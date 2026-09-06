@@ -2,11 +2,11 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
-- [ ] The Golden Sunbreak the app ships is older than the registry's (2026-09-04): the promo film
-      used the registry's 1.2.0 rig and companions (the sun that floats beside the mascot) because
-      the vendored copy has neither; a user who installs Golden Sunbreak today does not get the
-      character the film shows. Open question from the promo: update the vendored theme to 1.2.0?
-      `all` `decision` `checked 2026-09-04`
+- [ ] The app carries a copy of Golden Sunbreak that nothing can load (2026-09-06): a whole
+      theme folder sits in the app with no code path to it — installs come from the registry
+      instead. Harmless to users, but it is the copy a future session would read and believe.
+      Cleanup candidate, not a bug
+      `themes-screen` `desktop` `confirmed` `checked 2026-09-06`
 
 - [ ] Rebase every theme's mascot faces on the promo's "warm" face set (2026-09-04): the
       welcome eyes on every expression, expression carried by brows, lids and mouth; surprised
