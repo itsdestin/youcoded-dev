@@ -3,6 +3,7 @@ paths:
   - "**/desktop/src/main/preload.ts"
   - "**/desktop/src/main/ipc-handlers.ts"
   - "**/desktop/src/renderer/remote-shim.ts"
+  - "**/desktop/src/renderer/utils/ipc-error.ts"
   - "**/desktop/src/main/remote-server.ts"
   - "**/desktop/src/main/dev-tools.ts"
   - "**/app/**/SessionService.kt"
@@ -14,6 +15,7 @@ verify:
   - path: youcoded/desktop/src/renderer/remote-shim.ts
     contains: "REJECT_ON_NOT_OK"
   - path: youcoded/desktop/src/main/remote-server.ts
+  - test: youcoded/desktop/tests/ipc-error.test.ts
   - path: youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt
   - path: youcoded/desktop/src/main/dev-tools.ts
     contains: "buildIssueBody"

@@ -3,12 +3,17 @@ paths:
   - "**/desktop/src/main/engine/**"
   - "**/desktop/src/main/models/**"
   - "**/desktop/test-engine/**"
+  - "**/desktop/scripts/generate-engine-pin.mjs"
+  - "**/desktop/src/shared/engine-types.ts"
   - "**/desktop/src/main/providers/provider-registry.ts"
 last_verified: 2026-09-06
 verify:
   - path: youcoded/desktop/src/main/engine/engine-supervisor.ts
     contains: "models-dir"
   - path: youcoded/desktop/src/main/engine/engine-pin.ts
+    contains: "ARG_ALIASES"
+  - path: youcoded/desktop/scripts/generate-engine-pin.mjs
+  - path: youcoded/desktop/src/shared/engine-types.ts
   - path: youcoded/desktop/src/main/engine/model-presets.ts
     contains: "models.ini"
   - path: youcoded/desktop/src/main/models/model-downloader.ts

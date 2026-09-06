@@ -24,7 +24,11 @@ of event.
 > Do not read the sentence above as a statement about the code that ships today.
 
 > **STILL UNFIXED — verified against `origin/master` 2026-08-26, ten days after the crash.**
-> All four defects are untouched: `MODELS_MAX = 2` is unchanged (`engine-supervisor.ts:47`);
+> **(Superseded 2026-09-06: TWO of these four are now fixed on `feat/local-engine-upgrades` —
+> the double-counted capacity and the "You can still continue." copy both return zero hits in
+> `fit-estimator.ts`. `MODELS_MAX = 2` and the missing unified-memory reader are still true.
+> Read the rest of this block as of its own date, not as of today.)**
+> All four defects were untouched at that date: `MODELS_MAX = 2` is unchanged (`engine-supervisor.ts:47`);
 > `git grep -n "gtt|mem_info_gtt" origin/master -- desktop/src` → **0 hits**, so the unified-memory
 > ceiling is still never read; `checkMemoryForLoad` still computes
 > `capacity = totalMemBytes + (totalVramBytes ?? 0)` off TOTAL memory (`fit-estimator.ts`), and the
