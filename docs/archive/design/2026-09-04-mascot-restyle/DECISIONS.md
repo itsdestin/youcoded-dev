@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-05
 feature: mascot-restyle
 ---

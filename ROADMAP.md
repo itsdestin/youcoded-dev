@@ -65,7 +65,7 @@ Target: `v1.3`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 15 | 4 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 14 | 4 | 0 | 2 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 9 | 3 | 1 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 
 ## Filing an item
