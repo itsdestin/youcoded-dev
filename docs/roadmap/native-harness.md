@@ -151,8 +151,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `confirmed` `checked 2026-09-01` `urgent` → docs/active/investigations/2026-09-01-grep-glob-no-deadline.md
 
 - [ ] On a small local vision model the assistant is told an image is "already visible earlier in
-      this conversation" and gets no picture, even though it can no longer see it, until the file changes
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
+      this conversation" and gets no picture, even though it can no longer see it, until the file changes.
+      **Now genuinely reachable** — measured 2026-09-05 while building the local-engine upgrades: no
+      `KNOWN_MODELS` entry has ever declared `supportsVision`, and local bindings always resolved to
+      "don't know", so no local model could reach the buggy path at all. Once the engine reports a
+      paired vision file, any downloaded local vision model resolves true, and the only remaining
+      precondition is a context under ~8,500 tokens — which is exactly the small vision models this
+      feature makes easy to install.
+      `desktop` `confirmed` `checked 2026-09-05` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
 
 - [ ] Write and Edit refuse a file "modified since you read it" after a plain touch or git checkout
       that changed nothing, and can miss a real outside edit made in the same second
@@ -270,6 +276,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       agent at all; "ping the user and wait" is a core competency. Captured, not designed —
       decision 1 in the agent-platform vision doc §9; Phase 4's agent model and inbox wait on it
       `all` `parked` `checked 2026-09-01`
+
+- [ ] In the helpers popup, the amber "Needs you" label on a helper waiting for permission is
+      close to unreadable on the three pale themes — measured 1.52:1 on light, 1.41:1 on creme
+      and 1.19:1 on meadow-mist, against a 4.5:1 floor. The fix is the one the working pill took
+      on 2026-09-05: colour the ring and tint, leave the word on the theme's own text colour.
+      Left alone there because it is the consent affordance and the branch that measured it was
+      about a different chip
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-05`
 
 - [ ] Specialists — six follow-on ideas from plan 1c, named but not designed: promote a
       foreground helper to background mid-run; open a helper's own transcript in a viewer; a

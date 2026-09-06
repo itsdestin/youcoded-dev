@@ -158,6 +158,12 @@ seen-on is always n/a here.
       as covered
       `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
 
+- [ ] `chatgpt-auth.test.ts` ("after the callback the poll starts…") fails on the Windows CI
+      runner and passes on a re-run of the same commit, with no code change — seen 2026-09-05 on
+      youcoded PR #430. A suite that fails for reasons that are not yours trains sessions to wave
+      real failures away, which is the exact thing the 2026-08-28 flake sweep set out to end
+      `n/a` `confirmed` `checked 2026-09-05` `regression`
+
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
       or port the three fixes to it?
