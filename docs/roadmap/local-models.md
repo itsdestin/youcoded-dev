@@ -35,9 +35,14 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       `local-models-screen` `all` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Three faster engine builds upstream ships that we still do not offer: Intel SYCL, a newer
-      CUDA than the one we pin, and Android. ROCm is done — AMD machines on Linux and Windows are
-      offered it now, so this is what is left. Each needs the same measured trial ROCm got before
-      it becomes an option, and the Android one has no local engine to attach to yet.
+      CUDA than the one we pin, and Android. ROCm is available on AMD Linux and Windows, but as an
+      optional thing rather than a recommendation, because it turned out not to be a straight win:
+      it shipped for a day labelled "faster on AMD" with nobody having timed it, and when it was
+      timed on the Strix Halo desktop it read the conversation about 20% faster and wrote its
+      replies 24-46% SLOWER than what we already used. So the rule for the remaining three is
+      stricter than "try it": time BOTH halves — reading the conversation and writing the reply —
+      on the machine each one targets, before it is offered at all. The Android one also has no
+      local engine to attach to yet.
       `settings/local-models` `desktop` `decision` `checked 2026-09-06` `performance` → docs/active/investigations/2026-09-04-local-model-runner-audit.md
 
 - [ ] Parity with LM Studio / Ollama / Jan — what is LEFT after the 2026-09-05 upgrades. Shipped:

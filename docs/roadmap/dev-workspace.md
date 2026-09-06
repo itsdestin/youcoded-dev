@@ -122,6 +122,16 @@ seen-on is always n/a here.
       (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
       `desktop` `needs-verify` `checked 2026-09-05`
 
+- [ ] A dev instance silently changed the engine settings of Destin's real, installed app. Same
+      class as the sync-spaces item above, second file: ~/.youcoded/config.json is one shared
+      path, so --profile separates a dev instance's userData but not this. Switching engine
+      backends in a dev window overnight 2026-09-05 rewrote the live app's config (stamped 03:01,
+      backend now "rocm") while the live app was still running its Vulkan build — it would have
+      come up on ROCm at its next restart, with nothing on screen tracing that back to a test
+      session. This is the isolation run-dev.sh exists to provide. The file was left alone: what
+      his app runs on is his call, not a session's
+      `desktop` `confirmed` `checked 2026-09-06`
+
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
       context-free tester cannot claim to have covered either. Add pointer and scale switches to
