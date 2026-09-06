@@ -39,11 +39,10 @@ UI_REVIEW = os.path.dirname(HERE)
 # only shows at one width, or only in one palette.
 PLAN = 'selfie'
 SIZES = ['1440x900', '1024x768']
-# Longer than the renderer's own default: a page holding a RECORDING keeps Chrome's spinning
-# loading ring on screen until the video has fetched, and that ring is at a different angle in
-# every shot — which the pixel diff then boxes as a change (measured 2026-09-05).
-SETTLE_MS = 2000
 THEMES = ['midnight', 'light']
+# Bounds the render.mjs subprocess: a wedged headless Chrome would otherwise hang this call
+# forever, and the worktree cleanup in selfie()'s `finally` would never run.
+RENDER_TIMEOUT_S = 600
 RUNS = ['before', 'after']
 # Every fixture deck, and the plain-words name its pages carry into the review.
 DECKS = [('selfie', 'Review deck'), ('selfie-brief', 'Brief deck'), ('selfie-questions', 'Questions deck')]
@@ -144,11 +143,20 @@ def _render_run(tree, run, specs, out, log):
         for stem in built:
             sp = load_spec(specs[stem])
             shots = os.path.join(out, 'shots', run, stem)
-            r = subprocess.run(
-                ['node', os.path.join(HERE, 'render.mjs'), '--url', f'{base}/{sp["out"]}', '--out', shots,
-                 '--sizes', ','.join(SIZES), '--themes', ','.join(THEMES), '--pages', str(page_count(sp)),
-                 '--settle', str(SETTLE_MS)],
-                capture_output=True, text=True)
+            # Fix: no --settle override any more — render.mjs waits for the PICTURE to stop
+            # changing on a page holding a recording (two identical screenshots 250ms apart),
+            # which is the event this guess stood in for, so the default settle is enough.
+            try:
+                r = subprocess.run(
+                    ['node', os.path.join(HERE, 'render.mjs'), '--url', f'{base}/{sp["out"]}', '--out', shots,
+                     '--sizes', ','.join(SIZES), '--themes', ','.join(THEMES), '--pages', str(page_count(sp))],
+                    capture_output=True, text=True, timeout=RENDER_TIMEOUT_S)
+            except subprocess.TimeoutExpired:
+                # Fix: without a bound, a wedged Chrome hung this subprocess forever and the
+                # worktree cleanup in selfie()'s `finally` never ran. Report it as a refusal
+                # and move on to the next deck instead.
+                log(f'{stem} at {run}: the renderer did not finish within {RENDER_TIMEOUT_S}s — refusing rather than hanging')
+                continue
             try:
                 result = json.loads(r.stdout.strip().splitlines()[-1])
             except (ValueError, IndexError):
@@ -201,7 +209,9 @@ def _steps(out, plan, before_ref, dry_run, log, nothing_built=False):
     WHY only the pages that moved: `highlight: "auto"` boxes the pixels that differ, and a page
     where nothing differs has no box, which fails the build. Most pages do not move on most
     changes, so emitting them all would mean the selfie almost never builds."""
-    changed = "The deck's own code on this branch, against " + before_ref + '.'
+    # Fix: "this branch" and a bare git ref are developer words on a page Destin reads — say
+    # what he is actually comparing (the deck's look now, versus before this work) instead.
+    changed = "The deck's own appearance, as it is now against how it was before this work."
     steps = []
     for stem, label, page in plan:
         for size in SIZES:
@@ -252,8 +262,12 @@ def _write_review(out, plan, steps, missing, before_ref):
     if missing:
         # Say it on the deck, not only in the log: a reader must not take a short deck for
         # "only these pages moved" when some pages were never in the running.
-        names = ', '.join(sorted(dict.fromkeys(m.lower() for m in missing)))
-        title += f' — the {names} is left out, the copy at {before_ref} could not build it'
+        deduped = sorted(dict.fromkeys(m.lower() for m in missing))
+        names = ', '.join(deduped)
+        # Fix: the verb and pronoun must agree with how many decks are named — "the brief
+        # deck, questions deck IS left out" reads as a typo when it names two.
+        verb, pronoun = ('is', 'it') if len(deduped) == 1 else ('are', 'them')
+        title += f' — the {names} {verb} left out, the copy at {before_ref} could not build {pronoun}'
     crops = {}
     for stem, _, page in plan:
         for size in SIZES:
@@ -283,6 +297,10 @@ def _write_review(out, plan, steps, missing, before_ref):
 def _add_worktree(out, before_ref, log):
     tree = os.path.join(out, 'before')
     root = workspace_root()
+    # Fix: a previous run killed with SIGKILL (a wedged Chrome, a lost session) leaves its
+    # worktree registration behind even though the folder itself is gone — `worktree add`
+    # then refuses on a path that looks free. Prune first so a killed run heals on its own.
+    subprocess.run(['git', '-C', root, 'worktree', 'prune'], capture_output=True, text=True)
     r = subprocess.run(['git', '-C', root, 'worktree', 'add', '--detach', tree, before_ref],
                        capture_output=True, text=True)
     if r.returncode != 0:

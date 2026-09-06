@@ -130,8 +130,15 @@ def main(argv):
         # exactly the code path a session would type next, with no second copy of either.
         out = a.out or tempfile.mkdtemp(prefix='deck-selfie-')
         print('[selfie] working folder: ' + out)
-        return run_selfie(a.before, out, log=lambda m: print('[selfie] ' + m),
-                          dry_run=a.dry_run, finish=lambda p: main(['serve', p]))
+        try:
+            return run_selfie(a.before, out, log=lambda m: print('[selfie] ' + m),
+                              dry_run=a.dry_run, finish=lambda p: main(['serve', p]))
+        # Fix: a bad --before ref (typo, a branch not fetched here) used to end in a raw
+        # RuntimeError traceback — `_add_worktree` raises it with git's own stderr already
+        # in the message, so relay that as a plain refusal instead of a stack trace.
+        except RuntimeError as e:
+            print(str(e), file=sys.stderr)
+            return 1
     try:
         spec = load_spec(a.spec)
         # WHY here and not in load_spec(): only the two commands that PAINT a page follow the

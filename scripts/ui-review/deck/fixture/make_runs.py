@@ -7,8 +7,13 @@ the SAME synthetic run to render the deck against its own past self, and two gen
 "same" pictures would drift — at which point the selfie's before/after diff would be measuring
 the fixture rather than the deck. One generator, two callers (tests/fixture.py imports it).
 
-Everything here is deterministic on purpose. The selfie boxes what MOVED between two renders,
-so any pixel that wobbles run to run becomes a box drawn around nothing."""
+The PIXELS here are deterministic on purpose — the selfie boxes what MOVED between two renders,
+so any pixel that wobbles run to run becomes a box drawn around nothing. The BYTES are not: two
+`magick` runs a second apart write different PNG `tIME` and `date:create`/`date:modify` chunks,
+so the files themselves are never byte-identical. That does not matter today, because both refs
+in a selfie read the same already-generated files rather than each calling `make_runs` itself —
+but a change that made each ref regenerate its own copy would turn this byte noise into a false
+box on every page, so it is written down here rather than assumed."""
 import json
 import os
 import subprocess

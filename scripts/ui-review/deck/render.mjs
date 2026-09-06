@@ -93,13 +93,40 @@ export async function renderDeck({ url, out, sizes, themes, pages, settle = 400 
             // laying out. Report it instead of hiding it.
             errors.push(`${label}: the page never finished laying out (window.__deckReady was never set)`);
           }
+          // Fix: a page holding a RECORDING used to be shot after a longer fixed wait, guessing
+          // how long Chrome's native video controls take to stop showing their own loading
+          // spinner over a video that has not yet decoded and painted a frame — that spinner
+          // sits at a different angle in every shot, which `selfie` then boxed as a change
+          // (measured 2026-09-05). `readyState` does not track this: a small local recording
+          // reaches HAVE_ENOUGH_DATA almost immediately while the spinner keeps turning for
+          // roughly another second regardless (verified 2026-09-05: readyState 4 at frame one,
+          // spinner still on screen at 500ms) — and forcing a decode by playing then pausing
+          // the video moves the problem rather than solving it: that promotes the video to its
+          // own compositor layer and occasionally nudges the containing card's rounded-corner
+          // antialiasing by a pixel (measured — a handful of pixels at the card's corners,
+          // never the video itself). The actual event to wait for is the one `selfie` cares
+          // about: the PICTURE has stopped changing. Poll screenshots until two consecutive
+          // captures, 250ms apart, come back byte-identical — once the spinner is gone the
+          // page is static, so this converges on the same steady frame every time — bounded so
+          // a recording that genuinely never settles is reported instead of hung on forever.
+          const hasVideo = await c.evaluate("document.querySelectorAll('video').length > 0").catch(() => false);
+          if (hasVideo) {
+            let prev = null, stable = false;
+            for (let i = 0; i < 20 && !stable; i++) {
+              const shot = await c.send('Page.captureScreenshot', { format: 'png' });
+              stable = prev === shot.data;
+              prev = shot.data;
+              if (!stable) await sleep(250);
+            }
+            if (!stable) {
+              errors.push(`${label}: the recording never stopped changing between two checks 250ms apart`);
+            }
+          }
           // The page sets __deckReady once it has CHOSEN a layout; images, fonts and the
           // transition into it still need a beat, and a shot taken mid-transition is a
-          // picture of a defect that isn't there.
-          // `settle` is a knob because a page holding a RECORDING needs longer: Chrome paints
-          // its own spinning loading ring over a video it has not finished fetching, and that
-          // ring is at a different angle in every shot — which `selfie` then boxes as a change
-          // (measured 2026-09-05). Longer here costs seconds; a false box costs trust.
+          // picture of a defect that isn't there. Any video on the page has already decoded
+          // its first frame by now, so this is back to being the ordinary post-layout beat —
+          // not a stand-in for waiting on the video.
           await sleep(settle);
           const shot = await c.send('Page.captureScreenshot', { format: 'png' });
           const file = join(out, `p${n}-${theme}-${w}x${h}.png`);

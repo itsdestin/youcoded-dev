@@ -82,6 +82,22 @@ class CliTests(unittest.TestCase):
         # A dry run never checks a second copy of the workspace out.
         self.assertFalse(os.path.exists(os.path.join(out, 'before')), 'a dry run makes no worktree')
 
+    def test_selfie_bad_before_ref_refuses_plainly_instead_of_a_traceback(self):
+        # `_add_worktree` raises RuntimeError on a ref git cannot check out; that used to
+        # propagate straight out of main() as a traceback (the selfie dispatch sits before the
+        # try/except SpecError). Fake can_render() so this is provable on a machine with no
+        # Chrome or ffmpeg on PATH — the thing under test is the bad ref, not the browser check.
+        import deck.selfie as selfie_mod
+        orig = selfie_mod.can_render
+        selfie_mod.can_render = lambda log=print: True
+        self.addCleanup(setattr, selfie_mod, 'can_render', orig)
+        out = tempfile.mkdtemp()
+        bad_ref = 'no-such-ref-selfie-test-xyz'
+        code, so, se = self.run_cli('selfie', '--before', bad_ref, '--out', out)
+        self.assertEqual(code, 1, so + se)
+        self.assertNotIn('Traceback', so + se)
+        self.assertIn(bad_ref, se, so + se)
+
     def test_wait_reads_the_answers_file(self):
         json.dump({'submitted': '2026-08-27T18:40:00Z', 'answers': {}}, open(os.path.join(self.d, 'deck.answers.json'), 'w'))
         code, out, _ = self.run_cli('wait', self.p, '--timeout', '1'); self.assertEqual(code, 0); self.assertIn('3 skipped', out)

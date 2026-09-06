@@ -659,5 +659,26 @@ print(page_count(load_spec(${JSON.stringify(spec)})))`], { encoding: 'utf8' });
       assert.equal(files.length, pageCounts[stem], `${stem}: one picture per page`);
       for (const f of files) assert.ok(statSync(f).size > 1000, `blank ${f}`);
     }
+    // Finding 1: the settle knob used to stand in for a real event — Chrome's spinning
+    // loading ring over a video it had not finished fetching, at a different angle every
+    // shot, which selfie then boxed as a false change. render.mjs now polls screenshots
+    // until the picture itself stops changing (the real event `selfie` cares about) instead
+    // of guessing a duration. Prove it at the DEFAULT settle: render the clip page twice and
+    // assert the two PNGs read the same picture. `-fuzz 1%` tolerates the 1-unit-of-255
+    // antialiasing noise Chrome's own rounded-corner rasterizer produces around a page that
+    // holds a <video>, measured on this same fix (2026-09-05) and unrelated to the spinner
+    // bug being guarded against — a real regression (the spinner mid-spin) differs by
+    // hundreds of thousands of pixels, nowhere near this margin.
+    const clipPage = kinds.findIndex(s => 'clip' in s) + 1;
+    if (clipPage > 0) {
+      const outA = join(tmp, 'clip-a'), outB = join(tmp, 'clip-b');
+      const rA = await renderDeck({ url: `http://127.0.0.1:${port}/selfie.html`, out: outA, sizes: ['1440x900'], themes: ['midnight'], pages: clipPage });
+      const rB = await renderDeck({ url: `http://127.0.0.1:${port}/selfie.html`, out: outB, sizes: ['1440x900'], themes: ['midnight'], pages: clipPage });
+      assert.deepEqual(rA.errors, [], `clip render A logged an error: ${JSON.stringify(rA.errors)}`);
+      assert.deepEqual(rB.errors, [], `clip render B logged an error: ${JSON.stringify(rB.errors)}`);
+      const fileA = rA.files.at(-1), fileB = rB.files.at(-1);
+      const cmp = spawnSync('magick', ['compare', '-metric', 'AE', '-fuzz', '1%', fileA, fileB, join(tmp, 'clip-diff.png')], { encoding: 'utf8' });
+      assert.equal(cmp.status, 0, `clip page differed between two renders of the same code at the default settle: ${cmp.stderr}`);
+    }
   } finally { if (srv.exitCode === null) srv.kill(); }
 });
