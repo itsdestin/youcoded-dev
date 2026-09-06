@@ -298,9 +298,15 @@ new test in prose instead.)
 
 ## After the build
 
-Feature-flow §8e, in order: the **code reviewer** over the whole branch, then the **UX tester**
-driving the built copy, then triage of both, then the **grader** writing
+Feature-flow §8e, in order: the **code reviewer** over the whole branch, then triage, then the
+**grader** writing
 `voice-prompting.contract.verdicts.json`, then the acceptance deck, then `close-out.sh`.
+
+**The UX tester's second run was DROPPED** (Destin, 2026-09-05: "we can skip the beta tester.
+i will test this myself"). Its triage counts are part of §8e's own measurement, so this feature
+contributes only a first-run count to that data — say so when the three-feature review happens,
+rather than reading the gap as a zero. Everything the tester would have caught, Destin catches
+in the same pass, and he is the only one who can judge the parts no rig reaches anyway.
 
 **Not automatable, and Destin's:** the first real dictation. Nothing in this plan has heard a
 human voice — every measurement is a recorded file through a headless rig. The design's risks
