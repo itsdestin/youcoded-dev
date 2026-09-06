@@ -2,19 +2,18 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
-- [ ] The Golden Sunbreak the app ships is older than the registry's (2026-09-04): the promo film
-      used the registry's 1.2.0 rig and companions (the sun that floats beside the mascot) because
-      the vendored copy has neither; a user who installs Golden Sunbreak today does not get the
-      character the film shows. Open question from the promo: update the vendored theme to 1.2.0?
-      `all` `decision` `checked 2026-09-04`
+- [ ] The app carries a copy of Golden Sunbreak that nothing can load (2026-09-06): a whole
+      theme folder sits in the app with no code path to it — installs come from the registry
+      instead. Harmless to users, but it is the copy a future session would read and believe.
+      Cleanup candidate, not a bug
+      `themes-screen` `desktop` `confirmed` `checked 2026-09-06`
 
-- [ ] Rebase every theme's mascot faces on the promo's "warm" face set (2026-09-04): the
-      welcome eyes on every expression, expression carried by brows, lids and mouth; surprised
-      is not two black discs, curious has two brows of different shapes, blink is nearly flat
-      with the welcome mouth, dizzy is swirl eyes with stars circling above the head, plus new
-      happy, smug and shutdown (eyes closed, limbs tucked under) faces. Destin: "these will
-      also be the new guidelines to rebase all other themes on in the live app", 2026-09-04
-      `all` `decision` `checked 2026-09-04`
+- [ ] Everything the mascot learned this year is desktop-only (2026-09-05): on a phone or in
+      a browser the buddy is four still pictures — no blinking, no reacting, no eyes following
+      the cursor, and none of the new happy or asleep faces. Desktop gets all eight expressions
+      and the motion; the other two surfaces fall back to flat drawings because they cannot
+      load the animated format. Destin, told this: "okay this is fine for now"
+      `android` `confirmed` `checked 2026-09-05`
 
 - [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and

@@ -1,0 +1,24 @@
+{
+ "deck": "voice-prompting-review2",
+ "started": "2026-09-05T09:01:26.923Z",
+ "submitted": "2026-09-05T09:03:01Z",
+ "cur": 1,
+ "answers": {
+  "V-4": {
+   "v": "pick",
+   "pick": "strip",
+   "seconds": 27,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-5": {
+   "v": "pick",
+   "pick": "level",
+   "note": "make the max size a tad smaller tho",
+   "note_kind": "noting",
+   "seconds": 66,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

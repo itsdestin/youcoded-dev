@@ -3,6 +3,16 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
+      `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
+      an Android manifest or a workspace file yields "tests: none", and the guard that
+      exists to catch exactly that edit stays silent. Found 2026-09-05 reviewing the voice
+      prompting manifest guard, which reads `app/src/main/AndroidManifest.xml` from a test in
+      `desktop/tests/`. CI's full `npm test` does catch it, so this is about the local loop
+      lying, not about shipping broken. Fix: let a test declare the paths it watches, or
+      widen the source-scanning-guard fallback to spot cross-repo reads
+      `n/a` `confirmed` `checked 2026-09-05`
+
 
 - [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
       `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
@@ -163,6 +173,14 @@ seen-on is always n/a here.
       youcoded PR #430. A suite that fails for reasons that are not yours trains sessions to wave
       real failures away, which is the exact thing the 2026-08-28 flake sweep set out to end
       `n/a` `confirmed` `checked 2026-09-05` `regression`
+
+- [ ] Reading and editing files through shell `cat`/`sed`/heredocs loads NO path-scoped rule —
+      rules fire on the file tools only — so a session told to prefer Bash silently works with
+      none of them. Measured 2026-09-05: a session that shipped a renderer feature, a new test
+      and a review deck got 0 of the 6 rules its own edits matched (`~/.claude/instructions-loaded.log`
+      records the misses). A PostToolUse hook on edit-shaped Bash could name the rule that did
+      not load; the observation instrument for it already exists
+      `n/a` `confirmed` `checked 2026-09-05`
 
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
@@ -497,3 +515,10 @@ seen-on is always n/a here.
       inside the viewport but still rendering as a spacer — that number must always be zero.
       Generalises past folding to any lazy render: is anything late to the screen?
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
+
+- [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
+      merge commit's message was written by hand instead of left as git's default, because it looks
+      for the branch's name in that message. Happened on the voice merge 2026-09-05, where the
+      message was rewritten to describe the feature for Destin. Matching the commit rather than the
+      words would fix it; so would always keeping the branch name in the message
+      `n/a` `confirmed` `checked 2026-09-05`

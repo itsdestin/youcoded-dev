@@ -1,0 +1,215 @@
+{
+  "title": "Rebuilding the mascots",
+  "intro": "The promo film redrew the buddy's faces in a warmer style, and you said those would be the guideline for every theme in the app. None of it has reached the app yet — it lives only in the film's own tooling and, drawn a second time by hand, on the website. Before anything gets drawn, five decisions. Every one of them changes what you'll see on screen.",
+  "sections": [
+    {
+      "title": "What gets redrawn",
+      "intro": "There are five characters in play, not seven or eleven — most themes share one.",
+      "questions": [
+        {
+          "id": "scope",
+          "area": "mascots",
+          "today": "The buddy's face comes from a small set of drawings. Seven of your themes have no character of their own and all share ONE built-in default character: Light, Dark, Midnight, Creme, Cotton Candy Sky, Meadow Mist and Devil's Garden. Four community themes draw their own: Golden Sunbreak, Halftone Dimension, Kuromi Dreamer and Strawberry Kitty.",
+          "problem": "Those faces were drawn early and never revisited. The 'shocked' face is two big black discs and a black hole for a mouth, and the resting face has its eyes squeezed shut. Your words during the promo were that the eyes looked scary. The film only redrew two of the five characters: the default one, and Golden Sunbreak (which happens to share the default's face shape, so it came along for free).",
+          "proposal": "Redraw faces in the film's warmer style — expression carried by eyebrows, eyelids and mouth instead of by the size of a black circle. The question is how far that goes. Halftone keeps its glowing visor and the two cats keep their cat faces either way; you already said those ARE their characters.",
+          "options": [
+            {
+              "label": "All five characters, each in its own style",
+              "pros": [
+                "No theme is left behind — switching themes never makes the app look older",
+                "The cats stay cats and Halftone keeps its visor; they just stop looking frightened",
+                "The default character covers seven themes at once, so most users see it immediately"
+              ],
+              "cons": [
+                "Three characters have to be redrawn by hand rather than adapted, so more rounds of you looking at drawings",
+                "Halftone's visor and the cats' faces have no eyebrows to work with, so the new style has to be reinterpreted for each"
+              ]
+            },
+            {
+              "label": "Only the default character and Golden Sunbreak",
+              "pros": [
+                "Fastest by a long way — both are already drawn, it is a port rather than new art",
+                "Still reaches eight of the eleven themes, including every built-in one"
+              ],
+              "cons": [
+                "Kuromi, Strawberry Kitty and Halftone keep the scary faces, so installing one of them visibly downgrades the app",
+                "Those are the three most distinctive characters you have — the ones people install a theme FOR"
+              ]
+            },
+            {
+              "label": "All five, plus brand-new characters for the three themes that have none",
+              "pros": [
+                "Cotton Candy Sky, Meadow Mist and Devil's Garden stop borrowing a character that does not match them",
+                "Every theme becomes a complete little world rather than a colour scheme"
+              ],
+              "cons": [
+                "By far the biggest job — three characters invented from nothing, not just re-faced",
+                "Those three are community themes; inventing characters for them is a decision about someone else's theme"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "What his face can do",
+      "questions": [
+        {
+          "id": "new-expressions",
+          "area": "mascots",
+          "today": "Every character has exactly six faces: resting, welcome, curious, shocked, dizzy, and blink. That list is fixed by the app — a theme cannot add to it.",
+          "problem": "The film added three more faces — happy, smug, and shut-down (eyes closed, arms and legs tucked in). They only exist inside the film's own tooling. The app has no slot for them, so even if a theme drew them the app could never show them. The film's buddy is a richer character than the one in your app.",
+          "proposal": "Add the three new faces to the list a theme can supply. A theme that doesn't draw them falls back to one it does have, so nothing breaks for existing themes or for anyone's installed theme.",
+          "options": [
+            {
+              "label": "Add all three",
+              "pros": [
+                "He can look pleased when work finishes, instead of only neutral or startled",
+                "'Shut down' gives him a visible way to go quiet, which the sleep question below needs",
+                "Old themes keep working untouched — they just fall back to a face they already have"
+              ],
+              "cons": [
+                "Every character now has nine faces to draw instead of six, on top of redrawing the six",
+                "Theme makers have more to do before their theme feels complete"
+              ]
+            },
+            {
+              "label": "Add only 'happy'",
+              "pros": [
+                "The one face the app has an obvious daily use for — work finished, all good",
+                "Half the extra drawing"
+              ],
+              "cons": [
+                "No way to show him powering down, so sleeping has to reuse 'blink', which just looks like he blinked and got stuck"
+              ]
+            },
+            {
+              "label": "Keep the six he has",
+              "pros": ["Nothing new to draw for any theme"],
+              "cons": [
+                "He can never look pleased about anything",
+                "The film's character stays better than the app's, permanently"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "resting-face",
+          "area": "mascots",
+          "today": "When nothing is happening, the buddy's resting face is a closed-eye squint — two curved lines like >< . It is the very first face anyone sees.",
+          "problem": "His eyes are shut when he is doing nothing, which reads as asleep or not paying attention. The film's warm set has no squint at all; its resting face is open eyes with a highlight, the one labelled 'welcome'.",
+          "proposal": "Make his resting face the open, awake one, and keep the squint for a moment — a happy scrunch when something goes well, rather than his default state.",
+          "options": [
+            {
+              "label": "Open, awake eyes at rest",
+              "pros": [
+                "He looks present and ready rather than asleep",
+                "Matches the film and the website, so the app stops being the odd one out",
+                "The eyes have highlights, which is most of what makes the new style read as warm"
+              ],
+              "cons": [
+                "A character always looking at you is more presence in the corner of the screen; some people find that more distracting than a closed-eyed one"
+              ]
+            },
+            {
+              "label": "Keep the closed squint at rest",
+              "pros": ["Calmest possible resting state", "Nothing to change"],
+              "cons": [
+                "The first impression of the app is a character with its eyes shut",
+                "Everywhere else he appears — the permission screen, the moved screen, Settings, the mini-game — he is asleep too"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "How alive he feels",
+      "questions": [
+        {
+          "id": "aliveness",
+          "area": "mascots",
+          "today": "When you are not touching him, the buddy breathes, blinks and sways a little. His face changes only when you drag him, or when something needs your attention.",
+          "problem": "He does not respond to what the app is actually doing. He looks exactly the same while it is thinking, when it finishes your work, and when something has failed. All the character is in how he moves when you grab him.",
+          "proposal": "Give him reactions to the app's own activity. The film already contains a library of movements built for this — waving, cheering, shrugging, nodding, thinking, being startled — that has never been ported into the app. How far it goes is the question. Whichever you pick, the existing 'reduce motion' setting still turns all of it off.",
+          "options": [
+            {
+              "label": "Idling, plus reactions to what the app is doing",
+              "pros": [
+                "You can tell at a glance whether it is working, done, or stuck — without reading any text",
+                "Most useful when the buddy is small in a corner and the words are too tiny to scan",
+                "Uses movements that already exist and were already tuned for the film"
+              ],
+              "cons": [
+                "Movement at the edge of your vision while you are trying to concentrate",
+                "If a reaction is wrong or late it is worse than no reaction — a cheering buddy over a failed run"
+              ]
+            },
+            {
+              "label": "Richer idling only — no reactions",
+              "pros": [
+                "Never distracting and never wrong, because it never claims anything",
+                "Cheapest, and cannot mislead you about what the app is doing"
+              ],
+              "cons": [
+                "He stays a decoration; you still have to look at the text to know anything",
+                "'Slightly more alive' would mean only a wider variety of blinking"
+              ]
+            },
+            {
+              "label": "Reactions, plus spontaneous moments of his own",
+              "pros": [
+                "The most character — he yawns, stretches, notices your cursor",
+                "Feels like a companion rather than a status light"
+              ],
+              "cons": [
+                "Movement with no meaning trains you to ignore him, which then hides the reactions that DO mean something",
+                "Highest chance of crossing from charming to annoying, and the line is different for every person"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sleeping",
+          "area": "mascots",
+          "today": "The buddy breathes and sways forever. He never stops, however long you leave the app alone.",
+          "problem": "A character that never rests reads as a screensaver rather than a companion — and on a laptop something animating forever in a corner is drawing power for nothing.",
+          "proposal": "After a stretch of quiet he curls up and sleeps, using the new 'shut down' face — eyes closed, arms and legs tucked in. Anything happening wakes him.",
+          "options": [
+            {
+              "label": "Sleeps after a few quiet minutes, wakes on any activity",
+              "pros": [
+                "Reads as a real little creature: he rests when there is nothing to do",
+                "Stops the animation entirely while you are away, so no battery drain for a character nobody is watching",
+                "Waking up IS a reaction — you notice something started"
+              ],
+              "cons": [
+                "If the wake-up is slow or missed he looks broken rather than asleep",
+                "Depends on the 'shut down' face existing, so this is tied to the question above"
+              ]
+            },
+            {
+              "label": "Sleeps only when the app window is not the one you are using",
+              "pros": [
+                "He is always awake whenever you are actually looking at the app",
+                "Saves the same power, since that is when you are away"
+              ],
+              "cons": [
+                "You would rarely see him sleep, so most of the charm of it is lost",
+                "Switching windows constantly would have him nodding off and waking repeatedly"
+              ]
+            },
+            {
+              "label": "Never sleeps",
+              "pros": ["He is always there and always the same"],
+              "cons": [
+                "Animation runs forever for no one",
+                "No resting state, so 'shut down' has no everyday use"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

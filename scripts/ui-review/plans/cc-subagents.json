@@ -12,7 +12,6 @@
      "settle": 900
     }
    ],
-   "probe": false,
    "sameAsBaseline": true
   },
   {
@@ -28,8 +27,7 @@
      "eval": "(()=>{const c=document.querySelector('[data-testid=specialists-chip]'); if(c) c.click();})()",
      "settle": 1000
     }
-   ],
-   "probe": false
+   ]
   }
  ]
 }

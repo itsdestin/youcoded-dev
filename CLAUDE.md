@@ -61,7 +61,7 @@ Commands, cleanup recipes and recovery: `docs/workspace-workflows.md` → Git, w
 
 **Prefer verdicts:** `npm run knip` for dead code, `tsc --noEmit` for types, lint for its bug classes, IPC parity tests for bridge coverage, ast-grep for executable invariants, and `scripts/verify.sh` for combined desktop checks.
 
-**Use tool descriptions as runtime truth.** Prefer dedicated file tools. Quote shell glob patterns and URLs; use `rg -n`, never clustered `rg -rn`/`rg -nr` (`-r` means replacement). Avoid broad process-name kills; identify exact PIDs and never signal the live app. Claude Code's login-shell/ugrep workarounds are not facts about native Bash: YouCoded's native Bash uses bash and its Grep tool invokes ripgrep directly.
+**Use tool descriptions as runtime truth.** Prefer dedicated file tools — reading and editing through shell `cat`/`sed`/heredocs loads NO path-scoped rule, because rules fire on the file tools. Measured 2026-09-05: a session that shipped a renderer feature, a new test and a review deck entirely through Bash got 0 of the 6 rules its own edits matched. If a harness mode pushes you toward Bash, open the rules `docs/MAP.md` names for the subsystem yourself. Quote shell glob patterns and URLs; use `rg -n`, never clustered `rg -rn`/`rg -nr` (`-r` means replacement). Avoid broad process-name kills; identify exact PIDs and never signal the live app. Claude Code's login-shell/ugrep workarounds are not facts about native Bash: YouCoded's native Bash uses bash and its Grep tool invokes ripgrep directly.
 
 ### Code and copy standards
 

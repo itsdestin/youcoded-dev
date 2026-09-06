@@ -1,0 +1,67 @@
+{
+  "title": "Voice prompting — the mic in the message box",
+  "key": "voice-prompting-review",
+  "out": "voice-prompting.review.html",
+  "live": {
+    "worktree": "voice-prompting",
+    "paneWidth": 640
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "V-0",
+      "words": true,
+      "surface": "Behind the mic, on every desktop",
+      "path": "Your answer to Q-1 on the questions deck was 'let me test first'. You tested, and said 'yeah i think i like parakeet'. This step puts that decision on the record",
+      "headline": "The speech engine is Parakeet, downloaded once (464 MB), running on your computer.",
+      "changed": "NVIDIA's Parakeet TDT 0.6B v3 becomes the desktop speech engine, run through the sherpa-onnx runtime that has ready-made packages for Windows, Mac, Linux and Android. It writes punctuation and capitals itself, covers 25 European languages, and hears a 10 s message in under half a second on a weak laptop. The first-run card says 464 MB, not the 150 MB the questions deck guessed.",
+      "notice": "Your voice never leaves the computer, nothing costs money per use, and it works signed in with only a Claude subscription. Whisper is not in the first version.",
+      "risk": "464 MB is a bigger first download than the deck promised; Moonshine v2 (106 MB, English only, 8 s at a time) stays the fallback if that draws complaints."
+    },
+    {
+      "id": "V-1",
+      "surface": "Message box → the mic, listening, live words",
+      "path": "Any chat session. The pane below is the real message box against a stand-in engine that 'hears' one scripted sentence — there is no microphone behind it, so tap and watch",
+      "headline": "A mic beside Send. Tap it: it glows, a meter moves, and words land as they are heard, the newest two grey until they settle.",
+      "live": {
+        "surface": "voice-mic",
+        "round": 1,
+        "candidate": "ready"
+      },
+      "changed": "A mic icon sits between the message and Send, drawn like the paperclip. Tap it: the button fills with the theme's accent and breathes a soft ring, a four-bar loudness meter and a m:ss clock appear to its left, the placeholder reads 'Listening…'. Words arrive in the box while you talk; the last two are grey and may rewrite themselves until the next pass. The mic closes itself after two quiet seconds (or a second tap, or Enter), the grey turns solid, and the cursor waits at the end for you to fix a word or press Send. Also try: click into the EMPTY box and HOLD the space bar — walkie-talkie mode starts after a quarter second and stops when you let go.",
+      "notice": "Nothing sends by itself. Typing while the mic is open ends dictation and keeps what you typed. On Midnight and Dark the glow is the theme's light grey, since those themes are monochrome by rule.",
+      "risk": "The scripted sentence always lands cleanly; a real engine will sometimes rewrite a grey word into a different one, which is the moment the grey exists for."
+    },
+    {
+      "id": "V-2",
+      "surface": "Message box → the first tap, before the download",
+      "path": "A computer where the speech model has not been fetched yet. Tap the mic to open the card; Download runs a stand-in progress bar and ends with the mic ready",
+      "headline": "The first tap opens a small card above the mic: what it does, that your voice stays here, one download of 464 MB.",
+      "live": {
+        "surface": "voice-mic",
+        "round": 1,
+        "candidate": "first-run"
+      },
+      "changed": "The mic is always visible. Before the model exists on this computer, tapping it opens a card anchored above the button: 'Speak your messages', two sentences (words appear with punctuation, ready to fix or send; your voice is turned into text on this computer and never leaves it), the size, then Not now and Download. Download turns the card into a progress bar with the same sentence about keeping typing; when it finishes the card closes and a small note says 'Voice is ready — tap the mic to talk.'",
+      "notice": "Not now leaves the mic in place for another day. Nothing downloads without the tap.",
+      "risk": "The card uses the app's normal pop-up surface; on a phone-width window it may need to sit lower or narrower, which the narrow pass will show."
+    },
+    {
+      "id": "V-3",
+      "surface": "Message box → a computer with no microphone",
+      "path": "Same mic, but the app found no microphone. Tap it",
+      "headline": "When there is no microphone the tap says exactly that, with a Check again, instead of a mic that silently does nothing.",
+      "live": {
+        "surface": "voice-mic",
+        "round": 1,
+        "candidate": "no-mic"
+      },
+      "changed": "The mic stays visible so the feature is discoverable. The tap opens the same small card with the specific reason the app found ('No microphone was found on this computer.') and one Check again, for after you plug one in.",
+      "notice": "The reason is always the real one reported by the computer, never a guess — the same rule as every other error message in the app.",
+      "risk": "A permission refusal (the operating system said no) reads the same way with its own sentence; that state is not in this stand-in."
+    }
+  ]
+}

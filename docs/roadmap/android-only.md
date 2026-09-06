@@ -83,3 +83,10 @@ that in the shared area with android as seen-on.
       you were just handed. Desktop opens it in whatever app the OS uses; Android needs the same via
       a share/view intent
       `files-panel` `android` `confirmed` `checked 2026-09-05`
+
+- [ ] On the phone, the permission question the app asks Android is wired to a screen that may
+      already be gone: nothing unhooks it when the window closes, so a request arriving afterwards
+      throws where nothing catches it and the caller waits forever instead of being told no. Same
+      shape for the file picker, the folder picker and the QR scanner, so worth fixing once for all
+      four rather than per feature
+      `android` `needs-verify` `checked 2026-09-05` `needs-repro`

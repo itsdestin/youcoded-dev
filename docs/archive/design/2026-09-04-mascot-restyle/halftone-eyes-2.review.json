@@ -1,0 +1,36 @@
+{
+  "title": "Halftone's eye colour — cyan on violet",
+  "key": "halftone-eyes-2",
+  "out": "halftone-eyes-2.review.html",
+  "images": "images/halftone-eyes-2.review",
+  "runs": { "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/faces/runs/after" },
+  "themes": ["halftone-dimension"],
+  "crops": {
+    "cv-deep":  ["mascots", "col-cyan-violet-deep",  "1182x176+0+0"],
+    "cv-mid":   ["mascots", "col-cyan-violet-mid",   "1182x176+0+0"],
+    "cv-light": ["mascots", "col-cyan-violet-light", "1182x176+0+0"]
+  },
+  "steps": [
+    {
+      "id": "HE2-1",
+      "surface": "Halftone Dimension's buddy",
+      "path": "Settings → Appearance → Halftone Dimension",
+      "headline": "The cyan outline on the violet eye, as you asked. The only thing still open is how deep the violet sits under it.",
+      "variants": [
+        { "id": "light", "label": "A — lighter violet",
+          "crop": "cv-light",
+          "summary": "The eye is clearly a filled shape you can see from across the room, and the cyan edge sits on top of it rather than around a hole. Reads most awake of the three, and holds up best when the buddy is small on a busy wallpaper. The violet is far enough from the body that the head starts to read as two tones.",
+          "measured": "eye #463779 on body #191327" },
+        { "id": "mid", "label": "B — middle",
+          "crop": "cv-mid",
+          "summary": "The violet from the option you liked, unchanged. The eye is visibly its own colour but still clearly part of the head. Middle of the three on every count, which is usually where this kind of choice lands.",
+          "measured": "eye #33265c on body #191327" },
+        { "id": "deep", "label": "C — deeper violet",
+          "crop": "cv-deep",
+          "summary": "The violet is barely lighter than the body, so almost all the work is done by the cyan edge. Most graphic and most machine-like of the three, and the closest to a glowing outline drawn on a solid head. Loses the most at small sizes.",
+          "measured": "eye #241a44 on body #191327" }
+      ],
+      "risk": "The cyan also colours his eyelids, brows and mouth, so all three of these change the whole face, not only the eyes."
+    }
+  ]
+}

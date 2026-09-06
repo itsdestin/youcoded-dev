@@ -1,0 +1,21 @@
+{
+ "deck": "new-characters-2",
+ "started": "2026-09-06T01:10:22.048Z",
+ "submitted": "2026-09-06T01:10:59Z",
+ "cur": 1,
+ "answers": {
+  "NC2-1": {
+   "v": "pick",
+   "pick": "bone",
+   "seconds": 7,
+   "theme": "devils-garden",
+   "zoom": 1
+  },
+  "NC2-2": {
+   "v": "yes",
+   "seconds": 28,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  }
+ }
+}

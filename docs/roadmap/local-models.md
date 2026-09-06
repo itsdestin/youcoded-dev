@@ -84,3 +84,26 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       worth surveying how many of search's results are affected before widening the pattern:
       loosening it wrongly makes unrelated files look like downloadable models.
       `desktop` `confirmed` `checked 2026-09-05`
+
+- [ ] Starting a session on a hosted model builds and throws away every other provider's model
+      list, for the same reason a local session used to. Measured 2026-09-05 while fixing the
+      local half: `pricingFor` hands the catalog the whole provider list when it only ever reads
+      the binding's own provider, and a total network failure is never remembered, so the cost
+      repeats on every create, resume and model swap. The local half is fixed and pinned; this
+      is the same one-line narrowing in `ipc-handlers.ts`'s pricing closure.
+      `desktop` `confirmed` `checked 2026-09-05`
+
+- [ ] A vision model downloaded while the app is already running can be told to the assistant as
+      text-only. The engine does re-read the file pairing on request, and a download completing
+      does ask it to — but fire-and-forget with a swallowed error, while the model's profile is
+      settled once when the session starts. Lose that race and Local Models says "vision ready"
+      while the assistant is told the model cannot see, so the user attaches a picture and it
+      silently vanishes. Found reviewing the vision work 2026-09-05; deriving the answer from the
+      files on disk as well as from the engine would close it for good.
+      `local-models-screen` `desktop` `confirmed` `checked 2026-09-05`
+- [ ] Installing the local-model engine still asks the computer to unpack the download with a
+      program the app does not ship, so a machine without it fails at a step the user did not know
+      existed. Lower risk than the speech model was — the shapes it downloads need no extra helper
+      on any of the three platforms — but it is the same dependency, and voice now unpacks its own
+      downloads with nothing outside the app. Worth sharing that
+      `settings/local-models` `all` `needs-verify` `checked 2026-09-05`
