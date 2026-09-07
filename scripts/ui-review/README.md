@@ -413,4 +413,14 @@ release (contact, continuity, reversal, others, blink). **A release is not "clea
 three seeds × mouse and touch come back all-zero** — on 2026-09-03 ten rounds of single
 drags each fixed a real fault and each left the next one standing; the sweep found the
 one that mattered (the drag visuals hung on a ref pointerup flips before the drop lands)
-in its first 60 drags. Frames of any scenario are in `drag-fuzz.json`.
+in its first 60 drags.
+
+**Point it at the workbench's CHILD frame and widen it**, or it measures nothing:
+`?mode=workbench` alone renders the toolbar around an iframe, and at the default 460px the
+strip packs to ONE pill while a scenario needs three. Both together —
+`'…/?mode=workbench&child=1&view=app&scenario=stress&latency=0'` with `FUZZ_W=1400
+FUZZ_H=900`. **A `worst:` line of all dashes, with no numbered scenario rows above it, is a
+run that drove zero drags, not a clean sweep** (it printed exactly that six times on
+2026-09-07 before anyone noticed); the sweep now exits 1 rather than saying it. Frames of
+any scenario are in `drag-fuzz.json` — but the write of that file throws on a 60-drag run
+(`docs/roadmap/dev-workspace.md`), so read the scores off stdout until that is fixed.

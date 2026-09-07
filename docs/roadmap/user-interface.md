@@ -76,8 +76,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       dots into the row, and they appear at once while the bar re-centres ~6px in a single
       frame — the only non-zero number left in the drag sweep after the 2026-09-03 rebuild
       (`scripts/ui-review/drag-fuzz.mjs`: "continuity 27px" at t≈press in every run). Not
-      raised by Destin; the release itself is signed off (youcoded#404)
-      `desktop` `parked` `checked 2026-09-03` → docs/archive/handoffs/2026-08-31-session-strip-motion-handoff.md
+      raised by Destin; the release itself is signed off (youcoded#404). Still there
+      2026-09-07: 27.3-29.0 across three seeds x mouse and touch, every occurrence DURING the
+      drag rather than at the release, and unchanged by that session's menu-grip work (a
+      control run with the change removed scored the same)
+      `desktop` `parked` `checked 2026-09-07` → docs/archive/handoffs/2026-08-31-session-strip-motion-handoff.md
 
 - [ ] Right-clicking an image in chat or the file viewer offers nothing — no Copy image,
       Save image as…, Copy address, or Ask about this (the menu shipped for text, code,

@@ -9,7 +9,12 @@ seen-on is always n/a here.
       pushes, and ends up complete". Ubuntu and the local suite are green, so it is invisible
       to `verify.sh` and every merge inherits a red master. Confirmed pre-existing on master at
       `ccbf4211` (run 34049785765) and unchanged by youcoded#441 (run 34163846462), which is
-      how it was found. Both legs need a machine that can run them — this session could not
+      how it was found. Both legs need a machine that can run them — this session could not.
+      Narrowed 2026-09-07 (youcoded#443): "Ubuntu is green" no longer holds — that leg failed
+      too, but on a DIFFERENT and unrelated fault, an ENOTEMPTY removing the
+      engine-model-settings temp root after 9,743 passing tests, now fixed with the retrying
+      remove the test-hygiene rule prescribes. macOS and Windows remain red on the two
+      backendOptions cases, which are the part still needing AMD hardware
       `n/a` `confirmed` `checked 2026-09-07`
 
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
@@ -124,6 +129,21 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] `roadmap-check.mjs --fix` rewrites items the session never touched: on today's master it
+      downgrades two `confirmed` performance items (buddy reflow, remote replay buffer) to
+      `needs-verify` every run. The filing grammar tells every session to run it before
+      committing, so each one either ships another session's silent downgrade or has to spot
+      it and revert by hand. Seen twice on 2026-09-07, once from a stale checkout and once
+      from a freshly merged one
+      `desktop` `confirmed` `checked 2026-09-07`
+
+- [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
+      read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
+      never created, so the one artefact that says WHICH drag was bad does not exist for the
+      run size the README prescribes. Smaller runs write it fine. Found 2026-09-07 chasing a
+      non-zero continuity score
+      `desktop` `confirmed` `checked 2026-09-07`
+
 - [ ] A session needing Destin to approve a set of concrete text changes rebuilds its own
       loopback answer page instead of using the deck — happened 2026-09-05 for a nine-item
       prompt diff review. Wanted: a card type that renders a before/after diff, so one surface
