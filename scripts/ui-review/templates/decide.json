@@ -1,0 +1,120 @@
+{
+  "_comment": [
+    "DECIDE — one picture for context, several WRITTEN options, and he picks one (or Other).",
+    "Use it when the alternatives do not exist as pictures yet, or when the difference is not visible: 'open it by default, or leave it closed?' A Yes/No step cannot ask that — yes to which half?",
+    "The picture shows how it is TODAY; the options are what could replace it."
+  ],
+  "title": "The settings drawer — how should it open?",
+  "_comment_title": "title: what this deck is about, in his words.",
+  "key": "drawer-open-decide",
+  "_comment_key": "key: a short name for this deck. His pick is saved under it.",
+  "out": "drawer-open.decide.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "images": "images/decide",
+  "_comment_images": "images: where the cropped pictures land. It must contain this file's own name.",
+  "runs": {
+    "_comment": "runs: one sweep of today's app is all a decide step needs — the options are words, not pictures.",
+    "today": "runs/today"
+  },
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "_comment": "One step is one decision. Two options minimum — one option plus Other is a Yes/No step wearing a disguise.",
+      "id": "D-1",
+      "_comment_id": "id: your name for this decision. It labels his answer.",
+      "surface": "Settings",
+      "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
+      "path": "The drawer that slides in from the left",
+      "_comment_path": "path: how he would get there.",
+      "crop": "drawer",
+      "_comment_crop": "crop: the picture of how it is today. Names come from crops.json, or add your own under a top-level \"crops\" block.",
+      "headline": "Which section should the settings drawer open on?",
+      "_comment_headline": "headline: the decision itself, in one sentence. 25 words at most, no code words.",
+      "notice": "Whichever you pick is what opens every time you press the settings button.",
+      "_comment_notice": "notice (optional): what rides on the pick.",
+      "risk": "Every option remembers nothing between sessions; a drawer that remembers is a separate question.",
+      "_comment_risk": "risk (optional): what is true whichever option wins.",
+      "highlight": {
+        "_comment": "highlight: REQUIRED — one picture means nothing to diff, so you must say what to box. \"text\" boxes words on screen; a hand-placed \"box\": [x, y, w, h] is the last resort.",
+        "text": "Appearance"
+      },
+      "options": [
+        {
+          "_comment": "One option. Written, not pictured — so pros and cons carry the weight.",
+          "id": "top",
+          "_comment_id": "id: your name for this option. It is what his answer records.",
+          "label": "Always the first section",
+          "_comment_label": "label: the option's name, two or three words. Never write '(recommended)' into it — set the flag below instead, so the page can badge it.",
+          "pros": [
+            "The same thing is under your thumb every time.",
+            "Nothing to learn: the drawer never surprises you."
+          ],
+          "_comment_pros": "pros: short lines about HIS experience, not the code. One line each.",
+          "cons": [
+            "Two more taps every time the section you want is further down."
+          ],
+          "_comment_cons": "cons: the same, for what it costs him.",
+          "summary": "The drawer opens the way it does today.",
+          "_comment_summary": "summary (optional): a sentence beside the lists, when they need framing.",
+          "cost": "Nothing to build.",
+          "_comment_cost": "cost: what taking this option costs — work, time, something given up.",
+          "measured": "0 extra taps to reach the first section",
+          "_comment_measured": "measured (optional): a number. Needs a digit in it.",
+          "recommended": false,
+          "_comment_recommended": "recommended: true on AT MOST ONE option. The page badges it and says why in your summary."
+        },
+        {
+          "id": "last",
+          "label": "Wherever you left it",
+          "pros": [
+            "Comes back where you were, which is usually where you are going.",
+            "No taps at all when you return to the same section."
+          ],
+          "cons": [
+            "The drawer looks different every time you open it.",
+            "A section you visited once by mistake keeps coming back."
+          ],
+          "cost": "Remembers one section between openings.",
+          "recommended": true
+        },
+        {
+          "id": "search",
+          "label": "A search box first",
+          "pros": [
+            "Anything is two words away, however deep it lives."
+          ],
+          "cons": [
+            "Typing to reach a setting you can already see is slower.",
+            "The list of sections is pushed down the drawer."
+          ],
+          "cost": "A search box, and every setting has to be findable by name."
+        }
+      ]
+    },
+    {
+      "_comment": "A second decision, at its smallest: two options, no flags, no numbers.",
+      "id": "D-2",
+      "surface": "Settings",
+      "path": "The drawer that slides in from the left",
+      "crop": "drawerfull",
+      "headline": "What should closing the drawer do to an unsaved change?",
+      "highlight": {
+        "text": "Appearance"
+      },
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep it",
+          "pros": ["Nothing you typed is ever lost."],
+          "cons": ["A change you meant to abandon is still there tomorrow."]
+        },
+        {
+          "id": "ask",
+          "label": "Ask you",
+          "pros": ["You decide each time, and nothing goes quietly."],
+          "cons": ["A question every time you close the drawer in a hurry."]
+        }
+      ]
+    }
+  ]
+}

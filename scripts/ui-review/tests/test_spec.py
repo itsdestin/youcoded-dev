@@ -1,7 +1,7 @@
 import json, os, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
-from deck.spec import load_spec, validate, run_names, word_count, banned_in, workspace_root, SpecError
+from deck.spec import load_spec, validate, run_names, step_runs, word_count, banned_in, workspace_root, SpecError
 
 def write_spec(d, **over):
     # images/deck names the spec stem ('deck.json'), which is what validate() wants — see
@@ -122,3 +122,243 @@ class ClipStepTests(unittest.TestCase):
         errors, _ = validate(s)
         self.assertTrue(any('has no crop' in e for e in errors), errors)
         self.assertTrue(any('banned word "reducer"' in e for e in errors), errors)
+
+
+class LiveThemeTests(unittest.TestCase):
+    """The deck opens on the theme Destin's live app is on (design §5). The app writes the
+    slug to ~/.claude/youcoded-appearance.json on every theme change; these tests point
+    live_theme() at a temp file instead via YOUCODED_APPEARANCE_FILE."""
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        self.appearance = os.path.join(self.d, 'appearance.json')
+        os.environ['YOUCODED_APPEARANCE_FILE'] = self.appearance
+        self.addCleanup(os.environ.pop, 'YOUCODED_APPEARANCE_FILE', None)
+        self.log = []
+
+    def set_live(self, theme):
+        with open(self.appearance, 'w') as f:
+            json.dump({'theme': theme, 'reducedEffects': False}, f)
+
+    def words(self, **over):
+        """A picture-free deck (a questions deck): no images folder, no runs."""
+        over.setdefault('steps', [{"id": "Q-1", "words": True, "surface": "Games", "path": "Questions",
+                                   "headline": "A short statement.", "changed": "Stated, not asked.",
+                                   "notice": "Nothing yet."}])
+        over.setdefault('themes', ['midnight', 'light'])
+        p = write_spec(self.d, **over)
+        s = json.load(open(p))
+        for k in ('images', 'runs'):
+            s.pop(k, None)
+        json.dump(s, open(p, 'w'))
+        return load_spec(p)
+
+    def pictures(self, **over):
+        over.setdefault('themes', ['midnight', 'light'])
+        return load_spec(write_spec(self.d, **over))
+
+    def capture(self, theme, runs=('before', 'after')):
+        """The crops `crop` would have cut for that theme — empty files are enough, since the
+        captured check is existence only."""
+        d = os.path.join(self.d, 'images', 'deck')
+        os.makedirs(d, exist_ok=True)
+        for r in runs:
+            open(os.path.join(d, f'c--{theme}--{r}.png'), 'w').close()
+
+    def apply(self, spec, **kw):
+        from deck.spec import apply_live_theme
+        return apply_live_theme(spec, log=self.log.append, **kw)
+
+    def test_no_appearance_file_leaves_the_order_alone(self):
+        s = self.words()
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+
+    def test_live_theme_already_in_the_list_moves_to_the_front(self):
+        self.set_live('light')
+        s = self.words()
+        self.assertEqual(self.apply(s), 'light')
+        self.assertEqual(s['themes'], ['light', 'midnight'])
+
+    def test_live_theme_not_listed_is_added_to_a_picture_free_deck(self):
+        self.set_live('creme')
+        s = self.words()
+        self.assertEqual(self.apply(s), 'creme')
+        self.assertEqual(s['themes'], ['creme', 'midnight', 'light'])
+
+    def test_picture_deck_keeps_its_order_when_the_live_theme_is_not_captured(self):
+        self.set_live('creme')
+        s = self.pictures()
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+        self.assertTrue(any('not captured' in m for m in self.log), self.log)
+
+    def test_picture_deck_opens_on_a_captured_live_theme(self):
+        self.set_live('creme')
+        self.capture('creme')
+        s = self.pictures()
+        self.assertEqual(self.apply(s), 'creme')
+        self.assertEqual(s['themes'], ['creme', 'midnight', 'light'])
+        self.assertEqual(self.log, [])
+
+    def test_a_step_with_its_own_themes_does_not_need_the_live_theme(self):
+        # A real-app capture exists in ONE theme and lists it; the live theme must not be refused
+        # because that step has no crop for it — build_page never asks for one (review, 2026-09-05).
+        self.set_live('creme')
+        self.capture('creme')
+        s = self.pictures(steps=[
+            {"id": "S-1", "surface": "Home", "path": "Chat", "crop": "c",
+             "headline": "Short headline.", "changed": "What changed.", "notice": "You will notice."},
+            {"id": "S-2", "surface": "Terminal", "path": "Live", "crop": "c", "themes": ["midnight"],
+             "headline": "One theme only.", "changed": "Captured in the app.", "notice": "Midnight only."}])
+        self.assertEqual(self.apply(s), 'creme')
+        self.assertEqual(s['themes'][0], 'creme')
+        self.assertEqual(self.log, [])
+
+    def test_a_live_theme_with_no_colours_anywhere_is_refused(self):
+        self.set_live('no-such-theme')
+        s = self.words()
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+        self.assertTrue(any('no colours here' in m for m in self.log), self.log)
+
+    def test_override_wins_over_the_file(self):
+        self.set_live('light')
+        s = self.words()
+        self.assertEqual(self.apply(s, override='midnight'), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+
+    def test_fixed_pins_the_specs_own_order(self):
+        self.set_live('light')
+        s = self.words(theme='fixed')
+        self.assertEqual(self.apply(s), 'midnight')
+        self.assertEqual(s['themes'], ['midnight', 'light'])
+
+    def test_the_opened_theme_is_recorded_on_the_spec(self):
+        self.set_live('light')
+        s = self.words()
+        self.apply(s)
+        self.assertEqual(s['_open_theme'], 'light')
+
+    def test_any_other_top_level_theme_value_is_refused(self):
+        with self.assertRaises(SpecError) as e:
+            self.words(theme='midnight')
+        self.assertIn('fixed', str(e.exception))
+
+    def test_an_unreadable_appearance_file_is_silently_ignored(self):
+        with open(self.appearance, 'w') as f:
+            f.write('{not json')
+        from deck.spec import live_theme
+        self.assertIsNone(live_theme())
+
+
+class CommentStrippingTests(unittest.TestCase):
+    """`_comment` is how a TEMPLATE explains a field in place (design §6.5). It is documentation
+    for the session writing the deck, never deck content, so load_spec removes it everywhere —
+    at every depth, before a single rule is checked."""
+
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+
+    def _load(self, **over):
+        return load_spec(write_spec(self.d, **over))
+
+    def test_comment_on_the_deck_and_on_a_step_is_gone(self):
+        s = self._load(_comment='what this deck is for',
+                       steps=[{'_comment': 'one point per step', 'id': 'S-1', 'surface': 'Home',
+                               'path': 'Chat', 'crop': 'c', 'headline': 'Short headline.',
+                               'changed': 'What changed.', 'notice': 'You will notice.'}])
+        self.assertNotIn('_comment', s)
+        self.assertNotIn('_comment', s['steps'][0])
+        self.assertEqual(validate(s), ([], []))
+
+    def test_comment_inside_options_variants_and_rows_is_gone(self):
+        s = self._load(steps=[
+            {'id': 'S-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'Which one?',
+             'today': 'It is one row.', 'problem': 'It gets crowded.', 'proposal': 'Give it a row.',
+             'options': [{'_comment': 'each option is a real answer', 'id': 'a', 'label': 'Leave it',
+                          'pros': ['Nothing moves.'], 'cons': ['Stays crowded.']}]},
+            {'id': 'S-2', 'surface': 'Home', 'path': 'Chat', 'headline': 'Which picture?',
+             'variants': [{'_comment': 'one picture each', 'id': 'A', 'label': 'A', 'crop': 'c', 'summary': 'One.'},
+                          {'id': 'B', 'label': 'B', 'crop': 'c', 'summary': 'Two.'}]}])
+        self.assertNotIn('_comment', s['steps'][0]['options'][0])
+        self.assertNotIn('_comment', s['steps'][1]['variants'][0])
+        self.assertEqual(validate(s)[0], [])
+
+    def test_comment_is_stripped_before_the_page_marker_rule_runs(self):
+        # A page marker refuses any key but page/intro — so an un-stripped `_comment` on one
+        # would turn the template that explains a page into an error.
+        s = self._load(steps=[
+            {'_comment': 'a page marker starts a new page', 'id': 'P-1', 'page': 'First page',
+             'intro': 'One line under the title.'},
+            {'id': 'S-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'headline': 'Which one?',
+             'today': 'It is one row.', 'problem': 'It gets crowded.', 'proposal': 'Give it a row.'}])
+        self.assertNotIn('_comment', s['steps'][0])
+        self.assertEqual(validate(s)[0], [])
+
+    def test_a_comment_named_after_its_field_is_stripped_too(self):
+        # A template explains each field beside the field itself, which needs one comment key
+        # per field — `_comment_headline` next to `headline`. Any key starting `_comment` goes.
+        s = self._load(_comment_title='what this deck is about',
+                       steps=[{'id': 'S-1', '_comment_id': 'your name for this point', 'surface': 'Home',
+                               'path': 'Chat', 'crop': 'c', 'headline': 'Short headline.',
+                               'changed': 'What changed.', 'notice': 'You will notice.'}])
+        self.assertNotIn('_comment_title', s)
+        self.assertNotIn('_comment_id', s['steps'][0])
+        self.assertEqual(validate(s), ([], []))
+
+    def test_a_comment_may_be_a_list_of_lines_and_may_sit_at_any_depth(self):
+        s = self._load(live={'_comment': ['line one', 'line two'], 'worktree': 'demo'},
+                       steps=[{'id': 'S-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+                               'headline': 'Short headline.', 'changed': 'What changed.',
+                               'notice': 'You will notice.',
+                               'highlight': {'_comment': 'what the box goes around', 'text': 'Send'}}])
+        self.assertNotIn('_comment', s['live'])
+        self.assertNotIn('_comment', s['steps'][0]['highlight'])
+
+
+class SlideRunsTests(unittest.TestCase):
+    """A slide may name the captures it shows, so one deck holds a "build it?" point and a
+    "keep it?" point. Destin, 2026-09-06: he was handed two links for one ask."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+
+    def _two_run_deck(self, **step_over):
+        st = {'id': 'S-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c', 'headline': 'Short headline.',
+              'changed': 'What changed.', 'notice': 'You will notice.'}
+        st.update(step_over)
+        return load_spec(write_spec(self.d, steps=[st]))
+
+    def test_a_slide_with_no_runs_shows_the_decks(self):
+        s = self._two_run_deck()
+        self.assertEqual(step_runs(s, s['steps'][0]), ['before', 'after'])
+        self.assertEqual(step_runs(s, s['steps'][0]), run_names(s))
+
+    def test_a_slide_may_show_one_capture_out_of_a_pair(self):
+        s = self._two_run_deck(runs=['after'], highlight={'text': 'Send'})
+        self.assertEqual(step_runs(s, s['steps'][0]), ['after'])
+        self.assertEqual(validate(s), ([], []))
+
+    def test_one_picture_still_needs_a_highlight_even_in_a_two_run_deck(self):
+        # The "auto" default only exists when there are two pictures to compare.
+        s = self._two_run_deck(runs=['after'])
+        errors, _ = validate(s)
+        self.assertTrue(any('needs a highlight' in e for e in errors), errors)
+
+    def test_a_slide_cannot_name_a_capture_the_deck_does_not_have(self):
+        s = self._two_run_deck(runs=['today'], highlight={'text': 'Send'})
+        errors, _ = validate(s)
+        self.assertTrue(any('the deck does not' in e for e in errors), errors)
+
+    def test_runs_order_follows_the_deck_not_the_slide(self):
+        s = self._two_run_deck(runs=['after', 'before'])
+        self.assertEqual(step_runs(s, s['steps'][0]), ['before', 'after'])
+
+    def test_a_deck_may_hold_all_three_captures(self):
+        s = load_spec(write_spec(self.d, runs={'today': '/t', 'before': '/a', 'after': '/b'}))
+        self.assertEqual(len(s['runs']), 3)
+
+    def test_a_capture_name_outside_the_three_is_refused(self):
+        with self.assertRaises(SpecError):
+            load_spec(write_spec(self.d, runs={'yesterday': '/a'}))
+
+
+if __name__ == '__main__': unittest.main()

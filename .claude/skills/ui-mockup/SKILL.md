@@ -13,12 +13,18 @@ rendering happens**.
 ## Before drawing anything: the questions deck
 
 Step 2 of the feature flow (`docs/active/specs/2026-09-01-feature-flow-design.md` §5) is a
-deck, not a chat. Write `docs/active/design/<date>-<feature>/<feature>.questions.json` — one
-`"words": true` step per question, one to three options (the recommended one first, its why in
-`summary`), no picture — and `serve` it in the background. Do not ask what the design guide or
-the code already answers; do not ask what has an obvious answer (state it, the review deck
-will show it). Draw only after it is submitted: its answers are the first source of the
-contract.
+deck, not a chat. Copy `scripts/ui-review/templates/questions.json` to
+`docs/active/design/<date>-<feature>/<feature>.questions.json` — one `"words": true` step per
+question, each saying what exists today, what goes wrong (`problem`) and what would change
+(`proposal`), with one to three `options` carrying their own `pros` and `cons` and at most one
+`"recommended": true` (never that word typed into a label). The whole deck is ONE scrolling
+page unless a page marker (`{"id": "P-2", "page": "…", "intro": "…"}`) starts a new set, so err
+on more questions per page. `preview` it and read the contact sheet, then `serve` it in the
+background (it never opens a browser — put the printed link in chat as the last line of your
+turn). Do not ask what the design guide or the code already answers; do not ask what has an
+obvious answer (state it, the review deck will show it). Draw only after it is submitted: its
+answers are the first source of the contract. Every field and every refusal:
+`.claude/rules/review-deck.md`.
 
 **Hand Destin the `[deck] http://127.0.0.1:…` line from `serve`, never the `.html` path**, while
 the server runs. The app opens a pasted path as a plain file, where Submit has no server and the
@@ -130,7 +136,8 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    against the built branch) in parallel, each with a budget; mark every finding line in
    their review files; fix the accepted ones; hand the review files to the contract agent so
    accepted findings become `review:` rows.
-5. File a roadmap entry for every *fix later* note the contract agent listed (`docs/roadmap/<area>.md`
+5. File a roadmap entry for anything the contract agent listed under `## Not covered` that is
+   real work rather than a question for the next round (`docs/roadmap/<area>.md`
    — `ROADMAP.md` → "Filing an item"), and follow the workspace knowledge rules (pinning test >
    ast-grep rule > WHY comment > path-scoped rule) for anything durable.
 6. At the end: dispatch the grader (`scripts/ui-review/grader.md`, a fresh agent) to write

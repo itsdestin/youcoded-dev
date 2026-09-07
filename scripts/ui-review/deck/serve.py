@@ -1,5 +1,10 @@
-"""Serve a built deck on 127.0.0.1, open it in the browser, save every answer to
+"""Serve a built deck on 127.0.0.1, print its address, save every answer to
 <spec-stem>.answers.json as it arrives, and exit when Destin submits.
+
+WHY it never opens a browser (Destin, 2026-09-05): a session runs inside the YouCoded app,
+which opens any link pasted into chat — a model launching its own browser window on his
+desktop is a surprise, not a convenience. `serve` prints the address; the session's job is
+to put it in chat as the last line of its turn.
 
 WHY exit-on-submit: Claude runs `serve` as a background command and is re-invoked when it
 exits — that exit IS the notification that the review is done, with the summary on stdout.
@@ -16,14 +21,9 @@ import threading
 import time
 import urllib.error
 import urllib.request
-import webbrowser
 
 from .live import VITE_BASE_PORT, has_live, live_offset
-from .spec import SpecError, workspace_root
-
-# The tag says what a note IS — next-round work, a roadmap line, or a remark — so the
-# contract agent (Task 6) can route it instead of guessing (feature-flow design §5).
-NOTE_KIND = {'now': 'fix now', 'later': 'fix later', 'noting': 'just noting'}
+from .spec import SpecError, is_page, workspace_root
 
 
 def answers_path(spec):
@@ -43,23 +43,36 @@ def write_atomic(path, obj):
 
 def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
-    counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'skip': 0}
+    counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'picks': 0, 'wrote': 0, 'skip': 0}
     lines = []
     for st in spec['steps']:
+        if is_page(st):
+            continue   # a page marker asks nothing — no answer, so no line
         a = (state.get('answers') or {}).get(st['id']) or {}
         v = a.get('v') or 'skip'
         counts[v] = counts.get(v, 0) + 1
         note = (a.get('note') or '').strip()
         # A choice step answers with the variant it picked ("P-19 pick B"); "no" there means none of them.
-        what = f'pick {a.get("pick", "?")}' if v == 'pick' else ('none' if v == 'no' and st.get('variants') else v)
-        # The tag says what the note IS — next-round work, a roadmap line, or a remark — so the
-        # contract agent routes it instead of guessing (feature-flow design §5).
-        tag = NOTE_KIND.get(a.get('note_kind'), '')
-        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' + (f' [{tag}]' if tag else '') if note else ''))
+        # "Don't know" is Other with a flag on it, so the file keeps three answers rather than
+        # four — but the summary must say which of the two it was, or a session reads a shrug
+        # as "he wants something else".
+        # `picks` is several chosen at once and `wrote` is an answer he typed — both are
+        # answers in their own right, so they print as themselves rather than as a bare verb.
+        what = (f'pick {a.get("pick", "?")}' if v == 'pick'
+                else 'picks ' + ', '.join(a.get('picks') or []) if v == 'picks'
+                else 'wrote "' + (a.get('text') or '').strip() + '"' if v == 'wrote'
+                else 'none' if v == 'no' and st.get('variants')
+                else "don't know" if v == 'other' and a.get('dk') else v)
+        # Fix: a note is a note (Destin, 2026-09-04) — no tag to print. An older answers
+        # file may still carry a leftover per-note category alongside it; it is simply
+        # never read here, so it has no effect on the summary.
+        lines.append(f'{st["id"]} {what}' + (f' — "{note}"' if note else ''))
     when = (state.get('submitted') or '')[:16].replace('T', ' ')
     head = (f'{spec["key"]} · {"submitted " + when if when else "not submitted"} · '
             f'{counts["yes"]} yes · {counts["no"]} no · {counts["other"]} other · '
-            + (f'{counts["pick"]} picked · ' if counts['pick'] else '') + f'{counts["skip"]} skipped')
+            + (f'{counts["pick"]} picked · ' if counts['pick'] else '')
+            + (f'{counts["picks"]} multi-picked · ' if counts['picks'] else '')
+            + (f'{counts["wrote"]} written · ' if counts['wrote'] else '') + f'{counts["skip"]} skipped')
     return head + '\n' + '\n'.join(lines)
 
 
@@ -70,6 +83,9 @@ class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 def make_server(spec, port, on_submit):
     apath = answers_path(spec)
+    # One dev window per try-it slide, so pressing the button twice does not leave two apps
+    # fighting over the same profile. Keyed by step id; a dead entry is forgotten.
+    dev_windows = {}
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *a, **k):
@@ -140,20 +156,52 @@ def make_server(spec, port, on_submit):
                 self._json(200, {'ok': True})
                 on_submit(state)
                 return
+            if self.path == '/dev':
+                return self._json(*launch_dev(spec, dev_windows, state.get('step')))
             return self._json(404, {'error': 'unknown path'})
 
     srv = _Server(('127.0.0.1', port), Handler)
     return srv, f'http://127.0.0.1:{srv.server_address[1]}/{spec["out"]}'
 
 
-def open_url(url):
-    for cmd in (['xdg-open', url], ['open', url]):
-        try:
-            subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            return True
-        except FileNotFoundError:
-            continue
-    return webbrowser.open(url)
+def launch_dev(spec, windows, step_id):
+    """Open the dev window a TRY-IT slide names. Returns (status, body).
+
+    WHY the page may not send a command (Destin, 2026-09-06 asked for a button instead of a line
+    to copy): the request names a STEP, and the command is rebuilt here from the spec on disk.
+    A page that could post a command to run would be a shell on a loopback port — the deck is
+    served to a browser, and the browser is not a thing this process trusts.
+
+    It launches `run-dev.sh`, which is the dev instance on shifted ports with its own profile —
+    never Destin's own running app, which nothing in this workspace may touch."""
+    from .build import dev_command   # imported here: build.py imports this module at load time
+    step = next((st for st in spec['steps'] if st.get('id') == step_id), None)
+    if not step or 'dev' not in step:
+        return 404, {'error': f'no try-it slide called "{step_id}" on this deck'}
+    live = windows.get(step_id)
+    if live and live.poll() is None:
+        return 200, {'ok': True, 'already': True, 'pid': live.pid}
+    root = workspace_root()
+    script = os.path.join(root, 'scripts', 'run-dev.sh')
+    if not os.path.exists(script):
+        return 500, {'error': f'{script} is not here — run the deck from the workspace'}
+    dev = step['dev']
+    argv = ['bash', script, dev['worktree'], '--label', dev.get('label') or dev['worktree']]
+    if dev.get('offset') is not None:
+        argv += ['--offset', str(dev['offset'])]
+    if dev.get('profile'):
+        argv += ['--profile', dev['profile']]
+    log_path = os.path.join(spec['_base'], spec['_stem'] + f'.dev-{step_id}.log')
+    try:
+        with open(log_path, 'w') as lf:
+            # start_new_session: the window outlives this server, so submitting the deck (which
+            # exits the server) does not kill the app he is still looking at.
+            proc = subprocess.Popen(argv, stdout=lf, stderr=subprocess.STDOUT, cwd=root,
+                                    stdin=subprocess.DEVNULL, start_new_session=True)
+    except OSError as e:
+        return 500, {'error': f'could not start it: {e}'}
+    windows[step_id] = proc
+    return 200, {'ok': True, 'pid': proc.pid, 'command': dev_command(dev), 'log': log_path}
 
 
 def already_served(spec):
@@ -203,9 +251,6 @@ def rotate_submitted(spec, log=print):
     return dest
 
 
-_TAG_KIND = {v: k for k, v in NOTE_KIND.items()}   # "fix later" → 'later', the copy box's tag back to the page's key
-
-
 def parse_pasted(spec, text):
     """The deck's copy box, pasted back → the state the server would have written.
 
@@ -225,12 +270,15 @@ def parse_pasted(spec, text):
     state = {'deck': spec['key'], 'answers': {}}
     problems = []
     seg_re = re.compile(r'^(?P<what>yes|no|other|skip|none|pick\s+\S+)'
-                        r'(?:\s+—\s+"(?P<note>.*)"(?:\s+\[(?P<tag>[^\]]+)\])?)?\s*$', re.S)
+                        # A trailing [tag] is accepted and DROPPED: decks written before
+                        # 2026-09-05 carried "fix now / fix later / just noting" after a note,
+                        # and their paste must still record rather than be refused.
+                        r'(?:\s+—\s+"(?P<note>.*)"(?:\s+\[[^\]]+\])?)?\s*$', re.S)
     for i in range(1, len(parts) - 1, 2):
         sid, seg = parts[i], parts[i + 1].strip()
         m = seg_re.match(seg)
         if not m:
-            problems.append(f'{sid}: could not read "{seg[:60]}" — expected yes / no / other / skip / none / pick <id>, optionally — "note" [tag]')
+            problems.append(f'{sid}: could not read "{seg[:60]}" — expected yes / no / other / skip / none / pick <id>, optionally — "note"')
             continue
         what = m.group('what')
         if what == 'skip':
@@ -249,12 +297,6 @@ def parse_pasted(spec, text):
             a['v'] = what
         if m.group('note'):
             a['note'] = m.group('note')
-        if m.group('tag'):
-            kind = _TAG_KIND.get(m.group('tag'))
-            if kind:
-                a['note_kind'] = kind
-            else:
-                problems.append(f'{sid}: unknown note tag [{m.group("tag")}] — one of {", ".join(NOTE_KIND.values())}')
         state['answers'][sid] = a
     if not state['answers'] and not problems:
         problems.append('no step answers found — expected lines like "Q-1 pick a" or "P-3 yes" using this deck\'s step ids (' + ', '.join(ids) + ')')
@@ -372,7 +414,7 @@ def stop_workbench(proc):
             proc.kill()
 
 
-def serve(spec, port=0, open_browser=True, timeout_min=240, log=print, live=True):
+def serve(spec, port=0, timeout_min=240, log=print, live=True):
     """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served.
 
     `live=False` (--no-live) leaves the app server alone, for when Destin already has the
@@ -402,8 +444,9 @@ def serve(spec, port=0, open_browser=True, timeout_min=240, log=print, live=True
     with open(lock, 'w') as f:
         json.dump({'pid': os.getpid(), 'url': url}, f)
     log(f'[deck] {url}')
-    if open_browser:
-        open_url(url)
+    # Fix (Destin, 2026-09-05): never launch a browser ourselves — print the link and let
+    # the session paste it into chat, where the YouCoded app opens it for him.
+    log('[deck] not opened — put this link in chat as the last line of your turn')
     # WHY: shutdown() blocks until serve_forever() returns, so calling it on the thread
     # that runs serve_forever (the handler thread is one of its children in
     # ThreadingMixIn) would deadlock — it must run on a throwaway thread.

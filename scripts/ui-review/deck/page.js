@@ -5,14 +5,21 @@
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const N = DECK.steps.length, runs = DECK.runs;
   let cur = 0, theme = DECK.themes[0], zoom = 1, loupeOn = true, server = false, stepStart = Date.now();
+  // PAGES MODE. A question deck (no pictures anywhere) is not one screen per question: it is one
+  // scrolling page per SET of questions. Destin (2026-09-04): "my mindset should stay in the same
+  // place for each set of questions, and only shift when moving to a new set." In this mode `cur`
+  // is the PAGE index, not the step index — everything that used to read DECK.steps[cur] goes
+  // through curStep(), which is deliberately empty here. Picture decks: DECK.pages is absent and
+  // every line below behaves exactly as it did.
+  const PAGES = DECK.pages || null, LAST = PAGES ? PAGES.length - 1 : N - 1;
+  const stepById = id => DECK.steps.find(x => x.id === id);
+  const pageSteps = i => (PAGES[i] ? PAGES[i].steps.map(stepById).filter(Boolean) : []);
+  const curStep = () => (PAGES ? {} : DECK.steps[cur]) || {};
   const state = { deck: DECK.key, started: new Date().toISOString(), submitted: null, cur: 0, answers: {} };
   const ICON = {
     change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
     eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
     warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
-  // Mirrors serve.py's NOTE_KIND: an unknown/absent note_kind (an old answers file predating
-  // tags) prints nothing in the summary rather than "[undefined]".
-  const NOTE_KIND = { now: 'fix now', later: 'fix later', noting: 'just noting' };
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   if (window.top !== window) document.body.classList.add('embedded');
   // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
@@ -21,13 +28,17 @@
   // A LIVE pane is NOT pickable: a click inside it is an interaction with the candidate
   // (hover, drag, open a menu), not an answer. Picking stays on the lettered card and the
   // answer button. `open on its own` is the same address in a new tab — room and quiet.
+  // Which captures THIS slide shows. A slide that names its own wins; otherwise the deck's.
+  // WHY per slide (Destin, 2026-09-06): one deck can now hold a single-picture "build it?" point
+  // and a before/after "keep it?" point, so neither the frames nor the buttons can be decided once.
+  const stepRuns = st => (st && st.runs && st.runs.length ? st.runs : runs);
   const popout = url => `<a class="popout" href="${esc(url)}" target="_blank" rel="noopener" title="Open this design alone in a new browser window">Open in New Window ↗</a>`;
   const frames = st => st.kind === 'choice'
     ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}.</span>${esc(v.label)}`, pickable: true }))
     : st.kind === 'live'
     ? st.panes.map(p => ({ key: p.id, url: p.url, pickable: false,
         caption: (p.label ? `<span class="key">${esc(p.id)}.</span>${esc(p.label)}` : '<span class="live-dot"></span>Live') + popout(p.url) }))
-    : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
+    : stepRuns(st).map(r => ({ key: r, caption: esc((st.labels || {})[r] || DECK.runLabels[r] || r), pickable: false }));
   // CLIP step: one <video> per run instead of a still. They start PAUSED on their poster
   // (Destin, 2026-08-28) — ↻ or `r` plays both from the start together; native controls
   // so a bug can be paused and scrubbed; muted + looping once started.
@@ -109,8 +120,11 @@
     const info = Math.max(320, c.clientWidth * 0.30);
     const ranges = st.panes.map((p, i) => paneRangeOf(st, i));
     const fixedRow = ranges.reduce((sum, r, i) => sum + r.max + (i ? PANE_GAP : 0), 0);
-    const sideColumn = ranges.every(r => r.min === r.max) && c.clientWidth - info - 40 >= fixedRow;
-    c.className = 'content ' + (sideColumn ? 'col-right' : 'row-below live-fit');
+    const sideColumn = !st.fill && ranges.every(r => r.min === r.max) && c.clientWidth - info - 40 >= fixedRow;
+    // FILL: one screen of the app takes the whole stage, so it can be used rather than scrolled.
+    // `live-fit` sizes the stage to its content (right for a row of fixed-size designs); a
+    // filling pane needs the opposite, so the stage takes the row and the pane takes the stage.
+    c.className = 'content ' + (sideColumn ? 'col-right' : 'row-below live-fit') + (st.fill ? ' live-fill' : '');
     step.classList.remove('compact-step');
     // ALWAYS inline, no width threshold. The theme row is absolutely positioned beside the
     // step, and a live row is wide by nature — two to four panes at real size — so the side
@@ -122,6 +136,11 @@
     const stageWidth = (sideColumn ? c.clientWidth - info - 40 : (stage ? stage.clientWidth : c.clientWidth)) - 30;
     const fit = fitPanes(ranges, stageWidth);
     $$('#inner iframe').forEach((f, i) => {
+      // A FILLING pane is sized by CSS, not here: the frame is a column (caption above, pane
+      // below) and the pane takes what is left. Measuring it in JS meant subtracting the
+      // caption's height by hand, and the first version got it wrong and clipped the app's
+      // bottom strip. Clear any size a previous step left on the element.
+      if (st.fill) { f.style.width = ''; f.style.height = ''; return; }
       const w = fit.widths[i];
       f.style.width = w + 'px';
       if (!f.style.height) f.style.height = (st.height || MIN_PANE_H) + 'px';
@@ -139,16 +158,108 @@
     // hang every test in the suite and explain nothing.
     window.__deckReady = true;
   }
-  // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
-  const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  // ── the cards of one step ───────────────────────────────────────────────────────────────
+  // Hoisted out of render() so the scrolling QUESTION PAGE can draw the very same cards per
+  // article — one markup, so a question reads identically whether it is on a page of its own
+  // or one of several on a scrolling page (design §3.1).
+  // An option carries its own pros and cons, and the preferred one wears a badge beside its
+  // letter — Destin (2026-09-04): one grey paragraph per option was unreadable, and
+  // "(recommended)" written into the label read as part of the option's name.
+  const bullets = (o, k) => (o[k] || []).length ? `<ul class="${k}">${o[k].map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : '';
+  // Fix (2026-09-05): the chip printed the WHOLE option id, so `default-and-sunbreak` ate about
+  // 150px of the card's own gutter and squeezed the option's words. The chip is a handle, not
+  // the id: show at most KEY_MAX characters and keep the full id in its tooltip. Nothing else
+  // changes — the answers file, the printed summary and the finish screen all still carry it in
+  // full. (Chosen over a length LIMIT on ids: five committed specs already use long, readable
+  // ids, and those ids are what a session reads back out of the answers file.)
+  const KEY_MAX = 10;
+  const chip = id => `<span class="key" title="${esc(id)}">${esc(id.length > KEY_MAX ? id.slice(0, KEY_MAX - 1) + '…' : id)}</span>`;
+  // Fix (Destin, 2026-09-06): "add big ass clear 'Option A. Option B.' headers on the
+  // selectable options". The option's own id (`all-three`) was doing that job in a small chip,
+  // which named the thing without announcing that it is the thing you pick. The heading is now
+  // the position — Option A, Option B — and the id follows it quietly, because the answers file,
+  // the summary and any contract row still speak in ids.
+  const LETTERS = 'ABCDEFGH';
+  const optionCard = (o, cls, i) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><h3 class="ohead"><span class="oletter">Option ${LETTERS[i] || String(i + 1)}</span>${o.recommended ? '<span class="badge">Recommended</span>' : ''}${chip(o.id)}</h3><div class="vbody"><h4 class="oname">${esc(o.label)}</h4>${o.summary ? `<p>${esc(o.summary)}</p>` : ''}${bullets(o, 'pros')}${bullets(o, 'cons')}${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+  // The three parts of a question, one card each.
+  const partCard = (title, text) => `<section class="card part"><h3>${esc(title)}</h3><p>${esc(text)}</p></section>`;
+  // Fix (Destin, 2026-09-06): "do 3 cards side-by-side horizontally". Stacked, the three
+  // explanations were three screens of scrolling before the first thing he can answer.
+  const partCards = st => {
+    const cards = [['Today', st.today], ['The problem', st.problem], ['Proposal', st.proposal]]
+      .filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
+    return cards ? `<div class="parts">${cards}</div>` : '';
+  };
+  // No card at all when there is nothing to put in it: a slide showing a REAL screen of the app
+  // has no "what changed", and an empty titled box reads as a rendering fault.
+  const changedCard = st => !st.changed && !st.measured ? ''
+    : `<section class="card"><h3>${ICON.change}What changed</h3>${st.changed ? `<p>${esc(st.changed)}</p>` : ''}${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
+  const noticeCard = st => st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '';
+  const riskCard = st => st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '';
+  // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
+  // adds a Verdict column instead of always reserving one nobody has filled in yet.
+  const rowsTable = st => {
+    const graded = st.rows.some(r => r.verdict);
+    return `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}${r.found === 'review' ? '<p class="src"><strong>found in review</strong> — not on a deck you answered</p>' : ''}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
+  };
+  // SEVERAL looks exactly like pick-one until it says so — the cards, the borders and the
+  // lettering are the same. One line above them is what tells him he may tick more than one.
+  const pickHint = st => st.pick === 'several'
+    ? '<p class="pickhint">Pick as many as you like — click one again to unpick it.</p>' : '';
+  // TRY IT IN THE REAL APP. The deck cannot hold the real app — it is a desktop program, not
+  // a page — so this card carries the exact command instead, and the slide carries the verdict.
+  // The safety line is fixed copy, not the author's: a dev window is a SEPARATE app, and the
+  // one thing nobody may be told to poke is Destin's own running copy.
+  const devCard = st => `<section class="card dev"><h3>${ICON.change}Open the app to try it</h3>`
+    + `<div class="devrow">`
+    // Served: a button, because a line to copy into a terminal is a chore he asked to be rid
+    // of (2026-09-06). Opened as a plain file there is no server to ask, so the command stays.
+    + `<button type="button" class="btn primary opendev" data-id="${esc(st.id)}">Open the dev window</button>`
+    + `<button type="button" class="btn copycmd">Copy the command</button></div>`
+    + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
+    + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
+  // The body of one step, in the order the cards are read.
+  const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
+    : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + riskCard(st)
+    : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + riskCard(st)
+    : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
+    : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
+    : changedCard(st) + noticeCard(st) + riskCard(st);
+
+  // A one-picture slide is a BRIEF (nothing built yet): "keep / revert" would ask about work that
+  // does not exist. Decided per slide, because a deck may hold both kinds.
+  const YES = st => stepRuns(st).length === 1 ? 'Yes, build it' : 'Yes, keep it',
+    NO = st => stepRuns(st).length === 1 ? 'No, leave it' : 'No, revert it';
   // A words step may relabel the buttons ("Holds / Fails" on an acceptance row): the deck's
   // build/keep wording is about a picture, and a statement has none.
-  const yesLabel = st => st.yes || YES, noLabel = st => st.no || NO;
+  // Fix: a question (`kind === 'question'`) has no picture to keep or revert either, so its
+  // fallback is the plain "Yes" / "No" the buttons already show — not "Yes, keep it". This is
+  // now the ONLY place that decides the default; renderAnswers calls it instead of repeating
+  // its own `st.yes || 'Yes'`, so the finish-screen read-back can never disagree with the button.
+  const yesLabel = st => st.yes || (st.kind === 'question' ? 'Yes' : YES(st)),
+    noLabel = st => st.no || (st.kind === 'question' ? 'No' : NO(st));
   // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
   // question shape rides in `shape`, because `kind` already says where its picture comes
   // from — so a live pick-one answers exactly like a picture pick-one.
   const pickList = st => st.kind === 'choice' ? st.variants
     : (st.kind === 'live' && st.shape === 'choice') ? st.panes : null;
+  // The answer row for one step, as markup. Hoisted so a question on a scrolling page gets
+  // exactly the buttons it would get on a screen of its own.
+  // WRITE: the answer IS words he types, not one of a list. Destin (2026-09-06): naming and
+  // wording decisions had to be faked as a pick-one from options invented in advance, so an
+  // answer that was not on the list was never heard. `Don't know` stays — a shrug is an answer.
+  const writeBox = st => `<textarea class="write ans-write" data-id="${esc(st.id)}" rows="2" placeholder="${esc(st.prompt || 'Type your answer…')}"></textarea>`
+    + `<button class="btn ans" data-v="other" data-dk="1">Don't know</button>`;
+  const answerButtons = st => {
+    const picks = pickList(st);
+    if (st.answer === 'words') return writeBox(st);
+    return st.kind === 'question'
+      ? `<button class="btn ans" data-v="yes">${esc(yesLabel(st))}</button><button class="btn ans" data-v="no">${esc(noLabel(st))}</button><button class="btn ans" data-v="other" data-dk="1">Don't know</button>`
+      : picks || st.kind === 'decide'
+      ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
+        + `<button class="btn ans" data-v="other">Other</button>`
+      : `<button class="btn ans" data-v="yes">${esc(yesLabel(st))}</button><button class="btn ans" data-v="no">${esc(noLabel(st))}</button><button class="btn ans" data-v="other">Other</button>`;
+  };
   function renderAnswers(st) {
     // A DECIDE step's options ARE its answers, so there is no yes/no: picking one is the answer,
     // and "Other" carries anything he wants instead. No "None of these" — with written options
@@ -160,26 +271,48 @@
     // options." The cards are the better of the two (they carry the summary, the measurement
     // and the risk), so they are now the only place you pick. What stays here is only what a
     // card CANNOT say: none of them, or something else entirely.
-    $('#answers').innerHTML = picks || st.kind === 'decide'
-      ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
-        + `<button class="btn ans" data-v="other">Other</button>`
-      : `<button class="btn ans" data-v="yes">${yesLabel(st)}</button><button class="btn ans" data-v="no">${noLabel(st)}</button><button class="btn ans" data-v="other">Other</button>`;
+    // A QUESTION with no options is answered Yes / No / Don't know: a shrug is a real answer
+    // and must not have to be typed into Other. It rides as Other with `dk` so the answers
+    // file keeps three values, and both summaries print "don't know" for it.
+    $('#answers').innerHTML = answerButtons(st);
     if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
   }
-  function answer(v, pick) {
+  // `id` is the step being answered. On a page every question has its own answer row, so the
+  // id comes from the button that was clicked; on a one-step screen there is only one step.
+  function answer(v, pick, dk, id) {
     if (state.submitted) return;
-    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
-    state.answers[id] = a; paintState(); save(); $('#note').focus();
+    id = id || (PAGES ? '' : DECK.steps[cur].id); if (!id) return;
+    const st = stepById(id) || {};
+    // SEVERAL: the same click toggles membership instead of replacing the answer, so "A and C,
+    // not B" is a real answer rather than a sentence in the note box (Destin, 2026-09-06).
+    if (v === 'pick' && st.pick === 'several') {
+      const had = (state.answers[id] || {}).picks || [];
+      const picks = had.includes(pick) ? had.filter(x => x !== pick) : had.concat([pick]);
+      const b = { ...(state.answers[id] || {}), v: picks.length ? 'picks' : 'skip', picks };
+      delete b.pick; delete b.dk;
+      if (!picks.length) { delete b.picks; delete b.v; }
+      state.answers[id] = b; paintState(); save(); return;
+    }
+    const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
+    if (v !== 'picks') delete a.picks;
+    if (dk) a.dk = true; else delete a.dk;   // "Don't know" is Other with a flag; anything else clears it
+    state.answers[id] = a; paintState(); save();
+    const n = PAGES ? $(`#cards article.q[data-id="${CSS.escape(id)}"] .note`) : $('#note'); if (n) n.focus();
   }
   $('#deck-title').textContent = DECK.title; document.title = DECK.title;
   document.body.dataset.screen = 'deck';   // 'finished' once submitted — read by deck-render.test.mjs
-  $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
+  // One segment per page when the deck is pages, one per step otherwise.
+  $('#steps').innerHTML = (PAGES || DECK.steps).map(() => '<span></span>').join('');
+  // Fix: a ONE-page deck (no marker ever split it) has nothing to move BETWEEN — a Prev/Next
+  // pair and a single, always-full progress segment would just be dead controls sitting in
+  // the header. PAGES is fixed for the life of the page, so this is decided once, not per-paint.
+  if (PAGES && PAGES.length === 1) { $('#steps').hidden = true; $('#prev').hidden = true; $('#next').hidden = true; }
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
 
   // ── persistence ──
   const LS = 'deck:' + DECK.key;
   async function load() {
-    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
+    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; document.body.dataset.served = '1'; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
     try { const j = JSON.parse(localStorage.getItem(LS) || 'null'); if (j && j.answers) Object.assign(state, j); } catch (e) { /* no storage */ }
   }
   async function save() {
@@ -189,6 +322,7 @@
 
   // ── render the current step ──
   function render() {
+    if (PAGES) { renderPage(); return; }   // a question deck draws a whole page, not one step
     const st = DECK.steps[cur];
     const themes = st.themes || DECK.themes;   // a real-app capture exists in one theme only — that step lists just that one
     if (st.themes && st !== lastStep) theme = st.themes[0];   // a step with its own theme list opens on the first: that list says which themes matter here
@@ -196,6 +330,7 @@
     lastStep = st;
     document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
     $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
+    $('.top .where .sep').hidden = false;
     // A words step has no frames: the stage is hidden by layout() and the cards fill the row.
     curFrames = st.words ? [] : frames(st);
     inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}${st.kind === 'clip' ? ' clip' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic">${media(st, f)}</div></figure>`).join('');
@@ -228,26 +363,7 @@
     if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
     $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
     $('#headline').textContent = st.headline;
-    const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
-    // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
-    // adds a Verdict column instead of always reserving one nobody has filled in yet.
-    const graded = st.kind === 'contract' && st.rows.some(r => r.verdict);
-    const rowsTable = () => `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}${r.found === 'review' ? '<p class="src"><strong>found in review</strong> — not on a deck you answered</p>' : ''}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
-    $('#cards').innerHTML = st.kind === 'contract'
-      ? rowsTable()
-        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
-        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
-      : pickList(st)
-      ? pickList(st).map(v => optionCard(v, '')).join('')
-        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
-        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
-      : st.kind === 'decide'
-      ? (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
-        + st.options.map(o => optionCard(o, ' option')).join('')
-        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
-      : `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
-        + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
-        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '');
+    $('#cards').innerHTML = cardsFor(st);
     // Fix: this ran BEFORE #cards was filled in, so it bound handlers to the PREVIOUS step's
     // cards and the current step's got none — a lettered card looked clickable (pointer
     // cursor, "Pick B" tooltip) and did nothing, on every pick-one step. It matters more on a
@@ -270,19 +386,135 @@
     $$('#inner img').forEach(i => i.addEventListener('load', layout));
     layout(); paintState();
   }
+  // ── the question page: every question of one set, on one scrolling reading column ──────────
+  function renderPage() {
+    const pg = PAGES[cur], steps = pageSteps(cur);
+    document.documentElement.dataset.theme = theme;
+    // The header describes what is on screen, and on a page that is the page — its title and
+    // its one line of intro, not a step's surface and path.
+    $('#wtitle').textContent = pg.title; $('#wsub').textContent = pg.intro;
+    // The header's "·" separates two things; with no intro there is only one, and a dangling
+    // dot after the title reads as a rendering fault.
+    $('.top .where .sep').hidden = !pg.intro;
+    lastStep = null; curFrames = []; inner.innerHTML = ''; $('#thumbs').innerHTML = '';
+    // Nothing here has a picture, so every picture control is off.
+    $('#replay').hidden = true; $('#zoom').hidden = true; $('#livehint').hidden = true;
+    $('#headline').hidden = true;   // the page's own eyebrow leads the column instead
+    // The eyebrow names the SET of questions. The implicit page (one page, no marker) is named
+    // after the deck, which the chip and the header already say twice — so it gets no third.
+    const named = pg.intro || pg.title !== DECK.title;
+    $('#cards').innerHTML = (named ? `<div class="page-head"><p class="eyebrow">${esc(pg.title)}</p>${pg.intro ? `<p class="intro">${esc(pg.intro)}</p>` : ''}</div>` : '')
+      + steps.map((st, i) => `<article class="q" data-id="${esc(st.id)}">`
+        // Fix (Destin, 2026-09-06): "too hard to quickly navigate between questions and tell
+        // them apart". A page of questions had nothing between one and the next but a 14px gap,
+        // so on a tall question you cannot see where you are. Each one now names itself.
+        + `<p class="qnum"><span class="n">Question ${i + 1} of ${steps.length}</span><span class="tick" aria-hidden="true">answered</span></p>`
+        + `<h2 class="qh">${esc(st.headline)}</h2>`
+        + `<div class="qbody">${cardsFor(st)}</div>`
+        + `<div class="qrow"><span class="answers">${answerButtons(st)}</span>`
+        + `<input class="note" data-id="${esc(st.id)}" placeholder="Add a note (optional)"></div>`
+        + `</article>`).join('');
+    // Every control carries the id of the question it belongs to, so one click handler on the
+    // column can answer any of them without knowing which article it came from.
+    $$('#cards article.q').forEach(art => art.querySelectorAll('.ans').forEach(b => b.dataset.id = art.dataset.id));
+    if (state.submitted) $$('#cards .ans,#cards .note').forEach(e => e.disabled = true);
+    layout(); paintState();
+  }
+  // Delegated, and bound once: renderPage() replaces the whole column on every page change.
+  $('#cards').addEventListener('click', e => {
+    if (!PAGES) return;
+    const b = e.target.closest('.ans');
+    if (b && !b.disabled) { answer(b.dataset.v, b.dataset.pick, b.dataset.dk === '1', b.dataset.id); return; }
+    const c = e.target.closest('.card.variant'), art = c && c.closest('article.q');
+    if (art && !state.submitted) answer('pick', c.dataset.pick, false, art.dataset.id);
+  });
+  $('#cards').addEventListener('click', e => {
+    const open = e.target.closest('.opendev');
+    if (open) { openDev(open); return; }
+    const b = e.target.closest('.copycmd'); if (!b) return;
+    const code = b.parentElement.querySelector('code');
+    navigator.clipboard.writeText(code.textContent).then(
+      () => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy the command'; }, 1500); },
+      // No clipboard (an insecure origin, a locked-down browser): select it so it can be
+      // copied by hand, rather than a button that silently does nothing.
+      () => { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected — copy it'; });
+  });
+  $('#cards').addEventListener('input', e => {
+    const w = e.target.closest('.ans-write[data-id]');
+    if (w) { writeAnswer(w.dataset.id, w.value); return; }
+    const n = e.target.closest('.note[data-id]'); if (!n || !PAGES) return;
+    state.answers[n.dataset.id] = { ...(state.answers[n.dataset.id] || {}), note: n.value };
+    paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  });
+  // The button that opens the dev window. It posts the STEP, never a command: the server
+  // rebuilds the line from the spec on disk, so the page cannot ask it to run anything else.
+  function openDev(btn) {
+    const card = btn.closest('.card.dev'), note = card.querySelector('.devnote');
+    btn.disabled = true; btn.textContent = 'Opening…';
+    fetch('/dev', { method: 'POST', headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ step: btn.dataset.id }) })
+      .then(r => r.json().then(d => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok) throw new Error(d.error || 'it did not start');
+        btn.textContent = d.already ? 'Already open' : 'Opening — watch for the window';
+        note.textContent = d.already
+          ? 'The window this slide opened is still running. Find it in your taskbar; close it when you are done.'
+          : 'It takes a few seconds to appear, and it is a separate window from your own app. Close it when you are done.';
+        // Re-enabled so a window he closed can be opened again without reloading the deck.
+        setTimeout(() => { btn.disabled = false; btn.textContent = 'Open the dev window'; }, 8000);
+      })
+      .catch(err => {
+        btn.disabled = false; btn.textContent = 'Open the dev window';
+        // Never a silent no-op: say what failed and leave the command, which still works.
+        note.textContent = 'It did not start: ' + err.message + ' — the command above still works.';
+      });
+  }
+  // Typing IS the answer on a write slide. Emptying the box unanswers it, the way clicking a
+  // chosen option off does — otherwise a cleared box would still count as answered.
+  function writeAnswer(id, text) {
+    if (state.submitted) return;
+    const a = { ...(state.answers[id] || {}) };
+    if (text.trim()) { a.v = 'wrote'; a.text = text; delete a.dk; } else { delete a.v; delete a.text; }
+    state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  }
+  // Chosen, whichever shape the answer has: one pick, or one of several.
+  const chosen = (a, id) => a.v === 'picks' ? (a.picks || []).includes(id) : (a.v === 'pick' && a.pick === id);
+  function paintPage() {
+    $$('#cards article.q').forEach(art => {
+      const a = state.answers[art.dataset.id] || {};
+      art.querySelectorAll('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
+      art.querySelectorAll('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
+      const n = art.querySelector('.note');
+      // Never while he is typing in it: assigning `value` puts the caret back at the end.
+      if (n && document.activeElement !== n) n.value = a.note || '';
+      if (n) n.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+      const w = art.querySelector('.ans-write');
+      if (w && document.activeElement !== w) w.value = a.text || '';
+      // An answered question takes the same green edge the mock-up used for `done`.
+      art.classList.toggle('done', !!(a.v && a.v !== 'skip'));
+    });
+    // A segment is a PAGE: solid once every question on it is answered, half-lit while some are.
+    $$('#steps span').forEach((seg, i) => {
+      const on = pageSteps(i), n = on.filter(st => { const x = state.answers[st.id]; return x && x.v && x.v !== 'skip'; }).length;
+      seg.className = (on.length && n === on.length ? 'done' : n ? 'part' : '') + (i === cur ? ' on' : '');
+    });
+    const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
+    $('#count').textContent = 'page ' + (cur + 1) + ' of ' + PAGES.length + ' · ' + done + ' of ' + N + ' answered' + (state.submitted ? ' · submitted, read-only' : '');
+    // On a page the forward button is navigation, not "save this answer" — it is never disabled
+    // for an unanswered question, because there are several of them on screen.
+    $('#save').disabled = !!state.submitted; $('#save').textContent = cur === LAST ? 'Done' : 'Next page ›';
+    $('#prev').disabled = cur === 0; $('#next').disabled = cur === LAST; $('#next').textContent = cur === LAST ? 'Last page' : 'Next ›';
+  }
+
   function paintState() {
+    if (PAGES) { paintPage(); return; }
     const a = state.answers[DECK.steps[cur].id] || {};
     $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
-    $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
-    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
+    $$('.card.variant').forEach(c => c.classList.toggle('on', chosen(a, c.dataset.pick)));
+    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', chosen(a, f.dataset.run)));
     const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
-    // The tag row is shown only once a note has text — nothing about an empty note is tagged.
-    // A visible default, never an inference: an old answer's note (written before tags existed)
-    // has no note_kind, so it shows none selected — the default is written only when a note
-    // gains text under the #note input handler below, never painted on here.
-    const hasNote = !!(a.note && a.note.trim());
-    $('#tags').hidden = !hasNote;
-    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === a.note_kind));
+    // Never while he is typing in it: assigning `value` would put the caret back at the end.
+    const w = $('#answers .ans-write'); if (w && document.activeElement !== w) w.value = a.text || '';
     $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
     const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
     $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
@@ -294,6 +526,16 @@
   // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
   const PAD = 28, CAP = 24, GAP = 18;
   function layout() {
+    if (PAGES) {   // the reading column: a block that scrolls, nothing to size against a picture
+      // A contract step never reaches this branch: spec.pages() refuses a deck that defines or
+      // grades done, so a contract is always drawn one step per screen (`.content.words`, whose
+      // own `:has(.contract)` rule gives its table the full width). The `.pages.wide` column
+      // this used to switch on was removed with it, 2026-09-05.
+      $('#content').className = 'content pages'; $('#step').classList.remove('compact-step');
+      document.body.classList.remove('thumbs-inline');
+      document.body.dataset.layout = 'pages'; document.body.dataset.scores = '{}';
+      window.__deckReady = true; return;
+    }
     if (DECK.steps[cur].words) {   // no picture to size: one column of cards, answer bar under it
       $('#content').className = 'content words'; $('#step').classList.remove('compact-step');
       document.body.dataset.layout = 'words';
@@ -326,44 +568,62 @@
     $$('#inner img, #inner video').forEach(i => i.style.width = ((i.naturalWidth || i.videoWidth) * s * zoom) + 'px');
     $('#lvl').textContent = Math.round(zoom * 100) + '%';
     // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
+    // Fix (Destin, 2026-09-06): "option B seems to get cut off by other visually?" — the side
+    // column scrolls, and its last card ended exactly at the answer row with no sign of more.
+    // The class drives a fade over that row; re-checked whenever the column is laid out.
+    markMore();
     document.body.dataset.layout = score[best] < floor ? 'compact' : best;
     document.body.dataset.scores = JSON.stringify(score);
     const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
     window.__deckReady = true;   // the render test waits for this — set only once a real layout has been chosen
   }
 
+  function markMore() {
+    const info = $('#content .info'), dec = $('#content .decide');
+    if (!info || !dec) return;
+    const more = info.scrollHeight > info.clientHeight + 2 && info.scrollTop + info.clientHeight < info.scrollHeight - 2;
+    dec.classList.toggle('more', more);
+    if (!info.dataset.moreBound) { info.dataset.moreBound = '1'; info.addEventListener('scroll', markMore, { passive: true }); }
+  }
   // ── navigation & answers ──
   function record() {
+    const secs = Math.round((Date.now() - stepStart) / 1000);
+    if (PAGES) {
+      // Every question on the page was on screen for the same stretch of time, and there is no
+      // moment that belongs to one of them — so the elapsed seconds are split evenly across them.
+      const on = pageSteps(cur), each = on.length ? Math.round(secs / on.length) : 0;
+      on.forEach(st => {
+        const a = state.answers[st.id] || {};
+        if (!a.v) a.v = 'skip';
+        a.seconds = (a.seconds || 0) + each; a.theme = theme;
+        state.answers[st.id] = a;
+      });
+      return;
+    }
     const id = DECK.steps[cur].id; const a = state.answers[id] || {};
     if (!a.v) a.v = 'skip';
-    a.seconds = (a.seconds || 0) + Math.round((Date.now() - stepStart) / 1000); a.theme = theme; a.zoom = zoom;
+    a.seconds = (a.seconds || 0) + secs; a.theme = theme; a.zoom = zoom;
     state.answers[id] = a;
   }
   function go(i) {
     // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers — but
     // they may still MOVE. A submitted deck is a read-only record he can page back through;
     // record()/save() are what must not run, not the navigation itself.
-    if (state.submitted) { cur = Math.max(0, Math.min(N - 1, i)); zoom = 1; hideFinished(); render(); return; }
-    record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
+    if (state.submitted) { cur = Math.max(0, Math.min(LAST, i)); zoom = 1; hideFinished(); render(); return; }
+    record(); cur = Math.max(0, Math.min(LAST, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
   }
   // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
   // answered step used to lose that answer entirely. The note debounces so a sentence typed
   // at speed is one POST, not one per keystroke.
   let noteTimer = null;
-  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
+  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick, b.dataset.dk === '1'); });
+  $('#answers').addEventListener('input', e => { const w = e.target.closest('.ans-write[data-id]'); if (w) writeAnswer(w.dataset.id, w.value); });
   $('#note').addEventListener('input', e => {
+    if (PAGES) return;   // on a page the note lives on the question, not in the shared row
     const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
-    // A note that just gained text is "just noting" until he says otherwise — a visible default,
-    // not an inference: it is on screen, selected, and one click away from the other two.
-    if (a.note.trim() && !a.note_kind) a.note_kind = 'noting';
-    if (!a.note.trim()) delete a.note_kind;
     state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   });
-  $('#tags').addEventListener('click', e => {
-    const b = e.target.closest('.tag'); if (!b || state.submitted) return;
-    const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note_kind: b.dataset.kind }; paintState(); save();
-  });
-  $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
+  $('#save').onclick = () => { if (cur === LAST) openDialog(); else go(cur + 1); };
   // From the finish screen, Prev means "back into the deck" — the step he left, not the one
   // before it; and there is nothing after the end, so Next is off there (see showFinished).
   const step = d => go(document.body.dataset.screen === 'finished' ? cur : cur + d);
@@ -373,8 +633,8 @@
   // ── submit ──
   function summary() {
     const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
-    // Mirrors serve.py's summary(): the note's tag prints right after its quoted text, same words.
-    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); const tag = NOTE_KIND[a.note_kind]; lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (tag ? ' [' + tag + ']' : '') : '')); }
+    // Mirrors serve.py's summary(): a note prints plainly, right after the answer, same words.
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : v === 'picks' ? 'picks ' + (a.picks || []).join(', ') : v === 'wrote' ? 'wrote "' + String(a.text || '').trim() + '"' : (v === 'no' && pickList(st) ? 'none' : (v === 'other' && a.dk ? "don't know" : v)); lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' : '')); }
     return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
   }
   function openDialog() {
@@ -386,7 +646,10 @@
     const missing = DECK.steps.map((st, i) => [(state.answers[st.id] || {}).v, i]).filter(([v]) => !v || v === 'skip').map(([, i]) => i + 1);
     $('#skipped').style.display = missing.length ? 'flex' : 'none';
     $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (step' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ').';
-    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(missing[0] - 1); };
+    // The list names steps ("2 steps have no answer") because a question is what he answers;
+    // going there means opening the PAGE that question sits on.
+    const pageOf = i => PAGES ? Math.max(0, PAGES.findIndex(p => p.steps.includes(DECK.steps[i].id))) : i;
+    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(pageOf(missing[0] - 1)); };
     $('#dlg-text').innerHTML = server
       ? 'Your answers have been saving to a file next to this deck as you went. Submitting tells Claude you\'re finished — it picks them up in the session and replies there. <b>Nothing to copy or paste</b>: close this tab and go back to the conversation.'
       : 'This deck is not being served, so Claude is not watching it. Copy the feedback below and paste it into the chat.';
@@ -415,7 +678,7 @@
   function lockSubmitted() {
     $('#done').innerHTML = 'Submitted ✓<span class="long"> — view responses</span>';
     $('#done').onclick = showFinished; $('#done').disabled = false;
-    $$('.ans,#save,#note,.tag').forEach(e => e.disabled = true); paintState();
+    $$('.ans,#save,#note').forEach(e => e.disabled = true); paintState();
   }
 
   // ── the finish screen ──
@@ -425,8 +688,13 @@
   const ANS_LABEL = (st, a) => {
     const v = a.v || 'skip';
     if (v === 'skip') return 'No answer';
-    if (v === 'pick') { const o = (pickList(st) || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
-    if (v === 'other') return 'Something else';
+    // Fix: a words QUESTION offers `options`, not the `variants`/`panes` pickList knows about, so
+    // its answers read back on the finish screen as a bare id ("all-five-plus-new"). Look in both.
+    const label = id => { const o = (pickList(st) || st.options || []).find(x => x.id === id); return id + (o ? ' — ' + o.label : ''); };
+    if (v === 'pick') return label(a.pick);
+    if (v === 'picks') return (a.picks || []).map(label).join('; ');
+    if (v === 'wrote') return '“' + String(a.text || '').trim() + '”';
+    if (v === 'other') return a.dk ? "Don't know" : 'Something else';
     if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
     return yesLabel(st);
   };
@@ -434,11 +702,11 @@
     const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
     const rows = DECK.steps.map((st, i) => {
       const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
-      const note = (a.note || '').trim(); const tag = NOTE_KIND[a.note_kind];
+      const note = (a.note || '').trim();
       return `<tr><td class="n">${i + 1}</td>`
         + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
         + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
-        + `<td>${note ? esc(note) + (tag ? `<span class="kind">${esc(tag)}</span>` : '') : '<span class="src">—</span>'}</td></tr>`;
+        + `<td>${note ? esc(note) : '<span class="src">—</span>'}</td></tr>`;
     }).join('');
     $('#responses').querySelector('tbody').innerHTML = rows;
     const when = (state.submitted || '').slice(0, 16).replace('T', ' ');
@@ -451,7 +719,7 @@
     renderResponses(); $('#step').hidden = true; $('#finished').hidden = false; document.body.dataset.screen = 'finished';
     // The header describes what is ON SCREEN. Left saying "Home · chat — step 3 of 3" it would
     // be labelling a step nobody is looking at. The progress strip stays: it is the summary at
-    // a glance, and clicking a segment is still the way back into that step.
+    // a glance, and clicking a segment is still the way back into that step (a one-page deck hides the strip; `‹ Back to the deck` is its way back).
     $('#wtitle').textContent = DECK.title; $('#wsub').textContent = 'review complete';
     $('#count').textContent = 'all ' + N + ' steps · read-only';
     $('#prev').disabled = false; $('#next').disabled = true;   // Prev goes back into the deck; nothing follows the end
@@ -480,7 +748,7 @@
   });
   stage.addEventListener('mouseleave', () => loupe.style.display = 'none');
   function setZoom(z) {
-    if (DECK.steps[cur].kind === 'live') return;   // real size is the point; there is no image to scale
+    if (curStep().kind === 'live') return;   // real size is the point; there is no image to scale
     zoom = Math.max(1, Math.min(4, Math.round(z * 10) / 10)); layout();
   }
   $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1); $('#replay').onclick = replay;
@@ -488,7 +756,7 @@
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
     if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1);   // go() decides what a submitted deck is allowed to do
     if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
-    if (e.key === 'r' && DECK.steps[cur].kind === 'clip') replay();
+    if (e.key === 'r' && curStep().kind === 'clip') replay();
     if (e.key === 'l') { loupeOn = !loupeOn; if (!loupeOn) loupe.style.display = 'none'; document.body.classList.toggle('no-loupe', !loupeOn); }
   });
   // A pane measures its own content and says how tall it is. WHY measured rather than
@@ -533,7 +801,9 @@
   window.addEventListener('resize', layout);
   load().then(() => {
     const q = new URLSearchParams(location.search);
-    cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
+    // An answers file written before this deck had pages can carry a `cur` past the last page;
+    // clamping to LAST lands on the last page instead of rendering nothing.
+    cur = q.get('step') ? Math.max(0, Math.min(LAST, +q.get('step') - 1)) : Math.max(0, Math.min(LAST, state.cur || 0));
     if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
     stepStart = Date.now(); render();
     if (state.submitted) { lockSubmitted(); showFinished(); }   // an archived deck re-opened after its submit lands on the finish screen — its answers, read back — instead of a step full of dead buttons

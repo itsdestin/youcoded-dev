@@ -7,8 +7,10 @@ import json
 import os
 
 from .crops import image_name
-from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
-from .spec import SpecError, all_themes, is_choice, is_contract, is_decide, is_words, run_names, step_themes, validate, workspace_root, is_clip, clip_files
+from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, live_offset, pane_url, pane_width
+from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
+                    is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
+                    workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NICE = {'midnight': 'Midnight', 'dark': 'Dark', 'light': 'Light', 'creme': 'Crème', 'halftone-dimension': 'Halftone', 'meadow-mist': 'Meadow'}
@@ -69,7 +71,13 @@ def _choice_step(spec, st, boxes, run):
 
 
 def _option(o):
-    return {'id': o['id'], 'label': o['label'], 'summary': o['summary'],
+    # `pros`/`cons` are the option's body now and `summary` is optional beside them (design
+    # §3.2); both lists are always present so page.js never has to test for the key.
+    # Fix: `.strip()` — a summary of only spaces used to render an EMPTY paragraph under the
+    # option's title, a blank gap with nothing in it. Blank now means no paragraph at all.
+    return {'id': o['id'], 'label': o['label'], 'summary': (o.get('summary') or '').strip(),
+            'pros': list(o.get('pros') or []), 'cons': list(o.get('cons') or []),
+            'recommended': bool(o.get('recommended')),
             'measured': o.get('measured', ''), 'cost': o.get('cost', '')}
 
 
@@ -86,7 +94,20 @@ def _decide_step(spec, st, boxes, runs):
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
         'boxes': boxes.get(st['id'], {}),
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
+        **({'runs': runs} if st.get('runs') else {}),
+        **({'labels': st['labels']} if st.get('labels') else {}),
     }
+
+
+def dev_command(dev):
+    """The exact `run-dev.sh` line for a try-it slide. `--label` is never optional: concurrent
+    dev windows are told apart by their title, and a slide that opens one has a name for it."""
+    cmd = f'bash scripts/run-dev.sh {dev["worktree"]} --label "{dev.get("label") or dev["worktree"]}"'
+    if dev.get('offset') is not None:
+        cmd += f' --offset {dev["offset"]}'
+    if dev.get('profile'):
+        cmd += f' --profile {dev["profile"]}'
+    return cmd
 
 
 def _words_step(spec, st):
@@ -99,7 +120,14 @@ def _words_step(spec, st):
          'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
          'yes': st.get('yes', ''), 'no': st.get('no', ''),
          **({'themes': list(st['themes'])} if st.get('themes') else {})}
-    if is_contract(st):
+    if is_dev(st):
+        # The command, spelled HERE where the worktree and the ports are both known, so the card
+        # can print the exact line rather than a shape the reader has to fill in.
+        d['kind'] = 'dev'
+        d['command'] = dev_command(st['dev'])
+        d['yes'] = st.get('yes') or 'Yes, it works'
+        d['no'] = st.get('no') or 'No, it does not'
+    elif is_contract(st):
         # The rows, verbatim, and the two buttons a sign-off needs; page.js draws `rows` as a table.
         d['kind'] = 'contract'
         d['rows'] = [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']]
@@ -108,6 +136,14 @@ def _words_step(spec, st):
     elif st.get('options'):
         d['kind'] = 'decide'
         d['options'] = [_option(o) for o in st['options']]
+    elif is_question(st):
+        # A question with nothing to pick between is answered Yes / No / Don't know, which is a
+        # different answer row from both the decide and the statement — so it gets its own kind.
+        d['kind'] = 'question'
+    # The three parts of a question ride as their own keys; page.js draws one card each.
+    for k in QUESTION_FIELDS:
+        if st.get(k):
+            d[k] = st[k]
     return d
 
 
@@ -117,7 +153,14 @@ def _clip_step(spec, st, runs):
     return {'id': st['id'], 'kind': 'clip', 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
             'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
             'clips': {r: vids[r] for r in runs},
-            'posters': {r: (posters[r] if posters[r] and os.path.exists(os.path.join(spec['_base'], posters[r])) else '') for r in runs}}
+            'posters': {r: (posters[r] if posters[r] and os.path.exists(os.path.join(spec['_base'], posters[r])) else '') for r in runs},
+            **({'runs': runs} if st.get('runs') else {})}
+
+
+def _app_step(st):
+    """True when this live step shows screens of the app rather than authored designs."""
+    live = st.get('live') or {}
+    return is_app_pane(live) or any(is_app_pane(v) for v in st.get('variants') or [])
 
 
 def _live_step(spec, st):
@@ -127,14 +170,21 @@ def _live_step(spec, st):
     `url` is both the pane's address and its pop-out link: "open on its own" is this same
     candidate in a new tab, which is room and quiet, not a different rendering."""
     live = st['live']
-    theme = spec['themes'][0]   # first paint; every later theme change goes by message, not by reload
+    # First paint; every later theme change goes by message, not by reload. spec['themes'][0] is
+    # the theme the app itself is on by the time build runs (spec.apply_live_theme reorders the
+    # list before this), so a live pane boots the app in Destin's own theme too.
+    theme = spec['themes'][0]
+    # A pane names either an authored candidate or a screen of the app; `_pane_id` is whichever
+    # of the three it named, so a one-pane step still has a stable id for the answers file.
+    def _pane_id(d):
+        return d.get('candidate') or d.get('app') or d.get('view')
     if st.get('variants'):
         panes = [{'id': v['id'], 'label': v['label'], 'summary': v['summary'],
                   'measured': v.get('measured', ''), 'risk': v.get('risk', ''),
-                  'url': pane_url(spec, live, v['candidate'], theme)} for v in st['variants']]
+                  'url': pane_url(spec, live, v, theme)} for v in st['variants']]
     else:
-        panes = [{'id': live['candidate'], 'label': '', 'summary': '', 'measured': '', 'risk': '',
-                  'url': pane_url(spec, live, live['candidate'], theme)}]
+        panes = [{'id': _pane_id(live), 'label': '', 'summary': '', 'measured': '', 'risk': '',
+                  'url': pane_url(spec, live, live, theme)}]
     return {
         'id': st['id'], 'kind': 'live',
         # `kind` is spent on where the picture comes from, so the QUESTION shape rides
@@ -146,26 +196,68 @@ def _live_step(spec, st):
         'headline': st['headline'], 'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
         'panes': panes,
-        'width': live.get('paneWidth', pane_width(spec)),
-        'height': live.get('height'),
+        # A whole screen of the app needs room; an authored candidate is sized by the registry.
+        'width': live.get('paneWidth', APP_PANE_WIDTH if _app_step(st) else pane_width(spec)),
+        # An authored candidate reports its own height back to the page; a whole screen of the
+        # app does not, so without a default it fell back to the 160px "pane never reported"
+        # floor and showed the top inch of the app (seen 2026-09-06).
+        'height': live.get('height') or (APP_PANE_HEIGHT if _app_step(st) else None),
+        # ONE screen of the app takes the whole stage — width and height — so it can be used
+        # rather than scrolled. Destin, 2026-09-06: "better fitted in the window so I can use
+        # the whole thing without scrolling." A ROW of panes is a comparison and keeps its
+        # declared size; only a single screen fills. A declared size still wins.
+        **({'fill': True} if _app_step(st) and len(panes) == 1
+           and not live.get('paneWidth') and not live.get('height') else {}),
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
     }
 
 
-def deck_data(spec, boxes):
-    runs = run_names(spec)
-    steps = [_live_step(spec, st) if is_live(st)
-             else _words_step(spec, st) if is_words(st)
-             else _choice_step(spec, st, boxes, runs[-1]) if is_choice(st)
-             else _decide_step(spec, st, boxes, runs) if is_decide(st)
-             else _clip_step(spec, st, runs) if is_clip(st) else {
+def _still_step(spec, st, boxes):
+    runs = step_runs(spec, st)
+    return {
         'id': st['id'], 'surface': st['surface'], 'path': st['path'], 'headline': st['headline'],
         'changed': st['changed'], 'measured': st.get('measured', ''), 'notice': st['notice'], 'risk': st.get('risk', ''),
         'images': {t: {r: f'{spec["images"]}/{image_name(st["crop"], t, r)}' for r in runs} for t in step_themes(spec, st)},
         'boxes': boxes.get(st['id'], {}),
         # Only when the step narrows the deck's list — page.js falls back to DECK.themes otherwise.
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
-    } for st in spec['steps']]
+        # Only when the slide shows fewer captures than the deck holds; page.js falls back to
+        # DECK.runs. This is what lets one deck ask "build it?" about one picture and "keep it?"
+        # about a pair.
+        **({'runs': runs} if st.get('runs') else {}),
+        **({'labels': st['labels']} if st.get('labels') else {}),
+    }
+
+
+def _answer_shape(st):
+    """The two shapes that are about HOW he answers rather than what he is looking at, so they
+    ride on every kind of slide instead of being folded into one of them.
+
+    `pick: "several"` lets him choose more than one — "A and C, drop B" used to have nowhere to
+    go but the note box. `answer: "words"` makes the answer a line he types, so a name or a piece
+    of copy is a real answer instead of a pick from options invented in advance. Both asked for
+    by Destin, 2026-09-06."""
+    d = {}
+    if st.get('pick') == 'several':
+        d['pick'] = 'several'
+    if st.get('answer') == 'words':
+        d['answer'] = 'words'
+        if st.get('prompt'):
+            d['prompt'] = st['prompt']
+    return d
+
+
+def deck_data(spec, boxes):
+    runs = run_names(spec)
+    steps = [_live_step(spec, st) if is_live(st)
+             else _words_step(spec, st) if is_words(st)
+             else _choice_step(spec, st, boxes, step_runs(spec, st)[-1]) if is_choice(st)
+             else _decide_step(spec, st, boxes, step_runs(spec, st)) if is_decide(st)
+             else _clip_step(spec, st, step_runs(spec, st)) if is_clip(st)
+             else _still_step(spec, st, boxes)
+             for st in spec['steps'] if not is_page(st)]
+    for st, out in zip([x for x in spec['steps'] if not is_page(x)], steps):
+        out.update(_answer_shape(st))
     every = all_themes(spec)
     # `command` is spelled HERE, where the offset and the worktree are both known, so the
     # "server isn't running" card can name the exact thing to run instead of guessing.
@@ -175,7 +267,13 @@ def deck_data(spec, boxes):
         'worktree': tree,
         'command': f'YOUCODED_PORT_OFFSET={live_offset(spec)} bash scripts/run-workbench.sh {tree}',
     }} if has_live(spec) else {}
-    return {**live, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
+    # A question deck is PAGES (design 3.1): `pages` lists the step ids on each, and page.js
+    # switches to the scrolling reading column when it is there. Absent for any deck with a
+    # picture, which keeps one step per screen — `steps` itself never carries the markers.
+    pg = pages(spec)
+    paged = {'pages': [{'id': p['id'], 'title': p['title'], 'intro': p['intro'],
+                        'steps': [st['id'] for st in p['steps']]} for p in pg]} if pg else {}
+    return {**live, **paged, 'title': spec['title'], 'key': spec['key'], 'runs': runs,
             'runLabels': {'before': 'Before', 'after': 'After', 'today': 'Today', **spec.get('labels', {})},
             'themes': spec['themes'], 'themeNames': {t: NICE.get(t, t.replace('-', ' ').title()) for t in every},
             'steps': steps}
@@ -183,8 +281,10 @@ def deck_data(spec, boxes):
 
 def build_page(spec, boxes):
     errors, warnings = validate(spec)
-    runs = run_names(spec)
     for st in spec['steps']:
+        runs = step_runs(spec, st)
+        if is_page(st):
+            continue   # a page marker names a page — it has no picture and no answer
         if is_live(st):
             continue   # nothing on disk to check — the pane is a running app; page.js probes the server
         if is_words(st):

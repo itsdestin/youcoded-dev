@@ -1,0 +1,22 @@
+{
+ "deck": "deck-rebuild-review-2",
+ "started": "2026-09-06T06:34:36.631Z",
+ "submitted": "2026-09-06T06:37:24Z",
+ "cur": 1,
+ "answers": {
+  "D-1": {
+   "note": "that's worse somehow. do 3 cards side-by-side horizonally, then add big ass clear \"Option A. Option B.\" headers on the selectable options. ",
+   "v": "other",
+   "seconds": 126,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-2": {
+   "note": "did you even change anything? this looks just as bad as before. other, save/next, and the pros/cons lists all still have weird margins",
+   "v": "other",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -3,6 +3,15 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `engine-manager.test.ts` has failed on the macOS and Windows CI legs since at least
+      2026-09-06 — two `backendOptions` cases, "status() answers immediately without
+      backendOptions, then pushes them" and "an older install with no device list gets both
+      pushes, and ends up complete". Ubuntu and the local suite are green, so it is invisible
+      to `verify.sh` and every merge inherits a red master. Confirmed pre-existing on master at
+      `ccbf4211` (run 34049785765) and unchanged by youcoded#441 (run 34163846462), which is
+      how it was found. Both legs need a machine that can run them — this session could not
+      `n/a` `confirmed` `checked 2026-09-07`
+
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
       an Android manifest or a workspace file yields "tests: none", and the guard that
@@ -75,12 +84,19 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-09-02`
 
 - [ ] A whole session edited files that a path-scoped rule covers and the rule never loaded.
-      The session worked entirely through Bash (cat/sed/python heredocs, as bypass-permissions
-      mode asks for) rather than Read/Edit, and no rule injected all session — including the one
-      whose globs name the exact directory being edited. If that is how it works, every rule in
-      the workspace is silently off whenever a session edits through the shell, and the sessions
-      that most need the guardrails are the ones that lose them
-      `n/a` `needs-verify` `checked 2026-09-03`
+      First seen 2026-09-03, blamed on the session working entirely through Bash (cat/sed/python
+      heredocs, as bypass-permissions mode asks for) rather than Read/Edit. **That explanation is
+      wrong, or not the whole cause:** on 2026-09-07 a session edited six files through Edit/Write
+      — `ChatView.tsx`, `App.tsx`, `ipc-handlers.ts`, `remote-server.ts`, `BubbleFeed.tsx`,
+      `types.ts`, covered by at least four rules — and `~/.claude/instructions-loaded.log` recorded
+      4 loads for it, all `load_reason: session_start`, none path-scoped. The log DOES record
+      path matches (309 across other sessions), and it records them for worktree files (273),
+      so neither the tool nor the worktree is the discriminator. The one variable left: those
+      sessions' cwd was inside the worktree, this one's stayed at the workspace root while its
+      edits were four directories below it. Unproven — a session started with cwd inside the
+      worktree, editing the same files, would settle it in one run. If that is the cause, every
+      session following `CLAUDE.md`'s "use absolute worktree paths" from the root loses every rule
+      `n/a` `needs-verify` `checked 2026-09-07`
 
 - [ ] The lint gate only enables rules already at zero; the deferred list at the bottom of the
       ESLint config still fires — 79 renderer floating promises and 43 exhaustive-deps hits (the
@@ -108,6 +124,14 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] `roadmap-check.mjs --fix` rewrites items the session never touched: on today's master it
+      downgrades two `confirmed` performance items (buddy reflow, remote replay buffer) to
+      `needs-verify` every run. The filing grammar tells every session to run it before
+      committing, so each one either ships another session's silent downgrade or has to spot
+      it and revert by hand. Seen twice on 2026-09-07, once from a stale checkout and once
+      from a freshly merged one
+      `desktop` `confirmed` `checked 2026-09-07`
+
 - [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
       read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
       never created, so the one artefact that says WHICH drag was bad does not exist for the
@@ -115,12 +139,14 @@ seen-on is always n/a here.
       non-zero continuity score
       `desktop` `confirmed` `checked 2026-09-07`
 
-- [ ] The question deck (`scripts/questions/serve.py`) can only ask multiple-choice questions,
-      so a session needing Destin to approve a set of concrete text changes rebuilds its own
-      loopback answer page instead of using it — happened 2026-09-05 for a nine-item prompt
-      diff review. Wanted: a card type that renders a before/after diff, so one surface
-      answers every "approve these specific edits" question
-      `desktop` `needs-verify` `checked 2026-09-05`
+- [ ] A session needing Destin to approve a set of concrete text changes rebuilds its own
+      loopback answer page instead of using the deck — happened 2026-09-05 for a nine-item
+      prompt diff review. Wanted: a card type that renders a before/after diff, so one surface
+      answers every "approve these specific edits" question. Narrowed 2026-09-06: the original
+      framing was "the question deck can only ask multiple-choice questions", which is no
+      longer true — a slide can now take several ticks or an answer he types. What is still
+      missing is the DIFF itself, not the answer shape
+      `desktop` `needs-verify` `checked 2026-09-06`
 
 - [ ] A dev instance still shares one file with Destin's live app: the cross-device sync state
       at ~/.claude/toolkit-state/sync-spaces.json is a hardcoded path, so --profile does not
@@ -277,11 +303,6 @@ seen-on is always n/a here.
       real alternatives, not a build step
       In progress in another session on branch feat/session-strip-motion (Destin, 2026-09-02)
       `n/a` `in-flight` `checked 2026-09-02`
-
-- [ ] Review-deck "decide" steps cut off their last option in the side-column layout — the third
-      option is sliced and you scroll to reach it (46 px cut on chatsearch-gate step 1 at
-      1574x820 after the 2026-09-01 styling pass; pre-existing, not caused by live panes)
-      `n/a` `needs-verify` `checked 2026-09-01`
 
 - [ ] Terminal text wraps about two-thirds (only ever seen in the UI-review rig, never the live app —
       Destin 2026-09-02; still a rig bug to fix if it persists) of the way across the pane — Claude Code's screen and
