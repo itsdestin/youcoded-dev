@@ -36,7 +36,11 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
 
 - [ ] Star a model as a favourite on one device and the model picker on your other device opens empty, with no hint
       why, until you type. Favourites never leave the device they were set on. From youcoded#279, 2026-07-31.
-      `model-picker` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-model-favourites-localstorage-only.md
+      **Same empty list, second cause, seen 2026-09-06:** a FRESH install has no favourites at all, so the picker
+      offers nothing — not the local models you just downloaded, not even a Claude one — until you guess to type a
+      name. Destin hit it in a clean profile and reasonably read it as "local models are missing". Whatever fixes the
+      empty state has to cover both: syncing favourites helps the second device and does nothing for the first run.
+      `model-picker` `all` `confirmed` `checked 2026-09-06` → docs/active/investigations/2026-09-01-model-favourites-localstorage-only.md
 
 - [ ] Backup & Sync popup follow-ups still owed from the PR #126 redesign: the "additional backups" master toggle has
       no real saved on/off (it just mirrors whether any backup is active), and the main toggle's checked-state while

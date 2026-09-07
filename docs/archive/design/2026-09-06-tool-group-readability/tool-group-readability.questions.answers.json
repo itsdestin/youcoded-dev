@@ -1,0 +1,45 @@
+{
+ "deck": "tool-group-readability-questions",
+ "started": "2026-09-06T09:05:59.701Z",
+ "submitted": "2026-09-06T09:09:29Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "a",
+   "note": "but the \"first 2\" can contain more. \"Created 2 files and ran 3 commands (+2 more)\"",
+   "note_kind": "noting",
+   "seconds": 116,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 56,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

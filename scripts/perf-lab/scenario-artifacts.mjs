@@ -938,7 +938,7 @@ export const MEASURES = {
   blindTo: [
     'documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there',
     'real clipboard cost: MarkdownContent fires writeText without awaiting it',
-    'GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor',
+    'GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor. MEASURED, not assumed, since 2026-09-03: see report.machine.renderer (llvmpipe, gpu_compositing disabled)',
   ],
 };
 

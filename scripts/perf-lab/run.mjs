@@ -40,6 +40,8 @@ import { buildApp, treeFingerprint } from './build.mjs';
 import { waitFor } from './cdp.mjs';
 import { PRIMARY, get, runsFor } from './compare.mjs';
 import { buildFixture } from './fixture.mjs';
+import { formatRendererLine, readRendererInfo } from './gpu.mjs';
+import { formatLayoutCostLine, worstVerdict } from './layout-cost.mjs';
 import { launchApp, resolveXvfbBin, startXvfb } from './launch.mjs';
 import { collectStartup } from './metrics-startup.mjs';
 import { cpuPercent, cpuSnapshot, loadAvg1, machineBusyPct, pssMb } from './procs.mjs';
@@ -169,7 +171,22 @@ export function buildIdleSection(runs) {
  */
 export function buildWorkloadSection(wruns) {
   const forMedian = wruns.map(({ pssBreakdown, sessionIds, ...rest }) => rest);
-  return { runs: forMedian, median: medianTree(forMedian), pssBreakdownFirstRun: wruns[0]?.pssBreakdown ?? [] };
+  const median = medianTree(forMedian);
+  // medianTree medians every leaf, and median() sorts with `x - y` — which on the
+  // verdict STRING is NaN, so it returns whichever repeat's verdict the sort left in
+  // the middle. Overwrite it with the worst across repeats: a forced layout seen in
+  // one repeat of three is a real defect, and a repeat that measured nothing must not
+  // average into a pass. See layout-cost.mjs VERDICT_SEVERITY.
+  if (median.nativeLayoutCost) {
+    median.nativeLayoutCost.verdict = worstVerdict(forMedian.map((r) => r.nativeLayoutCost?.verdict));
+    // Same problem, smaller: medianing a BOOLEAN through `x - y` yields null, so the
+    // median section reported `attached: null` — unreadable as either yes or no.
+    // "did the probe attach in EVERY repeat" is the only form of this that means anything.
+    median.nativeLayoutCost.attached = forMedian.every((r) => r.nativeLayoutCost?.attached === true);
+    // A string carried through medianTree the same way; keep the first repeat that has one.
+    median.nativeLayoutCost.reason = forMedian.map((r) => r.nativeLayoutCost?.reason).find(Boolean) ?? null;
+  }
+  return { runs: forMedian, median, pssBreakdownFirstRun: wruns[0]?.pssBreakdown ?? [] };
 }
 
 /**
@@ -207,7 +224,13 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     label,
     sha: null, branch: null, dirty: null,
     timestamp,
-    machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version },
+    // `renderer` is filled on the first successful boot (see captureRenderer below).
+    // WHY IT IS IN THE REPORT AT ALL: "the rig is blind to GPU" is asserted in three
+    // scenarios' blindTo lists (workload, scrollback, artifacts — counted 2026-09-03;
+    // the roadmap item said five, which was wrong) and was never once verified. An
+    // unverified blind spot silently excuses every number it touches. Now each report
+    // carries its own answer, and on this machine that answer is llvmpipe: software.
+    machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
     startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
@@ -395,6 +418,10 @@ export function renderMarkdown(report, stem) {
     '',
     `sha ${report.sha ?? '—'} (${report.branch ?? '—'}${dirtyNote(report.dirty)}) — ${report.timestamp}`,
     `machine: ${report.machine?.cpu ?? '?'} · ${report.machine?.ramGb ?? '?'} GB · kernel ${report.machine?.kernel ?? '?'} · node ${report.machine?.node ?? '?'}`,
+    // The renderer belongs next to the CPU and RAM: it is a property of the machine the
+    // numbers were taken on, and a report that omits it is how "blind to GPU" survived
+    // five scenarios unverified.
+    `  ${formatRendererLine(report.machine?.renderer)}`,
     '',
   ];
   if (report.aborted) lines.push(`> **ABORTED:** ${report.aborted}`, '> The rows below are whatever had been measured when the run stopped.', '');
@@ -441,6 +468,16 @@ export function renderMarkdown(report, stem) {
       `| long tasks | ${n(p.longtaskCount, 'tasks')} (${n(p.longtaskTotalMs, 'ms')} total, max ${n(p.longtaskMaxMs, 'ms')}) |`,
       `| frame gaps > 40ms | ${n(p.frameGapCount, 'gaps')} (max ${n(p.frameGapMaxMs, 'ms')}) |`,
       `| native first token | ${n(w.nativeFirstTokenMs, 'ms')} |`,
+      // The re-gate for perf cycle 1. Reads as a VERDICT, not a duration, because
+      // counting work is what makes it independent of local-model speed. Anything
+      // other than 'coalesced' is flagged — including the two that measured nothing,
+      // which must never be skimmed as a pass.
+      `| **layouts per streamed token (native)** | ${w.nativeLayoutCost
+        ? `**${w.nativeLayoutCost.verdict}** — ${n(w.nativeLayoutCost.layouts, 'layouts')} over `
+          + `${n(w.nativeLayoutCost.commits, 'commits')} / ${n(w.nativeLayoutCost.frames, 'frames')} `
+          + `(${n(w.nativeLayoutCost.layoutsPerFrame, '/frame')}, ${n(w.nativeLayoutCost.layoutsPerCommit, '/commit')})`
+          + `${w.nativeLayoutCost.verdict === 'coalesced' ? '' : ' — ⚠ NOT a clean reading'}`
+        : '— (the native leg did not run)'} |`,
       `| CPU during workload | ${n(w.cpuDuringPct, '%')} |`,
       `| PSS after workload | ${n(w.pssAfterMb, 'MB')} |`,
     );
@@ -515,6 +552,20 @@ export function renderMarkdown(report, stem) {
       `| event listeners floor -> ceiling | ${n(s.floorListeners)} -> ${n(s.ceilingListeners)} (+${n(s.deltaListeners)}) |`,
       `| released by switching away + GC | ${n(s.releasedMb, 'MB')} |`,
       `| pages loaded / entries added | ${n(s.totalPagesLoaded)} / ${n(s.totalEntriesLoaded)} |`,
+      // The pop-in gate. Written as a VERDICT with the count beside it, because the
+      // passing value is zero and a reader must not have to interpret a number to
+      // see that. 'no-folding' and 'unmeasured' are flagged too — cycle 3 shipped a
+      // defect precisely because a measurement that tested nothing read as a pass.
+      `| **blank entries in view while scrolling** | ${s.lateContent
+        ? `**${s.lateContent.verdict}** — worst frame ${n(s.lateContent.maxLateInViewport)} blank, on `
+          + `${n(s.lateContent.framesWithLate)} of ${n(s.lateContent.frames)} frames `
+          + `(${n(s.lateContent.spacersSeenAnywhere)} spacers existed off-screen)`
+          + `${s.lateContent.lateAfterStop ? ' — ⚠ still blank after the scroll stopped' : ''}`
+          + `${s.lateContent.settledAtRest === false ? ` — ⚠ ${s.lateContent.lateAtRest} still blank while STANDING STILL` : ''}`
+          + `${s.lateContent.jumpedFrames ? ` · ${s.lateContent.jumpedFrames} frame(s) skipped where the app scrolled itself` : ''}`
+          + `${s.lateContent.verdict === 'clean' ? '' : ' — ⚠ NOT a pass'}`
+          + `${s.lateContent.firstLate ? ` · first at scrollTop ${s.lateContent.firstLate.atScrollTop}, key ${s.lateContent.firstLate.key ?? '?'}` : ''}`
+        : '— (not measured)'} |`,
       '',
       '| conversation | pages | entries after | page median / p95 | PSS after | reached the top every run |',
       '|---|---|---|---|---|---|',
@@ -661,6 +712,34 @@ async function teardown({ rethrow }) {
   }
 }
 
+// The renderer reading, captured ONCE on the first boot of a run and reused for the
+// report. Once per run rather than once per boot because it is a property of the
+// machine and the launch flags, neither of which changes between boots — and because
+// the SystemInfo round trip, however small, should not land inside a measured phase.
+let capturedRenderer = null;
+
+/** The renderer record for this run, or null if no boot ever succeeded. */
+export function getCapturedRenderer() { return capturedRenderer; }
+
+/** Reset between runs — exported for the tests, which must not inherit each other's state. */
+export function resetCapturedRenderer() { capturedRenderer = null; }
+
+/**
+ * Read the renderer on the first boot only. Deliberately swallows every failure:
+ * a rig that abandoned an hour-long run because it could not identify its GPU would
+ * be a worse instrument than one that recorded "unknown". readRendererInfo already
+ * returns an `error` record rather than throwing; the try/catch is belt-and-braces.
+ */
+async function captureRenderer(app) {
+  if (capturedRenderer) return;
+  try {
+    capturedRenderer = await readRendererInfo(CDP_PORT, app.cdp);
+  } catch (e) {
+    capturedRenderer = { source: null, glRenderer: null, accelerated: null, featureStatus: {}, devices: [], error: String(e?.message ?? e) };
+  }
+  log(formatRendererLine(capturedRenderer));
+}
+
 /** Boot, run `fn`, and always tear down — with the error-masking rule above. */
 async function withBoot(build, fixture, fn) {
   const app = await launchApp({ binary: build.binary, appDir: build.appDir, fixture, cdpPort: CDP_PORT });
@@ -670,6 +749,7 @@ async function withBoot(build, fixture, fn) {
     // The app is up when the renderer has listed sessions — that is the first moment
     // every startup mark this report reads has actually fired.
     await waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 90_000 });
+    await captureRenderer(app);
     return await fn(app);
   } catch (e) {
     bodyFailed = true;
@@ -1213,6 +1293,9 @@ async function main(argv) {
   }
 
   // ---- Write + enforce -----------------------------------------------------
+  // Set AFTER the try/finally so an aborted run still records which renderer it had —
+  // a partial run's numbers are exactly the ones most likely to be argued about later.
+  report.machine.renderer = capturedRenderer;
   report.incomplete = validateReport(report, cfg.only);
   mkdirSync(cfg.out, { recursive: true });
   const jsonPath = join(cfg.out, `${stem}.json`);

@@ -38,6 +38,15 @@ investigation doc two days earlier. `rg '`performance`' docs/roadmap/*.md`.
 | `artifacts` | files pane, editor, HTML preview | yes |
 | `shots` | 5 parity screenshots | 4 of 5. `native-chat` is NOT reproducible |
 
+**Three instruments were added on 2026-09-03** (workspace branch `perf/rig-instruments`,
+**not yet merged**) — §3 below, all three built, tested and run against the real app:
+
+| instrument | reads | first real answer |
+|---|---|---|
+| `report.machine.renderer` | which renderer Chromium actually used | **llvmpipe, software** — the "blind to GPU" claim is now MEASURED and correct |
+| `workload.median.nativeLayoutCost` | layouts per streamed token | `stream-too-slow` — the local model emits 35 deltas per 3 s, too few to conclude |
+| `scrollback.median.lateContent` | blank entries in view WHILE scrolling | see §3.3 — its first three readings were all artefacts of the rig |
+
 Current baseline for any A/B:
 `perf-reports/2026-09-03-2023-f39c742-ab-folding-rootfix.json` (3 repeats, every
 phase clean). Re-run the baseline whenever you change the instrument — perf-lab
@@ -63,7 +72,7 @@ a new trick — which is what makes them finishable unattended.
    attached remotely.
    → `docs/roadmap/remote-access.md` · investigation `2026-09-01-remote-pty-replay-buffer-copy-per-chunk.md`
 
-## 3. Rig instruments — the ones this cycle proved we need
+## 3. Rig instruments — BUILT 2026-09-03, on branch `perf/rig-instruments`
 
 Small, additive, and each closes a hole that actually cost us. Do these before any
 cycle that depends on the answers.
@@ -85,7 +94,26 @@ cycle that depends on the answers.
    still rendering as a spacer must always be zero. This is the class that hid cycle
    3's pop-in. Generalises past folding to any lazy render.
 
-All three: `docs/roadmap/dev-workspace.md`.
+All three: `docs/roadmap/dev-workspace.md` — close these items when the branch merges.
+
+**What they actually said, first time out.**
+
+1. **The renderer.** llvmpipe, `gpu_compositing=disabled_software`. So the blind spot is
+   real and the claim was right — it is now a measurement in every report rather than an
+   assumption. Chromium *sees* the NVIDIA device and declines it: Xvfb offers no
+   hardware GL, and a world-readable render node is not sufficient on its own. Also
+   corrected: the claim appears in **three** scenarios' `blindTo` lists, not five.
+2. **Layouts per token.** `stream-too-slow`, not a pass. The native leg produced 35
+   deltas across 181 frames; at that rate one layout per commit is both the defect's
+   signature and what a healthy renderer does. A conclusive reading needs a faster
+   local model or a longer window. Cycle 1 is therefore **still not re-gated** — the
+   instrument exists, the stream is too thin to use it.
+3. **Late content.** Its first three readings were all the rig measuring itself —
+   scrolling 500× faster than a human, sampling one frame after a seek, and counting a
+   frame where the app pinned itself to the bottom. Each is now excluded and each has a
+   pinning test. `scripts/perf-lab/README.md` has the table. **The lesson, which
+   generalises past this instrument: a measurement instrument's first finding is
+   usually about the instrument.**
 
 ## 4. Bigger, and genuinely harder
 - **Terminal / PTY has no perf coverage at all** — the largest wholly unmeasured

@@ -35,20 +35,23 @@ reading the report. Do not let this table drift optimistic.
 | startup / boot chores | in `run.mjs` | **covered** |
 | history reload by size | `scenario-history.mjs` | **covered** |
 | chat under load (6 sessions, streaming, switching) | `scenario-workload.mjs` | **covered** |
-| app-wide freeze on replay | `scenario-replay-stall.mjs` | **built, never run against the real app** |
-| artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **built, never run against the real app** |
+| memory ceiling once conversations are read back | `scenario-scrollback.mjs` | **covered** |
+| app-wide freeze on replay | `scenario-replay-stall.mjs` | **covered** (both its metrics currently read 0) |
+| artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **covered** |
+| layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
+| blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
+| which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
 | terminal | — | **NOT covered** |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**The two "built, never run" rows are not yet reachable from the CLI.** `run.mjs`'s
-phase list is `PHASES = ['startup', 'history', 'workload', 'shots']` (`run.mjs:54`) —
-neither new scenario is wired into the orchestrator, the report schema or
-`compare.mjs`'s `PRIMARY` list yet. Today they exist as modules with unit tests
-(`tests/scenario-replay-stall.test.mjs`, `tests/scenario-artifacts.test.mjs`) and are
-called by hand. Wiring them in is item 1 of the remaining work in the status doc.
+**All seven phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'scrollback']`
+— pick any subset with `--only`. (This paragraph previously said the list was four
+phases and that `stall` and `artifacts` were unreachable; that stopped being true when
+they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
 
 ---
 
@@ -579,6 +582,108 @@ and on the `--max-minutes` watchdog. `launchApp().kill()` deliberately **throws*
 process survived SIGKILL (a survivor would hold the CDP port and the profile lock, and
 the next boot would silently measure the wrong app); the orchestrator always prints
 that failure, and re-throws it only when the body of the boot had not already failed.
+
+---
+
+## The three instruments added on 2026-09-03
+
+All three exist because measurement failed us in perf cycle 3, not because they seemed
+nice. Read this before trusting any perf number about smoothness.
+
+### Which renderer did the rig get? — `gpu.mjs`
+
+`report.machine.renderer` now records what Chromium actually rendered with, read from
+CDP `SystemInfo.getInfo` on the browser target (WebGL `UNMASKED_RENDERER_WEBGL` is the
+fallback). It is captured once, on the first successful boot of a run.
+
+**The answer, measured 2026-09-03:** the rig is **software-rendered**.
+
+```
+ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.1.3-arch3.1)
+gpu_compositing = unavailable_off      rasterization = unavailable_off
+```
+
+So the "the rig is blind to GPU" line in five scenarios' `blindTo` lists is **correct** —
+it is now a measurement rather than an assumption, and every future report carries its
+own copy. Note that Chromium *sees* the NVIDIA device (`vendorId 4318`) and declines to
+use it: `/dev/dri/renderD128` being world-readable is not sufficient, because the app
+runs under Xvfb, which offers no hardware GL. Anything that would change this (a real
+display, a compositor) changes the numbers, so check this field before comparing two
+reports.
+
+### Layouts per streamed token — `layout-cost.mjs`
+
+Cycle 1's defect was one forced document layout per streamed token. Timing it needs a
+native stream and is hostage to local-model speed; **counting** it is not. CDP's
+`Performance` domain exposes `LayoutCount` and `RecalcStyleCount` as monotonic
+integers — confirmed empirically, not from the docs: 200 forced layouts read back as
+exactly `LayoutCount = 200`.
+
+Reported as `workload.median.nativeLayoutCost`, measured over a 3 s window on the
+**native** leg (the only real per-delta stream the rig has — the Claude Code streamer
+appends whole turns, so measuring there proves nothing). Read `verdict`:
+
+| verdict | meaning |
+|---|---|
+| `coalesced` | layouts track painted frames — the healthy shape, and the only pass |
+| `per-delta-forced-layout` | ~1 layout per render commit while commits outrun frames — **the cycle-1 defect** |
+| `forced-layout` | layouts far outrun frames, but not once per commit |
+| `stream-too-slow` | fewer deltas than frames, so the two shapes are indistinguishable — **not a pass** |
+| `no-stream` / `unmeasured` | nothing was measured — **not a pass** |
+
+**Expect `stream-too-slow` on this machine today.** Measured against master on
+2026-09-03, the local model emitted 35 deltas in 3 s against 181 frames. At that rate
+`layoutsPerCommit` is 1.0 — which is both the defect's signature and what a healthy
+renderer does when each commit lands in its own frame. Getting a conclusive reading
+needs a faster local model or a longer window; reporting `coalesced` there would have
+been a pass the data does not support.
+
+This is what re-gates cycle 1, and it is the detector the unfixed buddy-window twin
+(`BubbleFeed.tsx`) needs. It does **not** cover buddy windows yet: no scenario opens one.
+
+### Is anything late to the screen? — `late-content.mjs`
+
+The class that hid cycle 3's pop-in through three clean runs. Every other number in
+`scrollback` is taken while the app is **still**, and a lazy renderer is correct when
+still and wrong while moving.
+
+After all memory readings, the huge conversation is scrolled downward **at a fixed
+human pixel rate** (1,500 px/s for 8 s ≈ 12,000 px) while counting, every frame,
+`.timeline-entry` elements inside the viewport that are still rendering as a spacer.
+Reported as `scrollback.median.lateContent`. **The passing value is zero:** one blank
+frame is the pop-in a user sees.
+
+`clean` is the only pass. Verdicts, worst first: `blank-at-rest` (blank while standing
+still — worse than any scrolling result), `late-content`, `no-folding` (nothing was ever
+a spacer, so nothing was tested), `unmeasured`, `clean`.
+
+**This instrument needed three corrections before its readings meant anything, and each
+one turned a confident finding into an artefact of the rig.** They are worth knowing,
+because all three are traps any "measure it while it moves" probe will hit:
+
+| # | the artefact | the reading it produced | the fix |
+|---|---|---|---|
+| 1 | Crossed the whole document in a fixed time. On the huge fixture that is 4,504,187 px in 6 s — **745,000 px/s, ~500× a human scroll** | blank content on **214 of 216 frames** | scroll at a fixed human PIXEL RATE (1,500 px/s); the reading now carries `pxPerSecond` and `scrolledPx` so it can be judged |
+| 2 | Seeked to the start and sampled one frame later. No user teleports | **4 blanks on 8 frames**, every one at `scrollTop 0` | settle at rest first, and report a failure to settle as its own, worse verdict (`blank-at-rest`) |
+| 3 | Counted frames where the chat pane pinned ITSELF to the bottom | **3 blanks on 1 frame**, at `scrollTop 4,504,200` while the pass had travelled 12,003 px | compare actual scrollTop to commanded each frame; skip and count those frames (`jumpedFrames`) — an auto-scroll is a different thing from late content |
+
+Every one of those was found by looking at the number and asking whether the app could
+possibly have done that, not by a test going red. **A measurement instrument's first
+finding is usually about the instrument.**
+
+`clean` is the only pass. `no-folding` means nothing was ever a spacer during the
+scroll — the mechanism under test never engaged, so nothing was proven. A spacer is
+defined structurally (occupies height, renders nothing), so this generalises past
+folding to any lazy render.
+
+**Both verdicts are rolled up across repeats by WORST, not median** — `median()` sorts
+with `x - y`, which on a verdict string is `NaN`, so two clean repeats could otherwise
+bury the one that caught the defect.
+
+Each instrument has a **live proof** in its test file: a real headless Chromium is
+driven through both the healthy and the defective shape, and the test asserts the
+verdicts differ. Unit tests over fixtures the author wrote cannot show that an
+instrument can see the thing it was built for.
 
 ---
 

@@ -1,0 +1,131 @@
+{
+  "title": "Plain-language tool summaries — five questions",
+  "key": "tool-group-readability-questions",
+  "out": "tool-group-readability.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat view — a reply that used several different kinds of tools in one step",
+      "path": "Today this line reads: \"3 Tools (Bash, Write, Grep) — all complete\" — internal names, not plain words",
+      "headline": "When several DIFFERENT kinds of things happened, how many should the sentence name before folding the rest into a count?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Name the first 2, fold the rest into a count you can click open (recommended)",
+          "summary": "Proposal: \"Created a file and ran a command (+1 more)\". Clicking the line (it already opens today) shows every step by name, so nothing is hidden, just shortened. Pro: stays short and easy to scan no matter how busy the step was. Con: on a busy step (5-6 different kinds of things) you see 2 named and have to click for the rest.",
+          "cost": "A short combining rule, plus reusing the click-to-expand the line already has."
+        },
+        {
+          "id": "b",
+          "label": "Name every kind of thing that happened, never fold anything",
+          "summary": "\"Created a file, ran a command, searched the web and read a file\" — nothing hidden. Pro: everything visible without clicking. Con: on a busy step the line gets long and wraps, which works against the whole point of making this easier to read at a glance.",
+          "cost": "No cutoff logic, but the line's length becomes unpredictable."
+        },
+        {
+          "id": "c",
+          "label": "Name only 1 kind of thing, fold everything else into a count",
+          "summary": "\"Created a file (+3 more)\". Pro: shortest possible line. Con: throws away most of the \"what did it actually do\" information this request is asking for — close to as uninformative as today's version.",
+          "cost": "Least logic, but least useful."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat view — a step that ran the same kind of thing more than once (e.g. three commands)",
+      "path": "The app already writes \"Invoked 2 skills: brainstorming and writing-plans\" for repeated skills — this asks whether every tool type should work the same way",
+      "headline": "When the same kind of thing happens more than once, should the sentence say how many?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes, always show the number — \"ran 3 commands\" (recommended)",
+          "summary": "Matches the wording already shipped for repeated skills. Pro: consistent with what's already in the app, and the number is often the useful part — \"read 8 files\" tells you it searched broadly, \"ran 3 commands\" tells you it did more than a quick check. Con: none seen.",
+          "cost": "None beyond what's already built for the skills case."
+        },
+        {
+          "id": "b",
+          "label": "Never show the number — always just \"ran commands\"",
+          "summary": "Shortest, but one command and ten commands read exactly the same, which hides how much actually happened.",
+          "cost": "Simpler, but throws away real information."
+        },
+        {
+          "id": "c",
+          "label": "Only show the number at 3 or more; say just \"ran a command\" / \"ran commands\" below that",
+          "summary": "A middle ground. Con: one more rule to remember, and it wouldn't match the skills wording, which always shows the number.",
+          "cost": "An extra rule, and an inconsistency with the skills line."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat view — a step where one thing failed, or is waiting on your approval, among others that finished fine",
+      "path": "Today's line already ends with \"— 1 failed\" or \"— waiting on you\" (the waiting-on-you part is highlighted in color) — this only asks whether that stays as-is under the new wording",
+      "headline": "How should a failure, or something waiting on your approval, show up in the new plain-language line?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Keep today's ending exactly, just reworded in plain words (recommended)",
+          "summary": "\"Created a file and ran a command — 1 failed\" / \"...— waiting on you\" (still color-highlighted). Pro: reuses a part of today's line that already works well and is proven; nothing new to design. Con: none seen.",
+          "cost": "None — this part of the code is unchanged."
+        },
+        {
+          "id": "b",
+          "label": "Weave the failure into the sentence itself — \"Tried to run a command, but it failed\"",
+          "summary": "Reads more conversationally for exactly one failure, but gets wordy and hard to write a clean rule for once several different things are mixed together in one step.",
+          "cost": "New sentence-building rules for every combination of success/failure."
+        },
+        {
+          "id": "c",
+          "label": "Don't mention it in the summary line at all — only show it once you click to expand",
+          "summary": "Shortest line, but hides the one thing — a failure, or something that needs your yes/no — most worth noticing at a glance. Works against the purpose of this line.",
+          "cost": "Least code, but a real risk of a missed approval or failure."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Chat view — a step that used an outside connection (Gmail, Google Calendar, a community plugin) rather than one of the app's built-in tools",
+      "path": "The built-in tools (running a command, reading/writing a file, searching, etc.) each already have a plain-word phrase; outside connections don't yet",
+      "headline": "For an outside connection, should the sentence name the service, or stay generic?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Name the service when the app already knows its friendly name — \"checked Gmail\" (recommended)",
+          "summary": "Most outside connections already show a friendly name elsewhere in the app (Gmail, Google Calendar, Canva). Reuse that name here; fall back to a generic \"used a tool\" only for the rare one with no friendly name on file. Pro: as specific as possible for free, since the name already exists somewhere in the app. Con: none seen.",
+          "cost": "Reuses a name lookup the app already has for these connections."
+        },
+        {
+          "id": "b",
+          "label": "Always say \"used a tool\", no matter which service",
+          "summary": "Simpler, but throws away information the app already has — you'd see \"used a tool\" instead of \"checked Gmail\" even when it's known exactly what happened.",
+          "cost": "Simplest, but a step backward from how specific the built-in tools already read."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chat view — a step where some things are still running while others already finished, and one of the finished ones failed",
+      "path": "Your own example was \"Creating a file, editing an image, running commands (+3 completed)\" — this asks what happens when one of those 3 already-finished things failed",
+      "headline": "If something already finished has failed while other things are still running, should the count split it out right away?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes — split it out immediately, e.g. \"(+2 completed, 1 failed)\" (recommended)",
+          "summary": "Keeps the most urgent fact — a failure — visible the moment it happens, instead of waiting for the whole step to finish. Pro: you never have to wait to notice a problem. Con: the line is a little longer when there's a mix.",
+          "cost": "Combines two counts the app already tracks separately today."
+        },
+        {
+          "id": "b",
+          "label": "No — keep one combined \"completed\" count until everything finishes, e.g. \"(+3 completed)\"",
+          "summary": "Shorter while things are still running, but a failure could sit unnoticed inside that \"completed\" count until the whole step wraps up and the line updates.",
+          "cost": "Simplest, but can hide a failure that already happened."
+        }
+      ]
+    }
+  ]
+}

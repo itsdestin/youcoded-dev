@@ -38,6 +38,7 @@
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 import { pssMb } from './procs.mjs';
+import { formatLateContentLine, scrollAndCount, summariseLateContent, worstLateVerdict } from './late-content.mjs';
 import { openJourneySessions, installPageHelpers, median, p95 } from './scenario-workload.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -64,6 +65,14 @@ export const SCROLL_SIZES = Object.freeze(['huge', 'medium', 'small']);
 export const MAX_PAGES = 200;
 /** Idle window before the ceiling is collected and read — see the ceiling block. */
 export const CEILING_SETTLE_MS = 5000;
+
+// How long the late-content scroll pass runs. It scrolls at a fixed HUMAN pixel rate
+// (late-content.mjs HUMAN_SCROLL_PX_PER_SECOND), so this is a time budget, not a
+// distance: 8 s at 1,500 px/s covers ~12,000 px of conversation. Crossing the WHOLE
+// document instead was the first version's mistake — on the huge fixture that is
+// 4.5 million pixels, i.e. 745,000 px/s, and every frame came back blank because no
+// renderer could keep up. The instrument was measuring its own scroll speed.
+export const LATE_SCROLL_MS = 8000;
 /** Idle window before a per-leg reading, for the same reason as the ceiling. */
 export const LEG_SETTLE_MS = 2000;
 export const PER_SESSION_BUDGET_MS = 180000;
@@ -239,6 +248,7 @@ export const MEASURES = {
     'each of the three RESUMED conversations (huge, medium, small) is scrolled to its beginning, one at a time, largest first',
     'a page turn is driven the way a user drives it — scroll the pane to the top and wait for the entry count to GROW; the app\'s own data-history-sentinel (rendered only while history.hasMore) is what says whether there is more',
     'nothing streams during this phase: the only thing growing the window is the scroll-back itself',
+    'after every memory reading is taken, the huge conversation is scrolled back DOWN once at a deliberately slow pace — that pass is what lateContent measures, and it runs last so its own unfolding cannot be charged to the ceiling',
     'the ceiling is read AFTER a forced GC, so a rise means retained memory rather than uncollected garbage',
   ],
   clocks: {
@@ -250,12 +260,13 @@ export const MEASURES = {
     deltaNonJsMb: 'PSS rise minus the UPPER bound on JS — a LOWER bound on the DOM/layout/paint share. This is what parking a hidden view frees.',
     releasedMb: 'ceiling - (reading after switching away from every scrolled session and forcing a GC). Expected ~0 today, because nothing evicts; this is the metric a cycle-3 change has to move.',
     'perSize.*.pageMedianMs': 'how long one page turn takes, per conversation — does scrolling back get slower as the window grows?',
+    'lateContent.verdict': 'scroll the fully loaded huge conversation top to bottom and count, EVERY FRAME, entries inside the viewport still rendering as a spacer. The passing value is ZERO — one blank frame is the pop-in a user sees. Only \'clean\' is a pass; \'no-folding\' and \'unmeasured\' mean nothing was tested.',
   },
   blindTo: [
     'conversations larger than the fixture huge transcript (3,500 turns)',
     'whether the user would ever scroll this far — this is a CEILING, deliberately the worst case, not a typical session',
-    'the cost of scrolling back DOWN again, and of re-rendering a conversation whose pages were evicted (there is no eviction to measure yet)',
-    'anything requiring a real GPU — the rig runs headless under Xvfb, so the paint half of deltaNonJsMb is a software-raster figure',
+    're-rendering a conversation whose pages were EVICTED (there is no eviction to measure yet). Scrolling back DOWN is no longer blind: since 2026-09-03 lateContent scrolls the huge conversation top-to-bottom and counts blank entries inside the viewport — but it counts BLANKNESS, not the cost of that scroll, so page-turn timings going down are still unmeasured',
+    'anything requiring a real GPU, so the paint half of deltaNonJsMb is a software-raster figure. MEASURED, not assumed, since 2026-09-03: report.machine.renderer says llvmpipe with gpu_compositing disabled — check that field before comparing two reports',
     'per-session attribution of PSS: /proc reports the whole app family, so a per-conversation delta is only clean because they are scrolled ONE AT A TIME',
   ],
 };
@@ -300,6 +311,24 @@ export function medianRun(runs) {
       reachedTopEveryRun: legs.every((l) => l.reachedTop === true),
     };
   }
+  // NOT a median, for the same reason reachedTopEveryRun is not: one repeat that saw
+  // a blank entry inside the viewport is a real defect, and a repeat that measured
+  // nothing must not average into a pass. The counts alongside it ARE medians —
+  // they are only context for the verdict.
+  const lates = runs.map((r) => r.lateContent).filter(Boolean);
+  out.lateContent = {
+    verdict: worstLateVerdict(lates.map((l) => l.verdict)),
+    maxLateInViewport: med(lates.map((l) => l.maxLateInViewport)),
+    framesWithLate: med(lates.map((l) => l.framesWithLate)),
+    frames: med(lates.map((l) => l.frames)),
+    spacersSeenAnywhere: med(lates.map((l) => l.spacersSeenAnywhere)),
+    // The worst repeat's example, so the report names something a human can open.
+    firstLate: lates.find((l) => l.firstLate)?.firstLate ?? null,
+    lateAfterStop: lates.some((l) => l.lateAfterStop === true),
+    settledAtRest: lates.every((l) => l.settledAtRest === true),
+    lateAtRest: med(lates.map((l) => l.lateAtRest)),
+    jumpedFrames: med(lates.map((l) => l.jumpedFrames)),
+  };
   return out;
 }
 
@@ -454,11 +483,47 @@ export async function runScrollbackScenario(app, fixture, { onProgress } = {}) {
       }
     }
 
+    // ── Is anything LATE to the screen? ──────────────────────────────────
+    // Runs LAST, after every memory reading, and that ordering is load-bearing:
+    // this pass scrolls a fully loaded conversation from top to bottom, which
+    // unfolds entries as it goes. Doing it before the ceiling or the released
+    // control would charge their numbers to this instrument's own motion.
+    //
+    // WHY IT EXISTS: every other number in this phase is taken while the app is
+    // STILL, and a lazy renderer is correct when still and wrong while moving.
+    // Cycle 3's pop-in survived three clean runs of exactly these metrics.
+    // See late-content.mjs.
+    let lateContent = summariseLateContent({ ok: false, reason: 'the late-content pass did not run' });
+    const scrolledName = Object.keys(sizeByName).find((n) => sizeByName[n] === 'huge');
+    if (!scrolledName) {
+      warnings.push('scrollback: no huge session to scroll back down through, so late-content was not measured');
+    } else {
+      const back = await cdp.evaluate(
+        `window.__perfLab.switchTo(${names.indexOf(scrolledName)}, ${JSON.stringify(scrolledName)}, ${ids.length}, false, null, false)`);
+      if (!back.ok) {
+        warnings.push(`scrollback: could not switch back to the scrolled '${scrolledName}' session, so late-content was not measured`);
+      } else {
+        // The app's entry-folding idle is 800 ms; let it settle so the scroll
+        // starts from a folded state rather than from mid-transition.
+        await sleep(CEILING_SETTLE_MS);
+        lateContent = summariseLateContent(await scrollAndCount(cdp, { durationMs: LATE_SCROLL_MS, direction: 'down' }));
+        console.error(`[perf-lab] scrollback: ${formatLateContentLine(lateContent)}`);
+        if (lateContent.verdict === 'late-content') {
+          warnings.push(`scrollback: ${lateContent.maxLateInViewport} entr${lateContent.maxLateInViewport === 1 ? 'y was' : 'ies were'} blank INSIDE the viewport while scrolling — this is the pop-in class, and the passing value is zero`);
+        } else if (lateContent.verdict !== 'clean') {
+          warnings.push(`scrollback: late-content is ${lateContent.verdict} (${lateContent.reason ?? 'no reason recorded'}) — do NOT read it as a pass`);
+        }
+      }
+    }
+
     return {
       floor, ceiling, released, perSize, warnings,
       ...riseSplit(floor, ceiling),
       foldedEntries: ceiling.foldedEntries,
       totalEntries: ceiling.totalEntries,
+      // Blank entries inside the viewport WHILE SCROLLING. `verdict` is the reading;
+      // 'no-folding' and 'unmeasured' are not passes. See late-content.mjs.
+      lateContent,
       releasedMb: released ? released.releasedMb : null,
       totalPagesLoaded,
       totalEntriesLoaded: Object.values(perSize).reduce(

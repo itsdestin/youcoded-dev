@@ -21,10 +21,18 @@ The cache is reconciled against nothing after the fit.
 
 The gap is documented in-code at the `shownImages` field (a KNOWN GAP block) rather than papered over.
 
-**Bounded.** Needs the prune-protected window to exceed the fit budget (context under ~8,500 tokens)
-AND `supportsVision: true`, which for a local engine requires an explicit registry entry — i.e. a
-registry-declared small local vision model. Everything larger is covered because compaction
-re-estimates un-trimmed history at each turn start and fires first.
+**Bounded — but WIDER than this doc first said (corrected 2026-09-06).** It still needs the
+prune-protected window to exceed the fit budget (context under ~8,500 tokens) AND
+`supportsVision: true`. The old sentence said that second condition "for a local engine requires
+an explicit registry entry", which made it unreachable in practice: **no `KNOWN_MODELS` entry has
+ever declared `supportsVision`** — checked 2026-09-06, `rg -n "supportsVision"
+desktop/src/main/harness/known-models.ts` returns only the interface field — so local bindings
+always resolved to "don't know" and no local model could reach this path at all. That changed on
+2026-09-05: `visionFor()` now takes a DISCOVERED per-model answer when the registry has no
+opinion, and the local engine supplies one from `GET /models` `input_modalities` whenever a model
+sits in a folder with its projector. The live exposure is therefore **any downloaded local vision
+model with a very small context window**, registry entry or not. Everything larger is still
+covered because compaction re-estimates un-trimmed history at each turn start and fires first.
 
 ## Fix shape — and the two rejected ones
 
@@ -33,4 +41,5 @@ defeats dedupe entirely, and a count-diff latches permanently true once history 
 Two reviewers rejected both. Intended fix: re-key `shownImages` to `Map<path, {mtime, toolCallId}>`
 and reconcile against the fitted window after trimming — exact, no over-clearing, ~8 lines.
 
-History: filed 2026-08-11 (the one path youcoded#293 left open). Re-verified 2026-09-01.
+History: filed 2026-08-11 (the one path youcoded#293 left open). Re-verified 2026-09-01; the
+reachability sentence corrected 2026-09-06 while documenting the local-engine upgrades.

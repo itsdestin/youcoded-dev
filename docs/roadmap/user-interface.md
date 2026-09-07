@@ -152,15 +152,30 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       as editing a queued message, native-harness → sessions)
       `quick-chips` `all` `needs-verify` `checked 2026-09-02`
 
-- [ ] Three places still open a section with a bare "›" beside a word — the Backup & Sync log
-      ("Show log"), the recommended-model card in Local Models, and the system marker in chat.
-      Destin (2026-09-05 review deck): "I HATE the bare dropdowns with a chevron." The rule is now
-      design-guide G-22; the Local Models engine card and model rows switched to it on
-      `feat/local-engine-upgrades`, these three have not.
-      `all` `confirmed` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
+- [ ] Two places still open a section with a bare "›" beside a word — the Backup & Sync log
+      ("Show log") and the system marker in chat. Destin (2026-09-05 review deck): "I HATE the
+      bare dropdowns with a chevron." The rule is now design-guide G-22; the Local Models engine
+      card, its model rows and its recommended-model card all switched to it on
+      `feat/local-engine-upgrades`, these two have not.
+      `all` `confirmed` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json
 
-- [ ] The browser reports invalid page structure on the Local Models list: a card's whole
-      row is one big button, and the size figure inside it opens its own hover bubble from a
-      second button nested inside the first. Browsers silently rearrange that, and the two
-      sentences Destin signed off about a model's size and memory live in exactly that bubble
-      `settings/local-models` `all` `confirmed` `checked 2026-09-06`
+- [ ] Warning text elsewhere in the app is still one fixed amber, so it can vanish on a pale
+      theme the same way the local-model memory warning did. Measured on 2026-09-06: that amber
+      scores 1.05:1 on Creme's card and 1.16:1 on Light's — both BUILT-IN themes — against a
+      4.5:1 floor. The memory warning was moved to the new per-theme `--warning-fg` on
+      `feat/local-engine-upgrades`; 27 other `text-amber-*` sites were left alone deliberately,
+      because switching them changes their colour on the dark themes they were signed off in.
+      Includes this feature's own "Will be tight — close other apps first" label. Same fix, one
+      class at a time, each with a look at the surface it sits on.
+      `all` `confirmed` `checked 2026-09-06`
+
+- [ ] Model rows in the picker carry no tags, so choosing means knowing the names. Destin wants
+      **cost and intelligence tags** on each row, and the tokens-per-second tag filed alongside
+      them in local-models is meant to sit in the same strip — three coloured tags answering
+      "what will this cost me, how clever is it, how fast is it" at a glance. His words,
+      2026-09-06: "the cost/intelligence tags i want to eventually build in the model selector".
+      Undesigned: where the numbers come from (OpenRouter publishes per-model pricing; nothing
+      publishes "intelligence", so it is either a curated band or a benchmark we choose and
+      defend), what a local model shows for cost (nothing? "free"?), and whether three tags fit
+      a row that already carries a name, a source and a favourite star.
+      `model-picker` `all` `confirmed` `checked 2026-09-06`

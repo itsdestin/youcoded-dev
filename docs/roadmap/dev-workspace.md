@@ -124,6 +124,16 @@ seen-on is always n/a here.
       (YOUCODED_TOOLKIT_STATE_DIR); the sync path needs its own override or the same one
       `desktop` `needs-verify` `checked 2026-09-05`
 
+- [ ] A dev instance silently changed the engine settings of Destin's real, installed app. Same
+      class as the sync-spaces item above, second file: ~/.youcoded/config.json is one shared
+      path, so --profile separates a dev instance's userData but not this. Switching engine
+      backends in a dev window overnight 2026-09-05 rewrote the live app's config (stamped 03:01,
+      backend now "rocm") while the live app was still running its Vulkan build — it would have
+      come up on ROCm at its next restart, with nothing on screen tracing that back to a test
+      session. This is the isolation run-dev.sh exists to provide. The file was left alone: what
+      his app runs on is his call, not a session's
+      `desktop` `confirmed` `checked 2026-09-06`
+
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
       context-free tester cannot claim to have covered either. Add pointer and scale switches to
@@ -217,6 +227,17 @@ seen-on is always n/a here.
       rule separates from this noise. Remaining work is the gate itself, which still scores it
       `n/a` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
 
+- [ ] Android cannot be built or tested on this machine at all — there is no Android SDK
+      installed, only Android Studio, and CLAUDE.md asserted the opposite (it named
+      `/home/destin/.android-sdk` and a `java-21-openjdk` that also does not exist). Gradle
+      stops at `SDK location not found` before compiling, so every past "checked both
+      platforms" claim made by running that documented command was a configuration failure
+      read as a pass. CLAUDE.md corrected 2026-09-04 with the verification pasted in; the
+      remaining work is installing the SDK so the Android half of a cross-platform change
+      can actually be run. Until then Kotlin can only be compiled file-by-file with the
+      kotlinc inside `/opt/android-studio`
+      `n/a` `confirmed` `checked 2026-09-04`
+
 - [ ] Perf rig: the artifacts phase's session-files drawer lists nothing about 1 run in 9 —
       once for 30 s aborting a 26-minute run, once returning undefined numbers that the median
       silently swallowed; cause unknown
@@ -267,6 +288,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
+      own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
+      ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.
+      Do not renumber a guide Destin has signed off; the fix is his call (rename one, or add a
+      suffix). Found 2026-09-06 while shrinking the expandable-rows item.
+      `n/a` `confirmed` `checked 2026-09-06`
+
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
       then recommend deleting its worktree; it should notice unfinished edits before declaring success
       `n/a` `needs-verify` `checked 2026-09-05`

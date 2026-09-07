@@ -111,7 +111,7 @@ Use existing tools before inventing a rig: `scripts/ui-probe.mjs` for an isolate
 
 **Before claiming a desktop change done, run `bash scripts/verify.sh [<worktree>]`.** It covers types, related tests plus source-scanning guards, knip, lint and ast-grep; `--full` forces the full suite. It covers desktop only. Android and Worker need their own checks.
 
-Android worktree tests on this machine use JDK 21 and the installed SDK, with `-x bundleWebUi` to protect dependencies. Exact commands/build order: `docs/workspace-workflows.md` → Local build & test and `docs/build-and-release.md`. Run relevant tests after edits; distinguish pre-existing/environmental failures from regressions.
+**Android cannot be built or tested on this machine.** No SDK is installed — only Android Studio (verified 2026-09-05: `/home/destin/.android-sdk` absent, no `platform-tools`/`build-tools`/`cmdline-tools` anywhere under `/home/destin` or `/opt`, `/usr/lib/jvm` holds only java-26). Gradle stops at `SDK location not found` during configuration, before it compiles anything — so the documented command returns a configuration failure, never a test result. **Do not record running it as a completed cross-platform check**; a Kotlin change can only be compiled file-by-file with the kotlinc inside `/opt/android-studio`, and say so plainly rather than implying `./gradlew test` passed. Installing the SDK is an open item in `docs/roadmap/dev-workspace.md`; the commands for once it exists (JDK 21 from `/opt/android-studio/jbr`, `-x bundleWebUi` to protect hardlinked dependencies) are in `docs/workspace-workflows.md` → Local build & test.
 
 ### Harness evals (native agent tools)
 
