@@ -1,9 +1,18 @@
 #!/usr/bin/env python3
 """Review deck v2 — the page Destin approves UI changes on, one point per step.
 
-  python3 scripts/ui-review/review-cards.py build <spec.json>     cut the crops, resolve every highlight box, write the HTML next to the spec
-  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-open] [--no-build] [--port N] [--timeout MIN]
-        build it, serve it, open the browser, save answers to <spec>.answers.json, exit when Destin submits
+  python3 scripts/ui-review/review-cards.py build <spec.json> [--theme SLUG]     cut the crops, resolve every highlight box, write the HTML next to the spec
+  python3 scripts/ui-review/review-cards.py serve <spec.json> [--no-build] [--port N] [--timeout MIN] [--theme SLUG]
+        build it, serve it, print the address for the session to put in chat, save answers to <spec>.answers.json, exit when Destin submits
+  python3 scripts/ui-review/review-cards.py preview <spec.json> [--sizes 1440x900,1024x768] [--themes midnight,light] [--out DIR] [--theme SLUG]
+        build it, then look at it: one picture per page x window size x theme, plus contact.png laid out beside each other.
+        READ THE CONTACT SHEET BEFORE `serve` — four sessions in one day handed Destin a deck whose header was
+        visibly broken. The pictures land in <spec dir>/preview/ by default; that folder is scratch and is not committed.
+  python3 scripts/ui-review/review-cards.py selfie [--before origin/master] [--out DIR] [--dry-run]
+        the DECK reviewed on a deck: renders a fixture carrying every kind of step with the deck code at
+        <--before> and with this worktree's, then serves a review of the two, boxed by pixel difference.
+        Run it for any change to page.css, page.js, the page template or the fixture. --dry-run lays the
+        fixture out and writes the review spec without checking anything out, rendering or serving.
   python3 scripts/ui-review/review-cards.py wait  <spec.json> [--timeout MIN]
         block until the answers file says submitted (for a session that no longer holds the `serve` process)
   python3 scripts/ui-review/review-cards.py record <spec.json> ['<pasted summary>' | < file]
@@ -25,9 +34,18 @@ and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one 
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
 absence a yes/no, and `serve` boots the worktree's workbench for it).
 
-A step may instead be WORDS-ONLY ("words": true — a question with 1–3 written options, or a
-statement to approve; no picture, no images folder needed): that is the questions deck asked
-before anything is drawn.
+A step may instead be WORDS-ONLY ("words": true — no picture, no images folder needed): that
+is the questions deck asked before anything is drawn. A QUESTION says what exists, what goes
+wrong and what would change in three fields of its own (`today`, `problem`, `proposal`), and
+offers 1–3 written options carrying their own `pros`/`cons` (one may be `"recommended": true`)
+— or none, and is answered Yes / No / Don't know. Writing any of that as "Today: … Pro: …"
+inside a summary is refused, by field name. A STATEMENT to approve (`changed` + `notice`,
+`yes`/`no` relabels, no `today`) is the other words step, and is exempt from all of it.
+
+The deck opens on whatever theme the app is on (read from ~/.claude/youcoded-appearance.json,
+which the app rewrites on every theme change) — moved to the front of the spec's `themes`, or
+added to it when the deck's pictures already exist in that theme. `--theme <slug>` overrides it;
+`"theme": "fixed"` in the spec keeps the spec's own order, for a deck about one theme.
 
 A CONTRACT step ("rows") is the definition of done signed off as one step; see
 docs/active/specs/2026-09-01-feature-flow-design.md.
@@ -41,13 +59,16 @@ import argparse
 import json
 import os
 import sys
+import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck.build import build_page                       # noqa: E402
 from deck.contract import AcceptanceError, acceptance_spec, acceptance_status, check_contract, contract_steps, signoff   # noqa: E402
 from deck.crops import crop_images                      # noqa: E402
+from deck.preview import can_render, preview as render_preview   # noqa: E402
+from deck.selfie import selfie as run_selfie              # noqa: E402
 from deck.serve import already_served, record, serve, wait_for_submit   # noqa: E402
-from deck.spec import SpecError, load_spec, validate    # noqa: E402
+from deck.spec import SpecError, apply_live_theme, load_spec, validate    # noqa: E402
 
 
 def build(spec):
@@ -79,7 +100,7 @@ def main(argv):
         sys.stdout.reconfigure(line_buffering=True)
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
-    for c in ('build', 'serve', 'wait', 'contract-check', 'acceptance', 'record'):
+    for c in ('build', 'preview', 'serve', 'wait', 'contract-check', 'acceptance', 'record'):
         sub.add_parser(c).add_argument('spec')
     # `record`: the copy box's text, pasted back, when the page had no server to submit to.
     # One argument or stdin; newlines optional (a chat paste flattens them — see parse_pasted).
@@ -87,16 +108,60 @@ def main(argv):
     for c in ('serve', 'wait'):
         sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
-    sv.add_argument('--no-open', action='store_true')
     sv.add_argument('--no-live', action='store_true',
                     help="don't start or stop the app server for live panes (it's already running)")
     sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
     sv.add_argument('--port', type=int, default=0)
+    for c in ('build', 'preview', 'serve'):
+        sub.choices[c].add_argument('--theme', help="open the deck on this theme instead of the one the app is on")
+    # `selfie` is the one command with no spec of its own: it WRITES one.
+    sf = sub.add_parser('selfie')
+    sf.add_argument('--before', default='origin/master', help='the git ref to compare this worktree against')
+    sf.add_argument('--out', help='where the fixture, the pictures and the review land (default: a fresh temp folder, printed)')
+    sf.add_argument('--dry-run', action='store_true', help='lay the fixture out and write the review spec; check nothing out, render nothing, serve nothing')
+    pv = sub.choices['preview']
+    pv.add_argument('--sizes', help='window sizes to shoot, comma separated (default 1440x900,1280x800,1024x768)')
+    pv.add_argument('--themes', help="themes to shoot, comma separated (default: the deck's first two)")
+    pv.add_argument('--out', help='where the pictures go (default <spec dir>/preview/)')
     a = ap.parse_args(argv)
+    if a.cmd == 'selfie':
+        # WHY before the try below: selfie has no `spec` argument to load — the review deck is
+        # its OUTPUT. `finish` is main() again, so the deck it writes is built and served by
+        # exactly the code path a session would type next, with no second copy of either.
+        out = a.out or tempfile.mkdtemp(prefix='deck-selfie-')
+        print('[selfie] working folder: ' + out)
+        try:
+            return run_selfie(a.before, out, log=lambda m: print('[selfie] ' + m),
+                              dry_run=a.dry_run, finish=lambda p: main(['serve', p]))
+        # Fix: a bad --before ref (typo, a branch not fetched here) used to end in a raw
+        # RuntimeError traceback — `_add_worktree` raises it with git's own stderr already
+        # in the message, so relay that as a plain refusal instead of a stack trace.
+        except RuntimeError as e:
+            print(str(e), file=sys.stderr)
+            return 1
     try:
         spec = load_spec(a.spec)
+        # WHY here and not in load_spec(): only the two commands that PAINT a page follow the
+        # app's theme. contract-check and acceptance read the same spec and must see the order
+        # its author wrote, or a row's meaning would depend on which theme Destin is using.
+        if a.cmd in ('build', 'preview', 'serve'):
+            apply_live_theme(spec, a.theme, log=lambda m: print(m, file=sys.stderr))
         if a.cmd == 'build':
             return build(spec)
+        if a.cmd == 'preview':
+            # Asked before the build, so a machine with no browser is told immediately instead
+            # of after minutes of cropping.
+            if not can_render(lambda m: print(m, file=sys.stderr)):
+                return 2
+            # WHY build() here and not inside preview(): deck/preview.py importing this module
+            # back would be a circular import. Pictures of a stale page are worse than none, so
+            # a failed build stops the command.
+            if build(spec) != 0:
+                return 1
+            return render_preview(spec,
+                                  sizes=a.sizes.split(',') if a.sizes else None,
+                                  themes=a.themes.split(',') if a.themes else None,
+                                  out=a.out)
         if a.cmd == 'wait':
             return wait_for_submit(spec, timeout_min=a.timeout)
         if a.cmd == 'record':
@@ -158,7 +223,7 @@ def main(argv):
             return 3
         if not a.no_build and build(spec) != 0:
             return 1
-        return serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout, live=not a.no_live)
+        return serve(spec, port=a.port, timeout_min=a.timeout, live=not a.no_live)
     except SpecError as e:
         print(str(e), file=sys.stderr)
         return 1

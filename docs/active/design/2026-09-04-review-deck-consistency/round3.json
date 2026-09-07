@@ -1,0 +1,53 @@
+{
+ "title": "The question layout, again \u2014 three across and Option A / Option B",
+ "key": "deck-rebuild-review-3",
+ "out": "deck-review3.html",
+ "images": "images/deck-review3",
+ "themes": [
+  "midnight"
+ ],
+ "theme": "fixed",
+ "runs": {
+  "before": "/tmp/claude-1000/-home-destin-youcoded-dev/d3be01a5-97db-4ff2-8e07-3ad6b0b27099/scratchpad/qcmp/runs/before",
+  "after": "/tmp/claude-1000/-home-destin-youcoded-dev/d3be01a5-97db-4ff2-8e07-3ad6b0b27099/scratchpad/qcmp/runs/after3"
+ },
+ "labels": {
+  "before": "Before",
+  "after": "After"
+ },
+ "crops": {
+  "qpage": [
+   "q",
+   "questions",
+   "1180x600+150+230"
+  ],
+  "qopts": [
+   "q",
+   "options",
+   "1180x600+150+250"
+  ]
+ },
+ "steps": [
+  {
+   "id": "D-1",
+   "surface": "A page of questions",
+   "path": "Two of your mascot questions, before and after this round",
+   "crop": "qpage",
+   "headline": "The three explanations sit side by side, and each choice is headed Option A, Option B, Option C.",
+   "changed": "Before, Today / The problem / Proposal were stacked, so three screens of scrolling came before the first thing you could answer, and the choice was marked only by its short name in a small chip. Now the three explanations share one row, the column is wider to hold them, and each choice is headed 'Option A', 'Option B', 'Option C' at the size of a heading. The option's short name moved to the right-hand end of that line, because that is the word your answers file records.",
+   "notice": "You can read all three explanations without scrolling, and the choices are obvious as choices. Every line you read now starts on the same left edge \u2014 the option heading, its name, its bullets and the explanation text above it, measured within two pixels.",
+   "risk": "Below about a thousand pixels of room the three explanations stack again rather than becoming three unreadable strips, so on a narrow window it looks like it did before."
+  },
+  {
+   "id": "D-2",
+   "surface": "A question with written options",
+   "path": "The option cards, on a test deck",
+   "crop": "qopts",
+   "headline": "On a question beside a picture, the buttons stop being three different widths.",
+   "changed": "Before, in the narrow column beside a picture, Other, the note box and Save & Next each kept their own width and wrapped onto three lines that did not line up. Now they are one stack sharing one left and right edge with the option cards above them. The Option A / Option B headings appear here too.",
+   "notice": "The column reads as one thing instead of four fragments. Measured: all four edges are identical.",
+   "risk": "This is a test deck, so the words are placeholders. Judge the layout, not the content."
+  }
+ ],
+ "_comment": "A RECORD, not a deck to rebuild. Its pictures came from scratch folders under /tmp that are gone; the answers beside it are what it decided. Re-serve with `serve --no-build` only if the run folders still exist."
+}

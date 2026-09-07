@@ -1,0 +1,101 @@
+{
+  "_comment": [
+    "CHOICE — several pictures of ONE thing, and he picks one (or None of these / Other).",
+    "This is the shape for 'here are three designs of the same row'. Never give each design its own Yes/No step: that asks him the same question three times and lets him say yes to two of them.",
+    "The pictures come from the deck's LAST run, so one sweep of a workbench holding every candidate is enough."
+  ],
+  "title": "The send button — three designs, pick one",
+  "_comment_title": "title: what this deck is about, in his words.",
+  "key": "send-button-choice",
+  "_comment_key": "key: a short name for this deck. His pick is saved under it.",
+  "out": "send-button.choice.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "images": "images/choice",
+  "_comment_images": "images: where the cropped pictures land. It must contain this file's own name.",
+  "runs": {
+    "_comment": "runs: one sweep is enough — every design was captured in the same run of the workbench.",
+    "today": "runs/today"
+  },
+  "themes": ["midnight"],
+  "_comment_themes": "themes: when the choice is about shape, not colour, one palette keeps him on the question.",
+  "crops": {
+    "_comment": "crops (optional): regions this deck needs that crops.json does not have. Each is [which capture plan, which shot, WIDTHxHEIGHT+X+Y] on the 1440x900 shots. A design that only exists in your workbench needs one of these per candidate.",
+    "send-plain": ["main", "composer-send-plain", "260x70+1180+830"],
+    "send-labelled": ["main", "composer-send-labelled", "260x70+1180+830"],
+    "send-wide": ["main", "composer-send-wide", "260x70+1180+830"]
+  },
+  "steps": [
+    {
+      "_comment": "One step, one question, every design under it. Two designs minimum.",
+      "id": "C-1",
+      "_comment_id": "id: your name for this question. It labels his answer.",
+      "surface": "Chat",
+      "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
+      "path": "The row under the message box",
+      "_comment_path": "path: how he would get there.",
+      "headline": "Which send button should the message box use?",
+      "_comment_headline": "headline: the question itself, in one sentence. 25 words at most, no code words.",
+      "notice": "Whichever you pick becomes the button on every screen that sends a message.",
+      "_comment_notice": "notice (optional): what riding on the pick — where it shows up, what else it changes.",
+      "risk": "All three keep the same place on screen, so nothing moves whichever you pick.",
+      "_comment_risk": "risk (optional): the Risk card, shared by every design. Per-design risks go on the design.",
+      "variants": [
+        {
+          "_comment": "One design. Its picture, its name, and the sentence that sells it.",
+          "id": "plain",
+          "_comment_id": "id: your name for this design. It is what his answer records, so make it readable.",
+          "label": "Arrow only",
+          "_comment_label": "label: the design's name, two or three words. Never write '(recommended)' here — there is no such flag on a choice; say it in the summary.",
+          "crop": "send-plain",
+          "_comment_crop": "crop: this design's own picture. Every design needs one.",
+          "summary": "An arrow in a circle, no words. The smallest of the three.",
+          "_comment_summary": "summary: one or two sentences on what this design is and what it costs.",
+          "measured": "40 px wide",
+          "_comment_measured": "measured (optional): a number that separates it from the others. Needs a digit in it.",
+          "risk": "New users have to guess what the arrow does.",
+          "_comment_risk": "risk (optional): what is wrong with THIS design in particular."
+        },
+        {
+          "id": "labelled",
+          "label": "Arrow and the word Send",
+          "crop": "send-labelled",
+          "summary": "The arrow with 'Send' beside it. Reads at a glance, takes more room.",
+          "measured": "96 px wide",
+          "highlight": {
+            "_comment": "highlight (optional on a design): box one part of this picture. Leave it out and the whole picture is the point.",
+            "text": "Send"
+          }
+        },
+        {
+          "id": "wide",
+          "label": "Full-width bar",
+          "crop": "send-wide",
+          "summary": "A bar across the whole width under the message box. Impossible to miss, and it pushes everything else down.",
+          "measured": "260 px wide, 8 px taller",
+          "risk": "Takes a line of room away from the message you are writing."
+        }
+      ]
+    },
+    {
+      "_comment": "A second question, at its smallest: two designs, one line each. Everything else on a design is optional.",
+      "id": "C-2",
+      "surface": "Chat",
+      "path": "The strip along the bottom of the window",
+      "headline": "How should the branch name be shortened when it does not fit?",
+      "variants": [
+        {
+          "id": "middle",
+          "label": "Cut the middle",
+          "crop": "statusbar-tight",
+          "summary": "Keeps the start and the end, with a gap between them."
+        },
+        {
+          "id": "end",
+          "label": "Cut the end",
+          "crop": "statusbar",
+          "summary": "Keeps the start only, like a file name that runs out of room."
+        }
+      ]
+    }
+  ]
+}

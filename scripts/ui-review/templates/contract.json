@@ -1,36 +1,78 @@
 {
- "title": "<feature name> — contract",
- "key": "<deck key, e.g. arcade-contract>",
- "out": "<feature>.contract.html",
- "themes": ["midnight"],
- "branch": "<feature branch>",
- "sources": {
-  "<deck key>": "<spec path relative to this file>"
- },
- "steps": [
-  {
-   "id": "C",
-   "surface": "<the app area this feature lives in>",
-   "path": "<the screen or menu path>",
-   "headline": "This is what done means.",
-   "rows": [
+  "_comment": [
+    "CONTRACT — the definition of done, as a table of statements, signed off in one answer: Yes that is done / No something is missing.",
+    "It comes AFTER he has answered the design decks and BEFORE anything is built. Every row points back at the step where he decided it, so nothing in the contract is something you decided alone.",
+    "The same rows come back at the end as the acceptance deck, each with a verdict and the evidence behind it."
+  ],
+  "title": "Saved searches — contract",
+  "_comment_title": "title: the feature, plus the word contract. It heads the page.",
+  "key": "saved-searches-contract",
+  "_comment_key": "key: a short name for this deck. His sign-off is saved under it.",
+  "out": "saved-searches.contract.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "themes": ["midnight"],
+  "_comment_themes": "themes: a contract is words only, so one palette is enough.",
+  "branch": "feat/saved-searches",
+  "_comment_branch": "branch (optional): the branch this contract will be built on, recorded so a later session can find the work.",
+  "sources": {
+    "_comment": "sources: every deck a row can point back at — its key, and the spec file relative to this one. A row whose source names a deck that is not listed here is refused.",
+    "saved-searches-questions": "saved-searches.questions.json",
+    "saved-searches-choice": "saved-searches.choice.json"
+  },
+  "steps": [
     {
-     "id": "R1",
-     "statement": "<one sentence, in the user's experience>",
-     "checkedBy": "human",
-     "threshold": "pass/fail",
-     "source": "<deck key>#<step id>",
-     "note": "<optional — a note already recorded against the source step>"
-    },
-    {
-     "id": "R2",
-     "statement": "<one sentence, in the user's experience>",
-     "checkedBy": "mechanical",
-     "guard": "<workspace-relative test or script path that must pass>",
-     "threshold": "<what the guard proves, e.g. 'the named test passes'>",
-     "source": "<deck key>#<step id>"
+      "_comment": "One step, one table. A contract deck is normally this single step.",
+      "id": "C",
+      "_comment_id": "id: your name for the sign-off. It labels his answer.",
+      "surface": "Chat search",
+      "_comment_surface": "surface: the part of the app this feature lives in.",
+      "path": "The search box at the top of the session list",
+      "_comment_path": "path: where in the app that is.",
+      "headline": "This is what done means for saved searches.",
+      "_comment_headline": "headline: one sentence saying what he is signing. 25 words at most, no code words.",
+      "rows": [
+        {
+          "_comment": "A MECHANICAL row: a test or script decides it, so it needs a guard to run.",
+          "id": "R1",
+          "_comment_id": "id: your name for this row. The acceptance deck reuses it, so never renumber.",
+          "statement": "A saved search re-runs from the list under the search box in one press.",
+          "_comment_statement": "statement: one sentence, in what HE would experience. 25 words at most — it becomes the acceptance deck's headline word for word.",
+          "checkedBy": "mechanical",
+          "_comment_checkedBy": "checkedBy: who settles it — mechanical (a test), deck (his own answer on a deck), live-app (someone drives the built app), or human (someone looks).",
+          "guard": "youcoded/desktop/tests/saved-searches.test.ts",
+          "_comment_guard": "guard: the test or script that proves it, from the workspace root. Required on a mechanical row.",
+          "threshold": "the named test passes",
+          "_comment_threshold": "threshold: what counts as passing, in one phrase.",
+          "source": "saved-searches-questions#Q-1",
+          "_comment_source": "source: the deck key and the step where he decided this — <deck key>#<step id>. It has to be a deck listed in \"sources\" above."
+        },
+        {
+          "_comment": "A DECK row: he already answered this on a design deck, and that answer is the check.",
+          "id": "R2",
+          "statement": "Saved searches sit under the search box, not in settings.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "saved-searches-questions#Q-2",
+          "note": "He picked the answer marked as the one to take, and asked for at most three at a time.",
+          "_comment_note": "note (optional): something he said against the source step, kept where it is relevant."
+        },
+        {
+          "_comment": "A LIVE-APP row: someone has to drive the built app to know, because no test can see it.",
+          "id": "R3",
+          "statement": "Saving a search never interrupts what you were typing.",
+          "checkedBy": "live-app",
+          "threshold": "typing survives a save, in a dev instance",
+          "source": "saved-searches-choice#C-1"
+        },
+        {
+          "_comment": "A HUMAN row from a REVIEW: a finding the code reviewer or the tester raised and you accepted. Its source names the review file and the finding, because it was never on a deck.",
+          "id": "R4",
+          "statement": "A saved search with no results says so instead of showing an empty list.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:reviews/ux-tester.md#F3"
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

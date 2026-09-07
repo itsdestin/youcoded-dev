@@ -1,0 +1,374 @@
+# Authoring a review deck
+
+Every field of every step kind, the page grammar, every refusal the builder makes, the answers
+file, the printed summary and every command. Read on demand; the short version — which kind to
+pick, and the six rules — is `.claude/rules/review-deck.md`. Design:
+`docs/active/specs/2026-09-04-review-deck-consistency-design.md`, on top of
+`docs/archive/specs/2026-08-27-review-deck-v2-design.md` and
+`docs/active/specs/2026-09-01-feature-flow-design.md`.
+
+Copy a template from `scripts/ui-review/templates/` — one per kind, every field filled and
+explained in place. `_comment` keys (at any depth, including `_comment_<field>`) are stripped
+when the deck is built, so leave them or delete them as you like.
+
+## Where a deck lives, and what it is called
+
+A feature's decks sit in `docs/active/design/<date>-<feature>/`, named
+`<feature>.<round>.json` — `.questions.json`, `.review.json`, `.review-2.json`,
+`.contract.json`. The built page, the answers and any rotated older answers land beside the
+spec. Answers files are committed (they are the record of Destin's decisions); `preview/`,
+`*.serve.json` and `*.workbench.log` are scratch and are ignored.
+
+## Deck-level fields
+
+| Field | Required | What it is |
+|---|---|---|
+| `title` | yes | what the deck is about, in his words. Heads every page, and titles the first page of a question deck that opens with no marker |
+| `key` | yes | short name; his answers are saved under it, so keep it stable across rounds |
+| `out` | yes | the HTML file `build` writes, beside the spec |
+| `steps` | yes | the steps, in the order he reads them |
+| `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
+| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. A slide shows all of them unless it names its own (below) |
+| `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
+| `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
+| `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
+| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json` |
+| `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
+| `branch` | contract | the branch the contract will be built on |
+| `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |
+| `sources` | contract | `{deck key: spec file}` for every deck a row may point back at |
+
+Fields on every step: `id` (unique, never reused), `surface` (the part of the app, in his
+words), `path` (how he would get there), `headline` (one sentence, 25 words max, no code
+words). A step may carry its own `themes` when its picture exists in one palette only.
+
+### A slide names the pictures it shows
+
+`runs` on a SLIDE — a list of names the deck captures — says which pictures that slide puts on
+screen; without one it shows all of them. `labels` on a slide renames its own captions.
+
+    {"id": "B-1", "crop": "themes", "runs": ["after"], "labels": {"after": "Today"}, …}
+
+One picture is a BRIEF wherever it appears: the buttons read *Yes build it / No leave it* and
+`highlight` is required, because there is nothing to diff. Two are an APPROVE: *Yes keep it /
+No revert it*, `highlight` defaults to `"auto"`. So one deck now holds a "should we build
+this?" slide, a "keep it or revert it?" slide, a written question and the contract — the ask
+decides where a deck ends, not the screenshot rule.
+
+WHY it moved (Destin, 2026-09-06): the capture set is a property of the picture, not of the
+deck. While it sat on the deck, a brief slide and an approve slide could never share a page and
+he was handed two links for one ask.
+
+## The step kinds
+
+### Approve — a change he can see (`approve.json`)
+
+Two runs; the rig boxes the pixels that differ.
+
+| Field | Required | What it is |
+|---|---|---|
+| `crop` | yes | which region of the screenshots to show |
+| `changed` | yes | the *What changed* card — the real difference, one or two sentences |
+| `notice` | yes | the *You'll notice* card — what is different for him while using it |
+| `risk` | no | the *Risk* card. Keep it to one sentence |
+| `measured` | no | a number that proves it (must contain a digit) |
+| `highlight` | no | `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [x, y, w, h]}` |
+
+He answers **Yes keep it / No revert it / Other**.
+
+### Brief — something not built yet (`brief.json`)
+
+The same fields over ONE picture — the deck captures one run, or the slide names one of the
+deck's with `runs` — so the buttons read **Yes build it / No leave it / Other**. `highlight` is
+required: with one picture there is nothing to diff.
+
+### Choice — several pictures of one thing (`choice.json`)
+
+`variants[]` instead of `crop`/`changed`/`notice`; at least two. Pictures come from the deck's
+last run.
+
+| Variant field | Required | What it is |
+|---|---|---|
+| `id` | yes | what his answer records |
+| `label` | yes | the design's name, two or three words |
+| `crop` | yes | this design's own picture |
+| `summary` | no | one or two sentences on what it is and what it costs |
+| `measured` / `risk` / `highlight` | no | a number, this design's own risk, a box inside its picture |
+
+He **picks one**, or *None of these* / Other.
+
+### Decide — written options over one picture (`decide.json`)
+
+`crop` + `highlight` (required — one picture, nothing to diff) + `options[]` (at least two on a
+picture deck). Option fields are the question option fields below, plus `cost` (what taking it
+costs). He **picks one**, or Other.
+
+### Clip — motion, hover, a transition (`clip.json`)
+
+`clip` is a scene name (files at `<images>/clips/<name>--<run>.webm` with a `.webp` poster
+beside each, made by `scripts/ui-review/record-pair.sh`) or `{"before": "…", "after": "…"}`
+paths. Make the recordings first; `build` refuses a step whose files are missing. For anything
+he should DRIVE, use Live instead.
+
+### Live — panes of the running app (`live.json`)
+
+Deck-level `live.worktree` names the build. A pane shows one of two things:
+
+| A pane's `live` (or a variant's) | What it shows |
+|---|---|
+| `{"surface", "round", "candidate"}` | ONE authored design out of `compare/registry.tsx`. `round` is required, because candidate names repeat across rounds |
+| `{"app": "<scenario>"}` | a real screen of the app: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`. Add `"stalled": true` for the parked-turn state |
+| `{"view": "<name>"}` | one of the standalone surfaces: `tools`, `compare`, `assistant-final`, `attachments`, `session-pills` |
+
+`variants[]` (each naming its own candidate or screen) makes it a pick-one; without them it is
+yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app
+as it is. ONE app pane with no `paneWidth` and no `height` **fills the stage**, so the whole
+screen is usable without scrolling; give it either and it takes that size instead, and a ROW of
+panes is a comparison and always keeps its declared size.
+
+WHY the app rows exist (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote for one
+comparison. Asking him to operate a real screen had no shape at all, so a live slide could only
+ever offer drafts of things.
+
+`serve` boots that worktree's workbench; `--no-live` leaves a workbench you already started
+alone. Every pane is the renderer against a FAKE backend: real to look at and touch, but no
+model answering and nothing saved. For "does it actually work", use a Try-it slide.
+
+### Try it in the real app (`tryit.json`)
+
+A words slide carrying `dev`. Served, it renders an **Open the dev window** button that starts
+the instance for you, plus the exact `run-dev.sh` line and a copy button; opened as a plain file
+the button is hidden, because there is no server to ask. The page posts the STEP id, never a
+command — `serve` rebuilds the line from the spec on disk, so a page cannot ask the server to run
+something else. The window it opens is a dev instance on shifted ports with its own profile, and
+outlives the deck's server, so submitting does not close what you are still looking at.
+
+| Field | Required | What it is |
+|---|---|---|
+| `dev.worktree` | yes | the checkout the dev window runs — a worktree name or a branch |
+| `dev.label` | no | the window title, so concurrent dev windows are tellable apart. Defaults to the worktree |
+| `dev.offset` / `dev.profile` | no | a second instance alongside one already running; pass both or neither |
+| `changed` / `notice` | yes | what the dev window runs, and what to watch for |
+| `yes` / `no` | no | default to *Yes, it works* / *No, it does not* |
+
+WHY (Destin, 2026-09-06): a live pane cannot show that something WORKS, only how it looks and
+feels. The contract's `live-app` rows were therefore answered in chat and written down by hand
+— the loose prose the deck exists to replace. This slide puts that verdict in the answers file
+with everything else. It is also the slide a `review` stage accepts.
+
+### Question — words only (`questions.json`)
+
+`"words": true` and no picture of any kind.
+
+| Field | Required | What it is |
+|---|---|---|
+| `headline` | yes | the question itself, 25 words max |
+| `today` | yes | what exists now — which part of the app, what it does for him |
+| `problem` | yes | what goes wrong or is missing, as he experiences it |
+| `proposal` | yes | what would change, as he would notice it. With no options, say what Yes / No / Don't know each lead to |
+| `options[]` | no | the written answers (see below); one is enough, three is usually the most he can hold |
+| `risk` | no | the *Risk* card |
+
+| Option field | Required | What it is |
+|---|---|---|
+| `id` | yes | what his answer records |
+| `label` | yes | two or three words. Never write "(recommended)" into it |
+| `pros[]` / `cons[]` | one of these, or `summary` | short lines about HIS experience, never the code |
+| `summary` | no | a sentence beside (or instead of) the lists |
+| `measured` | no | a number (must contain a digit) |
+| `recommended` | no | `true` on at most ONE option; the page badges it |
+
+With options he **picks one**, or Other. Without them: **Yes / No / Don't know**.
+
+### Statement — something you assert (also `"words": true`)
+
+A words step with `changed` + `notice` and no `today`. `yes` / `no` relabel the buttons (under
+five words each). Exempt from the three-part rule; this is what acceptance rows are.
+
+### Contract — the definition of done (`contract.json`)
+
+One step carrying `rows[]`. Each row: `id`, `statement` (25 words max — it becomes the
+acceptance deck's headline word for word), `checkedBy` (`mechanical` | `deck` | `live-app` |
+`human`), `threshold`, `source` (`<deck key>#<step id>`, or `review:<file>#<finding id>` for an
+accepted review finding), `guard` (required on a mechanical row), optional `note`. He answers
+**Yes that is done / No something is missing**.
+
+### Acceptance — the graded contract
+
+Not hand-written: `review-cards.py acceptance <contract>` merges
+`<feature>.contract.verdicts.json` into a deck of statement steps, one per row.
+
+## How he answers: several at once, or words he types
+
+Two fields that are about the ANSWER rather than the picture, so they sit on any slide that
+can carry them.
+
+| Field | On | What it does |
+|---|---|---|
+| `"pick": "several"` | any slide with `options` or `variants` | he may choose more than one; clicking a chosen one again unpicks it. One line above the cards says so. Unpicking the last leaves the slide unanswered |
+| `"answer": "words"` | a words slide with nothing to pick | the answer is a line he types. `prompt` is the placeholder. *Don't know* stays |
+
+They land in the answers file as `{"v": "picks", "picks": ["a", "c"]}` and
+`{"v": "wrote", "text": "…"}`, and print in the summary as `picks a, c` and `wrote "…"`.
+
+WHY (Destin, 2026-09-06): every slide ended in pick-exactly-one or yes/no, so "A and C, drop B"
+and "call it *this*" had nowhere to go but the free note — a paragraph a session has to
+interpret, not an answer the tool records as a decision.
+
+## What stage the deck is at
+
+`"stage"` names where in a feature this deck sits, and the build refuses one that is missing
+the slide its stage exists for: **ask** needs a question, **design** something to look at and
+choose between, **contract** the definition-of-done table, **review** a before/after or a
+recording or live panes, **accept** a statement to accept or reject. Nothing else is forbidden —
+an ask deck may carry the contract it leads to. Leave `stage` out and nothing is checked.
+
+## Page markers — how a question deck is split
+
+A QUESTION deck — every step words-only, and no contract step — renders as scrolling PAGES
+rather than one step per screen. Every question shares one page until a marker starts the next.
+A deck that defines or grades done (a `rows` step) is picture-free too but is NOT paged: it
+keeps one step per screen, so its table gets the full width and its first question is on the
+first screen rather than under a 3,600px table.
+
+    {"id": "P-2", "page": "Where saved searches live", "intro": "one line"}
+
+- `page` is the page's title and must say something; `intro` is optional; **no other field is
+  allowed** — a marker that carries anything else was meant to be a step.
+- With no marker before the first question, the first page is titled with the deck's `title`.
+- A marker's page runs to the next marker, so two markers in a row is an empty page and is
+  refused.
+- Markers belong only in a question deck — not in one with pictures, not in one with a contract.
+- The progress bar counts pages; Prev / Next move between pages. A marker gets no answer row,
+  no summary line and cannot be a contract `source`.
+- Err on MORE questions per page: a page is one set he can hold in his head at once.
+
+## What the builder refuses
+
+`build` writes no page at all when any of these hold; it names the step and the field to use.
+
+Every step: a missing `id`, `surface`, `path` or `headline`; a duplicate `id`; a headline over
+25 words; a code word (`token`, `selector`, `component`, `reducer`, `handler`, `prop`, `props`,
+`ipc`, `react`, `dom`, `css class`, `tailwind`, `primitive`, `z-index`) in any text he reads; `themes`
+that is not a non-empty list.
+
+Questions:
+
+- `… missing today (a question says what exists, what goes wrong, and what would change — today / problem / proposal)`
+- `… today contains "Proposal:" — put it in the step's proposal field` — the inline labels
+  `Today:`, `Problem:`, `Proposal:`, `Pro:`, `Pros:`, `Con:`, `Cons:`, `Upside:`, `Downside:`
+  are refused inside `today`, `problem`, `proposal` and `summary`, by field name.
+- `… "(recommended)" in a label — set "recommended": true on the option instead`
+- `… two options are recommended — at most one`
+- `… an option needs pros, cons or a summary`
+- `… pick must be "one" or "several"`, `… pick "several" needs options or variants to pick between`
+- `… a written answer and a list to pick from are two different questions — drop one`
+- `… prompt is the placeholder in a written answer — add "answer": "words"`
+- `… a words step has no crop — there is no picture` (also `clip`, `highlight`, `variants`, `live`)
+
+Page markers: `a page marker carries only page and intro`; `a page marker needs a title in
+"page"`; `pages are for question decks — this deck has pictures`; `pages are for question decks
+— this deck defines done (it has a contract step)`; `an empty page`.
+
+Stages: `stage "<x>" is not one of ask, design, contract, review, accept`, `a "<stage>" deck
+needs <the slide it exists for>`.
+
+Placeholders: `… headline is still a placeholder — replace the "TODO: …" line with what actually
+changed on this page and what Destin will notice`. Any field of any step whose text starts
+`TODO:` blocks the build. `selfie` writes them on purpose — see below.
+
+Pictures: a missing crop file, an unknown crop name, an unresolved highlight box, `one picture
+and nothing to compare it with — this slide needs a highlight`, `"auto" highlight needs a before
+and an after run`, `runs names <x>, which the deck does not capture`.
+
+Warnings (printed, but the page is still written): more than three options; a hand-placed
+`box`; a `measured` with no digit; a `risk` over 40 words; an `images` folder that does not
+contain the spec's name.
+
+## The answers file
+
+`<spec stem>.answers.json`, written on every click and again on Submit:
+
+    {"deck": "<key>",
+     "started": "<iso>", "submitted": "<iso>",
+     "answers": {"<step id>": {"v": "yes|no|other|pick",
+                               "pick": "<option or variant id>",   // when v is "pick"
+                               "dk": true,                          // "Don't know" (Other with a flag)
+                               "note": "…"}}}
+
+A note carries no tag: a note is a note (Destin, 2026-09-04). Old files carrying `note_kind`
+still load; the field is ignored. Serving a deck whose answers were already submitted moves the
+old file aside as `<stem>.answers.<stamp>.json` and starts a fresh review.
+
+## What he sees when he submits
+
+The step is replaced by a **finish screen**: a tick, "Feedback submitted", and every answer read
+back in a table. It exists because the server exits on submit — after that there is nowhere else
+to read the answers, and the old behaviour (a greyed-out button on the last step) was
+indistinguishable from a click that did nothing. `‹ Back to the deck` and the header's
+`Submitted ✓` toggle between the two; the deck itself is read-only from then on. Re-opening a
+submitted deck lands on the finish screen, not on a step full of dead buttons.
+
+While a deck is being served, `<spec stem>.serve.json` beside it holds the pid and the URL — a
+second `serve` of the same spec refuses rather than rebuilding the page under the running one.
+The server's root redirects to the deck and folders never list.
+
+## The printed summary
+
+`serve` prints this when he submits (`wait` and `record` print the same), and its exit is the
+signal that the review is over:
+
+    saved-searches-questions · submitted 2026-09-05 04:58 · 2 yes · 0 no · 1 other · 2 picked · 0 skipped
+    Q-1 yes
+    Q-2 pick under-box — "keep it to three"
+    Q-3 don't know
+
+One line per step, in spec order, page markers skipped. `pick <id>` is the option he chose,
+`none` is *None of these* on a pick-one, `other` is Other and `don't know` is the third button
+on a yes/no question.
+
+## Commands
+
+    python3 scripts/ui-review/review-cards.py <command> …
+
+| Command | What it is for |
+|---|---|
+| `build <spec> [--theme SLUG]` | cut the crops, resolve every highlight, write the page. Refuses (no page) on any rule above |
+| `preview <spec> [--sizes 1440x900,1280x800,1024x768] [--themes …] [--out DIR]` | the built deck as pictures: one PNG per page × size × theme plus `contact.png`, in `<spec dir>/preview/`. **Look at the contact sheet before you serve.** Needs `google-chrome-stable`; exit 2 without it, exit 1 if the page logged an error |
+| `serve <spec> [--port N] [--timeout MIN] [--no-build] [--no-live]` | build, serve on 127.0.0.1, save answers as they arrive, exit when he submits. Prints `[deck] http://…` and **opens nothing** — put that line in chat as the last line of your turn. Run it in the background |
+| `wait <spec> [--timeout MIN]` | block on the answers file alone, for a session that no longer holds the `serve` process |
+| `record <spec> '<pasted summary>'` | write the submitted answers file from the page's copy box, for a deck he answered as a plain file |
+| `selfie [--before <ref>] [--out DIR] [--dry-run]` | the deck reviewed on a deck: renders a fixture carrying every kind with the deck code at `--before` (default `origin/master`) and with this worktree's, then writes an approve deck of the two, boxed by pixel difference. Run it for any change to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/`. **It does not serve.** Every step's `headline` and `changed` come out as `TODO:` placeholders the build refuses: you write, per step, what moved and what he will notice — the commit subjects since `--before` are seeded in each step's `_comment` to start from, and the run ends by listing the steps still to write plus the `serve` command that follows |
+| `contract-check <feature>.contract.json` | every row's source resolves to an answered step and every mechanical guard exists (exit 1 lists what does not); then `ok:` / `todo:` lines for the sign-off and the acceptance deck |
+| `acceptance <feature>.contract.json` | merge the grader's verdicts into `<feature>.contract.acceptance.json`, ready to serve |
+
+## Themes
+
+A deck opens on whatever theme Destin's app is on, read from
+`~/.claude/youcoded-appearance.json` (the app rewrites it on every appearance change; it is a
+plain file, never held open, so reading it is inside the live-app safety rule). That theme is
+moved to the front of `themes`, or added there when the deck has no pictures or its crops for
+that theme already exist. When nothing was shot in it, `build` says so and opens on the spec's
+first theme. `--theme <slug>` overrides; `"theme": "fixed"` keeps the spec's own order, for a
+deck whose point IS one theme.
+
+## Order of work
+
+1. Copy the template for the kind you need; write the steps.
+2. `build` — fix every refusal it names.
+3. `preview` — read `preview/contact.png`. A defect you can see there is one he would see.
+4. `serve` in the background; put the printed `[deck] http://…` line in chat as the last line
+   of your turn, and stop.
+5. Its exit is the notification; read the summary it prints.
+
+A deck he has ALREADY answered is re-served with `serve --no-build` — never rebuilt. Rebuilding
+a historical deck means "fixing" the record of a past decision, and ten committed specs
+(seven archived, three still under `docs/active/`) no longer build against today's field names.
+That they fail loudly is correct; leave them as the record they are.
+
+## Tests
+
+`cd scripts/ui-review/tests && python3 -m unittest test_spec test_words test_contract test_live
+test_tokens` (no binaries; also in CI). The renderer and the picture commands need Chrome and
+`magick`: `python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests
+-p 'test_*.py'` and `node --test scripts/ui-review/tests/deck-render.test.mjs`.

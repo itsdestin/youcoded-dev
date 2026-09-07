@@ -17,7 +17,7 @@ import os
 import re
 import subprocess
 
-from .spec import REVIEW_SOURCE_RE, is_contract, workspace_root
+from .spec import REVIEW_SOURCE_RE, is_contract, is_page, workspace_root
 
 
 def is_review_source(src):
@@ -151,7 +151,8 @@ def check_contract(spec):
                 continue
             if raw.get('key') != key:
                 problems.append(f'{tag}: {rel} is deck "{raw.get("key")}", not "{key}"')
-            if sid not in {s.get('id') for s in raw.get('steps', [])}:
+            # A page marker is not an answerable step, so a row that cites one has no source.
+            if sid not in {s.get('id') for s in raw.get('steps', []) if not is_page(s)}:
                 problems.append(f'{tag}: no step "{sid}" in {rel}')
             if ans is None:
                 problems.append(f'{tag}: {why}')

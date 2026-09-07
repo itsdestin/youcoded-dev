@@ -64,23 +64,58 @@ def pane_width(spec):
     return (spec.get('live') or {}).get('paneWidth', PANE_WIDTH)
 
 
-def pane_url(spec, live, candidate, theme):
-    """The one place a pane address is spelled. Always `child=1` (without it the workbench
-    renders its toolbar frame instead of the page) and always `round` (candidate ids are
-    unique only within a round — `close-prompt-body` reuses `labelled` and `one-line` across
-    its ten rounds, so an address without a round silently shows the wrong design)."""
-    q = urlencode({
+# The workbench routes a pane may point at instead of an authored candidate, from the same
+# table `scripts/workbench-boot-check.mjs` mounts on every run. Allow-listed so a typo is caught
+# at build time rather than painting an empty pane nobody can explain.
+# WHY they exist as pane targets (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote
+# into compare/registry.tsx for one comparison. Asking him to operate a real screen of the app —
+# the actual chat, the actual settings — had no shape at all, so a live slide could only ever
+# offer drafts.
+APP_SCENARIOS = ('default', 'empty', 'no-providers', 'refused', 'stress', 'site')
+APP_VIEWS = ('tools', 'compare', 'assistant-final', 'attachments', 'session-pills')
+# A whole screen of the app at the registry's 360px would render its narrow phone layout, which
+# is not what "show me the real screen" means. Panes wrap, so a wide one costs nothing.
+APP_PANE_WIDTH = 900
+# A whole screen reports no height of its own (only an authored candidate's frame does),
+# so without this it fell back to the 160px "never reported" floor and showed the top inch.
+APP_PANE_HEIGHT = 620
+
+
+def is_app_pane(d):
+    """True when this pane (or step-level `live`) names a screen of the app rather than an
+    authored candidate."""
+    return bool(d.get('app') or d.get('view'))
+
+
+def pane_url(spec, live, pane, theme):
+    """The one place a pane address is spelled.
+
+    Always `child=1` — without it the workbench renders its toolbar frame instead of the page.
+    A CANDIDATE pane always carries `round` too: candidate ids are unique only within a round
+    (`close-prompt-body` reuses `labelled` and `one-line` across its ten rounds), so an address
+    without one silently shows the wrong design. An APP pane names a scenario or a view instead,
+    and carries neither.
+
+    `pane` is the thing being shown: `{"candidate": id}`, `{"app": scenario}` or
+    `{"view": name}`. The step's own `live` supplies whatever the pane does not."""
+    d = {**live, **pane}
+    q = {
         'mode': 'workbench',
         'child': '1',
-        'view': 'live',
-        'surface': live['surface'],
-        'round': live['round'],
-        'candidate': candidate,
         'theme': theme,
         # The workbench fakes 150ms on every mocked IPC by default — a knob for loading
         # states, not for motion. In a live pane it delayed the drop of a dragged session
         # pill by 150ms (the drop waits on a round trip that takes ~1 frame in the app), so
         # the pane showed a release the app never has. A pane is the app's motion: no latency.
         'latency': '0',
-    })
-    return f'{live_base(spec)}/?{q}'
+    }
+    if is_app_pane(d):
+        if d.get('view'):
+            q['view'] = d['view']
+        else:
+            q['scenario'] = d['app']
+        if d.get('stalled'):
+            q['stalled'] = '1'
+    else:
+        q.update({'view': 'live', 'surface': d['surface'], 'round': d['round'], 'candidate': d['candidate']})
+    return f'{live_base(spec)}/?{urlencode(q)}'
