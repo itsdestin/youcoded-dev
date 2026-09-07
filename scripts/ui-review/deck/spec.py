@@ -8,7 +8,7 @@ import json
 import os
 import re
 
-from .live import PANE_WIDTH, is_live, pane_width
+from .live import APP_SCENARIOS, APP_VIEWS, PANE_WIDTH, is_app_pane, is_live, pane_width
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 UI_REVIEW = os.path.dirname(HERE)
@@ -294,6 +294,19 @@ def is_words(step):
     are its body). Users: the QUESTIONS deck answered before anything is drawn, the contract,
     and the acceptance deck's human rows (feature-flow design §3, §5, §7)."""
     return step.get('words') is True or is_contract(step)
+
+
+def is_dev(step):
+    """A TRY-IT slide: the question is about the REAL app, running in its own dev window, and
+    the deck's job is to carry the verdict rather than the picture.
+
+    WHY it exists (Destin, 2026-09-06): a live pane is the renderer against a FAKE backend, so
+    it can show how something looks and feels to touch but can never show that it works. The
+    contract's `live-app` rows — the ones that say the feature actually does the thing — were
+    therefore answered in chat and written down by hand, which is exactly the loose prose the
+    deck exists to replace. This slide does not open anything; it prints the command and takes
+    the answer."""
+    return is_words(step) and 'dev' in step
 
 
 def is_question(step):
@@ -652,6 +665,8 @@ def _validate_words(spec, st, sid, errors, warnings):
     _headline_and_words(st, sid, errors)
     if is_contract(st):
         _validate_rows(spec, st, sid, errors)
+    elif is_dev(st):
+        _validate_dev(spec, st, sid, errors)
     # A words step with options is ALWAYS a question — there is no other reason to offer a
     # choice — so it owes the three parts even when its author forgot `today` entirely.
     elif is_question(st) or st.get('options'):
@@ -795,12 +810,18 @@ def _validate_live(spec, st, sid, errors, warnings):
     if not isinstance(live, dict):
         errors.append(f'{sid}: live must be an object with "surface" and "round"')
         return
-    for k in ('surface', 'round'):
-        if not live.get(k):
-            errors.append(f'{sid}: live is missing {k}')
-    # WHY round is required: candidate ids are unique only WITHIN a round and the registry
-    # keeps every round forever — close-prompt-body reuses 'labelled' and 'one-line' across
-    # its ten. An address without a round silently shows the wrong design.
+    # A pane shows EITHER an authored candidate (surface + round + candidate) or a real screen
+    # of the app (app, or view). WHY round is required for a candidate: candidate ids are
+    # unique only WITHIN a round and the registry keeps every round forever — close-prompt-body
+    # reuses 'labelled' and 'one-line' across its ten, so an address without a round silently
+    # shows the wrong design. An app screen has neither and must not be asked for them.
+    app_step = is_app_pane(live) or any(is_app_pane(v) for v in st.get('variants') or [] if isinstance(v, dict))
+    if not app_step:
+        for k in ('surface', 'round'):
+            if not live.get(k):
+                errors.append(f'{sid}: live is missing {k} — a pane showing an authored design '
+                              f'needs both, and one showing a screen of the app needs "app" instead')
+    _validate_app_target(live, sid, errors)
     for k in ('crop', 'clip', 'highlight', 'options'):
         if st.get(k):
             errors.append(f'{sid}: a live step has no {k} — the pane IS the picture')
@@ -818,9 +839,13 @@ def _validate_live(spec, st, sid, errors, warnings):
             elif v['id'] in seen:
                 errors.append(f'{sid}: duplicate variant id "{v["id"]}"')
             seen.add(v.get('id'))
-            for k in ('label', 'candidate', 'summary'):
+            for k in ('label', 'summary'):
                 if not v.get(k):
                     errors.append(f'{sid}/{vid}: missing {k}')
+            if not (v.get('candidate') or is_app_pane(v)):
+                errors.append(f'{sid}/{vid}: needs "candidate" (an authored design) or "app" '
+                              f'(a screen of the running app)')
+            _validate_app_target(v, f'{sid}/{vid}', errors)
             if v.get('crop'):
                 errors.append(f'{sid}/{vid}: a live variant has no crop — the pane IS the picture')
             for k in VARIANT_TEXT_FIELDS:
@@ -831,12 +856,15 @@ def _validate_live(spec, st, sid, errors, warnings):
         panes = len(vs)
     else:
         # No variants: this is an approve step, and it needs the same words any approve step
-        # needs — otherwise the right-hand column has nothing in it.
-        for k in ('changed', 'notice'):
+        # needs — otherwise the right-hand column has nothing in it. An APP pane is exempt from
+        # `changed`: nothing changed, the pane is the app as it is, and "What changed" over a
+        # real screen would be an invented sentence.
+        for k in (('notice',) if app_step else ('changed', 'notice')):
             if not st.get(k):
                 errors.append(f'{sid}: missing {k}')
-        if not live.get('candidate'):
-            errors.append(f'{sid}: live is missing candidate (a step with no variants shows one pane)')
+        if not (live.get('candidate') or app_step):
+            errors.append(f'{sid}: live needs "candidate" (one authored design) or "app" '
+                          f'(one screen of the running app) — a step with no variants shows one pane')
         panes = 1
     if not (spec.get('live') or {}).get('worktree'):
         errors.append(f'{sid}: the deck needs "live": {{"worktree": "<name>"}} — serve boots that '
@@ -869,7 +897,7 @@ STAGES = {
                    not is_words(st) and not is_page(st) and len(step_runs(spec, st)) == 1)),
     'contract': ('the definition of done', lambda spec, st: is_contract(st)),
     'review': ('a change he can see',
-               lambda spec, st: is_clip(st) or is_live(st) or (
+               lambda spec, st: is_clip(st) or is_live(st) or is_dev(st) or (
                    not is_words(st) and not is_page(st) and len(step_runs(spec, st)) == 2)),
     'accept': ('a statement to accept or reject',
                lambda spec, st: is_words(st) and not is_contract(st) and not st.get('today') and st.get('changed')),
@@ -888,6 +916,39 @@ def _stage_checklist(spec, errors):
     if not any(holds(spec, st) for st in spec['steps'] if not is_page(st)):
         errors.append(f'a "{stage}" deck needs {what} — add the slide that asks it, '
                       f'or drop "stage" if this deck is something else')
+
+
+def _validate_dev(spec, st, sid, errors):
+    """A try-it slide needs somewhere to run and something to look for."""
+    dev = st['dev']
+    if not isinstance(dev, dict) or not dev.get('worktree'):
+        errors.append(f'{sid}: dev needs {{"worktree": "<name or branch>"}} — the checkout the '
+                      f'dev window runs, so the command can name it')
+        return
+    for k in ('changed', 'notice'):
+        if not st.get(k):
+            errors.append(f'{sid}: missing {k}')
+    for k in ('options', 'rows'):
+        if st.get(k):
+            errors.append(f'{sid}: a try-it slide has no {k} — the answer is whether the real '
+                          f'app did the thing')
+    if dev.get('offset') is not None and not isinstance(dev['offset'], int):
+        errors.append(f'{sid}: dev offset must be a whole number')
+
+
+def _validate_app_target(d, sid, errors):
+    """`app`/`view` name a workbench route, allow-listed so a typo is caught at build time
+    instead of painting an empty pane nobody can explain."""
+    if d.get('app') and d['app'] not in APP_SCENARIOS:
+        errors.append(f'{sid}: app "{d["app"]}" is not a screen the workbench serves '
+                      f'({", ".join(APP_SCENARIOS)})')
+    if d.get('view') and d['view'] not in APP_VIEWS:
+        errors.append(f'{sid}: view "{d["view"]}" is not a screen the workbench serves '
+                      f'({", ".join(APP_VIEWS)})')
+    if d.get('app') and d.get('view'):
+        errors.append(f'{sid}: a pane shows one screen — name "app" or "view", not both')
+    if is_app_pane(d) and d.get('candidate'):
+        errors.append(f'{sid}: a pane shows a screen of the app OR an authored design, not both')
 
 
 def _images_folder_warning(spec, warnings):

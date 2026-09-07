@@ -335,6 +335,12 @@ def shapes_spec(tmp, paged=True):
          'proposal': 'Give it one name and use it everywhere.'},
     ]
     if not paged:
+        # The slide that carries a verdict about the REAL app: no picture, a command to run.
+        steps.append({'id': 'T-1', 'words': True, 'surface': 'Home', 'path': 'Chat',
+                      'headline': 'Send a real message and watch the answer come back.',
+                      'dev': {'worktree': 'feat/shapes', 'label': 'Shapes', 'offset': 130, 'profile': 'shapes'},
+                      'changed': 'The dev window runs the real app end to end.',
+                      'notice': 'This is the step that says it works, not that it looks right.'})
         steps.append({'id': 'C', 'words': True, 'surface': 'Home', 'path': 'Chat',
                       'headline': 'This is what done means.',
                       'rows': [{'id': 'R1', 'statement': 'The strip has one name everywhere.',

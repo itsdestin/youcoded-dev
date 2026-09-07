@@ -112,11 +112,43 @@ he should DRIVE, use Live instead.
 
 ### Live — panes of the running app (`live.json`)
 
-Deck-level `live.worktree` names the build; a step's `live` is `{"surface", "round",
-"candidate"}` — `round` is required, because candidate names repeat across rounds. `variants[]`
-(each with its own `candidate`) makes it a pick-one; without them it is yes/no. Four panes is
-the cap. `serve` boots that worktree's workbench; `--no-live` leaves a workbench you already
-started alone.
+Deck-level `live.worktree` names the build. A pane shows one of two things:
+
+| A pane's `live` (or a variant's) | What it shows |
+|---|---|
+| `{"surface", "round", "candidate"}` | ONE authored design out of `compare/registry.tsx`. `round` is required, because candidate names repeat across rounds |
+| `{"app": "<scenario>"}` | a real screen of the app: `default`, `empty`, `no-providers`, `refused`, `stress`, `site`. Add `"stalled": true` for the parked-turn state |
+| `{"view": "<name>"}` | one of the standalone surfaces: `tools`, `compare`, `assistant-final`, `attachments`, `session-pills` |
+
+`variants[]` (each naming its own candidate or screen) makes it a pick-one; without them it is
+yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app
+as it is — and defaults to 900×620 rather than the registry's candidate width.
+
+WHY the app rows exist (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote for one
+comparison. Asking him to operate a real screen had no shape at all, so a live slide could only
+ever offer drafts of things.
+
+`serve` boots that worktree's workbench; `--no-live` leaves a workbench you already started
+alone. Every pane is the renderer against a FAKE backend: real to look at and touch, but no
+model answering and nothing saved. For "does it actually work", use a Try-it slide.
+
+### Try it in the real app (`tryit.json`)
+
+A words slide carrying `dev`. It renders the exact `run-dev.sh` line with a copy button and
+takes the verdict; it opens nothing itself.
+
+| Field | Required | What it is |
+|---|---|---|
+| `dev.worktree` | yes | the checkout the dev window runs — a worktree name or a branch |
+| `dev.label` | no | the window title, so concurrent dev windows are tellable apart. Defaults to the worktree |
+| `dev.offset` / `dev.profile` | no | a second instance alongside one already running; pass both or neither |
+| `changed` / `notice` | yes | what the dev window runs, and what to watch for |
+| `yes` / `no` | no | default to *Yes, it works* / *No, it does not* |
+
+WHY (Destin, 2026-09-06): a live pane cannot show that something WORKS, only how it looks and
+feels. The contract's `live-app` rows were therefore answered in chat and written down by hand
+— the loose prose the deck exists to replace. This slide puts that verdict in the answers file
+with everything else. It is also the slide a `review` stage accepts.
 
 ### Question — words only (`questions.json`)
 

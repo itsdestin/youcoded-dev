@@ -7,9 +7,9 @@ import json
 import os
 
 from .crops import image_name
-from .live import has_live, is_live, live_base, live_offset, pane_url, pane_width
+from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, live_offset, pane_url, pane_width
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
-                    is_decide, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
+                    is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -99,6 +99,17 @@ def _decide_step(spec, st, boxes, runs):
     }
 
 
+def dev_command(dev):
+    """The exact `run-dev.sh` line for a try-it slide. `--label` is never optional: concurrent
+    dev windows are told apart by their title, and a slide that opens one has a name for it."""
+    cmd = f'bash scripts/run-dev.sh {dev["worktree"]} --label "{dev.get("label") or dev["worktree"]}"'
+    if dev.get('offset') is not None:
+        cmd += f' --offset {dev["offset"]}'
+    if dev.get('profile'):
+        cmd += f' --profile {dev["profile"]}'
+    return cmd
+
+
 def _words_step(spec, st):
     """No picture: the cards take the whole row (page.js lays a `words` step out without a
     stage). With `rows` it is a contract (a table, signed off yes/no); with `options` it
@@ -109,7 +120,14 @@ def _words_step(spec, st):
          'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
          'yes': st.get('yes', ''), 'no': st.get('no', ''),
          **({'themes': list(st['themes'])} if st.get('themes') else {})}
-    if is_contract(st):
+    if is_dev(st):
+        # The command, spelled HERE where the worktree and the ports are both known, so the card
+        # can print the exact line rather than a shape the reader has to fill in.
+        d['kind'] = 'dev'
+        d['command'] = dev_command(st['dev'])
+        d['yes'] = st.get('yes') or 'Yes, it works'
+        d['no'] = st.get('no') or 'No, it does not'
+    elif is_contract(st):
         # The rows, verbatim, and the two buttons a sign-off needs; page.js draws `rows` as a table.
         d['kind'] = 'contract'
         d['rows'] = [{k: r.get(k, '') for k in ROW_KEYS} for r in st['rows']]
@@ -150,13 +168,17 @@ def _live_step(spec, st):
     # the theme the app itself is on by the time build runs (spec.apply_live_theme reorders the
     # list before this), so a live pane boots the app in Destin's own theme too.
     theme = spec['themes'][0]
+    # A pane names either an authored candidate or a screen of the app; `_pane_id` is whichever
+    # of the three it named, so a one-pane step still has a stable id for the answers file.
+    def _pane_id(d):
+        return d.get('candidate') or d.get('app') or d.get('view')
     if st.get('variants'):
         panes = [{'id': v['id'], 'label': v['label'], 'summary': v['summary'],
                   'measured': v.get('measured', ''), 'risk': v.get('risk', ''),
-                  'url': pane_url(spec, live, v['candidate'], theme)} for v in st['variants']]
+                  'url': pane_url(spec, live, v, theme)} for v in st['variants']]
     else:
-        panes = [{'id': live['candidate'], 'label': '', 'summary': '', 'measured': '', 'risk': '',
-                  'url': pane_url(spec, live, live['candidate'], theme)}]
+        panes = [{'id': _pane_id(live), 'label': '', 'summary': '', 'measured': '', 'risk': '',
+                  'url': pane_url(spec, live, live, theme)}]
     return {
         'id': st['id'], 'kind': 'live',
         # `kind` is spent on where the picture comes from, so the QUESTION shape rides
@@ -168,8 +190,14 @@ def _live_step(spec, st):
         'headline': st['headline'], 'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
         'panes': panes,
-        'width': live.get('paneWidth', pane_width(spec)),
-        'height': live.get('height'),
+        # A whole screen of the app needs room; an authored candidate is sized by the registry.
+        'width': live.get('paneWidth', APP_PANE_WIDTH if is_app_pane(live) or any(
+            is_app_pane(v) for v in st.get('variants') or []) else pane_width(spec)),
+        # An authored candidate reports its own height back to the page; a whole screen of the
+        # app does not, so without a default it fell back to the 160px "pane never reported"
+        # floor and showed the top inch of the app (seen 2026-09-06).
+        'height': live.get('height') or (APP_PANE_HEIGHT if is_app_pane(live) or any(
+            is_app_pane(v) for v in st.get('variants') or []) else None),
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
     }
 

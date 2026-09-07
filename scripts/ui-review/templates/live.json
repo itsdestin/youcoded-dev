@@ -2,7 +2,9 @@
   "_comment": [
     "LIVE — panes of the RUNNING app he can hover, click and drag, answered Yes / No or pick one.",
     "This is the right shape for motion, drag, hover and resize: a 200 ms animation cannot be judged from a recording. Each pane boots its own copy of the app from one authored candidate in youcoded's compare/registry.tsx, so build that first.",
-    "No pictures at all, so this deck names no images folder and no runs. serve boots the workbench of the worktree below; four panes is the cap, because each one is a whole app."
+    "No pictures at all, so this deck names no images folder and no runs. serve boots the workbench of the worktree below; four panes is the cap, because each one is a whole app.",
+    "A pane may instead show a REAL SCREEN of the app rather than an authored sketch: `\"live\": {\"app\": \"site\"}` (or default / empty / no-providers / refused / stress), or `{\"view\": \"tools\"}` for a standalone surface. It needs no surface, round, candidate or \"changed\", and sizes itself 900x620. Use it when the question is \"look around the real screen\", not \"which of these drafts\".",
+    "Every pane here is the renderer against a FAKE backend — real to look at and touch, but no model answering and nothing saved. For \"does it actually WORK\", copy tryit.json instead."
   ],
   "title": "Switching sessions — try it",
   "_comment_title": "title: what this deck is about, in his words.",
@@ -10,7 +12,9 @@
   "_comment_key": "key: a short name for this deck. His answers are saved under it.",
   "out": "session-switch.live.html",
   "_comment_out": "out: the page build writes, beside this spec.",
-  "themes": ["midnight"],
+  "themes": [
+    "midnight"
+  ],
   "_comment_themes": "themes: the palette the panes boot in. He can switch it on the page.",
   "live": {
     "_comment": "live (deck level): which build the panes come from. Required — every candidate in one review has to come from one build, or he is comparing two different apps.",

@@ -1,0 +1,54 @@
+{
+  "_comment": [
+    "TRY IT IN THE REAL APP — the one slide whose question is whether the thing WORKS, not how it looks.",
+    "Every other slide shows a picture, a recording, or a pane of the renderer against a fake backend: real to look at and touch, but no model answering and nothing saved to disk. This slide is for the rows of the contract marked `live-app` — the ones that say the feature actually does the thing.",
+    "It opens NOTHING. It prints the exact command with a copy button, and takes the answer. The dev window it names is a SEPARATE app alongside Destin's own; never tell him to poke his own running copy.",
+    "No pictures, so this deck names no images folder and no runs."
+  ],
+  "title": "Saved searches — does it actually work?",
+  "_comment_title": "title: what this deck is about, in his words.",
+  "key": "saved-searches-tryit",
+  "_comment_key": "key: a short name for this deck. His answers are saved under it.",
+  "out": "saved-searches.tryit.html",
+  "_comment_out": "out: the page build writes, beside this spec.",
+  "stage": "review",
+  "_comment_stage": "stage (optional): a try-it slide is what a `review` stage accepts.",
+  "themes": [
+    "midnight"
+  ],
+  "steps": [
+    {
+      "_comment": "One thing to do, one verdict. Two things to try are two slides, so each gets its own answer.",
+      "words": true,
+      "_comment_words": "words: true — a try-it slide has no picture of its own; the app is in another window.",
+      "id": "T-1",
+      "_comment_id": "id: your name for this point. It labels his answer.",
+      "surface": "Chat search",
+      "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
+      "path": "The search box at the top of the session list",
+      "_comment_path": "path: how he would get there once the window is open.",
+      "headline": "Save a search, close the window, reopen it — is the search still there?",
+      "_comment_headline": "headline: the one thing to DO, and the thing it proves. 25 words at most, no code words.",
+      "dev": {
+        "_comment": "dev: where the window comes from. `serve` does not launch it — the card prints this line and he (or you, after telling him) runs it.",
+        "worktree": "feat/saved-searches",
+        "_comment_worktree": "worktree: the checkout the window runs — a worktree name or a branch name.",
+        "label": "Saved searches",
+        "_comment_label": "label (optional): the window title, so two dev windows are tellable apart in Alt-Tab. Defaults to the worktree name.",
+        "offset": 120,
+        "_comment_offset": "offset (optional): only when a dev instance is ALREADY running — a second one needs its own ports.",
+        "profile": "savedsearches",
+        "_comment_profile": "profile (optional): pair it with offset. Two instances sharing a profile share their state and fight."
+      },
+      "changed": "The window runs the branch end to end — a real model answering, real files on disk, and the saved search written to your own settings.",
+      "_comment_changed": "changed: what this window actually is, so he knows what he is testing.",
+      "notice": "A search you saved before closing is at the top of the list when the window comes back.",
+      "_comment_notice": "notice: what to watch for. This is the thing his answer is about.",
+      "risk": "It is a second window on your desktop; close it when you are done.",
+      "_comment_risk": "risk: the Risk card. The window itself is usually the risk worth naming.",
+      "yes": "Yes, it works",
+      "no": "No, it does not",
+      "_comment_yes": "yes / no (optional): these are the defaults; relabel only when the verdict is not pass/fail."
+    }
+  ]
+}

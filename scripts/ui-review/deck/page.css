@@ -342,6 +342,15 @@ figcaption .key{color:var(--mark);font-weight:700}
 .ans[data-v="pick"]{flex:0 1 auto;max-width:min(340px,26vw)}
 .ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
 #save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
+/* The command spans the whole card row: in a 260px column it scrolled sideways inside its own
+   box and you could read about four words of it, which defeats the one thing it is for. */
+.card.dev{grid-column:1/-1}
+/* The command on a TRY-IT slide. Monospace and selectable, on the marked edge, because it is
+   the one thing on the card that has to be copied exactly rather than read. */
+.card.dev .cmd{margin:8px 0 0;padding:9px 11px;border:1px solid var(--edge);border-left:3px solid var(--mark);border-radius:var(--radius-md);background:var(--well);overflow-x:auto}
+.card.dev .cmd code{font:inherit;font-size:12px;color:var(--fg);white-space:pre;user-select:all}
+.card.dev .copycmd{margin-top:8px;align-self:flex-start;max-width:none}
+.card.dev .src{margin-top:8px}
 /* The one line that separates a several-pick from a pick-one. Spans the card row so it reads
    as an instruction about all of them, not a caption on the first. */
 .pickhint{grid-column:1/-1;margin:0;font-size:12px;color:var(--fg-muted)}

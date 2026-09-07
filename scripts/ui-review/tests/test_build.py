@@ -116,7 +116,7 @@ class TemplateTests(unittest.TestCase):
 
     DIR = os.path.join(os.path.dirname(HERE), 'templates')
     NAMES = ['approve.json', 'brief.json', 'choice.json', 'clip.json', 'contract.json',
-             'decide.json', 'live.json', 'questions.json']
+             'decide.json', 'live.json', 'questions.json', 'tryit.json']
 
     def _files(self):
         return sorted(f for f in os.listdir(self.DIR) if f.endswith('.json'))

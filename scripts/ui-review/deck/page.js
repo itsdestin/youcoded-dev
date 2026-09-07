@@ -182,7 +182,10 @@
       .filter(([, t]) => t).map(([h, t]) => partCard(h, t)).join('');
     return cards ? `<div class="parts">${cards}</div>` : '';
   };
-  const changedCard = st => `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
+  // No card at all when there is nothing to put in it: a slide showing a REAL screen of the app
+  // has no "what changed", and an empty titled box reads as a rendering fault.
+  const changedCard = st => !st.changed && !st.measured ? ''
+    : `<section class="card"><h3>${ICON.change}What changed</h3>${st.changed ? `<p>${esc(st.changed)}</p>` : ''}${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`;
   const noticeCard = st => st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '';
   const riskCard = st => st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '';
   // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
@@ -195,8 +198,17 @@
   // lettering are the same. One line above them is what tells him he may tick more than one.
   const pickHint = st => st.pick === 'several'
     ? '<p class="pickhint">Pick as many as you like — click one again to unpick it.</p>' : '';
+  // TRY IT IN THE REAL APP. The deck cannot hold the real app — it is a desktop program, not
+  // a page — so this card carries the exact command instead, and the slide carries the verdict.
+  // The safety line is fixed copy, not the author's: a dev window is a SEPARATE app, and the
+  // one thing nobody may be told to poke is Destin's own running copy.
+  const devCard = st => `<section class="card dev"><h3>${ICON.change}Open it like this</h3>`
+    + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
+    + `<button type="button" class="btn copycmd">Copy the command</button>`
+    + `<p class="src">This opens a separate dev window, alongside your own app — never your own app itself. Close it when you are done.</p></section>`;
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
+    : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + riskCard(st)
     : st.kind === 'contract' ? rowsTable(st) + noticeCard(st) + riskCard(st)
     : pickList(st) ? pickHint(st) + pickList(st).map((v, i) => optionCard(v, '', i)).join('') + noticeCard(st) + riskCard(st)
     : st.kind === 'decide' ? partCards(st) + pickHint(st) + noticeCard(st) + st.options.map((o, i) => optionCard(o, ' option', i)).join('') + riskCard(st)
@@ -403,6 +415,15 @@
     if (b && !b.disabled) { answer(b.dataset.v, b.dataset.pick, b.dataset.dk === '1', b.dataset.id); return; }
     const c = e.target.closest('.card.variant'), art = c && c.closest('article.q');
     if (art && !state.submitted) answer('pick', c.dataset.pick, false, art.dataset.id);
+  });
+  $('#cards').addEventListener('click', e => {
+    const b = e.target.closest('.copycmd'); if (!b) return;
+    const code = b.parentElement.querySelector('code');
+    navigator.clipboard.writeText(code.textContent).then(
+      () => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy the command'; }, 1500); },
+      // No clipboard (an insecure origin, a locked-down browser): select it so it can be
+      // copied by hand, rather than a button that silently does nothing.
+      () => { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected — copy it'; });
   });
   $('#cards').addEventListener('input', e => {
     const w = e.target.closest('.ans-write[data-id]');

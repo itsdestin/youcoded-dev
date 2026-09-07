@@ -848,5 +848,15 @@ test('a slide can take several picks, and a slide can take an answer he types', 
     assert.deepEqual(ans.answers['Q-1'].picks, ['a']);
     assert.equal(ans.answers['Q-2'].v, 'wrote');
     assert.equal(ans.answers['Q-2'].text, 'The shelf');
+    // The TRY-IT slide: the deck cannot hold the real app, so it holds the exact command and
+    // takes the verdict. The command must be readable in full, not scrolling inside a column.
+    await open(3);
+    const cmd = await c.evaluate("document.querySelector('.card.dev .cmd code').textContent");
+    assert.equal(cmd, 'bash scripts/run-dev.sh feat/shapes --label "Shapes" --offset 130 --profile shapes');
+    assert.match(await c.evaluate("document.querySelector('.ans[data-v=\"yes\"]').textContent"), /it works/);
+    const cardW = await c.evaluate("document.querySelector('.card.dev').getBoundingClientRect().width");
+    const rowW = await c.evaluate("document.querySelector('#cards').getBoundingClientRect().width");
+    assert.ok(cardW > rowW * 0.9, `the command takes the full row (${cardW} of ${rowW})`);
+    assert.ok(await c.evaluate("!!document.querySelector('.card.dev .copycmd')"), 'a copy button');
   } finally { c.close(); srv.kill(); }
 });

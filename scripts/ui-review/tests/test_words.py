@@ -369,6 +369,57 @@ class AnswerShapeTests(unittest.TestCase):
             self.assertEqual(bool(pages(s)), paged)
 
 
+class TryItSlideTests(unittest.TestCase):
+    """The slide that carries a verdict about the REAL app. Destin, 2026-09-06: a live pane is
+    the renderer against a fake backend, so it can show how something looks but never that it
+    works — and the rows that say it works were being answered in chat."""
+    def setUp(self): self.d = tempfile.mkdtemp()
+
+    def _dev(self, **over):
+        st = {'id': 'T-1', 'words': True, 'surface': 'Chat', 'path': 'The message box',
+              'headline': 'Send a real message and watch the answer come back.',
+              'dev': {'worktree': 'feat/x', 'label': 'Saved searches'},
+              'changed': 'The dev window runs the real app end to end.',
+              'notice': 'This is the step that says it works, not that it looks right.'}
+        st.update(over)
+        spec = {'title': 'T', 'key': 't', 'out': 't.html', 'themes': ['midnight'], 'steps': [st]}
+        p = os.path.join(self.d, 't.json')
+        with open(p, 'w') as f:
+            json.dump(spec, f)
+        return load_spec(p)
+
+    def test_the_command_is_spelled_for_him(self):
+        s = self._dev()
+        self.assertEqual(validate(s), ([], []))
+        step = deck_data(s, {})['steps'][0]
+        self.assertEqual(step['kind'], 'dev')
+        self.assertEqual(step['command'], 'bash scripts/run-dev.sh feat/x --label "Saved searches"')
+        self.assertEqual(step['yes'], 'Yes, it works')
+
+    def test_a_second_instance_carries_its_own_port_and_profile(self):
+        s = self._dev(dev={'worktree': 'feat/x', 'label': 'X', 'offset': 120, 'profile': 'deck'})
+        cmd = deck_data(s, {})['steps'][0]['command']
+        self.assertIn('--offset 120', cmd)
+        self.assertIn('--profile deck', cmd)
+
+    def test_the_label_falls_back_to_the_worktree(self):
+        s = self._dev(dev={'worktree': 'feat/x'})
+        self.assertIn('--label "feat/x"', deck_data(s, {})['steps'][0]['command'])
+
+    def test_it_needs_somewhere_to_run(self):
+        errors, _ = validate(self._dev(dev={'label': 'X'}))
+        self.assertTrue(any('needs {"worktree"' in e for e in errors), errors)
+
+    def test_it_is_not_a_question(self):
+        errors, _ = validate(self._dev(options=[{'id': 'a', 'label': 'One', 'pros': ['Good.']}]))
+        self.assertTrue(any('has no options' in e for e in errors), errors)
+
+    def test_it_answers_a_review_stage(self):
+        s = self._dev()
+        s['stage'] = 'review'
+        self.assertEqual(validate(s)[0], [])
+
+
 class StageChecklistTests(unittest.TestCase):
     """A deck says WHICH STAGE it is at, and the tool checks the slide that stage needs is
     there. A stage never says which other slides are allowed — that is what forced one ask
