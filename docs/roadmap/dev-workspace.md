@@ -3,6 +3,15 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `engine-manager.test.ts` has failed on the macOS and Windows CI legs since at least
+      2026-09-06 — two `backendOptions` cases, "status() answers immediately without
+      backendOptions, then pushes them" and "an older install with no device list gets both
+      pushes, and ends up complete". Ubuntu and the local suite are green, so it is invisible
+      to `verify.sh` and every merge inherits a red master. Confirmed pre-existing on master at
+      `ccbf4211` (run 34049785765) and unchanged by youcoded#441 (run 34163846462), which is
+      how it was found. Both legs need a machine that can run them — this session could not
+      `n/a` `confirmed` `checked 2026-09-07`
+
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
       an Android manifest or a workspace file yields "tests: none", and the guard that

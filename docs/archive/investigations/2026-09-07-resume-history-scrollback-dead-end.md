@@ -1,6 +1,6 @@
 ---
 date: 2026-09-07
-status: active
+status: shipped
 type: investigation
 topic: Scrolling back through a resumed conversation dead-ended after the first batch — every page request after the first had no way to locate the transcript file, and "I cannot find it" was the same answer as "this is the beginning"
 ---
@@ -12,7 +12,7 @@ way back through the chat history." Refined: *"the first handful of messages fro
 conversation load fine, but then nothing before those loads"* — and inconsistent across
 conversations.
 
-**Status.** Fixed. youcoded `329de8c2` on `session/chat-scrollback`. Diagnosed by code tracing and
+**Status.** Shipped — youcoded#441, merged `1a020a13`. Diagnosed by code tracing and
 pinned by tests; **never reproduced in a running app** — no dev-window run was done.
 
 ---
