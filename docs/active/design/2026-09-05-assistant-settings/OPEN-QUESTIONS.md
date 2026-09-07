@@ -31,6 +31,15 @@ code, silently. They go on a deck when he wants them, not before.
    top of the ChatGPT sign-in work. That was recorded as a risk on review round 1, step P-5,
    but he was never asked to accept it as an ordering constraint.
 
+7. **Should the picker offer Claude Code models on an install with no Claude login?**
+   Raised by design review 3 (R3-4) and sharpened by Destin on 2026-09-07. Someone who set
+   up YouCoded by signing in with ChatGPT still sees all four Claude models in every picker,
+   including the default-model row. Choosing one is honoured — that is the right behaviour
+   for an explicit pick — but it opens new conversations on an engine they have no login
+   for. The backend cannot fix this without discarding a deliberate choice, so the question
+   is what the picker should offer: everything, everything with the unusable ones marked, or
+   only what this install can actually run. Same shape as the remote-access question below.
+
 **Plus one raised by design review 2, which is a design question rather than a bug:** over
 remote access the model picker offers models the browser cannot run. The build makes such a
 default fall back to Claude rather than break, but narrowing what the picker OFFERS would

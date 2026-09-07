@@ -74,15 +74,33 @@ than an ignored preference.
 1. Native chosen, native not supported here (remote access, Android, capability flag off).
 2. The stored provider no longer exists, or is not ready.
 3. The stored model has left that provider's catalog.
-4. **Claude chosen, on an install with no Claude login.** Design review 3 (R3-4) — the
-   sharpest finding of the three rounds. Until now a stored default could only ever move
-   the form's *alias*; `startModel` lets it move the *runtime*, in both directions. The
-   picker lists Claude Code models unconditionally, so a ChatGPT-only install can hold a
-   Claude default and would then open every form on a runtime it cannot sign in to, with
-   Create enabled. `defaultRuntime()` and test (f) exist precisely to stop that. So a
-   Claude `startModel` is applied as an **alias only** — it never moves the runtime away
-   from `defaultRuntime()`. Only a native `startModel` may change the runtime, and only
-   through guards 1–3.
+**A Claude `startModel` moves the runtime too, and is honoured** (Destin, 2026-09-07,
+overruling my own answer to design review 3's R3-4). Picking Fable via Claude Code must
+give Fable via Claude Code — there is no reading of that choice where the engine is
+optional.
+
+R3-4's concern was real but its fix overshot: on a ChatGPT-only install a Claude default
+would open every form on Claude Code with a Create button that cannot work. The answer is
+NOT to discard the choice, for two reasons.
+
+- A Claude `startModel` exists only because someone picked it in the picker. It is never
+  inherited, inferred or migrated. Discarding it discards a deliberate action.
+- The only available "has a Claude login" signal is `firstRun.getState()`'s `authComplete`
+  / `authMode`, which by its own note in `ModelProvidersPopup.tsx` reflects the last known
+  SETUP outcome and does not track a later sign-in or sign-out from the terminal. A guard
+  built on it would sometimes throw away the default of someone who is in fact signed in.
+
+Weigh the two failures. Honour it, and a ChatGPT-only user who picked Claude gets a form on
+Claude Code that says it is not signed in — visible, self-explanatory, and the result of
+their own pick. Override it, and a signed-in user's setting silently does nothing with no
+way to tell why. The first is plainly the better failure.
+
+So the guards below exist only for what genuinely cannot work AND was not chosen: a
+provider the user deleted, a model that left the catalog, native models where there is no
+native runtime. **The defect R3-4 really points at is upstream — the picker offers Claude
+Code models on an install with no Claude login.** That is the same shape as R1-6 (the
+picker offering native models over remote access), it is a question about the picker rather
+than the backend, and it is Destin's to answer: recorded in `OPEN-QUESTIONS.md`.
 
 **Guards 2 and 3 cannot be answered where the first draft put them** (design review 2,
 R2-1). `useNativeBinding` fetches the provider list and catalog only when
