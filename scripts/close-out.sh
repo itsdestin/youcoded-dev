@@ -174,7 +174,20 @@ if [[ "$MERGED" == yes ]]; then
   fi
 
   for d in "$WORKSPACE"/worktrees/*/; do
-    [[ -d "$d" && ! -e "${d%/}/.git" ]] && fail "unregistered leftover directory: ${d%/}"
+    [[ -d "$d" && ! -e "${d%/}/.git" ]] || continue
+    # A GROUPING directory is not a leftover. CLAUDE.md's own session flow nests
+    # worktrees as worktrees/sessions/<name>/, so worktrees/sessions/ itself has
+    # no .git, and this scan named it every time the last session inside it
+    # finished. A session "finishing every line it reports" would have deleted a
+    # directory holding four other sessions' live worktrees (seen 2026-09-07).
+    # A plain glob loop, not `compgen -G`: an unmatched glob stays literal here,
+    # so the -e test is what decides, and it needs no shell option set either way.
+    nested_worktree=0
+    for kid in "${d%/}"/*/.git; do
+      [[ -e "$kid" ]] && { nested_worktree=1; break; }
+    done
+    [[ $nested_worktree == 1 ]] && continue
+    fail "unregistered leftover directory: ${d%/}"
   done
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
