@@ -101,22 +101,33 @@ on an engine they cannot sign in to. The backend must not answer that by discard
 choice. What the picker should OFFER is a design question and it is Destin's —
 `OPEN-QUESTIONS.md`, question 7.
 
-### This suppresses an existing substitution, and only for a stored default
+### The same rule applies to the last-used model, not just the stored default
 
-`useNativeBinding` today silently substitutes: an unready provider falls to
+`useNativeBinding` substitutes silently today: an unready provider falls to
 `readyProviders[0]`, an unknown model to `providerModels[0]`
-(`RuntimeBinding.tsx:204-219`). That is exactly what the rule above forbids, and it is
-**older and wider than this feature** — it also catches the last-used binding, on every
-install, including people who never set a default.
+(`RuntimeBinding.tsx:204-219`). A previous revision proposed suppressing that only where a
+stored default failed, leaving it in place for the last-used binding — two behaviours for
+one situation, decided by how the model happened to get there.
 
-**This build suppresses it only where a stored default failed to resolve.** With no stored
-default the hook behaves exactly as it does today, so the new-session form is unchanged for
-everyone not using this feature.
+**Destin, 2026-09-07: "we should fix this too."** So the rule is unconditional. Whenever a
+binding cannot be resolved — stored default or last-used memory — the form starts with
+nothing selected.
 
-**The wider question is Destin's, not the build's:** should that substitution exist at all?
-The same argument says no — it picks a model the user did not choose. But changing it for
-the last-used binding alters a surface he has already approved, for people who are not
-touching this feature, so it is asked rather than assumed. `OPEN-QUESTIONS.md`, question 8.
+Concretely, the two fallbacks become empty rather than first-available:
+
+- `selectedProviderId`: `readyProviders[0]?.id ?? ''` → `''` when the named provider is not
+  ready. It still falls to the first ready provider when there is no binding at all, which
+  is a first run with nothing to honour, not a substitution.
+- `selectedModelId`: `providerModels[0]?.id ?? ''` → `''` when the named model is not in the
+  catalog, with the same exception for no binding at all.
+
+`effectiveBinding` is then null and Create stays gated (`SessionStrip.tsx:747`), which is
+the behaviour the form already has for "no model chosen yet".
+
+**This is wider than the Assistant settings feature** — it changes the new-session form for
+people who never open the panel, so it is called out here rather than buried: it is a
+deliberate, requested behaviour change, and it needs its own before/after on the acceptance
+deck so Destin sees the empty state he asked for.
 
 ### The existing source-scan test constrains how, not whether
 

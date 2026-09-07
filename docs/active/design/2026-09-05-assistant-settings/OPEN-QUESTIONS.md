@@ -40,14 +40,12 @@ code, silently. They go on a deck when he wants them, not before.
    is what the picker should offer: everything, everything with the unusable ones marked, or
    only what this install can actually run. Same shape as the remote-access question below.
 
-8. **Should the new-session form ever substitute a model you did not choose?** Today, when
-   the provider behind your last-used model is not ready, the form quietly falls to the first
-   ready provider and its first model — so you can get a session on a different model than
-   the one that was showing a moment earlier. Destin's rule for stored defaults (2026-09-07)
-   is that nothing is overridden and the selector starts empty instead. The same argument
-   applies to the last-used binding, but changing that affects people who never set a default,
-   on a surface already approved, so it is asked rather than assumed. This build changes only
-   the stored-default path.
+8. ~~**Should the new-session form ever substitute a model you did not choose?**~~
+   **ANSWERED — Destin, 2026-09-07: "we should fix this too."** The substitution goes
+   everywhere, not just on the stored-default path. When the provider behind your last-used
+   model is not ready, or the model has left its catalog, the form now starts with nothing
+   selected instead of quietly dropping to the first available provider and its first model.
+   One rule, one behaviour, no matter how the model got there.
 
 **Plus one raised by design review 2, which is a design question rather than a bug:** over
 remote access the model picker offers models the browser cannot run. The build makes such a
