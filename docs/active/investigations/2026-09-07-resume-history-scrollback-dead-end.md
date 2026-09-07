@@ -2,7 +2,7 @@
 date: 2026-09-07
 status: active
 type: investigation
-topic: Resumed conversations sometimes load only recent messages with no way to scroll further back — a race between two first-page requests, one of which does not know which transcript file to read
+topic: Resumed conversations sometimes load only recent messages with no way to scroll further back — every request after the first has no way to locate the transcript file, and "I cannot find it" was indistinguishable from "this is the beginning"
 ---
 
 # Resumed conversations dead-end at the top of the scroll
@@ -11,8 +11,54 @@ topic: Resumed conversations sometimes load only recent messages with no way to 
 way back through the chat history. They only load the most recent messages, and earlier messages are
 unloadable even when scrolled to the top of the screen."
 
-**Status.** Root cause identified by code tracing plus a reader test over all 916 real transcripts.
-**Not yet reproduced in a running app** — no dev-window run has been done. No code has been changed.
+**Status.** Fixed on `session/chat-scrollback` (youcoded `329de8c2`). Still **not reproduced in a
+running app** — the diagnosis and the fix are pinned by tests, not by a dev-window run.
+
+---
+
+## Correction — the root cause below is only half of it (2026-09-07, after review)
+
+Everything from "How history is supposed to load" down was written before Destin described the
+symptom precisely: *"the first handful of messages from a resumed conversation load fine, but then
+nothing before those loads."* That is **not** the failure this document analyses. The failure below
+leaves the conversation **blank**. Both exist, and the race decides which one you get.
+
+**What was missed.** Only the FIRST page request carries a locator — `handleResumeSession` has the
+ids (`App.tsx:2640`). Every later request has only a cursor: the scroll-up sentinel
+(`ChatView.tsx:334`) and the buddy floater. So whenever the watcher could not answer, main returned
+`{events: [], cursor: null, hasMore: false}` for those too, and the reducer recorded it — cursor
+gone, sentinel gone, permanently. The bookmark already carried the file's own path
+(`transcript-page.ts:186`); the handler never looked at it.
+
+The watcher cannot answer at **three** ordinary moments, not one:
+
+1. Before CC's `SessionStart` hook reports the transcript path on a resume.
+2. **After the session's process exits** — `session-exit` calls `teardownSessionWatchers`
+   (`ipc-handlers.ts:3542`) while the conversation stays on screen and scrollable. Deterministic.
+3. In the buddy floater, which never watched the session.
+
+**Why it felt inconsistent.** The sentinel's observer has a `rootMargin` of 400px, so a first page
+that renders SHORT — "a handful of messages" — puts the sentinel in range the instant it paints and
+fires a locator-less request milliseconds later, well before the hook lands. A first page that
+renders tall is not asked for until the user actually scrolls, seconds later, by which time the
+watcher is up. The variable is page height, not chance.
+
+**What shipped.** (1) Main remembers where each session's transcript is
+(`transcript-page-source.ts`), from a validated request locator or the authoritative path read back
+from the watcher, so any later request resolves. (2) `TranscriptPageResult.unresolved` separates "I
+could not locate it" from "this is the beginning", on both answering surfaces, and callers retry
+instead of recording it.
+
+**Still open:** the blank-conversation branch analysed below — the uninformed request permanently
+claims the once-per-session slot even when it delivered nothing. The recommended fix in "Fixes
+considered" (derive the slug from the cwd) was NOT taken; remembering the ids the app was already
+given avoids the symlink, path-validation and byte-offset consequences that derivation creates.
+
+Two factual errors in the text below, left in place for the record: the table's native row cites
+`App.tsx:2610`, which passes **no** locator (native conversations resolve through
+`nativeHost.getHistoryPage` and are unaffected by any of this); and "What was ruled out" says the
+reader was tested over all 916 transcripts while "Evidence and scope" says the 60 largest — it was
+the 60 largest, and that probe was deleted, so it cannot be re-checked.
 
 ---
 
