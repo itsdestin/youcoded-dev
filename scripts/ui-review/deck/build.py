@@ -157,6 +157,12 @@ def _clip_step(spec, st, runs):
             **({'runs': runs} if st.get('runs') else {})}
 
 
+def _app_step(st):
+    """True when this live step shows screens of the app rather than authored designs."""
+    live = st.get('live') or {}
+    return is_app_pane(live) or any(is_app_pane(v) for v in st.get('variants') or [])
+
+
 def _live_step(spec, st):
     """Panes onto the RUNNING app instead of pictures. One pane for a try-this, one per
     variant for a pick-one — the question shape is the existing one, only the picture is new.
@@ -191,13 +197,17 @@ def _live_step(spec, st):
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
         'panes': panes,
         # A whole screen of the app needs room; an authored candidate is sized by the registry.
-        'width': live.get('paneWidth', APP_PANE_WIDTH if is_app_pane(live) or any(
-            is_app_pane(v) for v in st.get('variants') or []) else pane_width(spec)),
+        'width': live.get('paneWidth', APP_PANE_WIDTH if _app_step(st) else pane_width(spec)),
         # An authored candidate reports its own height back to the page; a whole screen of the
         # app does not, so without a default it fell back to the 160px "pane never reported"
         # floor and showed the top inch of the app (seen 2026-09-06).
-        'height': live.get('height') or (APP_PANE_HEIGHT if is_app_pane(live) or any(
-            is_app_pane(v) for v in st.get('variants') or []) else None),
+        'height': live.get('height') or (APP_PANE_HEIGHT if _app_step(st) else None),
+        # ONE screen of the app takes the whole stage — width and height — so it can be used
+        # rather than scrolled. Destin, 2026-09-06: "better fitted in the window so I can use
+        # the whole thing without scrolling." A ROW of panes is a comparison and keeps its
+        # declared size; only a single screen fills. A declared size still wins.
+        **({'fill': True} if _app_step(st) and len(panes) == 1
+           and not live.get('paneWidth') and not live.get('height') else {}),
         **({'themes': list(st['themes'])} if st.get('themes') else {}),
     }
 

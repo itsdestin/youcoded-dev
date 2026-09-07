@@ -2,7 +2,7 @@
   "_comment": [
     "TRY IT IN THE REAL APP — the one slide whose question is whether the thing WORKS, not how it looks.",
     "Every other slide shows a picture, a recording, or a pane of the renderer against a fake backend: real to look at and touch, but no model answering and nothing saved to disk. This slide is for the rows of the contract marked `live-app` — the ones that say the feature actually does the thing.",
-    "It opens NOTHING. It prints the exact command with a copy button, and takes the answer. The dev window it names is a SEPARATE app alongside Destin's own; never tell him to poke his own running copy.",
+    "It opens the window FOR him: served, the card shows an \"Open the dev window\" button beside the command. Opened as a plain file there is no server to ask, so only the command shows. Either way the window is a SEPARATE dev app alongside Destin's own; never tell him to poke his own running copy.",
     "No pictures, so this deck names no images folder and no runs."
   ],
   "title": "Saved searches — does it actually work?",

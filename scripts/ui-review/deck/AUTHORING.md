@@ -122,7 +122,9 @@ Deck-level `live.worktree` names the build. A pane shows one of two things:
 
 `variants[]` (each naming its own candidate or screen) makes it a pick-one; without them it is
 yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app
-as it is — and defaults to 900×620 rather than the registry's candidate width.
+as it is. ONE app pane with no `paneWidth` and no `height` **fills the stage**, so the whole
+screen is usable without scrolling; give it either and it takes that size instead, and a ROW of
+panes is a comparison and always keeps its declared size.
 
 WHY the app rows exist (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote for one
 comparison. Asking him to operate a real screen had no shape at all, so a live slide could only
@@ -134,8 +136,12 @@ model answering and nothing saved. For "does it actually work", use a Try-it sli
 
 ### Try it in the real app (`tryit.json`)
 
-A words slide carrying `dev`. It renders the exact `run-dev.sh` line with a copy button and
-takes the verdict; it opens nothing itself.
+A words slide carrying `dev`. Served, it renders an **Open the dev window** button that starts
+the instance for you, plus the exact `run-dev.sh` line and a copy button; opened as a plain file
+the button is hidden, because there is no server to ask. The page posts the STEP id, never a
+command — `serve` rebuilds the line from the spec on disk, so a page cannot ask the server to run
+something else. The window it opens is a dev instance on shifted ports with its own profile, and
+outlives the deck's server, so submitting does not close what you are still looking at.
 
 | Field | Required | What it is |
 |---|---|---|

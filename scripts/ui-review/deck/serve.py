@@ -83,6 +83,9 @@ class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 def make_server(spec, port, on_submit):
     apath = answers_path(spec)
+    # One dev window per try-it slide, so pressing the button twice does not leave two apps
+    # fighting over the same profile. Keyed by step id; a dead entry is forgotten.
+    dev_windows = {}
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *a, **k):
@@ -153,10 +156,52 @@ def make_server(spec, port, on_submit):
                 self._json(200, {'ok': True})
                 on_submit(state)
                 return
+            if self.path == '/dev':
+                return self._json(*launch_dev(spec, dev_windows, state.get('step')))
             return self._json(404, {'error': 'unknown path'})
 
     srv = _Server(('127.0.0.1', port), Handler)
     return srv, f'http://127.0.0.1:{srv.server_address[1]}/{spec["out"]}'
+
+
+def launch_dev(spec, windows, step_id):
+    """Open the dev window a TRY-IT slide names. Returns (status, body).
+
+    WHY the page may not send a command (Destin, 2026-09-06 asked for a button instead of a line
+    to copy): the request names a STEP, and the command is rebuilt here from the spec on disk.
+    A page that could post a command to run would be a shell on a loopback port — the deck is
+    served to a browser, and the browser is not a thing this process trusts.
+
+    It launches `run-dev.sh`, which is the dev instance on shifted ports with its own profile —
+    never Destin's own running app, which nothing in this workspace may touch."""
+    from .build import dev_command   # imported here: build.py imports this module at load time
+    step = next((st for st in spec['steps'] if st.get('id') == step_id), None)
+    if not step or 'dev' not in step:
+        return 404, {'error': f'no try-it slide called "{step_id}" on this deck'}
+    live = windows.get(step_id)
+    if live and live.poll() is None:
+        return 200, {'ok': True, 'already': True, 'pid': live.pid}
+    root = workspace_root()
+    script = os.path.join(root, 'scripts', 'run-dev.sh')
+    if not os.path.exists(script):
+        return 500, {'error': f'{script} is not here — run the deck from the workspace'}
+    dev = step['dev']
+    argv = ['bash', script, dev['worktree'], '--label', dev.get('label') or dev['worktree']]
+    if dev.get('offset') is not None:
+        argv += ['--offset', str(dev['offset'])]
+    if dev.get('profile'):
+        argv += ['--profile', dev['profile']]
+    log_path = os.path.join(spec['_base'], spec['_stem'] + f'.dev-{step_id}.log')
+    try:
+        with open(log_path, 'w') as lf:
+            # start_new_session: the window outlives this server, so submitting the deck (which
+            # exits the server) does not kill the app he is still looking at.
+            proc = subprocess.Popen(argv, stdout=lf, stderr=subprocess.STDOUT, cwd=root,
+                                    stdin=subprocess.DEVNULL, start_new_session=True)
+    except OSError as e:
+        return 500, {'error': f'could not start it: {e}'}
+    windows[step_id] = proc
+    return 200, {'ok': True, 'pid': proc.pid, 'command': dev_command(dev), 'log': log_path}
 
 
 def already_served(spec):

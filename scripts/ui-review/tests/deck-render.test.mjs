@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -859,4 +859,100 @@ test('a slide can take several picks, and a slide can take an answer he types', 
     assert.ok(cardW > rowW * 0.9, `the command takes the full row (${cardW} of ${rowW})`);
     assert.ok(await c.evaluate("!!document.querySelector('.card.dev .copycmd')"), 'a copy button');
   } finally { c.close(); srv.kill(); }
+});
+
+// The button that OPENS the dev window (Destin, 2026-09-06: "can we possibly just make a button
+// that launches it instead of a command I have to copy-paste?"). Never launches the real thing
+// here: YOUCODED_WORKSPACE points the server at a temp workspace whose run-dev.sh is a stub that
+// records its arguments and sleeps, so this test can never paint a window on anyone's desktop.
+test('the try-it slide opens the dev window from a button, and the server builds the command', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-dev-'));
+  const ws = join(tmp, 'ws');
+  mkdirSync(join(ws, 'scripts'), { recursive: true });
+  const marker = join(ws, 'launched.txt');
+  writeFileSync(join(ws, 'scripts', 'run-dev.sh'),
+    `#!/bin/bash\nprintf '%s\\n' "$@" > ${JSON.stringify(marker)}\nsleep 30\n`);
+  spawnSync('chmod', ['+x', join(ws, 'scripts', 'run-dev.sh')]);
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import shapes_spec; print(shapes_spec(${JSON.stringify(tmp)}, paged=False))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('shapes.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const env = { ...process.env, YOUCODED_WORKSPACE: ws };
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'], env });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/shapes.html?step=3` });
+    for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true').catch(() => false)); i++) await sleep(150);
+    await sleep(600);
+    // The button is revealed only once a server has answered — as a plain file there is
+    // nothing to ask, and the command stays as the way through.
+    assert.equal(await c.evaluate("document.body.dataset.served"), '1');
+    assert.equal(await c.evaluate("getComputedStyle(document.querySelector('.opendev')).display !== 'none'"), true);
+    await c.evaluate("document.querySelector('.opendev').click()");
+    for (let i = 0; i < 40 && !existsSync(marker); i++) await sleep(150);
+    assert.ok(existsSync(marker), 'the server started the dev window');
+    // The command is rebuilt from the SPEC, never taken from the page.
+    assert.deepEqual(readFileSync(marker, 'utf8').trim().split('\n'),
+      ['feat/shapes', '--label', 'Shapes', '--offset', '130', '--profile', 'shapes']);
+    await sleep(400);
+    assert.match(await c.evaluate("document.querySelector('.opendev').textContent"), /Opening|Already/);
+    // Pressing it again does not start a second one on the same profile.
+    await c.evaluate("(()=>{const b=document.querySelector('.opendev');b.disabled=false;b.click();})()");
+    await sleep(600);
+    assert.match(await c.evaluate("document.querySelector('.card.dev .devnote').textContent"), /still running|separate window/);
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});
+
+// ONE screen of the app fills the stage — Destin, 2026-09-06: "better fitted in the window so I
+// can use the whole thing without scrolling." A first version measured the pane in JS, forgot
+// the caption above it, and clipped the app's bottom strip; CSS sizes it now, so this pins the
+// box rather than the arithmetic.
+test('a single app pane fills the stage instead of taking a declared height', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-fill-'));
+  const stub = spawn('python3', ['-c',
+    `import sys, time; sys.path.insert(0, ${JSON.stringify(HERE)});\n` +
+    `from fixture import LivePaneServer\n` +
+    `s = LivePaneServer()\n` +
+    `print(s.base, flush=True)\n` +
+    `time.sleep(300)`], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const base = await new Promise((res, rej) => {
+    let out = ''; stub.stdout.on('data', d => { out += d; if (out.includes('\n')) res(out.trim()); });
+    setTimeout(() => rej(new Error('stub pane server never printed its address')), 10000);
+  });
+  const py = `import sys, json; sys.path.insert(0, ${JSON.stringify(HERE)});
+from fixture import live_spec
+p = live_spec(${JSON.stringify(tmp)}, base=${JSON.stringify(base)})
+r = json.load(open(p))
+r['steps'] = [{'id': 'A-1', 'surface': 'Chat', 'path': 'The whole screen',
+               'headline': 'This is the real screen — look around.',
+               'notice': 'Everything here is the app itself.',
+               'live': {'app': 'site'}}]
+json.dump(r, open(p, 'w'))
+print(p)`;
+  const fx = spawnSync('python3', ['-c', py], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const c = await cdp(await freePort(), 1440, 900);
+  try {
+    await sleep(800);
+    await c.send('Page.navigate', { url: `http://127.0.0.1:${port}/live.html` });
+    for (let i = 0; i < 40 && !(await c.evaluate('window.__deckReady === true').catch(() => false)); i++) await sleep(150);
+    await sleep(600);
+    assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('live-fill')"), true);
+    const box = JSON.parse(await c.evaluate("(()=>{const s=document.querySelector('.stage').getBoundingClientRect(),"
+      + "f=document.querySelector('#inner iframe').getBoundingClientRect(),"
+      + "cap=document.querySelector('#inner figcaption').getBoundingClientRect();"
+      + "return JSON.stringify({s:{w:s.width,h:s.height,b:s.bottom},f:{w:f.width,h:f.height,b:f.bottom},cap:cap.height});})()"));
+    // Tall: everything the stage has, minus its padding and the caption above the pane.
+    assert.ok(box.f.h > box.s.h - box.cap - 40, `pane ${box.f.h} should fill stage ${box.s.h} (caption ${box.cap})`);
+    // And never past it — the clipped bottom strip is exactly what this guards.
+    assert.ok(box.f.b <= box.s.b + 1, `pane bottom ${box.f.b} must stay inside the stage ${box.s.b}`);
+    assert.ok(box.f.w > box.s.w - 40, `pane ${box.f.w} should fill stage ${box.s.w}`);
+    assert.ok(box.s.h > 300, `the stage should claim the free row, got ${box.s.h}`);
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); stub.kill(); }
 });

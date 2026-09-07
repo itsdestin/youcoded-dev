@@ -120,8 +120,11 @@
     const info = Math.max(320, c.clientWidth * 0.30);
     const ranges = st.panes.map((p, i) => paneRangeOf(st, i));
     const fixedRow = ranges.reduce((sum, r, i) => sum + r.max + (i ? PANE_GAP : 0), 0);
-    const sideColumn = ranges.every(r => r.min === r.max) && c.clientWidth - info - 40 >= fixedRow;
-    c.className = 'content ' + (sideColumn ? 'col-right' : 'row-below live-fit');
+    const sideColumn = !st.fill && ranges.every(r => r.min === r.max) && c.clientWidth - info - 40 >= fixedRow;
+    // FILL: one screen of the app takes the whole stage, so it can be used rather than scrolled.
+    // `live-fit` sizes the stage to its content (right for a row of fixed-size designs); a
+    // filling pane needs the opposite, so the stage takes the row and the pane takes the stage.
+    c.className = 'content ' + (sideColumn ? 'col-right' : 'row-below live-fit') + (st.fill ? ' live-fill' : '');
     step.classList.remove('compact-step');
     // ALWAYS inline, no width threshold. The theme row is absolutely positioned beside the
     // step, and a live row is wide by nature — two to four panes at real size — so the side
@@ -133,6 +136,11 @@
     const stageWidth = (sideColumn ? c.clientWidth - info - 40 : (stage ? stage.clientWidth : c.clientWidth)) - 30;
     const fit = fitPanes(ranges, stageWidth);
     $$('#inner iframe').forEach((f, i) => {
+      // A FILLING pane is sized by CSS, not here: the frame is a column (caption above, pane
+      // below) and the pane takes what is left. Measuring it in JS meant subtracting the
+      // caption's height by hand, and the first version got it wrong and clipped the app's
+      // bottom strip. Clear any size a previous step left on the element.
+      if (st.fill) { f.style.width = ''; f.style.height = ''; return; }
       const w = fit.widths[i];
       f.style.width = w + 'px';
       if (!f.style.height) f.style.height = (st.height || MIN_PANE_H) + 'px';
@@ -202,10 +210,14 @@
   // a page — so this card carries the exact command instead, and the slide carries the verdict.
   // The safety line is fixed copy, not the author's: a dev window is a SEPARATE app, and the
   // one thing nobody may be told to poke is Destin's own running copy.
-  const devCard = st => `<section class="card dev"><h3>${ICON.change}Open it like this</h3>`
+  const devCard = st => `<section class="card dev"><h3>${ICON.change}Open the app to try it</h3>`
+    + `<div class="devrow">`
+    // Served: a button, because a line to copy into a terminal is a chore he asked to be rid
+    // of (2026-09-06). Opened as a plain file there is no server to ask, so the command stays.
+    + `<button type="button" class="btn primary opendev" data-id="${esc(st.id)}">Open the dev window</button>`
+    + `<button type="button" class="btn copycmd">Copy the command</button></div>`
     + `<pre class="cmd"><code>${esc(st.command)}</code></pre>`
-    + `<button type="button" class="btn copycmd">Copy the command</button>`
-    + `<p class="src">This opens a separate dev window, alongside your own app — never your own app itself. Close it when you are done.</p></section>`;
+    + `<p class="src devnote">This opens a separate dev window on your desktop, alongside your own app — never your own app itself. It takes a few seconds to appear. Close it when you are done.</p></section>`;
   // The body of one step, in the order the cards are read.
   const cardsFor = st => st.kind === 'question' ? partCards(st) + noticeCard(st) + riskCard(st)
     : st.kind === 'dev' ? devCard(st) + changedCard(st) + noticeCard(st) + riskCard(st)
@@ -300,7 +312,7 @@
   // ── persistence ──
   const LS = 'deck:' + DECK.key;
   async function load() {
-    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
+    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; document.body.dataset.served = '1'; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
     try { const j = JSON.parse(localStorage.getItem(LS) || 'null'); if (j && j.answers) Object.assign(state, j); } catch (e) { /* no storage */ }
   }
   async function save() {
@@ -417,6 +429,8 @@
     if (art && !state.submitted) answer('pick', c.dataset.pick, false, art.dataset.id);
   });
   $('#cards').addEventListener('click', e => {
+    const open = e.target.closest('.opendev');
+    if (open) { openDev(open); return; }
     const b = e.target.closest('.copycmd'); if (!b) return;
     const code = b.parentElement.querySelector('code');
     navigator.clipboard.writeText(code.textContent).then(
@@ -432,6 +446,29 @@
     state.answers[n.dataset.id] = { ...(state.answers[n.dataset.id] || {}), note: n.value };
     paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
   });
+  // The button that opens the dev window. It posts the STEP, never a command: the server
+  // rebuilds the line from the spec on disk, so the page cannot ask it to run anything else.
+  function openDev(btn) {
+    const card = btn.closest('.card.dev'), note = card.querySelector('.devnote');
+    btn.disabled = true; btn.textContent = 'Opening…';
+    fetch('/dev', { method: 'POST', headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({ step: btn.dataset.id }) })
+      .then(r => r.json().then(d => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok) throw new Error(d.error || 'it did not start');
+        btn.textContent = d.already ? 'Already open' : 'Opening — watch for the window';
+        note.textContent = d.already
+          ? 'The window this slide opened is still running. Find it in your taskbar; close it when you are done.'
+          : 'It takes a few seconds to appear, and it is a separate window from your own app. Close it when you are done.';
+        // Re-enabled so a window he closed can be opened again without reloading the deck.
+        setTimeout(() => { btn.disabled = false; btn.textContent = 'Open the dev window'; }, 8000);
+      })
+      .catch(err => {
+        btn.disabled = false; btn.textContent = 'Open the dev window';
+        // Never a silent no-op: say what failed and leave the command, which still works.
+        note.textContent = 'It did not start: ' + err.message + ' — the command above still works.';
+      });
+  }
   // Typing IS the answer on a write slide. Emptying the box unanswers it, the way clicking a
   // chosen option off does — otherwise a cleared box would still count as answered.
   function writeAnswer(id, text) {
