@@ -75,12 +75,19 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-09-02`
 
 - [ ] A whole session edited files that a path-scoped rule covers and the rule never loaded.
-      The session worked entirely through Bash (cat/sed/python heredocs, as bypass-permissions
-      mode asks for) rather than Read/Edit, and no rule injected all session — including the one
-      whose globs name the exact directory being edited. If that is how it works, every rule in
-      the workspace is silently off whenever a session edits through the shell, and the sessions
-      that most need the guardrails are the ones that lose them
-      `n/a` `needs-verify` `checked 2026-09-03`
+      First seen 2026-09-03, blamed on the session working entirely through Bash (cat/sed/python
+      heredocs, as bypass-permissions mode asks for) rather than Read/Edit. **That explanation is
+      wrong, or not the whole cause:** on 2026-09-07 a session edited six files through Edit/Write
+      — `ChatView.tsx`, `App.tsx`, `ipc-handlers.ts`, `remote-server.ts`, `BubbleFeed.tsx`,
+      `types.ts`, covered by at least four rules — and `~/.claude/instructions-loaded.log` recorded
+      4 loads for it, all `load_reason: session_start`, none path-scoped. The log DOES record
+      path matches (309 across other sessions), and it records them for worktree files (273),
+      so neither the tool nor the worktree is the discriminator. The one variable left: those
+      sessions' cwd was inside the worktree, this one's stayed at the workspace root while its
+      edits were four directories below it. Unproven — a session started with cwd inside the
+      worktree, editing the same files, would settle it in one run. If that is the cause, every
+      session following `CLAUDE.md`'s "use absolute worktree paths" from the root loses every rule
+      `n/a` `needs-verify` `checked 2026-09-07`
 
 - [ ] The lint gate only enables rules already at zero; the deferred list at the bottom of the
       ESLint config still fires — 79 renderer floating promises and 43 exhaustive-deps hits (the
