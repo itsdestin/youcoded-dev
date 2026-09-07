@@ -52,6 +52,26 @@ A sweep of every deck served since 2026-08-25 (61 specs, 15 screenshotted) found
    session puts that link in chat at the end of its turn, and Destin opens it when he is
    ready. Sessions run inside the app, which opens a pasted link; an unasked-for browser
    window on his desktop is the wrong surface.
+9. (2026-09-06) **A slide is independent; the deck decides nothing about it.** "Each kind of
+   way I'd want to present information to a user should be an independent slide with the model
+   given the option to add to any deck. Should still have a must-have X slide in Y deck."
+   Three things moved off the deck and onto the slide:
+   - `runs` (and `labels`) — which pictures a slide shows. A slide naming one capture is a
+     BRIEF wherever it sits; one naming a pair is an APPROVE. This is what forced one ask into
+     two decks: the sampler of 2026-09-06 came back as two links because a "build it?" point
+     and a "keep it?" point could not share a page.
+   - `"pick": "several"` — he may tick more than one option. Every slide ended in
+     pick-exactly-one or yes/no, so "A and C, drop B" had nowhere to go but the free note,
+     which nothing reads as a decision.
+   - `"answer": "words"` — the answer is a line he types (`prompt` is its placeholder), for a
+     name or a piece of copy, where options invented in advance never hear the real answer.
+10. (2026-09-06) **A deck declares its STAGE, and the stage requires rather than forbids.**
+   `"stage"` is one of ask / design / contract / review / accept, and the build refuses a deck
+   missing the slide its stage exists for. It never says which OTHER slides are allowed — a
+   deck type does that, and a deck type is what split one ask across several decks. Open, and
+   deliberately not built yet: nothing caps the OTHER direction, so a deck may still carry nine
+   unrelated slides and no clear ask. A warning for that waits until the new shape has been
+   lived with.
 
 ## 3. The page
 
@@ -139,7 +159,7 @@ The rule file (§7) carries this table; a session copies the template.
 | You want Destin to… | Kind | Spec shape | He answers | Template |
 |---|---|---|---|---|
 | approve a change he can see | **Approve** | `crop` + `changed` + `notice` (+ `risk`, `measured`), two runs | Yes keep it / No revert it / Other | `approve.json` |
-| approve something before it is built, from one picture of today | **Brief** | same, one run (`runs: {today}`) | Yes build it / No leave it / Other | `brief.json` |
+| approve something before it is built, from one picture of today | **Brief** | same, ONE picture — the deck captures one run, or the slide names one of the deck's with `runs` | Yes build it / No leave it / Other | `brief.json` |
 | pick between several pictures of ONE thing | **Choice** | `variants[]` each with a `crop` | pick one / None of these / Other | `choice.json` |
 | pick between written options with one picture for context | **Decide** | `crop` + `highlight` + `options[]` | pick one / Other | `decide.json` |
 | judge motion, hover or a transition | **Clip** | `clip` (files from `record-pair.sh`) | Yes / No / Other | `clip.json` |
