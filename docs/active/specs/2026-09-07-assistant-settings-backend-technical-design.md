@@ -63,22 +63,31 @@ old values once. Running it before either handler can answer removes the race.
 Android keeps its own copy of this file (`.claude-mobile/youcoded-defaults.json`) and its
 own override sync, so it needs the same migration in `SessionService.kt`.
 
-## T3 — Android carries the new default (contract R24)
+## T3 — Android carries the new default (contract R24) — DEFERRED
 
-**Today.** Android's `defaults:get` builds its reply field by field —
-`skipPermissions`, `model`, `projectFolder`, `permissionOverrides`. Anything else in the
-file is **dropped on the way out**, so `startModel` would vanish on Android even though
-the desktop wrote it into the shared shape.
+**Destin, 2026-09-07: skip the Android focus for now.** Deferred, not dropped: filed as
+`docs/roadmap/android-only.md`. What is deferred is only the round trip below; the
+Assistant settings row and panel are already mounted in `AndroidSettings`, which is what
+contract row R24 states.
 
-**Change.** Carry `startModel` through `defaults:get` and `defaults:set` in
-`SessionService.kt` as an opaque JSON object — Android does not interpret it. Android has
-no native runtime, so T1's guard already makes a native `startModel` fall back to the
-Claude alias there; the value must simply survive the round trip rather than be erased for
-every other device that syncs the file.
+**Correcting this document.** An earlier draft of this section said `startModel` would be
+"erased for every other device that syncs the file". That is wrong, and the correction
+narrows the risk to almost nothing:
 
-Android already serves `folders:list` and `dialog:open-folder`, so the folder picker on
-the General page works there as drawn. Web search stays hidden on Android, gated on
-`native.supported` exactly as the mockup shows.
+- The phone keeps its own file (`.claude-mobile/youcoded-defaults.json`,
+  `SessionService.kt:1883`), not the desktop's `~/.claude/youcoded-defaults.json`. The two
+  are never the same file, so nothing the phone does can reach a desktop value.
+- Android's `defaults:set` merges the whole payload key by key and writes it back
+  (`SessionService.kt:1919-1921`), so it **preserves keys it does not know about**. Only
+  `defaults:get` filters, and it filters on the way OUT (`SessionService.kt:1885-1890`).
+
+So the whole consequence of deferring is: on the phone, the panel shows the legacy Claude
+alias rather than a cross-provider default. The phone has no native runtime, so that alias
+is the only default it could act on anyway. Nothing is lost and nothing is corrupted.
+
+When it is picked up, the change is one line each way in `SessionService.kt` — carry
+`startModel` through `defaults:get` as an opaque object — plus the same one-time override
+migration as T2, against the phone's own copy of the file.
 
 ## Tests — three contract rows are `human` only because nothing checks them yet
 
@@ -88,16 +97,17 @@ time. Three become `mechanical` with this work:
 - **R5** — a stored native `startModel` opens the new-session form on that provider and
   model; a native `startModel` with native unsupported opens on the Claude alias instead.
 - **R17** — the migration zeroes every override and writes the marker; a second run with
-  the marker present changes nothing.
+  the marker present changes nothing. Desktop only while T3 is deferred.
 - **R19** — the confirm button stays disabled until the box is ticked; turning the switch
   off is instant with no popup; Cancel leaves the switch off.
 
 R24 stays `human`: it is an Android build, and this machine's Android tests do not render
-the settings panel.
+the settings panel. With T3 deferred it is unchanged from what the branch already does —
+the row and panel are mounted; only the cross-provider default does not reach the phone.
 
 ## Not in scope
 
 The five questions no deck ever asked (in-between window widths, whether the attention dot
 clears itself, whether each My Account link lands on the right page, existing Always-allowed
 entries, the ChatGPT-branch shipping order) are Destin's to answer on a later deck. None of
-them blocks this build; T1–T3 do not touch any of them.
+them blocks this build; T1 and T2 do not touch any of them.
