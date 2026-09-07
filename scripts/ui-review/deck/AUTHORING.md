@@ -3,7 +3,7 @@
 Every field of every step kind, the page grammar, every refusal the builder makes, the answers
 file, the printed summary and every command. Read on demand; the short version — which kind to
 pick, and the six rules — is `.claude/rules/review-deck.md`. Design:
-`docs/active/specs/2026-09-04-review-deck-consistency-design.md`, on top of
+`docs/archive/specs/2026-09-04-review-deck-consistency-design.md`, on top of
 `docs/archive/specs/2026-08-27-review-deck-v2-design.md` and
 `docs/active/specs/2026-09-01-feature-flow-design.md`.
 
