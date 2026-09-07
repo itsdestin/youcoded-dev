@@ -1,11 +1,12 @@
 ---
 status: active
 date: 2026-09-07
-revised: 2026-09-07 (design reviews 1 and 2 — 26 findings, all accepted)
+revised: 2026-09-07 (design reviews 1, 2 and 3 — 34 findings, all accepted; round 3 is the cap)
 branch: feat/assistant-settings
 contract: docs/active/design/2026-09-05-assistant-settings/assistant-settings.contract.json
 review: docs/active/reviews/2026-09-07-assistant-settings-design-review-1.md
 review2: docs/active/reviews/2026-09-07-assistant-settings-design-review-2.md
+review3: docs/active/reviews/2026-09-07-assistant-settings-design-review-3.md
 ---
 
 # Assistant settings — backend technical design
@@ -73,6 +74,15 @@ than an ignored preference.
 1. Native chosen, native not supported here (remote access, Android, capability flag off).
 2. The stored provider no longer exists, or is not ready.
 3. The stored model has left that provider's catalog.
+4. **Claude chosen, on an install with no Claude login.** Design review 3 (R3-4) — the
+   sharpest finding of the three rounds. Until now a stored default could only ever move
+   the form's *alias*; `startModel` lets it move the *runtime*, in both directions. The
+   picker lists Claude Code models unconditionally, so a ChatGPT-only install can hold a
+   Claude default and would then open every form on a runtime it cannot sign in to, with
+   Create enabled. `defaultRuntime()` and test (f) exist precisely to stop that. So a
+   Claude `startModel` is applied as an **alias only** — it never moves the runtime away
+   from `defaultRuntime()`. Only a native `startModel` may change the runtime, and only
+   through guards 1–3.
 
 **Guards 2 and 3 cannot be answered where the first draft put them** (design review 2,
 R2-1). `useNativeBinding` fetches the provider list and catalog only when
@@ -90,11 +100,27 @@ if (!nativeSupported || !active) return;
 if (runtime !== 'native' && !pendingStartModel) return;
 ```
 
-The form then applies the stored choice once the lists have arrived, and applies it only if
-the provider is ready and the model is in its catalog (or the provider is an
-openai-compatible endpoint with no catalog, where a freeform id is legitimate). Until then
-the form stays exactly where it is today — on the remembered runtime — so there is no flash
-of a native form that then reverts.
+The form applies the stored choice once the lists have arrived — **once per form open**,
+behind a latch, following the `usePreset` pattern in the same file. Without the latch the
+apply re-fires on every render, including the render caused by the user's own pick, so the
+picker snaps back to the default and the contract's "you may still switch models at any
+time" fails (design review 3, R3-2). `readyProviders` is rebuilt every render
+(`RuntimeBinding.tsx:204`), so the latch is a ref, never an effect dependency (R3-7).
+
+**The fetch is pre-warmed, not deferred to form-open** (R3-3). `providers.catalog()` can be
+two network calls behind a 15-second timeout, and Create is enabled on Claude for that whole
+window — a quick click starts a session on the wrong model, silently. Both forms are
+permanently mounted, so when a native default is stored the load starts without waiting for
+`active`. That also removes the Claude→native flash the previous revision wrongly claimed
+could not happen.
+
+The choice is applied only if the provider is ready and the model is in its catalog (or the
+provider is an openai-compatible endpoint with no catalog, where a freeform id is
+legitimate).
+
+The hook's four real edits: the load effect's condition, a `startModel` prop threaded in, a
+ref latch, and the apply itself. `pendingStartModel` in the sketch above is a description,
+not a name that exists (R3-7).
 
 **A freeform id on an openai-compatible provider passes guard 3 by design**, matching
 `needsFreeformModel` at `RuntimeBinding.tsx:212`.
@@ -111,7 +137,12 @@ said (design review 2, R2-2). All of it:
   (`SessionStrip.tsx:399`, `App.tsx:444`, both inside `applyModelChoice`). So the Claude
   fallback must route through `applyModelChoice({ runtime: 'claude', alias })` — a second
   literal anywhere fails the guard.
-- It requires that a form-close tail **still contains** `setter(defaultRuntime())`. This
+- It requires that a form-close tail **still contains** `setter(defaultRuntime())`, and it
+  measures a **600-character window** in which comments are blanked rather than removed —
+  `SessionStrip`'s create tail has only 262 characters of headroom (design review 3, R3-8).
+  A long WHY comment placed above the pinned reset turns the guard red with a message about
+  something else entirely, so the WHY for this change goes above the function, not inside
+  that window. This
   collides head-on with R1-10's post-create reset, so the order is fixed: reset to
   `defaultRuntime()` first, exactly as today, **then** apply the stored default on top. The
   guard stays green and the default still survives the create.
@@ -130,6 +161,16 @@ on one model and set a different default will notice.
 
 `HeaderBar` needs three small edits to thread the new prop through to `SessionStrip`
 (R2-10); it has no form of its own.
+
+**The stored label must not outlive the choice** (design review 3, R3-5). `startModelLabel`
+— added this round so the Settings row can name a native default without a catalog lookup —
+is a snapshot taken at pick time and never rechecked. Meanwhile guards 2 and 3 quietly send
+the forms back to Claude when the provider is gone. Without this, the row would keep saying
+"ChatGPT · GPT-5.6" confidently about a provider that no longer exists, while every new
+conversation actually started on Claude. So: **when the panel opens and its picker has
+loaded, an invalid stored choice clears both `startModel` and `startModelLabel`** — the row
+falls back to the Claude alias, which is what is really happening. Self-healing, one write,
+and only where the data to judge it already exists.
 
 ## T2 — the old protection overrides switch themselves off (contract R17)
 
@@ -160,14 +201,18 @@ It reads the file; if `permissionOverridesClearedAt` is absent it writes every o
 **not `~/.claude`** (R1-8), so an unguarded migration would perform the real, one-time,
 marker-setting rewrite of his live defaults the first time any dev build launched — and
 then never again, on his real install, before this shipped. Main therefore calls it only
-when `app.isPackaged`, or when `YOUCODED_MIGRATE_DEFAULTS=1` is set explicitly, which
-`run-dev.sh` never sets.
+when `app.isPackaged`.
 
-**The honest cost of that gate** (R2-4): R17 cannot be demonstrated in an ordinary dev
-instance. It stays a `human` contract row and is checked on a real install at acceptance,
-or in a dev instance launched deliberately with the opt-in. The alternative — letting dev
-builds migrate — trades a testing convenience for the risk of silently rewriting his live
-settings, which is not a trade worth making.
+**No environment opt-in.** A previous revision offered `YOUCODED_MIGRATE_DEFAULTS=1` as a
+way to try the migration in a dev instance. Design review 3 (R3-1) caught that this
+reopens R1-8 exactly: the defaults path is `os.homedir()`-based, dev does not isolate
+`~/.claude`, so the "verification" would perform the real, one-way, marker-setting rewrite
+of Destin's live settings. The opt-in is gone.
+
+**How R17 is verified instead:** against a COPY. The function takes its path as a
+parameter, so the unit test drives it on a temp file, and a manual check points it at a
+copy of a real defaults file — never at `~/.claude`. R17 stays a `human` contract row and
+is answered on a real install at acceptance.
 
 **Android is not covered by this and does not inherit it** (design review 2, R2-5). The
 phone keeps its own copy of the file and enforces the same overrides
