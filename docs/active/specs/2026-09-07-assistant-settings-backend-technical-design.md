@@ -65,83 +65,58 @@ default (R1-2).
 native default lasts exactly one session — the same defect as review R2-3, re-entering
 through a different door.
 
-### Three guards, all landing on Claude
+### Nothing is overridden — an unusable choice leaves the picker empty
 
-In every case below the form opens on the `model` alias under Claude Code, because **a form
-must never open on a runtime that cannot create a session** — a dead Create button is worse
-than an ignored preference.
+**Destin, 2026-09-07, replacing every earlier version of this section:** "nothing should be
+overridden. if users select an openrouter/claude code/chatgpt plan model, they should get
+that. if the provider is unavailable, the model selector should just start empty."
 
-1. Native chosen, native not supported here (remote access, Android, capability flag off).
-2. The stored provider no longer exists, or is not ready.
-3. The stored model has left that provider's catalog.
-**A Claude `startModel` moves the runtime too, and is honoured** (Destin, 2026-09-07,
-overruling my own answer to design review 3's R3-4). Picking Fable via Claude Code must
-give Fable via Claude Code — there is no reading of that choice where the engine is
-optional.
+The rule is one line: **the stored choice is applied as chosen, whatever provider it names.
+If it cannot be resolved, nothing is selected.** No fallback to Claude, no substitution of a
+neighbouring model, no silent repair.
 
-R3-4's concern was real but its fix overshot: on a ChatGPT-only install a Claude default
-would open every form on Claude Code with a Create button that cannot work. The answer is
-NOT to discard the choice, for two reasons.
+That includes the Claude direction. Picking Fable via Claude Code gives Fable via Claude
+Code, engine included — which also settles design review 3's R3-4, whose fix (never let a
+Claude default move the runtime) broke the ordinary case to protect an unusual one.
 
-- A Claude `startModel` exists only because someone picked it in the picker. It is never
-  inherited, inferred or migrated. Discarding it discards a deliberate action.
-- The only available "has a Claude login" signal is `firstRun.getState()`'s `authComplete`
-  / `authMode`, which by its own note in `ModelProvidersPopup.tsx` reflects the last known
-  SETUP outcome and does not track a later sign-in or sign-out from the terminal. A guard
-  built on it would sometimes throw away the default of someone who is in fact signed in.
+It deletes the three guards two earlier revisions of this document argued about. Every one
+of them chose a model on the user's behalf, which is the thing that must not happen. What
+replaces them:
 
-Weigh the two failures. Honour it, and a ChatGPT-only user who picked Claude gets a form on
-Claude Code that says it is not signed in — visible, self-explanatory, and the result of
-their own pick. Override it, and a signed-in user's setting silently does nothing with no
-way to tell why. The first is plainly the better failure.
+| The stored default | What the form does |
+|---|---|
+| resolves — provider ready, model in its catalog | opens on it, engine included |
+| names a provider that is gone or not ready | opens with **nothing selected** |
+| names a model that has left the catalog | opens with **nothing selected** |
+| is native, on a device with no native runtime (remote, Android) | opens with **nothing selected** |
 
-So the guards below exist only for what genuinely cannot work AND was not chosen: a
-provider the user deleted, a model that left the catalog, native models where there is no
-native runtime. **The defect R3-4 really points at is upstream — the picker offers Claude
-Code models on an install with no Claude login.** That is the same shape as R1-6 (the
-picker offering native models over remote access), it is a question about the picker rather
-than the backend, and it is Destin's to answer: recorded in `OPEN-QUESTIONS.md`.
+"Nothing selected" is a state the form already understands: `effectiveBinding` is null and
+the Create button is already gated on it (`SessionStrip.tsx:747`). The user picks and
+continues. The failure is visible and one click from fixed, which is the point — an empty
+selector tells the truth; a substituted model does not.
 
-**Guards 2 and 3 cannot be answered where the first draft put them** (design review 2,
-R2-1). `useNativeBinding` fetches the provider list and catalog only when
-`runtime === 'native' && active` (`RuntimeBinding.tsx:190-202`), so asking "does this
-provider still exist?" before switching to native is circular: the answer arrives only
-after the switch the guard is meant to veto. Worse, the existing resolution silently
-substitutes the first ready provider and its first model (`:205-220`), so a stale default
-does not fail loudly — it quietly starts a different model than the one chosen.
+R3-4's underlying observation stays true and is filed where it belongs: **the picker offers
+Claude Code models on an install with no Claude login**, so someone can choose one and land
+on an engine they cannot sign in to. The backend must not answer that by discarding their
+choice. What the picker should OFFER is a design question and it is Destin's —
+`OPEN-QUESTIONS.md`, question 7.
 
-**So the fetch condition changes, not the guard.** `useNativeBinding` also loads when there
-is a native `startModel` to validate, regardless of the current runtime:
+### This suppresses an existing substitution, and only for a stored default
 
-```
-if (!nativeSupported || !active) return;
-if (runtime !== 'native' && !pendingStartModel) return;
-```
+`useNativeBinding` today silently substitutes: an unready provider falls to
+`readyProviders[0]`, an unknown model to `providerModels[0]`
+(`RuntimeBinding.tsx:204-219`). That is exactly what the rule above forbids, and it is
+**older and wider than this feature** — it also catches the last-used binding, on every
+install, including people who never set a default.
 
-The form applies the stored choice once the lists have arrived — **once per form open**,
-behind a latch, following the `usePreset` pattern in the same file. Without the latch the
-apply re-fires on every render, including the render caused by the user's own pick, so the
-picker snaps back to the default and the contract's "you may still switch models at any
-time" fails (design review 3, R3-2). `readyProviders` is rebuilt every render
-(`RuntimeBinding.tsx:204`), so the latch is a ref, never an effect dependency (R3-7).
+**This build suppresses it only where a stored default failed to resolve.** With no stored
+default the hook behaves exactly as it does today, so the new-session form is unchanged for
+everyone not using this feature.
 
-**The fetch is pre-warmed, not deferred to form-open** (R3-3). `providers.catalog()` can be
-two network calls behind a 15-second timeout, and Create is enabled on Claude for that whole
-window — a quick click starts a session on the wrong model, silently. Both forms are
-permanently mounted, so when a native default is stored the load starts without waiting for
-`active`. That also removes the Claude→native flash the previous revision wrongly claimed
-could not happen.
-
-The choice is applied only if the provider is ready and the model is in its catalog (or the
-provider is an openai-compatible endpoint with no catalog, where a freeform id is
-legitimate).
-
-The hook's four real edits: the load effect's condition, a `startModel` prop threaded in, a
-ref latch, and the apply itself. `pendingStartModel` in the sketch above is a description,
-not a name that exists (R3-7).
-
-**A freeform id on an openai-compatible provider passes guard 3 by design**, matching
-`needsFreeformModel` at `RuntimeBinding.tsx:212`.
+**The wider question is Destin's, not the build's:** should that substitution exist at all?
+The same argument says no — it picks a model the user did not choose. But changing it for
+the last-used binding alters a surface he has already approved, for people who are not
+touching this feature, so it is asked rather than assumed. `OPEN-QUESTIONS.md`, question 8.
 
 ### The existing source-scan test constrains how, not whether
 
