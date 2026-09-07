@@ -108,6 +108,13 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
+      read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
+      never created, so the one artefact that says WHICH drag was bad does not exist for the
+      run size the README prescribes. Smaller runs write it fine. Found 2026-09-07 chasing a
+      non-zero continuity score
+      `desktop` `confirmed` `checked 2026-09-07`
+
 - [ ] The question deck (`scripts/questions/serve.py`) can only ask multiple-choice questions,
       so a session needing Destin to approve a set of concrete text changes rebuilds its own
       loopback answer page instead of using it — happened 2026-09-05 for a nine-item prompt

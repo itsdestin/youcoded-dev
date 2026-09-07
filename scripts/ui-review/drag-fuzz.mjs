@@ -12,7 +12,15 @@
 //
 // Usage:
 //   node scripts/ui-review/drag-fuzz.mjs <url> [count] [seed]
+//
+//   <url> must be the workbench's CHILD frame, which is where the app actually renders —
+//   the documented ?mode=workbench address is the toolbar around an iframe, and a CDP
+//   probe pointed at it sees no strip at all:
+//     'http://127.0.0.1:<port>/?mode=workbench&child=1&view=app&scenario=stress&latency=0'
+//   A scenario needs 3+ pills in the strip, so pass FUZZ_W=1400 FUZZ_H=900 — see W/H below.
+//
 //   CDP_PORT=10330   throw-away Chrome's debug port (fresh per run)
+//   FUZZ_W / FUZZ_H  emulated window (default 460x600, the deck pane's width)
 //   OUT_DIR=.        drag-fuzz.json (every scenario's frames) + drag-fuzz.md (the table)
 //   DPR=1.5          device scale factor (Destin's panel is 1.5)
 //   UNLIMITED=1      lift Chrome's frame-rate cap (a 180Hz panel runs the rAF loop 3x
@@ -46,7 +54,12 @@ const between = (a, b) => a + rnd() * (b - a);
 
 const CDP_PORT = Number(process.env.CDP_PORT ?? 10330);
 const DPR = Number(process.env.DPR ?? 1.5);
-const W = 460, H = 600;
+// WHY (2026-09-07) these are overridable: 460 is the DECK PANE's width, and at
+// 460 the strip packs to ONE pill — runScenario needs three, so the sweep bailed
+// on its first iteration and printed an all-dash "worst:" line having driven not
+// a single drag. That reads exactly like a clean run. Measured against the
+// workbench's stress scenario: 1 pill at 460x600, 11 at 1400x900.
+const W = Number(process.env.FUZZ_W ?? 460), H = Number(process.env.FUZZ_H ?? 600);
 const profile = mkdtempSync(join(tmpdir(), 'drag-fuzz-'));
 const flags = CHROME_FLAGS(W, H, CDP_PORT, profile).map((f) => f === '--force-device-scale-factor=1' ? `--force-device-scale-factor=${DPR}` : f);
 if (process.env.UNLIMITED) flags.unshift('--disable-frame-rate-limit', '--disable-gpu-vsync');
@@ -248,6 +261,11 @@ for (let n = 1; n <= COUNT; n++) {
   results.push(r);
   const { m, desc } = r;
   process.stdout.write(`#${String(n).padStart(2)} ${desc.pointer.padEnd(5)} ${desc.pressFirst ? 'press+' : 'cold  '} ${desc.fromIdx}→${desc.toIdx}${desc.overshoot ? (desc.overshoot > 0 ? '+' : '') + desc.overshoot : ''} grab ${desc.grab} ${String(desc.dragMs).padStart(3)}ms wob ${desc.wobble} ${desc.release.padEnd(9)} ${desc.after.padEnd(5)} delay ${desc.delay}  | contact ${m.contact.toFixed(1)} cont ${m.continuity.toFixed(1)} rev ${m.reversal.toFixed(1)} others ${m.others.toFixed(1)} blink ${m.blink} frame ${m.longFrame.toFixed(0)}ms\n`);
+}
+// A sweep that ran nothing must not read as a sweep that found nothing.
+if (results.length === 0) {
+  console.error(`\ndrag-fuzz: NO scenarios ran. runScenario needs 3+ pills in [data-session-strip]; at ${W}x${H} this page had fewer. Widen with FUZZ_W/FUZZ_H, or check the URL renders the app (the workbench app lives at ?mode=workbench&child=1&view=app).`);
+  process.exit(1);
 }
 const worst = {};
 for (const k of ['contact', 'continuity', 'reversal', 'others', 'blink']) {
