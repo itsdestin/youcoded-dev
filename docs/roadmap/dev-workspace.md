@@ -9,7 +9,12 @@ seen-on is always n/a here.
       pushes, and ends up complete". Ubuntu and the local suite are green, so it is invisible
       to `verify.sh` and every merge inherits a red master. Confirmed pre-existing on master at
       `ccbf4211` (run 34049785765) and unchanged by youcoded#441 (run 34163846462), which is
-      how it was found. Both legs need a machine that can run them — this session could not
+      how it was found. Both legs need a machine that can run them — this session could not.
+      Narrowed 2026-09-07 (youcoded#443): "Ubuntu is green" no longer holds — that leg failed
+      too, but on a DIFFERENT and unrelated fault, an ENOTEMPTY removing the
+      engine-model-settings temp root after 9,743 passing tests, now fixed with the retrying
+      remove the test-hygiene rule prescribes. macOS and Windows remain red on the two
+      backendOptions cases, which are the part still needing AMD hardware
       `n/a` `confirmed` `checked 2026-09-07`
 
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
