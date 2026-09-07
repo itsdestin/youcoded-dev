@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-04
 supersedes: scripts/questions/serve.py (the plain questions page)
 extends: docs/archive/specs/2026-08-27-review-deck-v2-design.md, docs/active/specs/2026-09-01-feature-flow-design.md

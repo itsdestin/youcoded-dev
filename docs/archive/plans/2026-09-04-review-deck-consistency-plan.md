@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-09-04
-spec: docs/active/specs/2026-09-04-review-deck-consistency-design.md
+spec: docs/archive/specs/2026-09-04-review-deck-consistency-design.md
 branch: feat/deck-consistency (youcoded-dev)
 ---
 
