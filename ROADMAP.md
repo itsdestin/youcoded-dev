@@ -53,16 +53,16 @@ Target: `v1.3`
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 68 | 26 | 2 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 48 | 8 | 1 | 16 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 31 | 17 | 0 | 6 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 32 | 17 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 6 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
-| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 16 | 9 | 1 | 1 |
+| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 17 | 9 | 1 | 1 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 14 | 4 | 2 | 6 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 13 | 1 | 2 | 2 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 11 | 4 | 0 | 1 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 13 | 4 | 0 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 2 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 

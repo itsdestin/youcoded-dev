@@ -2,6 +2,10 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] A second window keeps showing the old default model or project folder until its own
+      Settings panel is opened and closed
+      `settings/defaults` `desktop` `confirmed` `checked 2026-09-07`
+
 - [ ] While a session pill is being dragged from one window into another, nothing follows the cursor
       inside the SECOND window until it is dropped — the bar and chat area light up, but the pill
       itself is only drawn by the window it came from. The receiving window cannot read what is

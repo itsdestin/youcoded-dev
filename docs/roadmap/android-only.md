@@ -3,11 +3,15 @@ Filing test: if you fixed this on desktop, would Android still be broken? Yes �
 Android's own code. Not here: the code is shared and the phone is just where it shows — file
 that in the shared area with android as seen-on.
 
-- [ ] On the phone, Assistant settings shows the old Claude-only default model instead of a
-      default picked from another provider — Android's settings reply copies four named
-      fields and leaves the newer one out (deferred by Destin 2026-09-07 while the desktop
-      panel is built; the phone cannot run those models anyway, so it only affects what the
-      row displays)
+- [ ] Android keeps enforcing the old "approve protected requests" overrides after the desktop
+      switches them off — the desktop's one-time reset does not touch the phone's own copy, and
+      the phone has no screen to turn them off
+      `settings/permissions` `android` `confirmed` `checked 2026-09-07`
+
+- [ ] A default model chosen on the desktop is dropped by the phone's settings reply, so if
+      the phone ever gains those models it will ignore a default the user already set
+      (deferred by Destin 2026-09-07; today the phone can only pick Claude models anyway, so
+      nothing is visibly wrong on it)
       `settings/defaults` `android` `confirmed` `checked 2026-09-07`
 
 - [ ] Resuming a past Claude Code conversation on Android starts a fresh session instead; and
