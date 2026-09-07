@@ -18,30 +18,42 @@ needed anywhere. Three things are genuinely missing.
 
 ## T1 — the default model actually starts the conversation (contract R5)
 
-**Today.** `App.tsx` hands both new-session forms `defaultModel={sessionDefaults.model}` —
-a Claude alias string. Each form does `setNewModel(defaultModel || 'sonnet')`, and picks
-its runtime from `defaultRuntime()` (the `youcoded-runtime-default` localStorage key,
-written only by first-run) and its provider/model pair from `loadLastBinding()`. So a
-default model that is not a Claude alias has nowhere to land: picking GPT-5.6 in settings
-stores it, and the next new-session form still opens on Claude Code.
+**Correction (Destin, 2026-09-07).** An earlier draft of this section said the new-session
+forms only understand Claude's aliases. That is false, and the correction makes the job
+smaller. The forms understand native models completely: they hold a `runtime`
+(`SessionStrip.tsx:378`), a provider/model `binding` (`:379`), a derived `modelChoice` for
+the unified picker (`:390-394`), and an `applyModelChoice(c: ModelChoice)` setter that
+already does the right thing for BOTH runtimes (`:396-404`). Native session creation works.
 
-**Change.** `App.tsx` also passes `defaultStartModel={sessionDefaults.startModel}` to
-`SessionStrip` and `HeaderBar`. Where each form initialises (`setNewModel(defaultModel ||
-'sonnet')`, both call sites), it instead resolves the pair:
+**The real gap is the pipe from Settings to the form, not the form.** `App.tsx` passes the
+saved default as `defaultModel?: string` — a Claude alias and nothing else — and the two
+places that apply it call `setNewModel(defaultModel || 'sonnet')` (`SessionStrip.tsx:764`,
+`:2420`; the welcome form's equivalent is `App.tsx:3518`). There is no way to say "my
+default is GPT-5.6", so the form falls back to `defaultRuntime()` (the
+`youcoded-runtime-default` key) and `loadLastBinding()` (the last binding actually used).
 
-- `startModel.runtime === 'claude'` → runtime `claude`, alias from `startModel.alias`.
-- `startModel.runtime === 'native'` **and** native is supported → runtime `native`,
-  binding `{providerId, modelId}`.
-- `startModel` absent → today's behaviour exactly, unchanged.
-- `startModel.runtime === 'native'` but native is NOT supported (remote access, Android,
-  the capability flag off) → fall back to the `model` alias on Claude. **Never open a form
-  on a runtime that cannot create a session** — a silently dead Create button is worse
-  than ignoring the preference.
+**Why this is worth care rather than a quick patch.** Those fallbacks make the bug hide.
+Someone who was last using GPT-5.6 and then sets GPT-5.6 as their default sees the form
+open on GPT-5.6 and concludes the setting works — it was the last-used memory. The setting
+only visibly fails when the two disagree, which is exactly the case nobody tests.
+
+**Change.** `App.tsx` passes `defaultStartModel={sessionDefaults.startModel}` to
+`SessionStrip` and `HeaderBar`. At each of the three points that currently apply
+`defaultModel`, when `defaultStartModel` is present, call the existing `applyModelChoice`
+with it instead of `setNewModel`. No new resolution logic in the form — the setter that
+handles both runtimes is already there.
+
+One guard on top of `applyModelChoice`: if the stored choice is native and native is NOT
+supported here (remote access, Android, the capability flag off), fall back to the `model`
+alias on Claude. **Never open a form on a runtime that cannot create a session** — a dead
+Create button is worse than ignoring the preference. The same guard covers a stored choice
+whose provider the user has since deleted, or whose model has left the catalog: the picker
+resolves nothing, so the form must land on Claude rather than on a blank binding.
 
 `youcoded-runtime-default` and `youcoded-last-binding` keep their jobs and their writers:
-`startModel` wins when it is set, those two remain the fallback. In particular **nothing
-here writes `youcoded-runtime-default`** — first-run is still its only writer, and the
-source-scan test that pins that stays green.
+`startModel` wins when set, those two remain the fallback. **Nothing here writes
+`youcoded-runtime-default`** — first-run stays its only writer, and the source-scan test
+pinning that stays green.
 
 ## T2 — the old protection overrides switch themselves off (contract R17)
 
