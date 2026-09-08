@@ -70,7 +70,7 @@ free and needs no key; a real run needs `--key-file`.
   own truncated output.
   Guard: `harness-review-runner.test.ts` → "denies a Write outside the fixture".
 
-- **Uniform step budget, not the app's chat tiers** (25/50 cuts a 40–80-call run short),
+- **Explicit uniform `maxSteps: 100`**, independent of the app preference,
   and **never end a run on a heuristic**: a repeat-counting trigger was deleted 2026-08-11
   after truncating 13 paid runs, because cwd-persistence and read-before-edit REQUIRE
   repeats.
