@@ -70,7 +70,7 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | where a dragged session pill lands, and when a dot steps aside | `youcoded/desktop/src/renderer/components/header/drag-order.ts` (`DRAG_TUNE`); how it is drawn: `SessionStrip.tsx` → `flow` |
 | the session pills / dragging a session to another window, and the pill's right-click menu | `youcoded/desktop/src/renderer/components/SessionStrip.tsx`; on Linux/Wayland the chat-area drop target is `SessionDropZone.tsx` |
 | why an old message renders blank / "folding" | `youcoded/desktop/src/renderer/hooks/use-entry-folding.ts` (spacer of the height it last occupied; suspended while the find bar is open) |
-| the ChatGPT card in Settings / signing in with ChatGPT | `youcoded/desktop/src/renderer/components/ModelProvidersPopup.tsx` (the card); the account behind it: `youcoded/desktop/src/main/providers/chatgpt-auth.ts` |
+| the ChatGPT card in Settings / signing in with ChatGPT | `youcoded/desktop/src/renderer/components/ModelProvidersPopup.tsx` (the card — since 2026-09-07 it is rendered by Assistant settings' Cloud providers page, not by a popup of its own); the account behind it: `youcoded/desktop/src/main/providers/chatgpt-auth.ts` |
 | the plan usage bars and chips (5h / 7d / 30d) | `youcoded/desktop/src/renderer/components/plan-windows.tsx`; the chips: `StatusBar.tsx`; the /usage card: `UsageCard.tsx` |
 | the welcome / setup wizard, and whether it re-appears at launch | `youcoded/desktop/src/renderer/components/FirstRunView.tsx`; the launch decision: `setupIsUsable` in `youcoded/desktop/src/main/first-run.ts` |
 | the games pane / arcade (the gamepad button) | `youcoded/desktop/src/renderer/components/game/ArcadeShell.tsx` |
@@ -86,6 +86,8 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | the session drawer / session list | `youcoded/desktop/src/renderer/components/SessionDrawer.tsx` |
 | the resume browser | `youcoded/desktop/src/renderer/components/ResumeBrowser.tsx` |
 | Settings (every section) | `youcoded/desktop/src/renderer/components/SettingsPanel.tsx` |
+| Assistant settings — the one row that replaced Model Providers, Session Defaults, Permissions and Specialists | `youcoded/desktop/src/renderer/components/assistant-settings/AssistantSettings.tsx` (the row, the two-pane panel, the phone fold at 520px, the attention dot); its five pages: `youcoded/desktop/src/renderer/components/assistant-settings/pages.tsx` |
+| whether a model can actually run here — the greyed rows and their reasons, the saved default the panel says is being ignored | `youcoded/desktop/src/renderer/components/model/availability.ts` (one answer, three readers: the model menu, the Default model row, the new-session forms) |
 | the themes screen | `youcoded/desktop/src/renderer/components/ThemeScreen.tsx` |
 | the model picker / model dropdown | `youcoded/desktop/src/renderer/components/model/ModelPicker.tsx` |
 | the local models screen (search, download, delete, per-model settings, the size bubble) | `youcoded/desktop/src/renderer/components/LocalModelsSection.tsx` |
