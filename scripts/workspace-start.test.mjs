@@ -161,6 +161,33 @@ test('setup and startup use one repository inventory', () => {
   assert.doesNotMatch(script, /itsdestin\/youcoded:master/);
 });
 
+test('provisions node_modules as a hardlink farm for a configured component', t => {
+  const f = fixture(t), app = f.repo('app', 'master', path.join(f.root, 'youcoded'));
+  const srcModules = path.join(f.root, 'youcoded', 'desktop', 'node_modules', 'dep');
+  fs.mkdirSync(srcModules, { recursive: true });
+  fs.writeFileSync(path.join(srcModules, 'index.js'), 'module code\n');
+  const out = f.ok('alpha', ['youcoded']);
+  const destModules = path.join(out.repositories.youcoded.path, 'desktop', 'node_modules', 'dep', 'index.js');
+  assert.equal(fs.readFileSync(destModules, 'utf8'), 'module code\n');
+  // Hard linked, not a copy: same inode as the source.
+  assert.equal(fs.statSync(destModules).ino, fs.statSync(path.join(srcModules, 'index.js')).ino);
+  assert.match(JSON.stringify(out.repositories.youcoded.provisioned), /desktop\/node_modules \(hardlinked\)/);
+});
+
+test('a component with no installed deps and a resume both provision nothing', t => {
+  const f = fixture(t);
+  f.repo('app', 'master', path.join(f.root, 'youcoded'));
+  const created = f.ok('alpha', ['youcoded']);
+  assert.equal(created.repositories.youcoded.provisioned, undefined);
+  // Now add deps to the source AFTER creation: resume must not clobber or copy.
+  const srcModules = path.join(f.root, 'youcoded', 'desktop', 'node_modules');
+  fs.mkdirSync(srcModules, { recursive: true });
+  const resumed = f.ok('alpha', ['youcoded']);
+  assert.equal(resumed.repositories.youcoded.status, 'resumed');
+  assert.equal(resumed.repositories.youcoded.provisioned, undefined);
+  assert.equal(fs.existsSync(path.join(resumed.repositories.youcoded.path, 'desktop', 'node_modules')), false);
+});
+
 test('a held startup lock refuses the call and is not deleted', t => {
   const f = fixture(t);
   const lock = path.join(f.root, '.git', 'youcoded-sessions', 'alpha.lock');

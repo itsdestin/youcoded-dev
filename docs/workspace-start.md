@@ -36,8 +36,13 @@ Read/Edit/Write and give helpers those paths. A subprocess cannot retarget the c
 conversation's file-tool root or change its parent shell's directory. Existing manual
 worktrees remain valid; do not copy their entire files into a new session to adopt this tool.
 
-No dependencies are installed or linked. Follow the existing dependency safety rules when
-preparing a build. No shared source files, staged edits, local commits or untracked files
+Dependencies for a configured component are provisioned automatically at creation as a
+**hardlink farm** (`cp -al`) from the source checkout — currently `youcoded/desktop/node_modules`.
+The startup output lists what was linked as `deps: <path> (hardlinked|copied)`. Resumed sessions
+and components with no installed deps provision nothing. The dependency safety rules in
+`docs/PITFALLS.md` → Worktrees still apply to these hardlinked copies (hardlinks share inodes, so a
+dependency patcher must replace files rather than write in place; do not run `npm ci` /
+`bundleWebUi` against them). No shared source files, staged edits, local commits or untracked files
 are cleaned up. Git's remote refs and worktree metadata do change.
 
 ## Recovery and cleanup

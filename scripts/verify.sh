@@ -98,13 +98,22 @@ if [[ -L "$DESKTOP/node_modules" ]]; then
   echo "" >&2
 fi
 
-# Default base ref: prefer a local master, fall back to the remote. A worktree
-# created straight from origin/master may have no local master ref at all.
+# Default base ref: prefer origin/master over the local master.
+#
+# WHY this order (2026-09-07): workspace-start.mjs creates every session branch
+# from a FRESHLY-FETCHED origin/master, but the shared checkout's local `master`
+# ref is only as current as its last pull — it has been 100+ commits behind.
+# Diffing `master...HEAD` (three dots, merge-base) against that stale ref sweeps
+# every upstream commit that landed since into "changed files," and if any of
+# them touched desktop/package.json the BROAD_RE below trips and a two-file edit
+# pays for the FULL suite. origin/master is the ref the branch actually forked
+# from, so it is the only honest base. Fall back to local master only when there
+# is no origin/master (an offline clone with no remote ref).
 if [[ -z "$BASE" ]]; then
-  if git -C "$CHECKOUT" rev-parse --verify --quiet master >/dev/null; then
-    BASE="master"
-  else
+  if git -C "$CHECKOUT" rev-parse --verify --quiet origin/master >/dev/null; then
     BASE="origin/master"
+  else
+    BASE="master"
   fi
 fi
 

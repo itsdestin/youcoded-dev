@@ -44,6 +44,64 @@ function save(file, state) {
   fs.writeFileSync(temp, `${JSON.stringify(state, null, 2)}\n`, { flag: 'wx' });
   fs.renameSync(temp, file);
 }
+
+/**
+ * node_modules directories a freshly created component worktree inherits from
+ * its source checkout, as hardlink farms (`cp -al`).
+ *
+ * WHY this exists (2026-09-07): a new session worktree has no dependencies, so
+ * the first `npx vitest` / `tsc` dies with `Cannot find module` until the model
+ * discovers — out of band, from PITFALLS.md — that it must hand-copy them. That
+ * is a guaranteed dead-end on every fresh JS session. Copying here turns "read
+ * the docs, then run a command" into "it just works."
+ *
+ * WHY hardlinks (`cp -al`) and never a symlink: a symlinked node_modules lets
+ * `npm ci` / Gradle's bundleWebUi follow the link and empty the SHARED copy for
+ * every worktree at once (verify.sh prints the same warning). Hardlinks share
+ * inodes with the source, which the patcher rule already handles by replacing
+ * files rather than writing in place. Cross-filesystem sources fall back to a
+ * plain recursive copy — slower but correct.
+ *
+ * Best-effort by design: a source without that directory (most repos have no
+ * installed deps at all) contributes nothing, and a copy failure warns rather
+ * than aborting the whole startup over a cache that can be rebuilt with npm ci.
+ */
+const NODE_MODULES_PROVISIONS = {
+  youcoded: ['desktop'],
+};
+
+function copyTree(src, dest) {
+  try {
+    execFileSync('cp', ['-al', src, dest], { stdio: ['ignore', 'pipe', 'pipe'] });
+    return 'hardlinked';
+  } catch {
+    // EXDEV (source on another filesystem) or an older cp: hard links are an
+    // optimization, not a requirement — fall back to a real copy.
+    execFileSync('cp', ['-a', src, dest], { stdio: ['ignore', 'pipe', 'pipe'] });
+    return 'copied';
+  }
+}
+
+function provisionNodeModules(name, source, destination) {
+  const notes = [];
+  for (const sub of NODE_MODULES_PROVISIONS[name] ?? []) {
+    const srcModules = path.join(source, sub, 'node_modules');
+    if (!exists(srcModules) || !fs.lstatSync(srcModules).isDirectory() || fs.lstatSync(srcModules).isSymbolicLink()) continue;
+    const destModules = path.join(destination, sub, 'node_modules');
+    if (exists(destModules)) continue; // resume, or a prior partial run — leave it alone
+    try {
+      // The sub-dir (e.g. desktop/) may not exist as a real directory yet — a
+      // worktree's .gitignore can exclude the whole component, so git creates
+      // only the tracked files' parents. cp cannot create node_modules into a
+      // missing parent, so make it first.
+      fs.mkdirSync(path.dirname(destModules), { recursive: true });
+      notes.push(`${sub}/node_modules (${copyTree(srcModules, destModules)})`);
+    } catch (error) {
+      notes.push(`${sub}/node_modules (FAILED: ${String(error.message).trim()} — run 'cd ${path.join(destination, sub)} && npm ci')`);
+    }
+  }
+  return notes;
+}
 function validateWorktree(entry, source, destination, branch) {
   if (entry.path !== destination || entry.branch !== branch || entry.commonDir !== commonDir(source)) {
     throw new Error(`Session ownership mismatch for ${destination}; nothing was replaced.`);
@@ -108,7 +166,10 @@ export function startWorkspace({ root, session, repos = [] }) {
       // Record each successful component immediately: later failures preserve work and
       // a retry resumes what succeeded. A crash before this save fails closed on collision.
       save(manifest, state);
-      result.repositories[name] = { path: destination, branch, status: 'created' };
+      // After the manifest is saved: dependency provisioning is a convenience on
+      // top of a committed worktree, so its failures must not roll the worktree back.
+      const provisioned = provisionNodeModules(name, source, destination);
+      result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}) };
     }
     return result;
   } finally { fs.rmdirSync(lock); }
@@ -134,7 +195,10 @@ function main(args) {
   if (json) console.log(JSON.stringify(result, null, 2));
   else {
     console.log(`Session: ${result.session}`);
-    for (const [name, repo] of Object.entries(result.repositories)) console.log(`${name} (${repo.status}): ${repo.path}`);
+    for (const [name, repo] of Object.entries(result.repositories)) {
+      console.log(`${name} (${repo.status}): ${repo.path}`);
+      for (const note of repo.provisioned ?? []) console.log(`  deps: ${note}`);
+    }
     console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. No worktrees are automatically removed. This is not a sandbox.`);
   }
 }
