@@ -4,7 +4,7 @@
 
 **Goal:** Make the landing-page demo fully visible and vertically centered when activated, and make its scroll-driven fade clear sooner.
 
-**Architecture:** Keep all behavior in the landing page’s inline script. A small activation helper becomes the one owner for enabling the iframe, forcing the mask stop to 100%, and—on a wide viewport—centering the embed once. The existing requestAnimationFrame scroll path remains intact, but uses a named shorter reveal span constant.
+**Architecture:** Keep all behavior in the landing page’s inline script. The existing activation helper remains the one owner for enabling the iframe, forcing the mask stop to 100%, and—on a wide viewport—centering the embed once. The requestAnimationFrame scroll path remains intact, but starts and completes its reveal from the demo’s top edge while that complete window is still on screen.
 
 **Tech Stack:** Static HTML/CSS/vanilla JavaScript in `youcoded/docs/index.html`; Vitest source-contract test; isolated Vite workbench/Chrome recording.
 
@@ -15,6 +15,7 @@
 - Keep scroll work limited to one requestAnimationFrame and do not rebuild the SVG mask on scrolling.
 - A first activation clears the mask immediately, hides the existing floating controls through the current revealed state, and centers the embed only on wide screens.
 - Honor `prefers-reduced-motion: reduce` with an instant page scroll; do not re-center after the first activation.
+- During passive wide-screen scrolling, reach a 100% fade stop before the demo's top edge leaves the viewport.
 - Phone/narrow behavior remains unmasked and must not force recentering.
 - Do not modify iframe fixtures, generated media, source URL, or renderer code.
 - Comments explaining non-obvious behavior must include WHY.
@@ -62,9 +63,9 @@ describe('landing demo fade', () => {
   });
 
   it('uses a named shorter scroll reveal span and retains the safe mask technique', () => {
-    expect(site).toContain('var FADE_REVEAL_SPAN = 0.5;');
-    expect(site).toContain('var revealSpan = Math.max(120, band * FADE_REVEAL_SPAN);');
-    expect(site).toContain('/ revealSpan');
+    expect(site).toContain('var FADE_REVEAL_START = 240;');
+    expect(site).toContain('var FADE_REVEAL_SPAN = 180;');
+    expect(site).toContain('((FADE_REVEAL_START - er.top) / FADE_REVEAL_SPAN)');
     expect(site).toContain("embed.style.maskComposite = 'intersect'");
     expect(site).not.toContain('.frame.embed{overflow:hidden');
     expect(site).not.toContain('.frame.embed{clip-path:');
@@ -81,7 +82,7 @@ cd /home/destin/youcoded-dev/worktrees/sessions/landing-demo-fade/youcoded/deskt
 npx vitest run tests/landing-demo-fade.test.ts
 ```
 
-Expected: FAIL because `demoActivated`, `activateDemo`, and `FADE_REVEAL_SPAN` do not yet exist.
+Expected: FAIL until the existing test is updated from the former band-fraction contract to the new `FADE_REVEAL_START` and `FADE_REVEAL_SPAN` top-edge constants.
 
 - [ ] **Step 3: Commit the failing test**
 
@@ -92,7 +93,7 @@ git diff --cached --check
 git commit -m "test(site): pin landing demo activation behavior" -m "Submitted via YouCoded Assistant"
 ```
 
-### Task 2: Implement activation and accelerated scroll reveal
+### Task 2: Implement activation and top-edge scroll reveal
 
 **Files:**
 - Modify: `youcoded/docs/index.html:2537-2714`
@@ -102,30 +103,30 @@ git commit -m "test(site): pin landing demo activation behavior" -m "Submitted v
 - Consumes: `bootEmbed()`, `setFadeStop(fz)`, `wideMQ`, `placeFloat()`, `embed`, and the current `.hero-app.revealed` CSS behavior.
 - Produces: `activateDemo()` as the sole first-activation path, `demoActivated` one-shot state, and `FADE_REVEAL_SPAN` for the scroll path.
 
-- [ ] **Step 1: Add the named faster reveal span**
+- [ ] **Step 1: Replace the bottom-edge reveal with explicit top-edge timing**
 
-Immediately after the current `DOCK_GAP` declaration, add the following declaration and comment. This preserves the old lower bound while shortening only the interpolation distance.
+Replace the `DOCK_GAP`, fade-span comment, and `demoRevealed` declaration with these constants. The start point gives the complete window room to remain visible while its lower blend begins clearing; the 180px span completes it before the demo's top reaches the viewport top.
 
 ```js
 var DOCK_GAP = 34;
-// WHY: a full dissolved-band traversal left the live demo partially invisible
-// after visitors had scrolled past it; half that distance restores it promptly
-// without moving mask construction back into the scroll path.
-var FADE_REVEAL_SPAN = 0.5;
+// WHY: the bottom-edge anchor kept the demo blended after its top was leaving
+// the viewport. Start before the top reaches the viewport and finish the 180px
+// reveal while the complete window remains visible, without rebuilding its mask.
+var FADE_REVEAL_START = 240;
+var FADE_REVEAL_SPAN = 180;
 var demoRevealed = false, lastFz = null;
 ```
 
-Replace the existing calculation in `placeFloat()`:
+Inside `placeFloat()`, replace the old `band`, `revealSpan`, and `k` calculations with:
 
 ```js
-var k = Math.max(0, Math.min(1, ((innerHeight - DOCK_GAP - h) - er.bottom) / band));
+var k = Math.max(0, Math.min(1, ((FADE_REVEAL_START - er.top) / FADE_REVEAL_SPAN)));
 ```
 
-with:
+Keep the existing smoothstep line immediately after it:
 
 ```js
-var revealSpan = Math.max(120, band * FADE_REVEAL_SPAN);
-var k = Math.max(0, Math.min(1, ((innerHeight - DOCK_GAP - h) - er.bottom) / revealSpan));
+k = k * k * (3 - 2 * k);
 ```
 
 - [ ] **Step 2: Replace duplicated activation listeners with one helper**
@@ -172,7 +173,7 @@ Expected: PASS with 2 tests.
 
 - [ ] **Step 4: Prove the source-contract test detects regressions**
 
-Temporarily change `var FADE_REVEAL_SPAN = 0.5;` to `var FADE_REVEAL_SPAN = 1;`, run the focused test, and restore `0.5` immediately afterward.
+Temporarily change `var FADE_REVEAL_SPAN = 180;` to `var FADE_REVEAL_SPAN = 360;`, run the focused test, and restore `180` immediately afterward.
 
 Run:
 
@@ -180,7 +181,7 @@ Run:
 npx vitest run tests/landing-demo-fade.test.ts
 ```
 
-Expected: FAIL because the test requires the shorter `0.5` span. Restore the exact implementation and rerun the focused test; expected PASS.
+Expected: FAIL because the test requires the approved 180px top-edge reveal span. Restore the exact implementation and rerun the focused test; expected PASS.
 
 - [ ] **Step 5: Commit the implementation**
 
@@ -226,9 +227,9 @@ Expected: the isolated page is reachable at `http://127.0.0.1:4180/`.
 
 - [ ] **Step 3: Capture activation and scroll behavior in isolated Chrome**
 
-Use the existing `scripts/ui-probe.mjs` or an equivalent local CDP capture to open `http://127.0.0.1:4180/`, set a wide viewport, click the Try Demo button, and capture the resulting centered demo. Then reload, scroll downward through the demo, and capture that it reaches fully visible before the former full-band reveal distance. Use deterministic DOM conditions rather than a fixed sleep wherever the tool supports them.
+Use the existing `scripts/ui-probe.mjs` or an equivalent local CDP capture to open `http://127.0.0.1:4180/`, set a wide viewport, click the Try Demo button, and capture the resulting centered demo. Then reload, scroll the passive demo until its top reaches the viewport top, and capture that `--fade-stop` is `100%` before the top becomes negative. Use deterministic DOM conditions rather than a fixed sleep wherever the tool supports them.
 
-Expected: in the activation capture, the demo’s vertical midpoint is within a few pixels of the viewport midpoint and the lower dissolve is gone. In the scroll capture, `--fade-stop` reaches `100%` after approximately half the previous band distance.
+Expected: in the activation capture, the demo’s vertical midpoint is within a few pixels of the viewport midpoint and the lower dissolve is gone. In the passive scroll capture, `--fade-stop` is `100%` while the demo's top remains at or below zero.
 
 - [ ] **Step 4: Inspect the captures before presenting them**
 
@@ -253,6 +254,6 @@ Stop only the exact static-server process started in Step 2. Confirm `git -C /ho
 
 ## Plan self-review
 
-- **Spec coverage:** Task 2 implements immediate unmasking, wide-only one-time vertical centering, reduced-motion behavior, existing controls’ revealed state, and the faster rAF scroll reveal. It retains the safe two-layer mask and does not touch content/fixtures. Task 3 covers isolated visual validation and full desktop verification.
+- **Spec coverage:** Task 2 retains immediate unmasking, wide-only one-time vertical centering, reduced-motion behavior, and existing controls’ revealed state. It replaces the late bottom-edge reveal with top-edge timing that completes before the demo begins leaving the viewport; Task 3 visually validates that condition in isolation.
 - **Placeholder scan:** No TBD/TODO or unspecified test/code steps remain.
-- **Consistency:** `activateDemo`, `demoActivated`, and `FADE_REVEAL_SPAN` are defined in Task 2 and asserted by Task 1. All named paths point to the session’s isolated worktrees.
+- **Consistency:** `activateDemo`, `demoActivated`, `FADE_REVEAL_START`, and `FADE_REVEAL_SPAN` are defined in Task 2 and asserted by Task 1. All named paths point to the session’s isolated worktrees.
