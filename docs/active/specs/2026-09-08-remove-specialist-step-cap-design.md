@@ -37,9 +37,9 @@ Remove `stepCap` from `SpecialistDefinition` and from all built-in definitions. 
 
 ### Child-session construction
 
-When `NativeSessionHost` creates or resumes a specialist child, it will preserve the selected preset manifest without supplying a `limits.maxSteps` override. The child session must therefore have no step-cap configuration at all.
+When `NativeSessionHost` creates or resumes a specialist child, it will preserve the selected preset manifest without supplying a `limits.maxSteps` override. `HarnessSession` must explicitly skip its model-tier fallback budget when `isSpecialistChild` is true; merely omitting `limits.maxSteps` would incorrectly fall back to the root session's 25/50-step model budget.
 
-The parent session's existing `max_steps` behavior remains exactly as implemented because this change is restricted to `buildSpecialistSession()`.
+The root-session `max_steps` behavior remains exactly as implemented. The shared loop's only behavior change is the `isSpecialistChild` carve-out, so root sessions continue to use an explicit harness limit or `stepBudgetFor(modelId)`.
 
 ### Completion and routed asks
 
