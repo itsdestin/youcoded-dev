@@ -51,7 +51,7 @@ has passed ~8 items — graduate it to its own file.
 
 - [ ] With a buddy window open, a streaming reply makes the whole window re-lay-out on every
       token (2026-08-27) — the twin of the main-chat stutter fixed in perf cycle 1.
-      `buddy-window` `desktop` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-buddy-bubblefeed-reflow-per-token.md
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-buddy-bubblefeed-reflow-per-token.md
 
 - [ ] Typing a message in the buddy window while Claude Code is showing a permission / question /
       plan menu sends it straight into the menu and confirms the highlighted option (2026-07-31).

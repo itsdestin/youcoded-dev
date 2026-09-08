@@ -32,6 +32,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       dead 2026-08-31). Approved design exists; held by Destin, not yet built
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
 
+- [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual
+      refresh — Destin upgraded his ChatGPT plan and the new models didn't show up until he
+      thought to sign out and back in. A refresh button on each card so a plan or key change
+      is picked up without that workaround
+      `settings` `desktop` `confirmed` `checked 2026-09-07`
+
 - [ ] After a native session recovers from a step that produced only blank whitespace, the
       history the model sees on resume is not byte-identical to what it saw live (leading blank
       lines fold into the retry's text). Invisible to the user; leftover from the empty-step fix
