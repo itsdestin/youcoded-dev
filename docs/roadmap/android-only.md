@@ -3,6 +3,17 @@ Filing test: if you fixed this on desktop, would Android still be broken? Yes �
 Android's own code. Not here: the code is shared and the phone is just where it shows — file
 that in the shared area with android as seen-on.
 
+- [ ] Android keeps enforcing the old "approve protected requests" overrides after the desktop
+      switches them off — the desktop's one-time reset does not touch the phone's own copy, and
+      the phone has no screen to turn them off
+      `settings/permissions` `android` `confirmed` `checked 2026-09-07`
+
+- [ ] A default model chosen on the desktop is dropped by the phone's settings reply, so if
+      the phone ever gains those models it will ignore a default the user already set
+      (deferred by Destin 2026-09-07; today the phone can only pick Claude models anyway, so
+      nothing is visibly wrong on it)
+      `settings/defaults` `android` `confirmed` `checked 2026-09-07`
+
 - [ ] Resuming a past Claude Code conversation on Android starts a fresh session instead; and
       when the project folder's name contains hyphens, Android can open the session in a
       sibling folder (re-verified 2026-08-12 and 2026-09-01, unchanged since April)

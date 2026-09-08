@@ -1,6 +1,15 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] Saving a permission setting over remote access replaces the whole stored block instead
+      of merging into it, and does not refresh what the app is enforcing until something local
+      reads the settings again — harmless today because nothing writes those values any more
+      `settings/permissions` `remote` `confirmed` `checked 2026-09-07`
+
+- [ ] Over remote access the assistant-settings model picker offers models the browser cannot
+      actually run, so choosing one saves a default that quietly does nothing there
+      `settings/defaults` `remote` `confirmed` `checked 2026-09-07`
+
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
       `chat` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md

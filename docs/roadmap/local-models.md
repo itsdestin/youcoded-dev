@@ -2,6 +2,14 @@
 Filing test: getting a model onto this machine and serving it — downloads, disk, the engine
 process. Would this break the same way on a cloud model? No. (Yes → native-harness.)
 
+- [ ] A 2B model says "will be tight" on a 128 GB laptop — and every other local model is
+      mislabelled the same way, because the estimate scores against the 4 GB slice the BIOS
+      calls "video memory" instead of the ~90 GB the graphics chip can really reach. Destin
+      2026-09-07: count shared memory on every unified machine — this one, Apple M-series,
+      Windows where it makes sense — and check the logic so the same memory is never counted
+      twice
+      `local-models-screen` `desktop` `confirmed` `checked 2026-09-07` → docs/active/investigations/2026-09-07-unified-memory-fit-estimate.md
+
 - [ ] Loading a second large local model took the whole machine down — Qwen3.5-122B and
       Qwen3.6-35B resident together on the Strix Halo desktop (2026-08-16) lost the desktop
       shell, YouCoded, Chrome and Steam. **The warning half is fixed**: the numbers behind it are

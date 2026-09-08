@@ -1,0 +1,41 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1",
+ "width": 1440,
+ "height": 900,
+ "pre": [
+  {
+   "click": "[title=Settings]",
+   "settle": 700
+  }
+ ],
+ "shots": [
+  {
+   "name": "assistant-local",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Local models')",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Local models'"
+  },
+  {
+   "name": "assistant-specialists",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Specialists')",
+     "settle": 1200
+    }
+   ],
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Specialists'"
+  }
+ ]
+}

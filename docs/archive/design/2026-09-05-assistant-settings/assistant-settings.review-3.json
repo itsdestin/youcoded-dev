@@ -1,0 +1,94 @@
+{
+  "title": "Assistant settings — round 3: dropdowns, account buttons, your permissions copy",
+  "key": "assistant-settings-review-3",
+  "out": "assistant-settings.review-3.html",
+  "images": "images/assistant-settings.review-3",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r3/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r3/after"
+  },
+  "labels": { "before": "Round 2", "after": "Round 3" },
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "general": ["assistant-settings-r3", "assistant-general", "840x720+300+90"],
+    "cloud": ["assistant-settings-r3", "assistant-cloud", "840x720+300+90"],
+    "permissions": ["assistant-settings-r3", "assistant-permissions-skip-on", "840x720+300+90"]
+  },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Settings → Assistant settings → General",
+      "path": "Settings → Assistant settings → General",
+      "crop": "general",
+      "headline": "Two matching dropdowns, and web search is one card holding Tavily and Exa.",
+      "changed": "The project folder is a dropdown now, the same shape and size as the model one above it, with the hint line you asked for. It lists the folders you have saved in the app, Home directory, and Choose another folder… which opens the usual browse window. Web search is a card with its name, its (i) and both key rows inside it, tightened up.",
+      "notice": "The folder shows its saved nickname — youcoded — instead of the long path, when it is one you saved.",
+      "risk": "Someone whose default folder was picked by browsing, and never saved in the app, still sees the full path as the dropdown's text. There is nowhere shorter to put it.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R3-2",
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers",
+      "crop": "cloud",
+      "headline": "Claude Code now matches ChatGPT: limits, a My Account button and Sign out.",
+      "changed": "The Claude Code card grew its two limit bars, a Sign out button, and a My Account button. Every signed-in card has My Account, which opens that company's own account page in your browser — Claude's usage page, the ChatGPT account settings, the OpenRouter credits page.",
+      "notice": "Claude Code carries three buttons now: My Account, Preferences and Sign out. ChatGPT carries two.",
+      "risk": "Sign out is drawn but does nothing yet — the next question is whether to build it.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R3-3",
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Settings → Assistant settings → Permissions",
+      "crop": "permissions",
+      "headline": "Your Skip Permissions wording, word for word.",
+      "changed": "The row is now Enable Skip Permissions Mode? over your line: Allows you to toggle claude code's --dangerously-skip-permissions flag when creating a session. Claude won't ask before taking action.",
+      "notice": "The red line under it, when the switch is on, still says Claude will change files and run commands without asking you.",
+      "risk": "That red line now repeats what your own hint already says. Say the word and it goes.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R3-4",
+      "words": true,
+      "surface": "Settings → Assistant settings → General",
+      "path": "What the project folder row should be called",
+      "headline": "The row is named Show Project Folder, in your words. Is that the name you want on it?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Keep Show Project Folder",
+          "summary": "The name stays exactly as you wrote it. Pro: it is your wording and nobody has to guess at it. Con: the row does not show a folder, it chooses which folder new conversations start in — someone reading the list may expect the name to open or reveal a folder and not find one.",
+          "cost": "Nothing."
+        },
+        {
+          "id": "b",
+          "label": "Call it Default project folder",
+          "summary": "The name matches the row above it, Default model, and matches what the setting does. Pro: the two dropdowns read as a pair — the model you start with and the folder you start in. Con: it is not the name you wrote.",
+          "cost": "Nothing."
+        }
+      ]
+    },
+    {
+      "id": "R3-5",
+      "words": true,
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "Whether Sign out on the Claude Code card should really work",
+      "headline": "Signing out of Claude Code would sign you out everywhere on this computer, not just in YouCoded. Build it?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Build it, and say what it does before it does it",
+          "summary": "The button works, and pressing it first asks: this signs you out of Claude Code on this computer, including any terminal you use it in. Pro: the card matches ChatGPT's, which is what you asked for, and nobody is surprised. Con: it is real new work in the part of the app that handles your Claude login, and one wrong step there means signing back in.",
+          "cost": "A day or so of build and testing in the sign-in code."
+        },
+        {
+          "id": "b",
+          "label": "Drop the button for now",
+          "summary": "The Claude Code card keeps its limit bars, My Account and Preferences, and has no Sign out. Pro: nothing risky is touched, and the panel ships sooner. Con: the two cards do not match, and there is still no way to disconnect a Claude account from inside the app.",
+          "cost": "Nothing."
+        }
+      ]
+    }
+  ]
+}

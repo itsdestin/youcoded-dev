@@ -1,0 +1,53 @@
+{
+ "deck": "assistant-settings-review-2",
+ "started": "2026-09-06T10:27:50.681Z",
+ "submitted": "2026-09-06T10:37:35Z",
+ "cur": 5,
+ "answers": {
+  "R2-1": {
+   "note": "i think defaul model and default project folder should both have correctly styled dropdowns. the title of project folder should be \"Show Project Folder\". websearch should not be a bare header, but a card that contains the tavily/exa cards. tight spacing on it.",
+   "note_kind": "noting",
+   "v": "yes",
+   "seconds": 279,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "note": "add mirror line in project folder when we add dropdown.",
+   "note_kind": "noting",
+   "seconds": 39,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "note": "we should also have a white \"My Account\" page button that outlinks to the relevant provider's webpage. should be at the top right when signed in. also i thought we were supposed to make the claude code card mirror the gpt card with usage limits and such and a sign out button. ",
+   "note_kind": "noting",
+   "seconds": 110,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-4": {
+   "note": "change copy. that should be \"Enable Skip Permissions Mode?\" with copy that says\" Allows you to toggle claude code's --dangerously-skip-permissions flag when creating a session. Claude won't ask before taking action",
+   "note_kind": "noting",
+   "v": "yes",
+   "seconds": 137,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-5": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-6": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

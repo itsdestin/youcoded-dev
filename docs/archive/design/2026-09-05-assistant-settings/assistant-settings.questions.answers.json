@@ -1,0 +1,59 @@
+{
+ "deck": "assistant-settings-questions",
+ "started": "2026-09-05T07:21:45.521Z",
+ "submitted": "2026-09-05T07:38:42Z",
+ "cur": 6,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 764,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "other",
+   "note": "how many permissions settigns are there for each? if its JUST skip permissions, that should just go on the claude code page ",
+   "note_kind": "noting",
+   "seconds": 116,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "other",
+   "note": "confused. may need to see this to understand what youre asking",
+   "note_kind": "noting",
+   "seconds": 56,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "b",
+   "seconds": 31,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

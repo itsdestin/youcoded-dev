@@ -1,0 +1,52 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 1440,
+ "height": 900,
+ "pre": [
+  { "click": "[title=Settings]", "settle": 700 }
+ ],
+ "shots": [
+  {
+   "name": "settings-drawer",
+   "actions": [],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Model Providers'))"
+  },
+  {
+   "name": "before-model-providers",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Model Providers'))", "settle": 1200 }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "before-defaults",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Defaults'))", "settle": 900 }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "before-defaults-skip-on",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Defaults'))", "settle": 900 },
+    { "click": "[role=dialog] [aria-label='Skip Permissions']", "settle": 500 },
+    { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Advanced')", "settle": 500 }
+   ],
+   "expect": "[role=dialog] [aria-label='Auto-approve all']"
+  },
+  {
+   "name": "before-permissions",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Permissions'))", "settle": 900 }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "before-specialists",
+   "actions": [
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Specialists'))", "settle": 1200 }
+   ],
+   "expect": "[role=dialog]"
+  }
+ ]
+}

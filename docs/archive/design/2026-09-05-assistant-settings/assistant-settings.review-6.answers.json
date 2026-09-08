@@ -1,0 +1,20 @@
+{
+ "deck": "assistant-settings-review-6",
+ "started": "2026-09-06T17:19:57.455Z",
+ "submitted": "2026-09-06T17:22:24Z",
+ "cur": 1,
+ "answers": {
+  "R6-1": {
+   "v": "yes",
+   "seconds": 133,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-2": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

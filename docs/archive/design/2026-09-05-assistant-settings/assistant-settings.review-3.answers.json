@@ -1,0 +1,46 @@
+{
+ "deck": "assistant-settings-review-3",
+ "started": "2026-09-06T11:00:47.825Z",
+ "submitted": "2026-09-06T11:04:49Z",
+ "cur": 4,
+ "answers": {
+  "R3-1": {
+   "v": "other",
+   "note": "project picker should look like it does in the new session dropdown. same options, folder icon, etc.",
+   "note_kind": "noting",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1.2
+  },
+  "R3-2": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-3": {
+   "v": "yes",
+   "note": "remove the current red banner. replace it with a blocking popup that requires to acknowledge whatever working claude code itself uses for the skip permissions confirmation screen. tick a box saying they ackowleding they use it at their own risk.",
+   "note_kind": "noting",
+   "seconds": 101,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-4": {
+   "v": "pick",
+   "pick": "b",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-5": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 71,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "we should keep the button, then just give a popup telling them to run the /logout command if that works in a claude terminal session lmao. we won't actually sign them out.",
+   "note_kind": "noting"
+  }
+ }
+}
