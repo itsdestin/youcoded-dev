@@ -1,5 +1,5 @@
 ---
-status: resolved
+status: shipped
 date: 2026-09-07
 feature: Assistant settings
 ---

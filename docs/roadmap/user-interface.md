@@ -69,14 +69,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       (attention toast, permission gates, loading spinners, sync status) were never audited
       `chat` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-float-stacking.md
 
-- [ ] Fold Defaults + Permissions + Model Providers into one "Assistant settings" panel.
-      Destin reviewed the 2026-08-18 mockup on 2026-09-04: concept yes, implementation
-      rejected and DELETED (branch and worktree gone). Restart from scratch through the feature
-      flow — questions deck, then draw in the workbench on today's master. The concept and the
-      one hard constraint (Claude Code and native sessions have different permission modes) are
-      at the top of the archived design doc. Pre-1.3 priority (Destin, 2026-09-02)
-      `settings` `desktop` `confirmed` `checked 2026-09-04` `v1.3` → docs/archive/design/2026-08-17-assistant-settings-panel-design.md
-
 - [ ] Pressing a session whose name is shorter than the current one lets one or two more
       dots into the row, and they appear at once while the bar re-centres ~6px in a single
       frame — the only non-zero number left in the drag sweep after the 2026-09-03 rebuild

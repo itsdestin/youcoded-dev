@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-07
 revised: 2026-09-07 (design reviews 1, 2 and 3 — 34 findings, all accepted; round 3 is the cap)
 branch: feat/assistant-settings
