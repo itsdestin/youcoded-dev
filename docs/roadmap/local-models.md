@@ -130,3 +130,11 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       (`rg -n "ENGINE_MODELS_CHANGED" desktop/src/` → a declaration and a listener, no sender),
       and it would only fire while the engine process is running anyway.
       `desktop` `confirmed` `checked 2026-09-06`
+
+- [ ] Make the local-engine auto-unload timeframes user-configurable in the Assistant
+      settings panel. Today a model auto-sleeps after 15 minutes idle (`sleep-idle-seconds`,
+      engine-wide default 900) and the whole engine stops after 25 minutes idle (`idleMs`),
+      both hard-coded in `engine-supervisor.ts`. Surfaces: the per-model auto-sleep and the
+      whole-engine shutdown. Only when the settings panel exists — the two values ride that
+      feature's plumbing
+      `settings/local-models` `desktop` `needs-verify` `checked 2026-09-07`
