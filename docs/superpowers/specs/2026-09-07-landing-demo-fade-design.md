@@ -9,7 +9,7 @@ repo: youcoded
 
 ## Goal
 
-Keep the landing page's intentional blended lower edge on the live demo while it is passive. When a visitor chooses to use the demo, make the complete app window visible immediately and scroll it to the vertical center of the browser viewport. During ordinary downward page scrolling, restore the full window substantially sooner than the current reveal.
+Keep the landing page's intentional blended lower edge on the live demo while it is passive. When a visitor chooses to use the demo, make the complete app window visible immediately and scroll it to the vertical center of the browser viewport. During ordinary downward page scrolling, restore the full window before its top edge begins leaving the viewport.
 
 ## Scope
 
@@ -29,7 +29,7 @@ Keep the landing page's intentional blended lower edge on the live demo while it
 
 ## Scroll reveal
 
-The current animation-frame-throttled calculation remains the scroll path. Its interpolation range is reduced from the dissolved band's full height to a deliberately shorter fraction of that band, so the visible window reaches a 100% fade stop earlier as the visitor scrolls downward. The exact fraction is a named constant and has a WHY comment explaining that it corrects the prolonged partially-invisible state without reintroducing per-scroll mask rebuilds.
+The current animation-frame-throttled calculation remains the scroll path. On a passive wide-screen demo, its reveal is anchored to the demo's top edge approaching the viewport top, not to the demo bottom crossing the fixed download pill. It begins while the full window remains visible and reaches a 100% fade stop before the top edge can scroll above the viewport. The named threshold and span constants carry a WHY comment explaining that this corrects the prolonged partially-invisible state without reintroducing per-scroll mask rebuilds.
 
 ## Implementation boundaries
 
@@ -40,8 +40,8 @@ The current animation-frame-throttled calculation remains the scroll path. Its i
 ## Validation
 
 - A focused static/page-level test asserts the activation path makes the fade fully visible, scrolls to the calculated vertical center only on wide layouts, and selects smooth versus instant scrolling according to reduced-motion preference.
-- The same test asserts ordinary scroll uses the named shorter reveal span.
-- Capture and inspect an isolated before/after motion clip showing both: activation clears the dissolve and centers the demo; a downward scroll clears the fade sooner.
+- The same test asserts ordinary scrolling has named top-edge threshold and reveal-span constants.
+- Capture and inspect an isolated before/after motion clip showing both: activation clears the dissolve and centers the demo; normal downward scrolling clears the fade before the demo's top leaves the viewport.
 - Run the relevant landing-page/workbench checks. The desktop verification command is run before claiming the website change complete.
 
 ## Out of scope
