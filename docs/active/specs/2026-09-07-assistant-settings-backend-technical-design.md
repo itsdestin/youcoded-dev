@@ -151,7 +151,14 @@ said (design review 2, R2-2). All of it:
   `defaultRuntime()` first, exactly as today, **then** apply the stored default on top. The
   guard stays green and the default still survives the create.
 
-`youcoded-runtime-default` keeps its single writer: first-run. Nothing here writes it.
+`youcoded-runtime-default` keeps its single writer: first-run. Nothing here writes it — but
+it is now honoured unconditionally. `defaultRuntime()`'s `isNativeSupported()` gate (review
+R3-6) sent an install whose non-Claude side is switched off back to Claude Code; Destin
+removed it on the build deck (P-3 b): "i never want to 'default' back to claude code when the
+chosen models are unavailable. all providers should be equal/neutral". The way out on such an
+install is the model menu's "You have not set up any model providers." and its Add provider
+button, which opens this panel. `runtime-default.test.tsx` case (c) pinned the old rule and
+now pins this one.
 
 `App.tsx:478`'s inferred `sessionDefaults` state shape needs the new fields or the build
 will not compile. `preload.ts`'s `defaults` annotation is not imported by the renderer, so
@@ -166,15 +173,20 @@ on one model and set a different default will notice.
 `HeaderBar` needs three small edits to thread the new prop through to `SessionStrip`
 (R2-10); it has no form of its own.
 
-**The stored label must not outlive the choice** (design review 3, R3-5). `startModelLabel`
-— added this round so the Settings row can name a native default without a catalog lookup —
-is a snapshot taken at pick time and never rechecked. Meanwhile guards 2 and 3 quietly send
-the forms back to Claude when the provider is gone. Without this, the row would keep saying
-"ChatGPT · GPT-5.6" confidently about a provider that no longer exists, while every new
-conversation actually started on Claude. So: **when the panel opens and its picker has
-loaded, an invalid stored choice clears both `startModel` and `startModelLabel`** — the row
-falls back to the Claude alias, which is what is really happening. Self-healing, one write,
-and only where the data to judge it already exists.
+**The stored label must not outlive the choice** (design review 3, R3-5) — **answered by
+Destin on the build deck, P-1 a, 2026-09-07: the panel never erases a saved choice.**
+
+R3-5 proposed that an invalid stored choice clear both `startModel` and `startModelLabel`
+when the panel opens. He rejected it: the states that look invalid include ones that are only
+temporary — a local engine that is off, a sign-in check still in flight, a catalog that has
+not loaded — and wiping a setting chosen weeks ago for one of those is the app deciding
+something on his behalf, which is the rule this whole document is built on.
+
+What ships instead: the stored choice is kept, and Assistant settings' Default model row says
+it is being ignored ("ChatGPT · GPT-5.6 — sign in to use. New conversations start with no
+model chosen until this is fixed or you pick another one. Your choice is kept."). The
+new-session form stays silent and simply starts with nothing selected (P-2 b), so there is
+one place that tells the truth rather than two.
 
 ## T2 — the old protection overrides switch themselves off (contract R17)
 
@@ -251,7 +263,9 @@ The guards are added anyway, as guards:
 
 - A stored native `startModel` opens each of the three forms on that provider and model;
   with native unsupported, a deleted provider, or a model gone from the catalog, each opens
-  on the Claude alias.
+  with **nothing selected** — never on the Claude alias (P-3 b: no provider is the app's
+  fallback). This bullet said the opposite until 2026-09-07; it was left over from the
+  revision Destin's correction replaced.
 - The post-create reset re-applies the stored default rather than dropping to the remembered
   runtime.
 - The migration zeroes every override and writes the marker; a second run changes nothing;
