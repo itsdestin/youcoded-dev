@@ -34,7 +34,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 - [ ] The desktop pays a CPU cost on every line of terminal output for a remote replay buffer,
       even when no phone or browser is connected
-      `desktop` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-remote-pty-replay-buffer-copy-per-chunk.md
+      `desktop` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-remote-pty-replay-buffer-copy-per-chunk.md
 
 - [ ] Settings read over remote access can disagree with what the desktop shows for the same
       file — defaults, folders, permission overrides (from the 2026-07-10 review)
