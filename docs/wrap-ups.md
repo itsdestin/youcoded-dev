@@ -116,3 +116,9 @@ recurred — the repetition is the data.
 - The session-opening handoff asserted a workbench "still serving on port 5233"; nothing was on 5233, and 5223 belonged to a different session's worktree → dropped: self-correcting, two calls to check, and the alternative (a convention about naming live ports in handoffs) would be prose nobody reads. Worth remembering only as: never kill a port you did not start
 - His screenshot of a 2B model reading "will be tight" on a 128 GB laptop → roadmap: `local-models.md`, with a measured investigation. Reproduced the exact sentence from the app's own cached numbers; the estimate scores against a 4 GiB BIOS carve-out instead of the ~90 GB the graphics chip reaches. Not from this branch — those files are untouched by it  [4 curated models mislabelled today; his direction on unified memory captured in the report]
 - deleted/merged: `OPEN-QUESTIONS.md` went from seven live questions and 3.3 KB of prose to a one-table record of where each answer lives — every question was answered on the build deck
+
+## 2026-09-08 — fixed quick-space composer caret regression (session/composer-space-caret)
+- A delayed animation-frame caret repair could overwrite the caret after newer typing → applied: native `setRangeText()` insertion with a WHY comment and eight pinning regressions in `InputBar.tsx` / `InputBar.test.tsx`
+- Incorrect Grep `type` values were assistant misuse of an already-clear tool schema → dropped: expanding guidance would duplicate the tool contract
+- Broad browser timing and undo behavior were not exercised → dropped: outside this focused regression; no claim made
+- deleted/merged: removed the deferred cursor operation and manual string slicing
