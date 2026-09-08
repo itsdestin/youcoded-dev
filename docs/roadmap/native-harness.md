@@ -252,13 +252,17 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
       `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-mid-turn-model-swap-reprices-whole-turn.md
 
-- [ ] Cache efficiency — cloud and local sessions leave cache hits on the table: OpenRouter turns
-      can drift between endpoints, local models re-read the whole conversation every specialist
-      turn, long local sessions lose their cache to trimming (the ~50% "Reuse" reading on DeepSeek
-      is NOT a bug — measurement artifact, documented). The idle-shutdown half is answered:
-      turning on "Keep loaded" for a model stops both the per-model auto-sleep and the whole-engine
-      idle shutdown, so that model's cache survives the gap between messages
-      `desktop` `confirmed` `checked 2026-09-06` → docs/active/investigations/2026-08-17-cache-efficiency.md
+- [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
+      reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
+      and ChatGPT-plan sessions can resend a changed opening prompt after restart instead of keeping
+      the longest reusable prefix. Local models re-read the whole conversation every specialist
+      turn, and long local sessions lose their cache to trimming (the ~50% "Reuse" reading on
+      DeepSeek is NOT a bug — measurement artifact, documented). Improve resumed cloud-session
+      affinity and prefix stability, then measure the first post-resume request rather than trusting
+      historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
+      stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
+      survives the gap between messages
+      `desktop` `confirmed` `checked 2026-09-08` → docs/active/investigations/2026-08-17-cache-efficiency.md
 
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
