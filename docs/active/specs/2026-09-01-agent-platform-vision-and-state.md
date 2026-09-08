@@ -161,7 +161,7 @@ Recorded order from the 2026-08-11 program, re-verified 2026-08-26 and unchanged
 |---|---|---|
 | 3 | **Session context transparency panel** (broadened from "tell the user what was truncated") | Design approved 2026-08-17, tabbed mockup on `feat/context-truncation-notice`; **backend unbuilt** (`native.onSessionContext` does not exist). Handoff: `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md` |
 | 4 | **Ground-truth model metadata** — pricing incl. `input_cache_read`, context, tool support, discovered not curated | Unbuilt. Blocks 5 and the cost chip's correctness |
-| 5 | **Capability tiering rework** (four tiers: small/big local, small/frontier cloud) + fold `model-step-budget.ts` into the profile | Unbuilt. The specialists `Task` gate (`canDelegate`) already needs this model-class axis |
+| 5 | **Capability tiering rework** (four tiers: small/big local, small/frontier cloud) | Unbuilt. The specialists `Task` gate (`canDelegate`) already needs this model-class axis. This is capability classification only: root step guards are explicit creation-time header snapshots, specialist limits remain definition-owned `stepCap`, and evaluator runs explicitly use `maxSteps: 100`; none derives a step limit from these tiers. |
 | 6 | **M4 leftovers** — folderless sessions | Unbuilt, low priority. (Image-by-path shipped; cost chip shipped but see §5.5) |
 | 7 | **Multi-model cwd contract** — Bash `workdir`, file-tool relative-path policy, one canonical cwd-rules block | Items 1 and 4 unbuilt; item 2 shipped differently (miss hints). **Blocked on a decision, not code** (§9 item 6) |
 | 8 | **MCP phase 2** — settings UI, adopt flow, `mcp:*` IPC parity | Unbuilt; phase 1 is developer-operable only |

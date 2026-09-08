@@ -122,3 +122,9 @@ recurred — the repetition is the data.
 - Incorrect Grep `type` values were assistant misuse of an already-clear tool schema → dropped: expanding guidance would duplicate the tool contract
 - Broad browser timing and undo behavior were not exercised → dropped: outside this focused regression; no claim made
 - deleted/merged: removed the deferred cursor operation and manual string slicing
+
+## 2026-09-08 — native step-guard setting (session/native-step-guard-setting)
+- Two implementation specialists repeatedly exhausted broad task budgets without reports; splitting the remainder into runtime, UI, integration, and final-fix jobs produced four bounded reports and clean ownership → applied in-session: bounded specialist briefs; dropped as a durable rule because the existing guidance already says to delegate one focused piece of work  [2 interrupted workers before the split]
+- The supplied document path pointed at the shared checkout, while workspace-start had moved it into the session worktree; locating it cost a failed read plus a glob → dropped: workspace-start already prints the absolute paths, and the mismatch was specific to this resumed session
+- Final review caught a destructive validation asymmetry: malformed persisted values correctly read as None, but malformed write values also cleared the preference → applied: `step-guard-settings.test.ts` pins reject-without-mutation before the main-process fix
+- deleted/merged: removed the whole model-name-based `model-step-budget.ts` subsystem and its test; ordinary root limits now come from one explicit persisted snapshot
