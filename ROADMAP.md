@@ -63,7 +63,7 @@ Target: `v1.3`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 1 | 6 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 16 | 4 | 0 | 6 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 14 | 2 | 3 | 2 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 3 | 3 | 2 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 14 | 5 | 0 | 2 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 2 |
