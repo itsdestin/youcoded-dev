@@ -178,6 +178,16 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       should switch off in full-auto — decide both with the harness evaluator, not by argument
       `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
 
+- [ ] Warn the model when a background Bash command has been running 5 and 15 minutes
+      ("The (call) has been running for 5 minutes — if this is within expectations, you may
+      ignore this message"), so a model can act on a genuinely stuck call instead of polling.
+      Destin 2026-09-07: hit live — a model ran BashOutput in a 150-call polling loop on a
+      hung background command. Design note: ride the existing shell finished-notice lane
+      (ShellRegistry per-run timers → queueHostNotice → drainDeliveries), which delivers at
+      the next idle boundary, never mid-turn. Anti-poll wording shipped 2026-09-07; this is
+      the remaining proactive half
+      `desktop` `confirmed` `checked 2026-09-07`
+
 - [ ] WebFetch's "page was too thin to extract" thresholds were reasoned defaults, never measured
       against real pages the way the JS-render floor next to them was
       `desktop` `parked` `checked 2026-09-01`
