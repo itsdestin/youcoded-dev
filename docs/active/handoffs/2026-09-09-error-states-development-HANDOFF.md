@@ -116,6 +116,11 @@ Stage explicit paths; **never** worktree-wide. Full inventory (`git status --sho
 
 ## Next steps (in order)
 
+> **Superseded for the build.** Destin chose to build this out on 2026-09-09. The ordered plan
+> is `docs/active/plans/2026-09-09-error-states-development-build.md` — start there. The list
+> below is kept as the record of how the design stage ran.
+
+
 1. **If the new session is not the parent**: read the four docs above; verify state —
    `git status --short`, `ss -ltnp` for workbenches, `git -C youcoded diff --check`.
 2. ~~Apply round-2 feedback~~ **done** — revisions 16–19, ledger “Revision — 2026-09-09, second
