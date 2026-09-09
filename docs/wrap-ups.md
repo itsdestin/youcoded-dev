@@ -128,3 +128,11 @@ recurred — the repetition is the data.
 - The supplied document path pointed at the shared checkout, while workspace-start had moved it into the session worktree; locating it cost a failed read plus a glob → dropped: workspace-start already prints the absolute paths, and the mismatch was specific to this resumed session
 - Final review caught a destructive validation asymmetry: malformed persisted values correctly read as None, but malformed write values also cleared the preference → applied: `step-guard-settings.test.ts` pins reject-without-mutation before the main-process fix
 - deleted/merged: removed the whole model-name-based `model-step-budget.ts` subsystem and its test; ordinary root limits now come from one explicit persisted snapshot
+
+## 2026-09-09 — buddy floater and friendly mascot palettes (session/buddy-floater-regression)
+- Shared host zoom clipped 112px art inside an 85px CSS viewport; source guesses were insufficient → applied: preload per-frame zoom guard and tests; isolated Electron 41 probe preserved buddy 112px through main zoom changes and reload.
+- Theme sync reached more windows than theme-install notifications; a stale buddy reset a valid new theme → applied: multiwindow watcher and deferred incoming-theme activation with cancellation tests.
+- Default mascot art copied accessible button colors and produced frightening pale eyes; authoring references contradicted their own dark-eye guidance → applied: default-only palette/catchlight contract, small-size rim tests, and consolidated theme-builder/reference advice. UI text contrast remains unchanged.
+- Specialist failures and repeated status steers delayed work; one capture contained a browser error → dropped as new policy: existing tool and capture rules already require observable readiness and image inspection. Parent-owned server and actual DOM waits corrected the capture before review. No failed image was presented as accepted work.
+- deleted/merged: removed conflicting accent/on-accent mascot-palette prescriptions and stale paper-white Halftone advice; reused existing authoring references rather than another guide.
+- Paid model evaluation, interactive motion rigs, packaged beta and multi-monitor validation were not run → dropped from this task; existing buddy release-validation roadmap items remain open.
