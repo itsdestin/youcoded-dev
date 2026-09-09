@@ -15,8 +15,9 @@ tags: [cache, prompt-caching, kv-cache, deepseek, openrouter, llm, cost]
 > still sends only `{'HTTP-Referer','X-Title'}` with no stable session id; the
 > `<specialists-status>` splice-and-re-append runs every turn at `harness-session.ts:1762/1783`
 > (line refs below are from 2026-08-17 and have drifted; the mechanisms have not).
-> The claim anchor pins the splice — the one defect the original review called a genuine bug:
-<!-- claim: {"path": "youcoded/desktop/src/main/harness/harness-session.ts", "contains": "if \\(statusIdx >= 0\\) this\\.history\\.splice\\(statusIdx, 1\\)"} -->
+> The splice is gone: master retired the per-turn status block on 2026-09-09 (youcoded PR #456,
+> status is on demand via the Task tool's `list: true`). The anchor now pins that retirement:
+<!-- claim: {"path": "youcoded/desktop/src/main/harness/tools/task.ts", "contains": "list"} -->
 > Archive this doc together with that roadmap entry when it ships.
 >
 > Earlier re-verification 2026-08-26 reached the same conclusion (splice then at

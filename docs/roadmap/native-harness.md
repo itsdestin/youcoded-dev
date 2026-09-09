@@ -18,7 +18,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] On a ChatGPT-plan model, YouCoded drops private reasoning and assistant metadata from
       the history sent on the next request. Faithful continuation, including local reopen,
-      is approved and implementation is underway; its effect on cache reuse remains unmeasured
+      is implemented and reviewed on branch session/chatgpt-cache-efficiency (merged with master,
+      Stage 2 dropped); awaiting Destin's merge call; its effect on cache reuse remains unmeasured
       `desktop` `in-flight` `checked 2026-09-09` → docs/active/specs/2026-09-08-chatgpt-cache-efficiency-design.md
 
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —

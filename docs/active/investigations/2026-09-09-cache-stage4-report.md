@@ -207,3 +207,15 @@ compact-summary assertion that pinned the now-closed literal gap.
 `tests/xterm-webgl-mipmap-patch.test.ts`, which asserts a dependency patch inside
 `node_modules` — the known worktree/hardlink environmental failure, unrelated to Stage 4 and
 outside its scope.
+
+## Closing (2026-09-09, second session)
+
+The unfinished Stage 4 was completed on the app branch `session/chatgpt-cache-efficiency` as five reviewed tasks plus a whole-branch review and one fix wave. Every task got a fresh implementer and a fresh reviewer; the branch was then merged with `origin/master` (6ccb8172, PR #456) and Stage 2 was dropped by Destin's decision because master retired the per-turn specialist status block.
+
+Commits, in order: 46f10816 (durable credential epoch + `continuationIdentity`), 44da5d62 + be4126bf (manifest store: references, per-kind providerOptions allowlist, prune helpers), 47f35cf2 + fedcf05e (attempt-scoped capture + harness hooks), 6684d791 (host publication/restore/fencing), 3bfd972a (harness leftovers), 2ecef874 + d95fd3b8 (privacy sentinels + docs), c4ef1a3a (whole-branch review fixes), 2a3d07c6 (merge master), dce6b269 (drop Stage 2; `spliceNotice` records its own event).
+
+Whole-branch review findings and their disposition: C1 master conflict + uninstrumented `spliceNotice` — resolved by the merge commit and dce6b269; I1 empty-summary reasoning part could never publish — reference-free `empty` descriptor plus a summary-less fixture at store and host level; I2 spurious clearing status snapshot — moot, Stage 2 dropped; I3 fingerprint buffer parser mismatch — scanner completeness is the guard, shortfall counts as a dropped observation; I4 zero-assertion CPU benchmark — opt-in via `YOUCODED_DIAG_BENCH=1` with a real assertion; I5 loss record untested — writer and summary-script tests added; I6 double JSON parse pre-send — scanner now supplies `model` and input count, one parse; measured medians moved 12.98→12.72 ms (433 KB) and 29.33→27.99 ms (4 MiB encrypted part) on this machine, so the win is correctness, not speed. Minors carried as follow-ups are listed in the branch's `.superpowers/sdd/progress.md` ledger and in the roadmap entry.
+
+One documented exemption to "reference, never copy": `providerOptions.openai.parallelToolCall.input`, the parallel-call wrapper argument string the pinned SDK re-emits verbatim and the transcript cannot rebuild, is kept in the private sidecar. Stated in `youcoded/docs/native-runtime.md`.
+
+Final desktop verifier after the merge (from the merge report): `OK — all checks passed` (types, types in tests, related tests, knip, eslint, ast-grep). Not covered: Android, marketplace Worker; both were grep-checked for consumers of the touched boundaries and none were found. No paid evaluation or live model call was made; offline correctness does not establish cache savings.
