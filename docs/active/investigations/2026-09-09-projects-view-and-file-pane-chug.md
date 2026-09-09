@@ -10,16 +10,17 @@ topic: The Projects view and the session-file pane chug — measured outside the
 **Symptom (Destin, 2026-09-09).** "Our app currently CHUGS sometimes when opening projects
 view or trying to open/view session files in the session file pane."
 
-**Short answer.** The backend half of opening Projects is *not* the chug: measured against
-Destin's real data it is about 0.6 s of work with no freeze longer than 85 ms. The chug
-is most likely the *screen-drawing* half, which nothing has ever measured: the Files tab
-draws every card at once, each card gets its own glass blur under wallpaper themes, every
-card on screen fetches and renders a live preview (Markdown render, or a whole embedded
-web page for HTML), and every keystroke in search re-filters, re-sorts and re-creates all
-of them. The session-file pane's cost is a different set: a 0.7–1.1 s frozen Markdown
-render on open (already measured by the perf rig), three `git` processes per file open
-*and* three more on every file change anywhere in the project, a per-byte decode loop
-for every image/PDF, and the whole pane re-drawing on every streamed token.
+**Short answer (revised after measuring, §1 and §1b).** Neither half of opening Projects
+is a chug on an idle app at Destin's data scale: the backend is about 0.6 s of work with
+no freeze over 85 ms, and in the perf rig the whole view opens in 0.9 s cold / 0.16 s
+warm, mounts 831 cards in 100 ms, and never freezes over 136 ms. What remains, and what
+the rig cannot see, is the per-card glass blur on wallpaper themes (a bug class this app
+has shipped twice, `globals.css:1413`), the load of an agent streaming at the same time,
+and the laptop's own post-sleep slowdowns. The session-file pane's cost is a different
+set: a 0.7–1.1 s frozen Markdown render on open (measured by the perf rig 2026-08-28),
+three `git` processes per file open *and* three more on every file change anywhere in the
+project, a per-byte decode loop for every image/PDF, and the whole pane re-drawing on
+every streamed token.
 
 ## 1. What was measured (read-only, outside the app, Destin's real data)
 
