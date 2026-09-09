@@ -1,86 +1,104 @@
 {
-  "title": "Remote access — contract",
+  "title": "Remote access \u2014 contract",
   "key": "remote-access-contract",
   "out": "remote-access.contract.html",
-  "themes": ["midnight"],
+  "themes": [
+    "midnight"
+  ],
   "branch": "session/remote-mesh-roadmap",
   "sources": {
     "remote-access-questions": "remote-access.questions.json",
     "remote-access-host-review-2": "remote-access.review-2.json",
     "remote-access-review-3": "remote-access.review-3.json",
-    "remote-access-questions-2": "remote-access.questions-2.json"
+    "remote-access-questions-2": "remote-access.questions-2.json",
+    "remote-access-questions-3": "remote-access.questions-3.json"
   },
   "steps": [
     {
       "id": "C",
       "surface": "Remote access",
-      "path": "Settings → Remote Access, and a conversation on your phone or browser",
-      "headline": "This is what done means for remote access: setup, the devices list, and reconnecting.",
+      "path": "Settings \u2192 Remote Access",
+      "headline": "This is what done means for remote access.",
       "rows": [
         {
           "id": "R1",
-          "statement": "Remote access setup guides you through each step, explains every change before it happens, and checks the connection at the end.",
+          "statement": "Setup walks you through each change, waits for your approval, and then checks the connection worked.",
           "checkedBy": "live-app",
-          "threshold": "a dev instance is walked through setup end to end",
+          "threshold": "a dev instance completes setup with approval prompts and a connection check",
           "source": "remote-access-questions#Q-1"
         },
         {
           "id": "R2",
-          "statement": "A message typed while the connection is down waits as a draft until you press Send yourself; nothing runs again on its own.",
+          "statement": "A message typed while the connection is down waits as a draft until you press Send yourself.",
           "checkedBy": "live-app",
-          "threshold": "the draft survives a disconnect in a dev instance and sends only when pressed",
+          "threshold": "the draft survives a dropped connection and nothing sends on its own",
           "source": "remote-access-questions#Q-2"
         },
         {
           "id": "R3",
-          "statement": "Your phone stays on the conversation you had open; changing conversations on the desktop does not move it.",
+          "statement": "Your phone stays on the conversation you were reading, even when the desktop moves to another one.",
           "checkedBy": "live-app",
-          "threshold": "the phone keeps its conversation across a desktop switch and a reconnect, in a dev instance",
+          "threshold": "the phone's conversation survives a desktop switch and a reconnect",
           "source": "remote-access-questions#Q-3"
         },
         {
           "id": "R4",
-          "statement": "Enabled, Password, Keep awake and Add Device stay exactly where they are in the Remote Access panel.",
+          "statement": "Enabled, Password, Keep awake and Add Device stay where they are in the panel you already know.",
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "remote-access-host-review-2#2"
         },
         {
           "id": "R5",
-          "statement": "The panel opens saying remote access is not set up yet, with one button forward, instead of warning about your phone.",
+          "statement": "The panel says plainly that it is not set up yet, with one button that moves you forward.",
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "remote-access-review-3#1"
         },
         {
           "id": "R6",
-          "statement": "One yellow box asks your permission before this computer's name goes into a public certificate record.",
+          "statement": "One yellow box asks you first, before this computer's name is published in a public record.",
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "remote-access-review-3#2"
         },
         {
           "id": "R7",
-          "statement": "Devices are listed by name, and removing one really removes its access — it has to pair again.",
+          "statement": "Devices are listed by name, and removing one means that device has to pair again to return.",
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "remote-access-review-3#3"
         },
         {
           "id": "R8",
-          "statement": "The button that removes a device's access reads Unpair, and confirming it says the device must pair again.",
+          "statement": "The button that removes a device's access reads Unpair, and confirming says it must pair again.",
           "checkedBy": "human",
           "threshold": "pass/fail",
           "source": "remote-access-questions-2#Q-4"
         },
         {
           "id": "R9",
-          "statement": "Skip password on Tailscale is gone; a device needs the password even on your own private network.",
+          "statement": "Skip password on Tailscale is gone: a device always needs the password, whatever network it is on.",
           "checkedBy": "human",
           "threshold": "pass/fail",
           "source": "remote-access-questions-2#Q-5"
+        },
+        {
+          "id": "R10",
+          "statement": "Other devices reach this computer only through Tailscale; its direct home-network address no longer answers.",
+          "checkedBy": "live-app",
+          "threshold": "a dev instance answers over Tailscale and refuses the plain network address",
+          "source": "remote-access-questions-3#Q-6"
+        },
+        {
+          "id": "R11",
+          "statement": "Every device that has paired stays in the list, marked Online or Offline, until you unpair it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-access-questions-3#Q-7"
         }
-      ]
+      ],
+      "no": "No, not yet"
     }
   ]
 }
