@@ -2,7 +2,7 @@
 date: 2026-09-09
 status: draft
 type: investigation
-topic: The Projects view and the session-file pane chug — the main-process half measured against Destin's real data (moderate), the renderer half traced to unvirtualized per-card work (unmeasured), plus a ranked proposal
+topic: The Projects view and the session-file pane chug — measured outside the app and in the perf rig at Destin's data scale (fast on an idle app, no freeze over 136 ms), so the chug points at the per-card wallpaper blur, concurrent agent load, or machine state; ranked proposal revised
 ---
 
 # Projects view and session-file pane chug — where the time goes
@@ -46,6 +46,60 @@ switch. Its slow part is synchronous file reads on the event loop
 
 Backend total for one Projects open ≈ 13 + 301 + 283 + ~80 (`list-all-files`, called
 2–3× but cached 10 s) ≈ **0.65 s**, spread over async steps. Noticeable, not a chug.
+
+## 1b. Measured in the perf rig (packaged app, headless, Destin's data scale)
+
+Added the same day: `scripts/perf-lab/scenario-projects.mjs` (phase `projects`), which
+seeds a 1,600-file project carrying a 10 MB file-history record (8,000 records / 28,000
+versions, most under worktrees that do not exist) and 700 conversations, then drives the
+real Projects view through the debugging protocol with both probes per step. Report:
+`perf-reports/2026-09-09-2230-6ccb817-projects-scale.md` (3 passes, stock theme,
+llvmpipe software rendering, zero app errors logged).
+
+| Step | Pass 1 (cold) | Median of 3 |
+|---|---|---|
+| Open Projects → first cards painted | 882 ms | 156 ms |
+| Same click → counts landed | 882 ms | 156 ms |
+| First search keystroke (flat-mode flip, 116 cards) | 58 ms | 77 ms |
+| Keystroke → painted, p95 | 39 ms | 32 ms |
+| Type filter → flat grid of 831 cards (4,277 DOM nodes) | 100 ms | 98 ms |
+| Scroll that grid to the bottom, 40 screens | 0 long tasks | 0 long tasks |
+| Conversations tab, 700 rows (6,367 nodes) | 108 ms | 108 ms |
+| Switch small → big project | 200 ms | 233 ms |
+| Reopen Projects | 164 ms | 164 ms |
+| Worst main-process freeze (IPC round trip), whole run | 92 ms | 136 ms max |
+| Renderer long tasks, whole run | 118 ms total, max 64 ms | max 88 ms |
+
+Without the file-history record and the conversations the cold open was 376 ms, so the
+backend data is roughly half a second of the cold open — and the cold open's step probe
+shows IPC stall 43 ms with zero renderer long tasks, i.e. that half second is the
+backend fan-out of §1, not drawing.
+
+**What this changes.** At Destin's data scale, on an idle app, the Projects view is
+not slow in this rig: under 0.9 s the first time, under 0.2 s after, no freeze above
+136 ms, and mounting 831 cards at once costs 100 ms. The renderer suspects in §3
+(unvirtualized grid, per-keystroke re-filter, text previews) are real costs but small
+ones. The chug Destin feels therefore comes from something the rig cannot reproduce:
+
+1. **The per-card glass blur on wallpaper themes** — `theme-engine.ts:705` gives every
+   `.layer-surface` a `backdrop-filter`, every file card is `.layer-surface`, and the flat
+   grid mounts up to 831 of them. `globals.css:1413-1425` records this exact failure
+   shipping twice before (drawer tiles: "20–40 live blur regions, each its own
+   compositing layer … cards blink in and out"), fixed there by opting the tiles out.
+   The rig boots the stock theme under software rendering and cannot see this.
+2. **Concurrent live-app load.** The rig opens Projects on an idle app. On Destin's
+   machine an agent is usually streaming: the session-file list refetches every 250 ms
+   burst, every file change spawns three git processes for the open file, the
+   transcript tailer runs, and the main process serves all of it while Projects fans
+   out its own calls. The 66–85 ms synchronous reads inside the session scan (§1) land
+   on top of that.
+3. **Machine state.** This laptop's known post-suspend power wedge slows the whole
+   desktop, not just YouCoded ("sometimes" fits an intermittent machine state as well as
+   an app cost).
+
+Not reproduced, still unmeasured: a wallpaper theme on a real GPU (needs a dev window on
+Destin's display, not the rig), and the session-file pane itself (its rig scenario
+exists and its 2026-08-28 numbers are in §4).
 
 ## 2. Destin's data today
 
@@ -146,12 +200,17 @@ replying. Every non-edit event invalidates the discovery cache and forces a re-w
 
 ## 5. Proposal, ranked by expected effect on what Destin feels
 
-**Step 0 — measure the renderer (about 10 minutes, one dev window).** Nothing in the perf
-rig covers Project View. Launch a dev instance on a spare offset, open Projects and the
-Files tab through CDP, record a CPU profile and long tasks, do the same for opening a big
-Markdown file in the drawer. This ranks the items below instead of guessing. Cheap, and it
-is the only way to know whether the blur or the thumbnails or the search re-render is the
-big one. Add a `projects` phase to `scripts/perf-lab/` so it stays measured.
+**Revised after §1b (2026-09-09, later the same day).** The rig now covers Project View
+(`--only projects`), and at Destin's data scale the view is fast on an idle app under
+software rendering. The ranking below is re-ordered accordingly: the per-card blur (A2)
+and the session-file pane's spawn storm (C1) move to the top; virtualization (A1) and
+the search re-render (A4) drop to "worth doing, small".
+
+**Step 0 — two questions for Destin, then one dev-window check.** Which theme does he
+run (wallpaper or solid)? Does the chug coincide with an agent streaming, or with the
+laptop having just woken from sleep? If wallpaper: open Projects in a dev window on his
+display with the type filter on and watch the GPU/compositor cost — the one thing the rig
+cannot see.
 
 **A. Files tab drawing (likely the biggest win for "opening Projects").**
 1. Virtualize the grid and list (draw only the cards on screen plus a margin). Users see:
@@ -219,5 +278,7 @@ unchanged until Destin says otherwise.
   shimmer replaces silent stalls.
 
 ## 7. Open questions for Destin
-- Measure first (Step 0, one dev window) or start on A and C directly?
+- Which theme (wallpaper or solid), and does the chug line up with an agent streaming or
+  with a recent wake from sleep?
+- Start on A2 (one glass layer) + C1 (git spawns) + C4 (per-token redraw) directly?
 - Any appetite for D (data trimming), and if so which of the three cuts?
