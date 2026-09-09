@@ -1,6 +1,23 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
+      actionable for the user, when tailscale might just not be enabled on their phone" — the
+      phone gets the browser's own cannot-reach screen. Fix: install a service worker on the
+      first successful visit so a later failure serves OUR page instead. Newly possible: it
+      needs a secure context, which the Tailscale-only decision (`remote-access-questions-3#Q-6`)
+      provides. It cannot see VPN state, so it must not assert Tailscale is off — it can tell
+      "phone has no internet" from "phone is online but cannot reach the computer" and lead with
+      the likely fix. Limits: needs one prior successful visit; iOS evicts after ~7 days unused;
+      Add to Home Screen makes it stick and gives the app an icon. No service worker or web
+      manifest exists in the app today.
+      `remote` `confirmed` `checked 2026-09-09`
+
+- [ ] Destin 2026-09-09, same thread: the Android app can do better than any web page — it can
+      ask the system whether a VPN is active and say Tailscale is not running as a fact rather
+      than a guess. Separate from the browser fix above.
+      `android` `confirmed` `checked 2026-09-09`
+
 - [ ] Idea (Destin, 2026-09-08): sign in to a YouCoded account and connect to your computer
       without installing Tailscale. Long-horizon, around v1.4 rather than a release commitment;
       related to YouCoded Mesh and Cloud fallback in the native-harness backlog, but connecting
