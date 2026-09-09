@@ -44,6 +44,23 @@ const runHook = (ws) =>
     encoding: 'utf8',
   });
 
+test('startup reminder requires report review and distinguishes guidance authority without syncing', () => {
+  const { ws } = makeWorkspace();
+  fs.mkdirSync(path.join(ws, 'scripts'), { recursive: true });
+  fs.writeFileSync(path.join(ws, 'scripts', 'workspace-start.mjs'), '// fixture marker\n');
+  const hook = fs.readFileSync(HOOK, 'utf8');
+  const out = runHook(ws);
+
+  assert.match(out, /reorientation report and changed guidance/);
+  assert.match(out, /Uncommitted guidance is a proposal, not automatically authoritative/);
+  assert.match(hook, /as of the last fetch/);
+  assert.match(hook, /^export GIT_OPTIONAL_LOCKS=0$/m,
+    'every hook Git read must disable optional index locking and refresh');
+  assert.doesNotMatch(hook, /\bgit\s+(?:-[^\n ]+\s+)*(?:fetch|pull|update-index)\b|--refresh\b|workspace-sync\.(?:mjs|sh)/,
+    'the read-only hook must not fetch, pull, refresh the index, or invoke sync');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
 test('worktree section is always present, and says "(none)" when there are none', () => {
   const { ws } = makeWorkspace();
   const out = runHook(ws);

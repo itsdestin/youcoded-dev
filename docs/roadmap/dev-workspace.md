@@ -387,13 +387,20 @@ seen-on is always n/a here.
       waits on that data
       `n/a` `parked` `checked 2026-09-02` → docs/active/specs/2026-09-01-feature-flow-design.md
 
-- [ ] Work keeps existing on one disk only: on 2026-09-01 the site-themes worktree holds 40
-      uncommitted files on a branch with zero commits and no remote, and landing-demo-clips has
-      2 unpushed commits (down from 107 commits across 12 branches on 2026-08-26). Wanted: a
-      one-shot sweep that commits what it finds, and a standing check in the /audit slot that names
-      any worktree dirty or unpushed for more than N days — before anyone follows the "remove the
-      worktree after merging" rule
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] Work keeps existing on one disk only. The standing check SHIPPED 2026-09-09:
+      `strandedWorktrees` in `scripts/audit-anchors.mjs` warns (never fails) for any worktree
+      dirty or unpushed whose newest work is 24h+ old, so `/audit` names it before anyone follows
+      the "remove the worktree after merging" rule. It found three on its first real run.
+      RECURRED first, expensively: on 2026-09-09 a COMPLETE, review-clean implementation
+      (3,383 lines, 53 specialist dispatches) sat uncommitted 14 hours because its session was
+      interrupted before it could ask to commit, and eight other worktrees were in the same state.
+      Its branch had zero commits and no upstream, so the wrap-up ref sweep — the thing this item
+      assumed was enough — reported nothing to push; ref sweeps are structurally blind to a
+      working tree. Still open, and deliberately NOT the original "sweep that commits what it
+      finds": committing another session's in-flight WIP under this session's authorship is the
+      more dangerous failure. Wanted instead: an exit condition in plan templates, so a plan that
+      forbids committing during implementation says when that constraint ENDS
+      `n/a` `confirmed` `checked 2026-09-09`
 
 - [ ] Two guardrails from the 2026-07-28 retrospective are still unshipped: spec counts are
       neither anchored nor dated (no "specs are snapshots" convention exists), and `run-dev.sh
