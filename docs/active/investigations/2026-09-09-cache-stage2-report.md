@@ -1,8 +1,15 @@
 ---
-status: active
+status: superseded
 date: 2026-09-09
 ---
 # Cache efficiency Stage 2 implementation report
+
+> **Superseded — Stage 2 was dropped from `session/chatgpt-cache-efficiency` on 2026-09-09 by
+> Destin's decision.** Master PR #456 retired the per-turn `<specialists-status>` block outright,
+> replacing it with an on-demand `list: true` option on the Task tool, so the append-only snapshot
+> this report describes has nothing left to make append-only. The code and tests it names were
+> removed when the branch merged master. Stages 1, 3 and 4 are unaffected. Kept as the record of
+> what was built and why it no longer applies.
 
 ## Scope completed
 

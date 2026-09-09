@@ -53,7 +53,9 @@ Paths below are relative to `youcoded/desktop/` unless explicitly workspace path
 - [ ] Add summary tests using fabricated sanitized records: valid subset reuse = sum(cache)/sum(input); fresh uses same subset; show overall totals and both count/token coverage. Unknown reporting is never zero.
 - [ ] Run targeted diagnostic/auth/model/provider tests. Measure CPU cost (`process.cpuUsage`) for representative 100k-token-like request bodies and large encrypted parts; record actual numbers in reference docs, not a guessed budget.
 
-## Stage 2 — Append-only specialist state
+## Stage 2 — Append-only specialist state (DROPPED 2026-09-09)
+
+**Dropped by Destin's decision on 2026-09-09: master PR #456 retired the per-turn `<specialists-status>` block entirely in favour of an on-demand `list: true` option on the Task tool, so there is no per-turn status splice left to make append-only.** The items below are kept for the record; none of them ship.
 
 - [ ] Add `tests/specialist-status-snapshot.test.ts` and harness integration regressions. Pin byte-identical old history, unchanged suppression, lifecycle/report/failure/delivery/stale changes, one clearing update, pending completed reports, callback failure, clear/reset and resume/compaction reinjection.
 - [ ] Observe failures against the old splice-and-replace implementation.
