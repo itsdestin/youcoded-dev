@@ -1,0 +1,44 @@
+{
+  "title": "Friendlier Light and Crème mascots contract",
+  "key": "friendly-mascots-contract",
+  "out": "friendly-mascots.contract.html",
+  "themes": ["light"],
+  "branch": "session/buddy-floater-regression",
+  "sources": {
+    "friendly-mascots-questions": "friendly-mascots.questions.json",
+    "friendly-mascots-review": "friendly-mascots.review.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Buddy mascot",
+      "path": "Light and Crème themes — floating buddy and matching in-app mascots",
+      "headline": "This is what done means for friendlier Light and Crème mascots.",
+      "yes": "Confirm scope",
+      "no": "Change scope",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Light and Crème keep the same buddy with a softer palette.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "friendly-mascots-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "A lighter body and dark eyes keep the same buddy with a softer expression.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "friendly-mascots-review#V-1"
+        },
+        {
+          "id": "R3",
+          "statement": "Future mascot artwork uses the approved art principles.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "friendly-mascots-review#G-1"
+        }
+      ]
+    }
+  ]
+}
