@@ -54,15 +54,15 @@ Target: `v1.3`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 85 | 30 | 2 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 1 | 19 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 59 | 10 | 1 | 21 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 30 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 7 | 0 | 9 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 19 | 10 | 1 | 1 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 17 | 6 | 0 | 3 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 16 | 3 | 3 | 2 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 1 | 6 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 16 | 5 | 0 | 2 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 8 | 1 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 2 |

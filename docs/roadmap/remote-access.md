@@ -1,6 +1,12 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] Idea (Destin, 2026-09-08): sign in to a YouCoded account and connect to your computer
+      without installing Tailscale. Long-horizon, around v1.4 rather than a release commitment;
+      related to YouCoded Mesh and Cloud fallback in the native-harness backlog, but connecting
+      to a device is distinct from choosing where an automation runs. Hosting/privacy design open.
+      `remote` `parked` `checked 2026-09-08` `v1.4`
+
 - [ ] Saving a permission setting over remote access replaces the whole stored block instead
       of merging into it, and does not refresh what the app is enforcing until something local
       reads the settings again — harmless today because nothing writes those values any more
@@ -12,7 +18,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
-      `chat` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
+      `chat` `remote` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
 
 - [ ] Over remote access whole features are simply missing: the files panel cannot open any
       file (not even a small note), Project View tabs are thin, the game lobby signs in but
@@ -64,6 +70,13 @@ Filing test: reaching the app from another device — the protocol, the browser 
 - [ ] Remote access runs over a password-only connection that is not encrypted on the local network,
       which is why files, projects and games stay switched off over it (Destin, 2026-09-02).
       Encrypting the channel unblocks all three
+      Destin 2026-09-08: keep Tailscale for the near-term secure-access work; reliability and
+      secure transport first, then file reading/downloads, then uploads/editing and other features.
+      Account-based access without Tailscale is a separate v1.4-horizon idea, not a prerequisite.
+      Destin 2026-09-09: first validate the secure transport, then connection recovery,
+      conversation restoration and file reading/downloads. Stop for acceptance before
+      uploads/editing or other features; narrow shared-operation refactors to each batch.
+      Scope and acceptance: docs/active/specs/2026-09-09-remote-access-first-milestone.md
       `remote` `needs-verify` `checked 2026-09-02` `security`
 
 - [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers

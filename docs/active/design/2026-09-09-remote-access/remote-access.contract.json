@@ -1,0 +1,86 @@
+{
+  "title": "Remote access — contract",
+  "key": "remote-access-contract",
+  "out": "remote-access.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/remote-mesh-roadmap",
+  "sources": {
+    "remote-access-questions": "remote-access.questions.json",
+    "remote-access-host-review-2": "remote-access.review-2.json",
+    "remote-access-review-3": "remote-access.review-3.json",
+    "remote-access-questions-2": "remote-access.questions-2.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Remote access",
+      "path": "Settings → Remote Access, and a conversation on your phone or browser",
+      "headline": "This is what done means for remote access: setup, the devices list, and reconnecting.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Remote access setup guides you through each step, explains every change before it happens, and checks the connection at the end.",
+          "checkedBy": "live-app",
+          "threshold": "a dev instance is walked through setup end to end",
+          "source": "remote-access-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "A message typed while the connection is down waits as a draft until you press Send yourself; nothing runs again on its own.",
+          "checkedBy": "live-app",
+          "threshold": "the draft survives a disconnect in a dev instance and sends only when pressed",
+          "source": "remote-access-questions#Q-2"
+        },
+        {
+          "id": "R3",
+          "statement": "Your phone stays on the conversation you had open; changing conversations on the desktop does not move it.",
+          "checkedBy": "live-app",
+          "threshold": "the phone keeps its conversation across a desktop switch and a reconnect, in a dev instance",
+          "source": "remote-access-questions#Q-3"
+        },
+        {
+          "id": "R4",
+          "statement": "Enabled, Password, Keep awake and Add Device stay exactly where they are in the Remote Access panel.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-host-review-2#2"
+        },
+        {
+          "id": "R5",
+          "statement": "The panel opens saying remote access is not set up yet, with one button forward, instead of warning about your phone.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-review-3#1"
+        },
+        {
+          "id": "R6",
+          "statement": "One yellow box asks your permission before this computer's name goes into a public certificate record.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-review-3#2"
+        },
+        {
+          "id": "R7",
+          "statement": "Devices are listed by name, and removing one really removes its access — it has to pair again.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-review-3#3"
+        },
+        {
+          "id": "R8",
+          "statement": "The button that removes a device's access reads Unpair, and confirming it says the device must pair again.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-access-questions-2#Q-4"
+        },
+        {
+          "id": "R9",
+          "statement": "Skip password on Tailscale is gone; a device needs the password even on your own private network.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-access-questions-2#Q-5"
+        }
+      ]
+    }
+  ]
+}

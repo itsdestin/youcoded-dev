@@ -1,0 +1,33 @@
+{
+  "title": "Remote access — secure setup",
+  "key": "remote-access-host-review",
+  "out": "remote-access.review.html",
+  "images": "images/remote-access.review",
+  "runs": {"before": "docs/active/design/2026-09-09-remote-access/runs/before", "after": "docs/active/design/2026-09-09-remote-access/runs/after"},
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {"remote-host": ["remote-host", "remote-host", "460x650+490+125"]},
+  "live": {"worktree": "/home/destin/youcoded-dev/worktrees/sessions/remote-mesh-roadmap/youcoded", "offset": 364, "paneWidth": 420},
+  "steps": [
+    {
+      "id": "1",
+      "surface": "Remote access",
+      "path": "Settings → Remote Access → Setup",
+      "headline": "Try the guided setup, including the public-name notice.",
+      "changed": "Setup walks through Tailscale sign-in, name disclosure, and a connection check. This pane simulates every step; it installs nothing.",
+      "notice": "Click through to the address and try removing a remembered device. Password and keep-awake settings still need their place in the design.",
+      "risk": "This is a first design slice, not finished remote access. Phone pairing and reconnect screens follow separately.",
+      "live": {"surface": "remote-secure-setup", "round": 1, "candidate": "guided"}
+    },
+    {
+      "id": "2",
+      "surface": "Remote access",
+      "path": "Settings → Remote Access",
+      "crop": "remote-host",
+      "highlight": {"selector": "[role=dialog]"},
+      "headline": "Your secure address and remembered devices replace the connection settings checklist.",
+      "changed": "The main view shows the checked address and named devices, including offline ones. Revoke asks before removing a device's access; password-free network trust is removed.",
+      "notice": "You can find the connection address and remove a device without sorting through technical settings.",
+      "risk": "Password and keep-awake controls are not shown yet, not approved for removal. This is simulated; security and reconnection tests follow after design approval."
+    }
+  ]
+}

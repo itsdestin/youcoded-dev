@@ -1,0 +1,37 @@
+{
+  "title": "Remote access — one more decision, and one confirmation",
+  "key": "remote-access-questions-3",
+  "out": "remote-access.questions-3.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Remote access",
+      "path": "How another device reaches this computer",
+      "headline": "Should remote access only be reachable through Tailscale, and not over ordinary networks?",
+      "today": "The server accepts connections on every network this computer is joined to. On your home wifi, a phone can reach it at the computer's address directly, without Tailscale. The password still applies, but nothing on that path is encrypted — anything on the same network can read your conversations as they go past.",
+      "problem": "Two ways in exist, and only one of them is private. The unencrypted one is the one people fall back to when Tailscale is fiddly, which is exactly when it matters most. Keeping it also means we cannot honestly call remote access secure.",
+      "proposal": "The server would accept connections only from this computer itself. Every other device arrives through Tailscale, which encrypts the whole path and gives it a proper certificate. The direct address on your home network stops working.",
+      "options": [
+        {"id": "tailscale-only", "label": "Tailscale only", "recommended": true,
+         "pros": ["Everything between your phone and this computer is encrypted, on any network", "One way in, so there is no insecure fallback to explain", "Nothing on your home wifi can read your conversations"],
+         "cons": ["A saved bookmark to the computer's address stops working and has to be replaced", "If Tailscale is not running on the phone, there is no way in at all"]},
+        {"id": "keep-both", "label": "Keep the direct route too",
+         "pros": ["A device on your home wifi can connect without Tailscale running"],
+         "cons": ["Conversations travel unencrypted on that path, readable by anything on the network", "Remote access cannot be described as secure while it exists", "Two paths to keep working and to test"]}
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings → Remote Access → Devices",
+      "headline": "Should a device you are not currently using stay in the list, marked Offline?",
+      "today": "The list only shows devices connected right this second. Close the browser on your phone and it disappears, so there is nothing to unpair later.",
+      "problem": "You approved this in the pictures, but it was described rather than stated, so it is not written into the definition of done. Without it, Unpair only works while the device happens to be connected.",
+      "proposal": "Every device that has ever paired stays listed, marked Online or Offline, until you unpair it. Yes writes that into the definition of done; No means the list keeps showing only what is connected now.",
+      "options": []
+    }
+  ]
+}
