@@ -16,7 +16,11 @@ const FROM = markFrame('promo-model', 'chip', 'start', -15);
 // Two shots: A runs from before the click to just after it; B opens with the list already
 // there. WHY: between them the picker says "Loading models…" for 1.6 s of footage (the draft review).
 const A_LEN = Math.round((markFrame('promo-model', 'chip', 'end', 6) - FROM) / RATE);
-const B_FROM = markFrame('promo-model', 'list', 'start', -4);
+// 2026-09-09: the popup opens straight onto the list now (no field to click, no "Loading models…"),
+// so when `list` lands within a few frames of `chip` the take plays as ONE continuous shot — shot B
+// simply carries on from where A ends — instead of jumping back to replay the popup's opening.
+const CONTINUOUS = markFrame('promo-model', 'list', 'start') - markFrame('promo-model', 'chip', 'end') < 12;
+const B_FROM = CONTINUOUS ? FROM + Math.round(A_LEN * RATE) : markFrame('promo-model', 'list', 'start', -4);
 /** Local frame of a mark in this beat (shot A from frame 0, shot B from A_LEN, both at RATE). */
 const M = (mark: string, edge: 'start' | 'end' = 'start') => {
   const fr = markFrame('promo-model', mark, edge);
