@@ -226,11 +226,11 @@ footer{max-width:1500px;margin:0 auto;padding:0 32px 40px;color:var(--muted);fon
 <div class="q"><div class="src">Official extension</div><pre>Foreground only — nothing runs between turns.</pre></div>
 <div class="q"><div class="src">Community extensions</div><pre>tintinweb: get_subagent_result (with wait) — &quot;do NOT sleep, poll, or proactively check&quot;. nicobailon: subagent({action:&quot;status&quot;}) and, after a context summary with live jobs, a hidden nudge: &quot;Compaction is complete. Resume the parent task now; background subagent results will arrive separately when ready.&quot;</pre></div>
 </div>
-<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
-<div class="q"><div class="src">Kept as is</div><pre>The per-turn status block stays; it is what lets the assistant answer &quot;is the researcher done?&quot; without guessing.</pre></div>
-<div class="q"><div class="src">Two holes worth closing later (not built)</div><pre>Background commands could join the same block instead of needing a BashOutput listing. An interrupted helper&#x27;s &quot;no report will arrive&quot; line appears to stay in the block for the rest of the conversation.</pre></div>
-</div>
-</div></section>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3><div class="q"><div class="src">Changed on this branch (your call, 2026-09-09: match the others)</div><pre>The per-turn &lt;specialists-status&gt; block is retired. The model now learns what is running from the launch reply, from the report when it lands, and on demand:
+
+Task tool, list field: "Alone, with no other fields: list this conversation's specialists and their state (running, finished with report pending, failed, interrupted). Ask once when you need it — never in a loop; you are told when a report arrives."
+
+Launch reply now ends: "Task with list: true shows what is still running — once, if you need it."</pre></div><div class="q"><div class="src">Context summary prompt (new clause)</div><pre>…any specialists or background commands still running (their task_id or shell id, and what you are waiting on from each)…</pre></div><div class="q"><div class="src">Why</div><pre>The per-turn block kept helpers top-of-mind and invited the "report now" steers we measured, and re-inserting it every turn discarded cached prompt prefix. Codex and Hermes give the model a list it asks for; nobody reminds it every turn.</pre></div></div></div></section>
 <section id="t8"><h2>9. What Stop does to running helpers</h2><p class="why">Background: after you press Stop, our app used to deliver a finished report immediately as a new turn. That is what this branch changes.</p><div class="grid">
 <div class="col yc"><h3>YouCoded today (beta 76)</h3>
 <div class="q"><div class="src">Before this branch</div><pre>Stop halts the answer and any foreground helper; background helpers and commands keep running, and their reports started a new turn the moment they landed — Stop was exactly the idle moment the delivery was waiting for.</pre></div>
