@@ -121,8 +121,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] When a small model's session has its project rules outlined, skills cut or MCP servers dropped
       to fit the context budget, only the model is told — nothing on screen says so. In progress on
-      branch `feat/context-truncation-notice` (worktree `worktrees/context-truncation`)
-      `chat` `desktop` `in-flight` `checked 2026-09-01`
+      branch `session/context-truncation` (worktree `worktrees/sessions/context-truncation/youcoded`),
+      rebased onto master 2026-09-09; the older `feat/context-truncation-notice` branch and
+      `worktrees/context-truncation` hold the same work pre-rebase and can go once this lands
+      `chat` `desktop` `in-flight` `checked 2026-09-09`
 
 - [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
       send function only accepts the literal provider names. No live caller today; fix when the retry

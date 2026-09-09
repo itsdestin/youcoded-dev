@@ -1,0 +1,52 @@
+{
+  "title": "Session context panel, back on today's master",
+  "key": "session-context-rebase",
+  "out": "session-context-panel.review.html",
+  "intro": "This is the panel you approved on 2026-08-17 (the tabbed one, B), rebuilt on top of everything that has landed since. Nothing about the design was changed. What did change underneath it: about a thousand commits of the app moved on while this sat unmerged, and six files had to be merged by hand — the chat view (a find bar and paged history arrived above the strip), the fixture loader, the list of not-yet-built channels, the saved-session shape, one test, and the comparison registry. Types, lint and the related tests pass, and every workbench screen boots. The two panes on the first two slides are the real thing, running — click the tabs, open the Full vs supplied toggle, hover the file names. The third slide is the real chat: the strip at the top and the panel that opens once per session still wear the OLDER layout, because moving the approved layout into the real panel is the next step and was never done.",
+  "live": {
+    "worktree": "/home/destin/youcoded-dev/worktrees/sessions/context-truncation/youcoded",
+    "paneWidth": 420
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Session context panel",
+      "path": "Chat → the strip at the top of the conversation → View",
+      "headline": "A small local model that had to trim: is this still the panel you approved?",
+      "changed": "Nothing in the design. It was rebuilt on today's app so it can be finished. The pane shows qwen2.5-coder with a 16k window: the project instructions were read as an outline, one skill body was cut, and one MCP server was left unattached.",
+      "notice": "The header keeps the model, its window size and an amber Trimmed pill above the tabs. Overview shows the one-line warning, a Model / Context window / Loaded group, and a Not attached callout. Instructions and Skills each carry a Supplied | Full vs supplied toggle; red lines are what the model never saw. Tools are chips.",
+      "risk": "At this pane width the fifth tab, Tools, is clipped by about 20 px on the right. The real panel is wider so it fits there, but a phone-width window would clip it the same way. The file-name links open nothing in the workbench.",
+      "live": {
+        "surface": "session-context",
+        "round": 2,
+        "candidate": "tabs-trimmed"
+      }
+    },
+    {
+      "id": "L-2",
+      "surface": "Session context panel",
+      "path": "Chat → the strip at the top of the conversation → View",
+      "headline": "A cloud model that got everything: the same panel, green. Still right?",
+      "changed": "Nothing in the design. This is the state you never saw as a running pane: claude-sonnet-4-6 with a 200k window, nothing cut.",
+      "notice": "The pill reads Full context in green, the Overview line is a green check, there is no Not attached callout, and Instructions and Skills show plain text with no toggle, because nothing was trimmed.",
+      "risk": "Same clipped fifth tab at this width. The Manage Assistant Settings button is still a stub in both states; it will stay a stub until the assistant-settings panel exists.",
+      "live": {
+        "surface": "session-context",
+        "round": 2,
+        "candidate": "tabs-full"
+      }
+    },
+    {
+      "id": "L-3",
+      "surface": "Chat",
+      "path": "Any conversation, at the very top",
+      "headline": "The real chat today: the strip, and the older panel that opens once. Move the approved layout into it next?",
+      "changed": "The strip above the first message and the panel that opens by itself once per session both survived the rebase. The panel still has the pre-approval stacked layout, not the tabs.",
+      "notice": "Scroll to the top of the conversation to find the strip: a green check line for a full session, amber for a trimmed one, with View at the right. The panel opens on its own when the session loads; close it and the strip reopens it.",
+      "risk": "Everything here runs on made-up session facts. No real session reports them yet, so in the real app nothing appears until the backend is built. The strip sits above the older-history loader, so on a long conversation it stays at the very top, not near the latest message.",
+      "live": {
+        "app": "default"
+      }
+    }
+  ]
+}
