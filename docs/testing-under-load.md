@@ -223,3 +223,19 @@ speculation. If it ever fails on real CI, the fix is to restructure the mock so 
 can move to module scope — **not** to raise the number again.
 
 Both are tracked in `docs/roadmap/dev-workspace.md` → `## tests`.
+
+## Temp roots: why snapshot-restore fails, and why removal retries
+
+Moved out of `.claude/rules/test-suite-hygiene.md` on 2026-09-04 when that rule hit its
+word budget; the invariant stays in the rule, the reasoning is here.
+
+**Snapshot-and-restore of a real output directory cannot be correct under concurrency.**
+Two runs snapshot the same directory, both write, and each restores over the other. It
+also littered the repo on every run, which is how it was noticed. The fix is an env
+override that points the CLI somewhere disposable — `YOUCODED_EVAL_RUNS_DIR` for the
+harness evaluator — rather than a guard around a shared path.
+
+**Removing that root needs `maxRetries`, not a bare `rmSync`.** Ledger writes are
+fire-and-forget by design, so one lands inside the tree during its own removal walk and
+the walk throws `ENOTEMPTY` — from `afterEach`, into a test that has already passed, so
+the red names the wrong thing. `force: true` does not help: it only swallows `ENOENT`.

@@ -1,27 +1,11 @@
 # Emits the three new landing-page variants. The BODY markup is identical in all
 # three (same sections, same words) so the only thing being compared is the look.
-import json, io, os
+import json, io, os, re
 import os
 BASE = os.path.dirname(os.path.abspath(__file__))  # portable: run from wherever this file lives
 
-# ---------------------------------------------------------------------------
-# COPY VARIANT (2026-08-31). `python3 build.py` emits the page as agreed;
-# `YC_VARIANT=b python3 build.py` emits mockup-landing-b.html with different
-# WORDS and a different card ORDER, and nothing else -- same skin, same header,
-# same clips, same layout, so the only thing being compared is the argument.
-#
-# Why a whole second process rather than a parameter: BODY and DEMOS are
-# module-level f-strings evaluated at import, so the copy they close over is
-# fixed the moment this file is read. Re-running the module in a fresh process
-# with a different VARIANT is a two-line change; deferring those f-strings into
-# functions is a refactor of a 1,400-line generator mid-iteration.
-#
-# Variant B's thesis, from the 2026-08-31 competitive review: the page leads with
-# claims every rival also makes (any model, free, open source, works on your
-# files, asks permission) and buries the three things NO rival has. B inverts
-# that order and cuts the repetition -- measured on A: the model story appears
-# 6 times, "free and open source" 6, "runs locally" 5, "asks permission" 5.
-VARIANT = os.environ.get('YC_VARIANT', 'a')
+# One page of record (variant A). A copy-experiment variant B existed 2026-08-31
+# and was dropped the same day — do not revive YC_VARIANT or mockup-landing-b.
 THEMES = json.load(open(BASE + '/themes.json'))
 
 FEATURES = [
@@ -32,53 +16,24 @@ FEATURES = [
  ("Stay organized","Tags, notes, and shortcuts.","Tag and annotate conversations, pin the ones that matter, and hide the ones you'll never go back to. Quick chips run the prompts you use every day in one tap.","row4-organized"),
  ("Works everywhere","Start on your laptop. Finish on your phone.","Windows, macOS, Linux, Android, and any browser. Your conversations and files stay in sync through your own private GitHub, so what you started here is waiting there.","row5-follow"),
  ("Make it yours","Describe a look. Install a plugin. Share both.","Build a theme by describing it — customize wallpapers, app colors, mascots. Browse 300+ plugins from the marketplace: journaling, a personal encyclopedia, calendar and email integrations, and whatever your friends publish.","row6-yours"),
- ("Play while it works","Challenge a friend while it thinks.","Long tasks take a minute. Play Connect Four with a friend in the side panel, see who's online, and get back to the answer when it's ready.","row7-play"),
+ # Re-filmed 2026-09-03 against master: the four-game arcade shipped in
+ # youcoded#369 and this card still said Connect Four only.
+ ("Play while it works","Four games, beside the conversation.","Long tasks take a minute. Open the arcade in the side panel \u2014 Connect 4 or chess against a friend who's online, Flappy or 2048 on your own \u2014 and go back to the answer when it's ready.","row7-play"),
  ("For builders","Made to be customized and work with you.","Run Claude Code as a first-class session next to the app's own agent. Review, stage, and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.","row8-builders"),
 ]
 ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or send it from your phone. Results and approvals land in an inbox. First: run now and scheduled runs. Later: kick off from an incoming email or a changed file.")
 
-# ---------------------------------------------------------------------------
-# VARIANT B copy. Same nine clips, reordered so the page opens on the only
-# capability a visitor can PICTURE and the platform breadth six of eight rivals
-# cannot match, and closes on the developer material. Card 3 is the one the
-# review found buried: user tags, private notes and one-tap prompt buttons are
-# each held by ZERO of the eight competitors surveyed 2026-08-31.
-# ---------------------------------------------------------------------------
-if VARIANT == 'b':
-    FEATURES = [
- ("Real work, edited live","Hand it a spreadsheet, get something you can actually read.","Attach a file and ask for what you want out of it. The assistant reads it, builds the page, and hands it back in the panel beside the conversation — where you can open it, change it yourself, and watch the change take effect.","row2-artifact-edit"),
- ("Works everywhere","A real app on Windows, macOS, Linux and Android.","Not a browser tab — an app on every machine you own, plus any browser by connecting to a computer running it. Your conversations and files sync through your own private GitHub, so there is no server of ours in the middle holding your work.","row5-follow"),
- ("Nobody else does this","Your own tags. Your own notes.","On your computer, colour-code conversations however you like and leave a private note on any of them. Pin what matters and hide what you are done with, on any device — nothing is ever deleted. And the prompts you use every day sit above the message box as buttons, not commands you have to remember.","row4-organized"),
- ("Genuinely useful","Give it a task and it does real work, with boundaries you can trust.","It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.","row2-does-things"),
- ("Any model, and what it costs","Switch mid-conversation. Watch the meter.","Hundreds of models through OpenRouter, Claude on the plan you already pay for, or a private one running offline on your own computer. The status bar is yours to build: nineteen widgets covering how much of your plan is left, what this conversation has cost, how much room the model has, and more.","row1-any-ai"),
- ("Logical management","Project view keeps your files, conversations, and assistant instructions organized.","Open spreadsheets, documents, and images, revisit prior conversations, and see how your assistant is instructed to behave in each project.","row3-projects"),
- ("Make it yours","Describe a look. Install a plugin. Share both.","Build a theme by describing it — wallpapers, colours, mascots — then send it to a friend. The marketplace carries our own plugins for journaling, a personal encyclopedia and calendar and email, plus every Claude Code plugin, installable in one tap.","row6-yours"),
- ("Play while it works","Chess, Connect Four, Flappy Bird and 2048.","Long tasks take a minute. Play a friend at chess or Connect Four in the side panel, or beat your own score at Flappy Bird and 2048 with a friend leaderboard behind it. See who is online, and get back to the answer when it is ready.","row7-play"),
- ("For builders","Use the Claude plan you already pay for.","Run Claude Code as a first-class session next to the app's own agent — your existing Pro or Max subscription, not per-token billing. Review, stage and commit changes without leaving the window. Connect tools over MCP. Download and run local models with a GPU-fit check.","row8-builders"),
-    ]
-    ROADMAP = ("Roadmap","Hand it off.","Set up a job once — what to do, which tools it may use, where to stop and check with you — then run it on a schedule or start it from your phone. \u201cEvery morning at 8, summarise my new GitHub issues and ping me if any look urgent.\u201d Results and approvals land in an inbox.")
-    ABOUT_P2 = ("It runs as a real app on Windows, macOS, Linux and Android \u2014 not a website \u2014 and your "
-                "conversations, files and settings move between them through your own private GitHub. "
-                "Nothing passes through a server of ours, because there isn't one.")
-    ABOUT_P3 = ("You pick the AI behind it: Claude on a plan you already pay for, hundreds of cloud models "
-                "through one OpenRouter account, or a free model running offline on your own machine. And the "
-                "app is meant to be extended by the people using it \u2014 skills, tools and themes are built by "
-                "describing what you want, which is how this entire app was built in the first place.")
-    INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with services like these:"
-    KICKER = "Free &middot; Open source &middot; Windows, Mac, Linux &amp; Android"
-    SUBTITLE = "It works in your own files, does the task, and hands back something you can open and edit yourself."
-else:
-    ABOUT_P2 = ("With YouCoded, you can utilize OpenRouter to access any AI model from any provider including "
-                "Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to "
-                "download and run open source AI models on your own device, if your hardware supports it.")
-    ABOUT_P3 = ("YouCoded is built to become a fully-modular and open source assistant platform, as the app "
-                "itself integrates the ability for all users to build and share skills, tools, themes, and app "
-                "improvements. Because YouCoded was designed from the ground up to be improved by individuals "
-                "with no coding or development interest, it can quickly outpace development of competing closed "
-                "agents in a way that is driven by what users really want.")
-    INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with all of the following services:"
-    KICKER = "Free &middot; Open source &middot; BYO model"
-    SUBTITLE = "A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way."
+ABOUT_P2 = ("With YouCoded, you can utilize OpenRouter to access any AI model from any provider including "
+            "Anthropic (Claude), OpenAI (ChatGPT), Alibaba (Qwen) and more. YouCoded also allows you to "
+            "download and run open source AI models on your own device, if your hardware supports it.")
+ABOUT_P3 = ("YouCoded is built to become a fully-modular and open source assistant platform, as the app "
+            "itself integrates the ability for all users to build and share skills, tools, themes, and app "
+            "improvements. Because YouCoded was designed from the ground up to be improved by individuals "
+            "with no coding or development interest, it can quickly outpace development of competing closed "
+            "agents in a way that is driven by what users really want.")
+INTEG_INTRO = "With skills from the WeCoded marketplace, YouCoded can link with all of the following services:"
+KICKER = "Free &middot; Open source &middot; BYO model"
+SUBTITLE = "A self-improving, customizable AI agent. Use any AI model from any provider to work and build your way."
 
 FAQ = [
  ("How is this different from ChatGPT or claude.ai?","Those are chat websites. YouCoded Assistant is an app on your computer and phone that works in your own files — it opens, edits, and organizes them, runs tasks, and searches the web — and you choose the AI behind it: Claude, hundreds of cloud models, or one that runs locally for free."),
@@ -89,19 +44,6 @@ FAQ = [
  ('Is "agentic" AI safe?',"The app asks before it changes anything, and every standing permission you grant is listed on one screen where you can revoke it. AI still makes mistakes, so keep an eye on what it's doing — and be careful with full-auto mode, which lets it act without asking."),
  ("Who built this?","So far, it's just me (Destin). However, my intention is for this open-source project to become something we all build together. I believe one of the greatest potential goods of AI comes from its ability to revolutionize the world of open-source software. This project is just one example of what AI can allow us to create: an app owned by nobody, improved by everybody — all without anyone needing to learn how to code or even understand what “open-source” is. No profit motive, no ulterior incentives — just people making cool shit and sharing it with other people :)"),
 ]
-
-if VARIANT == 'b':
-    # A's answer argues against 2023's ChatGPT. Both ChatGPT's desktop app and
-    # Claude Cowork reach local files now, so "those are chat websites" is no
-    # longer true and a reader who knows that stops trusting the rest of the page.
-    # B contrasts on the three things that ARE still true and checkable.
-    FAQ[0] = ("How is this different from ChatGPT or claude.ai?",
-              "Those are chat products, and their newer desktop versions can reach some of your files. "
-              "YouCoded is a full app that works in your own folders on Windows, macOS, Linux and Android \u2014 "
-              "opening, editing and organizing your real files, running tasks and searching the web. You choose "
-              "the AI behind it: Claude, hundreds of cloud models, or one that runs on your own computer for "
-              "free. And your conversations and files sync through your own private GitHub rather than a "
-              "company's servers.")
 
 ACCOUNTS = [
  ("GitHub",["Required","Free"],"Keeps your conversations and files in sync across devices and delivers marketplace updates. Sign up with your Google or Apple account.","Create a GitHub account &rarr;","https://github.com/signup",None),
@@ -131,7 +73,10 @@ def dl_buttons(cls='dlbtn', primary='Windows'):
         label = 'iOS<sup>*</sup>' if os_=='iOS' else os_
         svg = OS_SVG['macOS'] if os_=='iOS' else OS_SVG[os_]
         href = '#' if os_=='iOS' else 'https://github.com/itsdestin/youcoded/releases/latest'
-        out.append(f'<a id="{DL_ID[os_]}" class="{cls}{p}" href="{href}">'
+        # data-dl, NOT id: this page renders TWO download rows (the floating
+        # pill and the in-flow row the pill replaces), so an id would be
+        # duplicated and getElementById could only ever bind ONE of them.
+        out.append(f'<a data-dl="{DL_ID[os_]}" class="{cls}{p}" href="{href}">'
                    f'<svg viewBox="0 0 24 24" aria-hidden="true">{svg}</svg><span>{label}</span></a>')
     return '\n        '.join(out)
 
@@ -202,7 +147,7 @@ def steps():
 # Clips re-filmed for this redesign live in media-local/, NOT in media/ --
 # media/ is a symlink into youcoded/docs/media, i.e. the real site's assets.
 # Writing there would change the live site before the redesign is approved.
-MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit', 'row5-follow', 'row5-phone'}
+MEDIA_LOCAL = {'row1-any-ai', 'row2-artifact-edit', 'row5-follow', 'row5-phone', 'row7-play'}
 
 def _media_dir(key):
     return 'media-local' if key in MEDIA_LOCAL else 'media'
@@ -352,9 +297,8 @@ def flank_header(prefix, words, suffix='', italic_last=False):
     <div class="dlrow">
         {dl_buttons()}
     </div>
-    <div class="hero-app">{EMBED}
-      {DLFLOAT}
-    </div>
+    <div class="hero-app">{EMBED}</div>
+    {DLFLOAT}
   </div>
 </header>'''
 
@@ -443,9 +387,8 @@ HEADERS = {
     <div class="dlrow">
         {dl_buttons()}
     </div>
-    <div class="hero-app">{EMBED}
-      {DLFLOAT}
-    </div>
+    <div class="hero-app">{EMBED}</div>
+    {DLFLOAT}
   </div>
 </header>''',
 
@@ -632,8 +575,13 @@ BODY = f'''
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can search your inbox, read threads, and compose replies through Apple Mail."><img class="tag-icon" src="icons/apple-mail.svg" alt="">Apple Mail</button>
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can manage your task list, process inbox items captured from your phone, create tasks from conversations, and help you stay on top of priorities."><img class="tag-icon" src="icons/todoist.svg" alt="">Todoist</button>
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can receive marketplace updates and sync your configuration through GitHub, keeping your installation current with the latest features and fixes."><img class="tag-icon" src="icons/github.svg" alt="">GitHub</button>
-    <button class="integration-tag" tabindex="0" data-desc="YouCoded can navigate websites, fill out forms, take screenshots, and interact with web pages through Chrome."><img class="tag-icon" src="icons/chrome.svg" alt="">Chrome</button>
-    <button class="integration-tag" tabindex="0" data-desc="YouCoded can navigate websites, fill out forms, take screenshots, and interact with web pages through Safari."><img class="tag-icon" src="icons/safari.svg" alt="">Safari</button>
+    <!-- Chrome and Safari chips REMOVED 2026-09-03: both claimed "navigate websites,
+         fill out forms, take screenshots". Nothing in the registry does browser
+         automation -- measured: 0 hits for safari across the whole marketplace repo,
+         0 browser skills in skills/index.json. The nearest real things are the macOS
+         Control / Windows Control integrations, which drive the whole desktop, are
+         permission-gated and are one-platform-each. Do not restore either chip
+         without an integration behind it. -->
     <button class="integration-tag" tabindex="0" data-desc="YouCoded can generate graphics, edit presentations, and work with visual content directly in Canva."><img class="tag-icon" src="icons/canva.svg" alt="">Canva</button>
     <span class="integration-tag soon">More coming soon...</span>
     </div>
@@ -648,7 +596,7 @@ BODY = f'''
     <p>Honestly, I really just wanted a cooler and more efficient way to journal and track my own tasks/goals. The very first thing I built with Claude is the Journaling and Life History system (now available in the marketplace), and I pretty quickly decided that I wanted to share it with my friends. However, the thought of installing and opening &ldquo;Claude Code&rdquo; in the terminal scared away most people almost immediately. I realized that the idea of advanced agentic AI is still rather new to most people, and that persuading them to adopt my fancy new journaling system would require it to be <em>much</em> more accessible and user-friendly. Towards this end, I kind of just&hellip; kept adding things. And now we're here.</p>
     <p>Every line of YouCoded was written through conversation with Claude by me, <strong>someone who has never written code</strong>. Every feature, every platform port, every theme, every multiplayer game. The entire app was built, and is currently maintained, without a single line typed by hand.</p>
     <p>YouCoded Assistant is what that kind of AI looks like when it's built for everyone — not just the people who already know how to use it.</p>
-    <a class="sign" href="#">Built by Destin &rarr;</a>
+    <a class="sign" href="https://github.com/itsdestin" target="_blank" rel="noopener">Built by Destin &rarr;</a>
   </div>
 </div></section>
 
@@ -676,7 +624,7 @@ BODY = f'''
 
 <footer><div class="wrap"><div class="panel foot">
   <a href="#top" class="logo"><span class="mark">YC</span><span class="wm">You<b>Coded</b></span></a>
-  <div class="flinks"><a href="#">GitHub</a><a href="#">Built by Destin</a><span class="badge">Open Source</span></div>
+  <div class="flinks"><a href="https://github.com/itsdestin/youcoded" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/itsdestin" target="_blank" rel="noopener">Built by Destin</a><span class="badge">Open Source</span></div>
   <p class="legal">MIT License &middot; YouCoded is an independent, community-built project. Not affiliated with, endorsed by, or officially supported by Anthropic.</p>
 </div></div></footer>
 
@@ -893,7 +841,7 @@ function bootEmbed(){
 // --- The download pill: floats over the embed's dissolve, then docks to the
 // bottom of the window once its own resting spot would have scrolled off.
 var dlFloat = document.querySelector('.dlfloat'), heroApp = document.querySelector('.hero-app');
-var forceDock = false, DOCK_GAP = 34, restBottom = 0;
+var DOCK_GAP = 34;
 var demoRevealed = false, lastFz = null;
 // Below 820px the pill is not a floating object at all -- it sits in the flow
 // under the demo. The docked rule is `body.fade-d .dlfloat.docked`, which
@@ -904,18 +852,14 @@ function placeFloat(){
   if (!dlFloat || !heroApp || getComputedStyle(dlFloat).display === 'none') return;
   if (!wideMQ.matches) { dlFloat.classList.remove('docked', 'hidden'); return; }
   var h = dlFloat.offsetHeight;
-  var hr = heroApp.getBoundingClientRect();
-  // Where it WOULD sit: .dlfloat is bottom:-1 percent of .hero-app, i.e. it hangs
-  // one hundredth of the hero's height past its bottom edge. Reading its own rect
-  // is no good once it is docked -- that returns the docked position.
-  // Read the resting offset back out of CSS rather than repeating the number
-  // here -- but only while undocked, because docking replaces `bottom` with the
-  // fixed 24px gap.
-  if (!dlFloat.classList.contains('docked')) restBottom = parseFloat(getComputedStyle(dlFloat).bottom) || 0;
-  var natTop = hr.bottom - restBottom - h;
-  var dockTop = innerHeight - h - DOCK_GAP;
-  var dock = forceDock || natTop < dockTop;
-  dlFloat.classList.toggle('docked', dock);
+  // Destin 2026-09-03: the pill is docked from the FIRST paint, not only once
+  // scrolling would have carried it off the top. Its resting spot is the embed's
+  // bottom edge, and on any window shorter than the hero that edge is below the
+  // fold -- so the page's only download control was invisible until you scrolled,
+  // which is exactly the moment a visitor decides whether to bother. Docking is
+  // now the only wide-window state, which also retires the old `forceDock` flag
+  // Try Demo used to set to dock the pill early.
+  dlFloat.classList.add('docked');
 
   // --- The dissolve heals as the dissolved band scrolls up past the pill.
   // Anchored on the embed's own BOTTOM EDGE relative to the TOP of the docked
@@ -1021,7 +965,7 @@ if (tryPill && embed) {
     bootEmbed();
     embed.classList.add('interactive');
     document.querySelector('.hero-app').classList.add('revealed');
-    demoRevealed = true; forceDock = true; placeFloat();
+    demoRevealed = true; placeFloat();
     // Start from whatever the scroll has already healed, not from the variant's
     // resting value -- otherwise pressing Try Demo part-way down the page snaps
     // the dissolve BACK before clearing it.
@@ -1427,9 +1371,29 @@ def patch_modal(js):
     js = js.replace(
       "resetDownloadButton(downloadKeyFor(platformKey), 'Download Now');\n        modal.setAttribute('data-open', '');",
       "resetDownloadButton(downloadKeyFor(platformKey), 'Download Now');\n        downloadBtn.parentElement.hidden = !!p.noDownload;\n        modal.setAttribute('data-open', '');")
+    # The live page has ONE download row, so modal.js binds by getElementById.
+    # This page has two (pill + in-flow), and the hidden one comes first in the
+    # document -- so every pill chip fell through to /releases/latest with no
+    # install tips at all, and the iOS chip did nothing (its href is "#").
+    # Rebind to every element carrying the platform's data-dl. Verified
+    # 2026-09-03 by clicking all five chips in both rows.
     js = js.replace(
-      "['dl-windows', 'dl-macos', 'dl-linux', 'dl-android']",
-      "['dl-windows', 'dl-macos', 'dl-linux', 'dl-android', 'dl-ios']")
+      "      ['dl-windows', 'dl-macos', 'dl-linux', 'dl-android'].forEach(function(id) {\n"
+      "        var el = document.getElementById(id);\n"
+      "        if (!el) return;\n"
+      "        el.addEventListener('click', function(e) {\n"
+      "          e.preventDefault();\n"
+      "          openModal(id);\n"
+      "        });\n"
+      "      });",
+      "      ['dl-windows', 'dl-macos', 'dl-linux', 'dl-android', 'dl-ios'].forEach(function(id) {\n"
+      "        document.querySelectorAll('[data-dl=\"' + id + '\"]').forEach(function(el) {\n"
+      "          el.addEventListener('click', function(e) {\n"
+      "            e.preventDefault();\n"
+      "            openModal(id);\n"
+      "          });\n"
+      "        });\n"
+      "      });")
     js = js.replace(
       "'<details class=\"install-modal-details\">' +\n            '<summary>After install: What to expect on first launch</summary>' +\n            '<div class=\"install-modal-section\">' + afterInstallHtml + '</div>' +\n          '</details>';",
       "(p.noDownload ? '' : '<details class=\"install-modal-details\">' +\n            '<summary>After install: What to expect on first launch</summary>' +\n            '<div class=\"install-modal-section\">' + afterInstallHtml + '</div>' +\n          '</details>');")
@@ -1601,10 +1565,31 @@ BUILDS = [
     # adding a line here brings any of them back for a side-by-side.
     ('mockup-landing.html', 'YouCoded — Landing', 'css_d.css', 'cotton-candy-sky', 'w-thats', False, 'deck-fade', 'fade-d pill-accent legend-on h1-md brand-tile wm-one'),
 ]
+def check_page(html, name):
+    """Refuse to write a page whose ids are not unique.
+
+    WHY (2026-09-03): dl_buttons() renders TWICE -- the floating pill and the
+    in-flow row it replaces -- so every download button's id existed twice. The
+    install-tips popup binds with getElementById, which returns the FIRST match:
+    the HIDDEN row. Result: not one of the five popups could be opened by a
+    visitor, and the iOS chip (href "#") did nothing at all. It looked completely
+    normal in a screenshot, and nothing here was checking.
+
+    Duplicate ids are invalid HTML anyway, so this is a cheap, general guard, not
+    a special case for the download row. Anything that must exist twice carries a
+    data- attribute instead.
+    """
+    ids = re.findall(r'\sid="([^"]+)"', html)
+    dupes = sorted({i for i in ids if ids.count(i) > 1})
+    if dupes:
+        raise SystemExit(
+            'BUILD REFUSED: ' + name + ' has duplicate id(s): ' + ', '.join(dupes) +
+            '\n  getElementById binds the FIRST one, which is often the hidden copy.'
+            '\n  Use data-<name> for anything rendered more than once.')
+
+
 for row in BUILDS:
     f, title, css, dflt, hdr = row[:5]
-    if VARIANT != 'a':
-        f = f.replace('.html', '-' + VARIANT + '.html')
     navpicker = row[5] if len(row) > 5 else True
     demo = row[6] if len(row) > 6 else 'theater'
     sheet = open(BASE + '/' + css).read() + MODAL_VARS[css] + MODAL_CSS + INTEG_CSS + EMBED_CSS + FADE_CSS + NAV_CSS
@@ -1615,12 +1600,6 @@ for row in BUILDS:
     if len(row) > 7 and row[7]: body_class += ' ' + row[7]
     html = page(title, sheet, dflt, header=hdr, extra_js=js,
                 navpicker=navpicker, body_class=body_class, demo=demo)
-    if VARIANT == 'b':
-        # "Safari" appears ZERO times in the marketplace's 339-entry registry
-        # (checked 2026-08-31), and integrations/index.json lists only four
-        # services as available. A chip promising a link that does not exist is
-        # the first thing a sceptic checks.
-        import re as _re
-        html = _re.sub(r'<button class="integration-tag"[^>]*>(?:(?!</button>).)*?Safari</button>\s*', '', html, flags=_re.S)
+    check_page(html, f)
     open(OUT + f, 'w').write(html)
     print('wrote', f)

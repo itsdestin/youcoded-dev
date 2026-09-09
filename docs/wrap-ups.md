@@ -53,3 +53,10 @@ recurred — the repetition is the data.
 - Clickable URLs in chat: he asked for a handoff mid-session, a fresh session built and merged `markdown-linkify.ts` before this one ended → nothing to file; the handoff worked
 - deleted/merged: `.claude/rules/harness-evaluator.md` went 778 → 547 words — three invariants about *changing* the evaluator moved into the depth doc it already points at, leaving the rule to cover *running* one
 - Ran `audit-anchors.mjs` in the shared checkout and got two failures that were both already FIXED upstream (a doc reported as living in active AND archive; a word-budget violation) — spent calls on each before checking against `origin/master`. RECURRENCE of the stale-checkout trap, twice in one session → applied: the auditor now prints how many commits behind the checkout is, before its findings
+
+## 2026-09-08 — plan-limit card Upgrade plan button (session/warn-upgrade-btn)
+- The workbench "isn't clickable" scare was NOT the button: inactive sessions render pointer-events:none, so a fixture session's card looks dead until the session is activated → applied: WHY comment at AttentionBanner's pointerEvents wiring is old code; the real fix was realising the fixture; a future session should click the session strip first [~8 probes]
+- Piping `run-workbench.sh` through `head` SIGPIPEs vite and kills the workbench mid-session — cost 2-3 restarts and confusing stale "exited" notices → applied: detach-with-redirect recipe in `scripts/run-workbench.sh` usage header
+- The workbench mock's `shell.openExternal` fell through to the catch-all and silently did nothing (console-only warning), so real clicks looked dead → applied: real `openExternal` (window.open) in `dev/workbench/mock-shim.ts`, boot-check green
+- Destin's final card decision (stated twice): Upgrade plan = transparent/secondary + LEFT; Switch Providers = green/primary + RIGHT → applied: recorded in `docs/archive/handoffs/2026-09-05-chatgpt-signin-START-HERE.md` and in the AttentionBanner WHY comments
+- deleted/merged: none found this session (the mock-shim WHY comment and run-workbench header note are the two durable edits)

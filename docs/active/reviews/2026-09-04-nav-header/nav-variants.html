@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>youcoded.ai — header bar options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=Fraunces:wght@300;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --font-ui:'DM Sans',system-ui,sans-serif; --font-mono:'JetBrains Mono',monospace;
+  --font-serif:'Fraunces',Georgia,serif;
+  --font-theme:'DM Sans',system-ui,sans-serif;
+  --wide:1280px;
+  --glass:rgba(var(--panel-rgb), var(--panel-op));
+  --glass-hi:rgba(255,255,255,.22);
+  --hair:rgba(var(--edge-rgb), .55);
+}
+html[data-dark="1"]{ --glass-hi:rgba(255,255,255,.14); --ink:rgba(0,0,0,.42); }
+html[data-dark="0"]{ --glass-hi:rgba(255,255,255,.55); --ink:rgba(255,255,255,.34); }
+body{font-family:var(--font-ui);background:#0B0C0E;color:#EDEFF2;min-height:100vh}
+
+/* ---------- the control chrome. Deliberately neutral grey so it doesn't tint
+     your read of bars that are all about colour. ---------- */
+.panelbar{position:sticky;top:0;z-index:200;background:#131519;border-bottom:1px solid rgba(255,255,255,.10);
+  padding:10px 18px 11px;display:flex;flex-direction:column;gap:9px;
+  max-height:56vh;overflow-y:auto}
+body.compact .axes{display:none}
+.toggle{font:inherit;font-size:.78rem;padding:5px 12px;border-radius:8px;cursor:pointer;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#B7BDC5}
+.toggle:hover{color:#fff}
+.ptop{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ptitle{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:#8A9099}
+.seg{display:flex;gap:4px;background:rgba(255,255,255,.06);padding:4px;border-radius:10px}
+.seg button{font:inherit;font-size:.82rem;padding:6px 13px;border:0;border-radius:7px;background:none;color:#8A9099;cursor:pointer}
+.seg button.on{background:rgba(255,255,255,.12);color:#fff}
+.themes{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.th{width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.18);cursor:pointer;position:relative;padding:0}
+.th span{position:absolute;inset:5px;border-radius:50%}
+.th.on{outline:2px solid #5EA9F0;outline-offset:2px}
+
+.sliders{display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.04)}
+.sl{display:flex;align-items:center;gap:7px}
+.sl label{font-size:.75rem;color:#8A9099;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.sl input[type=range]{width:104px;accent-color:#5EA9F0}
+.sl b{font-family:var(--font-mono);font-size:.68rem;color:#C9D1D9;min-width:48px}
+.reset{font:inherit;font-size:.75rem;padding:5px 11px;border-radius:8px;cursor:pointer;margin-left:auto;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#B7BDC5}
+
+.axes{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.grp-h{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:#6E747C;margin-bottom:5px}
+.chiprow{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font:inherit;font-size:.78rem;padding:5px 10px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  background:rgba(255,255,255,.05);border:1px solid transparent;color:#B7BDC5}
+.chip:hover{background:rgba(255,255,255,.09);color:#fff}
+.chip.on{background:rgba(94,169,240,.16);border-color:rgba(94,169,240,.5);color:#fff}
+.why{font-size:.75rem;color:#8A9099;min-height:1.2em}
+.why b{color:#C9D1D9;font-weight:600}
+.psetrow{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.psetl{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#6E747C;width:104px;flex:none}
+.pset{font:inherit;font-size:.78rem;padding:5px 11px;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);color:#B7BDC5}
+.pset:hover{color:#fff;background:rgba(255,255,255,.10)}
+.hint{font-size:.74rem;color:#6E747C}
+
+/* ---------- the canvas the bars sit on: the real wallpaper + the real scrim ---------- */
+.canvas{position:relative;min-height:calc(100vh - 270px);overflow:hidden;background:var(--canvas)}
+.bd{position:absolute;inset:0;background-size:cover;background-position:center}
+.bd-scrim{position:absolute;inset:0;background:
+  linear-gradient(rgba(var(--canvas-rgb),.30), rgba(var(--canvas-rgb),.62) 55%, rgba(var(--canvas-rgb),.86))}
+.canvas .inner{position:relative;z-index:2;padding:26px 0 60px}
+
+/* ---------- the bar itself: copied from the live site, with every number
+     Destin can dial exposed as a CSS variable. ---------- */
+.stage{font-family:var(--font-theme);color:var(--fg);
+  --tile:26px; --tile-r:35%; --wm-size:.95rem; --bar-h:56px; --wm-track:-.01em; --tag-size:57}
+.nav{padding:0 18px}
+.nav-in{max-width:var(--wide);margin:0 auto;min-height:var(--bar-h);padding:0 12px 0 16px;
+  display:flex;align-items:center;gap:20px;border-radius:var(--radius);
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.5);
+  backdrop-filter:blur(var(--blur)) saturate(1.5);
+  border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi), 0 18px 44px -18px var(--ink)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.mark{width:var(--tile);height:var(--tile);border-radius:var(--tile-r);
+  background:var(--accent);color:var(--on-accent);display:grid;place-items:center;flex:none}
+.mark-bot{width:62%;height:62%}
+.mark-bot path,.mark-bot rect{fill:currentColor}
+.wm{font-size:var(--wm-size);line-height:1.14}
+.wm-name,.wm i{letter-spacing:var(--wm-track)}
+.wm-a{font-weight:400}
+.wm b{font-weight:800}
+.wm i{font-style:normal;font-weight:500;opacity:.45}
+.wm em{display:block;font-style:normal;font-family:var(--font-mono);
+  font-size:calc(var(--wm-size) * var(--tag-size) / 100);letter-spacing:.1em;
+  text-transform:uppercase;opacity:.5;margin-top:2px}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:18px}
+.nav-links{display:flex;gap:20px;list-style:none}
+.nav-links a{text-decoration:none;font-size:.86rem;font-weight:600;opacity:.72;color:inherit}
+
+/* ================= THE MARK =============================================== */
+/* i-tile is the live one and needs no rule. The glass tile is the same material
+   as the bar, so the robot has to be painted IN the accent rather than knocked
+   out of it -- which puts a second accent-coloured object next to a coloured
+   word, and that is the thing worth judging here. */
+.i-glass .mark{background:var(--glass);color:var(--accent);border:1px solid var(--hair);
+  box-shadow:inset 0 1px 0 var(--glass-hi)}
+.i-bare .mark{background:none;color:var(--accent);border-radius:0}
+.i-bare .mark-bot{width:100%;height:100%}
+.i-circle .mark{border-radius:50%}
+.i-ink .mark{background:var(--fg);color:var(--canvas)}
+
+/* ================= WHAT THE BAR SAYS ====================================== */
+.s-nameasst .wm em{display:none}
+.s-nametag .wm i{display:none}
+.s-name .wm i,.s-name .wm em{display:none}
+
+/* ================= TYPEFACE =============================================== */
+/* n-theme is the LIVE behaviour: no font-family here, so .wm inherits the
+   THEME's font and the logo changes shape in every theme. */
+.n-fixed .wm{font-family:'DM Sans',system-ui,sans-serif}
+.n-serif .wm{font-family:var(--font-serif)}
+
+/* ================= CASE =================================================== */
+.c-lower .wm-name,.c-lower .wm i{text-transform:lowercase}
+.c-name .wm-name{text-transform:uppercase}
+.c-nameasst .wm-name,.c-nameasst .wm i{text-transform:uppercase}
+.c-all .wm-name,.c-all .wm i,.c-all .wm em{text-transform:uppercase}
+
+/* ================= COLOUR ================================================= */
+/* Every option paints exactly one part, so they read as distinct choices rather
+   than as "more colour" vs "less colour". */
+.k-coded .wm b{color:var(--accent)}
+.k-you .wm-a{color:var(--accent)}
+.k-asst .wm i{color:var(--accent);opacity:1}
+.k-tag .wm em{color:var(--accent);opacity:.95}
+.k-codedtag .wm b{color:var(--accent)}
+.k-codedtag .wm em{color:var(--accent);opacity:.95}
+.k-name .wm-name{color:var(--accent)}
+/* Not coloured letters: a filled block, the same material as the tile, with the
+   word knocked out of it. Inline-block so its padding cannot fight line-height. */
+.k-block .wm b{display:inline-block;background:var(--accent);color:var(--on-accent);
+  padding:0 7px 1px 6px;margin-left:3px;border-radius:7px;line-height:1.18}
+/* Letters stay plain; the colour is a rule under the whole name. */
+.k-under .wm-name{border-bottom:2px solid var(--accent);padding-bottom:2px}
+
+/* ================= WEIGHT ================================================= */
+.w-even .wm-a,.w-even .wm b{font-weight:700} .w-even .wm i{font-weight:700}
+.w-coded .wm-a{font-weight:400} .w-coded .wm b{font-weight:800} .w-coded .wm i{font-weight:500}
+.w-xsplit .wm-a{font-weight:200} .w-xsplit .wm b{font-weight:900} .w-xsplit .wm i{font-weight:400}
+.w-you .wm-a{font-weight:800}   .w-you .wm b{font-weight:400}   .w-you .wm i{font-weight:500}
+.w-asst .wm-a,.w-asst .wm b{font-weight:700}
+.w-asst .wm i{font-weight:800;opacity:.9}
+.w-light .wm-a,.w-light .wm b{font-weight:300} .w-light .wm i{font-weight:300;opacity:.55}
+.w-black .wm-a,.w-black .wm b{font-weight:900} .w-black .wm i{font-weight:400;opacity:.5}
+/* Fraunces ships 300/600/700/900 -- it has no 200 or 800 to fall back on. */
+.n-serif.w-coded .wm b,.n-serif.w-black .wm-a,.n-serif.w-black .wm b,
+.n-serif.w-xsplit .wm b{font-weight:900}
+.n-serif.w-light .wm-a,.n-serif.w-light .wm b,.n-serif.w-xsplit .wm-a{font-weight:300}
+
+/* ================= "ASSISTANT" ============================================ */
+.x-small .wm i{font-size:calc(var(--wm-size) * .62);letter-spacing:.16em;opacity:.42;
+  margin-left:2px;position:relative;top:-1px}
+/* Line one becomes purely the name; "Assistant" joins the tagline beneath it. */
+.x-line2 .wm-name{display:block}
+.x-line2 .wm i{display:inline;font-family:var(--font-mono);font-weight:500;opacity:.5;
+  font-size:calc(var(--wm-size) * var(--tag-size) / 100);letter-spacing:.1em}
+.x-line2 .wm i::after{content:'\00a0\00a0\00b7\00a0'}
+.x-line2 .wm em{display:inline;margin-top:0}
+/* With no tagline there is nothing for it to join, so it stays a small label. */
+.x-line2.s-nameasst .wm i::after,.x-line2.s-name .wm i::after{content:''}
+
+/* ================= TAGLINE ================================================ */
+.g-same .wm em{font-family:inherit;letter-spacing:var(--wm-track);font-weight:500}
+.g-sans .wm em{font-family:inherit;text-transform:none;letter-spacing:0;
+  font-size:calc(var(--wm-size) * .70);opacity:.6;font-weight:500;margin-top:0}
+.g-chip .wm em{display:inline-block;margin:0 0 0 10px;padding:3px 9px;border-radius:999px;
+  background:rgba(var(--fg-rgb),.09);border:1px solid rgba(var(--fg-rgb),.10);
+  opacity:.72;vertical-align:2px;font-size:calc(var(--wm-size) * .52)}
+
+/* ================= PLACEMENT ============================================== */
+.p-center .nav-in{position:relative;justify-content:center}
+.p-center .nav-right{position:absolute;right:12px;top:50%;transform:translateY(-50%);margin-left:0}
+
+/* Optional full stop after the name. */
+body.dot-on .wm-name::after{content:'.'}
+
+/* ---------- single mode: some page under the bar, for context ---------- */
+.hero{max-width:var(--wide);margin:50px auto 0;padding:0 30px;text-align:center;
+  font-family:var(--font-theme);color:var(--fg)}
+.kicker{font-family:var(--font-mono);font-size:.8rem;font-weight:500;letter-spacing:.15em;
+  text-transform:uppercase;opacity:.9;margin-bottom:9px}
+.hero h1{font-family:var(--font-ui);font-size:clamp(2.4rem,5.4vw,4.2rem);font-weight:900;
+  letter-spacing:-.05em;line-height:.97}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:1.06rem;margin-top:13px;opacity:.85}
+
+/* ---------- stack mode ---------- */
+.stackh{max-width:var(--wide);margin:6px auto 14px;padding:0 30px;font-size:.72rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:#fff}
+.stackh span{background:rgba(10,11,13,.8);padding:5px 12px;border-radius:999px}
+.row{margin-bottom:30px}
+.row-tag{max-width:var(--wide);margin:0 auto 7px;padding:0 30px}
+.row-tag>span{display:inline-flex;align-items:baseline;gap:9px;padding:4px 11px;border-radius:999px;
+  background:rgba(10,11,13,.78)}
+.row-tag b{font-size:.82rem;color:#fff}
+.row-tag i{font-style:normal;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;
+  color:rgba(255,255,255,.55)}
+#stack{display:none}
+body.mode-stack #single{display:none}
+body.mode-stack #stack{display:block}
+/* In "see all at once" every row carries its own sizes, so the sliders would be
+   lying about what you are looking at. Disabled there rather than ignored. */
+body.mode-stack .sliders{opacity:.3;pointer-events:none}
+</style>
+</head>
+<body class="mode-single">
+
+<div class="panelbar">
+  <div class="ptop">
+    <div class="ptitle">youcoded.ai header bar &middot; round 7</div>
+    <div class="seg">
+      <button id="m-single" class="on">Try one</button>
+      <button id="m-stack">See all at once</button>
+    </div>
+    <button class="toggle" id="t-axes">Fine-tune &#9662;</button>
+    <span class="hint" id="now">Live now</span>
+    <div class="themes" id="themes"></div>
+  </div>
+
+  <div class="sliders">
+    <div class="sl"><label>Tile</label><input type="range" id="s-tile" min="20" max="46" step="1"><b id="v-tile"></b></div>
+    <div class="sl"><label>Corners</label><input type="range" id="s-corner" min="0" max="50" step="1"><b id="v-corner"></b></div>
+    <div class="sl"><label>Name size</label><input type="range" id="s-wm" min="70" max="150" step="1"><b id="v-wm"></b></div>
+    <div class="sl"><label>Letter spacing</label><input type="range" id="s-track" min="-4" max="34" step="1"><b id="v-track"></b></div>
+    <div class="sl"><label>Tagline size</label><input type="range" id="s-tag" min="40" max="95" step="1"><b id="v-tag"></b></div>
+    <div class="sl"><label>Bar height</label><input type="range" id="s-bar" min="46" max="84" step="1"><b id="v-bar"></b></div>
+    <div class="sl"><label><input type="checkbox" id="s-dot"> full stop</label></div>
+    <button class="reset" id="reset">Back to what's live</button>
+  </div>
+
+  <div id="psets"><div class="psetrow"><span class="psetl">Spacing</span><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">Shipped +0.22</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="19" data-tag="60" data-x="x-same" data-i="i-glass">+0.19</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="16" data-tag="60" data-x="x-same" data-i="i-glass">+0.16</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="13" data-tag="60" data-x="x-same" data-i="i-glass">+0.13</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="10" data-tag="60" data-x="x-same" data-i="i-glass">+0.10</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="7" data-tag="60" data-x="x-same" data-i="i-glass">+0.07</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="4" data-tag="60" data-x="x-same" data-i="i-glass">+0.04</button></div><div class="psetrow"><span class="psetl">Glass + YOU</span><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">Glass · YOU · wide</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="30" data-tag="60" data-x="x-same" data-i="i-glass">Wider still</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-glass">Previous spacing</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-you" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">YOU heavier</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">YOU lighter</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-youtag" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">YOU + tagline</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="32" data-corner="34" data-wm="1.02" data-bar="60" data-track="20" data-tag="55" data-x="x-small" data-i="i-glass">Small ASSISTANT</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="32" data-corner="34" data-wm="1.04" data-bar="60" data-track="20" data-tag="52" data-x="x-line2" data-i="i-glass">ASSISTANT on line 2</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="33" data-corner="32" data-wm="1.06" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">No tagline</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="34" data-corner="33" data-wm="0.94" data-bar="62" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">Tile 34</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="38" data-corner="32" data-wm="0.94" data-bar="64" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">Tile 38</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="42" data-corner="31" data-wm="0.94" data-bar="68" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">Tile 42</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="46" data-corner="30" data-wm="0.94" data-bar="72" data-track="22" data-tag="60" data-x="x-same" data-i="i-glass">Tile 46</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="42" data-corner="31" data-wm="1.06" data-bar="68" data-track="22" data-tag="58" data-x="x-same" data-i="i-glass">Tile 42 + bigger name</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-tile">Same, solid tile</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="34" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-bare">Same, bare robot</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="50" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-circle">Same, circle</button></div><div class="psetrow"><span class="psetl">Caps · coloured</span><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">CODED in colour</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-you" data-w="w-you" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">YOU in colour</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-asst" data-w="w-asst" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">ASSISTANT in colour</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-name" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">Whole name in colour</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-codedtag" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">Colour top + bottom</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-tag" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">Tagline in colour</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-block" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">CODED in a block</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-under" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">Coloured underline</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="5" data-tag="60" data-x="x-same" data-i="i-tile">Tighter spacing</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="22" data-tag="60" data-x="x-same" data-i="i-tile">Wider spacing</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-xsplit" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.94" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">Extreme weight split</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">One weight</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="32" data-corner="34" data-wm="1.02" data-bar="60" data-track="12" data-tag="55" data-x="x-small" data-i="i-tile">Small ASSISTANT</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-mono" data-p="p-left" data-tile="32" data-corner="34" data-wm="1.04" data-bar="60" data-track="12" data-tag="52" data-x="x-line2" data-i="i-tile">ASSISTANT on line 2</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="33" data-corner="32" data-wm="1.06" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">No tagline</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-coded" data-w="w-coded" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="60" data-track="13" data-tag="57" data-x="x-same" data-i="i-tile">Typewriter tagline</button></div><div class="psetrow"><span class="psetl">Sizes</span><button class="pset" data-s="s-all" data-n="n-theme" data-c="c-as" data-k="k-none" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="26" data-corner="35" data-wm="0.95" data-bar="56" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Live now</button><button class="pset" data-s="s-all" data-n="n-theme" data-c="c-as" data-k="k-none" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.02" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Live, a bit bigger</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-as" data-k="k-none" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.02" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">One brand font</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-as" data-k="k-none" data-w="w-even" data-g="g-sans" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.02" data-bar="58" data-track="-1" data-tag="70" data-x="x-same" data-i="i-tile">Plain english</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-as" data-k="k-none" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="34" data-corner="32" data-wm="1.18" data-bar="60" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Big and simple</button><button class="pset" data-s="s-name" data-n="n-fixed" data-c="c-as" data-k="k-none" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="34" data-corner="32" data-wm="1.22" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Just the name</button></div><div class="psetrow"><span class="psetl">Caps · plain</span><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-nameasst" data-k="k-none" data-w="w-coded" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.92" data-bar="58" data-track="12" data-tag="57" data-x="x-same" data-i="i-tile">CAPS · one line</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-none" data-w="w-coded" data-g="g-same" data-p="p-left" data-tile="31" data-corner="34" data-wm="0.9" data-bar="60" data-track="13" data-tag="60" data-x="x-same" data-i="i-tile">CAPS · stacked</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-all" data-k="k-none" data-w="w-light" data-g="g-same" data-p="p-left" data-tile="30" data-corner="34" data-wm="0.86" data-bar="60" data-track="24" data-tag="62" data-x="x-same" data-i="i-tile">CAPS · wide + light</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-nameasst" data-k="k-none" data-w="w-black" data-g="g-mono" data-p="p-left" data-tile="33" data-corner="30" data-wm="1.02" data-bar="60" data-track="2" data-tag="57" data-x="x-same" data-i="i-tile">CAPS · tight + heavy</button><button class="pset" data-s="s-nametag" data-n="n-fixed" data-c="c-name" data-k="k-none" data-w="w-even" data-g="g-same" data-p="p-left" data-tile="32" data-corner="34" data-wm="1.0" data-bar="60" data-track="16" data-tag="58" data-x="x-same" data-i="i-tile">CAPS · name only</button><button class="pset" data-s="s-nametag" data-n="n-serif" data-c="c-all" data-k="k-none" data-w="w-even" data-g="g-same" data-p="p-center" data-tile="32" data-corner="30" data-wm="1.02" data-bar="62" data-track="14" data-tag="58" data-x="x-same" data-i="i-tile">CAPS · serif</button></div><div class="psetrow"><span class="psetl">Colour & weight</span><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-as" data-k="k-coded" data-w="w-coded" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.02" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Coloured "Coded"</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-as" data-k="k-you" data-w="w-you" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.02" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Coloured "You"</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-as" data-k="k-asst" data-w="w-asst" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.06" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Coloured "Assistant"</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-as" data-k="k-tag" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.02" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Coloured tagline</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-as" data-k="k-name" data-w="w-even" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.08" data-bar="58" data-track="-1" data-tag="57" data-x="x-same" data-i="i-tile">Whole name coloured</button><button class="pset" data-s="s-all" data-n="n-fixed" data-c="c-as" data-k="k-asst" data-w="w-light" data-g="g-mono" data-p="p-left" data-tile="31" data-corner="35" data-wm="1.06" data-bar="58" data-track="1" data-tag="57" data-x="x-same" data-i="i-tile">Flipped hierarchy</button><button class="pset" data-s="s-nameasst" data-n="n-fixed" data-c="c-as" data-k="k-none" data-w="w-black" data-g="g-mono" data-p="p-left" data-tile="33" data-corner="32" data-wm="1.14" data-bar="60" data-track="-2" data-tag="57" data-x="x-same" data-i="i-tile">Heavy + quiet</button></div></div>
+  <div class="axes" id="axes">
+    <div class="grp"><div class="grp-h">Mark</div><div class="chiprow"><button class="chip" data-axis="i" data-v="i-tile" data-why="Solid square in the theme colour with the robot cut out of it. What the site uses today." title="Solid square in the theme colour with the robot cut out of it. What the site uses today.">Accent tile (today)</button><button class="chip" data-axis="i" data-v="i-glass" data-why="Same frosted material as the bar itself, with the robot painted IN the theme colour instead of knocked out of it." title="Same frosted material as the bar itself, with the robot painted IN the theme colour instead of knocked out of it.">Glass tile</button><button class="chip" data-axis="i" data-v="i-bare" data-why="Just the robot, bigger, in the theme colour. Nothing behind it." title="Just the robot, bigger, in the theme colour. Nothing behind it.">No container</button><button class="chip" data-axis="i" data-v="i-circle" data-why="The same solid colour, but a round badge instead of a square." title="The same solid colour, but a round badge instead of a square.">Accent circle</button><button class="chip" data-axis="i" data-v="i-ink" data-why="Square in the text colour, robot cut out in the page colour. No colour at all up here." title="Square in the text colour, robot cut out in the page colour. No colour at all up here.">Ink tile</button></div></div>
+    <div class="grp"><div class="grp-h">What it says</div><div class="chiprow"><button class="chip" data-axis="s" data-v="s-all" data-why="Everything the bar says today: &quot;YouCoded Assistant&quot; with &quot;AGENTS FOR EVERYONE&quot; underneath." title="Everything the bar says today: &quot;YouCoded Assistant&quot; with &quot;AGENTS FOR EVERYONE&quot; underneath.">Name · Assistant · tagline</button><button class="chip" data-axis="s" data-v="s-nameasst" data-why="Keeps &quot;YouCoded Assistant&quot;, drops the tagline. Nothing under the name." title="Keeps &quot;YouCoded Assistant&quot;, drops the tagline. Nothing under the name.">Name · Assistant</button><button class="chip" data-axis="s" data-v="s-nametag" data-why="Drops the word &quot;Assistant&quot;. The name, then the tagline underneath it." title="Drops the word &quot;Assistant&quot;. The name, then the tagline underneath it.">Name · tagline</button><button class="chip" data-axis="s" data-v="s-name" data-why="Just &quot;YouCoded&quot;. The bar says nothing else about what it is." title="Just &quot;YouCoded&quot;. The bar says nothing else about what it is.">Name only</button></div></div>
+    <div class="grp"><div class="grp-h">Case</div><div class="chiprow"><button class="chip" data-axis="c" data-v="c-as" data-why="&quot;YouCoded Assistant&quot; — capital Y, capital C, the rest lower case." title="&quot;YouCoded Assistant&quot; — capital Y, capital C, the rest lower case.">As written (today)</button><button class="chip" data-axis="c" data-v="c-lower" data-why="&quot;youcoded assistant&quot; throughout. Softer, more like a modern consumer app." title="&quot;youcoded assistant&quot; throughout. Softer, more like a modern consumer app.">all lower case</button><button class="chip" data-axis="c" data-v="c-name" data-why="&quot;YOUCODED&quot; in capitals, &quot;Assistant&quot; left as written beside it." title="&quot;YOUCODED&quot; in capitals, &quot;Assistant&quot; left as written beside it.">NAME in caps</button><button class="chip" data-axis="c" data-v="c-nameasst" data-why="&quot;YOUCODED ASSISTANT&quot; both in capitals. The tagline is already capitals, so the top line now matches it." title="&quot;YOUCODED ASSISTANT&quot; both in capitals. The tagline is already capitals, so the top line now matches it.">NAME + ASSISTANT</button><button class="chip" data-axis="c" data-v="c-all" data-why="Every word in the bar in capitals, all three parts, one consistent block of type." title="Every word in the bar in capitals, all three parts, one consistent block of type.">EVERYTHING in caps</button></div></div>
+    <div class="grp"><div class="grp-h">Colour on</div><div class="chiprow"><button class="chip" data-axis="k" data-v="k-none" data-why="No colour anywhere in the words. The theme colour appears once, in the tile. This is live today." title="No colour anywhere in the words. The theme colour appears once, in the tile. This is live today.">No colour</button><button class="chip" data-axis="k" data-v="k-coded" data-why="The second half of the name picks up the theme colour." title="The second half of the name picks up the theme colour.">"Coded"</button><button class="chip" data-axis="k" data-v="k-you" data-why="The first half picks up the colour instead — puts the emphasis on the person, not the code." title="The first half picks up the colour instead — puts the emphasis on the person, not the code.">"You"</button><button class="chip" data-axis="k" data-v="k-asst" data-why="The name stays plain and the word &quot;Assistant&quot; carries the colour." title="The name stays plain and the word &quot;Assistant&quot; carries the colour.">"Assistant"</button><button class="chip" data-axis="k" data-v="k-tag" data-why="Name plain, tagline in the theme colour — the colour sits on the promise, not the name." title="Name plain, tagline in the theme colour — the colour sits on the promise, not the name.">The tagline</button><button class="chip" data-axis="k" data-v="k-codedtag" data-why="Colour in two places: the second half of the name and the tagline underneath." title="Colour in two places: the second half of the name and the tagline underneath.">"Coded" + tagline</button><button class="chip" data-axis="k" data-v="k-name" data-why="&quot;YouCoded&quot; entirely in the theme colour. The loudest option." title="&quot;YouCoded&quot; entirely in the theme colour. The loudest option.">The whole name</button><button class="chip" data-axis="k" data-v="k-youtag" data-why="Colour in two places: the first half of the name and the tagline underneath." title="Colour in two places: the first half of the name and the tagline underneath.">"You" + tagline</button><button class="chip" data-axis="k" data-v="k-block" data-why="Not coloured letters — a filled block of colour with the word knocked out of it, matching the tile." title="Not coloured letters — a filled block of colour with the word knocked out of it, matching the tile.">"Coded" in a block</button><button class="chip" data-axis="k" data-v="k-under" data-why="The letters stay plain and a coloured rule sits under the name, like a highlighter stroke." title="The letters stay plain and a coloured rule sits under the name, like a highlighter stroke.">Underline</button></div></div>
+    <div class="grp"><div class="grp-h">Weight</div><div class="chiprow"><button class="chip" data-axis="w" data-v="w-even" data-why="Name and &quot;Assistant&quot; at one weight. Nothing is emphasised over anything else — this is live today." title="Name and &quot;Assistant&quot; at one weight. Nothing is emphasised over anything else — this is live today.">All the same (today)</button><button class="chip" data-axis="w" data-v="w-coded" data-why="Light &quot;You&quot;, heavy &quot;Coded&quot; — one word with the emphasis inside it." title="Light &quot;You&quot;, heavy &quot;Coded&quot; — one word with the emphasis inside it.">"Coded" heavier</button><button class="chip" data-axis="w" data-v="w-xsplit" data-why="The widest possible gap: &quot;You&quot; very thin, &quot;Coded&quot; very heavy. Dramatic; can read as two words." title="The widest possible gap: &quot;You&quot; very thin, &quot;Coded&quot; very heavy. Dramatic; can read as two words.">Extreme split</button><button class="chip" data-axis="w" data-v="w-you" data-why="The reverse: heavy &quot;You&quot;, light &quot;Coded&quot;." title="The reverse: heavy &quot;You&quot;, light &quot;Coded&quot;.">"You" heavier</button><button class="chip" data-axis="w" data-v="w-asst" data-why="&quot;Assistant&quot; is bold and full strength instead of faded — it stops being a footnote." title="&quot;Assistant&quot; is bold and full strength instead of faded — it stops being a footnote.">"Assistant" heavy</button><button class="chip" data-axis="w" data-v="w-light" data-why="Thin, airy type throughout. Quiet and expensive-looking; can get weak on busy wallpapers." title="Thin, airy type throughout. Quiet and expensive-looking; can get weak on busy wallpapers.">Everything light</button><button class="chip" data-axis="w" data-v="w-black" data-why="The name at maximum weight with &quot;Assistant&quot; light beside it. Blunt and confident." title="The name at maximum weight with &quot;Assistant&quot; light beside it. Blunt and confident.">Name very heavy</button></div></div>
+    <div class="grp"><div class="grp-h">"Assistant"</div><div class="chiprow"><button class="chip" data-axis="x" data-v="x-same" data-why="&quot;Assistant&quot; sits on the same line at the same size, just faded." title="&quot;Assistant&quot; sits on the same line at the same size, just faded.">Same size as the name</button><button class="chip" data-axis="x" data-v="x-small" data-why="&quot;Assistant&quot; shrinks to a small spaced label beside the name, so the name dominates." title="&quot;Assistant&quot; shrinks to a small spaced label beside the name, so the name dominates.">Smaller label</button><button class="chip" data-axis="x" data-v="x-line2" data-why="&quot;Assistant&quot; leaves the name line and joins the tagline below: line one is purely the name." title="&quot;Assistant&quot; leaves the name line and joins the tagline below: line one is purely the name.">Down to line two</button></div></div>
+    <div class="grp"><div class="grp-h">Typeface</div><div class="chiprow"><button class="chip" data-axis="n" data-v="n-theme" data-why="The name changes typeface with every theme — Comfortaa here, Nunito there. This is what the live site does." title="The name changes typeface with every theme — Comfortaa here, Nunito there. This is what the live site does.">Theme font (today)</button><button class="chip" data-axis="n" data-v="n-fixed" data-why="The name is always DM Sans, whatever theme the page is wearing. Same shape everywhere." title="The name is always DM Sans, whatever theme the page is wearing. Same shape everywhere.">One brand font</button><button class="chip" data-axis="n" data-v="n-serif" data-why="A serif face, always. Warmer, more like a masthead than a software logo." title="A serif face, always. Warmer, more like a masthead than a software logo.">Serif</button></div></div>
+    <div class="grp"><div class="grp-h">Tagline</div><div class="chiprow"><button class="chip" data-axis="g" data-v="g-mono" data-why="The tagline in the mono face, tiny and letter-spaced." title="The tagline in the mono face, tiny and letter-spaced.">Typewriter caps (today)</button><button class="chip" data-axis="g" data-v="g-same" data-why="The tagline set in the name&#x27;s own typeface, still capitals. Makes the two lines read as one lockup." title="The tagline set in the name&#x27;s own typeface, still capitals. Makes the two lines read as one lockup.">Same font as the name</button><button class="chip" data-axis="g" data-v="g-sans" data-why="&quot;Agents for everyone&quot; in ordinary lower case. Much less technical." title="&quot;Agents for everyone&quot; in ordinary lower case. Much less technical.">A normal sentence</button><button class="chip" data-axis="g" data-v="g-chip" data-why="The tagline becomes a small rounded badge beside the name, not a line under it." title="The tagline becomes a small rounded badge beside the name, not a line under it.">In a chip</button></div></div>
+    <div class="grp"><div class="grp-h">Placement</div><div class="chiprow"><button class="chip" data-axis="p" data-v="p-left" data-why="Logo hard left, the About/Features/FAQ links hard right." title="Logo hard left, the About/Features/FAQ links hard right.">Left (today)</button><button class="chip" data-axis="p" data-v="p-center" data-why="Logo in the middle of the bar, links still on the right. Reads more like a masthead." title="Logo in the middle of the bar, links still on the right. Reads more like a masthead.">Centred</button></div></div>
+  </div>
+  <div class="why" id="why"></div>
+</div>
+
+<div class="canvas">
+  <div class="bd" id="bd"></div><div class="bd-scrim"></div>
+  <div class="inner">
+    <div id="single">
+      <div class="stage" id="stage"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div>
+      <div class="hero">
+        <p class="kicker">Free &middot; Open source &middot; BYO model</p>
+        <h1>More than a <em>chatbot</em>.</h1>
+        <p>A self-improving, customizable AI agent. Use any AI model from any provider.</p>
+      </div>
+    </div>
+    <div id="stack"><h2 class="stackh"><span>Spacing</span></h2><div class="row"><div class="row-tag"><span><b>Shipped +0.22</b><i>tile 38px · name 0.94rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>+0.19</b><i>tile 38px · name 0.94rem · spacing +0.19em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.19em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>+0.16</b><i>tile 38px · name 0.94rem · spacing +0.16em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.16em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>+0.13</b><i>tile 38px · name 0.94rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>+0.10</b><i>tile 38px · name 0.94rem · spacing +0.10em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.1em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>+0.07</b><i>tile 38px · name 0.94rem · spacing +0.07em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.07em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>+0.04</b><i>tile 38px · name 0.94rem · spacing +0.04em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.04em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><h2 class="stackh"><span>Glass + YOU</span></h2><div class="row"><div class="row-tag"><span><b>Glass · YOU · wide</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Wider still</b><i>tile 31px · name 0.92rem · spacing +0.30em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.3em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Previous spacing</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>YOU heavier</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-you g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>YOU lighter</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-coded g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>YOU + tagline</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-youtag w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Small ASSISTANT</b><i>tile 32px · name 1.02rem · spacing +0.20em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-small" style="--tile:32px;--tile-r:34%;--wm-size:1.02rem;--bar-h:60px;--wm-track:0.2em;--tag-size:55"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>ASSISTANT on line 2</b><i>tile 32px · name 1.04rem · spacing +0.20em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-mono p-left x-line2" style="--tile:32px;--tile-r:34%;--wm-size:1.04rem;--bar-h:60px;--wm-track:0.2em;--tag-size:52"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>No tagline</b><i>tile 33px · name 1.06rem · spacing +0.22em</i></span></div><div class="stage s-nameasst n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:33px;--tile-r:32%;--wm-size:1.06rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tile 34</b><i>tile 34px · name 0.94rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:34px;--tile-r:33%;--wm-size:0.94rem;--bar-h:62px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tile 38</b><i>tile 38px · name 0.94rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:38px;--tile-r:32%;--wm-size:0.94rem;--bar-h:64px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tile 42</b><i>tile 42px · name 0.94rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:42px;--tile-r:31%;--wm-size:0.94rem;--bar-h:68px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tile 46</b><i>tile 46px · name 0.94rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:46px;--tile-r:30%;--wm-size:0.94rem;--bar-h:72px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tile 42 + bigger name</b><i>tile 42px · name 1.06rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:42px;--tile-r:31%;--wm-size:1.06rem;--bar-h:68px;--wm-track:0.22em;--tag-size:58"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Same, solid tile</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Same, bare robot</b><i>tile 34px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:34px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Same, circle</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-you w-even g-same p-left x-same" style="--tile:31px;--tile-r:50%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><h2 class="stackh"><span>Caps · coloured</span></h2><div class="row"><div class="row-tag"><span><b>CODED in colour</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-coded g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>YOU in colour</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-you w-you g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>ASSISTANT in colour</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-asst w-asst g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Whole name in colour</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-name w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Colour top + bottom</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-codedtag w-coded g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tagline in colour</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-tag w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>CODED in a block</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-block w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Coloured underline</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-under w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Tighter spacing</b><i>tile 31px · name 0.92rem · spacing +0.05em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-coded g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.05em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Wider spacing</b><i>tile 31px · name 0.92rem · spacing +0.22em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-coded g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.22em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Extreme weight split</b><i>tile 31px · name 0.94rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-xsplit g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.94rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>One weight</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-even g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Small ASSISTANT</b><i>tile 32px · name 1.02rem · spacing +0.12em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-coded g-same p-left x-small" style="--tile:32px;--tile-r:34%;--wm-size:1.02rem;--bar-h:60px;--wm-track:0.12em;--tag-size:55"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>ASSISTANT on line 2</b><i>tile 32px · name 1.04rem · spacing +0.12em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-coded g-mono p-left x-line2" style="--tile:32px;--tile-r:34%;--wm-size:1.04rem;--bar-h:60px;--wm-track:0.12em;--tag-size:52"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>No tagline</b><i>tile 33px · name 1.06rem · spacing +0.13em</i></span></div><div class="stage s-nameasst n-fixed c-all k-coded w-coded g-same p-left x-same" style="--tile:33px;--tile-r:32%;--wm-size:1.06rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Typewriter tagline</b><i>tile 31px · name 0.92rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-coded w-coded g-mono p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:60px;--wm-track:0.13em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><h2 class="stackh"><span>Sizes</span></h2><div class="row"><div class="row-tag"><span><b>Live now</b><i>tile 26px · name 0.95rem · spacing -0.01em</i></span></div><div class="stage s-all n-theme c-as k-none w-even g-mono p-left x-same" style="--tile:26px;--tile-r:35%;--wm-size:0.95rem;--bar-h:56px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Live, a bit bigger</b><i>tile 31px · name 1.02rem · spacing -0.01em</i></span></div><div class="stage s-all n-theme c-as k-none w-even g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.02rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>One brand font</b><i>tile 31px · name 1.02rem · spacing -0.01em</i></span></div><div class="stage s-all n-fixed c-as k-none w-even g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.02rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Plain english</b><i>tile 31px · name 1.02rem · spacing -0.01em</i></span></div><div class="stage s-all n-fixed c-as k-none w-even g-sans p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.02rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:70"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Big and simple</b><i>tile 34px · name 1.18rem · spacing -0.01em</i></span></div><div class="stage s-nameasst n-fixed c-as k-none w-even g-mono p-left x-same" style="--tile:34px;--tile-r:32%;--wm-size:1.18rem;--bar-h:60px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Just the name</b><i>tile 34px · name 1.22rem · spacing -0.01em</i></span></div><div class="stage s-name n-fixed c-as k-none w-even g-mono p-left x-same" style="--tile:34px;--tile-r:32%;--wm-size:1.22rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><h2 class="stackh"><span>Caps · plain</span></h2><div class="row"><div class="row-tag"><span><b>CAPS · one line</b><i>tile 31px · name 0.92rem · spacing +0.12em</i></span></div><div class="stage s-nameasst n-fixed c-nameasst k-none w-coded g-mono p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.92rem;--bar-h:58px;--wm-track:0.12em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>CAPS · stacked</b><i>tile 31px · name 0.9rem · spacing +0.13em</i></span></div><div class="stage s-all n-fixed c-all k-none w-coded g-same p-left x-same" style="--tile:31px;--tile-r:34%;--wm-size:0.9rem;--bar-h:60px;--wm-track:0.13em;--tag-size:60"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>CAPS · wide + light</b><i>tile 30px · name 0.86rem · spacing +0.24em</i></span></div><div class="stage s-all n-fixed c-all k-none w-light g-same p-left x-same" style="--tile:30px;--tile-r:34%;--wm-size:0.86rem;--bar-h:60px;--wm-track:0.24em;--tag-size:62"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>CAPS · tight + heavy</b><i>tile 33px · name 1.02rem · spacing +0.02em</i></span></div><div class="stage s-nameasst n-fixed c-nameasst k-none w-black g-mono p-left x-same" style="--tile:33px;--tile-r:30%;--wm-size:1.02rem;--bar-h:60px;--wm-track:0.02em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>CAPS · name only</b><i>tile 32px · name 1.0rem · spacing +0.16em</i></span></div><div class="stage s-nametag n-fixed c-name k-none w-even g-same p-left x-same" style="--tile:32px;--tile-r:34%;--wm-size:1.0rem;--bar-h:60px;--wm-track:0.16em;--tag-size:58"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>CAPS · serif</b><i>tile 32px · name 1.02rem · spacing +0.14em</i></span></div><div class="stage s-nametag n-serif c-all k-none w-even g-same p-center x-same" style="--tile:32px;--tile-r:30%;--wm-size:1.02rem;--bar-h:62px;--wm-track:0.14em;--tag-size:58"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><h2 class="stackh"><span>Colour & weight</span></h2><div class="row"><div class="row-tag"><span><b>Coloured "Coded"</b><i>tile 31px · name 1.02rem · spacing -0.01em</i></span></div><div class="stage s-all n-fixed c-as k-coded w-coded g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.02rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Coloured "You"</b><i>tile 31px · name 1.02rem · spacing -0.01em</i></span></div><div class="stage s-all n-fixed c-as k-you w-you g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.02rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Coloured "Assistant"</b><i>tile 31px · name 1.06rem · spacing -0.01em</i></span></div><div class="stage s-nameasst n-fixed c-as k-asst w-asst g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.06rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Coloured tagline</b><i>tile 31px · name 1.02rem · spacing -0.01em</i></span></div><div class="stage s-all n-fixed c-as k-tag w-even g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.02rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Whole name coloured</b><i>tile 31px · name 1.08rem · spacing -0.01em</i></span></div><div class="stage s-nameasst n-fixed c-as k-name w-even g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.08rem;--bar-h:58px;--wm-track:-0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Flipped hierarchy</b><i>tile 31px · name 1.06rem · spacing +0.01em</i></span></div><div class="stage s-all n-fixed c-as k-asst w-light g-mono p-left x-same" style="--tile:31px;--tile-r:35%;--wm-size:1.06rem;--bar-h:58px;--wm-track:0.01em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div><div class="row"><div class="row-tag"><span><b>Heavy + quiet</b><i>tile 33px · name 1.14rem · spacing -0.02em</i></span></div><div class="stage s-nameasst n-fixed c-as k-none w-black g-mono p-left x-same" style="--tile:33px;--tile-r:32%;--wm-size:1.14rem;--bar-h:60px;--wm-track:-0.02em;--tag-size:57"><div class="nav"><div class="nav-in"><a href="#" class="logo" onclick="return false"><span class="mark"><svg class="mark-bot" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <!-- The app's built-in fallback mascot (AppIcon, Icons.tsx) — what YouCoded
+       actually renders for a theme that ships no mascot of its own. Pure
+       currentColor, so it takes whichever theme colour we set on the button. -->
+  <path fill-rule="evenodd" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z M8.5 8 L10.5 10 L8.5 12 L9.5 12 L11.5 10 L9.5 8 Z M15.5 8 L13.5 10 L15.5 12 L14.5 12 L12.5 10 L14.5 8 Z"/>
+  <path d="M1.8 9 L3.2 9 A0.8 0.8 0 0 1 4 9.8 L4 12.2 A0.8 0.8 0 0 1 3.2 13 L1.8 13 A0.8 0.8 0 0 1 1 12.2 L1 9.8 A0.8 0.8 0 0 1 1.8 9 Z"/>
+  <path d="M20.8 9 L22.2 9 A0.8 0.8 0 0 1 23 9.8 L23 12.2 A0.8 0.8 0 0 1 22.2 13 L20.8 13 A0.8 0.8 0 0 1 20 12.2 L20 9.8 A0.8 0.8 0 0 1 20.8 9 Z"/>
+  <rect x="7.2" y="17" width="3.5" height="4" rx="1.2"/>
+  <rect x="13.3" y="17" width="3.5" height="4" rx="1.2"/>
+</svg></span><span class="wm"><span class="wm-name"><span class="wm-a">You</span><b>Coded</b></span> <i>Assistant</i><em>Agents for everyone</em></span></a><div class="nav-right"><ul class="nav-links"><li><a href="#" onclick="return false">About</a></li><li><a href="#" onclick="return false">Features</a></li><li><a href="#" onclick="return false">FAQ</a></li></ul></div></div></div></div></div></div>
+  </div>
+</div>
+
+<script>
+var THEMES = {"cotton-candy-sky": {"name": "Cotton Candy Sky", "dark": false, "canvas": "#FBF5FC", "panel": "#ECDDF0", "accent": "#8B47B8", "onAccent": "#FFFFFF", "fg": "#21152C", "fg2": "#41304D", "dim": "#564463", "muted": "#695775", "edge": "#B597C6", "radius": "22px", "blur": 16, "opacity": 0.7, "font": "'Comfortaa', 'Cascadia Mono', monospace", "fontUrl": "https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap", "wall": "wall/cotton-candy-sky.webp"}, "devils-garden": {"name": "Devil's Garden", "dark": true, "canvas": "#140810", "panel": "#221020", "accent": "#FFC627", "onAccent": "#140810", "fg": "#FBE9C9", "fg2": "#D8C299", "dim": "#BDA57C", "muted": "#A28E6D", "edge": "#7A3048", "radius": "16px", "blur": 14, "opacity": 0.72, "font": "'Space Grotesk', system-ui, sans-serif", "fontUrl": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap", "wall": "wall/devils-garden.webp"}, "golden-sunbreak": {"name": "Golden Sunbreak", "dark": true, "canvas": "#08080e", "panel": "#140e1a", "accent": "#ffc030", "onAccent": "#000000", "fg": "#F8E8C8", "fg2": "#DCC898", "dim": "#B09060", "muted": "#917950", "edge": "#3C3223", "radius": "24px", "blur": 18, "opacity": 0.72, "font": null, "fontUrl": null, "wall": "wall/golden-sunbreak.webp"}, "halftone-dimension": {"name": "Halftone Dimension", "dark": true, "canvas": "#08060e", "panel": "#100e1c", "accent": "#E51F48", "onAccent": "#ffffff", "fg": "#F0E8F8", "fg2": "#D4CAE4", "dim": "#A498C0", "muted": "#7468A0", "edge": "#372D56", "radius": "24px", "blur": 20, "opacity": 0.78, "font": null, "fontUrl": null, "gradient": "linear-gradient(135deg, #08060e 0%, #18102e 25%, #200e3a 50%, rgba(232,35,74,0.07) 70%, rgba(0,184,255,0.05) 85%, #08060e 100%)"}, "kuromi-dreamer": {"name": "Kuromi Dreamer", "dark": false, "canvas": "#C9B8E0", "panel": "#D4C5E6", "accent": "#8158ad", "onAccent": "#FFFFFF", "fg": "#190E27", "fg2": "#3A2850", "dim": "#543D6E", "muted": "#65507F", "edge": "#8466A8", "radius": "32px", "blur": 18, "opacity": 0.74, "font": "'Comfortaa', 'Cascadia Mono', monospace", "fontUrl": "https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap", "wall": "wall/kuromi-dreamer.webp"}, "meadow-mist": {"name": "Meadow Mist", "dark": false, "canvas": "#F6FAF5", "panel": "#DDE9DA", "accent": "#2F7D55", "onAccent": "#FFFFFF", "fg": "#041008", "fg2": "#1E3426", "dim": "#33493A", "muted": "#465B4E", "edge": "#8FB191", "radius": "14px", "blur": 22, "opacity": 0.58, "font": "'Nunito', 'Cascadia Mono', monospace", "fontUrl": "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap", "wall": "wall/meadow-mist.webp"}, "strawberry-kitty": {"name": "Strawberry Kitty", "dark": false, "canvas": "#F8D7DE", "panel": "#FCE4E9", "accent": "#CC4060", "onAccent": "#FFFFFF", "fg": "#3A1420", "fg2": "#5C2235", "dim": "#7E3850", "muted": "#A26179", "edge": "#E09AA8", "radius": "32px", "blur": 4, "opacity": 0.3, "font": "'Comfortaa', 'Cascadia Mono', monospace", "fontUrl": "https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap", "wall": "wall/strawberry-kitty.webp"}, "midnight": {"name": "Midnight", "dark": true, "canvas": "#0D1117", "panel": "#161B22", "accent": "#88B4D8", "onAccent": "#0D1117", "fg": "#E6EDF3", "fg2": "#C9D1D9", "dim": "#8B949E", "muted": "#6E7681", "edge": "#30363D", "radius": "14px", "blur": 18, "opacity": 0.72, "gradient": "radial-gradient(1200px 700px at 20% -10%, #17283a 0%, transparent 60%), radial-gradient(900px 600px at 90% 10%, #101c2b 0%, transparent 55%), linear-gradient(#0D1117,#0A0E14)"}};
+var WALL = '../../../../youcoded/docs/';
+function rgb(h){ h=(h||'#000').replace('#',''); if(h.length===3) h=h.split('').map(function(c){return c+c}).join('');
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)].join(','); }
+var fontLinks = {};
+function applyTheme(slug){
+  var t = THEMES[slug]; if(!t) return;
+  var r = document.documentElement.style;
+  r.setProperty('--panel-rgb', rgb(t.panel));
+  r.setProperty('--accent-rgb', rgb(t.accent));
+  r.setProperty('--canvas-rgb', rgb(t.canvas));
+  r.setProperty('--fg-rgb', rgb(t.fg));
+  r.setProperty('--edge-rgb', rgb(t.edge));
+  r.setProperty('--canvas', t.canvas); r.setProperty('--accent', t.accent);
+  r.setProperty('--on-accent', t.onAccent); r.setProperty('--fg', t.fg);
+  r.setProperty('--radius', t.radius); r.setProperty('--blur', t.blur + 'px');
+  r.setProperty('--panel-op', t.opacity);
+  document.documentElement.setAttribute('data-dark', t.dark ? '1' : '0');
+  if (t.fontUrl && !fontLinks[t.fontUrl]) {
+    var l = document.createElement('link'); l.rel='stylesheet'; l.href=t.fontUrl;
+    document.head.appendChild(l); fontLinks[t.fontUrl]=1;
+  }
+  r.setProperty('--font-theme', t.font || "'DM Sans', system-ui, sans-serif");
+  var bd = document.getElementById('bd');
+  bd.style.background = t.gradient ? t.gradient : (t.wall ? 'url("' + WALL + t.wall + '")' : t.canvas);
+  bd.style.backgroundSize = 'cover'; bd.style.backgroundPosition = 'center';
+  document.querySelectorAll('.th').forEach(function(b){ b.classList.toggle('on', b.dataset.slug === slug); });
+  try { localStorage.setItem('yc-navpreview-theme', slug); } catch(e){}
+}
+
+var tw = document.getElementById('themes');
+Object.keys(THEMES).forEach(function(slug){
+  var t = THEMES[slug];
+  var b = document.createElement('button');
+  b.className = 'th'; b.dataset.slug = slug; b.title = t.name;
+  b.style.background = t.canvas;
+  b.innerHTML = '<span style="background:' + t.accent + '"></span>';
+  b.onclick = function(){ applyTheme(slug); };
+  tw.appendChild(b);
+});
+
+var CLASS_AXES = ['s','n','c','k','w','g','p','x','i'];
+var NUM_AXES = ['tile','corner','wm','bar','track','tag'];
+var LIVE = { s:'s-all', n:'n-theme', c:'c-as', k:'k-none', w:'w-even', g:'g-mono', p:'p-left',
+              x:'x-same', i:'i-tile', tile:26, corner:35, wm:95, bar:56, track:-1, tag:57, dot:false };
+// First load lands on the combination asked for, not on the live baseline --
+// "Back to what's live" is one click away and is what LIVE is for.
+var START = { s:'s-all', n:'n-fixed', c:'c-all', k:'k-you', w:'w-even', g:'g-same', p:'p-left',
+               x:'x-same', i:'i-glass', tile:38, corner:32, wm:94, bar:64, track:16, tag:60, dot:false };
+var sel = Object.assign({}, START);
+
+var els = {};
+NUM_AXES.forEach(function(k){ els[k] = document.getElementById('s-' + k); });
+els.dot = document.getElementById('s-dot');
+
+function setMode(stack){
+  document.body.className = (stack ? 'mode-stack' : 'mode-single') + (sel.dot ? ' dot-on' : '')
+    + (document.body.classList.contains('compact') ? ' compact' : '');
+  document.getElementById('m-stack').classList.toggle('on', stack);
+  document.getElementById('m-single').classList.toggle('on', !stack);
+}
+
+// What the chips currently add up to, in words. Shown whenever you are not
+// hovering an option, so the line never describes something you already left.
+function summary(){
+  var el = document.getElementById('why'); if (!el) return;
+  var picked = [];
+  document.querySelectorAll('.chip.on').forEach(function(c){ picked.push(c.textContent); });
+  el.innerHTML = '<b>Showing</b> — ' + picked.join(' &nbsp;·&nbsp; ');
+}
+
+function paint(){
+  var stage = document.getElementById('stage');
+  stage.className = 'stage ' + CLASS_AXES.map(function(k){ return sel[k]; }).join(' ');
+  stage.style.setProperty('--tile', sel.tile + 'px');
+  stage.style.setProperty('--tile-r', sel.corner + '%');
+  stage.style.setProperty('--wm-size', (sel.wm / 100) + 'rem');
+  stage.style.setProperty('--bar-h', sel.bar + 'px');
+  stage.style.setProperty('--wm-track', (sel.track / 100) + 'em');
+  stage.style.setProperty('--tag-size', sel.tag);
+  document.body.classList.toggle('dot-on', !!sel.dot);
+
+  NUM_AXES.forEach(function(k){ els[k].value = sel[k]; });
+  els.dot.checked = !!sel.dot;
+  document.getElementById('v-tile').textContent = sel.tile + 'px';
+  document.getElementById('v-corner').textContent = sel.corner + '%';
+  document.getElementById('v-wm').textContent = (sel.wm / 100).toFixed(2) + 'rem';
+  document.getElementById('v-bar').textContent = sel.bar + 'px';
+  document.getElementById('v-track').textContent = (sel.track >= 0 ? '+' : '') + (sel.track / 100).toFixed(2) + 'em';
+  document.getElementById('v-tag').textContent = sel.tag + '%';
+
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.classList.toggle('on', sel[c.dataset.axis] === c.dataset.v);
+  });
+  var p = null;
+  document.querySelectorAll('.pset').forEach(function(b){
+    var d = b.dataset, same = true;
+    CLASS_AXES.forEach(function(k){ if (d[k] !== sel[k]) same = false; });
+    NUM_AXES.forEach(function(k){
+      var v = (k === 'wm') ? Math.round(d[k] * 100) : +d[k];
+      if (v !== sel[k]) same = false;
+    });
+    if (same) p = b.textContent;
+  });
+  document.getElementById('now').textContent = p ? p
+    : ('tile ' + sel.tile + 'px · name ' + (sel.wm/100).toFixed(2) + 'rem · '
+       + (sel.track >= 0 ? '+' : '') + (sel.track/100).toFixed(2) + 'em');
+  summary();
+  try { localStorage.setItem('yc-navpreview-sel7', JSON.stringify(sel)); } catch(e){}
+}
+
+var whyEl = document.getElementById('why');
+function showWhy(c){ whyEl.innerHTML = '<b>' + c.textContent + '</b> — ' + c.dataset.why; }
+document.querySelectorAll('.chip').forEach(function(c){
+  c.onclick = function(){ sel[c.dataset.axis] = c.dataset.v; showWhy(c); paint(); };
+  c.onmouseenter = function(){ showWhy(c); };
+});
+document.getElementById('axes').onmouseleave = summary;
+
+NUM_AXES.forEach(function(k){
+  els[k].oninput = function(){ sel[k] = +this.value; paint(); };
+});
+els.dot.onchange = function(){ sel.dot = this.checked; paint(); };
+
+document.querySelectorAll('.pset').forEach(function(b){
+  b.onclick = function(){
+    var d = b.dataset;
+    CLASS_AXES.forEach(function(k){ sel[k] = d[k]; });
+    NUM_AXES.forEach(function(k){ sel[k] = (k === 'wm') ? Math.round(d[k] * 100) : +d[k]; });
+    setMode(false); paint(); };
+});
+document.getElementById('reset').onclick = function(){ sel = Object.assign({}, LIVE); paint(); };
+// Options collapsed on load: pick a preset first, open the axes to adjust it.
+var tAxes = document.getElementById('t-axes');
+function setCompact(on){
+  document.body.classList.toggle('compact', on);
+  tAxes.innerHTML = on ? 'Fine-tune ▾' : 'Hide options ▴';
+  try { localStorage.setItem('yc-navpreview-compact', on ? '1' : '0'); } catch(e){}
+}
+tAxes.onclick = function(){ setCompact(!document.body.classList.contains('compact')); };
+
+document.getElementById('m-single').onclick = function(){ setMode(false); };
+document.getElementById('m-stack').onclick = function(){ setMode(true); };
+
+var savedSel = null;
+try { savedSel = JSON.parse(localStorage.getItem('yc-navpreview-sel7')); } catch(e){}
+if (savedSel && savedSel.s && savedSel.k) sel = Object.assign({}, LIVE, savedSel);
+var savedTheme = null;
+try { savedTheme = localStorage.getItem('yc-navpreview-theme'); } catch(e){}
+applyTheme(savedTheme && THEMES[savedTheme] ? savedTheme : 'cotton-candy-sky');
+var savedCompact = null;
+try { savedCompact = localStorage.getItem('yc-navpreview-compact'); } catch(e){}
+setCompact(savedCompact !== '0');
+paint();
+window.__navPreviewReady = true;
+</script>
+</body>
+</html>

@@ -1,10 +1,8 @@
 # YouCoded — Comprehensive Feature Fact Sheet
 
-> **One-line idea:** YouCoded is a free, open, cross-platform AI assistant app that runs on desktop (Windows / macOS / Linux), Android, and remote browsers — with **any model backend** behind one polished, fully-featured, non-developer-friendly interface.
+> **This file is a feature inventory, not landing-page copy.** Do not quote pitches from it. Do not rank features by "nobody else has this" and put that on the site. Measured competitive numbers live in §22; claims that fail a one-click check live in §25.
 >
-> **Strategic position (from the product's own vision doc, July 2026):** nobody currently combines (a) local-first multi-model freedom, (b) a friendly non-technical UI, (c) a social/marketplace layer, and (d) agent automations in one consumer app. Cowork/ChatGPT Work own "agentic assistant for normal people" but are closed, cloud-only, single-vendor. OpenClaw/Hermes own "own your agent" but are developer-hostile to set up. **That intersection is YouCoded's lane.**
->
-> **Fast facts for marketing (revised 2026-08-31 against a measured competitive scan — see §22):** platform coverage is the strongest claim and it is stronger than this sheet used to say: **six of the eight independent rivals surveyed have no mobile app at all**. The second-strongest is a category nobody else contests — **user-defined tags on conversations, private notes on a conversation, and saved prompts as one-tap buttons are each held by ZERO of eight rivals**. The "every model, one UI" seam is real but is **not** a differentiator: opencode, Pi, Hermes and OpenClaw all do model-agnostic + local. Marketplace size should be stated as a split, not a total — see §9.
+> YouCoded is a free, open, cross-platform AI assistant: desktop (Windows / macOS / Linux), Android, and remote browsers, with more than one model backend behind one UI.
 >
 > *Status note: compiled from the youcoded-dev workspace (source code, ROADMAP.md, native-runtime docs, vision roadmap, registry indexes) at v1.3.0-beta era, August 2026. Items in §18–§21 are explicitly labeled planned/aspirational, not shipped.*
 
@@ -430,28 +428,6 @@ opencode: **202,712 stars, 26,373 forks**. YouCoded: **6 stars, 2 forks** (both 
 
 ---
 
-## 24. Pitches
-
-**One-liners:**
-
-> "YouCoded is the AI assistant that runs *any* model — Claude Code, local open models, OpenRouter — behind one polished chat UI, on desktop, Android, and remotely, with a community skills marketplace and themes."
-
-> "One app on every device, model freedom, a marketplace, and an honest UI for non-developers — that's YouCoded."
-
-**Three-sentence pitch (Reddit / students):**
-
-> "YouCoded is a desktop + phone + browser assistant you own. It runs Claude Code, your own local open models (llama.cpp built in — no Ollama needed), or OpenRouter models, all behind the same chat. Conversations sync across your devices, it has a community marketplace carrying our own plugins plus every Claude Code plugin, and themes, approvals instead of full-auto surprises, and a mascot sidekick — friendly enough for your parents, deep enough for real dev work."
-
-**Five-sentence pitch (professionals / developers):**
-
-> "YouCoded replaces your pile of AI terminals, tabs, and tools with one app. Your Claude subscription, an OpenRouter key, or a local GGUF model all live behind the same chat UI, tool cards, approvals, artifacts, and projects. The agent's work lands in a Files workspace with version history and a git review surface, so you can see, diff, and commit what it did instead of trusting a wall of chat. Everything syncs across desktop, Android, and a browser — and a marketplace carrying our own plugins plus every Claude Code plugin, plus themes, make it yours. It's the open, personal Cowork: the agentic assistant for people who want to own the stack, not rent it."
-
----
-
-
-
----
-
 ## 25. Claims that need fixing before this sheet is quoted (verified 2026-08-31)
 
 Each of these was checked against the source named. They are cheap to fix and expensive to be caught on, because every one is reachable in about one click from the public site.
@@ -466,25 +442,10 @@ Each of these was checked against the source named. They are cheap to fix and ex
 
 ---
 
-## 26. Marketing material this sheet has that the site does not use
-
-Ranked by how much a normal person would care. Every one is already shipped.
-
-1. **Automatic version history for everything the agent writes** (§7) — "no git knowledge required". This is the answer to "what if it wrecks my file", and the public site does not mention it at all.
-2. **Android runs Claude Code on-device** (§16) — a phone works with no desktop anywhere. No competitor has this; the site presents Android as a logo in a download row.
-3. **In-app viewers for CSV, Excel, DOCX, PDF, images and self-contained HTML**, plus a real CodeMirror editor (§7). The site gives this one clause.
-4. **The git review surface** (§7) — this sheet's own words: "the *what did the agent do to my code* killer feature".
-5. **Remote access with QR pairing** and Tailscale detection (§13) — currently an asterisked footnote on the site.
-6. **The buddy mascot floater** with screenshot-to-prompt (§14) — absent from the site.
-7. **A configurable 19-widget status bar** (§5) — absent from the site.
-8. **Cross-file ripgrep content search inside a project** (§7) — absent from the site.
-
-**The single sharpest forward-looking line in this document** is in §21 and is not on the site: *"Local models make 24/7 scheduled agents free"* — the headline claim against cloud-metered competitors. Second: §21's *"Nobody ships a consumer-friendly harness builder today."*
-
 **Do not build copy on the third-party-agent-CLI direction.** §20 lists it under deliberately-not-built — "a deliberate what-if, not a commitment" — even though a draft spec exists dated 2026-08-31.
 
 ---
 
 *Compiled from the youcoded-dev workspace: `ROADMAP.md`, `docs/archive/specs/2026-07-09-platform-vision-roadmap.md`, `youcoded/docs/native-runtime.md`, `youcoded/docs/sync-spaces.md`, `youcoded/docs/engine-dependencies.md`, renderer/main/Android source sweeps, and registry indexes (wecoded-marketplace: 339 index entries — 302 live, 13 YouCoded + 289 imported; wecoded-themes: 7 themes, 6 authored `claude`).*
 
-*Revised 2026-08-31 during the landing-page competitive review. Added: §22 (measured competitive position), §25 (claims that need fixing), §26 (unused marketing material); corrected the marketplace numbers throughout, the games section, the Android tags/notes limitation, the missing rename capability, agent-only transcript search, and the configurable status bar. Everything added carries the file, line or API it was read from; two claims that could not be re-verified offline are attributed to `ROADMAP.md` rather than asserted.*
+*Revised 2026-08-31 during the landing-page competitive review, then sterilized the same day: pitches (§24) and the “unused marketing material” list (§26) were deleted so this file cannot be quoted as copy. Remaining: inventory, §22 numbers, §25 fact-checks.*

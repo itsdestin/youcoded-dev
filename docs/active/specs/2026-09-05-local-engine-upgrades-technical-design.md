@@ -593,9 +593,23 @@ with the REAL cause, never a guess. The three new failure texts:
 - Preset file could not be written **while the engine is running**: "Could not save this
   model's settings: <OS error>." (the engine does keep running, on the previous file).
 - Preset file could not be written **or read back at spawn** (R3-2) — a different situation
-  and a different sentence, because the engine would otherwise not start at all: "Started
-  without your per-model settings: <OS error>. Every model is using the shared context
-  length." Shown on the engine card, not as a failure dialog.
+  and a different sentence, because the engine would otherwise not start at all. Shown on the
+  engine card, not as a failure dialog. **Wording revised while building T23**, keeping the
+  substance and dropping the jargon: the draft above ("Started without your per-model
+  settings: <OS error>. Every model is using the shared context length.") leads with a phrase
+  a non-developer has to decode, and "the shared context length" is not a thing the UI names
+  anywhere. It ships as the title **"Each model's own settings are off right now"** over
+  "Every model is running on the engine's own settings. It tries again the next time the
+  engine starts.", with the real cause quoted verbatim underneath in monospace.
+  **Two shapes, not one.** The draft assumed an OS error is always available; it is not.
+  There are TWO routes to a preset-less run, and T23 makes both carry their real cause:
+  `preparePreset` failing (the OS error) and the engine REFUSING the file at startup (the
+  engine's own sentence, via the new `presetStartupLine`; the existing `presetErrorLine`
+  matches only the "option 'x' not recognized" shape and returns empty for a file the grammar
+  rejected outright). When neither yields anything legible the card falls back to
+  `<ErrorState mode="general">` with Report bug / Diagnose with Claude, per
+  `docs/error-message-standards.md` — a general message with no next step is not allowed
+  either. Carried on `EngineStatus.modelSettingsError`.
 - An extra engine flag the binary rejects (R3-1): the save is refused with the binary's own
   stderr line, verbatim, never a guessed cause.
 - Runtime archive failed its check: reuse the existing sentence — "The <BACKEND> runtime

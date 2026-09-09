@@ -1,0 +1,25 @@
+{
+ "deck": "sleep-pose",
+ "started": "2026-09-05T05:44:13.138Z",
+ "submitted": "2026-09-05T05:46:12Z",
+ "cur": 1,
+ "answers": {
+  "sleep-pose": {
+   "v": "pick",
+   "pick": "loaf",
+   "note": "i quite like loaf. the animation to transition between states can be improved though. also wanna see a few more variants with the arms in different positions (tucked just a bit, fully docked, wildcard)",
+   "note_kind": "noting",
+   "seconds": 103,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "sleep-zzz": {
+   "v": "yes",
+   "note": "but veryy slow/subtle",
+   "note_kind": "noting",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

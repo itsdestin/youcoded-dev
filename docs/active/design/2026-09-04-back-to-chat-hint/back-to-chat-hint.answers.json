@@ -1,0 +1,23 @@
+{
+ "deck": "back-to-chat-hint",
+ "started": "2026-09-05T01:13:01.840Z",
+ "submitted": "2026-09-05T01:14:35Z",
+ "cur": 1,
+ "answers": {
+  "H-1": {
+   "note": "like b, but add outline and make both fill/outline use theme aolor. make sure outline doesn't split the triangle bit from the oval bubble bit.",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 77,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "H-2": {
+   "v": "pick",
+   "pick": "keep",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

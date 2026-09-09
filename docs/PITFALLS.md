@@ -41,6 +41,8 @@ This file now holds **only cross-repo invariants** — constraints that span two
 
 - **Never `git add -A` / `git add .` in the MAIN checkouts — stage explicit paths only.** The main `youcoded/` and `youcoded-dev/` checkouts routinely hold OTHER concurrent sessions' uncommitted in-flight work (that is what the worktree rule exists to protect). *Why:* on 2026-08-22 a "comment-only" commit built with `git add -A` swept 1,293 lines of another session's uncommitted work onto pushed master — four modified files AND four untracked ones — and needed a corrective revert that restored them to the working tree. `git status` before committing is not enough; the staging command itself must name the files you changed. *Guard:* none — working convention; worktrees for non-trivial work is the structural half of the same defense.
 
+- **A positional Edit to a shared-checkout file can silently delete ANOTHER session's uncommitted lines.** Worse than the staging hazard above: no commit, no reflog. On 2026-09-05, inserting one entry atop `docs/roadmap/dev-workspace.md` `## rigs` (whose working tree held three uncommitted 2026-09-04 entries origin/master lacks) replaced those lines in place; only the `-` lines of a `git diff origin/master` capture saved them. *Rule:* before editing a main-checkout file, `git diff origin/master -- <file>` — treat `-` lines that aren't yours as untouchable, and restore them after (recoverable from the same diff). *Why:* the working tree is the mailbox; uncommitted roadmap items and rule drafts are as losable as unpushed branches. *Guard:* none — candidate.
+
 ## A CI leg is red — is it yours?
 
 **Check master's own run for that leg before assuming your branch broke it.** In this

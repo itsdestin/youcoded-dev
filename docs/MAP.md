@@ -95,6 +95,7 @@ session-start hook prints this table into every session, so a lookup costs zero 
 | the chat/terminal toggle | `youcoded/desktop/src/renderer/components/WideViewToggle.tsx`, `NarrowViewToggle.tsx` (both carry `data-view-toggle`) |
 | the hint pointing back to the chat button | `youcoded/desktop/src/renderer/components/ViewToggleHint.tsx` |
 | buddy mode (the floating window) | `youcoded/desktop/src/renderer/components/buddy/` |
+| where the buddy is positioned, docked and dragged | `youcoded/desktop/src/main/buddy-window-manager.ts` |
 | the Permissions settings screen | `youcoded/desktop/src/renderer/components/PermissionsSection.tsx` |
 | the specialists chip + popup | `youcoded/desktop/src/renderer/components/SpecialistsChip.tsx` |
 | the fake backend the Workbench runs against | `youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts` |

@@ -1,0 +1,24 @@
+{
+ "deck": "linux-buddy-helper-questions2",
+ "started": "2026-09-04T20:36:38.138Z",
+ "submitted": "2026-09-04T20:40:02Z",
+ "cur": 1,
+ "answers": {
+  "Q-2R": {
+   "v": "pick",
+   "pick": "b",
+   "seconds": 166,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "a",
+   "note": "hide the buddy at the start of next update/ then prompt only if user goes in to re enable/",
+   "note_kind": "noting",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

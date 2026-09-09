@@ -39,8 +39,11 @@ refusal reason in the destructive colour). First run offers Log in with Claude /
 OpenRouter and "Use an API key or local model"; the Skip-setup link is gone. In a
 conversation on a ChatGPT model the status bar shows the plan's 5h/7d chips (click → Model
 Providers), the /usage card names the ChatGPT plan, and a used-up window shows "You have
-reached ChatGPT's 5-hour session limit (Resets @ 6:43pm)." with one **Switch Providers**
-button that opens the model picker. The picker labels the provider **ChatGPT Plan**.
+reached ChatGPT's 5-hour session limit (Resets @ 6:43pm)." with two buttons: **Upgrade plan**
+(transparent/secondary, left — opens chatgpt.com/explore/pro, OpenAI's own upgrade page)
+and **Switch Providers** (green/primary, right — opens the model picker). Destin's final call
+on 2026-09-08: upgrade stays secondary/transparent, switch stays primary/green, order
+upgrade-left / switch-right. The picker labels the provider **ChatGPT Plan**.
 
 ## What is real and what is mock on `feat/chatgpt-signin`
 

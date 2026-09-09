@@ -56,3 +56,10 @@ Filing test: reaching the app from another device — the protocol, the browser 
       which is why files, projects and games stay switched off over it (Destin, 2026-09-02).
       Encrypting the channel unblocks all three
       `remote` `needs-verify` `checked 2026-09-02` `security`
+
+- [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers
+      only allow a microphone on a secure (https) page, and remote access is plain http, so the
+      voice-prompting mic (2026-09-05 deck, Q-7: Destin picked "desktop and Android first") stays
+      off the remote client until the channel is encrypted. When it is: record in the browser, send
+      the audio to the desktop's speech engine, so it sounds the same everywhere
+      `input-bar` `remote` `parked` `checked 2026-09-05` → docs/active/design/2026-09-05-voice-prompting/voice-prompting.questions.json
