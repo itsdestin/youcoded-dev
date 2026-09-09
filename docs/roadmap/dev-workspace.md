@@ -3,6 +3,15 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
+      failed once in a full suite run and passed on the two full runs after it, plus three
+      isolated runs and three paired with the naming settings suite. Seen 2026-09-09, hours
+      after the test landed on master. It asserts an ordering between two queued writes
+      (`expected [[20],[40]] to equal [[30],[40]]` — the first write's value, not the
+      superseding one), so a scheduling race in the test rather than the queue is the
+      likeliest read. Nothing on the session-naming branch touches StepGuardRow
+      `desktop` `needs-verify` `checked 2026-09-09` `regression`
+
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
       so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
