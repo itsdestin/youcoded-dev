@@ -18,7 +18,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Promo" component={Promo} durationInFrames={FILM} fps={FPS} width={1920} height={1080} defaultProps={{ track: 'promo' }} />
     {/* the bubble check-in (2026-09-09): a look and a motion on a theme; `--props` overrides */}
     <Composition id="BubbleStudy" component={BubbleStudy} durationInFrames={BUBBLE_STUDY_FRAMES} fps={FPS} width={1920} height={1080}
-      defaultProps={{ look: 'glass' as const, motion: 'lift' as const, slug: 'cotton-candy-sky' as const, file: 'promo-idle-cotton', text: "Welcome to YouCoded! I'm your assistant." }} />
+      defaultProps={{ look: 'glass' as const, motion: 'lift' as const, shape: 'wedge' as const, slug: 'cotton-candy-sky' as const, file: 'promo-idle-cotton', text: "Welcome to YouCoded! I'm your assistant." }} />
     <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'warm' as const }} />
     <Composition id="HostStudy" component={HostStudy} durationInFrames={STUDY_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'warm' as const }} />
     {/* check-in 3c: two beats choreographed so the host PRESENTS the app (model picker, the phone), with the
