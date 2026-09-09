@@ -31,8 +31,13 @@ the name opens the same dialog. The dialog offers only Cancel and Save name.
 **A name you save is yours.** It survives every later automatic pass, a
 restart, a resume, and a sync from a device that generated something else.
 Saving the same text still takes ownership — that is the button for someone who
-likes the generated name and wants it to stop moving. A blank name is refused;
-handing the conversation back to automatic naming is a separate action.
+likes the generated name and wants it to stop moving. A blank name is refused.
+
+**There is no way back to automatic naming.** Review 3 removed that action
+("get rid of that button. it's dumb"), so a renamed conversation stays renamed
+until you type something else. The generated name is still remembered, so if
+that turns out to be wrong, offering it back later costs no model call. Filed
+on `docs/roadmap/chat-data.md` rather than built against the contract.
 
 ## How it is built
 
@@ -85,8 +90,12 @@ deleted.
 
 ### The Auto-Title hook, and the waste it was causing
 
-The hook now reads two files the app writes: `~/.claude/topics/naming-mode`
-(one word) and `~/.claude/topics/ask-<id>`. Off and Basic stop it from asking
+The hook now reads two files the app writes: a one-word mode file under the
+app instance's own `userData`, found through the `YOUCODED_NAMING_MODE_FILE`
+environment variable every session inherits, and `~/.claude/topics/ask-<id>`.
+The mode is per-instance on purpose: `~/.claude/topics` is shared by every
+YouCoded process on the machine, so a fixed path there would have let a dev
+instance set to Off silently switch off auto-titling in the installed app. Off and Basic stop it from asking
 at all — the cost is not the title, it is interrupting a reply to demand one —
 and AI asks only at a scheduled review. That closes the roadmap item "the
 auto-title reminder fires about six times per conversation — 277 wasted round
@@ -128,6 +137,16 @@ replayed completion events; missed completions; restart; a store write that
 fails; an empty model reply; a provider that is down; blank-name refusal; the
 clear-vs-rename merge in both directions; conflict-copy folding, including an
 unparseable copy; and the hook's gate ordering.
+
+## Reviewed
+
+A fresh code reviewer with none of this context read the branch against the
+contract: `../reviews/2026-09-09-session-naming-code-review.md`. Twelve
+findings, all accepted, all fixed, re-verified. Two of them meant renaming did
+not visibly work in the shipping app at all — both hidden by the design
+workbench, whose fake dispatched an update event the real code never did. That
+is the durable lesson from this feature: a workbench review proves the design,
+never the wiring.
 
 ## Not proven
 
