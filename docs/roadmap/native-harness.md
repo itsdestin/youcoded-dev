@@ -122,8 +122,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] When a small model's session has its project rules outlined, skills cut or MCP servers dropped
       to fit the context budget, only the model is told — nothing on screen says so. In progress on
       branch `session/context-truncation` (worktree `worktrees/sessions/context-truncation/youcoded`),
-      rebased onto master 2026-09-09; the older `feat/context-truncation-notice` branch and
-      `worktrees/context-truncation` hold the same work pre-rebase and can go once this lands
+      rebased onto master 2026-09-09; design reworded + restyled and approved on deck 3 the same
+      day; build not started. Start at docs/active/handoffs/2026-09-09-session-context-panel-handoff.md.
+      The older `feat/context-truncation-notice` branch and `worktrees/context-truncation` hold the
+      same work pre-rebase and can go once this lands
       `chat` `desktop` `in-flight` `checked 2026-09-09`
 
 - [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
