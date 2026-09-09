@@ -556,6 +556,7 @@ export function renderMarkdown(report, stem) {
       `| projects.list view | ${n(p.listView?.ms, 'ms')} |`,
       `| projects.switch big -> small / small -> big | ${n(p.switch?.smallMs, 'ms')} / ${n(p.switch?.bigMs, 'ms')} |`,
       `| projects.conversations tab | ${n(p.conversations?.ms, 'ms')} |`,
+      `| projects.tab thrash (Files <-> Conversations, rapid): to Files median / p95 / max | ${n(p.thrash?.toFiles?.medianMs, 'ms')} / ${n(p.thrash?.toFiles?.p95Ms, 'ms')} / ${n(p.thrash?.toFiles?.maxMs, 'ms')}; to Conversations median / max ${n(p.thrash?.toConversations?.medianMs, 'ms')} / ${n(p.thrash?.toConversations?.maxMs, 'ms')}; long tasks ${n(p.thrash?.longtaskTotalMs, 'ms')}, worst frame gap ${n(p.thrash?.frameGapMaxMs, 'ms')}, worst IPC ${n(p.thrash?.ipcMaxMs, 'ms')} |`,
       `| projects.reopen to first cards | ${n(p.reopen?.openMs, 'ms')} |`,
       `| projects long tasks | ${n(p.probe?.longtaskTotalMs, 'ms')} total, max ${n(p.probe?.longtaskMaxMs, 'ms')} |`,
       `| projects IPC stall (sum over steps) | ${n(p.ipcSumOfSteps?.totalStallMs, 'ms')}, max ${n(p.ipcSumOfSteps?.maxMs, 'ms')}, from ${n(p.ipcSumOfSteps?.pings, 'probe replies')} |`,
@@ -1328,7 +1329,7 @@ async function main(argv) {
           checkDeadline();
           const r = await runProjectsScenario(app, fixture, seeded);
           runs.push(r);
-          log(`projects ${i + 1}/${cfg.projectsRepeats}: open ${r.open?.openMs}ms (counts ${r.open?.countsMs}ms, ${r.open?.fileCards}+${r.open?.folderCards} cards), first key ${r.search?.firstKeyMs}ms, key p95 ${r.search?.keystroke?.p95Ms}ms, filter ${r.filter?.codeMs}ms for ${r.filter?.fileCards} cards, scroll long tasks ${r.scrollFlat?.longtaskTotalMs}ms, switch ${r.switch?.smallMs}/${r.switch?.bigMs}ms, reopen ${r.reopen?.openMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms max ${r.ipcSumOfSteps?.maxMs}ms`);
+          log(`projects ${i + 1}/${cfg.projectsRepeats}: open ${r.open?.openMs}ms (counts ${r.open?.countsMs}ms, ${r.open?.fileCards}+${r.open?.folderCards} cards), first key ${r.search?.firstKeyMs}ms, key p95 ${r.search?.keystroke?.p95Ms}ms, filter ${r.filter?.codeMs}ms for ${r.filter?.fileCards} cards, scroll long tasks ${r.scrollFlat?.longtaskTotalMs}ms, thrash to-Files p95/max ${r.thrash?.toFiles?.p95Ms}/${r.thrash?.toFiles?.maxMs}ms (ipc max ${r.thrash?.ipcMaxMs}ms), switch ${r.switch?.smallMs}/${r.switch?.bigMs}ms, reopen ${r.reopen?.openMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms max ${r.ipcSumOfSteps?.maxMs}ms`);
           for (const w of r.warnings ?? []) log(`projects warning: ${w}`);
         }
         report.projects = buildProjectsSection(runs, projectsMedian);

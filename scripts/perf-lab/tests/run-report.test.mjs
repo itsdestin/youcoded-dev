@@ -201,6 +201,7 @@ const projectsRun = (i) => ({
   listView: { ok: true, ms: 300 + i },
   switch: { smallMs: 500 + i, bigMs: 1100 + i },
   conversations: { ok: true, ms: 200 + i, rows: 3 },
+  thrash: { ok: true, rounds: 8, toFiles: { medianMs: 150 + i, p95Ms: 400 + i, maxMs: 500 + i }, toConversations: { medianMs: 90 + i, maxMs: 200 + i }, longtaskTotalMs: 300 + i, frameGapMaxMs: 120 + i, ipcMaxMs: 210 + i },
   reopen: { ok: true, openMs: 600 + i },
   probe: { longtaskCount: 30 + i, longtaskTotalMs: 4200 + i, longtaskMaxMs: 600 + i },
   ipcSumOfSteps: { pings: 1200, totalStallMs: 900 + i, over250ms: 3, over1000ms: 0, maxMs: 420 + i },

@@ -34,7 +34,7 @@ test('seedProjectsFixture writes the tree and lists both projects in youcoded-fo
   try {
     const home = join(root, 'home');
     const fixture = { home, projects: { alpha: join(home, 'projects', 'alpha') } };
-    const seeded = seedProjectsFixture(fixture, { files: 60, dirs: 6, topLevel: 5, seed: 1, sidecar: { artifacts: 300, versions: 900 }, conversations: 12 });
+    const seeded = seedProjectsFixture(fixture, { files: 60, dirs: 6, topLevel: 5, seed: 1, sidecar: { artifacts: 300, versions: 900 }, conversations: 12, nestedDirs: 90 });
     assert.equal(seeded.files, 60);
     assert.ok(seeded.bytes > 0);
     const folders = JSON.parse(readFileSync(join(home, '.claude', 'youcoded-folders.json'), 'utf8'));
@@ -55,7 +55,12 @@ test('seedProjectsFixture writes the tree and lists both projects in youcoded-fo
     assert.equal(sc.artifacts.length, 300);
     assert.ok(sc.artifacts.every((a) => a.kind === 'internal' && a.absolutePath === null && !a.path.startsWith('/')), 'records must be relative (= internal)');
     assert.ok(sc.artifacts.slice(60).every((a) => a.path.startsWith('worktrees/dead-')), 'orphans live under a worktree that is never created');
-    assert.ok(!existsSync(join(seeded.root, 'worktrees')), 'the dead worktrees must not exist on disk');
+    // The orphan records point at worktrees/dead-N, which is never created; the
+    // watcher-only subtrees live at worktrees/wt-N and ARE created, each a nested
+    // repo (a .git file) so discovery stops at its door.
+    assert.ok(!existsSync(join(seeded.root, 'worktrees', 'dead-0')), 'the dead worktrees must not exist on disk');
+    assert.ok(seeded.nestedDirs >= 90, `only ${seeded.nestedDirs} nested dirs`);
+    assert.ok(existsSync(join(seeded.root, 'worktrees', 'wt-0', '.git')), 'wt-0 must carry a .git marker so discovery treats it as a nested repo');
     assert.equal(seeded.conversations, 12);
     assert.equal(readdirSync(join(home, '.claude', 'projects')).length, 1, 'conversations go under the big project\'s own slug');
   } finally {

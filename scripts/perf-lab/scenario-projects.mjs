@@ -48,7 +48,7 @@
 //    exact rather than truncated.
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
-import { writeFileSync, mkdirSync, statSync } from 'node:fs';
+import { writeFileSync, mkdirSync, statSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { installProbe, readProbe, readProbeWindow, stopProbe, median, p95 } from './scenario-workload.mjs';
 import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
@@ -190,6 +190,15 @@ export function seedProjectsFixture(fixture, {
   files = 1600, dirs = 40, topLevel = 24, seed = 7, name = 'gamma',
   sidecar = { artifacts: 8000, versions: 28000 },
   conversations = 700,
+  // Nested worktree-like subtrees the project WATCHER walks but discovery does
+  // not (discovery stops at a nested .git; project-watcher.ts's ignore rule only
+  // skips dot-dirs and WATCH_SKIP_DIRS). Measured on Destin's youcoded-dev
+  // 2026-09-09: 9,583 directories / 108,730 entries under depth 6, 72,000 of the
+  // files inside worktrees/ — a fresh chokidar watch took 4.0–4.3 s to 'ready'
+  // with 310–372 ms event-loop freezes, versus 80 ms for the app checkout alone.
+  // Every return to the Files tab restarts that watch. 6,000 dirs here, each
+  // holding a .git marker file and one source file, reproduces the shape.
+  nestedDirs = 6000,
 } = {}) {
   const root = join(fixture.home, 'projects', name);
   const tree = buildProjectTree({ files, dirs, topLevel, seed });
@@ -234,6 +243,41 @@ export function seedProjectsFixture(fixture, {
     sidecarInfo = { path: p, bytes: statSync(p).size, artifacts: built.artifacts, versions: built.versions, orphans: built.orphans };
   }
 
+  // Worktree-like nested subtrees: worktrees/wt-<n>/ is a nested repo (a .git
+  // FILE, as real worktrees have), so discovery stops at it and the Files tab
+  // never lists these — only the watcher pays for them. Laid out 40 worktrees
+  // wide × (area/sub/leaf) deep so the directory count, not one flat dir, is
+  // what chokidar walks.
+  let nestedDirCount = 0;
+  if (nestedDirs > 0) {
+    const wts = 40;
+    const perWt = Math.ceil(nestedDirs / wts);
+    const r2 = rng32(seed + 202);
+    for (let w = 0; w < wts && nestedDirCount < nestedDirs; w++) {
+      const wt = join(root, 'worktrees', `wt-${w}`);
+      mkdirSync(wt, { recursive: true });
+      writeFileSync(join(wt, '.git'), `gitdir: ${join(root, '.git', 'worktrees', `wt-${w}`)}\n`);
+      nestedDirCount++;
+      let made = 1;
+      let leaf = 0;
+      while (made < perWt && nestedDirCount < nestedDirs) {
+        const area = AREAS[leaf % AREAS.length];
+        const sub = WORDS[Math.floor(r2() * WORDS.length)];
+        const d = join(wt, area, `${sub}-${leaf % 9}`, `leaf-${leaf}`);
+        mkdirSync(d, { recursive: true });
+        writeFileSync(join(d, `${WORDS[leaf % WORDS.length]}.ts`, ), `export const v${leaf} = ${leaf};\n`);
+        // Three directories per leaf path (area, sub, leaf), counted once each
+        // the first time they appear; approximate is fine — the report carries
+        // the exact number below.
+        nestedDirCount += 1;
+        made += 1;
+        leaf++;
+      }
+    }
+    // Count what was actually made so the report is exact, not the plan.
+    nestedDirCount = countDirs(join(root, 'worktrees'));
+  }
+
   // Conversations for this project: tiny one-turn transcripts under its slug,
   // the same generator and naming rule as the fixture's decoys.
   let conversationCount = 0;
@@ -250,9 +294,18 @@ export function seedProjectsFixture(fixture, {
 
   return {
     root, name, files: tree.entries.length, folders: tree.folders.length, bytes,
-    sidecar: sidecarInfo, conversations: conversationCount,
+    sidecar: sidecarInfo, conversations: conversationCount, nestedDirs: nestedDirCount,
     small: { root: fixture.projects.alpha, name: 'alpha' },
   };
+}
+
+/** Directories under `dir`, recursively (the number a watcher walks). */
+function countDirs(dir) {
+  let n = 0;
+  let entries;
+  try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return 0; }
+  for (const e of entries) if (e.isDirectory()) n += 1 + countDirs(join(dir, e.name));
+  return n;
 }
 
 // ---------------------------------------------------------------------------
@@ -527,6 +580,11 @@ export const NUMERIC_PATHS = [
   // Suspect 4: the per-switch fan-out, big -> small and back.
   'switch.smallMs', 'switch.bigMs',
   'conversations.ms',
+  // Destin's report: rapid Files <-> Conversations clicks. Files remounts cost
+  // list-all-files + a watcher restart each time; the tail is what he feels.
+  'thrash.toFiles.medianMs', 'thrash.toFiles.p95Ms', 'thrash.toFiles.maxMs',
+  'thrash.toConversations.medianMs', 'thrash.toConversations.maxMs',
+  'thrash.longtaskTotalMs', 'thrash.frameGapMaxMs', 'thrash.ipcMaxMs',
   'reopen.openMs',
   // Renderer + main-process cost across the whole run.
   'probe.longtaskTotalMs', 'probe.longtaskMaxMs',
@@ -554,6 +612,7 @@ export const MEASURES = {
   configuration: [
     'two saved projects: gamma (~1,600 generated files in 40 folders: 45% code, 25% markdown, 12% html, 10% png, 8% json) and alpha (the transcript fixture, 2 files)',
     'gamma carries a file-history record at Destin\'s 2026-09-09 scale — ~8,000 records / ~28,000 versions, ~80% of them under worktrees that do not exist — and 700 one-turn conversations under its Claude Code slug',
+    'gamma also holds ~6,000 nested directories under worktrees/wt-N/ (each a nested repo, so discovery skips them and only the project watcher walks them) — the shape of Destin\'s youcoded-dev, where a watcher restart measured 4 s',
     'stock theme, no wallpaper — the per-card backdrop blur is NOT applied here',
     'seven letters typed into the file search at ~45 ms spacing; the type filter "Code & configs" flattens the grid',
   ],
@@ -585,7 +644,7 @@ export const MEASURES = {
  * @param {number} [opts.keyDelayMs=45]
  * @param {number} [opts.scrollSteps=40]
  */
-export async function runProjectsScenario(app, fixture, seeded, { typed = 'handler', keyDelayMs = 45, scrollSteps = 40 } = {}) {
+export async function runProjectsScenario(app, fixture, seeded, { typed = 'handler', keyDelayMs = 45, scrollSteps = 40, thrashRounds = 8 } = {}) {
   const cdp = app.cdp;
   const warnings = [];
   const big = seeded.name;
@@ -712,6 +771,43 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
       return { ok: true, ms: r.ms, rows, nodes: st.nodes, count: st.conversations };
     });
     await call(cdp, 'h.tab("Files")');
+
+    // ── 6b. Tab thrash: Files <-> Conversations, quickly, several times ────
+    // Destin (2026-09-09): "it becomes especially laggy/prominent if I just
+    // quickly click back-and-forth between files/conversations in project view".
+    // Each switch UNMOUNTS the tab (ProjectView.tsx:907-912), so every return to
+    // Files re-runs artifacts:list-all-files, unwatches then re-watches the
+    // project root (a fresh chokidar walk, awaited before the IPC replies —
+    // project-watcher.ts:150-175) and refetches every visible card's preview.
+    // Per-switch clocks are kept as a list so a slow tail is visible.
+    const thrash = await step(cdp, 'projects:tab-thrash', async () => {
+      const toConv = [];
+      const toFiles = [];
+      for (let i = 0; i < thrashRounds; i++) {
+        const a = await call(cdp, 'h.tab("Conversations")');
+        if (!a.ok) throw new Error(`projects: thrash round ${i} to Conversations: ${a.reason}`);
+        toConv.push(a.ms);
+        // No settle wait between clicks — that is the point.
+        const b = await call(cdp, 'h.tab("Files")');
+        if (!b.ok) throw new Error(`projects: thrash round ${i} to Files: ${b.reason}`);
+        toFiles.push(b.ms);
+      }
+      // Let the last Files mount finish its list + watch before the next step.
+      await call(cdp, 'h.until(() => !h.loading(), 30000)');
+      return {
+        ok: true, rounds: thrashRounds,
+        toConversations: { samples: toConv, medianMs: median(toConv), p95Ms: p95(toConv), maxMs: Math.max(...toConv) },
+        toFiles: { samples: toFiles, medianMs: median(toFiles), p95Ms: p95(toFiles), maxMs: Math.max(...toFiles) },
+      };
+    });
+    // The step probe is the honest record for this one: the per-click clocks
+    // stop at "painted", but the main-process cost (list + watch) lands after.
+    if (thrash.probe && !thrash.probe.error) {
+      thrash.longtaskTotalMs = thrash.probe.longtaskTotalMs ?? null;
+      thrash.frameGapMaxMs = thrash.probe.frameGapMaxMs ?? null;
+    }
+    if (thrash.ipc && !thrash.ipc.error) thrash.ipcMaxMs = thrash.ipc.maxMs ?? null;
+
     const switchSmall = await step(cdp, 'projects:switch-small', async () => {
       const r = await call(cdp, `h.switchTo(${JSON.stringify(small)})`);
       if (!r.ok) throw new Error(`projects: switch to ${small}: ${r.reason}`);
@@ -734,7 +830,7 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
 
     // ── Totals ───────────────────────────────────────────────────────────
     const probe = await readProbe(cdp);
-    const allSteps = [open, switchToBig, search, cleared, filter, scrollFlat, listView, filterClear, conversations, switchSmall, switchBig, close, reopen].filter(Boolean);
+    const allSteps = [open, switchToBig, search, cleared, filter, scrollFlat, listView, filterClear, conversations, thrash, switchSmall, switchBig, close, reopen].filter(Boolean);
     const ipcTotals = allSteps.reduce((acc, s) => {
       const i = s?.ipc;
       if (!i || i.error) return acc;
@@ -751,6 +847,7 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
         name: big, files: seeded.files, folders: seeded.folders, bytes: seeded.bytes, openedOn: open.hero ?? null,
         sidecar: seeded.sidecar ? { bytes: seeded.sidecar.bytes, artifacts: seeded.sidecar.artifacts, versions: seeded.sidecar.versions, orphans: seeded.sidecar.orphans } : null,
         conversations: seeded.conversations ?? 0,
+        nestedDirs: seeded.nestedDirs ?? 0,
       },
       open,
       switchToBig,
@@ -762,6 +859,7 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
       filterClear,
       switch: { smallMs: switchSmall.ms ?? null, bigMs: switchBig.ms ?? null, small: switchSmall, big: switchBig },
       conversations,
+      thrash,
       close,
       reopen,
       probe,
