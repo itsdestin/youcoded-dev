@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { formatBriefing, syncWorkspace, verifyWorkspaceIdentity } from './workspace-sync.mjs';
 
 const inventory = JSON.parse(fs.readFileSync(new URL('./workspace-repos.json', import.meta.url), 'utf8'));
 function git(root, ...args) {
@@ -102,6 +103,25 @@ function provisionNodeModules(name, source, destination) {
   }
   return notes;
 }
+function validateDestinationAncestors(root, destination) {
+  const relative = path.relative(root, destination);
+  if (!relative || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+    throw new Error(`Session destination escapes the workspace: ${destination}`);
+  }
+  let current = root;
+  for (const part of relative.split(path.sep).slice(0, -1)) {
+    current = path.join(current, part);
+    let stat;
+    try { stat = fs.lstatSync(current); } catch (error) {
+      if (error.code === 'ENOENT') return; // Missing descendants will be created only after sync succeeds.
+      throw error;
+    }
+    if (!stat.isDirectory() || stat.isSymbolicLink() || fs.realpathSync(current) !== current) {
+      throw new Error(`Expected a real directory, not a symlink or unsafe session ancestor: ${current}`);
+    }
+  }
+}
+
 function validateWorktree(entry, source, destination, branch) {
   if (entry.path !== destination || entry.branch !== branch || entry.commonDir !== commonDir(source)) {
     throw new Error(`Session ownership mismatch for ${destination}; nothing was replaced.`);
@@ -117,7 +137,11 @@ function validateWorktree(entry, source, destination, branch) {
 export function startWorkspace({ root, session, repos = [] }) {
   if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(session || '')) throw new Error('Session key must be 1–64 lowercase letters, digits or hyphens, starting with a letter or digit.');
   for (const name of repos) if (!Object.hasOwn(inventory, name)) throw new Error(`Unknown repository: ${name}`);
-  root = primaryRoot(path.resolve(root));
+  // WHY: establish the configured workspace identity before creating lock/state
+  // directories or allowing any Git command that can fetch or update refs.
+  const identity = verifyWorkspaceIdentity(path.resolve(root), 'master', { requirePrimary: false });
+  root = identity.primary;
+  verifyWorkspaceIdentity(root, 'master');
   const common = commonDir(root), stateRoot = path.join(common, 'youcoded-sessions');
   ensureDirectory(stateRoot);
   const lock = path.join(stateRoot, `${session}.lock`), manifest = path.join(stateRoot, `${session}.json`);
@@ -136,42 +160,71 @@ export function startWorkspace({ root, session, repos = [] }) {
       }
     }
     const names = [...new Set(['workspace', ...Object.keys(state.repositories), ...repos])];
-    // Preflight ALL requested sources before creating any worktree. A missing component
-    // must not resolve upward to the containing workspace's Git repository.
+    // WHY: ownership and collision checks for every requested repository must finish
+    // before workspace sync is allowed to move the shared checkout.
     for (const name of names) {
       if (!Object.hasOwn(inventory, name)) throw new Error(`Unknown repository in manifest: ${name}`);
-      verifyRepo(name === 'workspace' ? root : path.join(root, name));
-    }
-    ensureDirectory(path.join(root, 'worktrees'));
-    ensureDirectory(path.join(root, 'worktrees', 'sessions'));
-    const result = { session, workspace, repositories: {} };
-    for (const name of names) {
       const source = name === 'workspace' ? root : path.join(root, name);
       const destination = name === 'workspace' ? workspace : path.join(workspace, name);
+      verifyRepo(source); // A missing component must not resolve upward to the workspace repository.
+      validateDestinationAncestors(root, destination);
       const entry = state.repositories[name];
-      if (entry) {
-        validateWorktree(entry, source, destination, branch);
-        result.repositories[name] = { path: destination, branch, status: 'resumed' };
-        continue;
+      if (entry) validateWorktree(entry, source, destination, branch);
+      else {
+        if (exists(destination)) throw new Error(`Worktree path already exists: ${destination}. Nothing was overwritten; choose another session key.`);
+        if (git(source, 'branch', '--list', branch)) throw new Error(`Session branch already exists: ${branch} in ${source}. Nothing was overwritten; inspect it before choosing another key.`);
       }
-      if (exists(destination)) throw new Error(`Worktree path already exists: ${destination}. Nothing was overwritten; choose another session key.`);
-      if (git(source, 'branch', '--list', branch)) throw new Error(`Session branch already exists: ${branch} in ${source}. Nothing was overwritten; inspect it before choosing another key.`);
-      const remoteRef = `refs/remotes/origin/${inventory[name].branch}`;
-      // Fetch only: never pull/reset/stash the shared checkout. Existing sessions skip
-      // this entirely so resuming unfinished work also works without a network.
-      git(source, 'fetch', '--no-tags', 'origin', `+refs/heads/${inventory[name].branch}:${remoteRef}`);
-      const base = git(source, 'rev-parse', remoteRef);
-      git(source, 'worktree', 'add', '-b', branch, destination, base);
-      state.repositories[name] = { path: destination, branch, commonDir: commonDir(source), base };
-      // Record each successful component immediately: later failures preserve work and
-      // a retry resumes what succeeded. A crash before this save fails closed on collision.
-      save(manifest, state);
-      // After the manifest is saved: dependency provisioning is a convenience on
-      // top of a committed worktree, so its failures must not roll the worktree back.
-      const provisioned = provisionNodeModules(name, source, destination);
-      result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}) };
     }
-    return result;
+
+    const result = { session, workspace, repositories: {} };
+    const synced = syncWorkspace({ root, sessionPath: state.repositories.workspace?.path ?? null });
+    result.reorientation = { reportPath: synced.reportPath, report: synced.report };
+    if (!state.repositories.workspace && synced.report.freshness.status !== 'fetched') {
+      throw new Error(`Cannot start a fresh workspace without fetched guidance. Report: ${synced.reportPath}`);
+    }
+
+    try {
+      ensureDirectory(path.join(root, 'worktrees'));
+      ensureDirectory(path.join(root, 'worktrees', 'sessions'));
+      for (const name of names) {
+        const source = name === 'workspace' ? root : path.join(root, name);
+        const destination = name === 'workspace' ? workspace : path.join(workspace, name);
+        const entry = state.repositories[name];
+        if (entry) {
+          result.repositories[name] = { path: destination, branch, status: 'resumed' };
+          continue;
+        }
+        let base;
+        if (name === 'workspace') {
+          // WHY: this immutable fetched OID is the authority already reported by sync;
+          // fetching again would let session creation silently use a different commit.
+          base = synced.report.freshness.fetchedOid;
+        } else {
+          const remoteRef = `refs/remotes/origin/${inventory[name].branch}`;
+          // WHY: component fetch updates refs too, so reuse the private hook isolation
+          // created by workspace sync instead of invoking repository-configured hooks.
+          const hooks = path.join(synced.report.evidence.directory, 'disabled-hooks');
+          git(source, '-c', `core.hooksPath=${hooks}`, 'fetch', '--no-tags', 'origin', `+refs/heads/${inventory[name].branch}:${remoteRef}`);
+          base = git(source, 'rev-parse', remoteRef);
+        }
+        // WHY: branch/ref creation during worktree add is part of the same isolated
+        // startup transaction and must not run repository-owned hooks either.
+        const hooks = path.join(synced.report.evidence.directory, 'disabled-hooks');
+        git(source, '-c', `core.hooksPath=${hooks}`, 'worktree', 'add', '-b', branch, destination, base);
+        state.repositories[name] = { path: destination, branch, commonDir: commonDir(source), base };
+        // Record each successful component immediately: later failures preserve work and
+        // a retry resumes what succeeded. A crash before this save fails closed on collision.
+        save(manifest, state);
+        // After the manifest is saved: dependency provisioning is a convenience on
+        // top of a committed worktree, so its failures must not roll the worktree back.
+        const provisioned = provisionNodeModules(name, source, destination);
+        result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}) };
+      }
+      return result;
+    } catch (error) {
+      // Preserve successful workspace evidence when later component provisioning fails.
+      throw new Error(`${error.message}\nWorkspace reorientation report: ${synced.reportPath}`);
+    }
   } finally { fs.rmdirSync(lock); }
 }
 
@@ -181,7 +234,7 @@ function main(args) {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--help') {
-      console.log('Usage: node scripts/workspace-start.mjs --session <stable-key> [workspace|youcoded|youcoded-core|youcoded-admin|wecoded-themes|wecoded-marketplace] [--root <workspace>] [--json]\nRe-use the same key to resume; add repository names as work expands. No shared checkout is pulled or cleaned.');
+      console.log('Usage: node scripts/workspace-start.mjs --session <stable-key> [workspace|youcoded|youcoded-core|youcoded-admin|wecoded-themes|wecoded-marketplace] [--root <workspace>] [--json]\nRe-use the same key to resume; add repository names as work expands. Startup fetches workspace guidance, and a guarded fast-forward may update the shared workspace when preservation is proven. No manual pull, stash, clean, commit, push or publish is performed.');
       return;
     }
     if (arg === '--session' || arg === '--root') {
@@ -194,6 +247,8 @@ function main(args) {
   const result = startWorkspace(opts);
   if (json) console.log(JSON.stringify(result, null, 2));
   else {
+    console.log(formatBriefing(result.reorientation.report));
+    console.log(`Report: ${result.reorientation.reportPath}\n`);
     console.log(`Session: ${result.session}`);
     for (const [name, repo] of Object.entries(result.repositories)) {
       console.log(`${name} (${repo.status}): ${repo.path}`);
