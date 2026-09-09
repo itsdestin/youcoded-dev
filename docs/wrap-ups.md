@@ -136,3 +136,9 @@ recurred — the repetition is the data.
 - Specialist failures and repeated status steers delayed work; one capture contained a browser error → dropped as new policy: existing tool and capture rules already require observable readiness and image inspection. Parent-owned server and actual DOM waits corrected the capture before review. No failed image was presented as accepted work.
 - deleted/merged: removed conflicting accent/on-accent mascot-palette prescriptions and stale paper-white Halftone advice; reused existing authoring references rather than another guide.
 - Paid model evaluation, interactive motion rigs, packaged beta and multi-monitor validation were not run → dropped from this task; existing buddy release-validation roadmap items remain open.
+
+## 2026-09-09 — buddy animation continuity (session/buddy-animation-races)
+- Blink/pose renders replaced the SVG and attention keys remounted its whole host → applied: four failing-then-passing DOM-identity regressions; memoized SVG markup and stable attention wrapper preserve animation state and the PeekHands observer.
+- deleted/merged: removed bounceKey state/effect and keyed remount; class changes already retrigger the existing bounce.
+- Negative spring timestep and stale hover-swing theories were not demonstrated as the reported failure → dropped from this fix; CSS specificity disproved the proposed hover override. No speculative speed changes.
+- Final desktop verify passed all six checks; fresh source review found no blockers. Docked motion was not visually rechecked; Destin explicitly authorized merge/close. App PR #455 merged.
