@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # Session naming — code review (fresh reviewer)
 
