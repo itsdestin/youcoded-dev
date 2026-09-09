@@ -21,8 +21,10 @@ reviewer/tester → grader), `.claude/rules/review-deck.md` + `scripts/ui-review
 
 1. Review **ALL error states** across all screens/chats/settings/menus; make them consistent,
    user-friendly, actionable. Retry when recoverable; Report bug when app-side; GitHub issue in
-   `itsdestin/youcoded` with logs/images where possible. Likely existing roadmap item (it exists:
-   `docs/roadmap/user-interface.md` UI-change 33; also
+   `itsdestin/youcoded` with logs/images where possible. Existing roadmap item:
+   `docs/roadmap/user-interface.md` line 35, "Error messages still guess at causes in many
+   places" (there is no "UI-change 33" — an earlier draft of this handoff cited a number the
+   file does not use). It stays OPEN: nothing here is implemented. Also
    `docs/active/investigations/2026-09-01-misleading-error-audit.md`).
 2. Improve **Settings → Development**: make “Contribute to YouCoded” install the workspace as a
    **youcoded-managed/synced project**, and add an **(i) explainer** walking through development
