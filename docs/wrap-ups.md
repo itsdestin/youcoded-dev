@@ -129,6 +129,26 @@ recurred — the repetition is the data.
 - Final review caught a destructive validation asymmetry: malformed persisted values correctly read as None, but malformed write values also cleared the preference → applied: `step-guard-settings.test.ts` pins reject-without-mutation before the main-process fix
 - deleted/merged: removed the whole model-name-based `model-step-budget.ts` subsystem and its test; ordinary root limits now come from one explicit persisted snapshot
 
+## 2026-09-09 — buddy floater and friendly mascot palettes (session/buddy-floater-regression)
+- Shared host zoom clipped 112px art inside an 85px CSS viewport; source guesses were insufficient → applied: preload per-frame zoom guard and tests; isolated Electron 41 probe preserved buddy 112px through main zoom changes and reload.
+- Theme sync reached more windows than theme-install notifications; a stale buddy reset a valid new theme → applied: multiwindow watcher and deferred incoming-theme activation with cancellation tests.
+- Default mascot art copied accessible button colors and produced frightening pale eyes; authoring references contradicted their own dark-eye guidance → applied: default-only palette/catchlight contract, small-size rim tests, and consolidated theme-builder/reference advice. UI text contrast remains unchanged.
+- Specialist failures and repeated status steers delayed work; one capture contained a browser error → dropped as new policy: existing tool and capture rules already require observable readiness and image inspection. Parent-owned server and actual DOM waits corrected the capture before review. No failed image was presented as accepted work.
+- deleted/merged: removed conflicting accent/on-accent mascot-palette prescriptions and stale paper-white Halftone advice; reused existing authoring references rather than another guide.
+- Paid model evaluation, interactive motion rigs, packaged beta and multi-monitor validation were not run → dropped from this task; existing buddy release-validation roadmap items remain open.
+
+## 2026-09-09 — buddy animation continuity (session/buddy-animation-races)
+- Blink/pose renders replaced the SVG and attention keys remounted its whole host → applied: four failing-then-passing DOM-identity regressions; memoized SVG markup and stable attention wrapper preserve animation state and the PeekHands observer.
+- deleted/merged: removed bounceKey state/effect and keyed remount; class changes already retrigger the existing bounce.
+- Negative spring timestep and stale hover-swing theories were not demonstrated as the reported failure → dropped from this fix; CSS specificity disproved the proposed hover override. No speculative speed changes.
+- Final desktop verify passed all six checks; fresh source review found no blockers. Docked motion was not visually rechecked; Destin explicitly authorized merge/close. App PR #455 merged.
+
+## 2026-09-08 — safe Markdown disclosure blocks (session/markdown-details-fix)
+- `workspace-start` created the app worktree without the documented auto-provisioned `desktop/node_modules`, causing one failed investigation command and a manual `cp -al` recovery → dropped: startup provisioning is already specified and this single miss did not recur; no new rule would improve on the existing mechanism [2 shell calls]
+- A first-pass raw-node transform passed component tests but failed TypeScript because root HAST content is wider than element content; the required `verify.sh` caught it before commit → applied: the final regression tests plus existing verification gate are the durable guard [1 failed verification run]
+- The first security review found unsupported HTML attributes could leak text into the URL linkifier and spaced `<details>`/`<summary>` was missed; both now have failing-then-passing tests → applied: `MarkdownContent.test.tsx` [2 caught edge cases]
+- A repo-wide source sweep found one production Markdown pipeline and all callers inherit it; no duplicate renderer or separate Android parser needed repair → dropped: no additional change exists to make
+- deleted/merged: no redundant code or guidance found; arbitrary raw-HTML enablement was deliberately avoided rather than adding `rehype-raw`
 ## 2026-09-08 — planned workspace startup reorientation (session/2026-09-08-workspace-sync)
 - Shared startup guidance was older than the freshly provisioned workspace: the latter already provisioned dependency hardlinks, absent from the initially inspected startup script → applied to planning: preserve that behavior explicitly in `docs/active/plans/2026-09-08-workspace-start-reorientation.md`; runtime repair deferred to its implementation tasks, not claimed complete. Serves fewer repeated searches and automatic freshness.
 - Existing sync treats a file matching historical upstream bytes as disposable; historical equality does not establish whether a rollback was intentional → applied to approved design/plan: preserve such files and pin that boundary in disposable-repository regression tests during implementation. Serves safe automatic behavior.
