@@ -44,6 +44,7 @@ const Beat4: React.FC = () => (
 //   the reply grows in at the bottom-left; the host stands right of it
 const P4 = present('b4', [
   { at: M('list') + 4, say: 'Use any AI, cloud or local.', target: inWindow(0.68, 0.6), stand: 'R', face: 'welcome', until: M('sent') + 4 },
-  { at: M('reply') - 2, say: "Behave, Grok, or I'm switching to Claude.", target: inWindow(0.2, 0.6), stand: 'R', face: 'smug', until: END - 8 },
+  // 0.2 → 0.25 at the 1.35 zoom (2026-09-09): the reply bubble grew and the host stood on its last words
+  { at: M('reply') - 2, say: "Behave, Grok, or I'm switching to Claude.", target: inWindow(0.25, 0.6), stand: 'R', face: 'smug', until: END - 8 },
 ], 'creme', P, END - 8);
 export const beat4: BeatModule = { id: 'b4', slug: 'creme', home: P4.home, Component: Beat4, host: P4.host, bubbles: P4.bubbles };
