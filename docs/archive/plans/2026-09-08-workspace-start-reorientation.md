@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Workspace Startup Reorientation Implementation Plan
@@ -14,7 +14,7 @@ status: active
 
 ## Global Constraints
 
-- Approved specification: `docs/active/specs/2026-09-08-workspace-start-reorientation.md`.
+- Approved specification: `docs/archive/specs/2026-09-08-workspace-start-reorientation.md`.
 - Only youcoded-dev gets synchronization and reorientation.
 - Never auto-commit or push.
 - A resumed workspace branch, index, and files are never integrated or rewritten automatically.

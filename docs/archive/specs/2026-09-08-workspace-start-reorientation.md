@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # Workspace startup: reorientation and preservation-safe sync
 
