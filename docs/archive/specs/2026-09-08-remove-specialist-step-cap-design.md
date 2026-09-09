@@ -1,5 +1,8 @@
 ---
-status: active
+status: shipped
+shipped: 2026-09-09
+app_pr: itsdestin/youcoded#453
+workspace_pr: itsdestin/youcoded-dev#74
 ---
 
 # Remove the specialist step cap — design
