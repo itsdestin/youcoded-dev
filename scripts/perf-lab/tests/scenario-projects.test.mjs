@@ -1,7 +1,7 @@
 // Unit tests for scenario-projects.mjs — everything checkable without an app.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, readFileSync, existsSync, statSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -34,7 +34,7 @@ test('seedProjectsFixture writes the tree and lists both projects in youcoded-fo
   try {
     const home = join(root, 'home');
     const fixture = { home, projects: { alpha: join(home, 'projects', 'alpha') } };
-    const seeded = seedProjectsFixture(fixture, { files: 60, dirs: 6, topLevel: 5, seed: 1 });
+    const seeded = seedProjectsFixture(fixture, { files: 60, dirs: 6, topLevel: 5, seed: 1, sidecar: { artifacts: 300, versions: 900 }, conversations: 12 });
     assert.equal(seeded.files, 60);
     assert.ok(seeded.bytes > 0);
     const folders = JSON.parse(readFileSync(join(home, '.claude', 'youcoded-folders.json'), 'utf8'));
@@ -46,6 +46,18 @@ test('seedProjectsFixture writes the tree and lists both projects in youcoded-fo
     assert.ok(png, 'fixture has no png');
     assert.equal(statSync(join(seeded.root, png.rel)).size, PNG_1X1.length);
     assert.ok(existsSync(join(seeded.root, 'main')), 'area folders were not created');
+    // The file-history record and the conversations, at the sizes asked for.
+    assert.equal(seeded.sidecar.artifacts, 300);
+    assert.ok(seeded.sidecar.versions >= 600, `only ${seeded.sidecar.versions} versions`);
+    assert.equal(seeded.sidecar.orphans, 240, 'every record beyond the real files must be an on-disk miss');
+    const sc = JSON.parse(readFileSync(seeded.sidecar.path, 'utf8'));
+    assert.equal(sc.$schema, 1);
+    assert.equal(sc.artifacts.length, 300);
+    assert.ok(sc.artifacts.every((a) => a.kind === 'internal' && a.absolutePath === null && !a.path.startsWith('/')), 'records must be relative (= internal)');
+    assert.ok(sc.artifacts.slice(60).every((a) => a.path.startsWith('worktrees/dead-')), 'orphans live under a worktree that is never created');
+    assert.ok(!existsSync(join(seeded.root, 'worktrees')), 'the dead worktrees must not exist on disk');
+    assert.equal(seeded.conversations, 12);
+    assert.equal(readdirSync(join(home, '.claude', 'projects')).length, 1, 'conversations go under the big project\'s own slug');
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

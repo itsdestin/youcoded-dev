@@ -57,6 +57,9 @@ import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './pr
 // generators so card previews render real Markdown/HTML/code, the same stall
 // attributor and key-event builder. Importing keeps one copy of each.
 import { rng32, buildCodeArtifact, buildMarkdownArtifact, buildHtmlArtifact, attributeStall, keyEventsFor } from './scenario-artifacts.mjs';
+// The fixture's own transcript writer, so the big project's conversations are the
+// same shape every other phase resumes (and one generator, not two).
+import { transcriptBody, stableUuid, ccProjectSlug } from './fixture.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const round1 = (n) => (typeof n === 'number' && Number.isFinite(n) ? Math.round(n * 10) / 10 : n);
@@ -109,16 +112,85 @@ export function buildProjectTree({ files = 1600, dirs = 40, topLevel = 24, seed 
 }
 
 /**
+ * The project's file-history record (`.youcoded/artifacts.json`) at Destin's
+ * scale, as data. Measured on his machine 2026-09-09: 10.6 MB, 8,301 records,
+ * 28,431 versions, ~44 % of records under worktrees that no longer exist, and
+ * by type 72 % edit / 17 % read / 11 % create. The record is what every
+ * Projects-view count, every file list and every existence check parses and
+ * walks, and the FIRST run of this scenario (no record at all) opened Projects
+ * in 0.38 s — so a fixture without one measures a project Destin does not have.
+ *
+ * Shape is ProjectSidecar / ArtifactRecord / VersionEvent
+ * (desktop/src/shared/artifacts/types.ts:19-77), relative paths = internal.
+ * `tracked` records point at the real generated files; `orphans` point under
+ * `worktrees/dead-N/` which is never created, so they are on-disk misses exactly
+ * like his dead-worktree records. Deterministic for a seed.
+ */
+export function buildSidecar({ entries, artifacts = 8000, versions = 28000, seed = 7, name = 'gamma', sessions = 60 } = {}) {
+  const r = rng32(seed + 101);
+  const pick = (a) => a[Math.floor(r() * a.length)];
+  const now = Date.now();
+  const b32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+  const ulid = (prefix, n) => `${prefix}01PERF${String(n).padStart(16, '0').replace(/\d/g, (d) => b32[Number(d)])}`;
+  const sessionIds = Array.from({ length: sessions }, (_, i) => stableUuid(`perf-projects:session:${i}`));
+  const typeFor = (x) => (x < 0.72 ? 'edit' : x < 0.89 ? 'read' : 'create');
+  const records = [];
+  let versionCount = 0;
+  let vn = 0;
+  const perRecord = Math.max(1, Math.round(versions / artifacts));
+  const mk = (path, i) => {
+    const k = Math.max(1, perRecord - 2 + Math.floor(r() * 5));   // avg ≈ perRecord
+    const vs = [];
+    let ts = now - Math.floor(r() * 60) * 86400000;
+    for (let j = 0; j < k; j++) {
+      ts += Math.floor(r() * 3600000);
+      const v = { id: ulid('ver_', vn++), ts: new Date(ts).toISOString(), sessionId: pick(sessionIds), type: j === 0 && r() < 0.3 ? 'create' : typeFor(r()), author: 'agent' };
+      if (r() < 0.32) v.toolUseId = `toolu_perf_${i}_${j}`;
+      vs.push(v);
+    }
+    versionCount += vs.length;
+    return { id: ulid('art_', i), path, kind: 'internal', absolutePath: null, lastModified: vs[vs.length - 1].ts, status: 'active', versions: vs, comments: [], tags: [] };
+  };
+  let i = 0;
+  for (const e of entries) records.push(mk(e.rel, i++));
+  const orphanStart = i;
+  while (records.length < artifacts) {
+    records.push(mk(`worktrees/dead-${i % 107}/${pick(AREAS)}/${pick(WORDS)}-${i}.${pick(['ts', 'md', 'tsx', 'json'])}`, i));
+    i++;
+  }
+  const sidecar = {
+    $schema: 1,
+    projectId: ulid('', 0),
+    name,
+    createdAt: new Date(now - 90 * 86400000).toISOString(),
+    updatedAt: new Date(now).toISOString(),
+    artifacts: records,
+    manualExcludes: [],
+    manualIncludes: [],
+  };
+  return { sidecar, artifacts: records.length, versions: versionCount, orphans: records.length - orphanStart };
+}
+
+/**
  * Writes the big project to disk under the fixture HOME and lists both fixture
  * projects in ~/.claude/youcoded-folders.json so Project View shows them
  * (the saved-folders file is a bare JSON array — saved-folders.ts:5,23).
+ *
+ * Also writes the project's file-history record (see buildSidecar) and
+ * `conversations` one-turn transcripts under the project's Claude Code slug —
+ * Destin's youcoded-dev has 746, and `project:list-conversations` does a 64 KB
+ * head read per transcript on every open and every switch.
  *
  * Called by run.mjs ONLY for the projects phase, after buildFixture: the
  * folders file changes what the welcome screen's folder picker lists, and the
  * startup phase's numbers must not move because a different phase gained a
  * fixture. Returns what the scenario needs to find its way around.
  */
-export function seedProjectsFixture(fixture, { files = 1600, dirs = 40, topLevel = 24, seed = 7, name = 'gamma' } = {}) {
+export function seedProjectsFixture(fixture, {
+  files = 1600, dirs = 40, topLevel = 24, seed = 7, name = 'gamma',
+  sidecar = { artifacts: 8000, versions: 28000 },
+  conversations = 700,
+} = {}) {
   const root = join(fixture.home, 'projects', name);
   const tree = buildProjectTree({ files, dirs, topLevel, seed });
   mkdirSync(root, { recursive: true });
@@ -149,7 +221,38 @@ export function seedProjectsFixture(fixture, { files = 1600, dirs = 40, topLevel
   ];
   mkdirSync(join(fixture.home, '.claude'), { recursive: true });
   writeFileSync(join(fixture.home, '.claude', 'youcoded-folders.json'), JSON.stringify(folders, null, 2));
-  return { root, name, files: tree.entries.length, folders: tree.folders.length, bytes, small: { root: fixture.projects.alpha, name: 'alpha' } };
+
+  // The file-history record, pretty-printed exactly as the app writes it
+  // (artifact-store.ts writes JSON.stringify(next, null, 2)); size on disk is
+  // part of what is being measured.
+  let sidecarInfo = null;
+  if (sidecar) {
+    const built = buildSidecar({ entries: tree.entries, artifacts: sidecar.artifacts, versions: sidecar.versions, seed, name });
+    mkdirSync(join(root, '.youcoded'), { recursive: true });
+    const p = join(root, '.youcoded', 'artifacts.json');
+    writeFileSync(p, JSON.stringify(built.sidecar, null, 2));
+    sidecarInfo = { path: p, bytes: statSync(p).size, artifacts: built.artifacts, versions: built.versions, orphans: built.orphans };
+  }
+
+  // Conversations for this project: tiny one-turn transcripts under its slug,
+  // the same generator and naming rule as the fixture's decoys.
+  let conversationCount = 0;
+  if (conversations > 0) {
+    const slugDir = join(fixture.home, '.claude', 'projects', ccProjectSlug(root));
+    mkdirSync(slugDir, { recursive: true });
+    for (let c = 0; c < conversations; c++) {
+      const id = stableUuid(`perf-projects:conv:${c}`);
+      const lines = transcriptBody({ content: 'plain', sessionId: id, cwd: root, turns: 1, startedAt: now - (1 + (c % 120)) * 86400000 });
+      writeFileSync(join(slugDir, `${id}.jsonl`), lines.join('\n') + '\n');
+      conversationCount++;
+    }
+  }
+
+  return {
+    root, name, files: tree.entries.length, folders: tree.folders.length, bytes,
+    sidecar: sidecarInfo, conversations: conversationCount,
+    small: { root: fixture.projects.alpha, name: 'alpha' },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -450,6 +553,7 @@ export const MEASURES = {
   question: 'What does the Projects view cost to open, search, filter, scroll and switch over a ~1,600-file project?',
   configuration: [
     'two saved projects: gamma (~1,600 generated files in 40 folders: 45% code, 25% markdown, 12% html, 10% png, 8% json) and alpha (the transcript fixture, 2 files)',
+    'gamma carries a file-history record at Destin\'s 2026-09-09 scale — ~8,000 records / ~28,000 versions, ~80% of them under worktrees that do not exist — and 700 one-turn conversations under its Claude Code slug',
     'stock theme, no wallpaper — the per-card backdrop blur is NOT applied here',
     'seven letters typed into the file search at ~45 ms spacing; the type filter "Code & configs" flattens the grid',
   ],
@@ -464,7 +568,7 @@ export const MEASURES = {
     'GPU cost: every file card is .layer-surface, which wallpaper themes give a backdrop-filter blur; under Xvfb/llvmpipe that is software-rasterised or skipped, so its real cost on a display is not measured',
     'the stock theme has no wallpaper, so the per-card blur is not applied at all in this configuration',
     'a project over the 2,000-file discovery cap (Destin\'s youcoded-dev is 3,279): the fixture sits under it so counts are exact',
-    'a conversation-heavy project (746 rows): alpha has the three fixture transcripts',
+    'the small project (alpha) has three conversations; the conversation-heavy leg is measured on gamma only',
   ],
 };
 
@@ -599,19 +703,20 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
     });
     if (!filterClear.ok) warnings.push(`clearing the type filter failed: ${filterClear.reason}`);
 
-    // ── 6. Switch to the small project, open Conversations, switch back ──
+    // ── 6. Conversations tab on the big project, then switch both ways ────
+    const conversations = await step(cdp, 'projects:conversations', async () => {
+      const r = await call(cdp, 'h.tab("Conversations")');
+      if (!r.ok) throw new Error(`projects: Conversations tab: ${r.reason}`);
+      const rows = await call(cdp, 'h.conversationRows()');
+      const st = await call(cdp, 'h.state()');
+      return { ok: true, ms: r.ms, rows, nodes: st.nodes, count: st.conversations };
+    });
+    await call(cdp, 'h.tab("Files")');
     const switchSmall = await step(cdp, 'projects:switch-small', async () => {
       const r = await call(cdp, `h.switchTo(${JSON.stringify(small)})`);
       if (!r.ok) throw new Error(`projects: switch to ${small}: ${r.reason}`);
       return r;
     });
-    const conversations = await step(cdp, 'projects:conversations', async () => {
-      const r = await call(cdp, 'h.tab("Conversations")');
-      if (!r.ok) throw new Error(`projects: Conversations tab: ${r.reason}`);
-      const rows = await call(cdp, 'h.conversationRows()');
-      return { ok: true, ms: r.ms, rows };
-    });
-    await call(cdp, 'h.tab("Files")');
     const switchBig = await step(cdp, 'projects:switch-big', async () => {
       const r = await call(cdp, `h.switchTo(${JSON.stringify(big)})`);
       if (!r.ok) throw new Error(`projects: switch back to ${big}: ${r.reason}`);
@@ -629,7 +734,7 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
 
     // ── Totals ───────────────────────────────────────────────────────────
     const probe = await readProbe(cdp);
-    const allSteps = [open, switchToBig, search, cleared, filter, scrollFlat, listView, filterClear, switchSmall, conversations, switchBig, close, reopen].filter(Boolean);
+    const allSteps = [open, switchToBig, search, cleared, filter, scrollFlat, listView, filterClear, conversations, switchSmall, switchBig, close, reopen].filter(Boolean);
     const ipcTotals = allSteps.reduce((acc, s) => {
       const i = s?.ipc;
       if (!i || i.error) return acc;
@@ -642,7 +747,11 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
     }, { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: 0 });
 
     return {
-      project: { name: big, files: seeded.files, folders: seeded.folders, bytes: seeded.bytes, openedOn: open.hero ?? null },
+      project: {
+        name: big, files: seeded.files, folders: seeded.folders, bytes: seeded.bytes, openedOn: open.hero ?? null,
+        sidecar: seeded.sidecar ? { bytes: seeded.sidecar.bytes, artifacts: seeded.sidecar.artifacts, versions: seeded.sidecar.versions, orphans: seeded.sidecar.orphans } : null,
+        conversations: seeded.conversations ?? 0,
+      },
       open,
       switchToBig,
       search,
