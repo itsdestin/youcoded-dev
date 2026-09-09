@@ -2,7 +2,7 @@ import React from 'react';
 import { useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
 import { family } from './Caption';
 import { THEMES, type Slug } from './themes';
-import { evaluate, type Action, type HostState } from './host/engine';
+import { evaluate, E, type Action, type HostState } from './host/engine';
 import { measureText } from '@remotion/layout-utils';
 
 // The speech bubble: the caption's second line, said by the host. Destin,
@@ -14,8 +14,17 @@ import { measureText } from '@remotion/layout-utils';
 // `until` (or when the next cue starts), and is not drawn while the host is
 // hidden or shrunk (the dive into the game) — a bubble with nobody under it
 // is the one thing this must never show.
+//
+// 2026-09-09 (Destin: "improve the styling and the animation for how those messages pop
+// in"): the bubble has a LOOK and a MOTION. `classic` is the first film's — a white card with
+// a thin accent ring, popped in by a bouncy spring — kept so a review can show it beside the
+// new ones. The film uses FILM_LOOK / FILM_MOTION below; the study (BubbleStudy.tsx) renders any.
+export type Look = 'classic' | 'card' | 'accent' | 'glass';
+export type Motion = 'classic' | 'lift';
+export const FILM_LOOK: Look = 'glass';
+export const FILM_MOTION: Motion = 'lift';
 export type BubbleCue = { at: number; until?: number; text: string; slug: Slug; side?: 'L' | 'R' };
-type Props = { cues: BubbleCue[]; actions: Action[]; base: HostState };
+type Props = { cues: BubbleCue[]; actions: Action[]; base: HostState; look?: Look; motion?: Motion };
 const FONT = 26, PAD_X = 22, PAD_Y = 11, GAP = 18, OUT = 6;
 const MAX_W = 560;   // a longer line WRAPS (Destin's twelve-word games line ran off the frame on one line, 2026-09-04)
 export const bubbleWidth = (text: string) => Math.min(text.length * FONT * 0.56 + PAD_X * 2, MAX_W + PAD_X * 2);
@@ -47,14 +56,49 @@ export function fitWidth(text: string, fontFamily: string, maxW: number): number
   fitCache.set(key, out); return out;
 }
 
-export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
+/** The box, ink, tail and shadow of each look, for a theme. */
+function styleFor(look: Look, slug: Slug): { box: React.CSSProperties; ink: string; tail: string } {
+  const t = THEMES[slug];
+  const ff = family(t);
+  const base: React.CSSProperties = { fontFamily: ff, fontSize: FONT, fontWeight: 600, lineHeight: 1.2, padding: `${PAD_Y}px ${PAD_X}px` };
+  switch (look) {
+    case 'classic': {
+      const bg = t.dark ? t.fg : '#ffffff', ink = t.dark ? t.canvas : t.fg;
+      return { ink, tail: bg, box: { ...base, borderRadius: 20, background: bg, color: ink, boxShadow: `0 8px 24px rgba(0,0,0,${t.dark ? 0.45 : 0.18}), 0 0 0 2px ${t.accent}55` } };
+    }
+    case 'card': {
+      // a paper card: white (a warm off-white on dark themes) with a hairline in the accent, a
+      // deeper, softer shadow and no ring — the accent lives in the hairline and the tail
+      const bg = t.dark ? '#FBF8F3' : '#ffffff', ink = t.dark ? '#1A1418' : t.fg;
+      return { ink, tail: bg, box: { ...base, borderRadius: 18, background: `linear-gradient(180deg, ${bg} 0%, ${bg}F2 100%)`, color: ink,
+        border: `1.5px solid ${t.accent}66`, boxShadow: `0 14px 34px rgba(0,0,0,${t.dark ? 0.5 : 0.16}), 0 2px 6px rgba(0,0,0,${t.dark ? 0.35 : 0.08})` } };
+    }
+    case 'accent': {
+      // the theme's own accent as the bubble, the way the app draws YOUR messages
+      return { ink: t.onAccent, tail: t.accent, box: { ...base, borderRadius: 20, background: t.accent, color: t.onAccent,
+        boxShadow: `0 14px 34px ${t.accent}55, 0 2px 8px rgba(0,0,0,${t.dark ? 0.5 : 0.22})` } };
+    }
+    case 'glass': {
+      // frosted glass over the wallpaper — the app's own translucent bubbles on wallpaper themes
+      const bg = t.dark ? 'rgba(18,14,26,0.62)' : 'rgba(255,255,255,0.66)';
+      const ink = t.dark ? t.fg : t.fg;
+      return { ink, tail: bg, box: { ...base, borderRadius: 20, background: bg, color: ink,
+        backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)',
+        border: `1px solid ${t.dark ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.75)'}`,
+        boxShadow: `0 14px 34px rgba(0,0,0,${t.dark ? 0.45 : 0.14}), inset 0 1px 0 ${t.dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.9)'}` } };
+    }
+  }
+}
+
+export const Bubbles: React.FC<Props> = ({ cues, actions, base, look = FILM_LOOK, motion = FILM_MOTION }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig();
   const sorted = [...cues].sort((a, b) => a.at - b.at);
   const i = sorted.findLastIndex((c) => f >= c.at);
   if (i < 0) return null;
   const cue = sorted[i];
   const until = Math.min(cue.until ?? Infinity, sorted[i + 1]?.at ?? Infinity);
-  if (f >= until + OUT) return null;
+  const outFrames = motion === 'classic' ? OUT : 8;
+  if (f >= until + outFrames) return null;
   const s = evaluate(actions, base, f - 1);
   if (s.hidden || s.size < 60 || s.alpha < 0.5) return null;
   const t = THEMES[cue.slug];
@@ -71,24 +115,44 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base }) => {
   const right = cue.side ? cue.side === 'R' : (s0.x + s0.size / 2 < 1280 && fitsRight) || roomRight >= roomLeft;
   const maxW = Math.max(260, Math.min(MAX_W, (right ? roomRight : roomLeft) - PAD_X * 2));
   const tight = fitWidth(cue.text, family(t), maxW);
-  const inS = spring({ frame: f - cue.at, fps, config: { damping: 12, stiffness: 190 } });
-  const outS = f >= until ? interpolate(f - until, [0, OUT], [1, 0], { extrapolateRight: 'clamp' }) : 1;
-  const scale = inS * outS;
+  // ---- the motion
+  let scale: number, opacity: number, rise = 0, sx = 1, sy = 1, textOpacity = 1;
+  if (motion === 'classic') {
+    const inS = spring({ frame: f - cue.at, fps, config: { damping: 12, stiffness: 190 } });
+    const outS = f >= until ? interpolate(f - until, [0, OUT], [1, 0], { extrapolateRight: 'clamp' }) : 1;
+    scale = inS * outS; opacity = Math.min(1, scale * 1.4);
+  } else {
+    // `lift`: the box grows from its tail with a calmer spring (no bounce past 1), rises a few
+    // pixels as it lands, stretches a hair wider than tall on the way in, and the words fade in
+    // two frames behind the box — a message arriving, not a balloon inflating. Out: it eases
+    // back toward the tail and fades over 8 frames.
+    const k = f - cue.at;
+    const inS = spring({ frame: k, fps, config: { damping: 15, stiffness: 160, mass: 0.9 } });
+    scale = 0.55 + 0.45 * inS; opacity = Math.min(1, k / 3 + 0.2);
+    rise = 8 * (1 - inS);
+    const h = E.hump(Math.min(1, k / 12));
+    sx = 1 + 0.05 * h; sy = 1 - 0.035 * h;
+    textOpacity = interpolate(k, [2, 7], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+    if (f >= until) {
+      const o = (f - until) / 8;
+      scale *= interpolate(E.inQuad(o), [0, 1], [1, 0.86]); opacity = 1 - E.inQuad(o); rise = -6 * o;
+    }
+  }
   // anchor: the side of the head, at eye height; flips to the left when the host is in the right third
   const headY = s.y + s.size * 0.42;
   const anchorX = right ? s.x + s.size * 0.82 : s.x + s.size * 0.18;
-  const bg = t.dark ? t.fg : '#ffffff';
-  const ink = t.dark ? t.canvas : t.fg;
+  const { box, ink, tail: tailFill } = styleFor(look, cue.slug);
   const tail = 14;
   return (
-    <div style={{ position: 'absolute', left: anchorX, top: headY, transform: `translate(${right ? GAP : -GAP}px, -50%) ${right ? '' : 'translateX(-100%)'}`, pointerEvents: 'none' }}>
-      <div style={{ position: 'relative', transform: `scale(${scale.toFixed(3)})`, transformOrigin: right ? '0% 50%' : '100% 50%', opacity: Math.min(1, scale * 1.4) }}>
-        <div style={{ padding: `${PAD_Y}px ${PAD_X}px`, borderRadius: 20, background: bg, color: ink, fontFamily: family(t), fontSize: FONT, fontWeight: 600, lineHeight: 1.2, whiteSpace: 'normal', width: tight, boxSizing: 'content-box', textAlign: right ? 'left' : 'right',
-          boxShadow: `0 8px 24px rgba(0,0,0,${t.dark ? 0.45 : 0.18}), 0 0 0 2px ${t.accent}55` }}>{cue.text}</div>
+    <div style={{ position: 'absolute', left: anchorX, top: headY, transform: `translate(${right ? GAP : -GAP}px, calc(-50% + ${rise.toFixed(2)}px)) ${right ? '' : 'translateX(-100%)'}`, pointerEvents: 'none' }}>
+      <div style={{ position: 'relative', transform: `scale(${(scale * sx).toFixed(3)}, ${(scale * sy).toFixed(3)})`, transformOrigin: right ? '0% 50%' : '100% 50%', opacity }}>
+        <div style={{ ...box, whiteSpace: 'normal', width: tight, boxSizing: 'content-box', textAlign: right ? 'left' : 'right', color: ink }}>
+          <span style={{ opacity: textOpacity }}>{cue.text}</span>
+        </div>
         {/* the tail: a rounded wedge pointing at the head */}
         <svg width={tail + 4} height={tail * 1.6} viewBox={`0 0 ${tail + 4} ${tail * 1.6}`}
           style={{ position: 'absolute', top: '50%', [right ? 'left' : 'right']: -tail + 2, transform: `translateY(-50%) ${right ? '' : 'scaleX(-1)'}` }}>
-          <path d={`M ${tail + 3} 2 L 1 ${tail * 0.8} L ${tail + 3} ${tail * 1.6 - 2} Z`} fill={bg} />
+          <path d={`M ${tail + 3} 2 L 1 ${tail * 0.8} L ${tail + 3} ${tail * 1.6 - 2} Z`} fill={tailFill} />
         </svg>
       </div>
     </div>

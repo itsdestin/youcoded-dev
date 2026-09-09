@@ -12,7 +12,9 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // Its first two bars: the request goes out (fast); bars 2–4: the re-opened, sorted
 // sheet (slowed to fill them); bars 4–6: project view — Econ 201's hero and file
 // tree, one click to Instructions & Memories (the clip runs at 1.2× so the tab lands inside).
-const T_AFTER = B('b5', 2), T_PROJ = B('b5', 4), END = LEN('b5');
+// 2026-09-09 (60-frame bars): the sheet gets bars 2.25–3.85 and project view the rest, which is
+// exactly what the three lines need to be read (1.2 s + ¼ s a word each).
+const T_AFTER = B('b5', 2.25), T_PROJ = B('b5', 3.85), END = LEN('b5');
 const A_FROM = markFrame('promo-sheet', 'attach', 'start', -6);
 const A_RATE = Math.min(1.6, Math.max(1, (markSec('promo-sheet', 'reply', 'end') - markSec('promo-sheet', 'attach', 'start')) / (2 * BAR_S)));
 const B_FROM = markFrame('promo-sheet', 'after', 'end', 20);

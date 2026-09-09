@@ -11,7 +11,7 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // clicked, the popup opens on the four favourites, Grok is picked, the chip
 // changes, a question is typed and Grok answers. The recording is 8.4 s from
 // the click to the reply; the beat is 8.6 s (a bar more since 2026-09-04, for the Grok line) and it runs at 1.35×.
-const RATE = 1.35;
+const RATE = 1.45;   // 1.35 → 1.45 on 2026-09-09: the beat is 8.0 s now (60-frame bars) and Destin wants the frames quicker
 const FROM = markFrame('promo-model', 'chip', 'start', -15);
 // Two shots: A runs from before the click to just after it; B opens with the list already
 // there. WHY: between them the picker says "Loading models…" for 1.6 s of footage (the draft review).

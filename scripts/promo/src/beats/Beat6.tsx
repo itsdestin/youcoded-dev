@@ -14,7 +14,8 @@ import { Sfx } from './sfx';
 // 0–3, long enough for Destin's twelve-word line), Connect 4 against Jake with moves both
 // ways (3–5), one chess move (5–6.5), then the Flappy flight on the hook's last bar and a
 // half, where the host dives INTO the game and becomes the bird.
-const T_C4 = B('b6', 3), T_CHESS = B('b6', 5), T_FLY = B('b6', 6.5), END = LEN('b6');
+// 7 bars since 2026-09-09 (was 8): lobby to 2.5, Connect 4 to 4.5, chess to 5.75, Flappy to the end.
+const T_C4 = B('b6', 2.5), T_CHESS = B('b6', 4.5), T_FLY = B('b6', 5.75), END = LEN('b6');
 const LOBBY_FROM = markFrame('promo-games-lobby', 'challenge', 'end', 8) - T_C4;
 const C4_FROM = markFrame('promo-connect4', 'drop1', 'start', -12);
 const CHESS_FROM = markFrame('promo-chess', 'move', 'start', -24);

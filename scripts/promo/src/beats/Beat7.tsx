@@ -12,12 +12,13 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // the menu with each session's status (bars 0–2); the browser with "econ" narrowing it
 // (2–4, slowed a touch); the Organize sheet with the tag on and a note typed (4–6, slowed).
 // The drag along the strip is CUT (Destin: "drop this").
-const T_SEARCH = B('b7', 2), T_NOTE = B('b7', 4), END = LEN('b7');
+// 2026-09-09 (60-frame bars): the note shot starts at bar 3.7 so its eleven-word line can still be read before the wipe.
+const T_SEARCH = B('b7', 2), T_NOTE = B('b7', 3.7), END = LEN('b7');
 const S1_FROM = markFrame('promo-conversations', 'menu', 'start', -10);
 // the browser shot opens just after the Resume click and ends before the Organize click (clip 8.28 s)
 const S2_FROM = markFrame('promo-conversations', 'resume', 'end', 6), S2_RATE = 0.85;
 // the note shot ends before the sheet closes (clip 13.73 s)
-const S3_FROM = markFrame('promo-conversations', 'note', 'start', -22), S3_RATE = 0.8;
+const S3_FROM = markFrame('promo-conversations', 'note', 'start', -22), S3_RATE = 0.74;   // 0.8 → 0.74 on 2026-09-09: the note shot is 2.3 bars of 60 frames now and must end before the sheet closes
 assertClipCovers('promo-conversations', S1_FROM, T_SEARCH);
 assertClipCovers('promo-conversations', S2_FROM, T_NOTE - T_SEARCH, S2_RATE);
 assertClipCovers('promo-conversations', S3_FROM, END - T_NOTE, S3_RATE);
