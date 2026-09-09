@@ -3,6 +3,12 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
+      drift-guard test commits into a temporary "component" repo that never had a git identity set,
+      so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
+      workspace PR since inherits the red check
+      `n/a` `confirmed` `checked 2026-09-09` `regression`
+
 - [ ] `engine-manager.test.ts` has failed on the macOS and Windows CI legs since at least
       2026-09-06 — two `backendOptions` cases, "status() answers immediately without
       backendOptions, then pushes them" and "an older install with no device list gets both

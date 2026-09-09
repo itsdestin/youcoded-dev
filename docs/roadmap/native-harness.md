@@ -272,6 +272,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Specialist limits should be adjustable in Settings: how many helpers may run at once, how
+      many launches a conversation gets, and how often the assistant may send a running helper a
+      note. Today each is a fixed number in the app; the 2026-09-09 transcript audit showed the
+      assistant nagging one helper 14 times and hitting the launch cap by surprise
+      `settings` `desktop` `decision` `checked 2026-09-09`
+
+- [ ] A finished helper's report should be able to arrive quietly — read with your next message
+      instead of starting a reply on its own — unless the assistant asked to be woken for that
+      helper. Codex works this way (a mailbox read at the next turn); after a Stop the app now
+      holds reports until you speak again, but after a normal answer a report still starts a turn.
+      Needs a decision on the default and on how the assistant asks to be woken
+      `desktop` `decision` `checked 2026-09-09`
+
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)
