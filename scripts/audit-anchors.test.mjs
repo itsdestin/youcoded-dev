@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
   globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
-  uncommittedPaths,
+  uncommittedPaths, strandedWorktrees,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -575,4 +576,88 @@ test('uncommittedPaths: runs git against the given root, not the cwd', () => {
   let seen = null;
   uncommittedPaths('/some/root', (_cmd, args) => { seen = args; return ''; });
   assert.deepEqual(seen, ['-C', '/some/root', 'status', '--porcelain']);
+});
+
+// --- stranded work: uncommitted or unpushed work whose session is gone ------------
+// WHY these tests exist: on 2026-09-09 a COMPLETE, review-clean implementation
+// (3,383 lines, 53 specialist dispatches) sat uncommitted for 14 hours because its
+// session was interrupted before it could ask to commit. Its branch had ZERO commits
+// and no upstream, so every existing sweep — which looks at refs, not working trees —
+// saw nothing. Eight other worktrees were in the same state that morning.
+function tempRepo(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stranded-'));
+  const git = (cwd, ...args) => execFileSync('git', ['-C', cwd, ...args], {
+    encoding: 'utf8',
+    env: { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null',
+           GIT_AUTHOR_NAME: 'T', GIT_AUTHOR_EMAIL: 't@e', GIT_COMMITTER_NAME: 'T', GIT_COMMITTER_EMAIL: 't@e' },
+  }).trim();
+  git(root, 'init', '-q', '-b', 'master');
+  fs.writeFileSync(path.join(root, 'seed.txt'), 'seed\n');
+  // Mirror the real workspace, which ignores worktrees/: without this the parent
+  // checkout counts each nested worktree directory as its own untracked work.
+  fs.writeFileSync(path.join(root, '.gitignore'), 'wt-*\n');
+  git(root, 'add', 'seed.txt', '.gitignore');
+  git(root, 'commit', '-qm', 'seed');
+  // A real bare origin: "unpushed" is only answerable against a remote, and every
+  // worktree this check runs on in practice has one.
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stranded-remote-'));
+  git(remote, 'init', '-q', '--bare', '-b', 'master');
+  git(root, 'remote', 'add', 'origin', remote);
+  git(root, 'push', '-q', '-u', 'origin', 'master');
+  t.after(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(remote, { recursive: true, force: true });
+  });
+  return { root, git, remote };
+}
+
+const ageFile = (p, hours) => {
+  const when = new Date(Date.now() - hours * 3600_000);
+  fs.utimesSync(p, when, when);
+};
+
+test('strandedWorktrees: a clean worktree is never reported', t => {
+  const f = tempRepo(t);
+  assert.deepEqual(strandedWorktrees(f.root), []);
+});
+
+test('strandedWorktrees: work being edited right now is left alone', t => {
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-live');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/live', wt);
+  fs.writeFileSync(path.join(wt, 'in-progress.txt'), 'typing\n');
+  assert.deepEqual(strandedWorktrees(f.root), [],
+    'a dirty worktree touched seconds ago is an active session, not stranded work');
+});
+
+test('strandedWorktrees: uncommitted work on a branch with zero commits is reported', t => {
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-stranded');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/stranded', wt);
+  const file = path.join(wt, 'finished.txt');
+  fs.writeFileSync(file, 'a whole day of work\n');
+  ageFile(file, 30);
+  const found = strandedWorktrees(f.root);
+  assert.equal(found.length, 1);
+  assert.equal(found[0].branch, 'session/stranded');
+  assert.equal(found[0].dirtyFiles, 1);
+  assert.equal(found[0].unpushedCommits, 0,
+    'zero commits is exactly why the ref sweeps miss this case');
+  assert.ok(found[0].idleHours >= 24);
+});
+
+test('strandedWorktrees: committed-but-unpushed work is reported too', t => {
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-unpushed');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/unpushed', wt);
+  fs.writeFileSync(path.join(wt, 'done.txt'), 'committed\n');
+  f.git(wt, 'add', 'done.txt');
+  f.git(wt, 'commit', '-qm', 'work');
+  const found = strandedWorktrees(f.root, { now: Date.now() + 48 * 3600_000 });
+  assert.equal(found.length, 1);
+  assert.equal(found[0].unpushedCommits, 1);
+});
+
+test('strandedWorktrees: never throws when git is unavailable', () => {
+  assert.deepEqual(strandedWorktrees('/definitely/not/a/repo'), []);
 });
