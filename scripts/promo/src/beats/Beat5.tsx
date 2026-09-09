@@ -6,7 +6,7 @@ import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { BAR_S } from '../grid';
 import { markFrame, markSec, assertClipCovers } from '../marks';
-import { B, LEN, present, inWindow, type BeatModule } from './beat';
+import { B, LEN, present, inWindow, feetAt, type BeatModule } from './beat';
 
 // Beat 5 (6 bars): collaborate with your assistant — and where it all lives.
 // Its first two bars: the request goes out (fast); bars 2–4: the re-opened, sorted
@@ -48,6 +48,8 @@ const P5 = present('b5', [
   // re-measured at the 1.35 zoom (2026-09-09): lower in the file-list column (it sat on the two file entries), and
   // right of the tab row on the Projects page (it sat on the end of the Instructions & Memories tab)
   { at: T_AFTER + 4, say: 'View and edit the result together.', target: inWindow(0.58, 0.6), stand: 'L', face: 'happy', until: T_PROJ - 8 },
-  { at: T_PROJ + 10, say: 'Manage classes, coding projects, and more with Project View.', target: inWindow(0.56, 0.56), stand: 'above', face: 'welcome', until: END - 8 },
+  // …and at 1.35 there is no gap left between the tab row and the search box at all, so it stands ON the file grid
+  // (the cards are blank placeholders) pointing at the spreadsheet card; the bubble lands over the first card
+  { at: T_PROJ + 10, say: 'Manage classes, coding projects, and more with Project View.', spot: feetAt(0.3, 0.74), target: inWindow(0.5, 0.8), face: 'welcome', until: END - 8 },
 ], 'meadow-mist', P, END - 8);
 export const beat5: BeatModule = { id: 'b5', slug: 'meadow-mist', home: P5.home, Component: Beat5, host: P5.host, bubbles: P5.bubbles };
