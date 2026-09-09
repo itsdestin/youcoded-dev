@@ -38,6 +38,7 @@ reading the report. Do not let this table drift optimistic.
 | memory ceiling once conversations are read back | `scenario-scrollback.mjs` | **covered** |
 | app-wide freeze on replay | `scenario-replay-stall.mjs` | **covered** (both its metrics currently read 0) |
 | artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **covered** |
+| Projects view (open, file search, type filter, flat-grid scroll, list view, project switch, Conversations tab, reopen) | `scenario-projects.mjs` | **covered** since 2026-09-09 — stock theme only, so the per-card wallpaper blur is NOT measured |
 | layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
 | blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
 | which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
@@ -47,8 +48,8 @@ reading the report. Do not let this table drift optimistic.
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**All seven phases are reachable from the CLI.** `run.mjs`'s phase list is
-`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'scrollback']`
+**All eight phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'scrollback']`
 — pick any subset with `--only`. (This paragraph previously said the list was four
 phases and that `stall` and `artifacts` were unreachable; that stopped being true when
 they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
@@ -279,6 +280,30 @@ answers one suspect:
 The fixture files are generated from a seeded PRNG (`rng32`) so they are byte-identical
 between a baseline and a candidate run — otherwise "the large file got slower" could
 just mean "the large file got different".
+
+### `scenario-projects.mjs` — the Projects view *(own boot; added 2026-09-09)*
+Seeds a second saved project of ~1,600 generated files in 40 folders (45 % code, 25 %
+markdown, 12 % HTML, 10 % PNG, 8 % JSON — every card-preview kind), lists it and the
+transcript project in `~/.claude/youcoded-folders.json`, then: opens Projects from the
+header button, **types seven real key events** into the file search, flips the grid to
+flat mode with the "Code & configs" type filter, scrolls that grid to the bottom so every
+card crosses the viewport (previews are IntersectionObserver-gated), switches to list
+view, switches projects both ways, opens the Conversations tab, closes and reopens — both
+probes over every step.
+
+**Look first at `open.openMs` versus `open.countsMs`** ("when do I see cards" versus
+"when do the numbers land"), then `filter.codeMs` beside `filter.fileCards` (the cost of
+mounting every matching file as a card — there is no virtualization), then
+`scrollFlat.longtaskTotalMs` (the per-card preview fetch + render as cards scroll in),
+then `search.keystroke.p95Ms` (the per-keystroke re-filter/re-sort). A step whose
+`stall.verdict` is `main` is the backend fan-out, not the renderer.
+
+**Blind to, by construction:** the per-card `backdrop-filter` blur that wallpaper themes
+put on every `.layer-surface` card — the fixture boots the stock theme (no wallpaper), and
+under llvmpipe a blur is software-rasterised anyway. That cost is real on Destin's
+display and this scenario says nothing about it. Also blind to a project over the
+2,000-file discovery cap and to a conversation-heavy project (the transcript project has
+three).
 
 ---
 

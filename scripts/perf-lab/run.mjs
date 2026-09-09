@@ -62,7 +62,9 @@ const CDP_PORT = 9555;
  * resumed 50,000-message transcript in it would charge that leftover state to whatever
  * ran last.
  */
-export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'scrollback'];
+// `projects` (added 2026-09-09) also takes its own boot: it seeds a ~1,600-file project
+// and a saved-folders file the other phases must not see.
+export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'scrollback'];
 
 /**
  * The transcript sizes the `stall` phase measures. Duplicated from
@@ -232,7 +234,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // carries its own answer, and on this machine that answer is llvmpipe: software.
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, scrollback: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -240,7 +242,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, scrollbackBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, scrollbackBoot: null },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -260,8 +262,23 @@ export function phaseOfPath(path) {
   if (path.startsWith('workload.')) return 'workload';
   if (path.startsWith('replayStall.')) return 'stall';
   if (path.startsWith('artifacts.')) return 'artifacts';
+  if (path.startsWith('projects.')) return 'projects';
   if (path.startsWith('scrollback.')) return 'scrollback';
   return null;
+}
+
+/**
+ * `projects` section — same shape and the same reasoning as buildArtifactsSection:
+ * the median through the scenario's own medianRun, plus `ipcSumOfSteps.pings` so a
+ * 0 ms stall total that nobody measured cannot pose as a responsive app.
+ */
+export function buildProjectsSection(pruns, medianRun) {
+  const med = medianRun(pruns);
+  return {
+    runs: pruns,
+    median: { ...med, ipcSumOfSteps: { ...med.ipcSumOfSteps, pings: median(pruns.map((r) => r.ipcSumOfSteps?.pings)) } },
+    warnings: [...new Set(pruns.flatMap((r) => r.warnings ?? []))],
+  };
 }
 
 /** The PRIMARY paths a given `--only` selection is responsible for producing. */
@@ -331,6 +348,20 @@ export function validateReport(report, only) {
       const pings = report.artifacts?.median?.ipcSumOfSteps?.pings;
       need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
         'artifacts: the IPC responsiveness probe never got a single reply, so artifacts.median.ipcSumOfSteps.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive — the keep/reject gate would read that zero as a perfect score');
+    }
+  }
+  if (only.has('projects')) {
+    need(report.projects?.runs?.length > 0, 'projects: no runs were recorded');
+    if (report.projects?.runs?.length > 0) {
+      // The open clock is the headline; null means the Files tab never painted a
+      // card, which is a broken scenario and not an instant Projects view.
+      const opened = report.projects?.median?.open?.openMs;
+      need(typeof opened === 'number' && Number.isFinite(opened),
+        'projects: open-to-first-cards was never measured — the Files tab never painted, so the open cost is UNKNOWN, not zero');
+      // Same zero-pings tell as the artifacts phase (see buildArtifactsSection).
+      const pings = report.projects?.median?.ipcSumOfSteps?.pings;
+      need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
+        'projects: the IPC responsiveness probe never got a single reply, so projects.median.ipcSumOfSteps.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive');
     }
   }
   if (only.has('scrollback')) {
@@ -513,6 +544,24 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  if (report.projects) {
+    const p = report.projects.median ?? {};
+    const runN = report.projects.runs?.length ?? 0;
+    const proj = report.projects.runs?.[0]?.project;
+    lines.push(
+      `| projects.open to first cards / to counts (median of ${runN}; ${proj ? `${proj.files} files in ${proj.folders} folders` : 'project size unknown'}) | ${n(p.open?.openMs, 'ms')} / ${n(p.open?.countsMs, 'ms')} |`,
+      `| projects.search first key (flat flip) / keystroke median / p95 | ${n(p.search?.firstKeyMs, 'ms')} / ${n(p.search?.keystroke?.medianMs, 'ms')} / ${n(p.search?.keystroke?.p95Ms, 'ms')} |`,
+      `| projects.filter "Code & configs" -> flat grid | ${n(p.filter?.codeMs, 'ms')} for ${n(p.filter?.fileCards, 'cards')}, ${n(p.filter?.nodes, 'DOM nodes')} |`,
+      `| projects.scroll flat grid | ${n(p.scrollFlat?.steps, 'screens')}, long tasks ${n(p.scrollFlat?.longtaskTotalMs, 'ms')} total / max ${n(p.scrollFlat?.longtaskMaxMs, 'ms')}, worst frame gap ${n(p.scrollFlat?.frameGapMaxMs, 'ms')}, previews ${n(p.scrollFlat?.img, 'img')} + ${n(p.scrollFlat?.iframe, 'iframe')} |`,
+      `| projects.list view | ${n(p.listView?.ms, 'ms')} |`,
+      `| projects.switch big -> small / small -> big | ${n(p.switch?.smallMs, 'ms')} / ${n(p.switch?.bigMs, 'ms')} |`,
+      `| projects.conversations tab | ${n(p.conversations?.ms, 'ms')} |`,
+      `| projects.reopen to first cards | ${n(p.reopen?.openMs, 'ms')} |`,
+      `| projects long tasks | ${n(p.probe?.longtaskTotalMs, 'ms')} total, max ${n(p.probe?.longtaskMaxMs, 'ms')} |`,
+      `| projects IPC stall (sum over steps) | ${n(p.ipcSumOfSteps?.totalStallMs, 'ms')}, max ${n(p.ipcSumOfSteps?.maxMs, 'ms')}, from ${n(p.ipcSumOfSteps?.pings, 'probe replies')} |`,
+    );
+  }
+
   lines.push('');
   lines.push(
     `noise: load ${report.noise?.loadAvgBefore ?? '—'}, busy ${report.noise?.machineBusyPctBefore ?? '—'}%, ` +
@@ -522,7 +571,7 @@ export function renderMarkdown(report, stem) {
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
     `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
-    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
+    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, projects boot ${report.errors?.projectsBoot ?? '—'}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
   );
   lines.push('A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.');
 
@@ -536,6 +585,7 @@ export function renderMarkdown(report, stem) {
   const stallWarnings = Object.entries(report.replayStall ?? {}).flatMap(([size, s]) => (s?.warnings ?? []).map((w) => `${size}: ${w}`));
   if (stallWarnings.length) lines.push('', '## Stall warnings', '', ...stallWarnings.map((w) => `- ${w}`));
   if (report.artifacts?.warnings?.length) lines.push('', '## Artifact warnings', '', ...report.artifacts.warnings.map((w) => `- ${w}`));
+  if (report.projects?.warnings?.length) lines.push('', '## Projects warnings', '', ...report.projects.warnings.map((w) => `- ${w}`));
   if (report.scrollback) {
     const s = report.scrollback.median ?? {};
     const runN = report.scrollback.runs?.length ?? 0;
@@ -605,7 +655,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
+const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
 const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
@@ -619,7 +669,8 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --workload-repeats <n>    workload passes              (default 3)
   --stall-repeats <n>       replay-stall passes per size (default 3)
   --artifact-repeats <n>    artifact-panel passes        (default 3)
-  --only a,b,c              phases: ${PHASES.join(', ')}  (default all)
+  --projects-repeats <n>    Projects-view passes         (default 3)
+  --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
   --force-build             rebuild even if the tree fingerprint is unchanged
   --label <text>            appended to the output filename stem
   --out <dir>               report directory             (default perf-reports/)
@@ -668,6 +719,7 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     workloadRepeats: posInt('workload-repeats', 3),
     stallRepeats: posInt('stall-repeats', 3),
     artifactRepeats: posInt('artifact-repeats', 3),
+    projectsRepeats: posInt('projects-repeats', 3),
     // 3 by default like the other own-boot phases: compare.mjs judges a change
     // against the run-to-run spread, and one sample of a memory ceiling can
     // neither prove nor veto anything. Each repeat is a full scroll-back of three
@@ -899,6 +951,14 @@ async function loadArtifacts() {
   }
 }
 
+async function loadProjects() {
+  try {
+    return await import('./scenario-projects.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the projects phase needs scripts/perf-lab/scenario-projects.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
+
 async function loadScrollback() {
   try {
     return await import('./scenario-scrollback.mjs');
@@ -966,12 +1026,13 @@ async function main(argv) {
       // Named separately rather than summed: the shared boot covers three phases,
       // while stall and artifacts each take one of their own (see their phase blocks).
       `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/shots) + ${cfg.only.has('workload') ? cfg.workloadRepeats : 0} workload (one per repeat)` +
-        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
+        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}${cfg.only.has('projects') ? ' + 1 projects' : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
       `  history repeats   ${cfg.only.has('history') ? `${cfg.historyRepeats} per size (small, medium, huge)` : '—'}`,
       `  workload passes   ${cfg.only.has('workload') ? `${cfg.workloadRepeats}${cfg.only.has('shots') ? ' + 1 screenshot pass (not in the median)' : ''}` : '—'}`,
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
       `  stall passes      ${cfg.only.has('stall') ? `${cfg.stallRepeats} per size (${STALL_SIZES.join(', ')}), own boot` : '—'}`,
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
+      `  projects passes   ${cfg.only.has('projects') ? `${cfg.projectsRepeats}, own boot` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
@@ -1244,6 +1305,34 @@ async function main(argv) {
         }
         report.artifacts = buildArtifactsSection(runs, artifactMedian);
         report.errors.artifactsBoot = readErrorLines(fixture, stem, 'artifacts');
+      });
+    }
+
+    // ---- Projects view: its OWN boot ---------------------------------------
+    // WHY not the shared boot: this phase seeds a ~1,600-file project and a
+    // saved-folders file. The folders file changes what the welcome screen's folder
+    // picker lists, so a shared boot would move the startup and history numbers for
+    // a fixture only this phase needs. Seeded AFTER buildFixture so the wipe-and-
+    // rebuild contract still holds and nothing else ever sees the extra project.
+    if (cfg.only.has('projects')) {
+      checkDeadline();
+      await noiseGate(report.noise);
+      const { runProjectsScenario, seedProjectsFixture, medianRun: projectsMedian, MEASURES: PROJECTS_MEASURES } = await loadProjects();
+      report.measures.projects = PROJECTS_MEASURES;
+      const fixture = buildFixture(SCRATCH, { log });
+      const seeded = seedProjectsFixture(fixture);
+      log(`projects fixture: ${seeded.files} files in ${seeded.folders} folders (${Math.round(seeded.bytes / 1024)} KB) at ${seeded.root}`);
+      await withBoot(build, fixture, async (app) => {
+        const runs = [];
+        for (let i = 0; i < cfg.projectsRepeats; i++) {
+          checkDeadline();
+          const r = await runProjectsScenario(app, fixture, seeded);
+          runs.push(r);
+          log(`projects ${i + 1}/${cfg.projectsRepeats}: open ${r.open?.openMs}ms (counts ${r.open?.countsMs}ms, ${r.open?.fileCards}+${r.open?.folderCards} cards), first key ${r.search?.firstKeyMs}ms, key p95 ${r.search?.keystroke?.p95Ms}ms, filter ${r.filter?.codeMs}ms for ${r.filter?.fileCards} cards, scroll long tasks ${r.scrollFlat?.longtaskTotalMs}ms, switch ${r.switch?.smallMs}/${r.switch?.bigMs}ms, reopen ${r.reopen?.openMs}ms, ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms max ${r.ipcSumOfSteps?.maxMs}ms`);
+          for (const w of r.warnings ?? []) log(`projects warning: ${w}`);
+        }
+        report.projects = buildProjectsSection(runs, projectsMedian);
+        report.errors.projectsBoot = readErrorLines(fixture, stem, 'projects');
       });
     }
 

@@ -20,12 +20,13 @@ import { describe, it } from 'node:test';
 import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
 import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
+import { MEASURES as PROJECTS_MEASURES, medianRun as projectsMedian } from '../scenario-projects.mjs';
 import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
   EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
-  buildArtifactsSection, buildIdleSection, buildStartupSection, buildWorkloadSection,
+  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
 } from '../run.mjs';
@@ -190,6 +191,22 @@ const artifactRun = (i) => ({
   warnings: [],
 });
 
+/** One Projects-view run, shaped as scenario-projects.mjs's runProjectsScenario returns it. */
+const projectsRun = (i) => ({
+  project: { name: 'gamma', files: 1600, folders: 40, bytes: 2400000, openedOn: 'gamma' },
+  open: { ok: true, openMs: 900 + i, countsMs: 1500 + i, fileCards: 24, folderCards: 8, nodes: 2200 + i },
+  search: { ok: true, firstKeyMs: 400 + i, keystroke: { count: 7, medianMs: 60 + i, p95Ms: 140 + i }, fileCards: 110, nodes: 3000 },
+  filter: { ok: true, codeMs: 1200 + i, fileCards: 720, nodes: 9000 + i },
+  scrollFlat: { ok: true, steps: 12, longtaskTotalMs: 800 + i, longtaskMaxMs: 210 + i, frameGapMaxMs: 180 + i, img: 40, iframe: 30 },
+  listView: { ok: true, ms: 300 + i },
+  switch: { smallMs: 500 + i, bigMs: 1100 + i },
+  conversations: { ok: true, ms: 200 + i, rows: 3 },
+  reopen: { ok: true, openMs: 600 + i },
+  probe: { longtaskCount: 30 + i, longtaskTotalMs: 4200 + i, longtaskMaxMs: 600 + i },
+  ipcSumOfSteps: { pings: 1200, totalStallMs: 900 + i, over250ms: 3, over1000ms: 0, maxMs: 420 + i },
+  warnings: [],
+});
+
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
 /**
  * One scroll-back repeat. Every number is plausible rather than round, and
@@ -245,8 +262,10 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   // is: `perSize.*.reachedTopEveryRun` is computed there, and a hand-assembled median
   // would keep passing after the scenario stopped carrying it.
   report.scrollback = { runs: sruns, median: scrollMedian(sruns), warnings: [] };
-  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, scrollback: SCROLL_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, scrollbackBoot: 0 };
+  const pruns = Array.from({ length: artifactRepeats }, (_, i) => projectsRun(i));
+  report.projects = buildProjectsSection(pruns, projectsMedian);
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, scrollback: SCROLL_MEASURES };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -470,7 +489,7 @@ describe('every scenario declares what it measures', () => {
   // every unit test. It is included because a rename there was the one mutation
   // the earlier tests did not catch.
   const load = async () => Object.fromEntries(await Promise.all(
-    ['workload', 'replay-stall', 'artifacts', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
+    ['workload', 'replay-stall', 'artifacts', 'projects', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
   ));
 
   it('exports MEASURES from every scenario module', async () => {
@@ -541,6 +560,24 @@ describe('stall phase wiring', () => {
     for (const row of ['artifacts.open markdown', 'artifacts.keystroke large', 'artifacts.html swap', 'artifacts IPC stall']) {
       assert.ok(md.includes(row), `summary is missing the "${row}" row`);
     }
+    for (const row of ['projects.open to first cards', 'projects.filter', 'projects.scroll flat grid', 'projects IPC stall']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+  });
+
+  it('refuses a projects run whose Files tab never painted rather than reading null as instant', () => {
+    const report = completeReport();
+    report.projects.median.open.openMs = null;
+    const problems = validateReport(report, new Set(['projects']));
+    assert.ok(problems.some((p) => /projects: open-to-first-cards was never measured/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms projects stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.projects.runs) r.ipcSumOfSteps = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: 0 };
+    report.projects = buildProjectsSection(report.projects.runs, projectsMedian);
+    const problems = validateReport(report, new Set(['projects']));
+    assert.ok(problems.some((p) => /projects: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
   });
 });
 
