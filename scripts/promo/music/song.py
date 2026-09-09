@@ -174,29 +174,29 @@ def render_b(out: str):
 
 
 # ---------------------------------------------------------------- the promo track
-# The 51-bar plan at 120 BPM (2026-09-09: Destin wanted the film quicker, and the music "less
+# The 49-bar plan at 120 BPM (2026-09-09: Destin wanted the film quicker, and the music "less
 # annoying by the two-minute mark" — more variety, better sound). Every bar here is keyed to
 # timeline.ts BEATS (b1 0-5 · b3 5-10 · b4 10-14 · b5 14-20 · b9 20-25 · b2 25-29 · b6 29-36 ·
-# b8 36-41 · b7 41-47 · b10 47-51), so a re-cut edits THIS block and the BEATS list together:
+# b8 36-41 · b7 41-45 · b10 45-49), so a re-cut edits THIS block and the BEATS list together:
 #   intro 0-1 (the punch on bar 0) · groove 2-6 (bar 6 = riser + fill + the gap) · drop1 7-9 (the
 #   three theme flips on 7, 8, 9) · groove-b 10-19 (the model, the sheet; the lead sneaks in on
 #   18-19 under project view; riser 18-19, fill on 19) · drop2 20-24 (the marketplace) · groove-c
 #   25-28 (the chips) · hook 29-35 (games; fill on 35) · break 36-37 (the phone) · build 38-40 ·
-#   groove2 41-46 (conversations, half-time, on the SECOND chord progression) · outro 47-49 (drums
-#   out from 49) · end 50 (the final hit, 2.5 s tail).
+#   groove2 41-44 (conversations, half-time, on the SECOND chord progression) · outro 45-47 (drums
+#   out from 47) · end 48 (the final hit, 2.5 s tail). (51 → 49 bars on 2026-09-09: the conversations beat lost two.)
 # Three tracks share the plan so the film's cuts land on the same downbeats whichever Destin picks:
 #   promo       the arcade-synthwave track of the first film, reworked (below)
 #   promo-lofi  warm keys and boom-bap, swung
 #   promo-pop   bright indie-pop: four-on-the-floor, a plucked riff, a round whistling lead
-BPM, BARS = 120, 51
+BPM, BARS = 120, 49
 PLAN = [("intro", 0), ("groove", 2), ("drop1", 7), ("groove-b", 10), ("drop2", 20), ("groove-c", 25), ("hook", 29),
-        ("break", 36), ("build", 38), ("groove2", 41), ("outro", 47), ("end", 50)]
+        ("break", 36), ("build", 38), ("groove2", 41), ("outro", 45), ("end", 48)]
 FLIPS = (7, 8, 9)                 # the theme flips (Beat3): drop 1 lands on the first
 GAP_BAR = 6                       # the fill trails off and everything goes silent for the last half-beat before drop 1
 LEAD_EARLY = (18, 19)             # the lead's early entry under project view
 FILLS = {6: "....x.......xx..", 19: "....x.......xxxX", 35: "....x.......xxxX"}
 RISERS = ((1, 1), (6, 1), (18, 2), (39, 2))   # (bar, bars): a noise swell reaching full level on the next downbeat
-DRUMS_OUT_FROM = 49
+DRUMS_OUT_FROM = 47
 DRUM_SECTIONS = ("groove", "drop1", "groove-b", "groove-c", "hook", "groove2", "drop2")
 # Per-bar dB trims applied AFTER the mix (a linear-in-dB envelope with a 40 ms crossfade at every
 # change). Measured 2026-09-09 on all three tracks: with every instrument at its own gain the grooves
@@ -204,11 +204,11 @@ DRUM_SECTIONS = ("groove", "drop1", "groove-b", "groove-c", "hook", "groove2", "
 # "more instruments", never louder — and the intro sat 20 dB under, the break 5 dB under. So: the
 # grooves are pulled down 2.5 dB (1 dB where a riser is building), the drops and the games hook sit
 # at 0, the intro bars come up 9 dB (the punch pre-trims itself, see _impact_trim), the break stays
-# where the arrangement puts it, the drumless bar 49 comes up 5 dB so the last hit is not a cliff,
-# and bar 51 (which does not exist) holds the end lift flat through the tail.
-LIFT_DB = {0: 9, 1: 9, 49: 5, 50: 9, 51: 9}
-LIFT_DB.update({b: -2.5 for b in (2, 3, 4, 5, *range(10, 18), *range(25, 29), *range(41, 47))})
-LIFT_DB.update({6: -1, 18: -1, 19: -1, 47: -1.5, 48: -1.5})
+# where the arrangement puts it, the drumless bar 47 comes up 5 dB so the last hit is not a cliff,
+# and bar 49 (which does not exist) holds the end lift flat through the tail.
+LIFT_DB = {0: 9, 1: 9, 47: 5, 48: 9, 49: 9}
+LIFT_DB.update({b: -2.5 for b in (2, 3, 4, 5, *range(10, 18), *range(25, 29), *range(41, 45))})
+LIFT_DB.update({6: -1, 18: -1, 19: -1, 45: -1.5, 46: -1.5})
 # Two chord progressions in the same key (A minor / C major): the first film's Am F C G, and a
 # second one — Dm F Am G — for the last third, so the ear gets somewhere new before the end.
 PROG_A = ([[57, 60, 64], [57, 60, 65], [55, 60, 64], [55, 59, 62]], [45, 41, 48, 43])
@@ -271,9 +271,10 @@ def _gap(s: Song):
 
 
 def _end_hit(s: Song):
-    s.hits("kick", "x...............", 50, S.kick)
-    s.hits("clap", "x...............", 50, S.clap, gain=0.7)
-    s.hits("hat", "o...............", 50, S.hat, gain=0.6)
+    end = BARS - 1
+    s.hits("kick", "x...............", end, S.kick)
+    s.hits("clap", "x...............", end, S.clap, gain=0.7)
+    s.hits("hat", "o...............", end, S.hat, gain=0.6)
 
 
 # ---- promo: the reworked synthwave track
@@ -465,7 +466,7 @@ def promo_track_pop() -> Song:
                 n = root + (12 if i in (8, 14) else 0)
                 s.note("bass", bar, i, S.bass_saw(n, s.beat / 4 * 1.7, cutoff=600, sweep=900), 0.9)
         elif sec == "break" or (sec == "outro" and bar >= DRUMS_OUT_FROM):
-            s.note("bass", bar, 0, S.bass_sub(root, s.bar * 0.95), 0.8 if sec == "break" else 0.35)   # bar 49 is lifted 5 dB after the mix
+            s.note("bass", bar, 0, S.bass_sub(root, s.bar * 0.95), 0.8 if sec == "break" else 0.35)   # the drumless outro bar is lifted 5 dB after the mix
         # keys: bright stabs on the off-beats everywhere but the intro and the end; a held chord in the break
         # (the intro is pad-only: with the stabs and a sub under it, plus the 9 dB intro lift, bar 0-1 came out
         # LOUDER than the drops — measured 2026-09-09)

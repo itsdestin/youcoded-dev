@@ -7,41 +7,41 @@ import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
 import { B, LEN, present, inWindow, type BeatModule } from './beat';
 
-// Beat 7 (6 bars; ninth in the film since Destin's reorder of 2026-09-04): every
-// conversation, findable — in Midnight, the student's sessions. All Sessions → Resume,
-// the menu with each session's status (bars 0–2); the browser with "econ" narrowing it
-// (2–4, slowed a touch); the Organize sheet with the tag on and a note typed (4–6, slowed).
-// The drag along the strip is CUT (Destin: "drop this").
-// 2026-09-09 (60-frame bars): the note shot starts at bar 3.7 so its eleven-word line can still be read before the wipe.
-const T_SEARCH = B('b7', 2), T_NOTE = B('b7', 3.7), END = LEN('b7');
-const S1_FROM = markFrame('promo-conversations', 'menu', 'start', -10);
-// the browser shot opens just after the Resume click and ends before the Organize click (clip 8.28 s)
-const S2_FROM = markFrame('promo-conversations', 'resume', 'end', 6), S2_RATE = 0.85;
-// the note shot ends before the sheet closes (clip 13.73 s)
-const S3_FROM = markFrame('promo-conversations', 'note', 'start', -22), S3_RATE = 0.74;   // 0.8 → 0.74 on 2026-09-09: the note shot is 2.3 bars of 60 frames now and must end before the sheet closes
+// Beat 7 (4 bars since 2026-09-09; ninth in the film since Destin's reorder of 2026-09-04): every
+// conversation, findable — in Midnight, the student's sessions. Two shots, two lines (Destin,
+// 2026-09-09: "the 'see status' scene should be a bit shorter and the bubble should be open only
+// while the session switcher is open/visible. then merge the other two into a single 'Tag, search,
+// and filter your previous conversations.' scene"):
+//   1. All Sessions → the switcher drops down with each session's status, and holds 2.8 s (the
+//      scene holds it open that long); the status line is said only while it is up (bars 0–1.6).
+//   2. Resume → the browser with "econ" narrowing it → Organize → the tag → the note, one take at
+//      1.55× under the one line (bars 1.6–4). The drag along the strip is CUT (Destin: "drop this").
+const T_SEARCH = B('b7', 1.6), END = LEN('b7');
+const MENU_AT = 10;                                                                   // local frame the switcher is open
+const S1_FROM = markFrame('promo-conversations', 'menu', 'end') - MENU_AT;
+// shot 1 must end BEFORE the Resume click: the line is up only while the switcher is
+if (S1_FROM + T_SEARCH > markFrame('promo-conversations', 'resume', 'start')) throw new Error('the switcher shot runs into the Resume click — hold the menu open longer in the scene');
+const S2_RATE = 1.55;
+const S2_FROM = markFrame('promo-conversations', 'resume', 'end', -4);
 assertClipCovers('promo-conversations', S1_FROM, T_SEARCH);
-assertClipCovers('promo-conversations', S2_FROM, T_NOTE - T_SEARCH, S2_RATE);
-assertClipCovers('promo-conversations', S3_FROM, END - T_NOTE, S3_RATE);
-if (S2_FROM + Math.ceil((T_NOTE - T_SEARCH) * S2_RATE) > markFrame('promo-conversations', 'organize', 'start') + 2) throw new Error('the browser shot runs into the Organize click');
-if (S3_FROM + Math.ceil((END - T_NOTE) * S3_RATE) > markFrame('promo-conversations', 'close', 'start')) throw new Error('the note shot runs into the sheet closing');
+assertClipCovers('promo-conversations', S2_FROM, END - T_SEARCH, S2_RATE);
+if (S2_FROM + Math.ceil((END - T_SEARCH) * S2_RATE) > markFrame('promo-conversations', 'close', 'start')) throw new Error('the search-and-tag shot runs into the sheet closing');
 const P = perch(0.3);
 const Beat7: React.FC = () => (
   <AbsoluteFill>
     <Sequence durationInFrames={T_SEARCH}><Footage file="promo-conversations" from={S1_FROM} /></Sequence>
-    <Sequence from={T_SEARCH} durationInFrames={T_NOTE - T_SEARCH}><Footage file="promo-conversations" from={S2_FROM} rate={S2_RATE} /></Sequence>
-    <Sequence from={T_NOTE}><Footage file="promo-conversations" from={S3_FROM} rate={S3_RATE} /></Sequence>
+    <Sequence from={T_SEARCH}><Footage file="promo-conversations" from={S2_FROM} rate={S2_RATE} /></Sequence>
     <Label text={CAPTIONS.b7.head} at={B('b7', 0) + 4} slug="midnight" />
   </AbsoluteFill>
 );
-const MENU = 10;
-// Three shots of two bars each, a line per shot, said beside the thing it is about:
-//   the sessions menu drops from the title bar's centre, each row with its status — said from the bar, pointing down at it
-//   the Resume browser (30–69 % across); the host stands right of it, pointing at the search field
-//   the Organize sheet is the same panel; the note box is low in it — no move, just a new aim
+// Two lines, each said beside the thing it is about:
+//   the sessions menu drops from the title bar's centre, each row with its status — said from the bar, pointing down at it,
+//   and gone (until) the frame the shot cuts to the Resume click
+//   the Resume browser (30–69 % across); the host stands right of it, pointing at the search field; the Organize sheet
+//   is the same panel, so the one stand covers the tag and the note too
 const P7 = present('b7', [
-  { at: MENU + 4, say: 'Easily see the status of working assistants.', target: inWindow(0.62, 0.15), stand: 'bar', face: 'welcome' },
-  { at: T_SEARCH + 14, say: 'Search and filter old conversations.', target: inWindow(0.68, 0.27), stand: 'R', face: 'welcome' },
-  { at: T_NOTE, say: 'Or add tags and notes to help you find conversations later.', target: inWindow(0.52, 0.7), stay: true, face: 'happy', until: END - 6 },
+  { at: MENU_AT + 4, say: 'Easily see the status of working assistants.', target: inWindow(0.62, 0.15), stand: 'bar', face: 'welcome', until: T_SEARCH - 4 },
+  { at: T_SEARCH + 10, say: 'Tag, search, and filter your previous conversations.', target: inWindow(0.68, 0.27), stand: 'R', face: 'welcome', until: END - 6 },
 ], 'midnight', P, END - 6);
 export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P7.home, Component: Beat7,
   host: P7.host,

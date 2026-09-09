@@ -177,17 +177,19 @@ export const Bubbles: React.FC<Props> = ({ cues, actions, base, look = FILM_LOOK
     const d = shapePath(shape, w, h);
     const stroke = 2.5;
     const line = t.dark ? `${t.accent}CC` : `${t.accent}B3`;   // the outline: the theme accent, 70–80 %
-    const fill = look === 'glass' ? (t.dark ? 'rgba(18,14,26,0.62)' : 'rgba(255,255,255,0.66)') : look === 'accent' ? t.accent : look === 'card' ? (t.dark ? '#FBF8F3' : '#ffffff') : '#ffffff';
+    // the glass: heavier frost than the first cut (Destin, round three: "the visible text/ui behind them
+    // can make them hard to read") — a stronger blur and a more opaque pane; and NO second white
+    // highlight stroke: offset a pixel down it read as a seam where the tail meets the box
+    const fill = look === 'glass' ? (t.dark ? 'rgba(18,14,26,0.80)' : 'rgba(255,255,255,0.82)') : look === 'accent' ? t.accent : look === 'card' ? (t.dark ? '#FBF8F3' : '#ffffff') : '#ffffff';
     const flip = right ? undefined : 'scaleX(-1)';
     return (
       <div style={{ position: 'absolute', left: anchorX, top: headY, transform: `translate(${right ? GAP - 4 : -(GAP - 4)}px, calc(-50% + ${rise.toFixed(2)}px)) ${right ? '' : 'translateX(-100%)'}`, pointerEvents: 'none' }}>
         <div style={{ position: 'relative', width: w, height: h, transform: `scale(${(scale * sx).toFixed(3)}, ${(scale * sy).toFixed(3)})`, transformOrigin: right ? '0% 50%' : '100% 50%', opacity,
           filter: `drop-shadow(0 12px 26px rgba(0,0,0,${t.dark ? 0.45 : 0.16}))` }}>
           <div style={{ position: 'absolute', inset: 0, transform: flip, clipPath: `path('${d}')`, WebkitClipPath: `path('${d}')`, background: fill,
-            ...(look === 'glass' ? { backdropFilter: 'blur(18px) saturate(1.5)', WebkitBackdropFilter: 'blur(18px) saturate(1.5)' } : {}) }} />
+            ...(look === 'glass' ? { backdropFilter: 'blur(30px) saturate(1.3)', WebkitBackdropFilter: 'blur(30px) saturate(1.3)' } : {}) }} />
           <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ position: 'absolute', inset: 0, overflow: 'visible', transform: flip }}>
             <path d={d} fill="none" stroke={line} strokeWidth={stroke} strokeLinejoin="round" />
-            {look === 'glass' && <path d={d} fill="none" stroke={t.dark ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.9)'} strokeWidth={1} style={{ transform: 'translate(0, 1.2px)' }} />}
           </svg>
           <div style={{ position: 'absolute', left: right ? TAIL : 0, top: 0, width: tight, padding: `${PAD_Y}px ${PAD_X}px`, fontFamily: box.fontFamily, fontSize: FONT, fontWeight: 600, lineHeight: 1.2,
             whiteSpace: 'normal', boxSizing: 'content-box', textAlign: right ? 'left' : 'right', color: ink, opacity: textOpacity }}>{cue.text}</div>

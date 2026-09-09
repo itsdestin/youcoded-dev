@@ -29,7 +29,7 @@ export type Beat = { id: BeatId; bars: [number, number]; after: Transition };
 // start (beat.ts `B(id, k)`), so a reorder here is the only edit.
 // Re-cut again 2026-09-09 (Destin: "just a little faster … a quick guided tour", keep the content):
 // 112 → 120 BPM (a bar is 2.0 s, 60 frames), 53 → 51 bars — the theme beat and the games beat each
-// lose a bar — and every beat's moments were re-timed to the shorter bars. The lines are unchanged;
+// lose a bar — then 49 (the conversations beat: two lines, four bars) — and every beat's moments were re-timed to the shorter bars. The lines are unchanged;
 // each still gets its reading time, which is what sets the floor on every beat's length.
 export const BEATS: Beat[] = [
   { id: 'b1', bars: [0, 5], after: 'cut' },             // the punch intro; two hello lines under the settled window (bars 1–5)
@@ -40,10 +40,10 @@ export const BEATS: Beat[] = [
   { id: 'b2', bars: [25, 29], after: 'wipe' },          // repeatable prompts: the chips (cotton candy)
   { id: 'b6', bars: [29, 36], after: 'wipe' },          // games (golden sunbreak): lobby, connect 4, chess, flappy
   { id: 'b8', bars: [36, 41], after: 'wipe' },          // resume on your phone (devil's garden); the take-over prompt is cut
-  { id: 'b7', bars: [41, 47], after: 'wipe' },          // status, search, tags & notes (midnight); the drag is cut
-  { id: 'b10', bars: [47, 51], after: 'none' },         // close (golden sunbreak): the window fills the frame, the modal
+  { id: 'b7', bars: [41, 45], after: 'wipe' },          // status while the switcher is open, then tag/search/filter (midnight) — 4 bars since 2026-09-09
+  { id: 'b10', bars: [45, 49], after: 'none' },         // close (golden sunbreak): the window fills the frame, the modal
 ];
-export const TOTAL_BARS_PLANNED = 51;
+export const TOTAL_BARS_PLANNED = 49;
 export const isFirst = (b: Beat) => b === BEATS[0];
 export const isLast = (b: Beat) => b === BEATS.at(-1);
 /** Frames a beat's sequence runs before its own first downbeat (the prelude for the first beat, the wipe's lead for the rest). */

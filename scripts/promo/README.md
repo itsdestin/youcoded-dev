@@ -22,8 +22,10 @@ one cue list. `npm run render:draft` → `out/draft.mp4` (half size, ~6 min). `b
 ## How Destin works on a film (his rules, from the first one)
 
 - **Check-ins, not renders.** Nothing goes into the film before he has seen it as a still or a
-  short study; the half-size draft is the check-in for the whole. Once he says "stop rendering
-  without my confirmation", nothing renders until he says go.
+  short study. **A draft or final render is HIS call, every time** (2026-09-09: "STOP doing full
+  video renders without my approval … iterate with only screenshots and partial elements") —
+  render the affected frames as stills (`npx remotion still src/index.ts Promo out/x.png --frame N`,
+  or one `remotion bundle` and stills off the bundle) and put them on a deck; ask before a draft.
 - **He edits the script himself** on the script editor (below): one card per line with the
   frame from the draft, a word budget per slot, drag-reorderable sections. His submit is the
   source; the session applies it (and re-cuts the timing to it, not the other way round).

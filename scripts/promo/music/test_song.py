@@ -10,7 +10,7 @@ BARS, BPM = M.BARS, M.BPM
 # cuts off this grid, so a moved boundary here is a moved cut in the video. Bar 7 (drop 1, the first
 # theme flip) and bar 20 (drop 2, the marketplace) must never move.
 STORYBOARD = [("intro", 0), ("groove", 2), ("drop1", 7), ("groove-b", 10), ("drop2", 20), ("groove-c", 25), ("hook", 29),
-              ("break", 36), ("build", 38), ("groove2", 41), ("outro", 47), ("end", 50)]
+              ("break", 36), ("build", 38), ("groove2", 41), ("outro", 45), ("end", 48)]
 
 
 def _render(style: str):
