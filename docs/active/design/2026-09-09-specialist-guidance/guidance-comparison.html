@@ -1,0 +1,254 @@
+<title>Specialist Guidance Comparison</title><style>
+:root{--bg:#faf9f6;--fg:#1c1b19;--muted:#6b6862;--edge:#e3e0d8;--card:#ffffff;--yc:#eef3ff;--new:#eefaf0;--accent:#2f5fd7}
+@media (prefers-color-scheme: dark){:root{--bg:#161615;--fg:#ecebe6;--muted:#a09d95;--edge:#2c2b28;--card:#1f1e1c;--yc:#1b2438;--new:#1a2e21;--accent:#8fb0ff}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:28px 32px 12px;max-width:1500px;margin:0 auto} h1{font-size:24px;margin:0 0 8px} header p{margin:6px 0;color:var(--muted);max-width:900px}
+nav{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 32px 18px;max-width:1500px;margin:0 auto;font-size:13px} nav a{color:var(--accent);text-decoration:none}
+section{max-width:1500px;margin:0 auto 34px;padding:0 32px} h2{font-size:19px;margin:0 0 4px;position:sticky;top:0;background:var(--bg);padding:10px 0 4px;z-index:2}
+.why{color:var(--muted);margin:0 0 12px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(220px,1fr));gap:10px;overflow-x:auto}
+@media (max-width:1400px){.grid{grid-template-columns:repeat(3,minmax(220px,1fr))}}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+.col{background:var(--card);border:1px solid var(--edge);border-radius:10px;padding:10px 12px;min-width:0}
+.col.yc{background:var(--yc)} .col.new{background:var(--new)}
+.col h3{font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px;color:var(--muted)}
+.q{margin:0 0 10px} .q .src{font-size:12px;color:var(--muted);margin:0 0 2px} .q pre{margin:0;white-space:pre-wrap;word-break:break-word;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:transparent;padding:0}
+footer{max-width:1500px;margin:0 auto;padding:0 32px 40px;color:var(--muted);font-size:13px}
+</style>
+<header><h1>How each assistant is told to use helpers</h1>
+<p>Verbatim text the model sees, side by side. Blue = YouCoded as shipped in beta 76. Green = YouCoded as changed on the <code>session/specialists-guidance</code> branch (items you approved: 1, 4, 5, 7, 8, 13). Rows 7 and 8 answer your two questions; row 7's green column holds a wording that is NOT applied and waits for your call.</p>
+<p>Sources: YouCoded code in the app repo; Claude Code's live tool text and public docs; Codex CLI and Hermes Agent repositories (2026-09-09); Pi's official subagent example plus two community extensions. Where a harness has nothing, it says so.</p></header>
+<nav><a href="#t0">1. When to delegate at all</a><a href="#t1">2. When NOT to delegate</a><a href="#t2">3. Background runs and what to do while waiting</a><a href="#t3">4. Don&#x27;t redo the job, don&#x27;t nag the helper</a><a href="#t4">5. Limits the model is told about up front</a><a href="#t5">6. How each helper is described to the model</a><a href="#t6">7. What the model reads when a helper&#x27;s report lands</a><a href="#t7">8. How the model knows what is still running</a><a href="#t8">9. What Stop does to running helpers</a></nav>
+<section id="t0"><h2>1. When to delegate at all</h2><p class="why">The transcripts showed helpers hired for single lookups. Everyone else opens with a rule about when a helper is worth it.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>Delegate one focused piece of work to a specialist subagent. The specialist works independently and reports back when it&#x27;s done.</pre></div>
+<div class="q"><div class="src">System prompt</div><pre>(nothing about specialists except: &quot;&lt;specialists-status&gt;: a helper reporting back, not a new request.&quot;)</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Agent tool description</div><pre>Reach for this when the task matches an available agent type, when you have independent work to run in parallel, or when answering would mean reading across several files — delegate it and you keep the conclusion, not the file dumps.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">spawn_agent tool (multi-agent mode)</div><pre>Do not spawn sub-agents unless the user or applicable AGENTS.md/skill instructions explicitly ask for sub-agents, delegation, or parallel agent work. Requests for depth, thoroughness, research, investigation, or detailed codebase analysis do not count as permission to spawn.</pre></div>
+<div class="q"><div class="src">spawn_agent (V2)</div><pre>Only call this tool for a concrete, bounded subtask that can run independently alongside useful local work; otherwise continue locally.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">delegate_task tool</div><pre>USE FOR: reasoning-heavy subtasks, work that would flood your context with intermediate data, or independent parallel workstreams.</pre></div>
+<div class="q"><div class="src">Docs</div><pre>Rule of thumb: Use delegate_task when the subtask requires reasoning, judgment, or multi-step problem solving.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">subagent extension tool</div><pre>Delegate tasks to specialized subagents with isolated context. Modes: single (agent + task), parallel (tasks array), chain (sequential with {previous} placeholder).</pre></div>
+<div class="q"><div class="src">Author&#x27;s blog</div><pre>Using a sub-agent mid-session for context gathering is a sign you didn&#x27;t plan ahead… [the one use he keeps is] code review… Do not read the code yourself. Let the sub-agent do that.</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>Most work is faster done yourself. Delegate only a self-contained job that also meets one of these: it would fill your context with file contents or search output you only need the conclusion of; it can run while you do something else; or it needs a fresh, unbiased read (a review).</pre></div>
+</div>
+</div></section>
+<section id="t1"><h2>2. When NOT to delegate</h2><p class="why">Ours had no list at all. Hermes&#x27;s list is the clearest; Codex&#x27;s is the strictest.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>(none)</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Agent tool description</div><pre>For a single-fact lookup where you already know the file, symbol, or value, search directly.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">spawn_agent</div><pre>Do not delegate urgent blocking work when your immediate next step depends on that result.</pre></div>
+<div class="q"><div class="src">spawn_agent</div><pre>Keep work local when the subtask is too difficult to delegate well and when it is tightly coupled, urgent, or likely to block your immediate next step.</pre></div>
+<div class="q"><div class="src">Depth refusal</div><pre>Agent depth limit reached. Solve the task yourself.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">delegate_task</div><pre>DO NOT USE FOR (use these instead):
+- Mechanical multi-step work with no reasoning needed -&gt; execute_code
+- A single tool call -&gt; call the tool directly
+- Tasks needing user interaction -&gt; subagents cannot ask questions
+- Durable work that must survive this session -&gt; cronjob or terminal(background=True, notify=True)</pre></div>
+<div class="q"><div class="src">Docs</div><pre>Quick file edits → do them directly</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">subagent extension tool</div><pre>(none)</pre></div>
+<div class="q"><div class="src">Author&#x27;s blog</div><pre>Spawning multiple sub-agents to implement various features in parallel is an anti-pattern in my book and doesn&#x27;t work, unless you don&#x27;t care if your codebase devolves into a pile of garbage.</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>Do not delegate a single lookup you could do with one Read, Grep or Glob, a quick edit to a file you have already read, a question that needs the user&#x27;s answer, or the very next step your own work is blocked on.</pre></div>
+</div>
+</div></section>
+<section id="t2"><h2>3. Background runs and what to do while waiting</h2><p class="why">Our background flag said &quot;Set true for anything long&quot; and the launch reply said &quot;Keep working&quot;. The model read that as: launch, then poll and nag.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">background field</div><pre>Set true for anything long — you keep working and the report is delivered to you automatically when the specialist finishes.</pre></div>
+<div class="q"><div class="src">Launch reply</div><pre>{name} is now working in the background (task_id: …). Their report will be delivered to you automatically when they finish — do not wait or poll. Keep working; a status block at the start of your turns tracks running specialists.</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Agent tool description</div><pre>Subagents run in the background; you&#x27;ll be notified when one completes. Never fabricate or predict a pending agent&#x27;s results — the notification is never something you write yourself; if the user asks before it arrives, say it&#x27;s still running.</pre></div>
+<div class="q"><div class="src">Launch reply</div><pre>The agent is working in the background. You will be notified automatically when it completes… continue other work or respond to the user in the meantime. Do not duplicate this agent&#x27;s work.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">spawn_agent</div><pre>While the subagent is running in the background, do meaningful non-overlapping work immediately.</pre></div>
+<div class="q"><div class="src">spawn_agent</div><pre>Call wait_agent very sparingly. Only call wait_agent when you need the result immediately for the next critical-path step and you are blocked until it returns. … Do not repeatedly wait by reflex.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">delegate_task</div><pre>Runs in the background: dispatch returns immediately… Results are delivered only BETWEEN your turns: finish whatever does not depend on them, then give a one-line status and END YOUR TURN. Never wait or poll on transcripts, artifact files, or CI for a child.</pre></div>
+<div class="q"><div class="src">Launch reply</div><pre>Results are delivered only after you END YOUR TURN: do anything that does not depend on it, then stop with a one-line status. Do not poll its transcript or artifacts to wait for it.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">Official extension</div><pre>(foreground only — the parent waits; nothing to do meanwhile)</pre></div>
+<div class="q"><div class="src">Community extension (tintinweb)</div><pre>Pass run_in_background: false only when your very next action depends on the agent&#x27;s result and nothing else could usefully happen while it runs… Wanting the result &quot;next&quot; is not enough on its own. … do NOT sleep, poll, or proactively check on its progress.</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">background field</div><pre>Set true only when you have other useful, non-overlapping work to do while the specialist runs; the report is delivered to you when it finishes. If you would only be waiting for it, leave this false and let the report come back as this call&#x27;s result.</pre></div>
+<div class="q"><div class="src">Launch reply</div><pre>{name} is now working in the background (task_id: …). Their report will be delivered to you when they finish — do not wait, poll, or send status requests, and do not redo the job yourself. Continue with work that does not depend on it; when nothing else is left, tell the user what is still running and end your turn. A status block at the start of your turns lists running specialists.</pre></div>
+</div>
+</div></section>
+<section id="t3"><h2>4. Don&#x27;t redo the job, don&#x27;t nag the helper</h2><p class="why">72% of our 179 steers were &quot;report now&quot; / &quot;status?&quot; a median 52 seconds apart. Nobody else offers a steer verb without a rule about it.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>To manage a specialist you already started, pass its task_id… Still running: &quot;prompt&quot; is delivered as a steer at its next natural pause.</pre></div>
+<div class="q"><div class="src">Rule about frequency</div><pre>(none)</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Agent tool description</div><pre>Once you&#x27;ve delegated a search, don&#x27;t also run it yourself — wait for the result.</pre></div>
+<div class="q"><div class="src">SendMessage</div><pre>Use SendMessage with the agent&#x27;s ID or name to continue a previously spawned agent with its context intact.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">spawn_agent</div><pre>Do not duplicate work between the main rollout and delegated subtasks.</pre></div>
+<div class="q"><div class="src">spawn_agent</div><pre>Do not redo delegated subagent tasks yourself…</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">delegate_task</div><pre>&#x27;steer&#x27; = queue course-correction text into one child (subagent_id + message) without stopping it</pre></div>
+<div class="q"><div class="src">Runaway guard (app-enforced)</div><pre>Blocked delegate_task: this turn has already spawned {count} subagents (limit {cap}). This looks like a runaway delegation loop. Finish the work with the results you have and answer the user.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">tintinweb extension</div><pre>steer_subagent: Send a steering message to a running agent… Do not duplicate this agent&#x27;s work.</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>Once you have delegated a job, do not also do it yourself, and do not send status requests: the report arrives on its own. When nothing else is left for you to do, tell the user what is still running and end your turn.</pre></div>
+<div class="q"><div class="src">Note</div><pre>An app-enforced limit on how often a helper may be steered is filed on the roadmap for Settings, not built here.</pre></div>
+</div>
+</div></section>
+<section id="t4"><h2>5. Limits the model is told about up front</h2><p class="why">Ours were only discovered by being refused: 4 at once, one editor, 30 launches, no nesting.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>(none — refusals only: &quot;Refused: this session is at capacity (max 4 concurrent specialists)…&quot;, &quot;Refused: another specialist with write access is running…&quot;, &quot;Refused: this conversation has reached its specialist budget (30)…&quot;)</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Docs</div><pre>Concurrent limit: Default 20 subagents running simultaneously. Nesting depth: 3 levels deep.</pre></div>
+<div class="q"><div class="src">Workflow tool</div><pre>keep workflows under 15 agents… the user must request that scale</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">Per-turn prompt section</div><pre>There are {N} available concurrency slots, meaning that up to {N} agents can be active at once, including you.</pre></div>
+<div class="q"><div class="src">Depth refusal</div><pre>Agent depth limit reached. Solve the task yourself.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">delegate_task tasks field</div><pre>The task(s), up to {max_children} in parallel for this user (set via delegation.max_concurrent_children).</pre></div>
+<div class="q"><div class="src">delegate_task</div><pre>Children cannot call delegate_task, clarify, memory, or cronjob.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">Official extension</div><pre>MAX_PARALLEL_TASKS = 8, MAX_CONCURRENCY = 4 (in code; the model sees only the error &quot;Max is 8&quot;)</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">Task tool description</div><pre>Limits: up to 4 specialists run at once (fewer on a local engine), only one of them may edit files, specialists cannot start specialists, and each conversation has a budget of 30 launches. Independent read-only specialists can be started in the same turn.</pre></div>
+<div class="q"><div class="src">Note</div><pre>Making these adjustable in Settings is filed on the roadmap.</pre></div>
+</div>
+</div></section>
+<section id="t5"><h2>6. How each helper is described to the model</h2><p class="why">Ours said what a helper HAS. Claude Code&#x27;s field is literally &quot;when Claude should delegate to this subagent&quot;.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">explorer</div><pre>Fast, read-only codebase search — locates files, symbols, and patterns.</pre></div>
+<div class="q"><div class="src">researcher</div><pre>Web research with sourced, cited findings.</pre></div>
+<div class="q"><div class="src">reviewer</div><pre>Read-only code review — findings reported as file:line.</pre></div>
+<div class="q"><div class="src">worker</div><pre>Focused implementation — edits code and runs the relevant tests.</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Explore agent</div><pre>Read-only search agent for broad fan-out searches — when answering means sweeping many files, directories, or naming conventions and you only need the conclusion, not the file dumps. It reads excerpts rather than whole files, so it locates code; it doesn&#x27;t review or audit it.</pre></div>
+<div class="q"><div class="src">Custom agents</div><pre>description: When Claude should delegate to this subagent</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">explorer role</div><pre>Use explorer for specific codebase questions. Explorers are fast and authoritative… you should trust the explorer results without additional verification… spawn up multiple explorers in parallel when you have multiple distinct questions… Reuse existing explorers for related questions.</pre></div>
+<div class="q"><div class="src">worker role</div><pre>Explicitly assign ownership of the task (files / responsibility)… Always tell workers they are not alone in the codebase…</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">(no roster)</div><pre>One generic child that inherits the parent&#x27;s tools.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">(descriptions never shown to the model)</div><pre>Agent .md files carry name/description, but the parent only sees names in an error: &quot;Unknown agent: … Available agents: …&quot;</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">explorer</div><pre>Use when the answer needs a sweep of many files and you only want the conclusion — never for one symbol or file you already know.</pre></div>
+<div class="q"><div class="src">researcher</div><pre>Use for outside facts that need sources and citations — not for something one WebSearch would answer.</pre></div>
+<div class="q"><div class="src">reviewer</div><pre>Use for a fresh-eyes check of a change before you call it done; findings come back as file:line. It cannot run tests.</pre></div>
+<div class="q"><div class="src">worker</div><pre>Use for one bounded change you have already scoped and are not blocked on; it edits code and runs the relevant tests. You stay responsible for checking its report.</pre></div>
+</div>
+</div></section>
+<section id="t6"><h2>7. What the model reads when a helper&#x27;s report lands</h2><p class="why">Ours arrives as a full new turn with no instruction about whether to speak. Hermes tells the model it may have moved on. Codex does not start a turn at all.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">Delivered report (starts a new turn)</div><pre>[Background specialist finished] {name} ({type}) completed the task you delegated (&quot;{description}&quot;, started {N}m ago, {steps} steps).
+
+## Report from {name} …</pre></div>
+<div class="q"><div class="src">Failure</div><pre>[Background specialist failed] {name} ({type}): {reason}. Partial transcript: specialist session {id}.</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Task notification (starts a new turn)</div><pre>&lt;task-notification&gt; … &lt;status&gt;completed&lt;/status&gt; &lt;summary&gt;Agent &quot;…&quot; finished&lt;/summary&gt; &lt;result&gt;…&lt;/result&gt;</pre></div>
+<div class="q"><div class="src">Agent tool description</div><pre>The agent&#x27;s final report is not shown to the user — relay what matters.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">Mailbox (does NOT start a turn)</div><pre>Message Type: FINAL_ANSWER … read automatically at the start of the parent&#x27;s next turn, or between thoughts mid-turn. Nothing in the mailbox starts a turn unless sent with trigger_turn, which cannot target the root agent.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">Completion message (starts a new turn)</div><pre>[ASYNC DELEGATION COMPLETE — {id}] A background subagent you dispatched earlier has finished. You may have moved on since dispatching it; the full task source is below so you can act on the result or re-dispatch if things have changed.</pre></div>
+<div class="q"><div class="src">delegate_task</div><pre>Child summaries are SELF-REPORTS, not verified facts: a child claiming &quot;uploaded successfully&quot; or &quot;file written&quot; may be wrong… verify it yourself before telling the user the operation succeeded.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">Official extension</div><pre>The report is the tool result (foreground).</pre></div>
+<div class="q"><div class="src">tintinweb extension (starts a new turn)</div><pre>&lt;task-notification&gt; … &lt;summary&gt;Agent &quot;…&quot; completed&lt;/summary&gt; &lt;result&gt;(500-char preview; use get_subagent_result for full output)&lt;/result&gt;</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">Built on this branch</div><pre>After you press Stop, reports are held and spliced in quietly ahead of your next message — no turn of their own. After a normal answer a report still starts a turn (unchanged).</pre></div>
+<div class="q"><div class="src">Proposed wording, not applied — your call</div><pre>[Background specialist finished] … The user may have moved on or stopped you since you delegated this. If the report still matters to what they asked, act on it or summarise it in a few lines; if it no longer matters, say so in one sentence and stop.</pre></div>
+</div>
+</div></section>
+<section id="t7"><h2>8. How the model knows what is still running</h2><p class="why">Your question. YouCoded is the only one that hands the model a fresh &quot;still running&quot; list every turn; the others make it remember or ask.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">&lt;specialists-status&gt; block (every turn, only while something is outstanding, rebuilt from disk)</div><pre>{name} ({type}): running — {N}s[, may be stuck — no activity for at least 2m]
+{name} ({type}): finished — report delivery pending
+{name} ({type}): failed — {reason} — report delivery pending
+{name} ({type}): interrupted — no report will arrive</pre></div>
+<div class="q"><div class="src">Background commands</div><pre>Not in the block. Bash launch reply: &quot;Started in the background (shell id …). You&#x27;ll be told when it finishes. BashOutput reads new output (or lists runs); KillShell stops it. Running now: N of M.&quot; BashOutput without an id lists them; &quot;Do NOT use to continuously poll — read it a few times per turn at most.&quot;</pre></div>
+<div class="q"><div class="src">After a context summary</div><pre>The block is rebuilt from the helper ledger every turn, so the fact that helpers are running survives; the summary prompt never mentions helpers, so the model&#x27;s own notes about them may not.</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Per-turn list</div><pre>None observed. The launch reply says &quot;You will be notified automatically when it completes… if the user asks before it arrives, say it&#x27;s still running.&quot; TaskStop and Monitor tools exist; /tasks is for the human.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">Per-turn prompt</div><pre>Only the cap: &quot;There are {N} available concurrency slots… including you.&quot; No running list.</pre></div>
+<div class="q"><div class="src">Tools</div><pre>list_agents → names + status (running / completed / errored…). wait_agent: &quot;Wait for a mailbox update from any live agent… prefer longer waits (minutes) to avoid busy polling.&quot;</pre></div>
+<div class="q"><div class="src">After a context summary</div><pre>Descendant messages and final answers are dropped from the summary; undelivered mail survives in the queue.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">Per-turn list</div><pre>None. The model relies on its own dispatch note and delegate_task(action=&#x27;list&#x27;) → live children with id, goal, status, running_seconds, live_transcript.</pre></div>
+<div class="q"><div class="src">After a context summary</div><pre>Not preserved; the completion message is self-contained so the parent can act on it cold. (&quot;You may have moved on since dispatching it; the full task source is below.&quot;)</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">Official extension</div><pre>Foreground only — nothing runs between turns.</pre></div>
+<div class="q"><div class="src">Community extensions</div><pre>tintinweb: get_subagent_result (with wait) — &quot;do NOT sleep, poll, or proactively check&quot;. nicobailon: subagent({action:&quot;status&quot;}) and, after a context summary with live jobs, a hidden nudge: &quot;Compaction is complete. Resume the parent task now; background subagent results will arrive separately when ready.&quot;</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">Kept as is</div><pre>The per-turn status block stays; it is what lets the assistant answer &quot;is the researcher done?&quot; without guessing.</pre></div>
+<div class="q"><div class="src">Two holes worth closing later (not built)</div><pre>Background commands could join the same block instead of needing a BashOutput listing. An interrupted helper&#x27;s &quot;no report will arrive&quot; line appears to stay in the block for the rest of the conversation.</pre></div>
+</div>
+</div></section>
+<section id="t8"><h2>9. What Stop does to running helpers</h2><p class="why">Background: after you press Stop, our app used to deliver a finished report immediately as a new turn. That is what this branch changes.</p><div class="grid">
+<div class="col yc"><h3>YouCoded today (beta 76)</h3>
+<div class="q"><div class="src">Before this branch</div><pre>Stop halts the answer and any foreground helper; background helpers and commands keep running, and their reports started a new turn the moment they landed — Stop was exactly the idle moment the delivery was waiting for.</pre></div>
+</div>
+<div class="col cc"><h3>Claude Code</h3>
+<div class="q"><div class="src">Docs</div><pre>Silent on Esc. Runtime: background agents keep running; a completion notification wakes the session.</pre></div>
+</div>
+<div class="col cx"><h3>Codex CLI</h3>
+<div class="q"><div class="src">Esc</div><pre>Aborts the parent only; children keep running. The model then sees &quot;The user interrupted the previous turn on purpose…&quot;. Late results wait in the mailbox and do not start a turn.</pre></div>
+</div>
+<div class="col hm"><h3>Hermes Agent</h3>
+<div class="q"><div class="src">Ctrl+C</div><pre>Does not cancel children (only /stop does). A completion drains whenever the agent is idle, so it CAN start a fresh turn after Ctrl+C.</pre></div>
+</div>
+<div class="col pi"><h3>Pi</h3>
+<div class="q"><div class="src">Esc</div><pre>Kills the child processes (&quot;Subagent was aborted&quot;); nothing outlives the turn.</pre></div>
+</div>
+<div class="col new"><h3>YouCoded proposed (on this branch)</h3>
+<div class="q"><div class="src">On this branch</div><pre>Stop sets a hold. Finished reports and background-command notices stay parked until your next message, then are spliced in quietly ahead of it as context. Three tests pin it. Background helpers still keep running (unchanged).</pre></div>
+</div>
+</div></section>
+<footer>Not verified from public docs: Claude Code's behaviour after Esc. Hermes's Ctrl+C behaviour and Codex's mailbox mechanics come from their source code, not their docs.</footer>
