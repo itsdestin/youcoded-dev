@@ -1,0 +1,26 @@
+{
+ "deck": "friendly-mascots-contract-acceptance",
+ "started": "2026-09-09T05:24:49.839Z",
+ "submitted": "2026-09-09T05:25:12Z",
+ "cur": 2,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "R1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "R3": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  }
+ }
+}
