@@ -10,17 +10,23 @@ topic: The Projects view and the session-file pane chug — measured outside the
 **Symptom (Destin, 2026-09-09).** "Our app currently CHUGS sometimes when opening projects
 view or trying to open/view session files in the session file pane."
 
-**Short answer (revised after measuring, §1 and §1b).** Neither half of opening Projects
-is a chug on an idle app at Destin's data scale: the backend is about 0.6 s of work with
-no freeze over 85 ms, and in the perf rig the whole view opens in 0.9 s cold / 0.16 s
-warm, mounts 831 cards in 100 ms, and never freezes over 136 ms. What remains, and what
-the rig cannot see, is the per-card glass blur on wallpaper themes (a bug class this app
-has shipped twice, `globals.css:1413`), the load of an agent streaming at the same time,
-and the laptop's own post-sleep slowdowns. The session-file pane's cost is a different
-set: a 0.7–1.1 s frozen Markdown render on open (measured by the perf rig 2026-08-28),
-three `git` processes per file open *and* three more on every file change anywhere in the
-project, a per-byte decode loop for every image/PDF, and the whole pane re-drawing on
-every streamed token.
+**Short answer (final, after §1c).** Found and reproduced. Destin narrowed it: "especially
+laggy if I just quickly click back-and-forth between files/conversations in project view",
+on a solid theme. Every return to the Files tab remounts it, and the remount restarts
+the **project file watcher** over the whole project root — and the watcher, unlike file
+discovery, does NOT stop at nested repositories or worktrees. Under `~/youcoded-dev` that
+is 9,583 directories / 108,730 entries (72,000 of the files inside `worktrees/`); a fresh
+watch measured **4.0–4.3 s to ready with 310–372 ms event-loop freezes**, versus 80 ms
+for the app checkout alone, and the IPC reply waits for it. In the perf rig with a
+worktree-shaped tree, eight rapid Files/Conversations clicks blocked the main process for
+**8.4 s in total, worst single freeze 857 ms** — the whole app stutters while each click
+itself paints in 50–380 ms. Opening Projects rose from 0.9 s to 2.2 s and a project switch
+to 1.0–1.6 s for the same reason. Everything else measured (cards, search, previews,
+conversations rows, the 10 MB history record) is small. The session-file pane's cost is a
+different set: a 0.7–1.1 s frozen Markdown render on open (measured by the perf rig
+2026-08-28), three `git` processes per file open *and* three more on every file change
+anywhere in the project, a per-byte decode loop for every image/PDF, and the whole pane
+re-drawing on every streamed token.
 
 ## 1. What was measured (read-only, outside the app, Destin's real data)
 
@@ -101,6 +107,62 @@ ones. The chug Destin feels therefore comes from something the rig cannot reprod
 Not reproduced, still unmeasured: a wallpaper theme on a real GPU (needs a dev window on
 Destin's display, not the rig), and the session-file pane itself (its rig scenario
 exists and its 2026-08-28 numbers are in §4).
+
+## 1c. The tab thrash — reproduced (later on 2026-09-09)
+
+Destin: "it becomes especially laggy/prominent if I just quickly click back-and-forth
+between files/conversations in project view. I'm on a basic theme with no blur."
+
+**Mechanism.** `ProjectView.tsx:907-912` mounts only the active tab, so each switch
+unmounts it. A Files remount runs `artifacts:list-all-files` again (`FilesTab.tsx:262`)
+and `useProjectWatch` (`:321`): unmount → `unwatchProject` drops the last ref and closes
+the chokidar watcher (`project-watcher.ts:209-234`); mount → `watchProject` starts a
+**new** watcher over the project root, depth 6, and awaits its `ready` before replying
+(`:150-175`). Its ignore rule (`isWatchIgnoredPath`, `:60-79`) skips only dot-directories
+and `WATCH_SKIP_DIRS`; unlike discovery (`project-file-discovery.ts`, stops at a nested
+`.git`) it descends into every nested repo and worktree.
+
+**Measured on Destin's folder** (`scratchpad/time-watcher.mjs`, the app's own chokidar
+with identical options, read-only):
+
+| Root | To `ready` | Longest event-loop freeze | Watched | `close()` |
+|---|---|---|---|---|
+| `~/youcoded-dev` (43 worktrees) | 4,096 / 4,308 / 4,002 ms | 372 / 311 / 358 ms | 9,583 dirs / 108,730 entries | 254–292 ms |
+| `~/youcoded-dev/youcoded` alone | 110 / 79 / 78 ms | 10 / 4 / 4 ms | 179 dirs / 2,341 entries | 5–7 ms |
+
+Process RSS also grew ~100 MB per start/close round in that probe (833 → 935 → 1,008 MB);
+not confirmed as a leak in the app, noted for the fix's review.
+
+**Reproduced in the rig** (fixture: 1,600 files + the 10 MB record + 700 conversations +
+12,052 nested directories under `worktrees/wt-N/`, each a nested repo; shakedown pass):
+
+| Step | Result |
+|---|---|
+| Open Projects → first cards | 2,197 ms (was 882 ms without the nested tree) |
+| Switch big → small / small → big | 983 ms / 1,569 ms (was 67 / 200 ms) |
+| Thrash, 8 rounds: each click → painted | to Files 50–64 ms; to Conversations 122–381 ms |
+| Thrash, 8 rounds: main-process (IPC) stall | **8,364 ms total, 14 stalls over 250 ms, worst 857 ms, 190 missed pings** |
+| Thrash, 8 rounds: renderer | 1,178 ms of long tasks, worst frame gap 328 ms |
+
+The clicks paint fast because the tab swap is cheap; the app then stalls because the
+main process is walking 12,000 directories for a watcher that is thrown away on the
+next click. Official three-pass numbers: `perf-reports/*-projects-thrash.md`.
+
+**Fix shape (proposed).**
+1. Make the watcher stop where discovery stops: skip any directory holding a `.git`
+   (dir or file), plus `worktrees/` by the same rule. Users see: the Files tab still
+   updates live for the files it actually lists; nothing inside a nested repo was ever
+   listed anyway. Cost on youcoded-dev drops from ~4 s to ~0.1 s per start.
+2. Do not throw the watcher away between clicks: hold the watch for the whole time
+   Project View is open (or a short grace after the last unsubscribe), so a tab switch
+   never restarts it. Users see: instant tab switches. Risk: a watcher stays alive up
+   to the grace period after leaving the view; bounded and harmless.
+3. Reply to `artifacts:watch-project` without awaiting `ready`. The renderer does nothing
+   with that reply beyond `ok`.
+4. Keep both tabs mounted and toggle visibility, so a return to Files does not refetch
+   the list and every visible preview. Users see: the Files tab comes back exactly as
+   left (scroll position, previews). Risk: a hidden tab keeps its DOM — small for these
+   two tabs.
 
 ## 2. Destin's data today
 
@@ -201,17 +263,18 @@ replying. Every non-edit event invalidates the discovery cache and forces a re-w
 
 ## 5. Proposal, ranked by expected effect on what Destin feels
 
-**Revised after §1b (2026-09-09, later the same day).** The rig now covers Project View
-(`--only projects`), and at Destin's data scale the view is fast on an idle app under
-software rendering. The ranking below is re-ordered accordingly: the per-card blur (A2)
-and the session-file pane's spawn storm (C1) move to the top; virtualization (A1) and
-the search re-render (A4) drop to "worth doing, small".
+**Final ranking (2026-09-09, after §1c).** The measured chug is the watcher restart on
+every Files-tab remount over a tree the watcher should never walk. That fix (§1c, items
+1–4) is first and on its own removes what Destin described. The rig's `projects` phase
+now gates it: `thrash.ipcMaxMs` and `thrash.longtaskTotalMs` must fall, `open.openMs`
+and `switch.bigMs` with them. Everything below stays as measured-small improvements,
+in this order: C1 (git spawns), C4 (per-token redraw), C2 (Markdown open), B1 (session
+scan cache), A4 (search transition), A1 (virtualization), A3 (previews), C3 (binary
+transfer). A2 (per-card blur) applies only to wallpaper themes, which Destin does not
+use; keep it filed for those users.
 
-**Step 0 — two questions for Destin, then one dev-window check.** Which theme does he
-run (wallpaper or solid)? Does the chug coincide with an agent streaming, or with the
-laptop having just woken from sleep? If wallpaper: open Projects in a dev window on his
-display with the type filter on and watch the GPU/compositor cost — the one thing the rig
-cannot see.
+**Step 0 — none needed.** The theme question is answered (solid) and the symptom is
+reproduced in the rig; no dev-window check is required before fixing.
 
 **A. Files tab drawing (likely the biggest win for "opening Projects").**
 1. Virtualize the grid and list (draw only the cards on screen plus a margin). Users see:
@@ -279,7 +342,7 @@ unchanged until Destin says otherwise.
   shimmer replaces silent stalls.
 
 ## 7. Open questions for Destin
-- Which theme (wallpaper or solid), and does the chug line up with an agent streaming or
-  with a recent wake from sleep?
-- Start on A2 (one glass layer) + C1 (git spawns) + C4 (per-token redraw) directly?
+- Go ahead with the watcher fix (§1c items 1–4) as one branch, gated by the rig's
+  `projects` phase before/after?
+- Then the session-file pane set (C1, C4, C2) as a second branch?
 - Any appetite for D (data trimming), and if so which of the three cuts?
