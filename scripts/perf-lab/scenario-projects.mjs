@@ -556,7 +556,9 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
     await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
     await sleep(150);
     if (await call(cdp, 'h.popoverOpen()')) warnings.push('the File filters popover stayed open after Escape — the scroll step measured with it overlaid');
-    if (!(await call(cdp, 'h.pv()')) ) throw new Error('projects: Escape closed the whole Project View instead of the filter popover');
+    // `!!` — a DOM element cannot cross the protocol by value ("Object reference
+    // chain is too long"); only the boolean can.
+    if (!(await call(cdp, '!!h.pv()'))) throw new Error('projects: Escape closed the whole Project View instead of the filter popover');
 
     // ── 4. Scroll the flat grid to the bottom (previews as cards cross) ──
     const scrollFlat = await step(cdp, 'projects:scroll-flat', async () => {
