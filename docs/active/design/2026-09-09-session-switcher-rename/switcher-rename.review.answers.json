@@ -1,0 +1,27 @@
+{
+ "deck": "session-switcher-rename",
+ "started": "2026-09-09T22:00:30.408Z",
+ "submitted": "2026-09-09T22:01:23Z",
+ "cur": 2,
+ "answers": {
+  "SR-1": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SR-2": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SR-3": {
+   "v": "pick",
+   "pick": "pencil",
+   "seconds": 33,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

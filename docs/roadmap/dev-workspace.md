@@ -3,6 +3,15 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
+      failed once in a full suite run and passed on the two full runs after it, plus three
+      isolated runs and three paired with the naming settings suite. Seen 2026-09-09, hours
+      after the test landed on master. It asserts an ordering between two queued writes
+      (`expected [[20],[40]] to equal [[30],[40]]` — the first write's value, not the
+      superseding one), so a scheduling race in the test rather than the queue is the
+      likeliest read. Nothing on the session-naming branch touches StepGuardRow
+      `desktop` `needs-verify` `checked 2026-09-09` `regression`
+
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
       so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
@@ -268,17 +277,6 @@ seen-on is always n/a here.
       image — cycle 2's real duplicate-bubble bug showed here at 14.04%, which no percentage
       rule separates from this noise. Remaining work is the gate itself, which still scores it
       `n/a` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
-
-- [ ] Android cannot be built or tested on this machine at all — there is no Android SDK
-      installed, only Android Studio, and CLAUDE.md asserted the opposite (it named
-      `/home/destin/.android-sdk` and a `java-21-openjdk` that also does not exist). Gradle
-      stops at `SDK location not found` before compiling, so every past "checked both
-      platforms" claim made by running that documented command was a configuration failure
-      read as a pass. CLAUDE.md corrected 2026-09-04 with the verification pasted in; the
-      remaining work is installing the SDK so the Android half of a cross-platform change
-      can actually be run. Until then Kotlin can only be compiled file-by-file with the
-      kotlinc inside `/opt/android-studio`
-      `n/a` `confirmed` `checked 2026-09-04`
 
 - [ ] Perf rig: the artifacts phase's session-files drawer lists nothing about 1 run in 9 —
       once for 30 s aborting a 26-minute run, once returning undefined numbers that the median
