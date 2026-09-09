@@ -3,7 +3,7 @@
   "theme": "cotton-candy-sky",
   "width": 1440,
   "height": 900,
-  "zoom": 1.25,
+  "zoom": 1.35,
   "fps": 30,
   "boot": 3000,
   "actions": [
@@ -73,5 +73,5 @@
       "hold": 4000
     }
   ],
-  "why": "Starts in Cotton Candy Sky (the look of beats 1-2) and flips to three community looks (Golden Sunbreak, Strawberry Kitty, Devil's Garden \u2014 Kuromi Dreamer was cut 2026-09-09) after the reply. The holds between flips are 2600 ms \u2014 one bar of the track is 2.03 s and the wipe straddles the downbeat \u2014 and 4000 ms after the last so the sub-line has a still look to land on. Each flip is followed by a paint observer that resolves two frames after data-theme changes, so `paintN` marks the frame the new look is actually on screen. The opening dust freeze is the promo-conversations trick (see its `why`); with Cotton Candy Sky's particles live, typing the request took 7.6 s instead of ~2."
+  "why": "Starts in Cotton Candy Sky (the look of beats 1-2) and flips to three community looks (Golden Sunbreak, Strawberry Kitty, Devil's Garden \u2014 Kuromi Dreamer was cut 2026-09-09) after the reply. The holds between flips are 2600 ms \u2014 one bar of the track is 2.03 s and the wipe straddles the downbeat \u2014 and 4000 ms after the last so the sub-line has a still look to land on. Each flip is followed by a paint observer that resolves two frames after data-theme changes, so `paintN` marks the frame the new look is actually on screen. The opening dust freeze is the promo-conversations trick (see its `why`); with Cotton Candy Sky's particles live, typing the request took 7.6 s instead of ~2. The reply wait is on the tool group's headline, \"Created 2 files\" (case-sensitive; it replaced \"N tools \u2014 all complete\" on 2026-09-06)."
 }

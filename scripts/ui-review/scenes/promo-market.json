@@ -3,7 +3,7 @@
   "theme": "light",
   "width": 1440,
   "height": 900,
-  "zoom": 1.25,
+  "zoom": 1.35,
   "fps": 30,
   "boot": 3000,
   "why": "Beat 9. The card is opened by its title (an h3). After Install the app's button reads Uninstall — there is no \"Installed\" label in the detail overlay — so `installed` waits for that. The marketplace is a Settings screen behind the detail overlay: three Escapes walk back to the chat (detail, marketplace, settings; a spare Escape in the chat is harmless) and `back` is marked on an observer that resolves when the composer's skills button is visible again. The chip row only reads its list at mount, so market-chip-sync.js hands the mock's list (which skills.install extended) to the app's own setChips before `chip` waits for the Remember chip.",

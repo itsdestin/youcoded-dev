@@ -28,7 +28,7 @@ export type Motion = 'classic' | 'lift';
 export type Shape = 'classic' | 'wedge' | 'swoop' | 'nub';
 export const FILM_LOOK: Look = 'glass';
 export const FILM_MOTION: Motion = 'lift';
-export const FILM_SHAPE: Shape = 'wedge';
+export const FILM_SHAPE: Shape = 'swoop';   // Destin's pick, 2026-09-09 ("kinda like swoop")
 export type BubbleCue = { at: number; until?: number; text: string; slug: Slug; side?: 'L' | 'R' };
 type Props = { cues: BubbleCue[]; actions: Action[]; base: HostState; look?: Look; motion?: Motion; shape?: Shape };
 const FONT = 26, PAD_X = 22, PAD_Y = 11, GAP = 18, OUT = 6;
@@ -74,7 +74,9 @@ export function shapePath(shape: Shape, w: number, h: number): string {
   const A = (x: number, y: number) => `A ${r} ${r} 0 0 1 ${x} ${y}`;
   // clockwise from the top-left corner, the tail cut into the left edge on the way back up
   const tail = shape === 'wedge' ? `L ${x0} ${cy + 10} L 0 ${cy} L ${x0} ${cy - 10}`
-    : shape === 'swoop' ? `L ${x0} ${cy + 14} Q ${x0 - 8} ${cy + 13} 0 ${cy + 6} Q ${x0 - 7} ${cy + 1} ${x0} ${cy - 6}`
+    // swoop: the lower edge bulges out and down to the tip, the upper edge comes back nearly straight
+    // (the first cut curled the upper edge INTO the box and left a notch at the join — Destin: "looks a bit broken")
+    : shape === 'swoop' ? `L ${x0} ${cy + 16} Q ${x0 * 0.28} ${cy + 17} 0 ${cy + 4} Q ${x0 * 0.45} ${cy + 1} ${x0} ${cy - 4}`
     : `L ${x0} ${cy + 8} C ${x0 - 13} ${cy + 8} ${x0 - 13} ${cy - 8} ${x0} ${cy - 8}`;
   return `M ${x0 + r} 0 L ${w - r} 0 ${A(w, r)} L ${w} ${h - r} ${A(w - r, h)} L ${x0 + r} ${h} ${A(x0, h - r)} ${tail} L ${x0} ${r} ${A(x0 + r, 0)} Z`;
 }

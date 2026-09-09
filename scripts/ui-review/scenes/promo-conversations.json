@@ -3,7 +3,7 @@
   "theme": "midnight",
   "width": 1440,
   "height": 900,
-  "zoom": 1.25,
+  "zoom": 1.35,
   "fps": 30,
   "boot": 3000,
   "why": "The first action freezes the theme's dust particles through the app's own window-hidden pause (ThemeEffects.tsx onVisibility), then puts visibilityState back so nothing else in the app thinks the window is hidden. Measured 2026-09-03: with the particle canvas repainting every 33 ms, every pointer step of the recorder waits ~90 ms for a frame (15 ms with the canvas still), so a click took 1.2-1.8 s and the drag's 19-step approach alone ate 2 s -- the pill never moved inside the 2 s shot. The dust stays on screen for the whole clip, it just does not drift. The pointer is parked on the All Sessions button before the opening hold: the screencast never draws a cursor, and a 19-step approach across the chat costs ~2 s of hover re-renders on this page, which pushed the menu past the bar the edit gives it. The opening hold is 2.6 s, not 0.9: for the first ~2.5 s after the screencast starts every pointer step costs ~90 ms whatever the page is doing, then ~1 ms (measured on this page, dust frozen); the menu click used to land inside that window and take 1.7 s. Nothing before the `menu` mark is in the edit.",
