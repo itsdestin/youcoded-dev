@@ -1,0 +1,110 @@
+{
+  "title": "The Rename button you didn't approve \u2014 and what should replace it",
+  "key": "session-switcher-rename",
+  "stage": "review",
+  "out": "switcher-rename.review.html",
+  "images": "images/switcher-rename.review",
+  "themes": [
+    "light"
+  ],
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-09-session-switcher-rename/runs/before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-09-session-switcher-rename/runs/after",
+    "today": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-09-session-switcher-rename/runs/today"
+  },
+  "crops": {
+    "switcher-list": [
+      "switcher",
+      "switcher",
+      "390x200+528+32"
+    ],
+    "saved-rows": [
+      "saved",
+      "saved",
+      "440x190+500+338"
+    ],
+    "design-none": [
+      "switcher",
+      "none",
+      "390x120+528+32"
+    ],
+    "design-pencil": [
+      "switcher",
+      "pencil",
+      "390x120+528+32"
+    ],
+    "design-underline": [
+      "switcher",
+      "underline",
+      "390x120+528+32"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SR-1",
+      "surface": "Session switcher",
+      "path": "Click the session name at the top \u2192 Sessions in this window",
+      "crop": "switcher-list",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "The bare Rename button is gone from the session list.",
+      "changed": "A previous round added a plain Rename button to the right of every row. It was never on a deck and you never approved it. It has been taken out.",
+      "measured": "1 button per row removed, 9 rows in this list",
+      "notice": "Right-click a session and Rename session\u2026 is still there \u2014 that one you did approve. Nothing else about the list moved.",
+      "risk": "Until you pick something below, the only way to rename from this list is the right-click menu, which is not visible until you try it."
+    },
+    {
+      "id": "SR-2",
+      "surface": "Resume Session",
+      "path": "Resume Session \u2192 the saved conversation list",
+      "crop": "saved-rows",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "The conversation name lines up with the folder underneath it.",
+      "changed": "The name was sitting eight pixels right of everything else in its card, because the clickable area around it was padded. The padding is still there for the hover highlight; the text starts where the folder line starts.",
+      "measured": "8 px left",
+      "notice": "The left edge of every card now reads as one straight line down the list.",
+      "risk": "None found. The hover highlight is unchanged and still has room around the text."
+    },
+    {
+      "id": "SR-3",
+      "surface": "Session switcher",
+      "path": "Click the session name at the top \u2192 Sessions in this window",
+      "runs": [
+        "today"
+      ],
+      "headline": "Should the session list offer renaming at all, and if so how?",
+      "notice": "Whatever you pick here only affects this list. The right-click Rename session\u2026 stays either way, and Resume Session keeps the pencil and underline you already approved.",
+      "risk": "The rows in this list are small and already carry a status pill, a folder, a model name and tag marks. Anything added competes with them.",
+      "variants": [
+        {
+          "id": "none",
+          "label": "Nothing here",
+          "crop": "design-none",
+          "summary": "Renaming stays on the right-click menu only. The list keeps every pixel for the things that tell sessions apart.",
+          "risk": "A right-click menu is invisible until you try it. Someone who never right-clicks never finds renaming here."
+        },
+        {
+          "id": "pencil",
+          "label": "Pencil only",
+          "crop": "design-pencil",
+          "summary": "The same pencil as Resume Session, right after each name. Clicking the pencil renames; clicking anywhere else on the row still switches to that session.",
+          "measured": "12 px wide, the same pencil as the saved list",
+          "risk": "Without the underline it does not match Resume Session exactly."
+        },
+        {
+          "id": "underline",
+          "label": "Pencil and dotted underline",
+          "crop": "design-underline",
+          "summary": "The full Resume Session treatment: dotted underline under the name and the pencil beside it, both always visible. The whole name renames.",
+          "measured": "9 underlines in a 9-row list",
+          "risk": "Clicking the name no longer switches sessions \u2014 it renames. The name is the most natural thing to click to switch, so you would have to aim beside it."
+        }
+      ]
+    }
+  ]
+}
