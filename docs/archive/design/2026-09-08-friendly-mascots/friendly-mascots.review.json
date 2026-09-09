@@ -1,0 +1,36 @@
+{
+  "title": "A softer default buddy",
+  "key": "friendly-mascots-review",
+  "stage": "design",
+  "out": "friendly-mascots.review.html",
+  "images": "images/friendly-mascots.review",
+  "runs": { "before": "docs/archive/design/2026-09-08-friendly-mascots/scratch/before", "after": "docs/archive/design/2026-09-08-friendly-mascots/scratch/after" },
+  "themes": ["light", "creme"],
+  "crops": { "palette": ["palette", "01", "752x760+328+70"] },
+  "steps": [
+    {
+      "id": "V-1",
+      "surface": "Default buddy",
+      "path": "Floating buddy, in-app mascot and Flappy · isolated renderer mockup",
+      "crop": "palette",
+      "headline": "1. A lighter body and dark eyes keep the same buddy, with a softer expression.",
+      "changed": "Light uses a pale grey-green body; Crème uses warm sand. Both keep dark facial features and separate light eye sparkles. Small mascots gain a dark rim so their bodies and limbs remain visible. Shapes, poses and button colours stay the same.",
+      "notice": "The floating-size preview uses the existing animated character renderer at 112 px, beside the existing 24 px app icon and playable Flappy game. This is a palette study, not a desktop-window test.",
+      "risk": "The pale body is less distinct against very light backgrounds. Small icons retain their existing flat artwork rather than gaining the floating buddy’s shading."
+    },
+    {
+      "id": "G-1",
+      "surface": "Future mascot guidance",
+      "words": true,
+      "path": "Guidance for future theme artwork",
+      "headline": "2. Use these art principles for future mascots?",
+      "today": "A mascot can inherit the same colours as a button, even when those colours make its face look harsh.",
+      "problem": "Button contrast alone does not make a friendly, readable character.",
+      "proposal": "Choose an intentional art palette: dark eyes with visible light sparkles on pale or warm bodies, or outlined dark eyes on dark bodies. Keep lighting restrained and consistent. One or two signature details can add personality without hiding the face. Dark, vivid and textured designs remain welcome. Check the silhouette against its background separately from face-to-body contrast. Check all eight expressions at 24, 48 and 80 px, plus the 112 px floating buddy on varied backgrounds.",
+      "options": [
+        { "id": "yes", "label": "Use these principles", "pros": ["Faces stay readable while artists retain room for distinctive styles."], "cons": ["Each mascot needs checks at several sizes and backgrounds."] },
+        { "id": "no", "label": "Leave guidance unchanged", "pros": ["No added art-review requirements."], "cons": ["Button-derived palettes can still produce harsh or unclear faces."] }
+      ]
+    }
+  ]
+}

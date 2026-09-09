@@ -66,6 +66,75 @@ function behindCount(root) {
   } catch { return 0; }
 }
 
+/** Worktrees holding work that exists on this disk only, and whose session has gone
+ *  quiet. Reported as a WARNING, never a failure: a session editing files right now is
+ *  legitimately dirty, and a red audit that everyone learns to ignore is worse than no
+ *  check at all.
+ *
+ *  WHY this exists: on 2026-09-09 a finished, review-clean implementation sat
+ *  uncommitted for 14 hours because its session was interrupted before it could ask to
+ *  commit. Its branch had ZERO commits and no upstream, so the wrap-up branch sweep —
+ *  which reads refs, not working trees — reported nothing to push. Eight other session
+ *  worktrees were in the same state. Roadmap item since 2026-09-01; the ref sweeps it
+ *  assumed were enough are structurally blind to it.
+ *
+ *  Idleness is measured from the newest evidence of work: the newest mtime among the
+ *  uncommitted files, or the tip commit date when the work is committed but unpushed.
+ *  Never throws — a missing git is not an audit failure. */
+export function strandedWorktrees(root, { now = Date.now(), idleHours = 24 } = {}) {
+  const git = (cwd, ...args) => execFileSync('git', ['-C', cwd, ...args],
+    { encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  let listed;
+  try { listed = git(root, 'worktree', 'list', '--porcelain'); } catch { return []; }
+
+  const worktrees = [];
+  for (const block of listed.split(/\n\n+/)) {
+    const wt = /^worktree (.+)$/m.exec(block)?.[1];
+    if (!wt) continue;
+    const branch = /^branch refs\/heads\/(.+)$/m.exec(block)?.[1] ?? null;
+    worktrees.push({ path: wt, branch });
+  }
+
+  const out = [];
+  for (const { path: wt, branch } of worktrees) {
+    let dirty = [];
+    try {
+      dirty = git(wt, 'status', '--porcelain', '-z', '--untracked-files=all')
+        .split('\0').map(l => l.slice(3)).filter(Boolean);
+    } catch { continue; }
+
+    // Unpushed = commits with no copy on a remote. A branch with an upstream compares
+    // against it; one without has never been pushed at all, so every commit past the
+    // default branch is local-only.
+    let unpushed = 0;
+    for (const range of ['@{upstream}..HEAD', 'origin/master..HEAD']) {
+      try {
+        const n = git(wt, 'rev-list', '--count', range);
+        if (/^\d+$/.test(n)) { unpushed = Number(n); break; }
+      } catch { /* no upstream, or no origin/master — try the next range */ }
+    }
+    if (!dirty.length && !unpushed) continue;
+
+    let newest = 0;
+    for (const rel of dirty) {
+      // lstat, not stat: a dangling symlink is still evidence of recent work.
+      try { newest = Math.max(newest, fs.lstatSync(path.join(wt, rel)).mtimeMs); } catch { /* raced away */ }
+    }
+    if (unpushed) {
+      try { newest = Math.max(newest, Number(git(wt, 'log', '-1', '--format=%ct')) * 1000); } catch { /* empty branch */ }
+    }
+    // No readable timestamp at all: say nothing rather than invent an age.
+    if (!newest) continue;
+
+    const idle = (now - newest) / 3600_000;
+    if (idle >= idleHours) {
+      out.push({ path: wt, branch, dirtyFiles: dirty.length, unpushedCommits: unpushed,
+                 idleHours: Math.round(idle) });
+    }
+  }
+  return out.sort((a, b) => b.idleHours - a.idleHours);
+}
+
 export function subRepoRoot(root) {
   if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
   let resolved = root;
@@ -705,6 +774,10 @@ function main() {
   // 4e. a live doc shadowed by an archived copy of itself — see shadowedActiveDocs.
   result.shadowedDocs = shadowedActiveDocs(root);
 
+  // 4f. work that exists on this disk only — see strandedWorktrees. A WARNING:
+  // it never fails the run, because an active session is legitimately dirty.
+  result.strandedWork = strandedWorktrees(root);
+
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
   result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
@@ -794,6 +867,8 @@ function printHuman(r, root = process.cwd()) {
        (r.strayRules || []).flatMap(x => x.files.map(f => `${x.repo}/.claude/rules/${f}`)));
   dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
        (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
+  warn('work on this disk only — quiet worktrees holding uncommitted or unpushed work (commit and push them; do NOT delete them)',
+       (r.strandedWork || []).map(x => `${x.branch ?? '(detached)'}: ${x.dirtyFiles} uncommitted, ${x.unpushedCommits} unpushed, idle ${x.idleHours}h  ->  ${x.path}`));
   if (r.worktreeGlobs) {
     console.log(`worktree-safe globs: ${r.worktreeGlobs.blind.length} blind · `
       + `${r.worktreeGlobs.exempt.length} exempt (named) · `
