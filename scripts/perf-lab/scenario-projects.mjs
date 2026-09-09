@@ -584,7 +584,7 @@ export const NUMERIC_PATHS = [
   // list-all-files + a watcher restart each time; the tail is what he feels.
   'thrash.toFiles.medianMs', 'thrash.toFiles.p95Ms', 'thrash.toFiles.maxMs',
   'thrash.toConversations.medianMs', 'thrash.toConversations.maxMs',
-  'thrash.longtaskTotalMs', 'thrash.frameGapMaxMs', 'thrash.ipcMaxMs',
+  'thrash.longtaskTotalMs', 'thrash.frameGapMaxMs', 'thrash.ipcMaxMs', 'thrash.ipcStallMs',
   'reopen.openMs',
   // Renderer + main-process cost across the whole run.
   'probe.longtaskTotalMs', 'probe.longtaskMaxMs',
@@ -806,7 +806,12 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
       thrash.longtaskTotalMs = thrash.probe.longtaskTotalMs ?? null;
       thrash.frameGapMaxMs = thrash.probe.frameGapMaxMs ?? null;
     }
-    if (thrash.ipc && !thrash.ipc.error) thrash.ipcMaxMs = thrash.ipc.maxMs ?? null;
+    if (thrash.ipc && !thrash.ipc.error) {
+      thrash.ipcMaxMs = thrash.ipc.maxMs ?? null;
+      // The headline for this step: how long the main process was unresponsive
+      // in total across the eight rounds (3 passes on 2026-09-09: 7.2–8.0 s).
+      thrash.ipcStallMs = thrash.ipc.totalStallMs ?? null;
+    }
 
     const switchSmall = await step(cdp, 'projects:switch-small', async () => {
       const r = await call(cdp, `h.switchTo(${JSON.stringify(small)})`);

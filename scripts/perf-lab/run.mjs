@@ -556,7 +556,7 @@ export function renderMarkdown(report, stem) {
       `| projects.list view | ${n(p.listView?.ms, 'ms')} |`,
       `| projects.switch big -> small / small -> big | ${n(p.switch?.smallMs, 'ms')} / ${n(p.switch?.bigMs, 'ms')} |`,
       `| projects.conversations tab | ${n(p.conversations?.ms, 'ms')} |`,
-      `| projects.tab thrash (Files <-> Conversations, rapid): to Files median / p95 / max | ${n(p.thrash?.toFiles?.medianMs, 'ms')} / ${n(p.thrash?.toFiles?.p95Ms, 'ms')} / ${n(p.thrash?.toFiles?.maxMs, 'ms')}; to Conversations median / max ${n(p.thrash?.toConversations?.medianMs, 'ms')} / ${n(p.thrash?.toConversations?.maxMs, 'ms')}; long tasks ${n(p.thrash?.longtaskTotalMs, 'ms')}, worst frame gap ${n(p.thrash?.frameGapMaxMs, 'ms')}, worst IPC ${n(p.thrash?.ipcMaxMs, 'ms')} |`,
+      `| projects.tab thrash (Files <-> Conversations, rapid): to Files median / p95 / max | ${n(p.thrash?.toFiles?.medianMs, 'ms')} / ${n(p.thrash?.toFiles?.p95Ms, 'ms')} / ${n(p.thrash?.toFiles?.maxMs, 'ms')}; to Conversations median / max ${n(p.thrash?.toConversations?.medianMs, 'ms')} / ${n(p.thrash?.toConversations?.maxMs, 'ms')}; long tasks ${n(p.thrash?.longtaskTotalMs, 'ms')}, worst frame gap ${n(p.thrash?.frameGapMaxMs, 'ms')}, main process unresponsive ${n(p.thrash?.ipcStallMs, 'ms')} in total, worst IPC ${n(p.thrash?.ipcMaxMs, 'ms')} |`,
       `| projects.reopen to first cards | ${n(p.reopen?.openMs, 'ms')} |`,
       `| projects long tasks | ${n(p.probe?.longtaskTotalMs, 'ms')} total, max ${n(p.probe?.longtaskMaxMs, 'ms')} |`,
       `| projects IPC stall (sum over steps) | ${n(p.ipcSumOfSteps?.totalStallMs, 'ms')}, max ${n(p.ipcSumOfSteps?.maxMs, 'ms')}, from ${n(p.ipcSumOfSteps?.pings, 'probe replies')} |`,

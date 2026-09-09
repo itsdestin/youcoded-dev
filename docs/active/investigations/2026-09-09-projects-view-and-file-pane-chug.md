@@ -146,7 +146,21 @@ not confirmed as a leak in the app, noted for the fix's review.
 
 The clicks paint fast because the tab swap is cheap; the app then stalls because the
 main process is walking 12,000 directories for a watcher that is thrown away on the
-next click. Official three-pass numbers: `perf-reports/*-projects-thrash.md`.
+next click.
+
+**Official run** (`perf-reports/2026-09-09-2326-6ccb817-projects-thrash.md`, 3 passes,
+noise gate passed, zero app errors):
+
+| | Pass 1 | Pass 2 | Pass 3 |
+|---|---|---|---|
+| Open Projects → first cards | 2,087 ms | 192 ms | 158 ms |
+| Thrash: main process unresponsive, 8 rounds total | 7,989 ms | 7,219 ms | 7,505 ms |
+| Thrash: worst single freeze | 338 ms | 285 ms | 305 ms |
+| Thrash: each click → painted (to Files / to Conversations) | 66 / ~107 ms | 64 / ~107 ms | 62 / ~107 ms |
+| Switch small → big project | 268 ms | 233 ms | 266 ms |
+
+Every pass reproduces it: seven to eight seconds of a frozen backend behind eight
+fast-painting clicks.
 
 **Fix shape (proposed).**
 1. Make the watcher stop where discovery stops: skip any directory holding a `.git`
