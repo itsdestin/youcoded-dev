@@ -128,3 +128,10 @@ recurred — the repetition is the data.
 - The supplied document path pointed at the shared checkout, while workspace-start had moved it into the session worktree; locating it cost a failed read plus a glob → dropped: workspace-start already prints the absolute paths, and the mismatch was specific to this resumed session
 - Final review caught a destructive validation asymmetry: malformed persisted values correctly read as None, but malformed write values also cleared the preference → applied: `step-guard-settings.test.ts` pins reject-without-mutation before the main-process fix
 - deleted/merged: removed the whole model-name-based `model-step-budget.ts` subsystem and its test; ordinary root limits now come from one explicit persisted snapshot
+
+## 2026-09-08 — safe Markdown disclosure blocks (session/markdown-details-fix)
+- `workspace-start` created the app worktree without the documented auto-provisioned `desktop/node_modules`, causing one failed investigation command and a manual `cp -al` recovery → dropped: startup provisioning is already specified and this single miss did not recur; no new rule would improve on the existing mechanism [2 shell calls]
+- A first-pass raw-node transform passed component tests but failed TypeScript because root HAST content is wider than element content; the required `verify.sh` caught it before commit → applied: the final regression tests plus existing verification gate are the durable guard [1 failed verification run]
+- The first security review found unsupported HTML attributes could leak text into the URL linkifier and spaced `<details>`/`<summary>` was missed; both now have failing-then-passing tests → applied: `MarkdownContent.test.tsx` [2 caught edge cases]
+- A repo-wide source sweep found one production Markdown pipeline and all callers inherit it; no duplicate renderer or separate Android parser needed repair → dropped: no additional change exists to make
+- deleted/merged: no redundant code or guidance found; arbitrary raw-HTML enablement was deliberately avoided rather than adding `rehype-raw`
