@@ -8,9 +8,9 @@
     "light"
   ],
   "runs": {
-    "before": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-09-session-switcher-rename/runs/before",
-    "after": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-09-session-switcher-rename/runs/after",
-    "today": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-09-session-switcher-rename/runs/today"
+    "before": "runs/before",
+    "after": "runs/after",
+    "today": "runs/today"
   },
   "crops": {
     "switcher-list": [

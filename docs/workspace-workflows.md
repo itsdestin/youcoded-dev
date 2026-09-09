@@ -114,27 +114,19 @@ cd youcoded/desktop && npm ci && npm run build
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
 
-# NEITHER Android command above can run on this machine today. Verified 2026-09-05:
-#   ls /home/destin/.android-sdk   -> No such file or directory
-#   ls /usr/lib/jvm               -> default, default-runtime, java-26-openjdk
-#   find /home/destin /opt -maxdepth 4 \( -name platform-tools -o -name build-tools \
-#        -o -name cmdline-tools \) -type d      -> nothing
-#   pacman -Qq | rg -i android    -> android-studio         (the IDE only)
-# Gradle stops at `SDK location not found` during CONFIGURATION, before compiling.
+# Both Android commands above DO run here (741 tests green, 2026-09-09) — Gradle
+# just needs ANDROID_HOME named, because the SDK is installed but not exported:
+#   JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
+#     ./gradlew test -x bundleWebUi
+# `-x bundleWebUi` skips the web-UI bundle, which would run npm against the
+# worktree's HARDLINKED node_modules and write through to the shared checkout.
 #
-# This block previously asserted the SDK WAS installed at that path, and named a
-# java-21-openjdk that is also absent. Both had been wrong long enough that nobody
-# noticed — which means sessions that ran this command and moved on recorded a
-# configuration failure as a completed "checked both platforms". A check that stops
-# checking goes quiet, not red. Do not report `./gradlew test` as passing here.
-#
-# Until the SDK is installed (open item: docs/roadmap/dev-workspace.md), a Kotlin
-# change can only be compiled file-by-file with the kotlinc inside /opt/android-studio.
-# Once it IS installed, this is the invocation. The JDK must be Android Studio's
-# bundled runtime (JDK 21.0.10) — the system default is 26, which AGP rejects. And
-# `-x bundleWebUi` is MANDATORY in a worktree: it transitively runs `npm ci`, which is
-# destructive against a hardlinked node_modules (see the worktree rule above).
-cd <worktree> && JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME=<the SDK, once installed> \
+# Read the result out of app/build/test-results/**/*.xml, not off the console:
+# a second run prints BUILD SUCCESSFUL with "103 tasks up-to-date" and executes
+# no tests at all. This block asserted for five days that Android could not be
+# built here — true when written, and by 2026-09-09 it had cost a session and a
+# subagent a false "unverifiable" each. Re-verify before trusting either claim.
+cd <worktree>/youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
   ./gradlew test -x bundleWebUi
 ```
 
