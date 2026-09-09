@@ -59,6 +59,31 @@ MAX_LIVE_PANES = 4
 # Wider than this and the row scrolls sideways, which defeats comparing the panes at all.
 LIVE_FIT_WIDTH = 1600
 AUTO_WARN_FRACTION = 0.6   # an auto-highlight covering more than this much of the crop is "whole surface"
+
+
+def _warn_whole_crop_box(hl, sid, warnings):
+    """A hand-placed box that covers the whole crop highlights nothing.
+
+    WHY: the "covers N% of the crop" warning lives in crops.py and only runs for `auto`
+    highlights, which measure the real pixel diff. So the way to silence it was to hand-place
+    a box — and on 2026-09-09 a deck did exactly that, `[2, 2, 96, 96]`, i.e. 92% of the crop,
+    drawing a rectangle around the entire dialog and calling it the change. That is a check
+    passing for the wrong reason: the author had to write the box, so it reads as deliberate.
+    Box units are percentages of the crop, so the coverage is arithmetic — no image needed.
+    """
+    box = hl.get('box')
+    if not (isinstance(box, (list, tuple)) and len(box) == 4):
+        return
+    try:
+        w, h = float(box[2]), float(box[3])
+    except (TypeError, ValueError):
+        return
+    share = (w / 100) * (h / 100)
+    if share > AUTO_WARN_FRACTION:
+        warnings.append(
+            f'{sid}: that box covers {round(share * 100)}% of the crop — it highlights nothing. '
+            'Name an element, or drop the highlight and let the before/after pair do the work'
+        )
 # The live app writes the theme it is on to this file on every appearance change
 # (desktop `appearance:set`). It is a plain file, never held open, so reading it is inside the
 # live-app safety rule — and it is the only way a deck can know which palette Destin is looking
@@ -524,6 +549,7 @@ def validate(spec):
                 errors.append(f'{sid}: highlight must be "auto" or have selector, text or box')
             elif 'box' in hl:
                 warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
+                _warn_whole_crop_box(hl, sid, warnings)
         else:
             errors.append(f'{sid}: highlight must be "auto" or an object')
         th = st.get('themes')
@@ -582,6 +608,7 @@ def _validate_decide(spec, st, sid, errors, warnings):
         errors.append(f'{sid}: highlight must have selector, text or box')
     elif 'box' in hl:
         warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
+        _warn_whole_crop_box(hl, sid, warnings)
     _validate_options(st, sid, errors, warnings, minimum=2)
     th = st.get('themes')
     if th is not None and (not isinstance(th, list) or not th or not all(isinstance(t, str) for t in th)):
