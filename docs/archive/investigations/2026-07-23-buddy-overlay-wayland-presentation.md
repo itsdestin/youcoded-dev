@@ -1,6 +1,7 @@
 ---
-status: active
+status: archived
 opened: 2026-07-23
+closed: 2026-09-08
 subsystem: buddy overlay (Linux Wayland), PR itsdestin/youcoded#214
 verdict: ARCHITECTURE BLOCKED — click-through primitive does not exist on native Wayland
 merged: PR #214 merged 2026-07-23 in DORMANT configuration (chooseBuddyStrategy → 'windows' everywhere)
@@ -268,3 +269,30 @@ lives under `docs/archive/prototypes/`. Fix it if the branch is ever revived.
 Linux Wayland — XWayland route PROVEN but shelved; next attempt: native Wayland") is still
 open, and no native-Wayland attempt has been made since. Nothing in the FINAL VERDICT or the
 Decision has been falsified by anything on master.
+
+## CLOSED — 2026-09-08 (superseded by a native-Wayland fix, XWayland route dropped)
+
+The native-Wayland attempt this doc called for happened: **PR #438 "The Linux buddy can be
+dragged: a KWin helper, the caption channel, and the work-area fix"** merged into master
+2026-09-06 (`f2ffde66`). It solves buddy dragging on native Wayland an entirely different way
+than anything explored here — the window is never asked to move itself; it renames its own
+title to `YC:<role>@<x>,<y>` and an opt-in KWin script reads that and moves it. See
+`.claude/rules/buddy-floater.md` → "Linux Wayland" and
+`docs/archive/design/2026-09-04-linux-buddy-helper/technical-design.md` for the shipped
+design. This makes the XWayland route moot: there is now a working native-Wayland path, so
+the tradeoffs recorded above (whole-app ozone switch, per-compositor sharpness, mixed-DPI
+breakage, machine-specific GPU flag) no longer need to be paid.
+
+**Disposition of PR #239 / branch `fix/linux-xwayland-floater`:** closed without merging,
+branch deleted (Destin, 2026-09-08 — "keep docs recording what we tried and the outcome,
+but drop the code"). One note for the record: the branch's `BuddyWindowManager.place()`
+fix (re-assert window size via `setBounds` on every `setPosition` call, to stop Electron
+inflating a frameless window at 1.5× fractional scale) does **not** appear to have been
+carried into the shipped fix — master's `place()` (`buddy-window-manager.ts`) uses
+`win.setTitle()` on the native-Wayland/KWin-helper path and plain `win.setPosition()`
+otherwise, not `setBounds`. The inflation bug was only ever reproduced under **XWayland**
+specifically; it's unconfirmed whether plain X11 or Windows/macOS with fractional scaling
+hit the same Electron behavior. Flagged here, not re-investigated — the branch containing
+the fix is gone as of this closure, so if `setPosition` size-inflation is ever seen again
+on a fractional-scale display, start from this paragraph and the "NEW BUG FOUND + FIXED"
+section above rather than rediscovering it from scratch.
