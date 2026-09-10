@@ -3,6 +3,16 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
+      has been red on master for it for weeks: `native-specialists.md` (764 words) and
+      `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every
+      session, so this is a standing tax on every conversation, and the red audit also
+      hides any NEW drift behind noise a session learns to skim past. The ledger records
+      native-specialists going over four separate times, each noticed and left because it
+      belongs to nobody's current branch. Fix is the one the rules README already
+      prescribes: move the overflow into the lazy doc the rule points at
+      `n/a` `confirmed` `checked 2026-09-10`
+
 - [ ] `use-provider-type.test.tsx` → "invalidation › is triggered by the ChatGPT card on a status
       transition" failed once in a `verify.sh --full` run on session/cache-competitor-survey
       (2026-09-10, `expected "vi.fn()" to be called at least once`, 1,224 ms) and passed 14/14 in

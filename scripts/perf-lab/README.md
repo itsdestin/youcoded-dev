@@ -12,6 +12,13 @@ running a command* instead of being re-investigated from scratch. What is not a
 scenario is not measured — see the coverage table, and read it as the honest list it
 is.
 
+> **Nothing here appears on Destin's desktop.** Every rig entry point — `run.mjs`,
+> `profile-open.mjs`, the screenshot sweep — launches the app on an **Xvfb virtual
+> display**, not the real one. The standing "warn before opening a window" rule is
+> about `run-dev.sh` and the workbench; it does not apply to the rig, and a session
+> that assumes it does will either warn for nothing or avoid the right instrument.
+> (Stated here because a session did exactly that on 2026-09-10.)
+
 > **Terms, once.** *Main process* — the single background process that owns the app's
 > files, IPC and windows; there is exactly one, shared by every open session.
 > *Renderer* — the process that draws a window (the web page). *IPC* — the messages the

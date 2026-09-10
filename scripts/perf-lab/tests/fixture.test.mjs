@@ -6,6 +6,22 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ccProjectSlug, transcriptLines, transcriptBody, readEnginePin, SIZES, CONTENT_SEED, messagesPerTurn, stableUuid, DECOY_TRANSCRIPTS, DECOY_PROJECT_DIRS } from '../fixture.mjs';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+// Some tests here read the APP repo (engine-pin.ts) because the whole point is
+// that the rig does not keep a second copy of the engine version. A workspace
+// worktree created without `youcoded` — which is every bare merge worktree —
+// has no app repo, and those tests then fail with a bare ENOENT that looks
+// exactly like a real break. Two sessions have now stopped to prove such a
+// failure environmental (2026-09-10, twice in one session). Skip with the
+// reason instead: absent is not failing.
+const WORKSPACE_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const APP_REPO = join(WORKSPACE_ROOT, 'youcoded', 'desktop');
+const noAppRepo = existsSync(APP_REPO)
+  ? false
+  : `needs the youcoded app repo, which is not checked out at ${APP_REPO} — run workspace-start with the youcoded component`;
 
 test('ccProjectSlug matches slug-encoding.ts for a Linux path', () => {
   assert.equal(ccProjectSlug('/home/destin/x/perf lab'), '-home-destin-x-perf-lab');
@@ -70,7 +86,7 @@ test('sessionId + slug pass loadHistory\'s SAFE_ID_RE guard', () => {
   assert.ok(SAFE_ID_RE.test(crypto.randomUUID()));
 });
 
-test('readEnginePin reads the app\'s own pin, not a second hardcoded copy', () => {
+test('readEnginePin reads the app\'s own pin, not a second hardcoded copy', { skip: noAppRepo }, () => {
   const pin = readEnginePin();
   assert.match(pin.version, /^b\d+$/);
   assert.match(pin.sha256, /^[0-9a-f]{64}$/);
@@ -200,7 +216,7 @@ test('decoys are spread across directories rather than piled into one', () => {
 // `alpha`, the session resumed nothing, and an empty conversation was reported as
 // "medium". The generator writes every fixture transcript for projects.alpha, so
 // the record must say so — the scenario now refuses a record without it.
-test('buildFixture transcript records carry the cwd they were written for', async () => {
+test('buildFixture transcript records carry the cwd they were written for', { skip: noAppRepo }, async () => {
   const { mkdtempSync, rmSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
