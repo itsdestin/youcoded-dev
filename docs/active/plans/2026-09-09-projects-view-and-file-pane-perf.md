@@ -90,11 +90,36 @@ Files: `desktop/src/main/artifacts/project-watcher.ts`, `desktop/src/main/ipc-ha
 2.2 **Stop the per-token redraw.** `React.memo(SessionDrawer)` with stable callbacks from
     `ChatView.tsx:1310`; memoize the `ArtifactProvider` value in `App.tsx:3077`. Check with
     the rig's workload phase (`--only workload`) that streaming cost does not move up.
-2.3 **Markdown open.** Memoize `hastText` in `MarkdownContent.tsx:337` (same component the
-    chat uses — verify chat rendering unchanged with the workload/scrollback phases). The
-    progressive first-screen render is a separate, larger change; do it only if the
-    artifacts phase still shows >500 ms on the large Markdown open after 2.3.
+2.3 **Markdown open — DROPPED as written, 2026-09-09; the premise was wrong.** Timed against
+    the rig's own 392 KB / 699-fence fixture through the app's own plugin chain: parse
+    292 ms, mdast→hast 217 ms, rehype-highlight 377 ms, `hastText` **7 ms** — 0.8% of the
+    work, so memoizing it could not have moved anything. Moved to `docs/roadmap/files.md`
+    with those numbers and three untried candidates (first-screen render, lazy highlighting,
+    parse off the main thread). It is a real freeze — 1,455 ms large, 570 ms for a 3.5 KB
+    file against 117 ms for a 400 KB code file — and now the largest one left in the pane.
 2.4 Self-review, `verify.sh`, artifacts + workload phases before/after, fresh-eyes review.
+
+## State — 2026-09-10
+
+**Branch 1 `fix/projects-watcher-thrash` — built, measured twice, reviewed. Awaiting Destin's
+merge call.** Two commits (`c73e0920` the fix, `69cde4e8` the review follow-ups).
+Eight rapid tab clicks: main process unresponsive 7,101 ms → **0 ms**; worst single freeze
+305 ms → 6 ms; cold open 2,087 → 776-855 ms. `VERDICT: KEEP` on both runs
+(`perf-reports/2026-09-10-0008-c73e092-watcher-thrash-fix.*`, `…-0206-69cde4e-…-2.*`).
+A fresh reviewer found two user-visible faults the change itself introduced — the hidden
+tab holding the Escape key / Android back button, and the hidden tab's refresh re-running
+the uncached tree walk — both fixed in `69cde4e8` with guards.
+
+**Branch 2 `fix/file-pane-spawns-and-redraw` — built, verified, reviewed by me only.
+Awaiting Destin's merge call.** Two commits (`068c4de7` the fix, `d8fd8414` the guard).
+The rig measured **flat** before and after, and that is a coverage gap rather than a null
+result: no phase opens the file pane while a reply streams, and none changes one file while
+a different one is open. Both filed (`docs/roadmap/dev-workspace.md` → tests). The claims
+are counts and are pinned as counts: 40 streamed tokens caused 40 full drawer re-renders
+before and 0 after; a change to any other file no longer costs three git subprocesses.
+No fresh-eyes review yet.
+
+**Not done:** Branch 3 in full; the Markdown open (2.3, re-scoped above and filed).
 
 ## Branch 3 — smaller, after 1 and 2 (any order, each a small PR)
 

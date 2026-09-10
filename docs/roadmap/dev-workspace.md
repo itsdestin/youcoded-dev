@@ -3,6 +3,17 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] The perf rig throws away a finished build when the machine is merely still calming
+      down. Its idle gate polls five times, 30 s apart, then aborts the whole run — but the
+      abort happens AFTER the multi-minute build, and a load average decaying from other
+      work can sit above the threshold for the whole 2.5 minutes while trending down. Hit
+      2026-09-09: five attempts at load 12.1 → 4.4 and abort, with the machine quiet a
+      minute later. Worked around twice with a hand-written waiter that requires three
+      consecutive settled samples before launching. Fix: wait until a deadline rather than a
+      fixed attempt count, require the load to be settled rather than momentarily under the
+      line, and print a "still waiting" line so a queued run is not mistaken for a hung one
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a
