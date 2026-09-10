@@ -80,12 +80,15 @@ read of one file. Five surfaces, pinned by `ipc-channels.test.ts`; `native.onSes
 is off the mock-only list. Design and the three surprises that shaped it:
 `docs/active/specs/2026-09-10-session-context-backend-design.md`.
 
-**Open, and Destin's to answer: what a Claude Code chat shows.** Contract R23 says EVERY chat
-carries the line, but Claude Code assembles its own instructions — YouCoded does not build its
-prompt, read its skills, or cut anything for it, so there is nothing truthful to report beyond
-the model and its window. Today a CC chat gets no line at all. The three ways forward, with
-what each costs, are in the design doc's own "Claude Code sessions" section. Nothing else waits
-on this.
+**Claude Code chats — ANSWERED and built** (Destin, 2026-09-10: "reflect what we can reflect
+accurately. And then for the stuff that's less certain. We should reflect it as such.").
+`main/claude-code-context.ts`. Reported as fact: the instruction files the CLI reads (including
+`~/.claude/CLAUDE.md`, which gets its own card and appears ONLY on a Claude Code chat, because
+the native harness never reads it), and the installed skills — the app writes the four
+registries the CLI reads, so that is the app's own knowledge. Withheld: its system prompt, its
+tool list, its context window, and whether it shortened anything. `tools` is **null, never
+`[]`** — an empty list reads as "this assistant has no tools", a lie in the more alarming
+direction; each empty tab says whose business it is instead.
 
 ### 3. Android parity — DONE
 `SessionService.kt` answers `native:session-context-text` with the honest
@@ -117,13 +120,13 @@ routes mount. **Android: 741 tests, 0 failed.** Probed in the workbench: the str
 the pushed record, Details opens the panel, and expanding a skill fetches its text and shows
 the got/cut comparison.
 
-**One visual defect found and filed, not fixed:** the selected tab paints as if a different tab
-were selected — the highlight stays on Overview and the Skills label goes invisible. The
-classes on the buttons are correct; the paint is one state behind, so it is stale paint in a
-shared control inside a glass panel, not this feature's markup. Reproducible in headless
-Chrome across themes — **worth 10 seconds of Destin's eyes in a dev instance before anyone
-spends longer on it**, since headless rendering may be the whole explanation.
-`docs/roadmap/user-interface.md`.
+**A "visual defect" that turned out to be the measuring instrument.** The selected tab appeared
+to paint on the wrong tab, reproducibly, in `ui-probe`'s headless Chrome — correct classes,
+stale paint. Checked in a real dev instance against the SAME control on an untouched surface
+(the bug-report popup's Bug/Feature tabs) and it is correct there: the selected tab carries
+`bg-accent` and paints it. **Headless Chrome does not settle style recalculation for these
+elements; do not trust `ui-probe` for painted state of a control that just changed.** The
+roadmap item filed for it was withdrawn the same day.
 
 ## Not part of this feature (filed, do not chase here)
 

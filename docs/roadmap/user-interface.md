@@ -189,16 +189,3 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       defend), what a local model shows for cost (nothing? "free"?), and whether three tags fit
       a row that already carries a name, a source and a favourite star.
       `model-picker` `all` `confirmed` `checked 2026-09-06`
-
-- [ ] The selected tab in a tab strip can paint as if a DIFFERENT tab were selected. Seen
-      2026-09-10 on the "What the assistant was given" panel: pressing Skills switches the
-      content correctly and marks the right tab for screen readers, but the highlight stays on
-      Overview and the Skills label goes invisible — a blank grey pill. Reproducible in headless
-      Chrome across themes. The classes on the buttons are CORRECT (`Overview` carries
-      `text-fg-2` and no `bg-accent`; `Skills` carries `bg-accent text-on-accent`) while the
-      painted styles are one state behind — so this is stale paint, not a React or class-order
-      bug. Prime suspect is the glass panel's backdrop-filter, the same Chromium paint-dropping
-      class as the `.layer-surface` on repeated elements rule. Shared control
-      (`SegmentedTabs variant="contained"`), so any tab strip inside a glass panel can do it.
-      Worth confirming on a real machine first — headless rendering may be its own explanation.
-      `all` `needs-verify` `checked 2026-09-10` `needs-repro` → docs/active/specs/2026-09-10-session-context-backend-design.md
