@@ -3,6 +3,15 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
+      still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
+      one-second `setInterval` and a previous session already lifted the timeout 3s -> 8s with a
+      comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
+      in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
+      a signal the card emits, so the test waits on the transition rather than on the clock. Not
+      done here because it is another feature's test and a bad rewrite is worse than a slow one
+      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
+
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
       so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
