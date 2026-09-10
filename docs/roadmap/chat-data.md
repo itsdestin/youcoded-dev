@@ -16,7 +16,7 @@ produced and the panel that shows them (files).
 
 - [ ] After switching models in a chat, the saved conversation record still shows the model from
       before the swap (desktop, 2026-08-27); a red test for it sits on branch test/last-used-model-pin
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-metadata-only-save-keeps-old-last-used-model.md
+      `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-metadata-only-save-keeps-old-last-used-model.md
 
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —

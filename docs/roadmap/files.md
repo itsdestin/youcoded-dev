@@ -7,7 +7,7 @@ searched or resumed (chat-data).
 - [ ] Git view: a file whose name has a quote, a backslash or an accent (an accented filename
       is the common case) shows no status at all, whatever was changed; a filename containing
       a literal " => " displays as a rename
-      `files-panel` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-status-quoted-paths.md
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-status-quoted-paths.md
 
 - [ ] Git review: after amending or rebasing while "Show more" pages are open, the next "Show
       more" can silently skip commits until the review is reopened
