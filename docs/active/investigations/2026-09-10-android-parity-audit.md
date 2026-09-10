@@ -366,6 +366,143 @@ Ordered by user impact:
 Four or more questions go on a questions deck; these can be served as one when Destin wants
 to decide.
 
+## Appendix: the roadmap items folded into this report (2026-09-10)
+
+On 2026-09-10 every Android-specific roadmap item was consolidated here and replaced by one
+"Rebuild the Android app" item in `docs/roadmap/android-only.md`. Each is kept below with its
+last tokens and any linked investigation so nothing is lost. A new Android-only finding goes
+here, not in the roadmap, until the rebuild lands. Items about shared code that merely showed
+on a phone stayed where they were (sync's stale tag on desktop, the browser's white first
+connect and desktop-shaped terminal, the Play listing's business prerequisites in
+dev-workspace).
+
+### From android-only.md (19)
+
+1. Android keeps enforcing the old "approve protected requests" overrides after the desktop
+   switches them off; the phone has no screen to turn them off.
+   `settings/permissions` `confirmed` `checked 2026-09-07`
+2. A default model chosen on the desktop is dropped by the phone's settings reply (deferred
+   2026-09-07; four-line fix, §3 above).
+   `settings/defaults` `confirmed` `checked 2026-09-07`
+3. Resuming a past Claude Code conversation starts a fresh session; hyphenated project names
+   can open the wrong folder (unchanged since April).
+   `resume-browser` `confirmed` `checked 2026-09-01` `v1.3.1` →
+   docs/active/investigations/2026-09-01-android-resume-unreachable.md
+4. Android still carries the Drive/GitHub backup-and-restore backend desktop demolished in July.
+   `settings/sync` `needs-verify` `checked 2026-09-01` `v1.3.1`
+5. Possible crash if a screen asks for preferences, defaults, theme or sync status before
+   startup finishes (18 spots).
+   `needs-verify` `checked 2026-09-01` `needs-repro` →
+   docs/active/investigations/2026-09-01-android-session-service-bootstrap-npe-window.md
+6. May attach a conversation to the wrong Claude Code session after a subagent or hook fires
+   (desktop fixed in PR #257).
+   `chat` `confirmed` `checked 2026-09-01` `needs-repro` →
+   docs/active/investigations/2026-09-01-android-event-bridge-session-map-ungated.md
+7. Dead "layout insets" reading of the chat chrome; decided 2026-09-02: delete.
+   `chat` `confirmed` `checked 2026-09-02` →
+   docs/active/investigations/2026-09-01-android-layout-insets-flow-uncollected.md
+8. The 2026-07-20 soft-keyboard fix was only checked in Chrome over remote, never in the
+   packaged app (Destin 2026-09-02: probably resolved, not certain).
+   `input-bar` `needs-verify` `checked 2026-09-02`
+9. Library does not show themes you built yourself until published.
+   `library` `needs-verify` `checked 2026-09-01`
+10. Integrations only list; Install, Connect, Uninstall, Configure return not-implemented
+    (youcoded#78).
+    `marketplace-screen` `needs-verify` `checked 2026-09-01`
+11. No Project View for files: listing, rename, exclude/include, delete-project and the project
+    channels all return not-implemented ("mobile Project View is v2").
+    `projects` `parked` `checked 2026-09-01`
+12. Skill settings (favourites, quick chips, overrides) revert every launch after the first;
+    the first save wipes what was on disk.
+    `confirmed` `checked 2026-09-01` `v1.3.1` →
+    docs/active/investigations/2026-09-01-android-skill-config-never-loaded.md
+13. What "Online" means on a phone. Destin decided 2026-09-02: Online means the app is in
+    front; build that.
+    `needs-verify` `checked 2026-09-02`
+14. Tags and notes refused on the phone; only pin and hide work. Storage and sync exist.
+    `session-drawer` `needs-verify` `checked 2026-09-01`
+15. The file-record store lacks the write queue and read guard desktop got in PR #318.
+    `needs-verify` `checked 2026-09-01` `performance`
+16. The phone never gets the file-path repair desktop got on 2026-08-13; the missing-file check
+    is a stub that reports nothing missing.
+    `files-panel` `needs-verify` `checked 2026-09-01`
+17. Pinned to Claude Code 2.1.112 because later releases ship as a native binary the runtime
+    cannot run; decide before any listing.
+    `decision` `checked 2026-09-03` `v1.3` →
+    docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+    <!-- claim: {"path": "youcoded/app/src/main/kotlin/com/youcoded/app/runtime/Bootstrap.kt", "contains": "PINNED_CLAUDE_CODE_VERSION = \"2.1.112\""} -->
+18. Tapping a file the app cannot display dead-ends; "Open externally" is desktop-only.
+    `files-panel` `confirmed` `checked 2026-09-05`
+19. The permission question, file picker, folder picker and QR scanner are wired to a screen
+    that may already be gone; a request arriving afterwards throws and the caller waits forever.
+    `needs-verify` `checked 2026-09-05` `needs-repro`
+
+### From claude-code-integration.md (4)
+
+20. The permission-mode chip never shows "auto" and shows "normal" for any screen it cannot
+    read, where desktop shows "unknown" (found 2026-07-17). Likely root cause: the pinned CLI
+    predates auto mode.
+    `status-bar` `confirmed` `checked 2026-09-01` →
+    docs/active/investigations/2026-09-01-android-permission-mode-auto-unknown.md
+21. Phantom prompt cards (paste-your-sign-in-code, Continue/"Ready") when a reply merely
+    contains phrases like "press Enter to continue" (2026-07-16 sweep).
+    `tool-cards` `confirmed` `checked 2026-09-01` →
+    docs/active/investigations/2026-09-01-android-bare-phrase-prompt-cards.md
+22. Long messages (over ~56 bytes) submit with a fixed 600 ms pause before Enter, where desktop
+    waits for the terminal's echo.
+    `confirmed` `checked 2026-09-01` →
+    docs/active/investigations/2026-09-01-android-pty-echo-driven-submit.md
+23. Claude Code's full-screen redraws push duplicate banner chrome into the terminal's scroll
+    history; re-check first, newer CLI versions fixed some cases.
+    `terminal` `parked` `checked 2026-05-18`
+
+### From user-interface.md (2)
+
+24. On a phone the app is a shrunk desktop; wanted a rethought default for the Android app and
+    the mobile browser (quick chips, session switching, resume/history) with the full narrow
+    UI still reachable. Design-first: a workbench mockup round before any build.
+    `parked` `checked 2026-09-02`
+25. The right-click menu may not open from a long-press; never tried on a device, and long-press
+    also starts text selection. (§5 above: there is no long-press handler at all.)
+    `needs-verify` `checked 2026-09-01` `needs-repro`
+
+### From themes.md (1)
+
+26. Everything the mascot learned this year is desktop-only: on a phone the buddy is four
+    still pictures. Destin: "okay this is fine for now" (2026-09-05).
+    `confirmed` `checked 2026-09-05`
+
+### From local-models.md (1)
+
+27. The Local Models list would crash a phone the day phones get a local engine: "what have I
+    downloaded?" answers an object where a list is expected, and the first filter throws.
+    Cannot be observed until the section is un-gated. (§7b above: the seam needs its own flag.)
+    `settings/local-models` `needs-verify` `checked 2026-09-06`
+
+### From remote-access.md (2)
+
+28. A phone that pairs to a desktop mid-dictation cannot stop its own microphone; stop and
+    cancel should pass through while paired (found 2026-09-05).
+    `input-bar` `confirmed` `checked 2026-09-05`
+29. Pairing while the message box is open leaves the mic button looking live; nothing re-asks
+    whether voice is available when the connection changes.
+    `input-bar` `confirmed` `checked 2026-09-05`
+
+### From dev-workspace.md (1)
+
+30. Android beta builds all claim to be version 1.2.4; the Android build never got the version
+    stamping the desktop test build has (§6 above: confirmed inside the 1.3.0-beta.76 APK).
+    `confirmed` `checked 2026-09-03`
+
+### Claims this report anchors
+
+The bridge's catch-all reply carries only an error string, so the shim resolves it as a value.
+<!-- claim: {"path": "youcoded/app/src/main/kotlin/com/youcoded/app/bridge/MessageRouter.kt", "contains": "fun buildErrorResponse"} -->
+Notification permission is declared in the manifest and never requested at runtime.
+<!-- claim: {"path": "youcoded/app/src/main/AndroidManifest.xml", "contains": "POST_NOTIFICATIONS"} -->
+The prebuilt web bundle's index is exempted from gitignore and tracked.
+<!-- claim: {"path": "youcoded/.gitignore", "contains": "!app/src/main/assets/web/index.html"} -->
+
 ## Sources
 
 Channel table, push-event gaps, and android-only list: sweep of `ipcMain.handle/on` across
