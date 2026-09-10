@@ -118,6 +118,70 @@
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "resume-filter-chips-review-3#S-13"
+        },
+        {
+          "id": "R15",
+          "statement": "Dragging the window wider than a phone while the filter panel is open leaves Projects and Tags opening their menus as before.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F1"
+        },
+        {
+          "id": "R16",
+          "statement": "With nothing picked a chip says Projects or Tags; one pick shows its name; more show the category and a count.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/filter-menu-chip.test.tsx",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F2"
+        },
+        {
+          "id": "R17",
+          "statement": "The developer note on the menu check box describes the rows as they are built, not a different pattern.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F3"
+        },
+        {
+          "id": "R18",
+          "statement": "The developer note above the search box describes the two-width layout that is actually there.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F4"
+        },
+        {
+          "id": "R19",
+          "statement": "The developer note on the tag manager no longer claims the Tags filter menu opens it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F5"
+        },
+        {
+          "id": "R20",
+          "statement": "The chips' chevron is the one shared glyph the dropdown fields and the find bar draw, not a private copy.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F6"
+        },
+        {
+          "id": "R21",
+          "statement": "A tap outside an open menu closes only that menu; the list stays open and your filters stay set.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-ux-review-2.md#U2"
+        },
+        {
+          "id": "R22",
+          "statement": "At phone width, when ticking a row shrinks the list, the open menu moves with its chip instead of floating loose.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-ux-review-2.md#U3"
+        },
+        {
+          "id": "R23",
+          "statement": "On desktop a long picked name is cut short so all three chips still fit on the row.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-resume-filter-chips-ux-review-2.md#U11"
         }
       ]
     }
