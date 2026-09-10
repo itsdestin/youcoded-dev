@@ -7,10 +7,17 @@ status: draft
 From `docs/active/specs/2026-09-09-remote-access-batch1-technical-design.md` revision 4,
 after three review rounds (45 findings, all accepted).
 
-**Nothing here starts yet.** Two gates are open: the contract
-(`docs/active/design/2026-09-09-remote-access/remote-access.contract.json`) is unsigned, and
-`remote-access-questions-3` (Q-6, the network decision; Q-7, offline devices staying listed)
-is unanswered. Q-6 decides whether tasks 6–9 exist at all.
+**Built: T1–T11, all eleven, on `session/remote-mesh-roadmap`** (2026-09-10). Both opening
+gates closed first: the contract was signed 2026-09-09, and `remote-access-questions-3`
+answered Q-6 Tailscale-only and Q-7 offline devices stay listed. Q-6 going that way is what
+kept tasks 6–9 in the batch.
+
+What remains is not building: a fresh code reviewer, a context-free UX tester, a fresh
+grader, then the acceptance deck. Nothing is merged.
+
+One thing the tests cannot cover: **no real phone has connected to a real computer through
+the app.** The transport was proven with a throwaway echo server on one machine. That needs
+a second device.
 
 Each task: one reviewer, one branchable unit, its own tests. Desktop tasks end with
 `bash scripts/verify.sh <worktree>`; Android tasks need their own build check.
