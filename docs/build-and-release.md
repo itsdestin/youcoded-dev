@@ -180,7 +180,8 @@ no channel and render unchanged. Format lives in `desktop/src/shared/version-lin
 <!-- verify: {"test": "youcoded/desktop/tests/version-line.test.ts"} -->
 
 **Rolling back.** Reinstall the last release's installer from its GitHub release
-(`YouCoded.Setup.<version>.exe`). That reverts the *code* only — it does **not** un-migrate
+(`YouCoded.Setup.<version>.exe` up to 1.3.0-beta.76, `YouCoded-Installer-<version>.exe` after
+the installer rename). That reverts the *code* only — it does **not** un-migrate
 `~/.claude/` or `~/.youcoded/` state that the newer build may have already rewritten. Snapshot both
 before installing a beta that's far ahead of your release (there's precedent: the 776 MB
 `claude-snapshot.tar.gz` taken 2026-07-12 before the two-device dogfood).
