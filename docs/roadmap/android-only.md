@@ -12,5 +12,6 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       11 from other areas) was folded into the report's appendix on 2026-09-10. Destin decided
       the same day (report §8): built-in assistant first, Play prioritized, the full desktop
       file view, remove the old restore wizard, harness before phone basics. Step 2 (honest
-      builds: versions, notification permission, clean refusals) is on session/android-rebuild-1
+      builds: versions, notification permission, clean refusals) and the restore-wizard deletion
+      merged 2026-09-10 (youcoded#468); next is step 4, the harness runtime on the phone
       `android` `in-flight` `checked 2026-09-10` → docs/active/investigations/2026-09-10-android-parity-audit.md

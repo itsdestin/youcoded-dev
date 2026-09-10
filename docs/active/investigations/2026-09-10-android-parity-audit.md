@@ -373,7 +373,7 @@ Ordered by user impact:
 4. **Remove the phone-only restore wizard**; the phone gets the current sync when the
    built-in assistant's runtime arrives.
 5. **Harness before phone basics.** Small honesty fixes (versions, notification permission,
-   clean refusals) shipped first regardless, on `session/android-rebuild-1`.
+   clean refusals) shipped first regardless, merged 2026-09-10 (youcoded#468).
 
 ## Appendix: the roadmap items folded into this report (2026-09-10)
 
@@ -399,7 +399,7 @@ dev-workspace).
    docs/active/investigations/2026-09-01-android-resume-unreachable.md
 4. Android still carries the Drive/GitHub backup-and-restore backend desktop demolished in July.
    `settings/sync` `needs-verify` `checked 2026-09-01` `v1.3.1`
-   Restore half deleted 2026-09-10 (deck Q-5, `session/android-rebuild-1`); the backup/push
+   Restore half deleted 2026-09-10 (deck Q-5, youcoded#468); the backup/push
    half stays until the Sync Spaces port rides the harness runtime (§7a).
 5. Possible crash if a screen asks for preferences, defaults, theme or sync status before
    startup finishes (18 spots).
