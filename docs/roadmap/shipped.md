@@ -37,6 +37,10 @@ decision either way.
 - [x] 2026-09-02 sync — Sync dead-ends on a machine without gh — Destin tested the no-gh path in his macOS VM, it worked (2026-09-02)
 
 ## Shipped before 2026-09-01 (old format)
+- `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
+  ENABLED and then typed, but React could commit the loaded value into the field after the
+  change event, so the save fired with the old number. Three full runs went red the day it
+  was found, always green in isolation. They now wait for the loaded value itself.
 
 Every `[x]` item from the single-file roadmap as it stood at the migration base, in file order — 149 were still sitting in their original sections and 19 were in the old `## Shipped` section. Copied verbatim; the tool never reads below this heading.
 

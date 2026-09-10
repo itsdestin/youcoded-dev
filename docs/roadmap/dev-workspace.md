@@ -3,21 +3,6 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
-- [ ] `step-guard-row.test.tsx` -> "serializes rapid commits and applies the latest intent after
-      the in-flight write" fails under full-suite load and passes in isolation. Seen 2026-09-10 on
-      `session/error-states-development`: `expected [ [ 20 ], [ 40 ] ] to deeply equal
-      [ [ 30 ], [ 40 ] ]` — an intermediate commit is read instead of the latest, i.e. the
-      serialization the test names is what load breaks. Isolated run: 8 passed. Immediate re-run of
-      the full suite: green. The branch's only change was `ui/states.tsx`, whose tree that test never
-      imports, so it is not caused by it. The file drives state through `waitFor` (`:41,48,51,53,59`)
-      against a 1s budget, which is the shape `.claude/rules/test-suite-hygiene.md` warns about.
-      Worth pinning on a signal rather than a wait, because a sometimes-red suite teaches sessions to
-      disbelieve it. **Recurred the same day** on a later full run, with TWO of the file's cases red
-      ("failed write rolls back and Retry persists the same intent": `expected [[20],[20]] to deeply
-      equal [[50],[50]]`, and the rapid-commits one again). Isolated: 8 passed. Immediate re-run of
-      the full suite: green. So it is reproducible-under-load, not rare
-      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
-
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
       so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
