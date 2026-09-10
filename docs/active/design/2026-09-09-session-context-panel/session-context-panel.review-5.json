@@ -2,7 +2,7 @@
   "title": "What the assistant was given — your seven changes, then the questions you did not reach",
   "key": "session-context-r5",
   "out": "session-context-panel.review-5.html",
-  "intro": "You approved the words and asked for seven changes in the note. They are built — numbered from 21 so nothing already approved gets renumbered: (21) the warning is one line you can open; (22) it sits BELOW the tabs and only on Overview; (23) so your phrase \"(see details below)\" is true again and comes back — round 4 had removed it precisely because a warning pinned above the tabs pointed at nothing on four of the five tabs; (24) file text now goes through the app's own markdown renderer instead of showing raw source; (25) the got/cut switch spans the panel; (26) each side says roughly how much text it is; (27) tools are full-width rows that open in place, each with a plain sentence saying what it does. Then the seven points you did not reach on the last deck, unchanged. The first one is the note that got cut off mid-word.",
+  "intro": "You approved the words and asked for seven changes in the note. They are built — numbered from 21 so nothing already approved gets renumbered: (21) the warning is one line you can open; (22) it sits BELOW the tabs and only on Overview; (23) so your phrase \"(see details below)\" is true again and comes back — round 4 had removed it precisely because a warning pinned above the tabs pointed at nothing on four of the five tabs; (24) file text now goes through the app's own markdown renderer instead of showing raw source; (25) the got/cut switch spans the panel; (26) each side says roughly how much text it is; (27) tools are full-width rows that open in place, each with a plain sentence saying what it does; and (28), from your note while reviewing, the got/cut switch and the text now share ONE container with the skill or file they belong to, instead of four separate slabs down the page with nothing marking where one skill ends and the next begins. Then the seven points you did not reach on the last deck, unchanged. The first one is the note that got cut off mid-word.",
   "live": {
     "worktree": "/home/destin/youcoded-dev/worktrees/sessions/context-truncation/youcoded",
     "paneWidth": 420
@@ -14,7 +14,7 @@
       "path": "Chat → the strip at the top of the conversation → Details",
       "headline": "Your seven changes, side by side with what you answered yes to. Open the warning, the tabs and a tool.",
       "changed": "Left is round 4. Right is changes 21 to 27. The biggest difference is the top: the tabs come first, and the warning is one line on Overview that opens to the full sentence.",
-      "notice": "On Project and Skills, press What was cut — the switch now spans the panel and says how many lines are on each side. On Tools, press any tool to read what it does.",
+      "notice": "On Project and Skills, press What was cut — the switch now spans the panel, says how many lines are on each side, and sits inside the same card as the skill it belongs to (change 28, from your note). On Tools, press any tool to read what it does.",
       "risk": "Markdown is scaled down for a panel this width; at chat size a heading dwarfed everything around it. Open and Assistant settings still do nothing.",
       "live": {
         "surface": "session-context",
