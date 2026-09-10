@@ -1,0 +1,225 @@
+{
+  "title": "What the assistant was given — your seven changes, then the questions you did not reach",
+  "key": "session-context-r5",
+  "out": "session-context-panel.review-5.html",
+  "intro": "You approved the words and asked for seven changes in the note. They are built — numbered from 21 so nothing already approved gets renumbered: (21) the warning is one line you can open; (22) it sits BELOW the tabs and only on Overview; (23) so your phrase \"(see details below)\" is true again and comes back — round 4 had removed it precisely because a warning pinned above the tabs pointed at nothing on four of the five tabs; (24) file text now goes through the app's own markdown renderer instead of showing raw source; (25) the got/cut switch spans the panel; (26) each side says roughly how much text it is; (27) tools are full-width rows that open in place, each with a plain sentence saying what it does. Then the seven points you did not reach on the last deck, unchanged. The first one is the note that got cut off mid-word.",
+  "live": {
+    "worktree": "/home/destin/youcoded-dev/worktrees/sessions/context-truncation/youcoded",
+    "paneWidth": 420
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "Your seven changes, side by side with what you answered yes to. Open the warning, the tabs and a tool.",
+      "changed": "Left is round 4. Right is changes 21 to 27. The biggest difference is the top: the tabs come first, and the warning is one line on Overview that opens to the full sentence.",
+      "notice": "On Project and Skills, press What was cut — the switch now spans the panel and says how many lines are on each side. On Tools, press any tool to read what it does.",
+      "risk": "Markdown is scaled down for a panel this width; at chat size a heading dwarfed everything around it. Open and Assistant settings still do nothing.",
+      "live": {
+        "surface": "session-context",
+        "round": 5
+      },
+      "variants": [
+        {
+          "id": "before",
+          "label": "Before — round 4",
+          "candidate": "r4-trimmed",
+          "summary": "Warning pinned above the tabs on every tab, raw file text, a small switch, tools as chips."
+        },
+        {
+          "id": "after",
+          "label": "After — changes 21 to 27",
+          "candidate": "r5-trimmed",
+          "summary": "Tabs first, a one-line warning on Overview, markdown, a full-width switch with a line count, tools that open."
+        }
+      ]
+    },
+    {
+      "id": "R-2",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "The same changes on a chat where nothing was cut. Does it still hold together?",
+      "changed": "Tabs first here too, with the green everything-fit line below them instead of the warning. Skills that fit now show their text, which they did not before.",
+      "notice": "There is no list of cuts, so Overview is the three facts and the settings row. The Tools tab is where most of the detail now lives.",
+      "risk": "With the tabs at the top and nothing amber, the panel is very quiet — check it does not read as empty.",
+      "live": {
+        "surface": "session-context",
+        "round": 5,
+        "candidate": "r5-full"
+      }
+    },
+    {
+      "id": "G-2",
+      "words": true,
+      "answer": "words",
+      "prompt": "The tab should be called…",
+      "surface": "What the assistant was given",
+      "path": "The second tab",
+      "headline": "Your note on the tab names got cut off at \"change youcoded to\" — what should it be?",
+      "today": "The second tab is called YouCoded and holds the instructions the app itself writes, the same in every chat. It was named that because \"Built-in\" broke across two lines and lost its hyphen at this width.",
+      "problem": "The note stopped mid-word, so I have half the answer and would rather ask than guess at a name you have to live with.",
+      "proposal": "Type the name you want. Anything up to about nine characters fits beside the other four tabs; longer and something else has to shorten."
+    },
+    {
+      "id": "G-4",
+      "surface": "What the assistant was given",
+      "path": "Project tab → What was cut",
+      "headline": "Open the Project tab, press What was cut in both, and pick the one you would rather read.",
+      "changed": "How the cut text is shown. Nothing on the record has ever decided this, and a tester who had never seen the app could not tell what the assistant ended up with.",
+      "notice": "The left one is the app's own before-and-after comparison, used on every tool card. The right one drops the colours and the numbers and shows only the text that was cut.",
+      "risk": "The plain one cannot show you what replaced the cut text, only what went missing. The comparison can, at the cost of reading like code.",
+      "live": {
+        "surface": "session-context",
+        "round": 5
+      },
+      "variants": [
+        {
+          "id": "compare",
+          "label": "Before and after",
+          "candidate": "r5-trimmed",
+          "summary": "Red is what was cut, green is the shorter version it got instead, with line numbers down the side."
+        },
+        {
+          "id": "plain",
+          "label": "Just what was cut",
+          "candidate": "r5-trimmed-plain",
+          "summary": "One line saying the assistant never saw this, then the cut text on its own. No colours, no numbers."
+        }
+      ]
+    },
+    {
+      "id": "G-3",
+      "surface": "Chat",
+      "path": "The line just above the first message",
+      "headline": "Close the panel that opens over the chat, then read the line above the conversation. Keep that line?",
+      "changed": "Every chat gets one line saying what the assistant started with. Click the second chat, theme contrast pass, and it turns amber for a small model. Details opens the panel. IMPORTANT: the panel that opens here is still the OLD one — the redesigned panel is on the first slides, and putting it in place is the work this deck unblocks.",
+      "notice": "The panel opening on its own is today's behaviour, and a later question asks whether to keep it. The line itself stays for the whole conversation — it is the way back in, not a one-off notice.",
+      "risk": "It sits above the point where older messages load, so in a long conversation you scroll a long way up to reach it.",
+      "yes": "Keep the line",
+      "no": "Drop it",
+      "live": {
+        "app": "default"
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "Chat → the start of a new conversation",
+      "headline": "Should this panel ever open by itself, or only when you press Details?",
+      "today": "In the app you use now, nothing on screen says what the assistant was handed — a small model silently drops rules and skills. In the draft, the panel opens by itself the first time, which is the panel you had to close on the last slide.",
+      "problem": "The strip alone is easy to scroll past. If it opens by itself it interrupts you at the moment you were about to type, and an interruption you did not ask for is the fastest way to make someone ignore a warning.",
+      "proposal": "Three ways it could behave. The strip is always there in all three; this only decides whether the panel comes up on its own the first time you open a chat.",
+      "options": [
+        {
+          "id": "cut-only",
+          "label": "Only when something was cut",
+          "pros": [
+            "You are told the one time it matters, without having to notice a thin strip.",
+            "A chat where everything fit never interrupts you at all."
+          ],
+          "cons": [
+            "On a small model it covers the conversation just as you start typing.",
+            "Two chats in a row on the same model both interrupt, even though the answer is the same."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "never",
+          "label": "Never — the strip is the only way in",
+          "pros": [
+            "Nothing ever appears that you did not press.",
+            "The chat is the first thing you see, every time."
+          ],
+          "cons": [
+            "Easy to work a whole session never knowing half your project rules were dropped.",
+            "The strip is one quiet line; people scroll past quiet lines."
+          ]
+        },
+        {
+          "id": "always",
+          "label": "Every time you open a new chat",
+          "pros": [
+            "Always the same, so you learn where it is."
+          ],
+          "cons": [
+            "Mostly it will say everything fit, so it becomes a box you close without reading.",
+            "Once it is noise, it is noise on the day it actually matters."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "A plain chat in a folder with no rules and no skills",
+      "headline": "In a chat that was given nothing extra at all, should the strip still appear?",
+      "today": "There is no strip, so the question has never come up. Most chats have something to report; a bare folder with no project rules, no skills and no tools has nothing.",
+      "problem": "A strip saying it started with nothing extra is a line of furniture on every plain chat, forever. Hiding it means the panel cannot be reached at all in those chats — but there is also nothing in it to see.",
+      "proposal": "Two ways to handle the empty case.",
+      "options": [
+        {
+          "id": "hide",
+          "label": "No strip when there is nothing to report",
+          "pros": [
+            "A plain chat stays plain.",
+            "The strip's presence starts to mean something: it is there when the assistant was given something."
+          ],
+          "cons": [
+            "The panel cannot be opened in those chats.",
+            "You cannot confirm from the chat that nothing was given — you infer it from the strip being absent."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-show",
+          "label": "Always show it, saying nothing extra was given",
+          "pros": [
+            "It is in the same place in every chat, so you never wonder whether it is missing or absent.",
+            "The panel is always reachable."
+          ],
+          "cons": [
+            "A permanent line on every plain chat that says nothing useful.",
+            "Opening it shows an almost empty panel."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "The Project and Skills tabs",
+      "headline": "Open beside a file opens that file in YouCoded, exactly as pressing a file path anywhere else in a chat does.",
+      "changed": "Stated, not asked. Open was a dead button in every round you have seen; this is what it will do.",
+      "notice": "You land in the file itself, so you can read the part that was cut in full rather than through the panel's small quote.",
+      "yes": "Right",
+      "no": "Wrong"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "The row at the bottom of the Overview tab",
+      "headline": "Assistant settings closes the panel and opens Assistant settings, on the page holding the model and the step guard.",
+      "changed": "Stated, not asked. It was a dead row in every round you have seen; this is where it will lead.",
+      "notice": "It is the one place that can fix what the panel is complaining about — a bigger model means less gets cut.",
+      "yes": "Right",
+      "no": "Wrong"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "On a phone, or the app in a narrow window",
+      "headline": "On a narrow screen the five tabs scroll sideways rather than squeezing, so no label is ever cut in half.",
+      "changed": "Stated, not asked. Nothing has decided this; an early round showed the fifth tab clipping by about twenty pixels at panel width.",
+      "notice": "You swipe the tab row to reach Tools instead of reading a tab called Too.",
+      "risk": "A tab off the edge is a tab you might not know is there, so the row will show it is scrollable rather than ending flush.",
+      "yes": "Right",
+      "no": "Wrong"
+    }
+  ]
+}
