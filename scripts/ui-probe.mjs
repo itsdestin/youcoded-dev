@@ -40,6 +40,14 @@
 //   node scripts/ui-probe.mjs "file://$PWD/page.html" --size 1574x820 --size 400x760 \
 //     --eval "document.querySelectorAll('.card').length" --shot /tmp/p-{size}.png
 //
+// NO THEME SWITCH. `?theme=` is honoured only on the workbench's `view=live`
+// route (index.tsx), and setting `data-theme` from an --eval is undone: the
+// theme engine writes its tokens as INLINE custom properties on <html>, which
+// beat any stylesheet, and re-applies them on the next render. The theme has to
+// be in localStorage before the document loads, which is what shot.mjs does
+// (`Page.addScriptToEvaluateOnNewDocument`) — reach for that when a shot is
+// about colour. Cost of learning this the other way: 3 probe runs, 2026-09-10.
+//
 // Needs a Chrome/Chromium binary. It launches its own headless instance on a
 // scratch profile and a FREE debugging port (never a hardcoded one — two probes
 // sharing 9977 hung one of them for 40 minutes on 2026-08-25), and cleans up.

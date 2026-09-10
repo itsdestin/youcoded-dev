@@ -57,6 +57,13 @@ Inset the pane with **margins**, not by un-hiding spacers: `ChatView`'s
 `framed-shell` has two `.frame-edge` children, `TerminalRightSlot`'s clone has one,
 so the spacer route fixes chat view and leaves terminal view broken.
 
+**A test that renders a viewport-branching component must DECLARE the viewport.**
+jsdom has no `matchMedia`, and the hook reads its absence as wide — so such a test
+silently exercises whichever branch the environment hands it. Two ResumeBrowser
+suites had been pinning the narrow layout's behaviour from the wide branch, and
+only said so when the wide branch changed under them. Stub `matchMedia` with the
+`NARROW_VIEWPORT_QUERY` answer you mean. · guard: none — candidate.
+
 **Hover-only affordances have no touch path.** `opacity-0 group-hover:` never
 resolves on the bundle phones actually run. Add `.touch-reveal` (visible under
 `pointer: coarse`) and `.coarse-hit` for a 44px target. `title=` tooltips also

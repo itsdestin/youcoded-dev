@@ -43,6 +43,11 @@ produced and the panel that shows them (files).
       review (F-not-covered); worst case is an early extra AI review, not a wrong name
       `desktop` `needs-verify` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-naming-code-review.md
 
+- [ ] Opening a long conversation in the Resume Browser's preview pauses noticeably before it
+      appears — reading the last 40 messages parses the whole transcript file. Nothing flickers
+      and the row highlights immediately, so it reads as slow rather than broken (2026-09-10)
+      `resume-browser` `desktop` `confirmed` `checked 2026-09-10` `performance`
+
 - [ ] The Resume Browser search box only matches names, project paths, notes and tags — a phrase you
       remember from inside a chat finds nothing, even though the full-text index exists and the
       assistant can search it for you (2026-08-31)
