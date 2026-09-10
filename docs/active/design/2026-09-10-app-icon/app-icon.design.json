@@ -1,5 +1,5 @@
 {
-  "title": "The new app and installer icons",
+  "title": "The new app icon — the purple mascot",
   "key": "app-icon-design",
   "out": "app-icon.design.html",
   "stage": "design",
@@ -8,54 +8,72 @@
     "today": "runs/today"
   },
   "crops": {
-    "appicon": ["icons", "appicon-compare", "800x330+0+0"],
-    "inst-badge": ["icons", "choice-inst-badge", "800x330+0+0"],
-    "inst-tray": ["icons", "choice-inst-tray", "800x330+0+0"],
-    "inst-strip": ["icons", "choice-inst-strip", "800x330+0+0"]
+    "m-pose-rest": ["icons", "m-pose-rest", "800x330+0+0"],
+    "m-pose-wave": ["icons", "m-pose-wave", "800x330+0+0"],
+    "m-pose-flap": ["icons", "m-pose-flap", "800x330+0+0"],
+    "m-pose-curious": ["icons", "m-pose-curious", "800x330+0+0"],
+    "m-style-soft": ["icons", "m-style-soft", "800x330+0+0"],
+    "m-style-sticker": ["icons", "m-style-sticker", "800x330+0+0"]
   },
   "steps": [
     {
-      "id": "B-1",
+      "id": "C-1",
       "surface": "The app's icon",
       "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
-      "headline": "Replace the app's icon with the robot tile from the youcoded.ai header?",
+      "headline": "Which pose should the purple mascot hold in the app icon?",
       "themes": ["light"],
-      "crop": "appicon",
-      "labels": {"today": "Today (left) and new (right), big and at real sizes"},
-      "highlight": {"box": [400, 0, 400, 330]},
-      "changed": "The dark terminal square with \"YC\" becomes the header's lavender tile with the solid purple robot, in every place the app's icon appears, including the taskbar while it runs.",
-      "notice": "YouCoded looks like its website. On a Mac the tile sits inside a little empty margin, so it lines up with other apps in the Dock.",
-      "risk": "The icon no longer changes colour with your theme; that comes back later, from the roadmap."
-    },
-    {
-      "id": "C-1",
-      "surface": "The installer file",
-      "path": "The downloaded installer, in Downloads and in search results (the opened Mac disk too)",
-      "headline": "Which installer icon should the download use?",
-      "themes": ["light"],
-      "notice": "Each is shown big and at the three sizes Windows really uses, on a light and a dark background.",
-      "risk": "All three keep the lavender tile and the purple robot, so the installer still reads as YouCoded.",
+      "notice": "Every picture is the app's own mascot in its real pose, in plain purple with no theme, on the lavender tile. Each is shown big and at the sizes Windows really uses. Your installer pick, the purple strip with an arrow, gets rebuilt around whichever you choose.",
+      "risk": "At the smallest size (the tiny one) any mascot turns into a purple blob; that one size could use the simple robot outline instead.",
       "variants": [
         {
-          "id": "badge",
-          "label": "Arrow badge",
-          "crop": "inst-badge",
-          "summary": "The app icon with a purple arrow badge in the corner, like a notification dot. Closest to the app icon.",
-          "risk": "At the smallest size the badge shrinks to a dot, so it looks almost like the app itself."
+          "id": "rest",
+          "label": "Resting",
+          "crop": "m-pose-rest",
+          "summary": "Arms down, big friendly eyes and a small smile. The calmest and the easiest to read small."
         },
         {
-          "id": "tray",
-          "label": "Arrow into tray",
-          "crop": "inst-tray",
-          "summary": "A small robot above a download arrow and tray. Reads as a download at any size.",
-          "risk": "At the smallest size the robot is too small to make out."
+          "id": "wave",
+          "label": "Waving",
+          "crop": "m-pose-wave",
+          "summary": "One arm raised in the wave the mascot does when you open the app.",
+          "risk": "The raised arm floats a little away from the body, the same as it does in the app."
         },
         {
-          "id": "strip",
-          "label": "Arrow strip",
-          "crop": "inst-strip",
-          "summary": "The robot, with a purple band along the bottom carrying a white arrow. A middle ground between the other two.",
-          "risk": "At the smallest size the arrow is hard to see."
+          "id": "flap",
+          "label": "Cheering",
+          "crop": "m-pose-flap",
+          "summary": "Both arms up with happy closed eyes. The most cheerful, and the widest shape.",
+          "risk": "Both arms float away from the body, so at small sizes it reads as three separate blocks."
+        },
+        {
+          "id": "curious",
+          "label": "Curious",
+          "crop": "m-pose-curious",
+          "summary": "Arms down, one eyebrow raised and a small round mouth. Has the most personality at full size.",
+          "risk": "The eyebrow disappears below the biggest size."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "surface": "The app's icon",
+      "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
+      "headline": "Which mascot style should the app icon use?",
+      "themes": ["light"],
+      "notice": "Both are shown in the resting pose; the pose you pick above applies to either.",
+      "variants": [
+        {
+          "id": "soft",
+          "label": "Soft 3D",
+          "crop": "m-style-soft",
+          "summary": "The app's default mascot: soft shading and a shine on the body, exactly as it appears inside YouCoded."
+        },
+        {
+          "id": "sticker",
+          "label": "Sticker",
+          "crop": "m-style-sticker",
+          "summary": "The same mascot with a thin white die-cut border around every part. Stands out more against the lavender tile.",
+          "risk": "It is not the look the mascot has inside the app, where the default is Soft 3D."
         }
       ]
     }
