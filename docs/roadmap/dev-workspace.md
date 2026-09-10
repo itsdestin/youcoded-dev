@@ -10,13 +10,6 @@ seen-on is always n/a here.
       `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
       `n/a` `needs-verify` `checked 2026-09-09`
 
-- [ ] The contract deck's default No button ("No, something is missing") is clipped by the
-      three-button row at 1440px — the label reads "o, something is missing". Seen 2026-09-09
-      on the remote-access contract; worked around by overriding `no` in that spec. The real
-      fix is in the deck's button row in `scripts/ui-review/deck/page.css`, which needs a
-      `review-cards.py selfie` run because it touches every deck.
-      `n/a` `confirmed` `checked 2026-09-09`
-
 - [ ] `engine-manager.test.ts` has failed on the macOS and Windows CI legs since at least
       2026-09-06 — two `backendOptions` cases, "status() answers immediately without
       backendOptions, then pushes them" and "an older install with no device list gets both

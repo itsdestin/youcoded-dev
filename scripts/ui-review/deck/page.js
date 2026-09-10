@@ -198,9 +198,23 @@
   const riskCard = st => st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '';
   // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
   // adds a Verdict column instead of always reserving one nobody has filled in yet.
+  // A verdict's evidence is a forensic note — a command, a path, what was compared against
+  // what — and the full text belongs in the verdicts FILE, which is committed and readable.
+  // In the table it is one cell competing for width with the statement he is deciding about.
+  // Measured on the remote-access acceptance deck at 1512px: evidence took 498px and the
+  // Statement column was starved to 105px, one word per line. The column shares this table
+  // deliberately does NOT use (see page.css) cannot fix that — the content is the problem.
+  const EVIDENCE_CHARS = 150;
+  const shortEvidence = text => {
+    const one = String(text).replace(/\s+/g, ' ').trim();
+    if (one.length <= EVIDENCE_CHARS) return one;
+    // Cut on a word boundary so the tail is not half a path.
+    const cut = one.slice(0, EVIDENCE_CHARS);
+    return cut.slice(0, cut.lastIndexOf(' ') > 60 ? cut.lastIndexOf(' ') : EVIDENCE_CHARS) + '… (full note in the verdicts file)';
+  };
   const rowsTable = st => {
     const graded = st.rows.some(r => r.verdict);
-    return `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}${r.found === 'review' ? '<p class="src"><strong>found in review</strong> — not on a deck you answered</p>' : ''}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
+    return `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}${r.found === 'review' ? '<p class="src"><strong>found in review</strong> — not on a deck you answered</p>' : ''}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(shortEvidence(r.evidence))}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
   };
   // SEVERAL looks exactly like pick-one until it says so — the cards, the borders and the
   // lettering are the same. One line above them is what tells him he may tick more than one.
@@ -249,16 +263,16 @@
   // wording decisions had to be faked as a pick-one from options invented in advance, so an
   // answer that was not on the list was never heard. `Don't know` stays — a shrug is an answer.
   const writeBox = st => `<textarea class="write ans-write" data-id="${esc(st.id)}" rows="2" placeholder="${esc(st.prompt || 'Type your answer…')}"></textarea>`
-    + `<button class="btn ans" data-v="other" data-dk="1">Don't know</button>`;
+    + `<button class="btn ans" data-v="other" data-dk="1"><span>Don't know</span></button>`;
   const answerButtons = st => {
     const picks = pickList(st);
     if (st.answer === 'words') return writeBox(st);
     return st.kind === 'question'
-      ? `<button class="btn ans" data-v="yes">${esc(yesLabel(st))}</button><button class="btn ans" data-v="no">${esc(noLabel(st))}</button><button class="btn ans" data-v="other" data-dk="1">Don't know</button>`
+      ? `<button class="btn ans" data-v="yes"><span>${esc(yesLabel(st))}</span></button><button class="btn ans" data-v="no"><span>${esc(noLabel(st))}</span></button><button class="btn ans" data-v="other" data-dk="1"><span>Don't know</span></button>`
       : picks || st.kind === 'decide'
-      ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
-        + `<button class="btn ans" data-v="other">Other</button>`
-      : `<button class="btn ans" data-v="yes">${esc(yesLabel(st))}</button><button class="btn ans" data-v="no">${esc(noLabel(st))}</button><button class="btn ans" data-v="other">Other</button>`;
+      ? (picks ? `<button class="btn ans" data-v="no"><span>None of these</span></button>` : '')
+        + `<button class="btn ans" data-v="other"><span>Other</span></button>`
+      : `<button class="btn ans" data-v="yes"><span>${esc(yesLabel(st))}</span></button><button class="btn ans" data-v="no"><span>${esc(noLabel(st))}</span></button><button class="btn ans" data-v="other"><span>Other</span></button>`;
   };
   function renderAnswers(st) {
     // A DECIDE step's options ARE its answers, so there is no yes/no: picking one is the answer,

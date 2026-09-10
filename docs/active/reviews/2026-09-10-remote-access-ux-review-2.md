@@ -36,7 +36,7 @@ Screenshots: `/home/destin/youcoded-dev/worktrees/sessions/remote-mesh-roadmap/d
 - U9 accepted — the status badge reads "Saved". Two controls labelled Set, one of which did nothing when clicked.
 
   ORIGINAL: I expected one control for the password / there are **two things labelled "Set"** side by side: a small green "Set" (a status word meaning a password exists — not clickable) and a "Set" button inside the field (the action) — propose the badge read "Password saved" or a lock icon — Remote Access, all states — `…-shots/k5-password.png`
-- U10 accepted, filed not fixed — password rules, a confirm field and a reveal are their own piece of work, not a copy change. docs/roadmap/remote-access.md.
+- U10 deferred (filed) — password rules, a confirm field and a reveal are their own piece of work, not a copy change. docs/roadmap/remote-access.md.
 
   ORIGINAL: I expected a password rule and a confirmation / **"abc" was accepted**, there is no minimum length, no second "confirm" box, no show-password eye, and the only feedback is a bare **"✓"** while the field resets to empty — I cannot tell what the password now is, or whether my phone will need it (nothing in the panel says the phone is asked for it) — Remote Access, `ready` — `…-shots/k5-password.png`
 - U11 accepted — the mock forced hasPassword true in every state. Fixed there; the panel already had the right placeholder for both cases.
@@ -48,13 +48,13 @@ Screenshots: `/home/destin/youcoded-dev/worktrees/sessions/remote-mesh-roadmap/d
 - U13 accepted — fixed. The warning reads "Already done:" once the choice is made, in the past tense.
 
   ORIGINAL: after switching Browser encryption on I expected the warning to change tense / the orange box still reads **"This cannot be undone: This computer's name **is added** to a public list…"** as if the choice were still ahead of me — propose "Your computer's name is now on the public certificate list. Turning this off does not remove it." — Remote Access → Browser encryption, `encrypted` — `…-shots/m4-encrypted-screen.png`
-- U14 partly accepted. "VPN not active" and the About copy are fixed; TAILSCALE stays, because it is the name of the thing being installed and hiding it would leave a user unable to find the app they just signed into. The jargon that is genuinely ours to remove is in the optional level — see U25.
+- U14 partly accepted (the fixed half only). "VPN not active" and the About copy are fixed; TAILSCALE stays, because it is the name of the thing being installed and hiding it would leave a user unable to find the app they just signed into. The jargon that is genuinely ours to remove is in the optional level — see U25.
 
   ORIGINAL: I expected words I know / the panel is full of terms a normal student would not know: a whole section headed **"TAILSCALE"**, **"VPN not active"**, **"certificate"**, **"issued certificates"**, **"tailnet"** in the URL, **"listening at"** — the only explanation of Tailscale is one sentence at the very bottom of `not-installed`, below the button that installs it — Remote Access, all states — `…-shots/s-not-installed.png`
 - U15 REJECTED — "Unpair" is Destin's own decision (questions-2 Q-4), and it is contract row R8, signed. Recorded here rather than changed.
 
   ORIGINAL: I expected "Remove" for getting rid of a device / the button says **"Unpair"** and the confirmation says **"Unpair this device? It must pair again to reconnect."** — propose "Remove" and "Remove this device? You'll have to set it up again to use it." — Remote Access → Devices, `ready` — `…-shots/j3-unpair-scrolled.png`
-- U16 accepted, filed not fixed — needs a line of copy Destin has not seen. docs/roadmap/remote-access.md.
+- U16 deferred (filed) — needs a line of copy Destin has not seen. docs/roadmap/remote-access.md.
 
   ORIGINAL: I expected to know what "Keep awake" does before choosing 4h / there is **no explanation at all** next to it, no hint of what happens when it runs out, and 4h is pre-selected without saying why — propose "Stop this computer sleeping for: (so your phone can still reach it)" — Remote Access, all states — `…-shots/s-ready.png`
 - U17 accepted — fixed. The sentence claimed Add Device opens YouCoded on the phone, which it does not.
@@ -63,25 +63,25 @@ Screenshots: `/home/destin/youcoded-dev/worktrees/sessions/remote-mesh-roadmap/d
 - U18 accepted — the mock showed an IP while signed out. It has no address until the network is up now.
 
   ORIGINAL: I expected an address only once the network is up / `sign-in-required` shows **"Status: VPN not active"** and directly under it **"IP: 100.82.14.7"** — Remote Access, `sign-in-required` — `…-shots/s-sign-in-required.png`
-- U19 accepted, filed for a deck — a step count changes an approved screen, so it is Destin's call, not mine. docs/roadmap/remote-access.md.
+- U19 deferred (filed, needs a deck) — a step count changes an approved screen, so it is Destin's call, not mine. docs/roadmap/remote-access.md.
 
   ORIGINAL: I expected to know how many steps setup takes / it is **three separate buttons in the same spot, one at a time** — "Install Tailscale" → "Sign in" → "Set up" — with no "step 1 of 3", so each time I think I am finished a new demand appears — Remote Access, `not-installed` → `sign-in-required` → `setup` — `…-shots/i8-install.png`, `…-shots/i10-signin.png`
-- U20 accepted, and mostly the mock: pressing Set up jumped straight to `ready`, where the banner is hidden by design because devices are listed. The real flow lands on `checked`, which stays on screen — and with U3 the address no longer leaves with the banner.
+- U20 accepted (fixed via U3), and mostly the mock: pressing Set up jumped straight to `ready`, where the banner is hidden by design because devices are listed. The real flow lands on `checked`, which stays on screen — and with U3 the address no longer leaves with the banner.
 
   ORIGINAL: after pressing "Set up" I expected a "you're all set" message / **the whole banner just vanishes**, silently, and the address vanishes with it; the only clue anything happened is that Add Device stops being greyed out — Remote Access, `setup` → after Set up — `…-shots/i7-setup-btn.png`
-- U21 accepted, filed not fixed — an undo for unpairing is new behaviour, not a fix. docs/roadmap/remote-access.md.
+- U21 deferred (filed) — an undo for unpairing is new behaviour, not a fix. docs/roadmap/remote-access.md.
 
   ORIGINAL: after "Confirm unpair" I expected a short "Removed — undo" / **the row simply disappears** with no message and no way back; the removal itself worked correctly and instantly — Remote Access → Devices, `ready` — `…-shots/m1-confirm-unpair.png`
 - U22 accepted — fixed. "A few seconds. Leave YouCoded open." replaces the instruction that read like it was for later.
 
   ORIGINAL: while it is checking I expected the greyed-out controls to say why / everything (password Set, Add Device) is disabled with **no note that it is temporary**, and the only hint is a small **"Keep YouCoded open"** under the spinner, which reads like an instruction for later, not for now — propose "Checking… this takes a few seconds. Leave YouCoded open." — Remote Access, `checking` — `…-shots/s-checking.png`
-- U23 accepted as observed, not changed. The sentence lives in the setup banner, which is hidden once a device is paired — that is the banner doing its job. Changing it means moving the sentence out of the banner, which is a deck question.
+- U23 rejected as a change, recorded as observed. The sentence lives in the setup banner, which is hidden once a device is paired — that is the banner doing its job. Changing it means moving the sentence out of the banner, which is a deck question.
 
   ORIGINAL: I expected the intro sentence to be there or not / **"Remote access lets you use YouCoded from any device — phone, tablet, or another computer."** appears in ten states and is missing from the three finished ones, so the panel visibly changes shape depending on state — Remote Access, all states — `…-shots/s-ready.png` vs `…-shots/s-setup.png`
 - U24 accepted — fixed. Both now read "We don't know why yet. Diagnose sends the log to Claude to find out."
 
   ORIGINAL: the two "we don't know why" errors are longer than they need to be / **"The server didn't report a reason. Diagnosing will collect the setup log so Claude can look at what happened."** (and the near-identical "The check didn't report a reason. Diagnosing will collect the connection log…") — propose "We don't know why yet. Diagnose sends the log to Claude to find out." — Remote Access, `checked-silent` / `error` — `…-shots/s-checked-silent.png`, `…-shots/s-error.png`
-- U25 accepted as the sharpest finding here, and it goes to Destin rather than into the code. The name was his round-4 decision, and the tester is right that it describes privacy while the setting buys the microphone, copy buttons and font picker. A rename changes meaning, not length, so it belongs on a deck.
+- U25 deferred to Destin (needs a deck) — the sharpest finding here, and it goes to him rather than into the code. The name was his round-4 decision, and the tester is right that it describes privacy while the setting buys the microphone, copy buttons and font picker. A rename changes meaning, not length, so it belongs on a deck.
 
   ORIGINAL: I expected "Browser encryption" to be about privacy / the first line of its own page says **"Your connection is already private either way"**, so the name describes something the setting does not do — it actually turns on the microphone, copy buttons and font picker on a phone — propose naming the row "Phone microphone & copy buttons" — Remote Access → Browser encryption — `…-shots/i4-encryption.png`
 - U26 REJECTED, with the reason. docs/error-message-standards.md gives a general error Report bug + Diagnose precisely BECAUSE there is nothing to retry — offering Retry for an unknown cause invites the same failure. The two that offer Retry have a real reason to retry.
