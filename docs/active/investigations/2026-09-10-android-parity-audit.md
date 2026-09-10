@@ -363,8 +363,17 @@ Ordered by user impact:
 4. Whether the phone should keep the Drive/GitHub restore wizard desktop deleted, or lose it.
 5. Order of 7a versus 7e: harness first, or the mobile essentials first.
 
-Four or more questions go on a questions deck; these can be served as one when Destin wants
-to decide.
+**Answered 2026-09-10** (deck `docs/active/design/2026-09-10-android-rebuild/`):
+
+1. **Built-in assistant first.** Claude Code on the phone stays at 2.1.112 for now, labelled
+   as the older option; unfreezing it is not scheduled.
+2. **Google Play, prioritized now.** "Both, maybe" long-term; the D-U-N-S number arrived on
+   2026-09-10, which was the blocker on the Play listing.
+3. **Everything desktop has** for Project View on the phone: browse, import, search, git.
+4. **Remove the phone-only restore wizard**; the phone gets the current sync when the
+   built-in assistant's runtime arrives.
+5. **Harness before phone basics.** Small honesty fixes (versions, notification permission,
+   clean refusals) shipped first regardless, on `session/android-rebuild-1`.
 
 ## Appendix: the roadmap items folded into this report (2026-09-10)
 
@@ -390,6 +399,8 @@ dev-workspace).
    docs/active/investigations/2026-09-01-android-resume-unreachable.md
 4. Android still carries the Drive/GitHub backup-and-restore backend desktop demolished in July.
    `settings/sync` `needs-verify` `checked 2026-09-01` `v1.3.1`
+   Restore half deleted 2026-09-10 (deck Q-5, `session/android-rebuild-1`); the backup/push
+   half stays until the Sync Spaces port rides the harness runtime (§7a).
 5. Possible crash if a screen asks for preferences, defaults, theme or sync status before
    startup finishes (18 spots).
    `needs-verify` `checked 2026-09-01` `needs-repro` →

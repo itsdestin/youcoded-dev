@@ -67,7 +67,7 @@ Target: `v1.3`
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
-| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 1 | 0 |
+| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 0 | 0 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,

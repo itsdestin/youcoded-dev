@@ -641,9 +641,11 @@ seen-on is always n/a here.
       `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
-      a verified developer even for sideloads. Blocked on the LLC's D-U-N-S number; then the bundle
-      upload, data-safety form, content rating and account-deletion link
-      `android` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
+      unblocked: next the Play developer account in the LLC's name, then the bundle upload,
+      data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
+      priority for the rebuilt app (deck Q-3)
+      `android` `confirmed` `checked 2026-09-10` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
