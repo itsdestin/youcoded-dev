@@ -158,6 +158,50 @@ branch that had not touched the markdown viewer. `--by renderer` re-ranks by
 renderer cost — a disagreement between the two orderings is itself the signal,
 because work moved off the main thread is not work removed.
 
+### Asking WHICH FUNCTIONS made a step slow
+
+```
+node scripts/perf-lab/profile-open.mjs --file mdLarge --top 20
+```
+
+`explain.mjs` stops at the step. This takes a real V8 CPU profile across one
+artifact open in the real app — on Xvfb, like every rig run, so nothing appears
+on the desktop — and ranks functions by **self** time, bucketed by subsystem:
+
+```
+================ open mdLarge — 939 ms wall, 1037 ms sampled ================
+  by subsystem:
+    our app code                                     714 ms   69%
+    V8 / GC / runtime                                210 ms   20%
+```
+
+It writes the `.cpuprofile` too, so it can be opened in Chrome DevTools when the
+buckets are not enough. Build a different tree with `--checkout <path>`; it
+defaults to this worktree's `youcoded/`.
+
+**Why it exists.** On 2026-09-09 a small Markdown file measured 570 ms against
+117 ms for a code file twenty times its size, and three fixes were filed against
+the Markdown renderer — which turns that same file into a page in ~30 ms. Half a
+second was being attributed to code that was not running. The profile found it in
+the probe, not the app (next section). A step number that surprises you is worth
+one profile before it is worth a plan.
+
+### A probe that reads layout charges the app for its own cost
+
+`viewerState()`'s `tail` calls `innerText`, which forces a synchronous layout of
+the pane — and `waitForViewer` polled it every 50 ms *while timing an open*. The
+more document there was to lay out, the more the probe billed, which reads
+exactly like "markdown is slow" and is why the 570 ms above was believed. The
+tail is now opt-in: off in the polling loop, on when a wait times out and the
+app's own error copy is worth a reflow. Pinned by two tests in
+`scenario-artifacts.test.mjs`.
+
+Two consequences worth knowing. Artifacts-phase numbers recorded **before
+2026-09-10 are not comparable** with later ones — they include the probe. And the
+general rule: anything a poll touches must not force style, layout or text
+serialisation. `innerText`, `offsetHeight`, `getBoundingClientRect` and
+`getComputedStyle` all do.
+
 ### The first run of a new scenario is a shakedown, not a baseline
 
 When a scenario runs against the real app for the first time — which is true *today*
