@@ -13,7 +13,7 @@ seen-on is always n/a here.
       against a 1s budget, which is the shape `.claude/rules/test-suite-hygiene.md` warns about.
       Worth pinning on a signal rather than a wait, because a sometimes-red suite teaches sessions to
       disbelieve it
-      `n/a` `confirmed` `checked 2026-09-10` `flake`
+      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
