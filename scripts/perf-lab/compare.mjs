@@ -121,6 +121,26 @@ export const get = (o, path) => {
     const secs = rawGet(o, 'workload.median.cpuWindowSeconds');
     if (typeof pct === 'number' && typeof secs === 'number') return Math.round(pct * secs / 100 * 10) / 10;
   }
+  // The thrash step's headline was promoted out of its probe object on 2026-09-09,
+  // in the same commit that checked in the first thrash report — so that report
+  // carries the probe and not the headline, and a missing PRIMARY path fails the
+  // gate CLOSED. The derivation is the promotion itself, verbatim
+  // (scenario-projects.mjs: `thrash.ipcStallMs = thrash.ipc.totalStallMs`), and it
+  // is written for BOTH shapes the path arrives in: the full report path, and the
+  // `thrash.ipcStallMs` tail that runsFor() projects out of each individual run.
+  if (path.endsWith('thrash.ipcStallMs')) {
+    const probePath = path.replace(/thrash\.ipcStallMs$/, 'thrash.ipc.totalStallMs');
+    const direct2 = rawGet(o, probePath);                    // a single RUN object
+    if (typeof direct2 === 'number') return direct2;
+    // A `…median…` path: the old report's median section never carried the probe
+    // object (only the promoted numbers go into a median), so recompute the median
+    // from the runs the same way the writer would have — sorted, upper middle,
+    // exactly run.mjs's median().
+    if (path.split('.').includes('median')) {
+      const xs = runsFor(o, probePath).sort((a, b) => a - b);
+      if (xs.length) return xs[Math.floor(xs.length / 2)];
+    }
+  }
   return undefined;
 };
 
@@ -294,13 +314,29 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
   // every one of the new metrics stops being judged, silently, while the run still
   // prints KEEP. A gate that cannot see a metric has not cleared that metric; it has no
   // opinion about it, and a gate with no opinion must not sign the change off.
+  //
+  // ONE exception, and it is about `--only <phase>` runs rather than about drift:
+  // when NEITHER report has the phase section at all, the phase was not run on
+  // either side. There is no measurement to compare and none to lose — refusing
+  // here would make every single-phase comparison print REJECT for reasons that
+  // have nothing to do with the change, which is how a gate gets ignored. The
+  // dangerous case is the ASYMMETRIC one (measured on one side, absent on the
+  // other) and that still fails closed, as does a phase that ran but whose path
+  // is gone — the drift this block exists to catch.
+  const phaseRan = (report, p) => rawGet(report, p.split('.')[0]) != null;
   const missing = [];
+  const notRun = [];
   for (const p of PRIMARY) {
     if (p === target) continue; // the target's own absence is already named above
     const inBase = present(baseline, p);
     const inCand = present(candidate, p);
-    if (!inBase || !inCand) missing.push({ path: p, where: !inBase && !inCand ? 'both' : (inBase ? 'candidate' : 'baseline') });
+    if (inBase && inCand) continue;
+    if (!phaseRan(baseline, p) && !phaseRan(candidate, p)) { notRun.push(p); continue; }
+    missing.push({ path: p, where: !inBase && !inCand ? 'both' : (inBase ? 'candidate' : 'baseline') });
   }
+  // Deliberately NOT pushed into `reasons` — `keep` is `reasons.length === 0`, so a
+  // note there would reject every single-phase comparison. It rides on the result
+  // instead and the CLI prints it, so the operator always sees what was out of scope.
   if (missing.length) {
     reasons.push(`cannot judge ${missing.length} PRIMARY metric(s) — absent from a report: ${missing.map((m) => `${m.path} (${m.where})`).join(', ')}`);
   }
@@ -315,6 +351,7 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
     target: { path: target, base: tb, cand: tc, deltaPct: td, beyondSpread },
     regressions,
     missing,
+    notRun,
     screens,
     errors,
     reasons,
@@ -335,6 +372,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   }
   const v = verdict(b, c, { target, screens, uxBugfix: process.argv.includes('--ux-bugfix') });
   console.log(`target ${target}: ${v.target.base} → ${v.target.cand} (${v.target.deltaPct}%)`);
+  // Printed BEFORE the table so the scope of the verdict is read first: these
+  // metrics were not judged because neither run measured their phase.
+  const skippedPhases = [...new Set(v.notRun.map((p) => p.split('.')[0]))];
+  if (skippedPhases.length) {
+    console.log(`  OUT OF SCOPE — neither report ran: ${skippedPhases.join(', ')} (${v.notRun.length} metric(s) not judged)`);
+  }
   for (const p of PRIMARY) {
     const bv = get(b, p);
     const cv = get(c, p);

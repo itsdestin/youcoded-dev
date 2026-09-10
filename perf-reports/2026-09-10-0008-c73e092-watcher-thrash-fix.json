@@ -1,0 +1,2771 @@
+{
+  "schemaVersion": 1,
+  "label": "watcher-thrash-fix",
+  "sha": "c73e09205d57f7736069b43ec2381ee6f80383a8",
+  "branch": "fix/projects-watcher-thrash",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-09-10T00:08:36.823Z",
+  "machine": {
+    "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "ramGb": 121,
+    "kernel": "7.1.3-2-cachyos",
+    "node": "v26.4.0",
+    "renderer": {
+      "source": "SystemInfo",
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+      "softwareRendering": true,
+      "accelerated": false,
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "unavailable_off",
+        "vulkan": "disabled_off",
+        "webgl": "unavailable_off",
+        "video_decode": "unavailable_off"
+      },
+      "devices": [
+        {
+          "vendorId": 4098,
+          "deviceId": 5510,
+          "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+          "active": null
+        }
+      ],
+      "error": null,
+      "attempts": []
+    }
+  },
+  "noise": {
+    "loadAvgBefore": 2.94,
+    "machineBusyPctBefore": 7.6,
+    "maxLoadAvgAccepted": 2.94,
+    "maxBusyPctAccepted": 7.6,
+    "discardedRuns": 0
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "projects": {
+    "runs": [
+      {
+        "project": {
+          "name": "gamma",
+          "files": 1600,
+          "folders": 40,
+          "bytes": 2922423,
+          "openedOn": "gamma",
+          "sidecar": {
+            "bytes": 10218562,
+            "artifacts": 8000,
+            "versions": 31989,
+            "orphans": 6400
+          },
+          "conversations": 700,
+          "nestedDirs": 12052
+        },
+        "open": {
+          "ok": true,
+          "openMs": 775.7,
+          "countsMs": 775.8,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 564,
+          "thumbs": {
+            "img": 0,
+            "iframe": 2
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 796,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 15,
+            "openStallMs": 23,
+            "rejectedPings": 0,
+            "missedTicks": 1,
+            "medianMs": 5,
+            "p95Ms": 64,
+            "maxMs": 64,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 14,
+            "worst": [
+              {
+                "atMs": 650,
+                "roundTripMs": 64
+              },
+              {
+                "atMs": 800,
+                "roundTripMs": 46
+              },
+              {
+                "atMs": 350,
+                "roundTripMs": 43
+              },
+              {
+                "atMs": 600,
+                "roundTripMs": 35
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 27
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 64ms, under the 250ms stall threshold"
+          }
+        },
+        "switchToBig": null,
+        "search": {
+          "ok": true,
+          "typed": "handler",
+          "firstKeyMs": 73,
+          "keystroke": {
+            "samples": [
+              35.6,
+              15.2,
+              31.5,
+              30.9,
+              31.6,
+              30.7,
+              31.6
+            ],
+            "dropped": 0,
+            "medianMs": 31.5,
+            "p95Ms": 35.6
+          },
+          "fileCards": 116,
+          "nodes": 904,
+          "probe": {
+            "windowMs": 750,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 2,
+            "frameGapMaxMs": 66
+          },
+          "ipc": {
+            "pings": 15,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 80,
+            "maxMs": 80,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 30,
+            "worst": [
+              {
+                "atMs": 51,
+                "roundTripMs": 80
+              },
+              {
+                "atMs": 170,
+                "roundTripMs": 27
+              },
+              {
+                "atMs": 700,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 133,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 216,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 80ms, under the 250ms stall threshold"
+          }
+        },
+        "searchClear": {
+          "ok": true,
+          "ms": 38,
+          "reason": null,
+          "probe": {
+            "windowMs": 40,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "filter": {
+          "ok": true,
+          "codeMs": 100.2,
+          "fileCards": 831,
+          "nodes": 4277,
+          "thumbs": {
+            "img": 0,
+            "iframe": 0
+          },
+          "probe": {
+            "windowMs": 122,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 56,
+            "longtaskMaxMs": 56,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 57
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 78,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 0ms, under the 250ms stall threshold"
+          }
+        },
+        "scrollFlat": {
+          "ok": true,
+          "steps": 40,
+          "ms": 6019,
+          "scrollHeight": 31400,
+          "clientHeight": 397,
+          "img": 0,
+          "iframe": 0,
+          "nodes": 4260,
+          "probe": {
+            "windowMs": 6022,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 120,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 2,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 3400,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 4100,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 5100,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 5700,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 5750,
+                "roundTripMs": 2
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+          },
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "frameGapMaxMs": 0
+        },
+        "listView": {
+          "ok": true,
+          "ms": 98.1,
+          "nodes": 6755,
+          "probe": {
+            "windowMs": 106,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 57,
+            "longtaskMaxMs": 57,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 76
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 3,
+            "p95Ms": 3,
+            "maxMs": 3,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 102,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 79,
+                "roundTripMs": 2
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+          }
+        },
+        "filterClear": {
+          "ok": true,
+          "ms": 65.7,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 256,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 5,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 151,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 101,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "switch": {
+          "smallMs": 66.4,
+          "bigMs": 217.7,
+          "small": {
+            "ok": true,
+            "ms": 66.4,
+            "reason": null,
+            "open": true,
+            "filesMounted": true,
+            "loading": false,
+            "fileCards": 1,
+            "folderCards": 0,
+            "files": "0",
+            "conversations": "0",
+            "nodes": 113,
+            "thumbs": {
+              "img": 0,
+              "iframe": 0
+            },
+            "hero": "alpha",
+            "probe": {
+              "windowMs": 111,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 4,
+              "p95Ms": 4,
+              "maxMs": 4,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 100,
+                  "roundTripMs": 4
+                },
+                {
+                  "atMs": 50,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          "big": {
+            "ok": true,
+            "ms": 217.7,
+            "reason": null,
+            "open": true,
+            "filesMounted": true,
+            "loading": false,
+            "fileCards": 24,
+            "folderCards": 8,
+            "files": "1600",
+            "conversations": "700",
+            "nodes": 661,
+            "thumbs": {
+              "img": 0,
+              "iframe": 3
+            },
+            "hero": "gamma",
+            "probe": {
+              "windowMs": 251,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 3,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 2,
+              "medianMs": 23,
+              "p95Ms": 111,
+              "maxMs": 111,
+              "over100ms": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 61,
+              "worst": [
+                {
+                  "atMs": 50,
+                  "roundTripMs": 111
+                },
+                {
+                  "atMs": 204,
+                  "roundTripMs": 23
+                },
+                {
+                  "atMs": 251,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 111ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "conversations": {
+          "ok": true,
+          "ms": 107.2,
+          "rows": 739,
+          "nodes": 6943,
+          "count": "700",
+          "probe": {
+            "windowMs": 112,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 63,
+            "longtaskMaxMs": 63,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 81
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 100,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 76,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "thrash": {
+          "ok": true,
+          "rounds": 8,
+          "toConversations": {
+            "samples": [
+              97.2,
+              115,
+              99,
+              98.4,
+              99,
+              115.3,
+              98.3,
+              132.5
+            ],
+            "medianMs": 99,
+            "p95Ms": 132.5,
+            "maxMs": 132.5
+          },
+          "toFiles": {
+            "samples": [
+              64.7,
+              64.2,
+              62.5,
+              63.1,
+              63.1,
+              64.3,
+              63.7,
+              62.9
+            ],
+            "medianMs": 63.7,
+            "p95Ms": 64.7,
+            "maxMs": 64.7
+          },
+          "probe": {
+            "windowMs": 1401,
+            "longtaskCount": 8,
+            "longtaskTotalMs": 542,
+            "longtaskMaxMs": 81,
+            "longtaskSupported": true,
+            "frameGapCount": 8,
+            "frameGapMaxMs": 97
+          },
+          "ipc": {
+            "pings": 23,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 5,
+            "maxMs": 6,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 461,
+                "roundTripMs": 6
+              },
+              {
+                "atMs": 1300,
+                "roundTripMs": 5
+              },
+              {
+                "atMs": 115,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 430,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 1209,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+          },
+          "longtaskTotalMs": 542,
+          "frameGapMaxMs": 97,
+          "ipcMaxMs": 6,
+          "ipcStallMs": 0
+        },
+        "close": {
+          "ok": true,
+          "ms": 60.6,
+          "reason": null,
+          "probe": {
+            "windowMs": 62,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 1,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "reopen": {
+          "ok": true,
+          "openMs": 430.4,
+          "countsMs": 430.6,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 466,
+          "thumbs": {
+            "img": 0,
+            "iframe": 0
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 482,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 6,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 3,
+            "medianMs": 50,
+            "p95Ms": 57,
+            "maxMs": 57,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 8,
+            "worst": [
+              {
+                "atMs": 300,
+                "roundTripMs": 57
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 51
+              },
+              {
+                "atMs": 401,
+                "roundTripMs": 50
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 4
+              },
+              {
+                "atMs": 50,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 57ms, under the 250ms stall threshold"
+          }
+        },
+        "probe": {
+          "longtaskCount": 11,
+          "longtaskTotalMs": 718,
+          "longtaskMaxMs": 81,
+          "frameGapCount": 14,
+          "frameGapMaxMs": 97,
+          "longtaskSupported": true,
+          "observedMs": 11076,
+          "frames": 634,
+          "framesPerSec": 57.2,
+          "marks": [
+            {
+              "t": 4,
+              "label": "projects:open:start"
+            },
+            {
+              "t": 800,
+              "label": "projects:open:end"
+            },
+            {
+              "t": 879,
+              "label": "projects:search:start"
+            },
+            {
+              "t": 1629,
+              "label": "projects:search:end"
+            },
+            {
+              "t": 1631,
+              "label": "projects:search-clear:start"
+            },
+            {
+              "t": 1671,
+              "label": "projects:search-clear:end"
+            },
+            {
+              "t": 1672,
+              "label": "projects:filter-code:start"
+            },
+            {
+              "t": 1794,
+              "label": "projects:filter-code:end"
+            },
+            {
+              "t": 1956,
+              "label": "projects:scroll-flat:start"
+            },
+            {
+              "t": 7978,
+              "label": "projects:scroll-flat:end"
+            },
+            {
+              "t": 8010,
+              "label": "projects:list-view:start"
+            },
+            {
+              "t": 8116,
+              "label": "projects:list-view:end"
+            },
+            {
+              "t": 8210,
+              "label": "projects:filter-clear:start"
+            },
+            {
+              "t": 8466,
+              "label": "projects:filter-clear:end"
+            },
+            {
+              "t": 8468,
+              "label": "projects:conversations:start"
+            },
+            {
+              "t": 8580,
+              "label": "projects:conversations:end"
+            },
+            {
+              "t": 8643,
+              "label": "projects:tab-thrash:start"
+            },
+            {
+              "t": 10044,
+              "label": "projects:tab-thrash:end"
+            },
+            {
+              "t": 10045,
+              "label": "projects:switch-small:start"
+            },
+            {
+              "t": 10156,
+              "label": "projects:switch-small:end"
+            },
+            {
+              "t": 10194,
+              "label": "projects:switch-big:start"
+            },
+            {
+              "t": 10445,
+              "label": "projects:switch-big:end"
+            },
+            {
+              "t": 10447,
+              "label": "projects:close:start"
+            },
+            {
+              "t": 10509,
+              "label": "projects:close:end"
+            },
+            {
+              "t": 10511,
+              "label": "projects:reopen:start"
+            },
+            {
+              "t": 10993,
+              "label": "projects:reopen:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 196,
+          "totalStallMs": 113,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 111
+        },
+        "warnings": []
+      },
+      {
+        "project": {
+          "name": "gamma",
+          "files": 1600,
+          "folders": 40,
+          "bytes": 2922423,
+          "openedOn": "gamma",
+          "sidecar": {
+            "bytes": 10218562,
+            "artifacts": 8000,
+            "versions": 31989,
+            "orphans": 6400
+          },
+          "conversations": 700,
+          "nestedDirs": 12052
+        },
+        "open": {
+          "ok": true,
+          "openMs": 161.1,
+          "countsMs": 161.1,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 164,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 12,
+            "p95Ms": 28,
+            "maxMs": 28,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 28
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 12
+              },
+              {
+                "atMs": 155,
+                "roundTripMs": 4
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 28ms, under the 250ms stall threshold"
+          }
+        },
+        "switchToBig": null,
+        "search": {
+          "ok": true,
+          "typed": "handler",
+          "firstKeyMs": 73,
+          "keystroke": {
+            "samples": [
+              40.5,
+              20.6,
+              25.5,
+              23.3,
+              21.4,
+              18.2,
+              17.1
+            ],
+            "dropped": 0,
+            "medianMs": 21.4,
+            "p95Ms": 40.5
+          },
+          "fileCards": 116,
+          "nodes": 899,
+          "probe": {
+            "windowMs": 936,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 18,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 47,
+            "maxMs": 47,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 47
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 40
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 29
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 19
+              },
+              {
+                "atMs": 269,
+                "roundTripMs": 2
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 47ms, under the 250ms stall threshold"
+          }
+        },
+        "searchClear": {
+          "ok": true,
+          "ms": 40.7,
+          "reason": null,
+          "probe": {
+            "windowMs": 43,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "filter": {
+          "ok": true,
+          "codeMs": 116.3,
+          "fileCards": 831,
+          "nodes": 4277,
+          "thumbs": {
+            "img": 0,
+            "iframe": 0
+          },
+          "probe": {
+            "windowMs": 154,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 64,
+            "longtaskMaxMs": 64,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 66
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 99,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 152,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 0ms, under the 250ms stall threshold"
+          }
+        },
+        "scrollFlat": {
+          "ok": true,
+          "steps": 40,
+          "ms": 6031,
+          "scrollHeight": 31400,
+          "clientHeight": 397,
+          "img": 0,
+          "iframe": 0,
+          "nodes": 4260,
+          "probe": {
+            "windowMs": 6033,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 120,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 100,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 350,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 400,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          },
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "frameGapMaxMs": 0
+        },
+        "listView": {
+          "ok": true,
+          "ms": 116.1,
+          "nodes": 6755,
+          "probe": {
+            "windowMs": 122,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 63,
+            "longtaskMaxMs": 63,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 83
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 87,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 103,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "filterClear": {
+          "ok": true,
+          "ms": 66,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 257,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 5,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 51,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "switch": {
+          "smallMs": 66.6,
+          "bigMs": 339,
+          "small": {
+            "ok": true,
+            "ms": 66.6,
+            "reason": null,
+            "open": true,
+            "filesMounted": true,
+            "loading": false,
+            "fileCards": 1,
+            "folderCards": 0,
+            "files": "0",
+            "conversations": "0",
+            "nodes": 113,
+            "thumbs": {
+              "img": 0,
+              "iframe": 0
+            },
+            "hero": "alpha",
+            "probe": {
+              "windowMs": 98,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 5,
+              "p95Ms": 5,
+              "maxMs": 5,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 50,
+                  "roundTripMs": 5
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          "big": {
+            "ok": true,
+            "ms": 339,
+            "reason": null,
+            "open": true,
+            "filesMounted": true,
+            "loading": false,
+            "fileCards": 24,
+            "folderCards": 8,
+            "files": "1600",
+            "conversations": "700",
+            "nodes": 661,
+            "thumbs": {
+              "img": 0,
+              "iframe": 3
+            },
+            "hero": "gamma",
+            "probe": {
+              "windowMs": 393,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 7,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 5,
+              "p95Ms": 53,
+              "maxMs": 53,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 3,
+              "worst": [
+                {
+                  "atMs": 300,
+                  "roundTripMs": 53
+                },
+                {
+                  "atMs": 250,
+                  "roundTripMs": 44
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 9
+                },
+                {
+                  "atMs": 373,
+                  "roundTripMs": 5
+                },
+                {
+                  "atMs": 150,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 53ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "conversations": {
+          "ok": true,
+          "ms": 103.6,
+          "rows": 739,
+          "nodes": 6943,
+          "count": "700",
+          "probe": {
+            "windowMs": 109,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 68,
+            "longtaskMaxMs": 68,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 87
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 100,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 78,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "thrash": {
+          "ok": true,
+          "rounds": 8,
+          "toConversations": {
+            "samples": [
+              98.3,
+              115.5,
+              117,
+              114,
+              115.5,
+              115.7,
+              115.4,
+              150.9
+            ],
+            "medianMs": 115.5,
+            "p95Ms": 150.9,
+            "maxMs": 150.9
+          },
+          "toFiles": {
+            "samples": [
+              63.5,
+              62.4,
+              62.3,
+              63.6,
+              62.8,
+              63.6,
+              63.6,
+              60.3
+            ],
+            "medianMs": 63.5,
+            "p95Ms": 63.6,
+            "maxMs": 63.6
+          },
+          "probe": {
+            "windowMs": 1484,
+            "longtaskCount": 8,
+            "longtaskTotalMs": 612,
+            "longtaskMaxMs": 112,
+            "longtaskSupported": true,
+            "frameGapCount": 8,
+            "frameGapMaxMs": 124
+          },
+          "ipc": {
+            "pings": 24,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 7,
+            "maxMs": 7,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 661,
+                "roundTripMs": 7
+              },
+              {
+                "atMs": 1211,
+                "roundTripMs": 7
+              },
+              {
+                "atMs": 110,
+                "roundTripMs": 6
+              },
+              {
+                "atMs": 457,
+                "roundTripMs": 5
+              },
+              {
+                "atMs": 1395,
+                "roundTripMs": 5
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+          },
+          "longtaskTotalMs": 612,
+          "frameGapMaxMs": 124,
+          "ipcMaxMs": 7,
+          "ipcStallMs": 0
+        },
+        "close": {
+          "ok": true,
+          "ms": 58.5,
+          "reason": null,
+          "probe": {
+            "windowMs": 60,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 1,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "reopen": {
+          "ok": true,
+          "openMs": 164.7,
+          "countsMs": 164.8,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 168,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 19,
+            "p95Ms": 35,
+            "maxMs": 35,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 35
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 19
+              },
+              {
+                "atMs": 161,
+                "roundTripMs": 3
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 35ms, under the 250ms stall threshold"
+          }
+        },
+        "probe": {
+          "longtaskCount": 12,
+          "longtaskTotalMs": 863,
+          "longtaskMaxMs": 112,
+          "frameGapCount": 12,
+          "frameGapMaxMs": 124,
+          "longtaskSupported": true,
+          "observedMs": 10646,
+          "frames": 602,
+          "framesPerSec": 56.5,
+          "marks": [
+            {
+              "t": 1,
+              "label": "projects:open:start"
+            },
+            {
+              "t": 165,
+              "label": "projects:open:end"
+            },
+            {
+              "t": 198,
+              "label": "projects:search:start"
+            },
+            {
+              "t": 1134,
+              "label": "projects:search:end"
+            },
+            {
+              "t": 1136,
+              "label": "projects:search-clear:start"
+            },
+            {
+              "t": 1179,
+              "label": "projects:search-clear:end"
+            },
+            {
+              "t": 1196,
+              "label": "projects:filter-code:start"
+            },
+            {
+              "t": 1350,
+              "label": "projects:filter-code:end"
+            },
+            {
+              "t": 1514,
+              "label": "projects:scroll-flat:start"
+            },
+            {
+              "t": 7547,
+              "label": "projects:scroll-flat:end"
+            },
+            {
+              "t": 7580,
+              "label": "projects:list-view:start"
+            },
+            {
+              "t": 7702,
+              "label": "projects:list-view:end"
+            },
+            {
+              "t": 7814,
+              "label": "projects:filter-clear:start"
+            },
+            {
+              "t": 8071,
+              "label": "projects:filter-clear:end"
+            },
+            {
+              "t": 8074,
+              "label": "projects:conversations:start"
+            },
+            {
+              "t": 8183,
+              "label": "projects:conversations:end"
+            },
+            {
+              "t": 8247,
+              "label": "projects:tab-thrash:start"
+            },
+            {
+              "t": 9731,
+              "label": "projects:tab-thrash:end"
+            },
+            {
+              "t": 9733,
+              "label": "projects:switch-small:start"
+            },
+            {
+              "t": 9831,
+              "label": "projects:switch-small:end"
+            },
+            {
+              "t": 9843,
+              "label": "projects:switch-big:start"
+            },
+            {
+              "t": 10236,
+              "label": "projects:switch-big:end"
+            },
+            {
+              "t": 10237,
+              "label": "projects:close:start"
+            },
+            {
+              "t": 10297,
+              "label": "projects:close:end"
+            },
+            {
+              "t": 10298,
+              "label": "projects:reopen:start"
+            },
+            {
+              "t": 10466,
+              "label": "projects:reopen:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 188,
+          "totalStallMs": 3,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 53
+        },
+        "warnings": []
+      },
+      {
+        "project": {
+          "name": "gamma",
+          "files": 1600,
+          "folders": 40,
+          "bytes": 2922423,
+          "openedOn": "gamma",
+          "sidecar": {
+            "bytes": 10218562,
+            "artifacts": 8000,
+            "versions": 31989,
+            "orphans": 6400
+          },
+          "conversations": 700,
+          "nestedDirs": 12052
+        },
+        "open": {
+          "ok": true,
+          "openMs": 158,
+          "countsMs": 158.1,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 172,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 8,
+            "p95Ms": 26,
+            "maxMs": 26,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 26
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 8
+              },
+              {
+                "atMs": 154,
+                "roundTripMs": 6
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 26ms, under the 250ms stall threshold"
+          }
+        },
+        "switchToBig": null,
+        "search": {
+          "ok": true,
+          "typed": "handler",
+          "firstKeyMs": 60,
+          "keystroke": {
+            "samples": [
+              30.3,
+              33.9,
+              22.2,
+              21.5,
+              21.4,
+              20.8,
+              17.3
+            ],
+            "dropped": 0,
+            "medianMs": 21.5,
+            "p95Ms": 33.9
+          },
+          "fileCards": 116,
+          "nodes": 905,
+          "probe": {
+            "windowMs": 710,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 13,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 54,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 400,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 500,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 550,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 600,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "searchClear": {
+          "ok": true,
+          "ms": 37.6,
+          "reason": null,
+          "probe": {
+            "windowMs": 39,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "filter": {
+          "ok": true,
+          "codeMs": 100.3,
+          "fileCards": 831,
+          "nodes": 4277,
+          "thumbs": {
+            "img": 0,
+            "iframe": 0
+          },
+          "probe": {
+            "windowMs": 125,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 55,
+            "longtaskMaxMs": 55,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 57
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 100,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 77,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "scrollFlat": {
+          "ok": true,
+          "steps": 40,
+          "ms": 6017,
+          "scrollHeight": 31400,
+          "clientHeight": 397,
+          "img": 0,
+          "iframe": 0,
+          "nodes": 4260,
+          "probe": {
+            "windowMs": 6019,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 120,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 8,
+            "maxMs": 10,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 150,
+                "roundTripMs": 10
+              },
+              {
+                "atMs": 3750,
+                "roundTripMs": 9
+              },
+              {
+                "atMs": 4050,
+                "roundTripMs": 9
+              },
+              {
+                "atMs": 2700,
+                "roundTripMs": 8
+              },
+              {
+                "atMs": 3450,
+                "roundTripMs": 8
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+          },
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "frameGapMaxMs": 0
+        },
+        "listView": {
+          "ok": true,
+          "ms": 98.5,
+          "nodes": 6755,
+          "probe": {
+            "windowMs": 103,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 65
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 67,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 103,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "filterClear": {
+          "ok": true,
+          "ms": 67,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 254,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 5,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 67,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 0
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "switch": {
+          "smallMs": 67.3,
+          "bigMs": 433.3,
+          "small": {
+            "ok": true,
+            "ms": 67.3,
+            "reason": null,
+            "open": true,
+            "filesMounted": true,
+            "loading": false,
+            "fileCards": 1,
+            "folderCards": 0,
+            "files": "0",
+            "conversations": "0",
+            "nodes": 113,
+            "thumbs": {
+              "img": 0,
+              "iframe": 0
+            },
+            "hero": "alpha",
+            "probe": {
+              "windowMs": 108,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 2,
+              "p95Ms": 2,
+              "maxMs": 2,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 100,
+                  "roundTripMs": 2
+                },
+                {
+                  "atMs": 50,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          "big": {
+            "ok": true,
+            "ms": 433.3,
+            "reason": null,
+            "open": true,
+            "filesMounted": true,
+            "loading": false,
+            "fileCards": 24,
+            "folderCards": 8,
+            "files": "1600",
+            "conversations": "700",
+            "nodes": 661,
+            "thumbs": {
+              "img": 0,
+              "iframe": 3
+            },
+            "hero": "gamma",
+            "probe": {
+              "windowMs": 461,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 7,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 2,
+              "medianMs": 4,
+              "p95Ms": 93,
+              "maxMs": 93,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 48,
+              "worst": [
+                {
+                  "atMs": 250,
+                  "roundTripMs": 93
+                },
+                {
+                  "atMs": 350,
+                  "roundTripMs": 55
+                },
+                {
+                  "atMs": 150,
+                  "roundTripMs": 5
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 4
+                },
+                {
+                  "atMs": 50,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 93ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "conversations": {
+          "ok": true,
+          "ms": 91.8,
+          "rows": 739,
+          "nodes": 6943,
+          "count": "700",
+          "probe": {
+            "windowMs": 95,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 59,
+            "longtaskMaxMs": 59,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 75
+          },
+          "ipc": {
+            "pings": 1,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 70,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 0ms, under the 250ms stall threshold"
+          }
+        },
+        "thrash": {
+          "ok": true,
+          "rounds": 8,
+          "toConversations": {
+            "samples": [
+              98.7,
+              99.1,
+              102.1,
+              97.4,
+              98.6,
+              99.1,
+              98.9,
+              99
+            ],
+            "medianMs": 99,
+            "p95Ms": 102.1,
+            "maxMs": 102.1
+          },
+          "toFiles": {
+            "samples": [
+              64.9,
+              63.7,
+              61.7,
+              64.9,
+              65.4,
+              65.1,
+              66,
+              62.2
+            ],
+            "medianMs": 64.9,
+            "p95Ms": 66,
+            "maxMs": 66
+          },
+          "probe": {
+            "windowMs": 1333,
+            "longtaskCount": 8,
+            "longtaskTotalMs": 490,
+            "longtaskMaxMs": 62,
+            "longtaskSupported": true,
+            "frameGapCount": 8,
+            "frameGapMaxMs": 78
+          },
+          "ipc": {
+            "pings": 23,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 6,
+            "maxMs": 6,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 108,
+                "roundTripMs": 6
+              },
+              {
+                "atMs": 608,
+                "roundTripMs": 6
+              },
+              {
+                "atMs": 1108,
+                "roundTripMs": 6
+              },
+              {
+                "atMs": 1248,
+                "roundTripMs": 6
+              },
+              {
+                "atMs": 78,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+          },
+          "longtaskTotalMs": 490,
+          "frameGapMaxMs": 78,
+          "ipcMaxMs": 6,
+          "ipcStallMs": 0
+        },
+        "close": {
+          "ok": true,
+          "ms": 63.2,
+          "reason": null,
+          "probe": {
+            "windowMs": 64,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 1,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 0ms, under the 250ms stall threshold"
+          }
+        },
+        "reopen": {
+          "ok": true,
+          "openMs": 164,
+          "countsMs": 164,
+          "reason": null,
+          "open": true,
+          "filesMounted": true,
+          "loading": false,
+          "fileCards": 24,
+          "folderCards": 8,
+          "files": "1600",
+          "conversations": "700",
+          "nodes": 661,
+          "thumbs": {
+            "img": 0,
+            "iframe": 3
+          },
+          "hero": "gamma",
+          "probe": {
+            "windowMs": 175,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 8,
+            "p95Ms": 29,
+            "maxMs": 29,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 29
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 8
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 29ms, under the 250ms stall threshold"
+          }
+        },
+        "probe": {
+          "longtaskCount": 11,
+          "longtaskTotalMs": 654,
+          "longtaskMaxMs": 62,
+          "frameGapCount": 12,
+          "frameGapMaxMs": 78,
+          "longtaskSupported": true,
+          "observedMs": 10542,
+          "frames": 609,
+          "framesPerSec": 57.8,
+          "marks": [
+            {
+              "t": 1,
+              "label": "projects:open:start"
+            },
+            {
+              "t": 173,
+              "label": "projects:open:end"
+            },
+            {
+              "t": 371,
+              "label": "projects:search:start"
+            },
+            {
+              "t": 1081,
+              "label": "projects:search:end"
+            },
+            {
+              "t": 1083,
+              "label": "projects:search-clear:start"
+            },
+            {
+              "t": 1122,
+              "label": "projects:search-clear:end"
+            },
+            {
+              "t": 1138,
+              "label": "projects:filter-code:start"
+            },
+            {
+              "t": 1263,
+              "label": "projects:filter-code:end"
+            },
+            {
+              "t": 1425,
+              "label": "projects:scroll-flat:start"
+            },
+            {
+              "t": 7444,
+              "label": "projects:scroll-flat:end"
+            },
+            {
+              "t": 7477,
+              "label": "projects:list-view:start"
+            },
+            {
+              "t": 7580,
+              "label": "projects:list-view:end"
+            },
+            {
+              "t": 7677,
+              "label": "projects:filter-clear:start"
+            },
+            {
+              "t": 7931,
+              "label": "projects:filter-clear:end"
+            },
+            {
+              "t": 7933,
+              "label": "projects:conversations:start"
+            },
+            {
+              "t": 8028,
+              "label": "projects:conversations:end"
+            },
+            {
+              "t": 8093,
+              "label": "projects:tab-thrash:start"
+            },
+            {
+              "t": 9426,
+              "label": "projects:tab-thrash:end"
+            },
+            {
+              "t": 9428,
+              "label": "projects:switch-small:start"
+            },
+            {
+              "t": 9536,
+              "label": "projects:switch-small:end"
+            },
+            {
+              "t": 9583,
+              "label": "projects:switch-big:start"
+            },
+            {
+              "t": 10044,
+              "label": "projects:switch-big:end"
+            },
+            {
+              "t": 10045,
+              "label": "projects:close:start"
+            },
+            {
+              "t": 10109,
+              "label": "projects:close:end"
+            },
+            {
+              "t": 10111,
+              "label": "projects:reopen:start"
+            },
+            {
+              "t": 10286,
+              "label": "projects:reopen:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 182,
+          "totalStallMs": 48,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 93
+        },
+        "warnings": []
+      }
+    ],
+    "median": {
+      "open": {
+        "openMs": 161.1,
+        "countsMs": 161.1,
+        "fileCards": 24,
+        "folderCards": 8,
+        "nodes": 661
+      },
+      "search": {
+        "firstKeyMs": 73,
+        "keystroke": {
+          "medianMs": 21.5,
+          "p95Ms": 35.6
+        },
+        "fileCards": 116
+      },
+      "filter": {
+        "codeMs": 100.3,
+        "fileCards": 831,
+        "nodes": 4277
+      },
+      "scrollFlat": {
+        "steps": 40,
+        "longtaskTotalMs": 0,
+        "longtaskMaxMs": 0,
+        "frameGapMaxMs": 0,
+        "img": 0,
+        "iframe": 0
+      },
+      "listView": {
+        "ms": 98.5
+      },
+      "switch": {
+        "smallMs": 66.6,
+        "bigMs": 339
+      },
+      "conversations": {
+        "ms": 103.6
+      },
+      "thrash": {
+        "toFiles": {
+          "medianMs": 63.7,
+          "p95Ms": 64.7,
+          "maxMs": 64.7
+        },
+        "toConversations": {
+          "medianMs": 99,
+          "maxMs": 132.5
+        },
+        "longtaskTotalMs": 542,
+        "frameGapMaxMs": 97,
+        "ipcMaxMs": 6,
+        "ipcStallMs": 0
+      },
+      "reopen": {
+        "openMs": 164.7
+      },
+      "probe": {
+        "longtaskTotalMs": 718,
+        "longtaskMaxMs": 81
+      },
+      "ipcSumOfSteps": {
+        "totalStallMs": 48,
+        "maxMs": 93,
+        "over250ms": 0,
+        "pings": 188
+      }
+    },
+    "warnings": []
+  },
+  "scrollback": null,
+  "measures": {
+    "projects": {
+      "scenario": "projects",
+      "question": "What does the Projects view cost to open, search, filter, scroll and switch over a ~1,600-file project?",
+      "configuration": [
+        "two saved projects: gamma (~1,600 generated files in 40 folders: 45% code, 25% markdown, 12% html, 10% png, 8% json) and alpha (the transcript fixture, 2 files)",
+        "gamma carries a file-history record at Destin's 2026-09-09 scale — ~8,000 records / ~28,000 versions, ~80% of them under worktrees that do not exist — and 700 one-turn conversations under its Claude Code slug",
+        "gamma also holds ~6,000 nested directories under worktrees/wt-N/ (each a nested repo, so discovery skips them and only the project watcher walks them) — the shape of Destin's youcoded-dev, where a watcher restart measured 4 s",
+        "stock theme, no wallpaper — the per-card backdrop blur is NOT applied here",
+        "seven letters typed into the file search at ~45 ms spacing; the type filter \"Code & configs\" flattens the grid"
+      ],
+      "clocks": {
+        "open.openMs": "click the header Projects button -> the first file/folder cards painted",
+        "open.countsMs": "the same click -> the Files segment shows a count (the withCounts pass landed)",
+        "search.keystroke": "keydown -> painted, measured in-page via beforeinput; firstKeyMs is the flat-mode flip",
+        "filter.codeMs": "click the type chip -> the flat grid painted",
+        "switch.*": "click the palette row -> the other project's hero name and a settled Files tab"
+      },
+      "blindTo": [
+        "GPU cost: every file card is .layer-surface, which wallpaper themes give a backdrop-filter blur; under Xvfb/llvmpipe that is software-rasterised or skipped, so its real cost on a display is not measured",
+        "the stock theme has no wallpaper, so the per-card blur is not applied at all in this configuration",
+        "a project over the 2,000-file discovery cap (Destin's youcoded-dev is 3,279): the fixture sits under it so counts are exact",
+        "the small project (alpha) has three conversations; the conversation-heavy leg is measured on gamma only"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "projectsBoot": 0,
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}
