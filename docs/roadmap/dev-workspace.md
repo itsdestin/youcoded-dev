@@ -10,6 +10,49 @@ seen-on is always n/a here.
       likeliest read is the same shape as the step-guard entry below: a timer-dependent
       assertion under full-suite load
       `desktop` `needs-verify` `checked 2026-09-10`
+- [ ] The perf rig throws away a finished build when the machine is merely still calming
+      down. Its idle gate polls five times, 30 s apart, then aborts the whole run — but the
+      abort happens AFTER the multi-minute build, and a load average decaying from other
+      work can sit above the threshold for the whole 2.5 minutes while trending down. Hit
+      2026-09-09: five attempts at load 12.1 → 4.4 and abort, with the machine quiet a
+      minute later. Worked around twice with a hand-written waiter that requires three
+      consecutive settled samples before launching. Fix: wait until a deadline rather than a
+      fixed attempt count, require the load to be settled rather than momentarily under the
+      line, and print a "still waiting" line so a queued run is not mistaken for a hung one
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
+- [ ] The perf rig can say WHICH step is slow (`explain.mjs`, 2026-09-09) but not which
+      STAGE inside it. Finding that opening a large Markdown file spends 292 ms parsing,
+      217 ms restructuring, 377 ms colouring code and 7 ms on the thing a plan had blamed
+      took a throwaway script run against the rig's own fixture — and that 7 ms is what
+      stopped a change nobody could have traced to an improvement. Worth a rig utility, but
+      not obviously general: the stages are specific to whatever pipeline is under the
+      microscope, so this may be a documented recipe rather than a tool. Deferred
+      2026-09-09 as the one item of six that was not clearly easy
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
+- [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
+      actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
+      phase opens the drawer but types into an editor rather than receiving a reply, so a
+      change that removes per-token drawer redraws measures as flat in both (2026-09-09:
+      artifacts and workload before/after within run-to-run spread, while a render count
+      showed 40 avoided redraws per 40 tokens). Nor does any phase change one file while a
+      DIFFERENT file is open, which is what makes the git footer re-run three git
+      subprocesses. Fix: a step that opens the drawer on a file, streams a reply, and edits
+      other files meanwhile — then the drawer's cost during a reply is a rig number instead
+      of a unit-test count
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
+- [ ] perf-lab's own `screenshots.test.mjs` fails about two runs in three: "each run removes its
+      throwaway Chrome profile" counts `perf-lab-diff-*` directories in the OS temp dir before and
+      after two headless launches and demands the count be unchanged, but the cleanup waits on an
+      async Chrome exit, so a run that finishes teardown late reads as a leak. `/tmp` on this
+      machine held ~160 orphaned profile directories from earlier runs, which is the same fault
+      seen from the other side — some really are left behind. Found 2026-09-09 while gating the
+      Project View watcher fix; reproduced on a pristine tree with the perf work stashed, so it is
+      not that change. Fix: have the test wait on the exit it is asserting about rather than on a
+      count, and sweep the orphans
+      `n/a` `confirmed` `checked 2026-09-09`
 
 - [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
       failed once in a full suite run and passed on the two full runs after it, plus three
