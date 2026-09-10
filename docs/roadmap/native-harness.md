@@ -240,7 +240,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] The session-cost chip reads low once a long session starts compacting — a step down at
       every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
-      `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
+      `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
 
 - [ ] Changing models while an answer is still streaming bills that whole turn at the new
       model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
@@ -256,11 +256,18 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
       stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
       survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
-      shipped in youcoded#461 (2026-09-09). The eight remaining ways the app breaks caching — no
-      Anthropic cache_control, local trimming before compaction, rolling prune rewrites, in-place
-      summaries, the ChatGPT summary cache key, no OpenRouter session id, the Task tool's live
-      roster description, and the Reuse chip hiding cold requests — are the handoff
-      `desktop` `confirmed` `checked 2026-09-09` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
+      shipped in youcoded#461 (2026-09-09). Of the eight remaining breakers, youcoded#464
+      (2026-09-10) shipped six plus the backend half of the seventh: Anthropic caching switched on
+      and OpenRouter sessions pinned, compaction firing before the trimmer on every window,
+      pruning committed only on a prune decision, the summary reusing the conversation's warm
+      prefix and reporting its cost, an `expectedRebuild` flag on every turn, llama.cpp's reuse
+      count recorded per step, and the Task tool pinned byte-identical across catalog reloads.
+      The ChatGPT summary key was dropped on purpose (the summary shares the chat's key now).
+      What is left: the Reuse chip's DISPLAY of expected vs surprise misses (four layouts in the
+      survey, a deck for Destin), and a measurement pass in a dev instance — nothing reads the
+      recorded local reuse count yet, and whether OpenRouter honours the top-level cache field
+      and the session pin is asserted only against a stubbed network
+      `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
