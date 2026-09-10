@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
   globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
-  uncommittedPaths, strandedWorktrees,
+  uncommittedPaths, strandedWorktrees, undocumentedWorkbenchSwitches,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -660,4 +660,76 @@ test('strandedWorktrees: committed-but-unpushed work is reported too', t => {
 
 test('strandedWorktrees: never throws when git is unavailable', () => {
   assert.deepEqual(strandedWorktrees('/definitely/not/a/repo'), []);
+});
+
+// ---------------------------------------------------------------------------
+// undocumentedWorkbenchSwitches — see the function's comment for the 2026-09-09
+// incident. A shot plan that omits a `?switch=` captures an EMPTY card, which is
+// indistinguishable from a feature that was never built.
+// ---------------------------------------------------------------------------
+
+function switchFixture(t, { shim, readme }) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-switches-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  if (shim !== null) {
+    const dir = path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'dev', 'workbench');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'mock-shim.ts'), shim);
+    // subRepoRoot() resolves sub-repos from the main checkout when this root has none.
+    fs.mkdirSync(path.join(root, 'youcoded', '.git'), { recursive: true });
+  }
+  if (readme !== null) {
+    fs.mkdirSync(path.join(root, 'scripts', 'ui-review'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'scripts', 'ui-review', 'README.md'), readme);
+  }
+  return root;
+}
+
+test('undocumentedWorkbenchSwitches: a documented switch is not reported', t => {
+  const root = switchFixture(t, {
+    shim: "const x = new URLSearchParams(location.search).get('planUsage');",
+    readme: 'Switches: `?planUsage=1` (the plan bars).',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
+});
+
+test('undocumentedWorkbenchSwitches: an undocumented switch IS reported', t => {
+  // The real 2026-09-09 case: the switch exists, the README never names it, and the
+  // resulting shot shows a card with no usage bars.
+  const root = switchFixture(t, {
+    shim: "const x = new URLSearchParams(location.search).get('planUsage');",
+    readme: 'Switches: `?scenario=default`.',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['planUsage']);
+});
+
+test('undocumentedWorkbenchSwitches: reads the hoisted searchParams spelling too', t => {
+  // mock-shim.ts uses both forms; matching only one would under-report silently.
+  const root = switchFixture(t, {
+    shim: "const searchParams = new URLSearchParams(location.search);\nconst v = searchParams.get('claudeCode');",
+    readme: 'nothing here',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['claudeCode']);
+});
+
+test('undocumentedWorkbenchSwitches: results are sorted and de-duplicated', t => {
+  const root = switchFixture(t, {
+    shim: "get('zebra'); new URLSearchParams(location.search).get('alpha');\nnew URLSearchParams(location.search).get('zebra');",
+    readme: '',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['alpha', 'zebra']);
+});
+
+test('undocumentedWorkbenchSwitches: a checkout without the app reports nothing', t => {
+  // A workspace worktree has no sub-repo clone; that is not drift.
+  const root = switchFixture(t, { shim: null, readme: 'Switches: none.' });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
+});
+
+test('undocumentedWorkbenchSwitches: a checkout without the rig README reports nothing', t => {
+  const root = switchFixture(t, {
+    shim: "new URLSearchParams(location.search).get('planUsage');",
+    readme: null,
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
 });

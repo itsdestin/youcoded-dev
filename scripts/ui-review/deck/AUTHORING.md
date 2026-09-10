@@ -42,6 +42,17 @@ Fields on every step: `id` (unique, never reused), `surface` (the part of the ap
 words), `path` (how he would get there), `headline` (one sentence, 25 words max, no code
 words). A step may carry its own `themes` when its picture exists in one palette only.
 
+**A crop's SHAPE decides the page layout, and a tall one hides your Risk card.** The page
+tries every arrangement and keeps whichever shows the pictures largest: a wide crop puts
+What changed / You'll notice / Risk in a row UNDER the pictures, all three readable; a tall
+one puts them in a side column that is only about two cards deep, so the third is cut off
+mid-sentence and looks like a rendering fault. Crop to the part that carries your point —
+the greyed rows, the one card that changed — not the whole dialog around it. Measured
+2026-09-09: a 420x580 crop of a dialog clipped the Risk card at every viewport width and
+survived four rounds of shortening the words; recropping to 420x275 fixed it in one.
+Cropping the whole window instead is the opposite failure — the pane grows until the
+cards fall off the bottom of the screen entirely.
+
 ### A slide names the pictures it shows
 
 `runs` on a SLIDE — a list of names the deck captures — says which pictures that slide puts on

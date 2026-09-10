@@ -1,0 +1,73 @@
+{
+  "title": "Claude sign-in — round 2: your usage bars, and one question I asked badly",
+  "key": "claude-signin-live-status-r2",
+  "out": "claude-signin-r2.review.html",
+  "images": "images/claude-signin-r2",
+  "runs": {
+    "before": "runs2/before",
+    "after": "runs2/after"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "card": [
+      "card",
+      "cloud-providers",
+      "640x168+330+206"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "The Claude Code card",
+      "crop": "card",
+      "headline": "Your Claude usage bars are already there — my picture last round was the thing that was wrong.",
+      "changed": "Nothing new was built — the card just thought you were signed out, so it drew no bars.",
+      "measured": "Your real file right now: 8% of the 5-hour window, 21% of the 7-day",
+      "notice": "Two bars under Claude Code, in ChatGPT's exact style.",
+      "risk": "The numbers can run a few minutes stale, like the status bar."
+    },
+    {
+      "id": "R2-2",
+      "words": true,
+      "surface": "Model menu",
+      "path": "The rare case where the app cannot get an answer",
+      "headline": "If the app can't tell whether you're signed in, should it still let you pick a Claude model?",
+      "today": "When you open the model menu, the app asks Claude Code whether you are signed in. On your machine that takes about a tenth of a second, and it answers yes.",
+      "problem": "Rarely it will not answer at all — the check runs too long, or Claude Code prints something the app does not recognise. The app then genuinely does not know, and it still has to decide what to show you.",
+      "proposal": "I chose to leave every Claude model switched on when it does not know. The other choice is to grey them out and say the check failed. This is the only thing I still need your call on; everything else is built and working.",
+      "options": [
+        {
+          "id": "leave-on",
+          "label": "Leave the models switched on",
+          "recommended": true,
+          "summary": "The app says nothing, and you use Claude exactly as normal.",
+          "pros": [
+            "You are never locked out of a model that works — which is the bug you reported this morning.",
+            "A slow or odd answer from the check costs you nothing at all.",
+            "If something really is wrong, you find out the moment you send a message, with a real error."
+          ],
+          "cons": [
+            "No warning up front on the rare occasion something really is broken."
+          ]
+        },
+        {
+          "id": "grey-out",
+          "label": "Grey them out and say the check failed",
+          "summary": "The models go dim with a note that the app could not check your sign-in.",
+          "pros": [
+            "You are warned before you spend time typing a message.",
+            "The menu never offers a model that might not work."
+          ],
+          "cons": [
+            "One slow check takes all four Claude models away from you.",
+            "This is exactly how this morning's bug behaved — greyed out, on a machine that was fine."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -9,8 +9,13 @@ seen-on is always n/a here.
       after the test landed on master. It asserts an ordering between two queued writes
       (`expected [[20],[40]] to equal [[30],[40]]` — the first write's value, not the
       superseding one), so a scheduling race in the test rather than the queue is the
-      likeliest read. Nothing on the session-naming branch touches StepGuardRow
-      `desktop` `needs-verify` `checked 2026-09-09` `regression`
+      likeliest read. Nothing on the session-naming branch touches StepGuardRow.
+      SECOND occurrence 2026-09-09, a DIFFERENT test in the same file — "serializes rapid
+      commits and applies the latest intent after the in-flight write" — in a full suite run
+      on session/claude-auth-live-status, which touches no step-guard file at all; 3 of 3
+      isolated re-runs green. Two of the file's eight tests have now flaked in full runs and
+      only in full runs, which points at the suite's shared timers rather than either test
+      `desktop` `confirmed` `checked 2026-09-09` `regression`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
@@ -149,8 +154,17 @@ seen-on is always n/a here.
       `needs-verify` every run. The filing grammar tells every session to run it before
       committing, so each one either ships another session's silent downgrade or has to spot
       it and revert by hand. Seen twice on 2026-09-07, once from a stale checkout and once
-      from a freshly merged one
-      `desktop` `confirmed` `checked 2026-09-07`
+      from a freshly merged one. THIRD occurrence 2026-09-09, a different item and a different
+      file: it downgraded the native-harness cache-efficiency item to `needs-verify` while a
+      session was filing an unrelated dev-workspace entry, and rewrote ROADMAP.md's counts to
+      match. Reverting needs THREE steps, because re-running `--fix` to repair the index
+      re-applies the downgrade — revert the area file, revert the index, then hand-correct the
+      one index row. Two sessions have now had to work that out from scratch; the fix wanted is
+      for `--fix` to touch only files the run was asked about. It has now reached master: on
+      2026-09-09 `ROADMAP.md` there said native-harness had 11 needs-verify items while
+      `native-harness.md` said 10 — the index half of a downgrade shipped without the file half,
+      so `roadmap-check` is RED on master until someone matches them
+      `desktop` `confirmed` `checked 2026-09-09`
 
 - [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
       read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
@@ -611,3 +625,14 @@ seen-on is always n/a here.
       message was rewritten to describe the feature for Destin. Matching the commit rather than the
       words would fix it; so would always keeping the branch name in the message
       `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] `workbench-boot-check.mjs` boots only the `scenario=*` / `view=*` routes, so eleven of the
+      eighteen `?switch=` values `mock-shim.ts` reads have never been booted by any check —
+      `planUsage`, `chatgpt`, `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`,
+      `student`, `voice`, `buddyHelper`. `scripts/ui-review/README.md` → Extending has told
+      every session to add a route for a new switch since the file was written; none of the
+      eleven has one. A switch that crashes the mock would surface as a failed screenshot in
+      whichever session next used it, not as a red check. Counted 2026-09-09 while adding the
+      `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
+      same instruction but cannot boot anything
+      `n/a` `confirmed` `checked 2026-09-09`
