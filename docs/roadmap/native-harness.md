@@ -4,6 +4,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
+      you picked — its own test says so and has been failing on master since the feature shipped
+      2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists
+      the same intent": both saves carry 20 after 50 was chosen). Found 2026-09-09 by a
+      `verify.sh` run on an unrelated branch; nobody has checked yet whether it reproduces in
+      the running app or is only true on the failure path the test exercises
+      `settings` `desktop` `needs-verify` `checked 2026-09-09`
+
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
       `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md

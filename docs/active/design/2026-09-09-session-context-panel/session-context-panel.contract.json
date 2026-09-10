@@ -1,0 +1,104 @@
+{
+  "title": "What the assistant was given — contract",
+  "key": "session-context-panel-contract",
+  "out": "session-context-panel.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/context-truncation",
+  "sources": {
+    "session-context-styled": "session-context-panel.review-3.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "This is what done means for the panel that shows what the assistant was given.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The panel is built from the same dialog pieces as the app's other settings dialogs, not its own hand-drawn look.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The header shows the panel's title, one short line beneath it, and a close cross at the right, above a hairline.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R3",
+          "statement": "When something was left out, the app's standard warning box says so at the top, and no model pill appears.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R4",
+          "statement": "Sections are introduced by small uppercase labels rather than cards carrying headings of their own.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R5",
+          "statement": "Each item is a rounded row with a chevron, spaced exactly like the rows in the Preferences dialog.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R6",
+          "statement": "Model, context window and what was given sit as three plain rows under THIS CHAT, each value on the right.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R7",
+          "statement": "There is no footer button; Assistant settings is a row with a chevron that leads onward.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R8",
+          "statement": "Quoted file content sits on the app's deepest surface behind a hairline, at the app's small caption size.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R9",
+          "statement": "What it got and What was cut are the app's own tabs; Open sits beside a file as a small row button.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R10",
+          "statement": "When nothing was left out, the same restyled panel appears in its green everything-fit state.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-2"
+        },
+        {
+          "id": "R11",
+          "statement": "In the green state one green-dot line inside a card replaces the warning box, above the tabs, THIS CHAT and MORE.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-2"
+        },
+        {
+          "id": "R12",
+          "statement": "With nothing cut there is no list of cuts, only the three facts and the settings row.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-2"
+        }
+      ]
+    }
+  ]
+}
