@@ -85,6 +85,8 @@ UI design precedes backend implementation. Read `.claude/rules/feature-flow.md` 
 
 Use the context-free UX tester before Destin's first deck and after implementation, a fresh code reviewer, and a fresh grader before acceptance. Briefs and execution: `scripts/ui-review/{ux-tester,code-reviewer,grader,contract-agent}.md`; full route: `.claude/rules/feature-flow.md`. This overrides generic brainstorming chat-question habits for YouCoded features.
 
+**Small changes, features or bug fixes with clear direction** may skip the questions deck, UX tester, reviewers, contract and acceptance rounds; a UI review deck is then the first thing Destin sees. Ask him before skipping to confirm that is what he wants.
+
 ### Asking Destin many questions at once
 
 Four or more questions go on a questions deck — a words-only review deck: copy `scripts/ui-review/templates/questions.json`, `preview` it and read the contact sheet, then `serve` it in the background and put the printed link in chat as the last line of your turn (it opens nothing itself). Every question carries context-free Today / Problem / Proposal / Options with user-facing pros and cons, as fields the builder enforces; questions share one scrolling page unless a page marker starts a new one. Fewer than four or wording-only questions may stay in chat, except where feature-flow requires a deck. Fields, kinds and commands: `.claude/rules/review-deck.md` and `scripts/ui-review/deck/AUTHORING.md`.
