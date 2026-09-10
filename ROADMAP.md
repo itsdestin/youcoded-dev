@@ -36,7 +36,6 @@ release mechanics; Android still lacks tags, notes, the native harness and the l
 
 ## Next release
 Target: `v1.3`
-- android-only: Android is pinned to Claude Code 2.1.112 because later releases ship as a native binary the
 - dev-workspace: Re-work the release method: releases tag master directly, so every release ships the
 - dev-workspace: Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
 - dev-workspace: Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
@@ -53,20 +52,20 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 88 | 30 | 2 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 87 | 30 | 2 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 58 | 10 | 3 | 19 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 30 | 16 | 0 | 6 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 28 | 15 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 8 | 0 | 9 |
-| [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 19 | 10 | 1 | 1 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 6 | 2 | 6 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 16 | 3 | 3 | 2 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 1 | 6 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 16 | 6 | 0 | 2 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 14 | 6 | 0 | 2 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 9 | 2 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 2 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
+| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 1 | 0 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,
