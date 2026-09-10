@@ -35,7 +35,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
-      `chat` `remote` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
+            Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
+`chat` `remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
 
 - [ ] Over remote access whole features are simply missing: the files panel cannot open any
       file (not even a small note), Project View tabs are thin, the game lobby signs in but
@@ -55,13 +56,23 @@ Filing test: reaching the app from another device — the protocol, the browser 
       further beat to fill in; the July byte-shaving merge changed nothing Destin could feel
       on LAN. ~2.5 s of it is scripted waiting; the white part is unmeasured on a real phone
       Destin 2026-09-02: probably much improved; keep for a future remote-access verification pass
-      `remote` `needs-verify` `checked 2026-09-02` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
+      Destin 2026-09-10, after batch 1: still "takes quite a while before showing any real app ui
+      or the password screen". Measured that day: the sign-in box ships INSIDE the whole app's
+      script, so a phone downloads and runs 2,444 KB (607 KB compressed) before it can draw a
+      text box, then fetches the 34 KB connection code as a second download, and only then
+      shows sign-in. His test ran against the dev window, which serves the 523 source files one
+      by one instead of one bundle, so the wait he felt is inflated by dev mode; the built app
+      has not been timed on his phone. Fix shape: a small first download holding only sign-in
+      and the connection code, with the app loading after the password is accepted. The 2.5 s
+      of scripted waiting after sign-in is a separate, proven cost (below)
+      `remote` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] Finish the remote-hydration work: a remote browser can land on a different session or
       view than the desktop window shows, and events arriving during connect can double-apply
       or drop (commits 2 and 3 of the 2026-07-20 plan; ask Destin which still bites)
       Destin 2026-09-02: still sees intermittent desktop/remote mismatch bugs, not sure they are exactly this
-      `remote` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
+            Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
+`remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
 
 - [ ] A phone browser on remote access behaves like a desktop in the terminal view — touch
       adaptations off, soft keyboard and scrolling wrong (found 2026-07-20 on Chrome/Android)
@@ -179,7 +190,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
       but the CAUSE is unidentified. A request in flight when the connection blips is not
       cancelled or retried; it waits out its own 30-second timeout and then rejects, which
       fits the symptom without being proven
-      `remote` `needs-verify` `checked 2026-09-10`
+            Destin 2026-09-10, later the same day: "mostly fixed" — did not recur on his phone
+`remote` `needs-verify` `checked 2026-09-10`
 
 - [ ] Browser encryption — the optional second level — is an approved design with nothing
       behind it. Destin went looking for it in the app on 2026-09-10 and found no trace: the
