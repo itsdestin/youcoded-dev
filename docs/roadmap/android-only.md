@@ -9,6 +9,8 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       device", Claude Code unfrozen or scoped as legacy, updates and notifications that actually
       arrive, sharing into the app, real file access, touch-first input, modern Android polish,
       and a Google Play listing instead of sideloading. Every earlier Android item (19 here plus
-      11 from other areas) was folded into the report's appendix on 2026-09-10; the five
-      decisions the plan needs are in its §8
-      `android` `decision` `checked 2026-09-10` → docs/active/investigations/2026-09-10-android-parity-audit.md
+      11 from other areas) was folded into the report's appendix on 2026-09-10. Destin decided
+      the same day (report §8): built-in assistant first, Play prioritized, the full desktop
+      file view, remove the old restore wizard, harness before phone basics. Step 2 (honest
+      builds: versions, notification permission, clean refusals) is on session/android-rebuild-1
+      `android` `in-flight` `checked 2026-09-10` → docs/active/investigations/2026-09-10-android-parity-audit.md
