@@ -380,3 +380,58 @@ Claude Try to Fix It"* — install the workspace, open a session, hand it the bu
 approved ticket design has no such action, so flipping that gate would delete a working
 feature no deck ever asked to remove. It is a question for the acceptance deck, not a
 silent change. The Contribute gate is gone and its legacy screen deleted.
+
+## Acceptance — the three reviews, 2026-09-10
+
+Three fresh agents, none of which saw the work: a code reviewer, a context-free UX
+tester, and a grader run three times. Between them **51 findings on a branch where
+every check was green**, which is the point of running them.
+
+### What the code reviewer found (17, seven of them dishonest)
+
+The worst was mine and structural: `dev:setup-workspace` was desktop-only by
+**omission**. The remote shim's `dev` namespace is hand-built, so a member left out of
+it is `undefined` and calling it throws *"window.claude.dev.setupWorkspace is not a
+function"* — a raw JavaScript error shown to a phone user as the reason setup failed.
+**Desktop-only has to be a refusal, not an absence.**
+
+Worse, the parity test I added to catch exactly that was a **tautology** —
+`NEW_TYPES.includes(t) || DESKTOP_ONLY.has(t)` where `NEW_TYPES` is defined as the
+complement of `DESKTOP_ONLY`, true for every input. When I "proved" it by adding a
+dummy channel, four tests went red and **none of them was mine**; the pre-existing
+tests did the work and I took the credit.
+
+### What the UX tester found (17)
+
+The screen said *"Your ticket is open in your browser with everything you wrote"*
+without ever checking whether a browser opened — `void openExternal(...)`. The tester
+ran the whole flow with every operation failing and got that success message word for
+word, with no link and Done throwing the draft away.
+
+A 401 reported *"Bad credentials"* about credentials they had never set up. A rejected
+token means the same thing to a user as having none: finish it in the browser.
+
+Nothing they typed was ever lost, in any flow.
+
+### What the grader found (the decisive one)
+
+**The suite was green on a screen no user could open.** The ticket screen rendered only
+under `?mode=workbench`, and `main.ts` never puts a mode on a packaged window — so
+**thirteen of the twenty-three signed rows were unmet for that single reason**, and
+"43 tests passed" was not evidence the shipped app had changed.
+
+The gate had been held up to avoid deleting *"Let Claude Try to Fix It"*, which no deck
+asked to remove. That was the wrong trade: it kept a screen that pre-collects logs
+before anyone consents, runs AI before you see anything, and answers every send failure
+with *"Opening GitHub in your browser…"*. The action was **carried over** instead —
+first into the footer, which broke R17 and R21 on their own words, then behind the
+**Optional AI help** disclosure, where it contradicts neither.
+
+The same defect existed one level up: `DevelopmentPopup` kept two copies of itself and
+users only ever saw the older one, so the approved **Roadmap** row was invisible.
+
+### The standing question for the acceptance deck
+
+*"Let your assistant try to fix it"* is **new UI on a screen Destin signed without it**.
+It is behind the disclosure and named in the code, not slipped in. Keep it, cut it, or
+redesign it — his call, and the only one still open.
