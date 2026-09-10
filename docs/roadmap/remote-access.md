@@ -12,7 +12,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
-      `chat` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
+      `chat` `remote` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
 
 - [ ] Over remote access whole features are simply missing: the files panel cannot open any
       file (not even a small note), Project View tabs are thin, the game lobby signs in but
@@ -72,18 +72,4 @@ Filing test: reaching the app from another device — the protocol, the browser 
       off the remote client until the channel is encrypted. When it is: record in the browser, send
       the audio to the desktop's speech engine, so it sounds the same everywhere
       `input-bar` `remote` `parked` `checked 2026-09-05` → docs/archive/design/2026-09-05-voice-prompting/voice-prompting.questions.json
-
-- [ ] A phone that pairs to a desktop mid-dictation cannot stop its own microphone. The mic
-      belongs to the phone's own speech service, and the only way to close it is a message the
-      pairing has just started refusing — so it stays open until the phone's recogniser times
-      out on its own. Bounded in practice (a few seconds of silence ends it) and not reachable
-      before pairing, but the fix is to let stop and cancel through while paired instead of
-      refusing them with everything else. Found reviewing the voice build, 2026-09-05
-      `input-bar` `android` `confirmed` `checked 2026-09-05`
-
-- [ ] Pairing to a desktop while the message box is open leaves the mic button looking live.
-      Nothing re-asks whether voice is available when the connection changes, so the first tap
-      shows the "voice stopped" card rather than the card that explains you are connected to
-      another computer. Recovers on its own once the screen is reopened, or on Check again
-      `input-bar` `android` `confirmed` `checked 2026-09-05`
 

@@ -7,13 +7,18 @@ import { CaptionStudy } from './CaptionStudy';
 import { HostStudy, STUDY_FRAMES } from './intro/HostStudy';
 import { TransitionStudy, TRANSITION_STUDY_FRAMES } from './studies/TransitionStudy';
 import { EndPoseStudy } from './studies/EndPoseStudy';
+import { BubbleStudy, BUBBLE_STUDY_FRAMES } from './studies/BubbleStudy';
 // The film runs the bar grid (TOTAL_FRAMES) plus TAIL_FRAMES, the frames the
 // last beat holds so the music's final chord plays out under a live picture.
 // `Intro` is the cold-open study clip (round three's mascot check-in) and the
 // three `Caption*` stills are the caption designs Destin picks from.
 export const RemotionRoot: React.FC = () => (
   <>
-    <Composition id="Promo" component={Promo} durationInFrames={FILM} fps={FPS} width={1920} height={1080} />
+    {/* `track` picks the music file under public/ (promo, promo-lofi, promo-pop — three candidates since 2026-09-09) */}
+    <Composition id="Promo" component={Promo} durationInFrames={FILM} fps={FPS} width={1920} height={1080} defaultProps={{ track: 'promo' }} />
+    {/* the bubble check-in (2026-09-09): a look and a motion on a theme; `--props` overrides */}
+    <Composition id="BubbleStudy" component={BubbleStudy} durationInFrames={BUBBLE_STUDY_FRAMES} fps={FPS} width={1920} height={1080}
+      defaultProps={{ look: 'glass' as const, motion: 'lift' as const, shape: 'wedge' as const, slug: 'cotton-candy-sky' as const, file: 'promo-idle-cotton', text: "Welcome to YouCoded! I'm your assistant." }} />
     <Composition id="Intro" component={Intro} durationInFrames={INTRO_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'warm' as const }} />
     <Composition id="HostStudy" component={HostStudy} durationInFrames={STUDY_FRAMES} fps={FPS} width={1920} height={1080} defaultProps={{ faceStyle: 'warm' as const }} />
     {/* check-in 3c: two beats choreographed so the host PRESENTS the app (model picker, the phone), with the

@@ -31,14 +31,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       the 464 MB first download draws complaints (accepted on review V-0's risk card)
       `input-bar` `desktop` `parked` `checked 2026-09-05`
 
-- [ ] On a phone the app is a shrunk desktop — status-bar chips, panels and desktop session
-      switching — where Gemini, Siri and Claude mobile are built around quick dispatch and search.
-      Wanted: a rethought default for the Android app and the mobile browser client covering quick
-      chips, session switching and resume/history, with the full desktop-narrow UI still reachable
-      rather than removed. Bigger than the 2026-07-20 narrow-viewport pass, and design-first: it
-      needs its own workbench mockup round before any build
-      `android` `parked` `checked 2026-09-02`
-
 - [ ] Browser-default hover tooltips look foreign to the app — first noticed 2026-07-28 on the
       /clear "Cleared — still here to read" hint; every hover hint in the app is one of these
       `all` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-app-native-tooltips.md
@@ -93,11 +85,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Save image as…, Copy address, or Ask about this (the menu shipped for text, code,
       links and file pills only)
       `desktop` `needs-verify` `checked 2026-09-01`
-
-- [ ] The right-click menu may not open from a long-press on Android — never tried on a
-      device; a long-press is also how Android starts a text selection, so the menu could
-      make selecting text harder rather than easier
-      `android` `needs-verify` `checked 2026-09-01` `needs-repro`
 
 - [ ] "Ask about this" native treatment (lift the message to screen centre, dim the window,
       trace the selection) — built on draft PR youcoded#263, still open; Destin 2026-07-28:

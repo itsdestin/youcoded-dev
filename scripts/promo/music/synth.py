@@ -250,6 +250,17 @@ def lead_pulse(note, dur, glide_from=None):
     return onepole_lp(x, 3200, 1) * env(n, 0.01, 0.1, 0.7, 0.08) * 0.5
 
 
+def lead_soft(note, dur, glide_from=None):
+    """A rounder lead for the pop track: a triangle with a sine under it, a slow vibrato that comes
+    in late, and a soft top — a whistle rather than lead_pulse's chip buzz."""
+    n = secs(dur)
+    f0, f1 = midi(glide_from if glide_from is not None else note), midi(note)
+    f = f1 + (f0 - f1) * np.exp(-np.arange(n) / (0.04 * SR))
+    f = f * (1 + 0.005 * sine(5.2, n) * np.clip(np.arange(n) / (0.3 * SR), 0, 1))
+    x = tri(f, n) * 0.7 + sine(f, n) * 0.3
+    return onepole_lp(x, 2600, 1) * env(n, 0.012, 0.1, 0.75, 0.1) * 0.55
+
+
 def vinyl(n: int, level=0.05):
     """Crackle + hiss for the lo-fi sketch."""
     hiss = onepole_lp(noise(n), 3500, 1) * 0.35

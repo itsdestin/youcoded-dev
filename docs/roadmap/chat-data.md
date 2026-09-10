@@ -16,7 +16,7 @@ produced and the panel that shows them (files).
 
 - [ ] After switching models in a chat, the saved conversation record still shows the model from
       before the swap (desktop, 2026-08-27); a red test for it sits on branch test/last-used-model-pin
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-metadata-only-save-keeps-old-last-used-model.md
+      `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-metadata-only-save-keeps-old-last-used-model.md
 
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —
@@ -29,9 +29,19 @@ produced and the panel that shows them (files).
       Destin 2026-09-02: this device only; discard any old branch and build it fresh
       `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
 
-- [ ] You cannot rename a conversation — names are auto-generated only, on every platform; all
-      eight surveyed competitors have rename (2026-08-31)
-      `resume-browser` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-rename-a-conversation.md
+- [ ] A conversation you renamed by hand cannot be handed back to automatic naming. Review 3
+      removed the reset action from the dialog ("get rid of that button. it's dumb"), so the
+      only way out is to type another name. Matters in AI mode, where automatic naming would
+      otherwise keep following the subject; barely matters in Basic, which names once anyway.
+      The generated name IS still remembered, so any future affordance costs no model call
+      `resume-browser` `all` `decision` `checked 2026-09-09` → docs/archive/specs/2026-09-08-session-naming-design.md
+
+- [ ] Session naming's reply counter may double-count after a `/clear` truncation. The
+      transcript watcher resets its read offset to 0 and re-emits historical `turn-complete`
+      lines; the namer dedups by transcript uuid but caps that set at 200 and trims to 100,
+      so a very long session could re-count. Flagged unconfirmed by the 2026-09-09 code
+      review (F-not-covered); worst case is an early extra AI review, not a wrong name
+      `desktop` `needs-verify` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-naming-code-review.md
 
 - [ ] The Resume Browser search box only matches names, project paths, notes and tags — a phrase you
       remember from inside a chat finds nothing, even though the full-text index exists and the
@@ -56,11 +66,6 @@ produced and the panel that shows them (files).
       keep a dead key forever once a mis-filed session vanishes; and the remaining follow-ups the
       branch review deferred (see `fix/project-slug-encoding` review notes in git history)
       `desktop` `needs-verify` `checked 2026-08-12`
-
-- [ ] The auto-title reminder fires about six times per conversation instead of once — 277 wasted
-      round trips across 46 sessions in the 2026-08-28 study, still firing on 2026-08-31. Wants a
-      fire-once-per-conversation guard
-      `desktop` `needs-verify` `checked 2026-08-31` `performance`
 
 - [ ] Searching a long conversation says "no results" for text that is definitely there — since
       paged history shipped (youcoded#349), only the most recent ~30 turns are in the DOM, and

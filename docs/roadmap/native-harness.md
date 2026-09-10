@@ -33,12 +33,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
-- [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
-      next step of a tool turn, so a long tool-using turn may re-think work it already did —
-      slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
-      on the free plan, so nothing is broken today; a paid plan is the case to check
-      `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/specs/2026-09-05-chatgpt-signin-backend-design.md
-
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —
       six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
       chasing the sidecar crash; not the crash cause, a few hundred bytes each)
@@ -267,7 +261,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] The session-cost chip reads low once a long session starts compacting — a step down at
       every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
-      `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
+      `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
 
 - [ ] Changing models while an answer is still streaming bills that whole turn at the new
       model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
@@ -282,8 +276,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       affinity and prefix stability, then measure the first post-resume request rather than trusting
       historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
       stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
-      survives the gap between messages
-      `desktop` `confirmed` `checked 2026-09-08` → docs/active/investigations/2026-08-17-cache-efficiency.md
+      survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
+      shipped in youcoded#461 (2026-09-09). Of the eight remaining breakers, youcoded#464
+      (2026-09-10) shipped six plus the backend half of the seventh: Anthropic caching switched on
+      and OpenRouter sessions pinned, compaction firing before the trimmer on every window,
+      pruning committed only on a prune decision, the summary reusing the conversation's warm
+      prefix and reporting its cost, an `expectedRebuild` flag on every turn, llama.cpp's reuse
+      count recorded per step, and the Task tool pinned byte-identical across catalog reloads.
+      The ChatGPT summary key was dropped on purpose (the summary shares the chat's key now).
+      What is left: the Reuse chip's DISPLAY of expected vs surprise misses (four layouts in the
+      survey, a deck for Destin), and a measurement pass in a dev instance — nothing reads the
+      recorded local reuse count yet, and whether OpenRouter honours the top-level cache field
+      and the session pin is asserted only against a stubbed network
+      `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
@@ -293,6 +298,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Specialist limits should be adjustable in Settings: how many helpers may run at once, how
+      many launches a conversation gets, and how often the assistant may send a running helper a
+      note. Today each is a fixed number in the app; the 2026-09-09 transcript audit showed the
+      assistant nagging one helper 14 times and hitting the launch cap by surprise
+      `settings` `desktop` `decision` `checked 2026-09-09`
+
+- [ ] A finished helper's report should be able to arrive quietly — read with your next message
+      instead of starting a reply on its own — unless the assistant asked to be woken for that
+      helper. Codex works this way (a mailbox read at the next turn); after a Stop the app now
+      holds reports until you speak again, but after a normal answer a report still starts a turn.
+      Needs a decision on the default and on how the assistant asks to be woken
+      `desktop` `decision` `checked 2026-09-09`
+
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)

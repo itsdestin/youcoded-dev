@@ -84,17 +84,22 @@ test('it leaves no scratch profile behind', () => {
   assert.ok(after <= before, `left ${after - before} profile(s) behind`);
 });
 
-// Headless Chrome reports the PREVIOUS painted value for anything that just
-// changed — stably, with the screenshot agreeing, which is exactly what makes it
-// convincing. On 2026-09-10 that got a tab strip filed as an app bug; the app was
-// fine. The header comment explains it, but a header is read once and this is
-// read every time, so the warning fires at the moment somebody is about to be
-// misled. If it ever stops firing, this fails.
-test('asking about paint prints the warning that it may be stale', () => {
+// A colour read after a click measures at its OLD value here, because the
+// animation clock does not advance — `--no-motion` exists to fix exactly that.
+// Two sessions paid for not knowing it: one lost a review answer, one filed an
+// app bug against a tab strip that was fine (2026-09-10). The flag only helps
+// somebody who already knows it exists, so the probe says so unprompted.
+test('reading paint WITHOUT --no-motion points at the flag that fixes it', () => {
   const r = run('--eval', 'getComputedStyle(document.body).backgroundColor');
   assert.equal(r.status, 0, r.stderr);
-  assert.match(r.stderr, /painted state/, 'no stale-paint warning on a getComputedStyle query');
+  assert.match(r.stderr, /--no-motion/, 'the warning must name the flag, not just caution');
   assert.match(r.stdout, /rgb/, 'the warning must not replace the answer');
+});
+
+test('with --no-motion there is nothing to warn about, so it stays quiet', () => {
+  const r = run('--no-motion', '--eval', 'getComputedStyle(document.body).backgroundColor');
+  assert.equal(r.status, 0, r.stderr);
+  assert.doesNotMatch(r.stderr, /painted state/);
 });
 
 test('a structural query is NOT warned about — a warning on everything is a warning on nothing', () => {

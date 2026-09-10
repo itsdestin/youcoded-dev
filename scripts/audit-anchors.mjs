@@ -629,6 +629,39 @@ export function shadowedActiveDocs(root) {
     .sort();
 }
 
+// A `?switch=` the workbench mock reads that the shot rig's README never names.
+//
+// WHY THIS IS A CHECK AND NOT A SENTENCE (2026-09-09). A shot plan that omits a switch
+// does not fail — it captures the surface in whatever state the fixture defaults to, and
+// an EMPTY card is indistinguishable from a card whose feature was never built. On
+// 2026-09-09 a review deck showed the Claude Code card with no usage bars because its plan
+// omitted `?planUsage=1`; Destin read the picture correctly and asked for a feature that
+// had shipped four days earlier. Eleven of the eighteen switches were undocumented that
+// morning, `?planUsage` and `?chatgpt` among them — the two that shape the very surface
+// being reviewed.
+//
+// The README section is the list a session writing a plan actually reads, so that is what
+// this compares against; a switch documented anywhere in that file counts.
+//
+// A WARNING, not a failure: a switch added mid-build is legitimately undocumented for an
+// hour, and a permanently red audit is one everybody learns to ignore (ledger, 2026-09-09).
+export function undocumentedWorkbenchSwitches(root) {
+  const shim = path.join(subRepoRoot(root), 'youcoded', 'desktop', 'src', 'renderer',
+    'dev', 'workbench', 'mock-shim.ts');
+  const readme = path.join(root, 'scripts', 'ui-review', 'README.md');
+  // Either side absent (a checkout without the app, or without the rig) is not drift.
+  if (!fs.existsSync(shim) || !fs.existsSync(readme)) return [];
+  const src = fs.readFileSync(shim, 'utf8');
+  const docs = fs.readFileSync(readme, 'utf8');
+  const found = new Set();
+  // Both spellings in the file: `new URLSearchParams(location.search).get('x')` and a
+  // hoisted `searchParams.get('x')`.
+  for (const m of src.matchAll(/(?:location\.search\)|searchParams)\s*\)?\.get\(\s*'([A-Za-z0-9_]+)'/g)) {
+    found.add(m[1]);
+  }
+  return [...found].filter(s => !docs.includes('?' + s)).sort();
+}
+
 // ---------- main ----------
 
 const CODE_EXT = /\.(ts|tsx|js|mjs|cjs|kt|kts|java|sh|ps1|sql|toml|gradle)$/;
@@ -778,6 +811,11 @@ function main() {
   // it never fails the run, because an active session is legitimately dirty.
   result.strandedWork = strandedWorktrees(root);
 
+  // 4g. a workbench switch the shot rig's README never names — see
+  // undocumentedWorkbenchSwitches. A WARNING: a switch added mid-build is
+  // legitimately undocumented for an hour.
+  result.undocumentedSwitches = undocumentedWorkbenchSwitches(root);
+
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
   result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
@@ -869,6 +907,8 @@ function printHuman(r, root = process.cwd()) {
        (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
   warn('work on this disk only — quiet worktrees holding uncommitted or unpushed work (commit and push them; do NOT delete them)',
        (r.strandedWork || []).map(x => `${x.branch ?? '(detached)'}: ${x.dirtyFiles} uncommitted, ${x.unpushedCommits} unpushed, idle ${x.idleHours}h  ->  ${x.path}`));
+  warn('workbench switches the shot rig\'s README never names (a plan that omits one captures an EMPTY card, which reads as a missing feature)',
+       (r.undocumentedSwitches || []).map(s => `?${s}=  ->  document it in scripts/ui-review/README.md`));
   if (r.worktreeGlobs) {
     console.log(`worktree-safe globs: ${r.worktreeGlobs.blind.length} blind · `
       + `${r.worktreeGlobs.exempt.length} exempt (named) · `
