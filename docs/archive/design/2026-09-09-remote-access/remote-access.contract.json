@@ -1,0 +1,226 @@
+{
+  "title": "Remote access — contract",
+  "key": "remote-access-contract",
+  "out": "remote-access.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/remote-mesh-roadmap",
+  "sources": {
+    "remote-access-questions": "remote-access.questions.json",
+    "remote-access-host-review-2": "remote-access.review-2.json",
+    "remote-access-review-3": "remote-access.review-3.json",
+    "remote-access-questions-2": "remote-access.questions-2.json",
+    "remote-access-questions-3": "remote-access.questions-3.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Remote access",
+      "path": "Settings → Remote Access",
+      "headline": "This is what done means for remote access.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Setup walks you through each change, waits for your approval, and then checks the connection worked.",
+          "checkedBy": "live-app",
+          "threshold": "a dev instance completes setup with approval prompts and a connection check",
+          "source": "remote-access-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "A message typed while the connection is down waits as a draft until you press Send yourself.",
+          "checkedBy": "live-app",
+          "threshold": "the draft survives a dropped connection and nothing sends on its own",
+          "source": "remote-access-questions#Q-2"
+        },
+        {
+          "id": "R3",
+          "statement": "Your phone stays on the conversation you were reading, even when the desktop moves to another one.",
+          "checkedBy": "live-app",
+          "threshold": "the phone's conversation survives a desktop switch and a reconnect",
+          "source": "remote-access-questions#Q-3"
+        },
+        {
+          "id": "R4",
+          "statement": "Enabled, Password, Keep awake and Add Device stay where they are in the panel you already know.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-host-review-2#2"
+        },
+        {
+          "id": "R5",
+          "statement": "The panel says plainly that it is not set up yet, with one button that moves you forward.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-review-3#1"
+        },
+        {
+          "id": "R6",
+          "statement": "One yellow box asks you first, before this computer's name is published in a public record.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-review-3#2"
+        },
+        {
+          "id": "R7",
+          "statement": "Devices are listed by name, and removing one means that device has to pair again to return.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-access-review-3#3"
+        },
+        {
+          "id": "R8",
+          "statement": "The button that removes a device's access reads Unpair, and confirming says it must pair again.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-access-questions-2#Q-4"
+        },
+        {
+          "id": "R9",
+          "statement": "Skip password on Tailscale is gone: a device always needs the password, whatever network it is on.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-access-questions-2#Q-5"
+        },
+        {
+          "id": "R10",
+          "statement": "Other devices reach this computer only through Tailscale; its direct home-network address no longer answers.",
+          "checkedBy": "live-app",
+          "threshold": "a dev instance answers over Tailscale and refuses the plain network address",
+          "source": "remote-access-questions-3#Q-6"
+        },
+        {
+          "id": "R11",
+          "statement": "Every device that has paired stays in the list, marked Online or Offline, until you unpair it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-access-questions-3#Q-7"
+        },
+        {
+          "id": "R12",
+          "statement": "Remote Access opens fully filled in on a phone, instead of showing a blank panel.",
+          "checkedBy": "live-app",
+          "threshold": "a phone opens Settings > Remote Access and sees the settings, the device list and the status, not a blank panel",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F1"
+        },
+        {
+          "id": "R13",
+          "statement": "A phone cannot unpair a device, and a change this computer refuses never looks like it worked.",
+          "checkedBy": "mechanical",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F2",
+          "guard": "youcoded/desktop/tests/remote-host-admin-desktop-only.test.ts"
+        },
+        {
+          "id": "R14",
+          "statement": "A device leaves the list only when this computer confirms it lost access.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F11"
+        },
+        {
+          "id": "R15",
+          "statement": "An action you were already told had failed never runs later on its own when the connection returns.",
+          "checkedBy": "live-app",
+          "threshold": "a dev instance drops and restores the connection and nothing re-runs",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F4"
+        },
+        {
+          "id": "R16",
+          "statement": "Switching remote access off after a failed start makes the panel say it is off, not still failed.",
+          "checkedBy": "mechanical",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F5",
+          "guard": "youcoded/desktop/tests/remote-server.test.ts"
+        },
+        {
+          "id": "R17",
+          "statement": "One paired device can never learn whether another device's action went through.",
+          "checkedBy": "mechanical",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F13",
+          "guard": "youcoded/desktop/tests/remote-server.test.ts"
+        },
+        {
+          "id": "R18",
+          "statement": "A computer that is already connected and has a password never tells you it is not set up yet.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F15"
+        },
+        {
+          "id": "R19",
+          "statement": "An error explains a cause we recognise in plain words, and says plainly when we do not know it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U2"
+        },
+        {
+          "id": "R20",
+          "statement": "While it checks, the screen says it takes a few seconds and to leave YouCoded open.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U22"
+        },
+        {
+          "id": "R21",
+          "statement": "The password row shows Saved once one exists, so it is not mistaken for a second button.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U9"
+        },
+        {
+          "id": "R22",
+          "statement": "Pressing Add Device brings the pairing panel into view instead of leaving it below the fold.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U7"
+        },
+        {
+          "id": "R23",
+          "statement": "Once it is working, the panel shows the address for your phone, and clicking it copies it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U3"
+        },
+        {
+          "id": "R24",
+          "statement": "The screen that tells you to pair a device below lets you press Add Device.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U1"
+        },
+        {
+          "id": "R25",
+          "statement": "In the settings list, remote access whose check failed reads Not running rather than finished.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U4"
+        },
+        {
+          "id": "R26",
+          "statement": "The button that continues past the warning sits fully inside the dialog, even in a short window.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U12"
+        },
+        {
+          "id": "R27",
+          "statement": "Once browser encryption is on, its warning is written as something already done, not still ahead.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U13"
+        },
+        {
+          "id": "R28",
+          "statement": "The explainer says to install Tailscale on your phone and sign in, then scan the code here.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U17"
+        }
+      ],
+      "no": "No, not yet"
+    }
+  ]
+}

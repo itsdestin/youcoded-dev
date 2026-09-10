@@ -4,6 +4,20 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+
+- [ ] Idea (Destin, 2026-09-08): "YouCoded Mesh" automatically chooses an available, suitable
+      device of yours for remote requests and scheduled/autonomous duties, without making you
+      manage which device runs each request. Build on Agents & Automations and secure remote
+      access; account-based access is tracked in remote-access. Around v1.4, not a release promise.
+      Suitability, required files/tools, permissions and avoiding duplicate runs need design.
+      `all` `parked` `checked 2026-09-08` `v1.4`
+
+- [ ] Idea (Destin, 2026-09-08): "YouCoded Cloud" could run an automation when none of your
+      devices is online, as an optional, possibly paid fallback after YouCoded Mesh. Around v1.4
+      or later, not a release promise or agreed pricing. Consent, spending limits, required data
+      and credentials, privacy and safe handoff need design; do not assume offline-only files
+      are available to the cloud or treat device/cloud retries as permission to run work twice.
+      `all` `parked` `checked 2026-09-08` `v1.4`
 - [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
       mid-sentence and the assistant is told to "ask for the rest" without being told which file
       that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules

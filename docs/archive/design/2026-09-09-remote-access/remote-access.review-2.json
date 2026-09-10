@@ -1,0 +1,58 @@
+{
+  "title": "Remote access \u2014 keep the familiar controls",
+  "key": "remote-access-host-review-2",
+  "out": "remote-access.review-2.html",
+  "images": "images/remote-access.review-2",
+  "runs": {
+    "before": "docs/archive/design/2026-09-09-remote-access/runs/before",
+    "after": "docs/archive/design/2026-09-09-remote-access/runs/revision-2"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "remote-host": [
+      "remote-host",
+      "remote-host",
+      "460x650+490+125"
+    ]
+  },
+  "live": {
+    "worktree": "/home/destin/youcoded-dev/worktrees/sessions/remote-mesh-roadmap/youcoded",
+    "offset": 364,
+    "paneWidth": 520
+  },
+  "steps": [
+    {
+      "id": "2",
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "remote-host",
+      "highlight": {
+        "selector": "[role=dialog]"
+      },
+      "headline": "Keep Enabled, Password, Keep awake, and Add Device where they belong.",
+      "changed": "The familiar controls stay. Secure connection status and device access are improved within the existing layout\u2014not a replacement screen.",
+      "notice": "You can still turn access on or off and keep the computer awake.",
+      "risk": "This is a simulated UI. No live settings change. Phone pairing and recovery follow separately."
+    },
+    {
+      "id": "1",
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access \u2192 Connection setup",
+      "headline": "Try setup inside the same panel\u2014not a separate wizard.",
+      "changed": "Setup appears where it is needed, using the same controls and concise instructions. The public-name notice appears only when approval is needed.",
+      "notice": "Try Enabled, Keep awake, setup, and Add Device. All actions here are simulated.",
+      "risk": "Approving this design does not install Tailscale or publish a certificate.",
+      "live": {
+        "surface": "remote-secure-setup",
+        "round": 1,
+        "candidate": "guided",
+        "height": 680,
+        "paneWidth": 560
+      }
+    }
+  ]
+}

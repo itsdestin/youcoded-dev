@@ -3,6 +3,12 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
+      intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
+      in isolation immediately after — load-sensitive, not a regression from the remote-access
+      work that was running beside it. Likely a fixed sleep or an unawaited signal; see
+      `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
+      `n/a` `needs-verify` `checked 2026-09-09`
 - [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
       has been red on master for it for weeks: `native-specialists.md` (764 words) and
       `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every
@@ -701,6 +707,15 @@ seen-on is always n/a here.
       message was rewritten to describe the feature for Destin. Matching the commit rather than the
       words would fix it; so would always keeping the branch name in the message
       `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
+      orphans its Vite server. Stopping a dev instance the documented way — derive the pid
+      from its port, kill it — leaves the renderer's dev server holding port 5223, so the
+      next `run-dev.sh` dies with a bind error that names Vite rather than the leftover.
+      Cost 2026-09-10: one failed relaunch plus a second kill, mid-test, while Destin was
+      waiting on his phone. A `--stop` that kills the pair, or a pidfile the script cleans
+      up, would execute; the launcher already knows both ports
+      `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] `workbench-boot-check.mjs` boots only the `scenario=*` / `view=*` routes, so eleven of the
       eighteen `?switch=` values `mock-shim.ts` reads have never been booted by any check —

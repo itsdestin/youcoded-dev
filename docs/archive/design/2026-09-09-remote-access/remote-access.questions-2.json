@@ -1,0 +1,92 @@
+{
+  "title": "Remote access \u2014 two decisions the pictures didn't cover",
+  "key": "remote-access-questions-2",
+  "out": "remote-access.questions-2.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access \u2192 Devices",
+      "headline": "Should the button that removes a device's access say Unpair?",
+      "today": "Each device in the list has a button called Disconnect. It only hangs up: the same device gets straight back in with the password it already has.",
+      "problem": "The button now genuinely removes access, so it needs a name that says so. Revoke is what an administrator would call it. Unpair is the plain opposite of pairing, which is how the device got there.",
+      "proposal": "The button reads Unpair, and confirming says the device must pair again to reconnect. Yes keeps Unpair; No means tell me what it should say instead.",
+      "options": [
+        {
+          "label": "Unpair",
+          "recommended": true,
+          "pros": [
+            "Says exactly what happens \u2014 it undoes pairing",
+            "Matches Add Device, the button that created it",
+            "No jargon"
+          ],
+          "cons": [
+            "A device that is merely offline may look unpaired to someone skimming"
+          ],
+          "id": "unpair"
+        },
+        {
+          "label": "Remove device",
+          "pros": [
+            "The most everyday wording of the three"
+          ],
+          "cons": [
+            "Sounds like it deletes the device or its data, which it does not"
+          ],
+          "id": "remove-device"
+        },
+        {
+          "label": "Revoke access",
+          "pros": [
+            "Unambiguous about what is being taken away"
+          ],
+          "cons": [
+            "Administrator language; you rejected this wording once already"
+          ],
+          "id": "revoke"
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access \u2192 Tailscale",
+      "headline": "Should Skip password on Tailscale be removed?",
+      "today": "A switch called Skip password on Tailscale lets a device on your private network connect with no password at all.",
+      "problem": "It is not a read-only shortcut. A device that gets in this way can drive the assistant \u2014 run tools, read and write your files. The check is the device's network address, and the range it trusts is not one Tailscale exclusively owns. The server also currently listens on every network, not just your private one, so the two together are a real hole.",
+      "proposal": "The switch goes away and a password is always required, even on your own network. Yes removes it; No keeps it and I will write down that the risk was accepted.",
+      "options": [
+        {
+          "label": "Remove it",
+          "recommended": true,
+          "pros": [
+            "A device always needs the password, whatever network it is on",
+            "Closes the hole without waiting for the rest of the security work",
+            "One fewer setting to explain"
+          ],
+          "cons": [
+            "You type the password when pairing a new device, where before you could skip it"
+          ],
+          "id": "remove"
+        },
+        {
+          "label": "Keep it for now",
+          "pros": [
+            "Pairing on your own network stays one step shorter"
+          ],
+          "cons": [
+            "Anything reaching the port from that address range is let in with no password",
+            "Blocks the claim that remote access is secure"
+          ],
+          "id": "keep"
+        }
+      ]
+    }
+  ]
+}
