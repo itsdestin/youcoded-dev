@@ -607,3 +607,12 @@ seen-on is always n/a here.
       message was rewritten to describe the feature for Destin. Matching the commit rather than the
       words would fix it; so would always keeping the branch name in the message
       `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
+      orphans its Vite server. Stopping a dev instance the documented way — derive the pid
+      from its port, kill it — leaves the renderer's dev server holding port 5223, so the
+      next `run-dev.sh` dies with a bind error that names Vite rather than the leftover.
+      Cost 2026-09-10: one failed relaunch plus a second kill, mid-test, while Destin was
+      waiting on his phone. A `--stop` that kills the pair, or a pidfile the script cleans
+      up, would execute; the launcher already knows both ports
+      `n/a` `confirmed` `checked 2026-09-10`

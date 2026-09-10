@@ -170,3 +170,14 @@ Filing test: reaching the app from another device — the protocol, the browser 
       cancelled or retried; it waits out its own 30-second timeout and then rejects, which
       fits the symptom without being proven
       `remote` `needs-verify` `checked 2026-09-10`
+
+- [ ] Browser encryption — the optional second level — is an approved design with nothing
+      behind it. Destin went looking for it in the app on 2026-09-10 and found no trace: the
+      Advanced section renders only in the workbench mockup, and there is no certificate
+      code, no HTTPS server and no stored on/off state. What it buys is the microphone, copy
+      buttons and font picker on a phone, and a browser that stops saying "Not secure". What
+      it costs: he must enable HTTPS for the tailnet on Tailscale's own website, the
+      computer's name goes on a permanent public list, the address every paired device uses
+      changes, and certificates expire in ~90 days so renewal has to be handled. Design
+      approved in the round-4 deck; start at the technical design, not at questions
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/design/2026-09-09-remote-access/remote-access.review-4.json
