@@ -21,16 +21,6 @@ seen-on is always n/a here.
       line, and print a "still waiting" line so a queued run is not mistaken for a hung one
       `n/a` `confirmed` `checked 2026-09-09` `performance`
 
-- [ ] The perf rig can say WHICH step is slow (`explain.mjs`, 2026-09-09) but not which
-      STAGE inside it. Finding that opening a large Markdown file spends 292 ms parsing,
-      217 ms restructuring, 377 ms colouring code and 7 ms on the thing a plan had blamed
-      took a throwaway script run against the rig's own fixture — and that 7 ms is what
-      stopped a change nobody could have traced to an improvement. Worth a rig utility, but
-      not obviously general: the stages are specific to whatever pipeline is under the
-      microscope, so this may be a documented recipe rather than a tool. Deferred
-      2026-09-09 as the one item of six that was not clearly easy
-      `n/a` `confirmed` `checked 2026-09-09` `performance`
-
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a
@@ -65,8 +55,15 @@ seen-on is always n/a here.
       commits and applies the latest intent after the in-flight write" — in a full suite run
       on session/claude-auth-live-status, which touches no step-guard file at all; 3 of 3
       isolated re-runs green. Two of the file's eight tests have now flaked in full runs and
-      only in full runs, which points at the suite's shared timers rather than either test
-      `desktop` `confirmed` `checked 2026-09-09` `regression`
+      only in full runs, which points at the suite's shared timers rather than either test.
+      THIRD occurrence 2026-09-10, a THIRD test in the same file — "invalid text does not
+      save null and visibly restores the saved value" — in a `verify.sh --full` run on
+      perf/markdown-open, whose four changed files are markdown rendering and CSS and are
+      imported by nothing in this suite; 3 of 3 isolated re-runs green and the very next
+      full run green at 10,280 passed. Three of eight tests, three unrelated branches, never
+      once outside a full run: treat the file's shared timer setup as the suspect, not the
+      assertions. It costs a re-run on every branch that trips it
+      `desktop` `confirmed` `checked 2026-09-10` `regression`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
