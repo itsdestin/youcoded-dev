@@ -3,12 +3,23 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Desktop CI's Windows leg is red on master (seen 2026-09-10 on three runs in a row) on two
+      native-harness tests — "an unchanged attachment restores its bytes; a changed one
+      invalidates the whole checkpoint" and "publishes references to exact transcript content
+      and restores private metadata without duplicating transcript text" — while macOS and
+      Linux pass. Every merging session has to open the log to learn it is not theirs; two did
+      so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
+      broken on Windows; nobody has looked
+      `n/a` `needs-verify` `checked 2026-09-10` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access
       work that was running beside it. Likely a fixed sleep or an unawaited signal; see
       `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
-      `n/a` `needs-verify` `checked 2026-09-09`
+      Fourth sighting 2026-09-10: failed in one `verify.sh` run on a branch touching only Android
+      Kotlin and the remote shim, passed twice alone and once alone on master, green on the
+      next full run (`expected [[50],[50]] to equal [[20],[20]]`, the Retry-persists test)
+      `n/a` `needs-verify` `checked 2026-09-10`
 - [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
       has been red on master for it for weeks: `native-specialists.md` (764 words) and
       `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every

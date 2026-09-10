@@ -6,7 +6,7 @@ This file now holds **only cross-repo invariants** — constraints that span two
 
 ## Releases
 
-- **CI stamps the Android version on every build (since 2026-09-10): `versionName` is the tag (or `<base>.<run>` for a dispatched beta) and `versionCode` is `100 + run_number` of `android-release.yml`.** The hand-set values in `youcoded/app/build.gradle.kts` are for local builds only, which are never distributed. *Why:* every beta APK had shipped as `versionCode 20 / 1.2.4`, the May release's identity; Play Store requires `versionCode` to be monotonically increasing, and one workflow's run counter is. *Guard:* `desktop/tests/android-honest-build.test.ts`.
+- **CI stamps the Android version: `versionName` from the tag or `<base>.<run>`, `versionCode` = `100 + run_number` of `android-release.yml`.** Hand-set values in the gradle file are local-only. *Why:* every beta shipped as `20 / 1.2.4`; a run counter is monotonic, as Play requires. *Guard:* `desktop/tests/android-honest-build.test.ts`.
 - **One `vX.Y.Z` tag on youcoded master ships all platforms.** It triggers both `android-release.yml` and `desktop-release.yml` → a single GitHub Release with APK/AAB + Win/Mac/Linux installers. *Why:* coordinated cross-platform release. *Guard:* CI workflows.
 - **Desktop version comes from the git tag, not `package.json`.** CI extracts the version from the tag and patches `package.json` during build. *Guard:* `desktop-release.yml`.
 - **youcoded-core auto-tags on `plugin.json` version change** on master — `youcoded-core/.github/workflows/auto-tag.yml` compares `HEAD` vs `HEAD~1` and creates the tag. There is one manifest (no layer-level `plugin.json`). *Guard:* `auto-tag.yml`.
