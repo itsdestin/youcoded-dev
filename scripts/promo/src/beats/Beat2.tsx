@@ -5,7 +5,7 @@ import { Label } from '../Label';
 import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { markFrame, assertClipCovers } from '../marks';
-import { B, LEN, present, inWindow, type BeatModule } from './beat';
+import { B, LEN, present, inWindow, feetAt, type BeatModule } from './beat';
 
 // Beat 2 (4 bars; sixth in the film since Destin's reorder of 2026-09-04): repeatable
 // prompts — the chips, in Cotton Candy Sky. The chip's click release lands three frames
@@ -26,7 +26,8 @@ const Beat2: React.FC = () => (
 //   the reply, top-left; its right edge is ~40 % across so the host stands beyond it
 const END = LEN('b2');
 const P2 = present('b2', [
-  { at: 40, say: 'Save repeatable prompts.', target: inWindow(0.355, 0.867), stand: 'above', face: 'welcome' },
+  // an explicit spot (2026-09-09): 'above' the chip put the feet ON the chip row at 1.35; it stands up-left of the Briefing chip and aims down at it
+  { at: 40, say: 'Save repeatable prompts.', spot: feetAt(0.3, 0.8), target: inWindow(0.355, 0.867), face: 'welcome' },
   // 0.40 → 0.52 at the 1.35 zoom (2026-09-09): the reply runs to half the window now and the host stood on its last words
   { at: 118, say: 'Or entire workflows. No annoying re-explanation needed.', target: inWindow(0.52, 0.16), stand: 'R', face: 'happy', until: END - 8 },
 ], 'cotton-candy-sky', P, END - 8);

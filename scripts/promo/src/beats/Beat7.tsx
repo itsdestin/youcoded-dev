@@ -12,12 +12,12 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // 2026-09-09: "the 'see status' scene should be a bit shorter and the bubble should be open only
 // while the session switcher is open/visible. then merge the other two into a single 'Tag, search,
 // and filter your previous conversations.' scene"):
-//   1. All Sessions → the switcher drops down with each session's status, and holds 2.8 s (the
-//      scene holds it open that long); the status line is said only while it is up (bars 0–1.6).
+//   1. All Sessions → the switcher drops down with each session's status, and holds 3.8 s (the
+//      scene holds it open that long); the status line is said only while it is up (bars 0–1.75).
 //   2. Resume → the browser with "econ" narrowing it → Organize → the tag → the note, one take at
-//      1.55× under the one line (bars 1.6–4). The drag along the strip is CUT (Destin: "drop this").
-const T_SEARCH = B('b7', 1.6), END = LEN('b7');
-const MENU_AT = 10;                                                                   // local frame the switcher is open
+//      1.55× under the one line (bars 1.75–4). The drag along the strip is CUT (Destin: "drop this").
+const T_SEARCH = B('b7', 1.75), END = LEN('b7');
+const MENU_AT = 6;                                                                   // local frame the switcher is open
 const S1_FROM = markFrame('promo-conversations', 'menu', 'end') - MENU_AT;
 // shot 1 must end BEFORE the Resume click: the line is up only while the switcher is
 if (S1_FROM + T_SEARCH > markFrame('promo-conversations', 'resume', 'start')) throw new Error('the switcher shot runs into the Resume click — hold the menu open longer in the scene');
