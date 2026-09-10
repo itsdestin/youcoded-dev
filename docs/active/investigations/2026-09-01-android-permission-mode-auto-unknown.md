@@ -5,6 +5,10 @@ type: investigation
 topic: Android permission-mode chip drops "auto" and guesses "normal"
 ---
 
+> **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 20 in the
+> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
+
 # Android permission-mode chip drops `auto` and guesses `normal`
 
 **Symptom.** On Android the status-bar permission-mode chip never shows `auto`, and shows
