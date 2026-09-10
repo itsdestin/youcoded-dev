@@ -52,20 +52,23 @@ The best version for YouCoded is a combination, not a copy of one product.
 - **Routing keys (items 5 and 6)** are verified against current docs. OpenRouter wants a
   top-level `session_id` field (or `x-session-id` header). The `user` field does nothing for
   routing. Sticky sessions last ten minutes of inactivity. Cline sends the field, Crush and
-  OpenCode send the header. Codex derives sub-lane keys as `"<purpose>:<parent id>"`, which is
-  exactly the fix item 5 proposes.
+  OpenCode send the header. Codex derives sub-lane keys as `"<purpose>:<parent id>"`; for us
+  the summary should simply share the chat's key once it reuses the chat's prefix (item 4).
 - **Tool list stability (item 7)**: Hermes freezes the tool list per session and announces
   changes as an appended message. Claude Code defers MCP tools and models mode switches as
-  tools so definitions never change. Our Task tool should stop embedding the roster in its
-  description.
+  tools so definitions never change. Our Task tool already produces identical bytes while the
+  roster is unchanged; the fix is a test that keeps it that way, not a redesign.
 - **The Reuse chip (item 8)**: Claude Code's `/usage` line is the model to beat: percent from
   cache, number of misses, "expected rebuilds" (compaction, tool-result clearing) counted
   separately from surprises, whether the cache is warm, and a likely cause. Hermes rebases its
   hit rate after each compaction or model switch so the number describes now, not history.
 
-**Recommended order:** the four small backend fixes (6, 5, 7, 1) plus one measurement change
-first, then one design pass that treats items 2, 3 and 4 as a single "compaction is an event"
-policy, then item 8 as a UI decision for Destin. Details and evidence follow.
+**Recommended order (after the 2026-09-10 independent review, which cut the plan roughly in
+half):** one registry change that switches on Anthropic caching and OpenRouter session pinning
+together; two constant changes and one gate so compaction fires before trimming and pruning
+stops sliding; a flag that marks every expected cache rebuild so surprises stand out; then one
+design pass for the summary request; then the chip as a UI decision for Destin. Details,
+evidence and what the review removed follow.
 
 ---
 
@@ -101,8 +104,10 @@ https://code.claude.com/docs/en/prompt-caching and https://code.claude.com/docs/
 - **System marker + tail marker** (pi, Hermes, Crush, Goose) protects the static prefix
   independently. This is also Anthropic's own recommended "robust combination for agent loops".
 - **Two trailing markers** (Roo, OpenCode, Hermes) guard against long turns that push the
-  previous entry past the 20-position lookback. On the Claude API consecutive tool_use and
-  tool_result runs each count as one position, so this is rarely needed; it costs a slot.
+  previous entry past the 20-position lookback. The Claude API reference bundled with Claude
+  Code states that consecutive tool_use and tool_result runs each count as one position, so
+  this is rarely needed; it costs a slot. (The public prompt-caching page does not state the
+  run-collapsing rule; treat it as reference-doc knowledge.)
 - **Marking side calls** (OpenCode) is a pure surcharge: a one-shot summary prompt writes a cache
   entry nobody reads. pi's `none` policy is the correct default.
 - **TTL.** A read refreshes the timer on either TTL. 1h costs 2x on the *newly written delta*
@@ -111,35 +116,45 @@ https://code.claude.com/docs/en/prompt-caching and https://code.claude.com/docs/
   For rapid tool loops under five minutes per step, 5m is strictly cheaper. Claude Code chose 1h
   for the human-facing conversation and 5m for machine lanes.
 
-### Best version for YouCoded
+### Best version for YouCoded (simplified after the 2026-09-10 independent review)
 
-1. **Direct Anthropic:** an explicit breakpoint on the last system block via
-   `providerOptions.anthropic.cacheControl` (render order is tools → system → messages, so tools
-   are covered), plus Anthropic's top-level automatic `cache_control` for the moving tail. The
-   installed `@ai-sdk/anthropic` 4.0.45 supports system, part, tool and request-level markers
-   and `ttl: '5m' | '1h'`; it caps at 4 and warns (`dist/index.js:1068, 1254, 2484, 3985`).
+1. **Direct Anthropic:** one explicit breakpoint on the last system block via
+   `providerOptions.anthropic.cacheControl`, plus Anthropic's top-level automatic
+   `cache_control` for the moving tail. The system marker is not redundant: after a compaction
+   the automatic tail's 20-position lookback cannot reach any earlier entry, so without a system
+   entry the tools and system prompt (often 10-30k tokens) are rewritten too. The installed
+   `@ai-sdk/anthropic` 4.0.45 supports system, part, tool and request-level markers and
+   `ttl: '5m' | '1h'`; it caps at 4 and warns (`dist/index.js:1068, 1254, 2484, 3985`).
 2. **Via OpenRouter:** per-part markers are not reachable through `@ai-sdk/openai-compatible`
    (its converter has no cache_control path), but OpenRouter documents top-level automatic
-   `cache_control` for the Anthropic, Vertex, Azure and Bedrock providers. Pass it as a
-   top-level body field through `providerOptions.openrouter`, which the installed provider
+   `cache_control` (with `ttl`) for the Anthropic, Vertex, Azure and Bedrock providers. Pass it
+   as a top-level body field through `providerOptions.openrouter`, which the installed provider
    spreads verbatim into the body (`@ai-sdk/openai-compatible/dist/index.js:582-583`). Gate on
    the model id, as pi does (`anthropic/` prefix), so other models never receive it.
-3. **TTL policy per lane:** chat lane `1h`; specialist lanes `5m` (they are short loops and cold
-   by nature); summary and naming lanes **no marker at all**. Longer-TTL entries must come
-   before shorter ones in one request, so the system block carries the lane's TTL and the
-   automatic tail inherits it.
-4. **Minimums:** 512 tokens on Opus 5 / Fable 5.x, 1024 on Sonnet 5 / Opus 4.8, 4096 on Opus
-   4.6 and Haiku 4.5. Measure our system prompt size per binding before assuming the marker
-   caches; below the minimum it silently does nothing, which is harmless.
-5. **Sequence:** land after item 7 and before the design pass. Caching pays only if the prefix
-   stays still; items 3 and 4 moving it does not make caching *worse* than today, so there is
-   no reason to hold item 1 hostage to the design work.
+3. **One TTL: `1h`** for every harness request (chat and specialist children share the same
+   `HarnessSession` code path). Specialists pay 2x instead of 1.25x on their written deltas,
+   bounded by their short lives; one setting removes the per-lane split and any chance of
+   mixing TTLs in a request (mixed TTLs must be ordered longer-first, a real footgun).
+4. **No tail marker on side calls.** Naming already has no `cacheKey`, so a registry rule keyed
+   on `cacheKey` leaves it alone for free. The summary call needs an explicit exception: it
+   changes `tool_choice` (item 4), which invalidates Anthropic's *messages* cache while keeping
+   tools and system, so an automatic tail marker on the summary would **write the whole history
+   at 2x for a cache nobody reads**, worse than today's 1x. The summary sends the system marker
+   only (direct) or no marker (OpenRouter, where the top-level field is all-or-nothing).
+5. **Where it lives:** the Anthropic markers and the OpenRouter `session_id` (item 6) belong in
+   `provider-registry.ts` as a model middleware keyed on `opts.cacheKey`, exactly where
+   `chatGptMiddleware(opts?.cacheKey)` already sits. The harness stays provider-ignorant.
+6. **Minimums:** 512 tokens on Opus 5 / Fable 5.x, 1024 on Sonnet 5 / Opus 4.8, 4096 on Opus
+   4.6 and Haiku 4.5. Below the minimum the marker silently does nothing, which is harmless.
+7. **Sequence:** first, together with item 6. It depends on nothing else; items 3 and 4 moving
+   the prefix cannot make caching worse than today.
 
-**What users experience:** Claude conversations get up to ten times cheaper on the repeated part
-from the second message on. Nothing visible changes. Risk: for API-key users in rapid tool
-loops the 1h write premium adds roughly 0.75x on each turn's new tokens; the per-lane split
-keeps that off specialist lanes. Prove it with a fake-fetch test asserting marker placement per
-lane and none on summary/naming, and with the diagnostics (below) showing reads on turn two.
+**What users experience:** Claude conversations get roughly ten times cheaper on the repeated
+part from the second message on (forty times on Fable 5.1, whose cache reads are 0.025x).
+Nothing visible changes. Risk: API-key users in rapid tool loops pay 2x instead of 1.25x on each
+turn's new tokens; a single pause over five minutes repays that many times over. Prove it with a
+fake-fetch test asserting marker placement on a harness request, system-only on a summary, and
+none on naming, and with the usage fields (below) showing reads on turn two.
 
 ---
 
@@ -214,33 +229,40 @@ negative (`engine-supervisor.ts:536-577`, `harness-session.ts:1219-1318` in the 
 - **`--slot-save-path`** trades disk writes (Unsloth chmods the dir 0700 because "Saved KV
   encodes chat content") for surviving idle unloads without a re-prefill.
 
-### Best version for YouCoded
+### Best version for YouCoded (simplified after the 2026-09-10 independent review)
 
-1. **Order the constants so compaction always fires first.** Reply reserve becomes
-   `min(maxTokens, ctx / 4)` (Unsloth's rule; OpenCode's is `min(20k, maxOutput)`). The
-   compaction trigger must sit below `ctx − reserve − margin`, and `fitToContext` becomes an
-   emergency floor that should never fire in steady state. Size `maxTokens` per window instead
-   of a flat 16,000.
-2. **Trim whole turn groups to a sticky boundary with headroom.** Record the boundary in the
-   accepted-history transformation (the store already reproduces pruned text; a boundary index
-   is smaller). Over-trim by a quarter so the boundary moves rarely. Protect system, the newest
-   user turn and the last group. Never emit an orphan tool result or opener.
-3. **Count tokens exactly** for local models via llama-server `/tokenize` or `/apply-template`
-   rather than chars/4; the negative-budget collapse on 8k-16k models is a correctness bug and an
-   estimator problem, not only a cache problem.
-4. **Engine flags:** add `--no-context-shift` explicitly (pins current default behaviour), try
-   `--cache-reuse 256` as a measured experiment, and consider `--cache-ram` so a specialist's
-   prompt does not evict the chat's KV. `--slot-save-path` is worth a look only after the idle
-   timers are revisited; it writes chat content to disk and needs the same privacy handling as
-   the diagnostics file.
-5. **Read `timings.cache_n` and `prompt_n`** from every local response into diagnostics. This is
-   the local equivalent of `stablePrefixItems` and the only way to prove any of the above.
-6. Offer Unsloth's **checkpoint policy** as a later option for tiny windows, not as the default.
+Unsloth needs sticky trimming because trimming *is* its compaction. YouCoded summarizes, so
+once compaction reliably fires first, `fitToContext` is an emergency floor whose stability no
+longer matters. That collapses item 2 to constants and one test.
+
+1. **Reply reserve = `min(maxTokens, ctx / 4)`** (Unsloth's rule; OpenCode's is
+   `min(20k, maxOutput)`). This alone ends the negative-budget collapse: the budget stays
+   positive for any window above ~1.4k tokens, so no more "newest message only" on 8k models.
+2. **Derive the compaction trigger from the trim budget, not a flat ratio.** The arithmetic:
+   at 32k with reserve 8192 the trim budget is 32768 − 8192 − 1024 = **23,552**, while
+   0.75 × 32768 = **24,576**. A flat 0.75 still trims before it compacts. Trigger at, say,
+   0.9 × budget so compaction always wins.
+3. **Keep the estimator.** `planCompaction` already triggers on the previous step's *real*
+   `inputTokens` (`compaction.ts:planCompaction`, `used = lastInputTokens > 0 ? … : estimate`);
+   chars/4 only matters on the first step and inside the floor. Exact tokenization via the
+   server is dropped.
+4. **Read `timings.cache_n` and `prompt_n`** from every local response into diagnostics through
+   the existing local metadata path. This is the local equivalent of `stablePrefixItems` and the
+   only way to know whether anything else is needed.
+5. **Engine flags: none now.** `--no-context-shift` pins a default that is already off in the
+   pinned build; `--cache-ram` already defaults to 8192 MiB; `--slot-save-path` writes chat
+   content to disk for an idle-unload case this plan does not address. `--cache-reuse` is
+   parked: llama.cpp disables it for multimodal models and for contexts whose memory cannot
+   shift (SWA models such as Gemma 3 and gpt-oss), and it only pays when the prefix shifts,
+   which steps 1-2 make rare. Revisit only if `cache_n` shows shifts still happening.
+6. Unsloth's checkpoint-and-archive policy stays a note, not a plan.
 
 **What users experience:** local replies start faster after the first few turns because the
 engine stops re-reading the whole conversation each step; battery use drops; tiny models stop
-"forgetting everything but the last message". Risk: over-trimming drops more history at each
-event than today; the summary step must run first so the dropped turns are summarized, not lost.
+"forgetting everything but the last message". Visible change: the "conversation got long"
+compaction marker appears somewhat earlier on local models than today, because the trigger
+moves below the trim budget. Prove with unit tests at 32k and 8k windows: compaction fires before
+any trim, and the outgoing prefix is byte-identical across three consecutive steps.
 
 ---
 
@@ -266,8 +288,15 @@ Goose `compute_tool_call_cutoff`; Codex `protocol/src/openai_models.rs:1006`; Un
 `context_window.py:342`, `llama_cpp.py:~806`.
 
 Note: YouCoded's constants (protect 40,000, minimum savings 20,000, 2,000 chars) match
-OpenCode's exactly, but OpenCode runs its prune once per turn and ships it off by default;
-ours runs at the top of every step.
+OpenCode's exactly. **Correction to the handoff (verified on master 2026-09-10):** our prune
+is already batched. `planCompaction` returns `'prune'` only when pruning reclaims at least
+`minPruneSavings`; otherwise it returns `'summarize'`. The per-step slide comes from
+`maybeCompact` running `pruneToolOutputs` on *both* decisions ("always prune first"). On the
+summarize path that is a small slide followed by a summary that usually ends the episode; the
+slide repeats every step only when the summary bails (the span-too-small thrash guard, common on
+small windows, or a failed summary call). On a 200k window the first triggering step prunes one
+big batch, then summarizes. So the item is real but smaller than described, and the fix is a
+gate, not a design.
 
 ### Trade-offs
 
@@ -278,23 +307,26 @@ ours runs at the top of every step.
   cache-perfect, but loses detail the model might have wanted two steps later. Both approaches
   compose: cap at ingestion, prune the survivors rarely.
 - **Constant sentinel text** is not optional. Claude Code's timestamped sentinel is the cleanest
-  documented example of an invisible self-inflicted miss.
+  documented example of an invisible self-inflicted miss. Ours (`PRUNE_TRAILER(n)`) embeds a
+  byte count, but it is a function of the pruned part alone, so repeat passes write identical
+  bytes; it is fine as is.
 
-### Best version for YouCoded
+### Best version for YouCoded (simplified after the 2026-09-10 independent review)
 
-1. Run `pruneToolOutputs` **once per turn**, after the tool loop ends (OpenCode's placement),
-   never at the top of a step.
-2. **Pin the boundary** at a message index once chosen; move it only when the budget demands, and
-   only if the move reclaims at least `minPruneSavings` (Hermes's hysteresis). Record the index
-   in the accepted-history transformation so reopen reproduces it.
-3. **Constant sentinel**, no timestamp, no counts. Keep the existing 2,000-char stub.
-4. **Cap oversized results at record time** (Codex-style middle-out at a per-tool byte limit,
-   with the spill path the tool already writes) so fewer prunes are ever needed.
-5. Keep `skill`-style protected tools out of pruning, as OpenCode does; decide the list.
+1. **Gate the prune on the decision.** Prune the history only when `planCompaction` says
+   `'prune'` (already hysteretic: at least `minPruneSavings` reclaimed), or immediately before a
+   summary that is actually going to run (span passes the thrash guard). When the summary bails,
+   the history must be left untouched instead of standing pruned.
+2. That is the whole change. No turn-boundary placement, no boundary index in the
+   accepted-history descriptor (`AcceptedHistoryTransformation` stays `'pruned' | 'summary'`),
+   no ingestion cap, no protected-tool list. Each of those was a new moving part whose only job
+   was to fix a slide the gate already removes.
+3. Pin it: a test that, above the trigger with a summary that bails, three consecutive steps send
+   byte-identical histories.
 
 **What users experience:** nothing visible; fewer surprise cost spikes mid-conversation and
-faster local steps. Risk: a run of huge tool outputs inside one turn is not pruned until the turn
-ends, so the ingestion cap in step 4 is what protects small windows.
+faster local steps in the stuck case. Cost: a huge tool result on a small window is not pruned
+until a step decides `'prune'` or a summary runs, which is today's behaviour.
 
 ---
 
@@ -340,26 +372,33 @@ back. Not reachable through OpenRouter.
 - **Server-side compaction** removes the extra call for Claude but is beta, direct-API only,
   and changes the accepted-history model.
 
-### Best version for YouCoded
+### Best version for YouCoded (simplified after the 2026-09-10 independent review)
 
-1. Keep the summary **appended with a hidden boundary** in the accepted-history manifest
-   (summary reference plus explicit retained range, as the shipped design already specifies)
-   rather than physically replacing index 0. The wire view still starts with the summary; the
-   store stays append-only and reopen-safe.
-2. **Reshape the summary request to reuse the warm prefix**: same system text, same tools, same
-   history, plus one user message asking for the structured summary. Same cache key on ChatGPT,
-   same `session_id` on OpenRouter, same Anthropic breakpoints. This also resolves most of item
-   5 (below). Guard against the model calling a tool instead of summarizing by instructing
-   text-only output and treating a tool call as a retry with tools removed.
-3. **Count the summary call** in a visible bucket ("summaries") in session totals; never fold it
+The store side is already done: master's accepted-history capture records a
+`{ kind: 'summary', summaryEventUuid }` transformation, so reopen reproduces the summary without
+rewriting stored history. What remains is the cost of the summary call and its visibility.
+
+1. **Reshape the summary request to reuse the warm prefix**: same system text, same tools, the
+   same `fitToContext` view of the history the chat just sent (not raw history, or a local model
+   overflows), plus one user message asking for the summary, with **`toolChoice: 'none'`**. No
+   retry ladder: `none` makes a tool call impossible, is unaffected by the forced-tool-choice
+   removal on Fable 5.1, and keeps the prefix byte-identical.
+2. **Be honest about where it pays.** On OpenAI/ChatGPT, DeepSeek and llama.cpp the cache is a
+   hash over the whole input, so the entire history reads warm. On Anthropic, a `tool_choice`
+   change invalidates the messages cache while keeping tools and system, so only the system and
+   tools read warm and the history is billed once at 1x (with no tail marker; see item 1 step
+   4). Still cheaper than today's cold prompt with a different system text, and simpler.
+3. **Count the summary call** in a visible "summaries" bucket in session totals; never fold it
    into the turn silently, never hide it.
-4. Make compaction rare via items 2 and 3, and record each compaction as an "expected rebuild"
-   event for item 8.
-5. Revisit Anthropic server-side compaction as a direct-API option once the above is stable.
+4. Record each compaction as an "expected rebuild" for item 8.
+
+Dropped: a separate appended-summary redesign (shipped) and Anthropic's server-side compaction
+beta (direct API only, changes the history model).
 
 **What users experience:** the "conversation got long" moment costs a fraction of what it does
-today, and the cost chip stops under-reporting. Risk: the warm-prefix summary carries the full
-tool list, so the summary model must be told plainly not to use them.
+today on OpenAI, DeepSeek and local models, and the cost chip stops under-reporting. Risk: the
+summary model now sees the real system prompt and tool list instead of a bare "you compress
+history" instruction; summary quality should be spot-checked with the existing fakes.
 
 ---
 
@@ -385,16 +424,15 @@ routing hashes the initial tokens including tool definitions. GPT-5.6+ adds
 `prompt_cache_options.ttl` (only `30m`) and explicit `prompt_cache_breakpoint` markers, and
 starts charging cache writes at 1.25x.
 
-### Best version for YouCoded
+### Best version for YouCoded (simplified after the 2026-09-10 independent review)
 
-- **If item 4's warm-prefix summary lands, keep the same key**: the summary is then the same
-  conversation plus one message, and sharing the machine is exactly what you want.
-- **Until then, derive `${sessionId}:summary`** (Codex pattern) and keep naming keyless. Pin it
-  in `tests/chatgpt-model.test.ts` on the captured summary body. The diagnostics already lane by
-  purpose; only the wire key is missing.
+**Drop the key change.** Under item 4's warm-prefix summary the summary *is* the same
+conversation plus one message, and sharing the machine is exactly right. Before that lands, the
+summary's different prefix is a miss anyway and the "pollution" of the chat's machine is
+marginal (OpenAI routes by key; a second entry on the same machine evicts nothing at our request
+rates). The real cost in this item is the uncounted summary usage, which item 4 step 3 fixes.
 
-**What users experience:** nothing visible; the chat lane stops losing its machine to a
-summary with a different front.
+**What users experience:** nothing from this item alone.
 
 ---
 
@@ -441,8 +479,10 @@ its own `X-OpenRouter-Cache: true` response cache.
   different across sessions, absent on naming.
 
 **What users experience:** DeepSeek and Claude conversations through OpenRouter stop paying a
-fresh cache write when OpenRouter's router happens to pick another server. This is the exact path
-behind the original "50% reuse" question.
+fresh cache write when OpenRouter's router happens to pick another server. Expectation check:
+OpenRouter already pins the provider after any cache hit, so `session_id` adds pinning before the
+first hit and re-pinning after a miss. It is cheap and correct, but the bigger part of the
+original "50% reuse" reading is the prune and summary rewrites in items 3 and 4.
 
 ---
 
@@ -471,22 +511,25 @@ behind the original "50% reuse" question.
 Anthropic also ships `tool_addition` / `tool_removal` blocks (Opus 5 onward, beta
 `mid-conversation-tool-changes-2026-07-01`) for cache-preserving tool changes on the direct API.
 
-### Best version for YouCoded
+### Best version for YouCoded (simplified after the 2026-09-10 independent review)
 
-1. **Make the Task tool's definition roster-independent.** The description should say how to
-   delegate, not list who exists; the schema should accept a specialist id string validated at
-   call time rather than enumerating ids. The roster then arrives as content the model reads:
-   the existing `list: true` on-demand path, plus an **appended message** when the roster
-   actually changes mid-session (Hermes's announcement).
-2. If the roster must stay in the definition, **snapshot it per session** (or per `setBinding`),
-   dirty-check like `syncSkillTool` and `syncMcpTools` already do, and apply changes only at a
-   turn boundary (Codex's gate).
-3. Pin with a test: a catalog reload mid-session leaves the serialized tool set byte-identical.
+Today's behaviour is already the right trade: an unchanged roster produces identical bytes
+(specialist files are read sorted, built-ins first, `catalog.ts`), and a changed roster costs one
+miss, which is the correct price for a hire. Removing ids from the schema would change what weak
+local models see; snapshotting per session would hide a new hire until restart, a worse
+experience than one cache miss.
 
-**What users experience:** hiring or editing a specialist mid-chat no longer silently re-bills
-the whole conversation once. Risk: if the description stops naming specialists, the model must
-learn the roster from the announcement or the list call; the first turn after a hire should
-include the announcement.
+1. **Pin the invariant with a test:** a catalog reload mid-session, with no roster change, leaves
+   the serialized tool set byte-identical. This turns the fragile de-facto property the handoff
+   worried about into a guarded one.
+2. **Count a real roster change as an "expected rebuild"** for item 8, so the one miss is
+   explained rather than mysterious.
+
+Dropped: roster-independent description, per-session snapshot, roster-change announcement
+message, turn-boundary gate. Anthropic's `tool_addition` blocks (Opus 5+, beta) remain a note.
+
+**What users experience:** nothing changes; a hire mid-chat still costs one re-read, and the chip
+will say why.
 
 ---
 
@@ -529,18 +572,22 @@ include the announcement.
 - **Per-turn miss notices** (pi) are the most diagnostic and the most noisy; pi ships them off.
 - **Hiding zero** (Unsloth) means a user never sees "0 reused" as a warning.
 
-### Best version for YouCoded (backend now, UI via the feature flow)
+### Best version for YouCoded (backend now, UI via the feature flow; simplified 2026-09-10)
 
-Backend, no UI change:
-- Record per request: read, write (Anthropic `cacheCreationInputTokens`, OpenRouter
-  `cache_write_tokens`, llama.cpp `cache_n`/`prompt_n`), lane, and a **classification**:
-  `hit`, `expected-rebuild` (compaction, prune commit, model switch, TTL/idle gap > 5 min or
-  > 10 min on OpenRouter), or `unexpected-miss` with the diagnostics' first-differing index as
-  the likely cause. Extend the ChatGPT prefix-diff observer to the OpenRouter, Anthropic and
-  local lanes; the comparison is provider-agnostic at the SDK boundary. On direct Anthropic,
-  send the `cache-diagnosis-2026-04-07` beta on every request and record `cache_miss_reason`.
-- Keep the chip's total but add the inputs a breakdown needs: parent vs specialists vs summaries
-  vs naming, and the current-regime rate since the last rebuild.
+Backend, no UI change, **a flag rather than a classifier**:
+- The harness already knows when it moved the prefix: a prune commit, a summary, a binding or
+  model change, a tool-set change, a rule injection, or an idle gap past the TTL. Set
+  `expectedRebuild: true` on the next request and record it alongside the usage the step already
+  has (`StepUsage.cacheReadTokens` / `cacheCreationTokens`, `harness-session.ts:310`). A
+  request with low reads and no flag is an unexpected miss. For local models, add llama.cpp's
+  `cache_n` / `prompt_n` from `timings` through the existing local metadata path.
+- Keep the chip's total but record the inputs a breakdown needs: lane (parent, specialist,
+  summary, naming) and the rate since the last rebuild.
+
+Dropped: extending the ChatGPT prefix-diff observer to other lanes, the Anthropic
+`cache-diagnosis` beta, and a computed "first differing index" for other providers. Those give a
+"likely cause" string for unexpected misses; the flag alone already makes every regression in
+items 1-7 visible, which is the point. Revisit if unexpected misses turn out to be common.
 
 UI options for Destin's deck (not decided here):
 1. **Tooltip breakdown** on the existing chip: "91% from cache · 1 expected rebuild · 0 misses ·
@@ -568,24 +615,32 @@ for free; get it wrong and no marker helps. Items 2, 3 and 4 are one policy: **d
 batches, at turn boundaries, to a recorded boundary, and reuse the warm prefix for the summary
 call.**
 
-Recommended sequence, each step separately reviewable and provable offline with existing fakes:
+Recommended sequence after the 2026-09-10 review. Every step but B3 is a small change with a
+unit or fake-fetch test; only B3 needs a short design pass.
 
 | Step | Items | Size | Proof |
 |---|---|---|---|
-| A1 | 6: `session_id` on OpenRouter; capture `cache_write_tokens`/`cache_discount` | small | fake-fetch body assertion |
-| A2 | 7: roster-independent Task tool, snapshot + announcement | small | byte-identical tools after catalog reload |
-| A3 | 5: derived summary key (or same key once B3 lands) | small | captured summary body |
-| A4 | 1: system breakpoint + automatic tail, per-lane TTL, none on side calls; direct and OpenRouter | small | fake-fetch marker placement per lane |
-| A5 | 8 backend: classify every request hit / expected-rebuild / unexpected-miss across all lanes; `cache_n` for local | small-medium | diagnostics tests |
-| B1 | 2: reserve = min(maxTokens, ctx/4); compaction below trim budget; exact local token counts | design | unit tests at 32k and 8k windows: compaction fires before any trim; prefix byte-stable across three steps |
-| B2 | 3: turn-boundary prune, pinned boundary with hysteresis, constant sentinel, ingestion cap | design | prune commits ≤ 1 per turn; pruned bytes identical across steps |
-| B3 | 4: appended summary with hidden boundary; warm-prefix summary request; visible summary bucket | design | summary request prefix byte-identical to the chat request minus the last message |
-| B4 | 2: `--no-context-shift`, `--cache-reuse` experiment, `--cache-ram`, turn-group sticky trim | design | `cache_n` ≥ prior prompt size on consecutive local steps |
+| A1 | 1 + 6: registry middleware keyed on `cacheKey`: Anthropic system marker + automatic tail at `1h` (direct and OpenRouter for `anthropic/*`), OpenRouter `session_id`; summary gets system-only/none, naming nothing; capture `cache_write_tokens`/`cache_discount` | small | fake-fetch: marker placement per request kind; `session_id` stable within a session, different across, absent on naming |
+| A2 | 7: pinning test for byte-identical tools across a catalog reload; roster change flagged as expected rebuild | test only | the test |
+| A3 | 8 backend: `expectedRebuild` flag recorded with step usage; lane recorded; local `cache_n`/`prompt_n` | small | unit tests on the flag; local metadata test |
+| B1 | 2: reserve = `min(maxTokens, ctx/4)`; trigger derived from the trim budget | small | unit tests at 32k and 8k: compaction fires before any trim; prefix byte-identical across three steps |
+| B2 | 3: prune only on a `'prune'` decision or right before a summary that runs | small | above trigger with a bailing summary, three steps send identical histories |
+| B3 | 4: warm-prefix summary request with `toolChoice: 'none'`; summary usage in a visible bucket | design | summary request prefix byte-identical to the chat request minus the last message; tool call impossible |
 | C | 8 UI: choose among the four options on a deck | UI | feature flow |
 
-Things this survey did **not** find anyone doing that we should still avoid: per-step pruning
-(only we do it), rebuilding a tool description from mutable state per turn (OpenCode does; it is
-the fragile pattern), and timestamps in replacement text (Claude Code's regression).
+Needs Destin's nod before B1 lands: the local compaction marker will appear earlier than today.
+
+Cut by the review, with reasons recorded in the handoff: per-lane TTL; derived summary key
+(item 5); turn-boundary prune placement, pinned prune boundary, ingestion cap and protected-tool
+list (item 3); sticky trim boundary, headroom, turn-group trimming and exact tokenization
+(item 2); roster-independent Task tool and snapshot (item 7); the cross-lane prefix-diff
+observer and cache-diagnosis beta (item 8); all engine flags, with `--cache-reuse` parked
+pending `cache_n` evidence.
+
+Things this survey did **not** find anyone doing that we should still avoid: pruning on a path
+where the summary can bail and leave the slide standing (ours), rebuilding a tool description
+from mutable state per turn (OpenCode does; it is the fragile pattern), and timestamps in
+replacement text (Claude Code's regression).
 
 ---
 
