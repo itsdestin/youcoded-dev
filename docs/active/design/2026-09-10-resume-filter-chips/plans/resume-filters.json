@@ -1,0 +1,135 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 3500,
+ "width": 1440,
+ "height": 900,
+ "shots": [
+  {
+   "name": "resume-browser",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ],
+   "expect": "[placeholder^='Search sessions']"
+  },
+  {
+   "name": "resume-projects-open",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Projects'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.trim().startsWith('Clear'))"
+  },
+  {
+   "name": "resume-tags-open",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Tags'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Manage tags')"
+  },
+  {
+   "name": "resume-tags-picked",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Tags'))",
+     "settle": 400
+    },
+    {
+     "click": "js:document.querySelector('[role=option]') || [...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Manage tags')).nextElementSibling",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Manage tags')"
+  },
+  {
+   "name": "resume-sort-flipped",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Most recent'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Oldest first')"
+  },
+  {
+   "name": "resume-stress-projects-open",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Projects'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.trim().startsWith('Clear'))"
+  }
+ ]
+}

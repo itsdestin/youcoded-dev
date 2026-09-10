@@ -8,6 +8,33 @@ produced and the panel that shows them (files).
       still closes it (seen in the workbench while filming the promo, 2026-09-03)
       `resume-browser` `desktop` `needs-verify` `checked 2026-09-03`
 
+- [ ] The Resume browser dialog re-centres itself whenever a filter or search shrinks the list, so
+      the chips slide about 120 px down the screen under your hand (a beta tester's most confusing
+      moment, 2026-09-10); one steady height is asked as Q-3 on the resume-filter-chips deck
+      `resume-browser` `all` `decision` `checked 2026-09-10`
+
+- [ ] The Resume browser says "session" everywhere the chat says "conversation", and its title and
+      reopen button both read "Resume Session"; renaming this screen's copy is asked as Q-2 on the
+      resume-filter-chips deck, with "Show Complete" and the card meta line (Skip Permissions, 4KB,
+      raw model ids) to follow the same decision
+      `resume-browser` `all` `decision` `checked 2026-09-10`
+
+- [ ] Priority shows as a tag on every card and in the per-card tag picker, but the Tags filter
+      cannot narrow to it; the note marker looks like a tag too and cannot be filtered
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] Nothing in the top bar says "past conversations" or "history": the only entrance is the
+      sessions chevron whose panel is headed "Sessions in this window" with a Resume button at the
+      bottom, or typing /resume (beta tester, 2026-09-10)
+      `session-drawer` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] The Resume browser has no close button; only Escape or clicking the dark area closes it
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] Resume browser cards show only a date, so conversations from the same day cannot be told
+      apart and the Most recent / Oldest first flip looks like it did nothing
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
