@@ -1,0 +1,365 @@
+{
+  "title": "First run — the buddy's tour, tips, empty screens, Help, and the first warnings",
+  "key": "first-run-guide-review",
+  "out": "first-run-guide.review.html",
+  "stage": "design",
+  "images": "images/first-run-guide.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "welcome": [
+      "guide",
+      "welcome",
+      "620x520+410+220"
+    ],
+    "wizard-signin": [
+      "guide",
+      "wizard-auth",
+      "480x470+480+330"
+    ],
+    "wizard-done": [
+      "guide",
+      "wizard-done",
+      "480x200+480+385"
+    ],
+    "projects-empty": [
+      "guide",
+      "projects-empty",
+      "1100x600+170+50"
+    ],
+    "drawer-rows": [
+      "guide",
+      "settings-drawer",
+      "330x800+0+60"
+    ],
+    "help-popup": [
+      "guide",
+      "help-popup",
+      "380x460+530+225"
+    ],
+    "chat-empty": [
+      "guide",
+      "chat-empty",
+      "900x120+270+370"
+    ],
+    "tour-1": [
+      "guide",
+      "tour-1",
+      "1100x460+340+360"
+    ],
+    "tour-3": [
+      "guide",
+      "tour-3",
+      "1000x520+430+320"
+    ],
+    "tour-4": [
+      "guide",
+      "tour-4",
+      "1120x740+310+100"
+    ],
+    "tip": [
+      "guide",
+      "tip",
+      "700x260+730+540"
+    ],
+    "warn-skip": [
+      "guide",
+      "warn-skip",
+      "800x420+320+250"
+    ],
+    "warn-small": [
+      "guide",
+      "warn-small",
+      "800x420+320+250"
+    ]
+  },
+  "steps": [
+    {
+      "id": "W-1",
+      "surface": "The between-sessions screen",
+      "path": "What a new person sees the first time the app opens after setup",
+      "crop": "welcome",
+      "headline": "A first-time person is asked to start their first session instead of being told there is no active one.",
+      "changed": "\"No Active Session\" becomes \"Start your first session\" with one sentence on what a session is, the form is already open, and Resume is hidden while there is nothing to resume.",
+      "notice": "One thing to do on day one and no button that lists nothing. Once a session exists to resume, the screen is today's again.",
+      "risk": "A second device with synced sessions the app has not pulled yet would briefly hide Resume; the check errs toward showing it while unsure."
+    },
+    {
+      "id": "T-1",
+      "surface": "The tour",
+      "path": "Right after setup, on the between-sessions screen",
+      "crop": "tour-1",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          57.5,
+          63,
+          31.8,
+          37
+        ]
+      },
+      "headline": "The buddy stands in the corner with a speech bubble and rings the thing it is talking about.",
+      "changed": "Eight stops, Next / Back / Skip on the bubble, a count so you know how long it is, and an accent ring around the control each stop is about. The bubble is the same shape as the hint that points at the chat/terminal switch. Starting a session mid-tour moves it on.",
+      "notice": "You learn on the real screen. Skip is one press; Show me around in Settings brings it back.",
+      "risk": "The bubble sits over the bottom-right corner, so on a small window it can cover part of an open dialog's lower edge."
+    },
+    {
+      "id": "T-2",
+      "surface": "The tour",
+      "path": "Stop 6, who answers you",
+      "crop": "tour-4",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          16.7,
+          10.7,
+          55.5,
+          55.4
+        ]
+      },
+      "headline": "Each stop opens the real screen it talks about, so you see the thing while the buddy explains it.",
+      "changed": "Stops 2 to 8 open the New Session form, the Projects screen, Cloud providers, Appearance and Help & feedback for real, in that order, and close them again when the tour moves on or ends.",
+      "notice": "It is the screen, not a picture of it. A stop about something you have not made yet (tags, before any session) says where it will be, with no ring."
+    },
+    {
+      "id": "P-1",
+      "surface": "Tips",
+      "path": "Days later, at the moment a tip becomes relevant",
+      "crop": "tip",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          34.7,
+          16.5,
+          50,
+          63.5
+        ]
+      },
+      "headline": "A tip is the same buddy and bubble, one at a time, with Got it and Stop showing tips.",
+      "changed": "About eight tips, each with its own moment (first time in the drawer, the fifth session with no project, the third launch), never more than one per sitting, never while the assistant is answering.",
+      "notice": "Two presses at most to never see one again; the switch lives under Settings, Help & feedback.",
+      "risk": "A tip that arrives while you are mid-thought is still an interruption, even a quiet one."
+    },
+    {
+      "id": "E-1",
+      "surface": "Projects",
+      "path": "The Projects screen, before any project exists",
+      "crop": "projects-empty",
+      "headline": "With no projects yet, the screen explains what a project is and offers one button, instead of an empty layout.",
+      "changed": "\"Select a project to view its artifacts\" and three empty tabs are replaced by a card: what a project is, why to make one, and Add a project. The buddy sits beside it.",
+      "notice": "The word \"artifacts\" is gone from this screen. Once a project exists, the screen is today's again.",
+      "risk": "One more paragraph that must stay short.",
+      "highlight": {
+        "box": [
+          25.4,
+          46.5,
+          49.3,
+          48.7
+        ]
+      }
+    },
+    {
+      "id": "H-1",
+      "surface": "Settings",
+      "path": "The settings drawer, above Development",
+      "crop": "drawer-rows",
+      "headline": "A Help & feedback row sits above Development.",
+      "changed": "One new row. Development and everything below it are unchanged.",
+      "notice": "The word Help finally appears in Settings. The drawer is one row longer.",
+      "risk": "Report a bug now lives in two places until Development can drop it."
+    },
+    {
+      "id": "H-2",
+      "surface": "Settings",
+      "path": "Settings, Help & feedback",
+      "crop": "help-popup",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          3.2,
+          17.4,
+          93.7,
+          73.9
+        ]
+      },
+      "headline": "Help & feedback holds the tour, the tips switch, the community, a bug report, known issues and the version.",
+      "changed": "Show me around replays the tour. Tips for new users is the switch. Community on Reddit opens r/youcoded. Report a bug is the same report as under Development.",
+      "notice": "A person with a problem finds it under Help, not Development. No tour on the phone, so Show me around is hidden there."
+    },
+    {
+      "id": "Z-1",
+      "surface": "Setup",
+      "path": "The setup wizard's sign-in step",
+      "crop": "wizard-signin",
+      "headline": "The sign-in card carries one sentence about files and backups, where nobody can skip past it.",
+      "changed": "One sentence under the sign-in line: the assistant can create, change and delete files in any folder it is pointed at; keep your own backups of anything you cannot replace.",
+      "notice": "Every new person reads it before handing over a login. The wording is asked about on the next slide.",
+      "risk": "One more line on a card people are hurrying through.",
+      "highlight": {
+        "box": [
+          10.8,
+          20.9,
+          76.7,
+          19.1
+        ]
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Setup",
+      "path": "The sentence on the sign-in card above",
+      "headline": "Which wording for the file-safety sentence?",
+      "today": "The card says: \"The assistant can create, change and delete files in any folder you point it at. Keep your own backups of anything you cannot replace.\"",
+      "problem": "This is the one sentence a court would ask about, and the deck said its wording is your call.",
+      "proposal": "Pick one, or write your own in Other.",
+      "options": [
+        {
+          "id": "as-shown",
+          "label": "As shown",
+          "summary": "The assistant can create, change and delete files in any folder you point it at. Keep your own backups of anything you cannot replace.",
+          "pros": [
+            "Says what it does and what to do about it, in two sentences."
+          ],
+          "cons": [
+            "Twenty-six words on a card people skim."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "shorter",
+          "label": "Shorter",
+          "summary": "The assistant can change and delete files in the folders you give it. Keep your own backups.",
+          "pros": [
+            "Seventeen words; reads in one glance."
+          ],
+          "cons": [
+            "Drops \"create\", and \"anything you cannot replace\" — the part that says why."
+          ]
+        },
+        {
+          "id": "plainer",
+          "label": "Plainer",
+          "summary": "This assistant edits and deletes real files on your computer. Back up what matters to you.",
+          "pros": [
+            "\"Real files on your computer\" is the bluntest version."
+          ],
+          "cons": [
+            "Slightly alarming for a sign-in card, which the deck asked to avoid."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Z-2",
+      "surface": "Setup",
+      "path": "The setup wizard's last card",
+      "crop": "wizard-done",
+      "headline": "The last card says the buddy will show you around, instead of listing three things to try.",
+      "changed": "The three bullets (pick a theme, install a skill, sync) are gone; one line says the tour is coming. The spinner line stays.",
+      "notice": "The card is shorter and hands straight to the tour.",
+      "risk": "None: the card shows for a second and a half.",
+      "highlight": {
+        "box": [
+          10.4,
+          40,
+          78.1,
+          20
+        ]
+      }
+    },
+    {
+      "id": "G-1",
+      "surface": "New session form",
+      "path": "Turning on Skip Permissions for the first time",
+      "crop": "warn-skip",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          23,
+          15,
+          54,
+          75
+        ]
+      },
+      "headline": "The first time Skip Permissions is switched on, a plain explainer asks for an I-understand tick before it turns on.",
+      "changed": "Three short paragraphs, a checkbox (\"I understand the assistant can change or delete files without asking\"), Cancel and Turn it on. Turn it on stays greyed until the box is ticked. Shown once; after that the switch behaves as today.",
+      "notice": "Cancel leaves the switch off. Cycling the status-bar chip into it shows the same dialog."
+    },
+    {
+      "id": "G-2",
+      "surface": "New session form",
+      "path": "Pressing Create with a small model chosen, the first time",
+      "crop": "warn-small",
+      "runs": [
+        "after"
+      ],
+      "themes": [
+        "midnight"
+      ],
+      "highlight": {
+        "box": [
+          23,
+          15,
+          54,
+          75
+        ]
+      },
+      "headline": "The first session on a small model gets a short, honest explainer, with Got it and no checkbox.",
+      "changed": "Small means the model's name says 40 billion parameters or fewer (a \"9B\" or \"30B\" in the name), or a local file under 30 GB with no size in its name. Three paragraphs: cheaper and private, more mistakes, start with work you can undo.",
+      "notice": "Shown once, then never again. Got it starts the session."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Status bar",
+      "path": "Cycling the permission chip into Full auto, the first time",
+      "headline": "Full auto gets the same dialog shape as Skip Permissions, with its own words and the checkbox.",
+      "changed": "Title \"Before you pick Full auto\". Paragraphs: it works without checking with you except for the few things it always asks about (the list from the Permissions page, verbatim); anything else it can do on its own, including changing and deleting files, and a mistake reaches your files before you see it; keep your own backups. Checkbox, Cancel, Use Full auto.",
+      "notice": "The workbench cannot photograph this one (its chip needs a live assistant); the built app will, on the acceptance deck.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "C-1",
+      "surface": "Chat",
+      "path": "A session before its first message",
+      "crop": "chat-empty",
+      "headline": "The empty chat pane gains one line saying what the assistant can do in the session's folder.",
+      "changed": "Under \"Start a conversation with your assistant\": \"It works in this session's folder — ask it to read, write or change files there.\"",
+      "notice": "Nothing moves; the pane says one useful thing where it said nothing.",
+      "risk": "None."
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Tips",
+      "path": "The eight tips and their moments",
+      "headline": "These are the eight tips, each fired by the moment named beside it.",
+      "changed": "Tags: first time the session drawer is open. Notes: first time the close-session prompt shows. Projects: the fifth session started. Resume: a launch with something to resume and nothing open. Local models: the model picker opens with no local model. Buddy floater: the third launch, desktop only. Themes: Settings opens a day or more after the tour. Help: the first general error card.",
+      "notice": "One per sitting, each once, none until the wizard has run on this install. Two smaller empty screens changed the same way: a project's Conversations tab uses the standard empty state, and the session note's placeholder says what a note is for.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}

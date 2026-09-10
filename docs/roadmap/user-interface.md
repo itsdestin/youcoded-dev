@@ -2,6 +2,14 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] Three things a context-free tester tripped on during the first-run guide's review that
+      predate it (2026-09-10): the Cloud providers card at phone width wraps "Signed in as…"
+      one word per line and the Claude Code title runs under its buttons; the welcome
+      screen's new-session form and the session strip's form look and behave differently
+      (no (i) on one, Launch in New Window only on the other); and the welcome form's
+      Create Session button wraps onto two lines beside a one-line Cancel
+      `all` `needs-verify` `checked 2026-09-10` → docs/active/reviews/2026-09-10-first-run-guide-ux-review-1.md
+
 - [ ] The before/after file comparison — the one shown on every tool card that edits a file —
       is hard to read for anyone who is not a developer. In the light theme the small + and −
       marks fail the app's own readability minimum (measured 2.31 and 3.5 against 4.5), and
