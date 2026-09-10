@@ -53,8 +53,8 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 87 | 29 | 2 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 58 | 9 | 3 | 19 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 88 | 30 | 2 | 10 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 58 | 10 | 3 | 19 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 30 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 8 | 0 | 9 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 19 | 10 | 1 | 1 |

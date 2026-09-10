@@ -3,6 +3,14 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `use-provider-type.test.tsx` → "invalidation › is triggered by the ChatGPT card on a status
+      transition" failed once in a `verify.sh --full` run on session/cache-competitor-survey
+      (2026-09-10, `expected "vi.fn()" to be called at least once`, 1,224 ms) and passed 14/14 in
+      an isolated re-run. That branch changes no renderer file and no ChatGPT card code, so the
+      likeliest read is the same shape as the step-guard entry below: a timer-dependent
+      assertion under full-suite load
+      `desktop` `needs-verify` `checked 2026-09-10`
+
 - [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
       failed once in a full suite run and passed on the two full runs after it, plus three
       isolated runs and three paired with the naming settings suite. Seen 2026-09-09, hours
