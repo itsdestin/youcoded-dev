@@ -1,0 +1,52 @@
+{
+ "deck": "error-states-development-review-6",
+ "started": "2026-09-10T21:41:47.402Z",
+ "submitted": "2026-09-10T21:44:54Z",
+ "cur": 6,
+ "answers": {
+  "R6-24": {
+   "v": "other",
+   "note": "fine to just have \"setting up your development workspace\" with a \"this may take a while, you can close this tab and setup will continue in the background\" type of warning",
+   "seconds": 90,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-25": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-26": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-27": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-28": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-29": {
+   "v": "yes",
+   "note": "put these retry buttons at the bottom right, not the bottom left. in-line with text where it makes sense. our ui design guide should prohibit single filled buttons at the bottom left. buttons should either be full modal width or on the righthand side",
+   "seconds": 61,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-30": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

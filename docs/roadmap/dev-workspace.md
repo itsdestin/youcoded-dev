@@ -12,7 +12,10 @@ seen-on is always n/a here.
       imports, so it is not caused by it. The file drives state through `waitFor` (`:41,48,51,53,59`)
       against a 1s budget, which is the shape `.claude/rules/test-suite-hygiene.md` warns about.
       Worth pinning on a signal rather than a wait, because a sometimes-red suite teaches sessions to
-      disbelieve it
+      disbelieve it. **Recurred the same day** on a later full run, with TWO of the file's cases red
+      ("failed write rolls back and Retry persists the same intent": `expected [[20],[20]] to deeply
+      equal [[50],[50]]`, and the rapid-commits one again). Isolated: 8 passed. Immediate re-run of
+      the full suite: green. So it is reproducible-under-load, not rare
       `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
