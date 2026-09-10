@@ -13,5 +13,6 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       the same day (report §8): built-in assistant first, Play prioritized, the full desktop
       file view, remove the old restore wizard, harness before phone basics. Step 2 (honest
       builds: versions, notification permission, clean refusals) and the restore-wizard deletion
-      merged 2026-09-10 (youcoded#468); next is step 4, the harness runtime on the phone
+      merged 2026-09-10 (youcoded#468); next is step 4, the harness runtime on the phone —
+      start at docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md
       `android` `in-flight` `checked 2026-09-10` → docs/active/investigations/2026-09-10-android-parity-audit.md
