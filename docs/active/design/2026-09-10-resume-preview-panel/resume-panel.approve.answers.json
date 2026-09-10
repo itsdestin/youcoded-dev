@@ -1,0 +1,20 @@
+{
+ "deck": "resume-panel-approve",
+ "started": "2026-09-10T23:29:49.155Z",
+ "submitted": "2026-09-10T23:30:11Z",
+ "cur": 1,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
