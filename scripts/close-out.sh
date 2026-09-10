@@ -112,9 +112,19 @@ else
   # yet". That is the same misleading-message failure the 2026-09-03 fix below
   # was for, on the other axis; hit again 2026-09-04.
   #
-  # The trailing ('|$) is also what keeps a branch from matching a LONGER one
+  # The trailing boundary is also what keeps a branch from matching a LONGER one
   # that starts with its name (fix/resume vs fix/resume-cc-brand-icon).
-  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="(/|')$BRANCH('|\$)" \
+  #
+  # WHY the LEADING side accepts whitespace and start-of-subject too (2026-09-10):
+  # it used to be (/|'), which only ever matched GitHub's own "Merge pull request
+  # #1 from itsdestin/<branch>". A plain `git merge --no-ff <branch>` writes
+  # "Merge <branch>" with a SPACE in front, so every hand-merged branch fell
+  # through to "never pushed — nobody else can review this branch yet", which is
+  # the exact misleading message the two fixes above were for. Not hypothetical:
+  # master's own history here carries subjects of the form "Merge session/<name>",
+  # and three branches merged on 2026-09-10 all reported never-pushed minutes
+  # after landing.
+  MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="(^|[[:space:]/'])$BRANCH([[:space:]']|\$)" \
                  --extended-regexp --format=%h -1 2>/dev/null || true)
   if [[ -n "$MERGE_COMMIT" ]]; then
     pass "no ref left, and $BASE carries the merge commit $MERGE_COMMIT for it — the work landed"
