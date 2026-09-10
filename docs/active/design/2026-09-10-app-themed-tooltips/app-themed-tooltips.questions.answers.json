@@ -1,0 +1,43 @@
+{
+ "deck": "app-themed-tooltips-questions",
+ "started": "2026-09-10T10:35:58.500Z",
+ "submitted": "2026-09-10T10:39:26Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "all-three",
+   "seconds": 35,
+   "theme": "light"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "always-visible",
+   "seconds": 35,
+   "theme": "light"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "long-press",
+   "seconds": 34,
+   "theme": "light"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "match-today",
+   "seconds": 34,
+   "theme": "light"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "info-button",
+   "seconds": 34,
+   "theme": "light"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 34,
+   "theme": "light"
+  }
+ }
+}

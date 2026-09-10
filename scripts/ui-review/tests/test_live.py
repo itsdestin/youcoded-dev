@@ -280,6 +280,23 @@ class ServeGuardTests(unittest.TestCase):
         self.assertIn(os.path.join(tree, 'desktop'), msg)  # what SHOULD be
         self.assertIn('offset', msg)                       # and the way out
 
+    def test_a_session_worktree_resolves_by_its_own_name(self):
+        """`workspace-start` puts a session's app checkout at
+        worktrees/sessions/<name>/youcoded. Before 2026-09-10 the only spelling that
+        worked was that whole path — the session key and the branch both failed, and a
+        deck pointed at its own session's build refused to start."""
+        from deck import serve as serve_mod
+        ws = os.path.join(self.tmp, 'ws')
+        tree = os.path.join(ws, 'worktrees', 'sessions', 'my-feature', 'youcoded')
+        os.makedirs(os.path.join(tree, 'desktop'), exist_ok=True)
+        real_ws = serve_mod.workspace_root
+        serve_mod.workspace_root = lambda: ws
+        self.addCleanup(lambda: setattr(serve_mod, 'workspace_root', real_ws))
+        for spelling in ('my-feature', 'session/my-feature', 'sessions/my-feature/youcoded'):
+            with self.subTest(spelling=spelling):
+                self.assertEqual(serve_mod.resolve_worktree(spelling), os.path.abspath(tree))
+        self.assertIsNone(serve_mod.resolve_worktree('no-such-session'))
+
     def test_a_server_already_serving_this_tree_is_left_alone(self):
         from deck import serve as serve_mod
         tree = os.path.join(self.tmp, 'live-tree')

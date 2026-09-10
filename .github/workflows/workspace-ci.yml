@@ -163,6 +163,15 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-wrong-repo.test.sh
 
+      # The launchers' name resolution. A session's app checkout sits at
+      # worktrees/sessions/<name>/youcoded, and run-workbench is normally invoked from
+      # INSIDE that worktree — where the workspace-relative layouts it checks cannot match.
+      # Two failed launches on 2026-09-10, and three on 2026-09-09 before the shared
+      # resolver existed at all; this is the same lesson arriving twice.
+      - name: a launcher resolves a session worktree by its own name
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/resolve-checkout.test.sh
+
       # The pre-merge report must say whether the branch still merges cleanly — two branches
       # passed every check on 2026-09-04 and conflicted on the generated roadmap table at merge.
       - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"
