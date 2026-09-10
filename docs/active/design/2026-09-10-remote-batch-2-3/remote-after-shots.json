@@ -13,10 +13,25 @@
    "name": "chat-incomplete",
    "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&conversation=incomplete",
    "actions": [],
-   "expect": "js:document.body.textContent.includes('may be behind your computer')",
+   "expect": "js:document.body.textContent.includes('may be out of date')",
    "measure": [
     "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Refresh')"
    ]
+  },
+  {
+   "name": "chat-refreshed",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&conversation=incomplete",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Refresh')",
+     "settle": 1400
+    },
+    {
+     "hover": "textarea",
+     "settle": 200
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Up to date')"
   },
   {
    "name": "files-list",
@@ -49,21 +64,48 @@
     },
     {
      "clickText": "scroll-perf-report.md",
-     "settle": 1500
-    },
-    {
-     "click": "[aria-label='Hide list']",
-     "settle": 1500
+     "settle": 1800
     },
     {
      "hover": "textarea",
      "settle": 400
     }
    ],
-   "expect": "[aria-label='Download to this device']",
+   "expect": "[aria-label='Download']",
    "measure": [
-    "[aria-label='Download to this device']"
+    "[aria-label='Download']",
+    "[aria-label='Back to the file list']"
    ]
+  },
+  {
+   "name": "file-downloaded",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 1200
+    },
+    {
+     "clickText": "scroll-perf-report.md",
+     "settle": 1800
+    },
+    {
+     "hover": "textarea",
+     "settle": 400
+    },
+    {
+     "click": "[aria-label='Download']",
+     "settle": 500
+    },
+    {
+     "hover": "textarea",
+     "settle": 200
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Saving scroll-perf-report.md')"
   },
   {
    "name": "file-too-large",
@@ -78,18 +120,14 @@
     },
     {
      "clickText": "annual-report.pdf",
-     "settle": 1500
-    },
-    {
-     "click": "[aria-label='Hide list']",
-     "settle": 1500
+     "settle": 1800
     },
     {
      "hover": "textarea",
      "settle": 400
     }
    ],
-   "expect": "js:document.body.textContent.includes('Too large to preview on a phone')",
+   "expect": "js:document.body.textContent.includes('Too big to preview on a phone')",
    "measure": [
     "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Download')"
    ]

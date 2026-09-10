@@ -37,6 +37,16 @@
       "remote",
       "file-too-large",
       "390x560+0+40"
+    ],
+    "chat-refreshed": [
+      "remote",
+      "chat-refreshed",
+      "390x330+0+0"
+    ],
+    "file-downloaded": [
+      "remote",
+      "file-downloaded",
+      "390x844+0+0"
     ]
   },
   "steps": [
@@ -50,7 +60,7 @@
         "after": "Proposed"
       },
       "headline": "While the phone reconnects, a grey line at the top says so and keeps your draft.",
-      "changed": "Today nothing on screen changes when the connection drops; the message box simply refuses to send. A grey line now sits above the messages: Reconnecting to your computer, your draft is kept.",
+      "changed": "Today nothing on screen changes when the connection drops; the message box simply refuses to send. A grey line now sits above the messages: Reconnecting to your computer — your draft is safe, it sends once you're reconnected.",
       "notice": "It is its own row above the chat, not a banner over it, so no message is hidden. It disappears by itself when the connection is back.",
       "risk": "Simulated: the workbench cannot drop a real connection, so the line is shown in place rather than triggered."
     },
@@ -63,10 +73,25 @@
         "before": "Today",
         "after": "Proposed"
       },
-      "headline": "After a refresh that didn't finish, the phone admits it may be behind and offers Refresh.",
-      "changed": "Today a refresh that comes back incomplete changes nothing: the phone silently keeps what it had. The same line, in amber, now says the conversation may be behind your computer, why, and gives one button.",
+      "headline": "After a refresh that didn't finish, the phone says the conversation may be out of date and offers Refresh.",
+      "changed": "Today a refresh that comes back incomplete changes nothing: the phone silently keeps what it had. The same line, in amber, now says this conversation may be out of date, why, and gives one button.",
       "notice": "What you were reading stays put. Refresh asks the computer for a fresh copy; the line turns grey while it catches up and goes away when it is done.",
-      "risk": "The words are the longest on any phone screen in the app; the tester's shorter wording, if any, is applied before this reaches you."
+      "risk": "A fresh tester rewrote these words before you saw them: 'behind your computer' read as a place, not a time."
+    },
+    {
+      "id": "2b",
+      "surface": "Remote conversation",
+      "path": "Phone → the line above the chat → Refresh",
+      "crop": "chat-refreshed",
+      "labels": {
+        "before": "Today",
+        "after": "Proposed"
+      },
+      "headline": "Refresh catches up, then says Up to date for a moment so you can see it worked.",
+      "changed": "Pressing Refresh turns the line grey (Catching up with your computer… Loading the newest messages…), and when the copy arrives it reads Up to date for about two seconds before the row disappears.",
+      "measured": "Up to date shows for 2.5 s",
+      "notice": "You are never left wondering whether the refresh did anything. The tester asked for exactly this.",
+      "risk": "Simulated: the workbench answers a refresh in under a second; a real computer may take longer, and the grey line stays up until it does."
     },
     {
       "id": "3",
@@ -91,10 +116,24 @@
         "before": "Today",
         "after": "Proposed"
       },
-      "headline": "A file opens on the phone, and Download sits where Open and Reveal sit on the desktop.",
-      "changed": "Today the drawer says Nothing here yet and a file cannot open. Now the list fills, a file opens in the same viewer the desktop uses, and the toolbar shows a Download button in place of the two desktop-only ones.",
-      "notice": "Download saves the whole file to your phone's own downloads folder; a big one does not block the chat. Copy path, expand and close are where they were.",
+      "headline": "On a phone, tapping a file shows the file, with ‹ Files to go back and Download in the toolbar.",
+      "changed": "Today the drawer says Nothing here yet and a file cannot open. Now the list fills, a tap opens the file in the same viewer the desktop uses (the list steps aside, as on any phone app), a labelled ‹ Files button leads back, and Download sits where the desktop's Open and Reveal are.",
+      "notice": "Copy path shows a tick for a moment after you press it. Expand, which does nothing at phone width, is not offered there. Nothing changes on the desktop.",
       "risk": "The Before picture shows the refusal as this branch draws it (could not load, with Retry). Today's app says Nothing here yet for a chat with thirteen files."
+    },
+    {
+      "id": "4b",
+      "surface": "Files on the phone",
+      "path": "Phone → an open file → Download",
+      "crop": "file-downloaded",
+      "labels": {
+        "before": "Today",
+        "after": "Proposed"
+      },
+      "headline": "Download says what it is doing: a small notice confirms the file is being saved to this device.",
+      "changed": "Today the file toolbar has no Download at all. Pressing the new one shows the app's usual notice — Saving scroll-perf-report.md to this device… — and the phone's own download bar takes it from there.",
+      "notice": "The same notice appears from the too-big card's Download. If the computer refuses, the notice says why, in the computer's words.",
+      "risk": "Simulated: the workbench has no bytes to hand over, so only the notice is shown here."
     },
     {
       "id": "5",
@@ -106,7 +145,7 @@
         "after": "Proposed"
       },
       "headline": "A file too big to preview shows its name, size and kind with Download, not a dead end.",
-      "changed": "A file over the phone's preview limit is not fetched at all. The computer answers with its size, and the phone shows a card: the name, 24.0 MB · PDF, one line saying why, and Download.",
+      "changed": "A file over the phone's preview limit is not fetched at all. The computer answers with its size, and the phone shows a card: the name, 24.0 MB · PDF, one line — Too big to preview on a phone (limit 10 MB). Download it instead — and the button.",
       "measured": "24.0 MB PDF; previews stop at 1 MB for text and 10 MB for images and PDFs",
       "notice": "Nothing freezes and nothing downloads until you ask. The desktop keeps its own, larger limits.",
       "risk": "The limits are the ones you picked on the questions deck; changing them later is a one-line change, not a redesign."
@@ -127,8 +166,8 @@
       "words": true,
       "surface": "Files on the phone",
       "path": "Phone → Projects → Files, and Session Files, when the computer cannot answer",
-      "headline": "Two silent failures become honest: the Files tab no longer spins forever, and the drawer no longer says Nothing here yet.",
-      "changed": "Stated, not asked. Found while drawing these screens: when the computer refuses or fails a file list, the Files tab showed Loading files… for ever, and the session drawer showed the empty-state message as if it knew. Both now show the real message with Retry.",
+      "headline": "Three silent wrongs become honest: no endless spinner, no false Nothing here yet, no window buttons on a phone.",
+      "changed": "Stated, not asked. Found while drawing these screens: when the computer refuses or fails a file list, the Files tab showed Loading files… for ever, and the session drawer showed the empty-state message as if it knew. Both now show the real message with Retry. Also found by the tester: a phone browser showed the desktop's Minimize / Maximize / Close buttons, squeezing the conversation name to one letter, because that check ran before the phone had declared itself remote. It is decided at render now.",
       "notice": "You will only ever see these on a real failure; after batch 3 the phone is not refused any more. They also apply on the desktop, where a failed list used to look empty.",
       "yes": "Holds",
       "no": "Fails"

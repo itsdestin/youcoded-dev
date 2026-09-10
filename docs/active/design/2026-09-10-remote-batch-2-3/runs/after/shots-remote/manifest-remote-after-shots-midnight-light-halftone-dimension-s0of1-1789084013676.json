@@ -34,7 +34,7 @@
         "h": 16
       }
     ],
-    "rmseVsBaseline": 0.0052444,
+    "rmseVsBaseline": 0.00613128,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/chat-reconnecting.png"
   },
@@ -76,14 +76,53 @@
     "measures": {
       "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Refresh')": {
         "x": 290,
-        "y": 77,
+        "y": 70,
         "w": 66,
         "h": 25
       }
     },
-    "rmseVsBaseline": 0.00508544,
+    "rmseVsBaseline": 0.00541538,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/chat-incomplete.png"
+  },
+  {
+    "theme": "midnight",
+    "name": "chat-refreshed",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "|",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 382,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.02,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 654,
+        "w": 7,
+        "h": 16
+      }
+    ],
+    "rmseVsBaseline": 0.0960795,
+    "dump": [],
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/chat-refreshed.png"
   },
   {
     "theme": "midnight",
@@ -146,7 +185,7 @@
         "h": 17
       }
     ],
-    "rmseVsBaseline": 0.278615,
+    "rmseVsBaseline": 0.277689,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/files-list.png"
   },
@@ -186,16 +225,61 @@
       }
     ],
     "measures": {
-      "[aria-label='Download to this device']": {
-        "x": 248,
+      "[aria-label='Download']": {
+        "x": 280,
         "y": 46,
         "w": 28,
         "h": 28
+      },
+      "[aria-label='Back to the file list']": {
+        "x": 18,
+        "y": 48,
+        "w": 58,
+        "h": 25
       }
     },
-    "rmseVsBaseline": 0.252791,
+    "rmseVsBaseline": 0.252481,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/file-preview.png"
+  },
+  {
+    "theme": "midnight",
+    "name": "file-downloaded",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "·",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span.text-fg-faint",
+        "x": 78,
+        "y": 690,
+        "w": 7,
+        "h": 17
+      },
+      {
+        "text": "·",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span.text-fg-faint",
+        "x": 160,
+        "y": 690,
+        "w": 7,
+        "h": 17
+      }
+    ],
+    "rmseVsBaseline": 0.25501,
+    "dump": [],
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/file-downloaded.png"
   },
   {
     "theme": "midnight",
@@ -222,12 +306,12 @@
     "measures": {
       "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Download')": {
         "x": 159,
-        "y": 431,
+        "y": 423,
         "w": 73,
         "h": 25
       }
     },
-    "rmseVsBaseline": 0.226961,
+    "rmseVsBaseline": 0.228485,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/midnight/file-too-large.png"
   },
@@ -305,7 +389,7 @@
         "h": 15
       }
     ],
-    "rmseVsBaseline": 0.00717122,
+    "rmseVsBaseline": 0.00596773,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/chat-reconnecting.png"
   },
@@ -386,14 +470,92 @@
     "measures": {
       "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Refresh')": {
         "x": 290,
-        "y": 77,
+        "y": 70,
         "w": 66,
         "h": 25
       }
     },
-    "rmseVsBaseline": 0.00547131,
+    "rmseVsBaseline": 0.00597239,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/chat-incomplete.png"
+  },
+  {
+    "theme": "light",
+    "name": "chat-refreshed",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "|",
+        "ratio": 2.74,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(152, 152, 152)",
+        "bg": "rgb(249,249,249)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 382,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(152, 152, 152)",
+        "bg": "rgb(215,215,215)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 654,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "Sonnet",
+        "ratio": 4.3,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(194, 65, 12)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1.5 > span",
+        "x": 32,
+        "y": 797,
+        "w": 36,
+        "h": 15
+      },
+      {
+        "text": "|",
+        "ratio": 4.3,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(194, 65, 12)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1.5 > span.opacity-40",
+        "x": 74,
+        "y": 797,
+        "w": 6,
+        "h": 15
+      },
+      {
+        "text": "auto Effort",
+        "ratio": 4.3,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(194, 65, 12)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1.5 > span.capitalize",
+        "x": 86,
+        "y": 797,
+        "w": 66,
+        "h": 15
+      }
+    ],
+    "rmseVsBaseline": 0.122289,
+    "dump": [],
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/chat-refreshed.png"
   },
   {
     "theme": "light",
@@ -508,7 +670,7 @@
         "h": 17
       }
     ],
-    "rmseVsBaseline": 0.4369,
+    "rmseVsBaseline": 0.435886,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/files-list.png"
   },
@@ -587,16 +749,100 @@
       }
     ],
     "measures": {
-      "[aria-label='Download to this device']": {
-        "x": 248,
+      "[aria-label='Download']": {
+        "x": 280,
         "y": 46,
         "w": 28,
         "h": 28
+      },
+      "[aria-label='Back to the file list']": {
+        "x": 18,
+        "y": 48,
+        "w": 58,
+        "h": 25
       }
     },
-    "rmseVsBaseline": 0.311341,
+    "rmseVsBaseline": 0.311022,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/file-preview.png"
+  },
+  {
+    "theme": "light",
+    "name": "file-downloaded",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "·",
+        "ratio": 2.74,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(152, 152, 152)",
+        "bg": "rgb(249,249,249)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span.text-fg-faint",
+        "x": 78,
+        "y": 690,
+        "w": 7,
+        "h": 17
+      },
+      {
+        "text": "·",
+        "ratio": 2.74,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(152, 152, 152)",
+        "bg": "rgb(249,249,249)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span.text-fg-faint",
+        "x": 160,
+        "y": 690,
+        "w": 7,
+        "h": 17
+      },
+      {
+        "text": "Sonnet",
+        "ratio": 4.3,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(194, 65, 12)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1.5 > span",
+        "x": 32,
+        "y": 797,
+        "w": 36,
+        "h": 15
+      },
+      {
+        "text": "|",
+        "ratio": 4.3,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(194, 65, 12)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1.5 > span.opacity-40",
+        "x": 74,
+        "y": 797,
+        "w": 6,
+        "h": 15
+      },
+      {
+        "text": "auto Effort",
+        "ratio": 4.3,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(194, 65, 12)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1.5 > span.capitalize",
+        "x": 86,
+        "y": 797,
+        "w": 66,
+        "h": 15
+      }
+    ],
+    "rmseVsBaseline": 0.313739,
+    "dump": [],
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/file-downloaded.png"
   },
   {
     "theme": "light",
@@ -662,12 +908,12 @@
     "measures": {
       "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Download')": {
         "x": 159,
-        "y": 431,
+        "y": 423,
         "w": 73,
         "h": 25
       }
     },
-    "rmseVsBaseline": 0.284674,
+    "rmseVsBaseline": 0.286786,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/light/file-too-large.png"
   },
@@ -680,7 +926,7 @@
     "errors": [],
     "contrastFails": [
       {
-        "text": "⠸",
+        "text": "⠋",
         "ratio": 3.91,
         "need": 4.5,
         "size": 12,
@@ -693,7 +939,7 @@
         "h": 12
       },
       {
-        "text": "Your draft is kept. Sending waits until the connection is ba",
+        "text": "Your draft is safe. It sends once you’re reconnected.",
         "ratio": 3.58,
         "need": 4.5,
         "size": 10,
@@ -758,7 +1004,7 @@
         "h": 16
       },
       {
-        "text": "⠸",
+        "text": "⠋",
         "ratio": 3.91,
         "need": 4.5,
         "size": 14,
@@ -797,7 +1043,7 @@
         "h": 14
       },
       {
-        "text": "⠸",
+        "text": "⠋",
         "ratio": 3.91,
         "need": 4.5,
         "size": 12,
@@ -836,7 +1082,7 @@
         "h": 21
       }
     ],
-    "rmseVsBaseline": 0.00813019,
+    "rmseVsBaseline": 0.00887815,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/chat-reconnecting.png"
   },
@@ -849,7 +1095,7 @@
     "errors": [],
     "contrastFails": [
       {
-        "text": "The last refresh from your computer didn’t finish, so newer ",
+        "text": "The last refresh didn’t finish, so newer messages may be mis",
         "ratio": 3.58,
         "need": 4.5,
         "size": 10,
@@ -859,7 +1105,7 @@
         "x": 54,
         "y": 96,
         "w": 224,
-        "h": 45
+        "h": 30
       },
       {
         "text": "· git status --short",
@@ -914,7 +1160,7 @@
         "h": 16
       },
       {
-        "text": "⠴",
+        "text": "⠋",
         "ratio": 3.91,
         "need": 4.5,
         "size": 14,
@@ -953,7 +1199,7 @@
         "h": 14
       },
       {
-        "text": "⠴",
+        "text": "⠋",
         "ratio": 3.91,
         "need": 4.5,
         "size": 12,
@@ -995,14 +1241,144 @@
     "measures": {
       "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Refresh')": {
         "x": 290,
-        "y": 89,
+        "y": 82,
         "w": 66,
         "h": 25
       }
     },
-    "rmseVsBaseline": 0.00632938,
+    "rmseVsBaseline": 0.00706122,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/chat-incomplete.png"
+  },
+  {
+    "theme": "halftone-dimension",
+    "name": "chat-refreshed",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "· git status --short",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-xs.text-fg-muted.truncate",
+        "x": 189,
+        "y": 323,
+        "w": 71,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(77, 65, 122)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 84,
+        "y": 361,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "4",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-2xs.font-mono.text-fg-muted",
+        "x": 194,
+        "y": 361,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "Report + mockup for review; the chart is the raw data behind",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.flex-1.min-w-0.text-2xs",
+        "x": 208,
+        "y": 361,
+        "w": 49,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 1.99,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(77, 65, 122)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 82,
+        "y": 637,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "NORMAL",
+        "ratio": 3.84,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(16,14,28)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm > span.sm:hidden",
+        "x": 189,
+        "y": 788,
+        "w": 36,
+        "h": 14
+      },
+      {
+        "text": "⠼",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span.text-xs.leading-none.shrink-0",
+        "x": 30,
+        "y": 815,
+        "w": 12,
+        "h": 12
+      },
+      {
+        "text": "2 subagents",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 46,
+        "y": 813,
+        "w": 66,
+        "h": 15
+      },
+      {
+        "text": "Halftone Dimension",
+        "ratio": 3.84,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(16,14,28)",
+        "path": "div.flex-1.flex.flex-col > div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm",
+        "x": 127,
+        "y": 810,
+        "w": 122,
+        "h": 21
+      }
+    ],
+    "rmseVsBaseline": 0.167189,
+    "dump": [],
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/chat-refreshed.png"
   },
   {
     "theme": "halftone-dimension",
@@ -1065,7 +1441,7 @@
         "h": 16
       },
       {
-        "text": "⠏",
+        "text": "⠇",
         "ratio": 3.91,
         "need": 4.5,
         "size": 14,
@@ -1104,7 +1480,7 @@
         "h": 14
       },
       {
-        "text": "⠏",
+        "text": "⠇",
         "ratio": 3.91,
         "need": 4.5,
         "size": 12,
@@ -1247,13 +1623,339 @@
         "h": 26
       }
     ],
-    "rmseVsBaseline": 0.259666,
+    "rmseVsBaseline": 0.259156,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/files-list.png"
   },
   {
     "theme": "halftone-dimension",
     "name": "file-preview",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "created · 7/28/2026",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 206,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 254,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "delivered · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 302,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "viewed · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 350,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "viewed · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 398,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "edited · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 446,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 494,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 542,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 590,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 638,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "viewed · 7/27/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 686,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 7/26/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 734,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "created · 3h ago",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.flex-1.overflow-y-auto > div.group.relative > button.w-full.text-left.px-2 > div.text-3xs.text-fg-muted.ml-0.5",
+        "x": 21,
+        "y": 782,
+        "w": 168,
+        "h": 15
+      },
+      {
+        "text": "4cc745ec",
+        "ratio": 3.91,
+        "need": 4.5,
+        "size": 14,
+        "fg": "rgb(229, 31, 72)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.flex-1.overflow-auto.p-4 > ul.list-disc.pl-6.mb-3 > li.leading-relaxed > code.text-sm.text-code",
+        "x": 214,
+        "y": 526,
+        "w": 67,
+        "h": 19
+      },
+      {
+        "text": "created",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span",
+        "x": 25,
+        "y": 667,
+        "w": 46,
+        "h": 17
+      },
+      {
+        "text": "·",
+        "ratio": 2.2,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(77, 65, 122)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span.text-fg-faint",
+        "x": 79,
+        "y": 667,
+        "w": 7,
+        "h": 17
+      },
+      {
+        "text": "7/28/2026",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span",
+        "x": 94,
+        "y": 667,
+        "w": 59,
+        "h": 17
+      },
+      {
+        "text": "·",
+        "ratio": 2.2,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(77, 65, 122)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span.text-fg-faint",
+        "x": 161,
+        "y": 667,
+        "w": 7,
+        "h": 17
+      },
+      {
+        "text": "489 B",
+        "ratio": 3.96,
+        "need": 4.5,
+        "size": 11,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(12,10,20)",
+        "path": "div.drawer-body.flex-1.flex > div.drawer-content.flex-1.min-w-0 > div.flex.items-center.gap-2 > span",
+        "x": 176,
+        "y": 667,
+        "w": 33,
+        "h": 17
+      },
+      {
+        "text": "NORMAL",
+        "ratio": 3.84,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(16,14,28)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm > span.sm:hidden",
+        "x": 189,
+        "y": 788,
+        "w": 36,
+        "h": 14
+      },
+      {
+        "text": "⠼",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span.text-xs.leading-none.shrink-0",
+        "x": 30,
+        "y": 815,
+        "w": 12,
+        "h": 12
+      },
+      {
+        "text": "2 subagents",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 46,
+        "y": 813,
+        "w": 66,
+        "h": 15
+      },
+      {
+        "text": "Halftone Dimension",
+        "ratio": 3.84,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(16,14,28)",
+        "path": "div.flex-1.flex.flex-col > div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm",
+        "x": 127,
+        "y": 810,
+        "w": 122,
+        "h": 21
+      }
+    ],
+    "measures": {
+      "[aria-label='Download']": {
+        "x": 281,
+        "y": 59,
+        "w": 28,
+        "h": 28
+      },
+      "[aria-label='Back to the file list']": {
+        "x": 19,
+        "y": 61,
+        "w": 58,
+        "h": 25
+      }
+    },
+    "rmseVsBaseline": 0.25016,
+    "dump": [],
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/file-preview.png"
+  },
+  {
+    "theme": "halftone-dimension",
+    "name": "file-downloaded",
     "run": null,
     "verified": true,
     "reasons": [],
@@ -1546,17 +2248,9 @@
         "h": 21
       }
     ],
-    "measures": {
-      "[aria-label='Download to this device']": {
-        "x": 249,
-        "y": 59,
-        "w": 28,
-        "h": 28
-      }
-    },
-    "rmseVsBaseline": 0.25051,
+    "rmseVsBaseline": 0.254333,
     "dump": [],
-    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/file-preview.png"
+    "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/file-downloaded.png"
   },
   {
     "theme": "halftone-dimension",
@@ -1736,7 +2430,7 @@
         "h": 15
       },
       {
-        "text": "Too large to preview on a phone. Previews stop at 10.0 MB fo",
+        "text": "Too big to preview on a phone (limit 10 MB). Download it ins",
         "ratio": 3.58,
         "need": 4.5,
         "size": 12,
@@ -1744,9 +2438,9 @@
         "bg": "rgb(24,20,48)",
         "path": "div.flex-1.overflow-hidden > div.h-full.flex.items-center > div.w-full.max-w-xs.rounded-lg > p.text-xs.text-fg-muted.mt-1",
         "x": 52,
-        "y": 358,
+        "y": 366,
         "w": 288,
-        "h": 48
+        "h": 32
       },
       {
         "text": "created",
@@ -1801,6 +2495,19 @@
         "h": 14
       },
       {
+        "text": "⠴",
+        "ratio": 3.58,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(116, 104, 160)",
+        "bg": "rgb(24,20,48)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span.text-xs.leading-none.shrink-0",
+        "x": 30,
+        "y": 815,
+        "w": 12,
+        "h": 12
+      },
+      {
         "text": "2 subagents",
         "ratio": 3.58,
         "need": 4.5,
@@ -1830,12 +2537,12 @@
     "measures": {
       "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Download')": {
         "x": 160,
-        "y": 426,
+        "y": 418,
         "w": 73,
         "h": 25
       }
     },
-    "rmseVsBaseline": 0.216219,
+    "rmseVsBaseline": 0.217588,
     "dump": [],
     "file": "docs/active/design/2026-09-10-remote-batch-2-3/runs/after/shots-remote/halftone-dimension/file-too-large.png"
   }
