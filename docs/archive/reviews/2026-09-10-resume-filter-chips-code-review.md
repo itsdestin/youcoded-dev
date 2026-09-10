@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 feature: resume-filter-chips
 branch: session/resume-filter-chips (youcoded, f7d772b2 vs origin/master)
 reviewer: fresh code reviewer, scripts/ui-review/code-reviewer.md

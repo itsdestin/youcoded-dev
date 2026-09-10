@@ -619,3 +619,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
   rows; Destin skipped the code reviewer, the second UX tester run and the acceptance deck.
   Records: `docs/archive/design/2026-09-09-session-context-panel/`,
   `docs/archive/specs/2026-09-10-session-context-backend-design.md`.
+- [x] 2026-09-10 chat-data — Resume browser filter chips: the Projects / Tags / Most recent row restyled to the app's filter pill with a real chevron, menus with square check boxes, counts and a footer Clear, the sort-bars flip chip, and a phone-width filter panel behind the search pill's filter button (youcoded#469, youcoded-dev#87; three decks, signed contract, 14/14 accepted; decks and reviews in docs/archive/design/2026-09-10-resume-filter-chips and docs/archive/reviews/)

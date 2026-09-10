@@ -2,6 +2,11 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] The files filter panel (Project View and the Files drawer) draws its own 12 px filter chip
+      instead of the shared 14 px filter pill, the size the design guide already rejected as the
+      smallest text in the app (noticed while building the Resume browser's phone filter panel, 2026-09-10)
+      `files-panel` `all` `confirmed` `checked 2026-09-10`
+
 - [ ] A lit filter chip is 2 px shorter than an idle one (the shared recipe drops the border when
       lit), so a picked chip sits visibly smaller than its neighbours in the same row — a design-guide
       question (G-14), not one screen's bug

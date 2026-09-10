@@ -13,7 +13,9 @@ when the deck is built, so leave them or delete them as you like.
 
 ## Where a deck lives, and what it is called
 
-A feature's decks sit in `docs/active/design/<date>-<feature>/`, named
+A feature's decks sit in `docs/active/design/<date>-<feature>/` **of the session's workspace
+worktree** (the path `workspace-start` returned — never the shared `youcoded-dev` checkout, whose
+files a session cannot commit; one session built four decks there before noticing, 2026-09-10), named
 `<feature>.<round>.json` — `.questions.json`, `.review.json`, `.review-2.json`,
 `.contract.json`. The built page, the answers and any rotated older answers land beside the
 spec. Answers files are committed (they are the record of Destin's decisions); `preview/`,
@@ -28,7 +30,7 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `out` | yes | the HTML file `build` writes, beside the spec |
 | `steps` | yes | the steps, in the order he reads them |
 | `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
-| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. **Paths resolve from where you run the command (the workspace root), not from the spec** — `docs/active/design/<feature>/runs/after`, not `runs/after` (two builds failed on that, 2026-09-09). A slide shows all of them unless it names its own (below) |
+| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. **Paths resolve from the spec's own folder** — write `runs/after` beside the spec; a workspace-root path such as `docs/active/design/<feature>/runs/after` is looked up UNDER the spec's folder and fails (measured 2026-09-10; a 2026-09-09 note said the opposite and cost one build). A slide shows all of them unless it names its own (below) |
 | `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
