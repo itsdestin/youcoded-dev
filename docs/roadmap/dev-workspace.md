@@ -3,6 +3,13 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
+      intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
+      in isolation immediately after — load-sensitive, not a regression from the remote-access
+      work that was running beside it. Likely a fixed sleep or an unawaited signal; see
+      `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
+      `n/a` `needs-verify` `checked 2026-09-09`
+
 - [ ] The contract deck's default No button ("No, something is missing") is clipped by the
       three-button row at 1440px — the label reads "o, something is missing". Seen 2026-09-09
       on the remote-access contract; worked around by overriding `no` in that spec. The real
