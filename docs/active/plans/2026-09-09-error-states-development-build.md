@@ -190,3 +190,30 @@ as your own, and do not let a standing red teach you to skip the check.
   actions, dialog actions full-width `w-full py-2.5` primary over secondary
   (`.claude/skills/ui-mockup/SKILL.md`, and Destin 2026-09-09).
 - `WB_PORT=<port>` repoints a capture plan; do not copy the plan to change its port.
+
+## Order decided — 2026-09-10
+
+Destin, after asking where the app-wide error work was: **"finish the screens, but we will
+continue on to do the rest of this work."**
+
+So: **unit A to completion, then unit B.** Unit B is not deferred and not optional — it is his
+goal 1 and the larger half of what he asked for. Do not close this branch, wrap up, or treat
+the feature as delivered when A lands.
+
+**Why A got the whole design stage, recorded so the next session does not repeat it:** the deck
+/ review-round process attaches to NEW screens. Goals 2 and 3 were new screens and consumed the
+design stage; goal 1 is existing screens made honest, which needs a thin contract and code, not
+deck rounds. Two days went into the smaller half of the ask.
+
+**Measured 2026-09-10, the size of unit B** (`youcoded/desktop/src/renderer`): 294 `.tsx` files,
+99 containing a `catch`, **7 using `<ErrorState>`** (14 call sites), 622 `catch` blocks total.
+The standard component is the exception, not the rule.
+
+A6 (widen `ui/states.tsx:90–108` so recoverable and reportable are independent) is the hinge
+between the two units: unit B is a migration onto that component, so A6 lands in unit A and
+unit B builds on it.
+
+Unit B opens on the three findings that state something false to the user, in this order:
+E-12 (backup says "Uploaded!" after `{success:false}`), E-11 (uninstall and update failures
+labelled "Failed to install"), remote-shim timeout (`:135–161` — a timed-out request stays
+queued and can execute after reconnect, so "nothing happened" is not true).
