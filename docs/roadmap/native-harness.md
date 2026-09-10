@@ -11,8 +11,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
       are written up with options and how other tools handle each one — deck ready to serve, nothing
       answered. Parked 2026-09-09 to finish the session-context panel first
-      `desktop` `parked` `checked 2026-09-09`
-      → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+      `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
 
 - [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
       you picked — its own test says so and has been failing on master since the feature shipped
