@@ -61,7 +61,7 @@
      "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('Manage tags')"
+   "expect": "js:!!document.querySelector('[role=option]')"
   },
   {
    "name": "resume-tags-picked",
@@ -86,7 +86,7 @@
      "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('Manage tags')"
+   "expect": "js:!!document.querySelector('[role=option]')"
   },
   {
    "name": "resume-sort-flipped",

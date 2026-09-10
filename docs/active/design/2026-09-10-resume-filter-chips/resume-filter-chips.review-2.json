@@ -1,0 +1,128 @@
+{
+  "title": "Resume browser chips — round 2: the sort glyph, and the phone-width filters",
+  "key": "resume-filter-chips-review",
+  "out": "resume-filter-chips.review-2.html",
+  "images": "images/resume-filter-chips.review-2",
+  "stage": "design",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs/round-2"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "sort-a": [
+      "sort-montage",
+      "a",
+      "470x106+0+0"
+    ],
+    "sort-b": [
+      "sort-montage",
+      "b",
+      "470x106+0+0"
+    ],
+    "sort-c": [
+      "sort-montage",
+      "c",
+      "470x106+0+0"
+    ],
+    "narrow-row": [
+      "resume-filters-narrow",
+      "resume-browser",
+      "390x150+0+90"
+    ],
+    "narrow-open": [
+      "resume-filters-narrow",
+      "resume-filters-open",
+      "390x520+0+90"
+    ],
+    "header": [
+      "resume-filters",
+      "resume-browser",
+      "470x100+485+240"
+    ],
+    "tags-menu-2": [
+      "resume-filters",
+      "resume-tags-open",
+      "640x190+400+288"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Resume Session",
+      "path": "Chips row → the third chip, at rest and after one tap",
+      "themes": [
+        "light"
+      ],
+      "headline": "Which sort chip should the row use? Each picture shows it at rest, then after one tap.",
+      "notice": "Whichever you pick keeps the one-tap flip you chose in round 1 and lights up while the order is oldest-first.",
+      "variants": [
+        {
+          "id": "two-way",
+          "label": "Two-way arrows",
+          "crop": "sort-a",
+          "summary": "The usual sort mark: an up arrow and a down arrow side by side. It stays still; the words say which way the list runs."
+        },
+        {
+          "id": "bars",
+          "label": "Sort bars",
+          "crop": "sort-b",
+          "summary": "Three bars with a down arrow. The bars run wide-to-narrow for newest first and narrow-to-wide for oldest first."
+        },
+        {
+          "id": "words",
+          "label": "Words only",
+          "crop": "sort-c",
+          "summary": "No mark at all. The chip is just Most recent or Oldest first, and lights up when flipped."
+        }
+      ]
+    },
+    {
+      "id": "S-8",
+      "surface": "Resume Session",
+      "path": "On a phone-width window → the search box",
+      "crop": "narrow-row",
+      "headline": "On a phone the three chips are gone; the filter button inside the search box holds them instead.",
+      "changed": "Below 640 px the row of chips is not shown. The search box becomes the search pill Project View and the Files drawer use, with the filter button docked at its right end and a count badge when a filter is on.",
+      "notice": "The list starts one row higher, and nothing scrolls sideways any more. Desktop width is unchanged: the old search box and the chips.",
+      "risk": "On a phone the search box is a rounded pill while on desktop it stays the squarer box you kept in round 1."
+    },
+    {
+      "id": "S-9",
+      "surface": "Resume Session",
+      "path": "On a phone-width window → tap the filter button",
+      "crop": "narrow-open",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          56,
+          146,
+          328,
+          340
+        ]
+      },
+      "headline": "The filter button opens one panel with Project, Tags and Order, the same shape as the files filter panel.",
+      "changed": "Project and Tags are rows of chips you can tick several of, each with its count; Order is a two-way switch, Most recent or Oldest first. Clear at the top resets the filters and leaves the order alone. Tag chips here are plain text with a count, where the desktop menu shows the coloured tag chip.",
+      "notice": "One tap to open, everything in one place, Escape or a tap outside closes it."
+    },
+    {
+      "id": "S-10",
+      "surface": "Resume Session",
+      "path": "Chips row → Tags",
+      "crop": "tags-menu-2",
+      "headline": "As asked: Manage tags… is gone from the Tags menu, leaving Clear alone in the footer.",
+      "changed": "The footer holds only Clear, like the Projects menu. Renaming and recolouring tags still lives in a conversation's Organize popover.",
+      "notice": "The two menus now have the same footer.",
+      "risk": "There is no longer a way into the tag manager from the filter row."
+    }
+  ]
+}
