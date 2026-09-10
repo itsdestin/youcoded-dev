@@ -11,8 +11,8 @@
 # harness checkpoint test on Windows in the app) was already red on master. Two to three
 # minutes each, and a session that skips it merges over a real regression one day.
 #
-# Read-only. Exits 0 when every failing test on the PR also fails on master's latest run
-# of that workflow, 1 when the PR has a failure master does not (or a job with no test
+# Read-only. Exits 0 when every failing test on the PR also fails in one of master's last five
+# completed runs of that workflow, 1 when the PR has a failure master does not (or a job with no test
 # names to compare — build/install breaks — which you read yourself). Needs `gh`.
 set -u
 pr="${1:?usage: ci-red-vs-master.sh <pr-number> [<repo-dir>]}"
@@ -34,16 +34,20 @@ while IFS=$'\t' read -r name state _ url; do
   [ "$state" = "fail" ] || continue
   run="${url##*/actions/runs/}"; run="${run%%/*}"
   wf=$(gh run view "$run" --json workflowName -q .workflowName)
-  # latest COMPLETED run: an in-progress one has no failed log yet and every PR failure would read as new
-  master=$(gh run list --branch master --workflow "$wf" --status completed --limit 1 --json databaseId -q '.[0].databaseId')
-  prfail=$(failing_tests "$run"); mfail=$(failing_tests "$master")
-  echo "== $name  (workflow: $wf; master run $master)"
+  # the last FIVE completed master runs, not one: an intermittent failure (Chrome not opening
+  # its debugging port on the runner, 2026-09-10) hits one master run in three, so a single
+  # comparison calls it "new" two times out of three. In-progress runs have no failed log yet.
+  masters=$(gh run list --branch master --workflow "$wf" --status completed --limit 5 --json databaseId -q '.[].databaseId')
+  prfail=$(failing_tests "$run"); mfail=""
+  for m in $masters; do mfail+=$(failing_tests "$m" | sed "s/$/\t(master run $m)/")$'\n'; done
+  echo "== $name  (workflow: $wf; compared with master runs: $(echo $masters | tr '\n' ' '))"
   if [ -z "$prfail" ]; then
     echo "   no test names in the failed log — a build/install failure; read it: $url"; new=1; continue
   fi
   while IFS= read -r t; do
     compared=$((compared+1))
-    if grep -qxF "$t" <<<"$mfail"; then echo "   also red on master: $t"
+    hit=$(grep -F "$t"$'\t' <<<"$mfail" | head -1 | sed -E 's/.*\t//')
+    if [ -n "$hit" ]; then echo "   also red on master $hit: $t"
     else echo "   NEW on this PR:     $t"; new=1; fi
   done <<<"$prfail"
 done < <(gh pr checks "$pr" 2>/dev/null)

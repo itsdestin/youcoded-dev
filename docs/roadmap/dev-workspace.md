@@ -3,6 +3,13 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
+      never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
+      pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
+      hour. Nothing about the code changed between the green and red runs, so it is the runner's
+      Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
+      is recognised, but the fix is a longer or retried launch in the perf-lab harness
+      `n/a` `needs-verify` `checked 2026-09-10`
 - [ ] Desktop CI's Windows leg is red on master (seen 2026-09-10 on three runs in a row) on two
       native-harness tests — "an unchanged attachment restores its bytes; a changed one
       invalidates the whole checkpoint" and "publishes references to exact transcript content
