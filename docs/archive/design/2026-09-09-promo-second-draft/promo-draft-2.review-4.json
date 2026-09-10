@@ -1,0 +1,70 @@
+{
+  "title": "The promo video, round four — the tail, the frost, the conversations scene, the chess board",
+  "key": "promo-draft-2",
+  "out": "promo-draft-2.review-4.html",
+  "images": "images/promo-draft-2.review-4",
+  "runs": {
+    "before": "docs/active/design/2026-09-09-promo-second-draft/runs/before",
+    "after": "docs/active/design/2026-09-09-promo-second-draft/runs/after"
+  },
+  "labels": { "before": "Before", "after": "Now" },
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "crops": {
+    "swoop-tail": ["promo", "swoop-tail", "1000x260+0+0"],
+    "conversations": ["promo", "conversations", "1920x540+0+0"],
+    "chess-board": ["promo", "chess-board", "960x600+0+0"]
+  },
+  "steps": [
+    {
+      "id": "A-3",
+      "surface": "The promo video",
+      "path": "Every line the mascot says",
+      "crop": "swoop-tail",
+      "runs": ["before", "after"],
+      "highlight": { "box": [26, 30, 22, 40] },
+      "headline": "The seam at the tail is gone and the glass is frostier, so the words sit on a calmer pane.",
+      "changed": "The seam was a second, thin white line drawn a pixel below the outline; it is removed. The frost went from a light blur to a heavy one and the pane is more opaque, so what is behind the bubble no longer shows through into the text.",
+      "measured": "Blur 30 px, was 18; pane 82 % opaque, was 66 %",
+      "notice": "One clean outline round the bubble and its tail; text stays readable over busy wallpaper and over the app's own text.",
+      "risk": "Less of the theme shows through the bubble than before."
+    },
+    {
+      "id": "A-4",
+      "surface": "The promo video",
+      "path": "Every conversation, findable: the Midnight scene near the end",
+      "crop": "conversations",
+      "runs": ["before", "after"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "The status line is up only while the session switcher is open, then one line covers tag, search and filter.",
+      "changed": "Three lines over three shots became two lines over two. The switcher now holds open for the whole status line and the line ends the frame the switcher closes; then Resume, the search for 'econ', Organize, the tag and the note run as one take under 'Tag, search, and filter your previous conversations.'",
+      "measured": "8.1 s for the scene, was 12 s; the film is 1:45",
+      "notice": "The status line and the switcher appear and leave together, which is what ties them.",
+      "risk": "The second take runs at 1.55 times speed, so the typing and the sheet move briskly."
+    },
+    {
+      "id": "A-5",
+      "surface": "The app: games panel",
+      "path": "Chess, in the side panel, in a short or zoomed window",
+      "crop": "chess-board",
+      "runs": ["before", "after"],
+      "highlight": { "box": [50, 12, 50, 50] },
+      "headline": "The chess board now shrinks to fit a short panel instead of losing its top ranks.",
+      "changed": "This is an app fix, not a film fix. The board used to take the panel's full width and stay square, so in a panel wider than it is tall the top ranks fell off the edge. It is now the largest square that fits the room, leaving the status line and the chat.",
+      "measured": "Ranks 8 to 5 were cut off at 135 % zoom",
+      "notice": "In a tall window nothing changes; in a short one the board is a little smaller and complete.",
+      "risk": "On a very short window the board gets small; it never drops below 220 px."
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "The promo video",
+      "path": "The whole film",
+      "headline": "Every line was re-checked as a still after the re-film; two stands moved, and the composer says 'Message your assistant'.",
+      "changed": "All scenes were re-filmed on today's master, so the input reads 'Message your assistant…'. The mascot's stand on the spreadsheet chip and on the prompt chips moved off the controls. The theme scene, the model picker and the phone scene were fixed for app changes since the first film.",
+      "notice": "No draft has been rendered this round. If the four steps above are right, say the word and I render the half-size draft; otherwise tell me what to move.",
+      "yes": "Render the draft",
+      "no": "Not yet"
+    }
+  ]
+}

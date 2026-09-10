@@ -9,7 +9,7 @@
 //
 // Usage: WB_PORT=5473 CDP_PORT=10320 node record.mjs <scene.json> <outBase>
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
@@ -69,6 +69,21 @@ const framesDir = mkdtempSync(join(tmpdir(), 'ui-frames-'));
 // every exit path (including process.exit(1) calls above) clears it.
 // KEEP_FRAMES=1 keeps them — the ffmpeg-failure path below is undiagnosable otherwise.
 process.on('exit', () => { if (process.env.KEEP_FRAMES === '1') { console.error(`frames kept: ${framesDir}`); return; } try { rmSync(framesDir, { recursive: true, force: true }); } catch { /* best effort */ } });
+// A scene that dies on a MISSING selector or a TIMEOUT keeps its LAST frame as <outBase>.fail.png:
+// the screen the scene was looking at when the element it wanted was not there. WHY (2026-09-09):
+// three promo scenes broke against app changes (a reworded tool line, a picker that lost its
+// field, a title that became a Rename control) and each cost a hand-made probe scene to see
+// what the app was showing instead — the frame was on disk the whole time and deleted on exit.
+process.on('unhandledRejection', (err) => {
+  try {
+    if (frames.length) {
+      const last = join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0')}.png`);
+      mkdirSync(dirname(outBase), { recursive: true }); copyFileSync(last, `${outBase}.fail.png`);
+      console.error(`[record] failed — the last frame is at ${outBase}.fail.png`);
+    }
+  } catch { /* best effort */ }
+  console.error(err); process.exit(1);
+});
 ws.addEventListener('message', (m) => {
   const d = JSON.parse(m.data);
   if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); }
