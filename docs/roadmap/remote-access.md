@@ -117,3 +117,36 @@ Filing test: reaching the app from another device — the protocol, the browser 
       another computer. Recovers on its own once the screen is reopened, or on Check again
       `input-bar` `android` `confirmed` `checked 2026-09-05`
 
+
+- [ ] An action whose answer never arrived is recorded but never shown. When a request is sent
+      over remote access and the reply is lost, the client now keeps the request instead of
+      claiming it failed, asks the host about it on reconnect, and announces the result on an
+      internal event — but nothing in the interface listens, so the person is told nothing
+      either way. Sending is safe (it never re-runs); it is the "we don't know whether that
+      happened" state that has no screen. The event and its reconciliation shipped with the
+      2026-09-09 secure-connection batch; the indicator on the affected card did not
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-access-code-review.md
+
+- [ ] The remote access password has no rules and no confirmation. "abc" is accepted, there is
+      no minimum length, no second box to type it again, and no way to reveal what you typed —
+      the only feedback is a tick while the field empties itself, so you cannot check what you
+      just set. It is the one secret standing between a paired device and the whole assistant.
+      Found by a beta tester setting remote access up from scratch, 2026-09-10
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] Removing a device has no "removed" message and no undo. The row simply disappears; the
+      removal is correct and immediate, but nothing confirms it happened and there is no way
+      back if the wrong row was tapped — the device has to be paired again from scratch
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] "Keep awake" never says what it does. No hint next to it, nothing about what happens when
+      the time runs out, and 4h is pre-selected without saying why — a person setting up remote
+      access has to guess whether this is the setting that keeps their phone able to reach the
+      computer. It is
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] Setup asks for three things one at a time with no sense of how many are left. "Install
+      Tailscale", then "Sign in", then "Set up" — each appears in the same spot after the last
+      one is done, so every time you think you have finished, a new demand appears. Needs a
+      deck: a step count changes an approved screen
+      `remote` `needs-verify` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-access-ux-review-2.md
