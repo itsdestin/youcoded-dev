@@ -159,9 +159,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       real phone before scoping
       `all` `needs-verify` `checked 2026-08-07` `performance`
 
-- [ ] On the touchscreen Z13, the desktop app's on-screen keyboard interactions misbehave (Destin,
-      2026-09-02; details to be gathered). Investigate together with the Android keyboard item
-      `input-bar` `desktop` `needs-verify` `checked 2026-09-02` `needs-repro`
+- [ ] On the touchscreen Z13, the app's touch accommodations — bigger tap targets, buttons that
+      otherwise only appear on hover — probably never switch on, because the app judges the machine
+      mouse-driven (found fixing the on-screen keyboard, 2026-09-10)
+      `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] Tapping a quick chip when the typing box already has text should offer a small menu —
       Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
