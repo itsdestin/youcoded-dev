@@ -1,0 +1,88 @@
+{
+  "title": "Resume browser chips — round 3: the phone filter panel, redone",
+  "key": "resume-filter-chips-review",
+  "out": "resume-filter-chips.review-3.html",
+  "images": "images/resume-filter-chips.review-3",
+  "stage": "design",
+  "runs": {
+    "before": "runs/round-2",
+    "after": "runs/round-3"
+  },
+  "labels": {
+    "before": "Round 2",
+    "after": "Round 3"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "narrow-open": [
+      "resume-filters-narrow",
+      "resume-filters-open",
+      "390x330+0+90"
+    ],
+    "narrow-projects": [
+      "resume-filters-narrow",
+      "resume-filters-projects-open",
+      "390x470+0+90"
+    ],
+    "sort-bars": [
+      "resume-filters",
+      "resume-sort-flipped",
+      "470x50+485+288"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-11",
+      "surface": "Resume Session",
+      "path": "On a phone-width window → tap the filter button",
+      "crop": "narrow-open",
+      "headline": "The phone filter panel now holds the same three chips as the desktop row: two dropdowns and the sort chip.",
+      "changed": "The chip rows for Project and Tags and the two-way Order switch are gone. In their place are the desktop Projects and Tags dropdown chips and the Most recent sort chip, wrapping onto a second line when they need to.",
+      "notice": "The controls behave exactly as they do on desktop: Projects and Tags open their menus, Most recent flips with one tap. Clear at the top empties both filters.",
+      "risk": "The panel is smaller than round 2's, so the list under it shows through sooner."
+    },
+    {
+      "id": "S-12",
+      "surface": "Resume Session",
+      "path": "On a phone-width window → filter button → Projects",
+      "crop": "narrow-projects",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          70,
+          120,
+          300,
+          330
+        ]
+      },
+      "headline": "A dropdown opened inside the phone panel is the same menu as on desktop, and the panel stays open behind it.",
+      "changed": "Tapping Projects or Tags inside the panel opens the menu under that chip; picking rows keeps both the menu and the panel open, and a tap outside closes them together.",
+      "notice": "Tick several projects, then tap Tags without anything closing on you. A long project list scrolls inside its menu."
+    },
+    {
+      "id": "S-13",
+      "surface": "Resume Session",
+      "path": "Chips row → Most recent, after one tap",
+      "crop": "sort-bars",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          232,
+          0,
+          200,
+          50
+        ]
+      },
+      "headline": "The sort chip carries the sort bars you picked, and the bars turn narrow-to-wide for oldest first.",
+      "changed": "Three bars with a down arrow replace the two-way arrows: wide-to-narrow for newest first, narrow-to-wide for oldest first.",
+      "notice": "Nothing else on the row changed."
+    }
+  ]
+}

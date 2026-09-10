@@ -40,7 +40,32 @@
      "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('Order')"
+   "expect": "js:!![...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))"
+  },
+  {
+   "name": "resume-filters-projects-open",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector('[aria-label^=\"Filter\"]')",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:!!document.querySelector('[role=option]')"
   },
   {
    "name": "resume-filters-picked",
@@ -61,11 +86,15 @@
      "settle": 500
     },
     {
-     "click": "js:document.querySelector('[role=dialog][aria-label=\"Filters\"] [role=checkbox]')",
+     "click": "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))",
+     "settle": 500
+    },
+    {
+     "click": "js:document.querySelector('[role=option]')",
      "settle": 700
     }
    ],
-   "expect": "js:document.body.textContent.includes('Order')"
+   "expect": "[role=dialog][aria-label='Filters']"
   },
   {
    "name": "resume-tags-open",
@@ -86,7 +115,7 @@
      "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('Order')"
+   "expect": "js:!![...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))"
   }
  ]
 }
