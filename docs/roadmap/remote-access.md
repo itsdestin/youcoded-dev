@@ -65,6 +65,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
       has not been timed on his phone. Fix shape: a small first download holding only sign-in
       and the connection code, with the app loading after the password is accepted. The 2.5 s
       of scripted waiting after sign-in is a separate, proven cost (below)
+      Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
+      after the milestone's batches 2 and 3
       `remote` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] Finish the remote-hydration work: a remote browser can land on a different session or
