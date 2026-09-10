@@ -13,6 +13,8 @@ A new session picks this up to investigate and resolve the eight remaining ways 
 
 Providers only give the cache discount (10x cheaper input on Anthropic, near-free on DeepSeek, cheaper on OpenAI) when the **start** of a request is byte-for-byte identical to a recent request. Anything that changes an early byte re-bills everything after it. YouCoded's native harness already gets the big things right — the system prompt is frozen for a session's life, tool order is stable, history is append-only in the common case — and PR #461 fixed the two ChatGPT-specific problems (dropped reasoning metadata every turn; the per-turn status rewrite, which master also retired in #456). What is left is below, ordered by what it costs the user.
 
+**Read next:** `docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md` — how Hermes, pi, Unsloth Studio, OpenCode, Claude Code, Codex, Cline, Roo, Goose and Crush handle each of the eight items, with verified provider docs and a recommended "best version" and sequence per item. It refines several fixes below (warm-prefix summary requests, OpenRouter `session_id` as a body field, roster-independent Task tool, per-lane TTL).
+
 Authority and history: `docs/archive/investigations/2026-08-17-cache-efficiency.md` (the original four-provider study, provider cache rules, the "stable-prefix playbook"), `docs/archive/specs/2026-09-08-chatgpt-cache-efficiency-design.md` (what shipped in #461 and its privacy constraints), `docs/roadmap/native-harness.md` → "Cache efficiency" (the open roadmap item this handoff serves). Destin's framing when he asked for this list: *"is there anywhere that users may be upset with us for wasting their money or otherwise breaking cache?"*
 
 ## Ground rules for the session
