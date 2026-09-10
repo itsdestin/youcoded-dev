@@ -1,5 +1,5 @@
 {
-  "title": "The new app icon — the purple mascot",
+  "title": "The new app icon — eyes and outline",
   "key": "app-icon-design",
   "out": "app-icon.design.html",
   "stage": "design",
@@ -8,49 +8,50 @@
     "today": "runs/today"
   },
   "crops": {
-    "m-pose-rest": ["icons", "m-pose-rest", "800x330+0+0"],
-    "m-pose-wave": ["icons", "m-pose-wave", "800x330+0+0"],
-    "m-pose-flap": ["icons", "m-pose-flap", "800x330+0+0"],
-    "m-pose-curious": ["icons", "m-pose-curious", "800x330+0+0"],
-    "m-style-soft": ["icons", "m-style-soft", "800x330+0+0"],
-    "m-style-sticker": ["icons", "m-style-sticker", "800x330+0+0"]
+    "eyes-today": ["icons", "r4-eyes-today", "800x330+0+0"],
+    "eyes-white": ["icons", "r4-eyes-white", "800x330+0+0"],
+    "eyes-pair": ["icons", "r4-eyes-pair", "800x330+0+0"],
+    "eyes-rim": ["icons", "r4-eyes-rim", "800x330+0+0"],
+    "outline-white": ["icons", "r4-outline-white", "800x330+0+0"],
+    "outline-pale": ["icons", "r4-outline-pale", "800x330+0+0"],
+    "outline-lilac": ["icons", "r4-outline-lilac", "800x330+0+0"],
+    "outline-deep": ["icons", "r4-outline-deep", "800x330+0+0"]
   },
   "steps": [
     {
       "id": "C-1",
       "surface": "The app's icon",
       "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
-      "headline": "Which pose should the purple mascot hold in the app icon?",
+      "headline": "Which eyes should the waving sticker mascot have?",
       "themes": ["light"],
-      "notice": "Every picture is the app's own mascot in its real pose, in plain purple with no theme, on the lavender tile. Each is shown big and at the sizes Windows really uses. Your installer pick, the purple strip with an arrow, gets rebuilt around whichever you choose.",
-      "risk": "At the smallest size (the tiny one) any mascot turns into a purple blob; that one size could use the simple robot outline instead.",
+      "notice": "All four are the waving sticker mascot, now a little smaller inside the tile, with a white outline. Every eye comes from the app's own mascot face kit, so it matches the mascot inside YouCoded.",
+      "risk": "The mascot rules forbid pale or white eyes on a coloured body, because they read as glowing holes, so none of these lighten the eye itself; they lighten what is in it or around it.",
       "variants": [
         {
-          "id": "rest",
-          "label": "Resting",
-          "crop": "m-pose-rest",
-          "summary": "Arms down, big friendly eyes and a small smile. The calmest and the easiest to read small."
+          "id": "today",
+          "label": "Round 3 eyes",
+          "crop": "eyes-today",
+          "summary": "What you saw last round, for comparison: dark eyes with small purple sparkles."
         },
         {
-          "id": "wave",
-          "label": "Waving",
-          "crop": "m-pose-wave",
-          "summary": "One arm raised in the wave the mascot does when you open the app.",
-          "risk": "The raised arm floats a little away from the body, the same as it does in the app."
+          "id": "white",
+          "label": "White sparkles",
+          "crop": "eyes-white",
+          "summary": "The same dark eyes with three bright white sparkles, so they look lit up."
         },
         {
-          "id": "flap",
-          "label": "Cheering",
-          "crop": "m-pose-flap",
-          "summary": "Both arms up with happy closed eyes. The most cheerful, and the widest shape.",
-          "risk": "Both arms float away from the body, so at small sizes it reads as three separate blocks."
+          "id": "pair",
+          "label": "Softer, big shine",
+          "crop": "eyes-pair",
+          "summary": "A softer, lighter purple-brown eye with one big white shine and one small one. Rounder and cuter; the look the cat mascots use.",
+          "risk": "The softer eye has less contrast against the purple body at the smallest sizes."
         },
         {
-          "id": "curious",
-          "label": "Curious",
-          "crop": "m-pose-curious",
-          "summary": "Arms down, one eyebrow raised and a small round mouth. Has the most personality at full size.",
-          "risk": "The eyebrow disappears below the biggest size."
+          "id": "rim",
+          "label": "Light ring",
+          "crop": "eyes-rim",
+          "summary": "Dark eyes with a thin lavender ring around each and the big white shine, so the eyes stand out from the body.",
+          "risk": "The ring can blur into the body below the biggest size."
         }
       ]
     },
@@ -58,22 +59,37 @@
       "id": "C-2",
       "surface": "The app's icon",
       "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
-      "headline": "Which mascot style should the app icon use?",
+      "headline": "Which outline colour should the sticker mascot have?",
       "themes": ["light"],
-      "notice": "Both are shown in the resting pose; the pose you pick above applies to either.",
+      "notice": "All four use the white-sparkle eyes; the eyes you pick above apply to any of them.",
+      "risk": "The sticker style's own rule keeps the outline white in every theme. A different colour here changes only the app icon, not the mascot inside themes.",
       "variants": [
         {
-          "id": "soft",
-          "label": "Soft 3D",
-          "crop": "m-style-soft",
-          "summary": "The app's default mascot: soft shading and a shine on the body, exactly as it appears inside YouCoded."
+          "id": "white",
+          "label": "White",
+          "crop": "outline-white",
+          "summary": "The sticker style as designed: a crisp white die-cut edge.",
+          "risk": "On the lavender tile the white edge is soft; it pops more on dark backgrounds."
         },
         {
-          "id": "sticker",
-          "label": "Sticker",
-          "crop": "m-style-sticker",
-          "summary": "The same mascot with a thin white die-cut border around every part. Stands out more against the lavender tile.",
-          "risk": "It is not the look the mascot has inside the app, where the default is Soft 3D."
+          "id": "pale",
+          "label": "Pale lavender",
+          "crop": "outline-pale",
+          "summary": "An off-white with a hint of lavender, so the edge sits into the tile instead of glowing.",
+          "risk": "The quietest of the four; the sticker look nearly disappears on the tile."
+        },
+        {
+          "id": "lilac",
+          "label": "Lilac",
+          "crop": "outline-lilac",
+          "summary": "A mid lilac between the tile and the body: a soft, clearly visible edge."
+        },
+        {
+          "id": "deep",
+          "label": "Deep purple",
+          "crop": "outline-deep",
+          "summary": "A dark purple edge, like an ink line. The strongest outline and the easiest to read at small sizes.",
+          "risk": "Reads more like a cartoon ink line than a sticker."
         }
       ]
     }
