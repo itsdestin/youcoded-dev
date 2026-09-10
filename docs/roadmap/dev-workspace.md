@@ -9,8 +9,13 @@ seen-on is always n/a here.
       after the test landed on master. It asserts an ordering between two queued writes
       (`expected [[20],[40]] to equal [[30],[40]]` — the first write's value, not the
       superseding one), so a scheduling race in the test rather than the queue is the
-      likeliest read. Nothing on the session-naming branch touches StepGuardRow
-      `desktop` `needs-verify` `checked 2026-09-09` `regression`
+      likeliest read. Nothing on the session-naming branch touches StepGuardRow.
+      SECOND occurrence 2026-09-09, a DIFFERENT test in the same file — "serializes rapid
+      commits and applies the latest intent after the in-flight write" — in a full suite run
+      on session/claude-auth-live-status, which touches no step-guard file at all; 3 of 3
+      isolated re-runs green. Two of the file's eight tests have now flaked in full runs and
+      only in full runs, which points at the suite's shared timers rather than either test
+      `desktop` `confirmed` `checked 2026-09-09` `regression`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
