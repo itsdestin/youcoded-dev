@@ -334,3 +334,49 @@ invented failure where real status would go. Both mistakes are the deck's, not t
   moved or updated. `importProject` MOVES a folder and is therefore not the path to use here.
 
 Open questions from this round: none. The design stage is closed.
+
+## Round 6 and the build — 2026-09-10
+
+**Round 6 deck** (`error-states.review-6.json`, 7 single-picture slides): the outcome
+states the approved screens never had. Design review F10 found that the approved
+components stopped at draft/review and at one handler-less button, so contract rows
+R10, R13 and R23 described moments with no surface at all.
+
+**R6-25 through R6-28 and R6-30 approved as shown.** Two notes:
+
+- **R6-24** — *"fine to just have 'setting up your development workspace' with a 'this
+  may take a while, you can close this tab and setup will continue in the background'
+  type of warning"*. The per-step feed is gone. The reassurance is only honest because
+  setup moved into the main process and the screen re-reads its status on open, so
+  closing really does leave it running — pinned by two tests.
+- **R6-29** — *"put these retry buttons at the bottom right, not the bottom left. in-line
+  with text where it makes sense. our ui design guide should prohibit single filled
+  buttons at the bottom left. buttons should either be full modal width or on the
+  righthand side."* Applied to `ErrorState` itself, so it fixes every error card in the
+  app, and written into the design guide as **G-28**.
+
+### What was built
+
+| Task | What changed | Contract |
+|---|---|---|
+| A6 | `ErrorState` widened: retry / report / diagnose are independent, and an error with no action or no text is refused by the TYPE | prerequisite for unit B |
+| A1 | The originating error reaches the ticket, from all five mount points; shown before it is sent | R11, R22 |
+| A2 | AI stays a separate choice; "Diagnose with Claude" opens on the review step with the disclosure expanded | R12, R17 |
+| A3 | Three honest submission outcomes; `browserOnly` for attachments; `shell.openExternal`; truncation disclosed | R13, R14, R23 |
+| A4 | `dev:setup-workspace` / `dev:setup-status` in main; never touches an existing folder; survives closing the dialog | R9, R10 |
+| A5 | Bridge rejections read as sentences, not channel names | E-14/E-15 |
+
+### Two decisions worth finding later
+
+**The workspace is NOT a sync space.** `sync-spaces/managed-roots.ts` turns every
+directory under `~/YouCoded/Projects` into a synced space and the transport stages with
+`git add -A`; this tree is 969 MB with five nested `.git` directories. Registering it
+there would push a gigabyte to the user's backup while the approved screen says nothing
+about backup. It goes to `~/YouCoded/Development`, outside both sync roots, and is
+registered as a saved folder — the same thing the legacy installer already did.
+
+**The ticket gate is still up, deliberately.** The legacy review screen carries *"Let
+Claude Try to Fix It"* — install the workspace, open a session, hand it the bug. The
+approved ticket design has no such action, so flipping that gate would delete a working
+feature no deck ever asked to remove. It is a question for the acceptance deck, not a
+silent change. The Contribute gate is gone and its legacy screen deleted.
