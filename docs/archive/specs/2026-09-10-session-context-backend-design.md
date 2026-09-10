@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 branch: session/context-truncation
 ---
 

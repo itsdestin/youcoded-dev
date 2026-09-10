@@ -1,6 +1,6 @@
 ---
 status: superseded
-superseded_by: docs/active/handoffs/2026-09-09-session-context-panel-handoff.md
+superseded_by: docs/archive/handoffs/2026-09-09-session-context-panel-handoff.md
 ---
 
 > Superseded 2026-09-09: the work was rebased onto master, reworded and restyled with Destin;

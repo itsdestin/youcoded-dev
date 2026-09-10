@@ -11,7 +11,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       finger cannot comfortably hit. Found 2026-09-09 by a context-free tester looking at the
       session-context panel; the defects belong to the shared renderer, so they affect every
       tool card (findings U18-U20 and U22)
-      `desktop` `confirmed` `checked 2026-09-09` → docs/active/reviews/2026-09-09-session-context-panel-ux-review-1.md
+      `desktop` `confirmed` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-context-panel-ux-review-1.md
 
 - [ ] A second window keeps showing the old default model or project folder until its own
       Settings panel is opened and closed

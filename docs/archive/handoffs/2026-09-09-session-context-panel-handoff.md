@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 supersedes: docs/archive/handoffs/2026-08-17-session-context-panel-handoff.md
 ---
 
@@ -28,7 +28,7 @@ left is Destin's call on Claude Code sessions, the two never-decked items, and t
 | Workbench | `YOUCODED_PORT_OFFSET=340 bash scripts/run-workbench.sh <abs path of the youcoded worktree>` → `http://127.0.0.1:5513/?mode=workbench` |
 | **The panel** | `desktop/src/renderer/components/SessionContextPopup.tsx` — the real component, not a mockup |
 | The strip | `desktop/src/renderer/components/SessionContextBanner.tsx` |
-| Decks + answers | `docs/active/design/2026-09-09-session-context-panel/` — rounds 3, 4, 5 all submitted |
+| Decks + answers | `docs/archive/design/2026-09-09-session-context-panel/` — rounds 3, 4, 5 all submitted |
 | **Contract** | `session-context-panel.contract.json` — 31 rows, `contract-check` holds, **NOT signed** |
 | Design lineage (mockups) | `desktop/src/renderer/dev/workbench/compare/registry.tsx`, surface `session-context`, rounds 1-5 |
 | Pre-rebase duplicates, safe to delete once this lands | branch `feat/context-truncation-notice`, worktree `worktrees/context-truncation` |
@@ -73,7 +73,7 @@ Four came from HIS OWN words, in chat rather than on a deck — decided, just no
 - **Details lost its border**, and with it its fill and radius.
 
 Three came from what the CODE turned out to do, not from anyone's decision. Reasons and
-measurements: `docs/active/specs/2026-09-10-session-context-backend-design.md`.
+measurements: `docs/archive/specs/2026-09-10-session-context-backend-design.md`.
 
 - **A skill card opens to its text** rather than showing it. R20 says a skill that fits shows
   its text; with 47 installed that is 47 open cards and 619 KB read to build the page. The card
@@ -88,7 +88,7 @@ measurements: `docs/active/specs/2026-09-10-session-context-backend-design.md`.
 `native:session-context`, with `native:session-context-text` answering the panel's on-demand
 read of one file. Five surfaces, pinned by `ipc-channels.test.ts`; `native.onSessionContext`
 is off the mock-only list. Design and the three surprises that shaped it:
-`docs/active/specs/2026-09-10-session-context-backend-design.md`.
+`docs/archive/specs/2026-09-10-session-context-backend-design.md`.
 
 **Claude Code chats — ANSWERED and built** (Destin, 2026-09-10: "reflect what we can reflect
 accurately. And then for the stuff that's less certain. We should reflect it as such.").
