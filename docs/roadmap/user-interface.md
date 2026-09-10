@@ -2,6 +2,11 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] A lit filter chip is 2 px shorter than an idle one (the shared recipe drops the border when
+      lit), so a picked chip sits visibly smaller than its neighbours in the same row — a design-guide
+      question (G-14), not one screen's bug
+      `all` `decision` `checked 2026-09-10`
+
 - [ ] A second window keeps showing the old default model or project folder until its own
       Settings panel is opened and closed
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-07`
