@@ -3,6 +3,14 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `use-provider-type.test.tsx` → "invalidation › is triggered by the ChatGPT card on a status
+      transition" failed once in a `verify.sh --full` run on session/cache-competitor-survey
+      (2026-09-10, `expected "vi.fn()" to be called at least once`, 1,224 ms) and passed 14/14 in
+      an isolated re-run. That branch changes no renderer file and no ChatGPT card code, so the
+      likeliest read is the same shape as the step-guard entry below: a timer-dependent
+      assertion under full-suite load
+      `desktop` `needs-verify` `checked 2026-09-10`
+
 - [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
       failed once in a full suite run and passed on the two full runs after it, plus three
       isolated runs and three paired with the naming settings suite. Seen 2026-09-09, hours
@@ -472,12 +480,6 @@ seen-on is always n/a here.
       own updater can tell a good download from a bad one. Verified against the 1.3.0-beta.72
       release listing
       `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
-- [ ] Android beta builds all claim to be version 1.2.4. The desktop test build stamps its own
-      version number into every beta; the Android one never got that, so its About screen shows
-      the last released number no matter how new the code is — a tester reporting a bug names a
-      version that says nothing about what they were running
-      `n/a` `confirmed` `checked 2026-09-03`
 
 - [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
       INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
