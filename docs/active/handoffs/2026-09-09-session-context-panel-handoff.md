@@ -54,24 +54,34 @@ Look, words and behaviour are settled. The contract's 31 rows are the authority;
 
 ## Remaining work, in order
 
-### 1. Three things built from notes, never seen on a deck
-The contract agent flagged both. They are in the code but not approved:
-- **What the System tab contains.** His note: "include both preset instructions and general
-  system instructions. i want to be fully transparent about what models load in with." Built as
-  five parts (identity / preset / environment / doctrine / small-model steering) from what
-  `prompt-assembly.ts` actually assembles. He has not seen it.
-- **The strip tidy-up** — "remove the checkmark. improve the button." Done; not seen.
+### 1. What the signed contract does NOT cover
 
-- **What the backend found, and what it changed on screen** (2026-09-10). Reading the harness
-  showed the design had assumed things the code does not do, and three deviations followed:
-  a skill's card now opens to its text rather than showing it (47 skills would otherwise be
-  47 open cards, and 619 KB to build them); a skill row says "would be shortened when used"
-  instead of claiming a cut that has not happened; and the amber state is driven by what was
-  ACTUALLY left out — including the big one, that a small model is never told its skills exist.
-  Reasons in `docs/active/specs/2026-09-10-session-context-backend-design.md`.
+Destin signed the 31 rows and chose to skip the code reviewer and the second UX tester run
+(2026-09-10: *"i think this is ready, we can skip the reviewers"*). That is his call and it is
+recorded. What it means for the record: **a contract row must trace to an answered deck step**
+(`review-cards.py contract-check` enforces it), so the seven things below are in the code and
+were not addable as rows. They are written here because that makes them findable; they are not
+signed.
 
-Show all three on the next deck. They can ride the acceptance deck rather than needing one of
-their own.
+Four came from HIS OWN words, in chat rather than on a deck — decided, just not sourced:
+
+- **The System tab's five parts** — "include both preset instructions and general system
+  instructions. i want to be fully transparent about what models load in with."
+- **The strip tidy-up** — "remove the checkmark. improve the button."
+- **The whole row is the button** — "i want the whole row thing to be a clickable button that
+  opens the popup." Forced Details to stop being a real control (a button cannot nest).
+- **Details lost its border**, and with it its fill and radius.
+
+Three came from what the CODE turned out to do, not from anyone's decision. Reasons and
+measurements: `docs/active/specs/2026-09-10-session-context-backend-design.md`.
+
+- **A skill card opens to its text** rather than showing it. R20 says a skill that fits shows
+  its text; with 47 installed that is 47 open cards and 619 KB read to build the page. The card
+  still owns its text — it waits to be asked. **This is the one that bends an approved row.**
+- **A skill row says "would be shortened when used"**, future tense, because skills are read
+  when they are USED. Claiming a cut that has not happened would be false.
+- **The amber state is driven by what was ACTUALLY left out** — the instruction file, dropped
+  add-ons, and the big one: a small model is never told its skills exist.
 
 ### 2. The backend — DONE (2026-09-10, commit `acab1255`)
 `NativeSessionHost.buildSessionContext` emitted from `wire()`, forwarded as
