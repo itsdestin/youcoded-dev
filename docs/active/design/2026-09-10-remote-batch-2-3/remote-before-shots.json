@@ -1,0 +1,76 @@
+{
+ "base": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote",
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "chat-reconnecting",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote",
+   "actions": [],
+   "expect": "[aria-label='Open menu']"
+  },
+  {
+   "name": "chat-incomplete",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote",
+   "actions": [],
+   "expect": "[aria-label='Open menu']"
+  },
+  {
+   "name": "files-list",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&remoteFiles=refused",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Projects\").test(b.textContent.trim()))",
+     "settle": 1000
+    },
+    {
+     "click": "[aria-label=Files]",
+     "settle": 1400
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('remote access')"
+  },
+  {
+   "name": "file-preview",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&remoteFiles=refused",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 1200
+    },
+    {
+     "hover": "textarea",
+     "settle": 400
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Session Files')"
+  },
+  {
+   "name": "file-too-large",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&remoteFiles=refused",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 1200
+    },
+    {
+     "hover": "textarea",
+     "settle": 400
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Session Files')"
+  }
+ ]
+}

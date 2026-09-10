@@ -1,0 +1,98 @@
+{
+ "base": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote",
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "chat-reconnecting",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&conversation=reconnecting",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Reconnecting to your computer')"
+  },
+  {
+   "name": "chat-incomplete",
+   "url": "http://127.0.0.1:5573/?mode=workbench&child=1&latency=150&scenario=default&connection=remote&conversation=incomplete",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('may be behind your computer')",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Refresh')"
+   ]
+  },
+  {
+   "name": "files-list",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Projects\").test(b.textContent.trim()))",
+     "settle": 1000
+    },
+    {
+     "click": "[aria-label=Files]",
+     "settle": 1400
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Project Files')"
+  },
+  {
+   "name": "file-preview",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 1200
+    },
+    {
+     "clickText": "scroll-perf-report.md",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Hide list']",
+     "settle": 1500
+    },
+    {
+     "hover": "textarea",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Download to this device']",
+   "measure": [
+    "[aria-label='Download to this device']"
+   ]
+  },
+  {
+   "name": "file-too-large",
+   "actions": [
+    {
+     "click": "[aria-label='Open menu']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>new RegExp('^'+\"Session Files\").test(b.textContent.trim()))",
+     "settle": 1200
+    },
+    {
+     "clickText": "annual-report.pdf",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Hide list']",
+     "settle": 1500
+    },
+    {
+     "hover": "textarea",
+     "settle": 400
+    }
+   ],
+   "expect": "js:document.body.textContent.includes('Too large to preview on a phone')",
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Download')"
+   ]
+  }
+ ]
+}
