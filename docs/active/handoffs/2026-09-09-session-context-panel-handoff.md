@@ -3,115 +3,133 @@ status: active
 supersedes: docs/archive/handoffs/2026-08-17-session-context-panel-handoff.md
 ---
 
-# Handoff: "What the assistant was given" panel — design approved, build next
+# Handoff: "What the assistant was given" — design done, panel built, backend next
 
-**START HERE** for the session-start context panel (the roadmap item in
+**START HERE** for the session-start context panel (roadmap item in
 `docs/roadmap/native-harness.md`: "When a small model's session has its project rules
 outlined, skills cut or MCP servers dropped … nothing on screen says so").
+
+Rewritten 2026-09-10. The previous version of this file described a design still in the
+workbench; that is no longer where it lives.
+
+## State in one line
+
+**The design is finished and signed off across five review rounds; the panel is now the real
+shipping component; nothing feeds it real data yet.**
 
 ## Where it lives
 
 | What | Where |
 |---|---|
-| App branch (rebased onto master 2026-09-09, pushed) | `youcoded` `session/context-truncation`, worktree `worktrees/sessions/context-truncation/youcoded` |
-| Workspace branch (decks, answers, this doc; pushed) | `youcoded-dev` `session/context-truncation`, worktree `worktrees/sessions/context-truncation` |
+| App branch (pushed) | `youcoded` `session/context-truncation`, worktree `worktrees/sessions/context-truncation/youcoded` |
+| Workspace branch (pushed) | `youcoded-dev` `session/context-truncation`, worktree `worktrees/sessions/context-truncation` |
 | Resume | `node scripts/workspace-start.mjs --session context-truncation youcoded` |
-| Workbench for this worktree | `YOUCODED_PORT_OFFSET=340 bash scripts/run-workbench.sh <abs path of the youcoded worktree>` → `http://127.0.0.1:5513/?mode=workbench` (the deck tool's own offset, so `serve --no-live` reuses it) |
-| The approved design (source of truth) | `desktop/src/renderer/dev/workbench/compare/registry.tsx` → `SfxTabbedStyled` (round 4 of surface `session-context`) |
-| Decks + answers | `docs/active/design/2026-09-09-session-context-panel/` — `review.json` (rebase check, unanswered, superseded), `review-2.json` (rewording, unanswered, superseded), **`review-3.json` + `.answers.json` (the decision)** |
-| Pre-rebase copies, safe to delete once this lands | branch `feat/context-truncation-notice`, worktree `worktrees/context-truncation` (identical work, 1,009 commits behind) |
+| Workbench | `YOUCODED_PORT_OFFSET=340 bash scripts/run-workbench.sh <abs path of the youcoded worktree>` → `http://127.0.0.1:5513/?mode=workbench` |
+| **The panel** | `desktop/src/renderer/components/SessionContextPopup.tsx` — the real component, not a mockup |
+| The strip | `desktop/src/renderer/components/SessionContextBanner.tsx` |
+| Decks + answers | `docs/active/design/2026-09-09-session-context-panel/` — rounds 3, 4, 5 all submitted |
+| **Contract** | `session-context-panel.contract.json` — 31 rows, `contract-check` holds, **NOT signed** |
+| Design lineage (mockups) | `desktop/src/renderer/dev/workbench/compare/registry.tsx`, surface `session-context`, rounds 1-5 |
+| Pre-rebase duplicates, safe to delete once this lands | branch `feat/context-truncation-notice`, worktree `worktrees/context-truncation` |
 
-The old branch and worktree were left alone on purpose: nothing was removed without
-Destin's word. Both carry nothing the new branch lacks.
+## What is decided (rounds 3, 4, 5 — all submitted, answers committed)
 
-## What was decided (the record is the answers file; this is the summary)
+Look, words and behaviour are settled. The contract's 31 rows are the authority; in brief:
 
-**Layout** — the tabbed panel (candidate B, 2026-08-17) stands. Five tabs, header, one
-pane at a time.
+- Built entirely from the app's dialog vocabulary — `Dialog size="panel" fill`, eyebrow
+  sections, `SettingRow` stacks, `Callout`, well-backed text. Never its own invention.
+- Title never says "context" — the app's other Context popup means how full the window is now.
+- Tabs FIRST (Overview / System / Project / Skills / Tools); the status card belongs to Overview.
+- Warning is one line ("Not everything fit") opening to the full sentence ending
+  "(see details below)" — true only because the card sits above the list it names.
+- Cut text is the app's red/green comparison ("i like the diff view"), with a line count per
+  side, inside ONE card per file or skill.
+- File text renders as markdown, heading sizes scaled down for a 420px panel.
+- Tools are full-width rows that open in place, each with a plain-English sentence.
+- **It never opens by itself.** The strip is the only way in and carries the amber state.
+- The strip shows even when nothing extra was given.
+- Open opens the file (via `useOpenFilepath`). No Assistant settings row, no footer.
+- Tabs scroll sideways when narrow.
 
-**Words (changes 1–12, Destin 2026-09-09: "content is fine")**
-1. Title "What the assistant was given" — never "context" (the app's Context popup means how
-   full the window is).
-2. Status pill → replaced in R4; see 14.
-3. First tab leads with the consequence: it may miss rules or skip steps.
-4. One tappable row per cut under WHAT WAS LEFT OUT; tapping jumps to that tab.
-5. Model/window rows moved out of the top (they came back as rows under THIS CHAT in 17).
-6. Tabs: Overview / YouCoded / Project / Skills / Tools ("Built-in" broke at its hyphen).
-7. Each tab opens with one line saying what that thing is.
-8. Cut-content switch reads "What it got | What was cut"; caption explains red and green lines.
-9. Per-item notes: "shortened to headings", "cut short".
-10. The unattached add-on shows on the Tools tab, in a warning callout.
-11. Footer copy → replaced in R4; see 18.
-12. The strip in the real chat (production `SessionContextBanner.tsx`, already edited):
-    "Started with this project's rules, 3 skills and 10 tools" / "This model's context window
-    is small, so some rules and skills were left out"; button says **Details**.
+## Remaining work, in order
 
-**Look (changes 13–20, deck 3 S-1: picked After)** — built only from the dialog vocabulary:
-13. `Dialog.tsx` header geometry (title `text-sm font-bold`, `text-3xs` subtitle, CloseButton,
-    hairline). Subtitle: "Its instructions, skills and tools for this chat."
-14. No pill, no model line. Trimmed → `Callout tone="warning"`; full → `bg-inset/50` card with a
-    green dot and one sentence (the "signed in" pattern).
-15. Eyebrow sections: the `h3 text-3xs font-medium text-fg-muted tracking-wider uppercase` recipe.
-16. Every row is `SettingRow variant="item"`, stacked `space-y-1.5`.
-17. THIS CHAT rows: Model · Context window ("How much it can hold at once") · Given, value right.
-18. No footer. MORE → `SettingRow` "Assistant settings — Change the model, or what the assistant
-    is given", `onClick` chevron (destination: the Assistant-settings panel).
-19. Code blocks: `bg-well rounded-lg border border-edge-dim text-2xs`.
-20. Got/cut switch is `SegmentedTabs variant="bare"`; "Open" beside a file is
-    `Button variant="secondary" size="sm"`.
+### 1. Two things built from notes, never seen on a deck
+The contract agent flagged both. They are in the code but not approved:
+- **What the System tab contains.** His note: "include both preset instructions and general
+  system instructions. i want to be fully transparent about what models load in with." Built as
+  five parts (identity / preset / environment / doctrine / small-model steering) from what
+  `prompt-assembly.ts` actually assembles. He has not seen it.
+- **The strip tidy-up** — "remove the checkmark. improve the button." Done; not seen.
 
-**Deck 3 note, applied (commit `93acee8a`)**: the warning banner is ONE sentence — "This
-model's context window is small (16k), so some rules and skills were cut and it may miss
-steps it would normally follow (see details below)." S-2 (green state): yes.
+Show both on the next deck. They can ride the acceptance deck rather than needing one of
+their own.
 
-**Dots** are `bg-green-500` / `bg-amber-500` — the app has no `status-ok/-warn` tokens
-despite the design guide naming them; `SettingsPanel.tsx` uses the same Tailwind colours.
-Touch matters: no `title=` tooltips carry information (Destin reviews on a touchscreen).
+### 2. The backend — the bulk of what is left
+Nothing supplies `SessionContext` today; the panel runs on workbench fixtures.
 
-## Verified on the rebased branch
+A session-start push carrying:
+- `fitProjectInstructions` result — `prompt-assembly.ts` currently discards `truncated`.
+- `fitInjection` per skill and rule (`harness-session.ts`, `native-session-host.ts`).
+- `HarnessSession.droppedMcpServers`.
+- `fullText` for the diff (CLAUDE.md / SKILL.md from disk).
+- **`systemPromptSections`** — the new field. `assembleSystemPrompt` already builds the prompt
+  from exactly these parts; the honest implementation returns them rather than re-splitting a
+  finished string.
 
-`npx tsc --noEmit` clean · eslint clean on every touched file ·
-`chat-reducer`, `workbench-fixture-actions`, `workbench-mock-contract` tests: 260 pass ·
-`node scripts/workbench-boot-check.mjs 5513`: all 16 routes mount. `bash scripts/verify.sh`
-has NOT been run yet — run it before claiming the build done.
+New channel on all four surfaces (`preload.ts`, `remote-shim.ts`, `ipc-handlers.ts`,
+`SessionService.kt`), pinned by `ipc-channels.test.ts`. Then delete the
+`native.onSessionContext` row from `mock-only.ts`.
 
-## Next steps, in order
+**Known trap:** the budget is fixed at session start and `setBinding` does NOT re-apply it, so
+a model switch mid-chat does not re-trim. The panel must not imply that it does. (Filed as a
+question in the parked truncation rework — see below.)
 
-1. **Contract deck.** Dispatch a fresh agent with `scripts/ui-review/contract-agent.md`, the
-   three deck specs + the answers file, branch `session/context-truncation`. Serve
-   `session-context-panel.contract.json`; Destin signs it before the build.
-2. **Make the approved panel the real one.** Rebuild `SessionContextPopup.tsx` as
-   `SfxTabbedStyled` inside the real `<Dialog size="panel" title subtitle>` (the mockup's
-   header IS Dialog's header — drop the hand-copy). Keep the once-per-session auto-open latch
-   and the strip in `ChatView.tsx`. Then delete `SfxTabbed`/`SfxTabbedClear`/`SfxCardAltA`
-   from the registry or leave them as lineage — Destin's call; the compare rounds' notes are
-   the design history either way.
-3. **Backend.** A session-start push carrying `SessionContext` (type in `chat-types.ts`):
-   `fitProjectInstructions` result (`prompt-assembly.ts` currently discards `truncated`),
-   `fitInjection` per skill/rule (`harness-session.ts`, `native-session-host.ts`),
-   `HarnessSession.droppedMcpServers`, and `fullText` (CLAUDE.md / SKILL.md on disk) for the
-   diff. New channel on all four surfaces (`preload.ts`, `remote-shim.ts`, `ipc-handlers.ts`,
-   `SessionService.kt`) pinned by `ipc-channels.test.ts`; then delete the
-   `native.onSessionContext` row from `mock-only.ts`. The budget is fixed at session start and
-   `setBinding` does not re-apply it — a model switch mid-chat does not re-trim, and the panel
-   must not imply it does. Survives resume (the prompt is rebuilt on resume).
-4. **Wire the two dead spots**: "Open" (the `FilepathToken` open action) and the Assistant
-   settings row (deep-link to the Assistant-settings panel when it exists; until then the row
-   can open Settings).
-5. **Reviews**: UX tester run 2 + code reviewer in parallel, triage, grader, acceptance deck,
-   `bash scripts/close-out.sh session/context-truncation`. Merge only on Destin's word.
-6. **After landing**: archive this handoff and the design folder's lifecycle docs, close the
-   roadmap item into `docs/roadmap/shipped.md`, remove `feat/context-truncation-notice` +
-   `worktrees/context-truncation` + the session worktrees, stop the workbench.
+### 3. Android parity
+The React panel is shared, so it comes along, but `SessionService.kt` needs the channel.
+Nothing about Android has been checked. `JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+ANDROID_HOME=$HOME/.android-sdk ./gradlew test -x bundleWebUi` from `youcoded/`.
 
-## Things learned this session (not yet filed anywhere else)
+### 4. Reviews and close-out
+Code reviewer + UX tester run 2 in parallel (`scripts/ui-review/{code-reviewer,ux-tester}.md`),
+triage every finding line, accepted ones become `review:` contract rows, then a fresh grader
+writes `session-context-panel.contract.verdicts.json`, then the acceptance deck, then
+`bash scripts/close-out.sh session/context-truncation`. **Destin signs the contract before the
+build is called done** — it is unsigned today.
 
-- `git cherry-pick` of the 2026-08-26 rescue commit onto master conflicted in six files; every
-  conflict was additive (keep both sides). The compare registry was easiest rebuilt from
-  master + the commit's own patch (`patch --fuzz=3`) with the surface entry re-inserted by
-  hand at the end of `ALL_SURFACES`.
-- `workspace-start` did NOT provision `node_modules` for the new worktree despite CLAUDE.md
-  saying it does (`deps:` line absent). `cp -al youcoded/desktop/node_modules <worktree>/desktop/`
-  took half a second and matched the lock file. Worth a look in `scripts/workspace-start.mjs`.
-- `SegmentedTabs variant="contained"` splits width evenly with `flex-1`, so five tabs at
-  `panel` width clip or hyphen-break any label over ~8 characters.
+### 5. After it lands
+Archive this handoff and the design folder, close the roadmap item into `docs/roadmap/shipped.md`,
+delete `feat/context-truncation-notice` + `worktrees/context-truncation` + the session worktrees,
+stop the workbench on 5513.
+
+### Decide at some point
+The `Sfx*` mockups (rounds 1-5) still sit in `compare/registry.tsx`. Keep as design lineage or
+delete now that the real component exists — Destin's call, no urgency.
+
+## Verified state
+
+`bash scripts/verify.sh <youcoded worktree>` — **green** (types, related tests + 44
+source-scanning guards, knip, lint, ast-grep). All 16 workbench routes mount. Probed in the
+running app: the panel does not auto-open, and Details opens it.
+
+## Not part of this feature (filed, do not chase here)
+
+- `docs/roadmap/native-harness.md` — the Assistant-settings step guard may save the OLD number;
+  its own test has failed on master since 2026-09-08.
+- `docs/roadmap/user-interface.md` — the shared before/after diff renderer fails the app's own
+  contrast minimum in the light theme, breaks words mid-line, and ends on a sliced half-line.
+  Affects every tool card, not just this panel.
+- `docs/roadmap/native-harness.md` — the small-model truncation rework, parked, with a
+  ready-to-serve seven-question deck. Investigation:
+  `docs/active/investigations/2026-09-09-small-model-context-truncation.md`. Three correctness
+  fixes from it are already merged into this branch (a cut skill names its file, cuts land on a
+  line boundary, the Skill tool respects the session budget).
+
+## Lessons worth keeping
+
+- A component mounted with `open={false}` still runs its hooks. Putting `useOpenFilepath` at the
+  top of the panel reached into artifact context on every ChatView render and failed eight test
+  files. The outer component now returns before any hook exists.
+- `verify.sh` had never been run on this branch until 2026-09-10 and found three guard failures
+  in a single run, two of them ours. Run it before believing a UI change is done.
+- The context-free UX tester found 31 things in one pass, including a dead end (expanding cut
+  text pushed the controls off an unscrollable window) that five design rounds had missed.
