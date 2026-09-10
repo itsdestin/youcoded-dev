@@ -63,6 +63,10 @@ if (!argv.length || argv.some((a) => HELP.test(a))) {
 }
 
 // ── arguments ────────────────────────────────────────────────────────────────
+// What counts as "asking how it looks". Deliberately broad: a false warning
+// costs three lines of stderr, a missed one cost a session.
+const PAINT_QUERY = /getComputedStyle|backgroundColor|\bcolor\b|currentColor|\.style\b/;
+
 const opts = { sizes: [], evals: [], wait: null, settle: 400, shot: null, json: false, failOnError: false, keepGoing: false };
 let url = null;
 for (let i = 0; i < argv.length; i++) {
@@ -173,6 +177,17 @@ for (const size of opts.sizes) {
   await sleep(opts.settle);
 
   const evals = [];
+  // Headless Chrome does not settle style recalculation on its own, so a query
+  // about how something LOOKS right after it changed reads back the previous
+  // state — stably, with the screenshot agreeing, which is what makes it
+  // convincing. That cost most of a session on 2026-09-10: a tab strip was filed
+  // as an app bug and the app was fine. The header explains it; this says it at
+  // the moment somebody is about to be misled.
+  if (opts.evals.some((e) => PAINT_QUERY.test(e))) {
+    console.error('ui-probe: WARNING — this asks for painted state (colour/style). Headless Chrome');
+    console.error('  reports the PREVIOUS value for anything that just changed. Structure, text and');
+    console.error('  geometry are trustworthy; confirm colour in a dev instance (scripts/run-dev.sh).');
+  }
   for (const expr of opts.evals) {
     try { evals.push({ expr, value: await evaluate(expr) }); }
     catch (e) { evals.push({ expr, error: String(e.message || e) }); }

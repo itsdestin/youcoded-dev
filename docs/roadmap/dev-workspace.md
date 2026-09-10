@@ -607,3 +607,14 @@ seen-on is always n/a here.
       message was rewritten to describe the feature for Destin. Matching the commit rather than the
       words would fix it; so would always keeping the branch name in the message
       `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] `run-dev.sh --offset N` fails with a bare Vite "Port 5233 is already in use" when the offset
+      collides with another session's dev instance — after the whole launch sequence has run, and
+      without saying that a dev instance is what owns it or which offset is free. Hit 2026-09-10:
+      picked `--offset 60`, which another session's `remote-mesh-roadmap` instance already held.
+      With four-plus concurrent session worktrees on this machine this is the normal case, not the
+      rare one, and CLAUDE.md's "concurrent instances also need distinct --offset and --profile"
+      cannot help — the rule was followed, the guess was just taken. A preflight that checks the
+      three ports the offset resolves to, names the worktree holding one, and suggests the next
+      free offset would turn a cryptic late failure into a one-line answer
+      `n/a` `confirmed` `checked 2026-09-10`

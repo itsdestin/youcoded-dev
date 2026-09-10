@@ -83,3 +83,22 @@ test('it leaves no scratch profile behind', () => {
   const after = readdirSync(tmpdir()).filter((d) => d.startsWith('ui-probe-')).length;
   assert.ok(after <= before, `left ${after - before} profile(s) behind`);
 });
+
+// Headless Chrome reports the PREVIOUS painted value for anything that just
+// changed — stably, with the screenshot agreeing, which is exactly what makes it
+// convincing. On 2026-09-10 that got a tab strip filed as an app bug; the app was
+// fine. The header comment explains it, but a header is read once and this is
+// read every time, so the warning fires at the moment somebody is about to be
+// misled. If it ever stops firing, this fails.
+test('asking about paint prints the warning that it may be stale', () => {
+  const r = run('--eval', 'getComputedStyle(document.body).backgroundColor');
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stderr, /painted state/, 'no stale-paint warning on a getComputedStyle query');
+  assert.match(r.stdout, /rgb/, 'the warning must not replace the answer');
+});
+
+test('a structural query is NOT warned about — a warning on everything is a warning on nothing', () => {
+  const r = run('--eval', 'document.getElementById("c").textContent');
+  assert.equal(r.status, 0, r.stderr);
+  assert.doesNotMatch(r.stderr, /painted state/);
+});
