@@ -68,17 +68,45 @@ export function fitBox(text: string, fontFamily: string, maxW: number): { width:
 // the box); a bubble on the other side mirrors the glass and the outline, never the text. The
 // box spans x = TAIL..w, y = 0..h; the tail reaches x = 0 at the box's vertical centre.
 export const TAIL_OF: Record<Shape, number> = { classic: 0, wedge: 18, swoop: 22, nub: 12 };
+/**
+ * Where the tail meets the box's left edge, at height y. On a short bubble the corner arcs
+ * reach past the tail's attachment points, so the point sits ON the arc (and the arc is cut
+ * there), not on a straight edge that no longer exists at that height.
+ *
+ * WHY (round four, 2026-09-09): the first one-path shapes drew the full corner arc up to
+ * y = h − r and then a straight line back DOWN to the tail — on a one-line bubble (h = 40,
+ * r = 19) that is a 13 px stub running through the tail, which Destin saw as "a visible gap
+ * between the swoop element and the main bubble" on three decks running.
+ * Returns the point and the unit tangent of the path's travel (up the left edge) there.
+ */
+function attach(y: number, x0: number, h: number, r: number): { x: number; y: number; tx: number; ty: number; onArc: boolean } {
+  const lowerArc = y > h - r, upperArc = y < r;
+  if (!lowerArc && !upperArc) return { x: x0, y, tx: 0, ty: -1, onArc: false };
+  const cx = x0 + r, cy = lowerArc ? h - r : r;
+  const dy = y - cy;
+  const x = cx - Math.sqrt(Math.max(0, r * r - dy * dy));
+  // the tangent of a clockwise-drawn corner, travelling up the left side: perpendicular to the radius
+  return { x, y, tx: -dy / r, ty: (x - cx) / r, onArc: true };
+}
 export function shapePath(shape: Shape, w: number, h: number): string {
   const x0 = TAIL_OF[shape], cy = h / 2;
   const r = Math.min(shape === 'wedge' ? 14 : 22, h / 2 - 1);
-  const A = (x: number, y: number) => `A ${r} ${r} 0 0 1 ${x} ${y}`;
-  // clockwise from the top-left corner, the tail cut into the left edge on the way back up
-  const tail = shape === 'wedge' ? `L ${x0} ${cy + 10} L 0 ${cy} L ${x0} ${cy - 10}`
-    // swoop: the lower edge bulges out and down to the tip, the upper edge comes back nearly straight
-    // (the first cut curled the upper edge INTO the box and left a notch at the join — Destin: "looks a bit broken")
-    : shape === 'swoop' ? `L ${x0} ${cy + 16} Q ${x0 * 0.28} ${cy + 17} 0 ${cy + 4} Q ${x0 * 0.45} ${cy + 1} ${x0} ${cy - 4}`
-    : `L ${x0} ${cy + 8} C ${x0 - 13} ${cy + 8} ${x0 - 13} ${cy - 8} ${x0} ${cy - 8}`;
-  return `M ${x0 + r} 0 L ${w - r} 0 ${A(w, r)} L ${w} ${h - r} ${A(w - r, h)} L ${x0 + r} ${h} ${A(x0, h - r)} ${tail} L ${x0} ${r} ${A(x0 + r, 0)} Z`;
+  const A = (x: number, y: number) => `A ${r} ${r} 0 0 1 ${f(x)} ${f(y)}`;
+  const f = (n: number) => Math.round(n * 100) / 100;
+  const half = shape === 'wedge' ? 10 : shape === 'nub' ? 8 : 11;   // the tail's reach above/below the centre line
+  const P1 = attach(cy + half + (shape === 'swoop' ? 3 : 0), x0, h, r);   // lower attachment (the swoop hangs a little low)
+  const P2 = attach(cy - half + (shape === 'swoop' ? 3 : 0), x0, h, r);   // upper attachment
+  const tip = shape === 'swoop' ? { x: 0, y: cy + 3 } : { x: 0, y: cy };
+  const tail = shape === 'wedge' ? `L ${f(P1.x)} ${f(P1.y)} L 0 ${f(tip.y)} L ${f(P2.x)} ${f(P2.y)}`
+    : shape === 'swoop'
+      // the lower edge leaves along the edge's own tangent and sweeps out to the tip; the upper edge
+      // comes back and arrives along the tangent, so neither join has a corner
+      ? `L ${f(P1.x)} ${f(P1.y)} C ${f(P1.x + P1.tx * 7)} ${f(P1.y + P1.ty * 7)} ${f(x0 * 0.35)} ${f(tip.y + 12)} 0 ${f(tip.y)} C ${f(x0 * 0.45)} ${f(cy)} ${f(P2.x - P2.tx * 6)} ${f(P2.y - P2.ty * 6)} ${f(P2.x)} ${f(P2.y)}`
+      : `L ${f(P1.x)} ${f(P1.y)} C ${f(P1.x - 13)} ${f(P1.y)} ${f(P2.x - 13)} ${f(P2.y)} ${f(P2.x)} ${f(P2.y)}`;
+  // clockwise from the top-left corner; the left side is drawn bottom-up with the tail cut into it
+  const bottomLeft = P1.onArc ? '' : `${A(x0, h - r)} `;
+  const topLeft = P2.onArc ? A(x0 + r, 0) : `L ${x0} ${f(r)} ${A(x0 + r, 0)}`;
+  return `M ${f(x0 + r)} 0 L ${f(w - r)} 0 ${A(w, r)} L ${w} ${f(h - r)} ${A(w - r, h)} L ${f(x0 + r)} ${h} ${bottomLeft}${P1.onArc ? A(P1.x, P1.y).replace(/^L /, '') + ' ' : ''}${tail} ${topLeft} Z`;
 }
 
 /** The box, ink, tail and shadow of each look, for a theme. */
