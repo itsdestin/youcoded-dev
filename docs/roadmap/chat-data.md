@@ -35,6 +35,11 @@ produced and the panel that shows them (files).
       apart and the Most recent / Oldest first flip looks like it did nothing
       `resume-browser` `all` `confirmed` `checked 2026-09-10`
 
+- [ ] In the Resume browser a second press of Escape can fall through to the chat instead of
+      closing the browser: the layered Escape handling removes its entry after the first press and
+      nothing puts it back (code review, 2026-09-10)
+      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
+
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
