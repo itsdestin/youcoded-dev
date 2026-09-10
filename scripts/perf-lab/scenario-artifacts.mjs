@@ -450,8 +450,21 @@ export async function installArtifactHelpers(cdp) {
        * CodeEditorView (:157) and MarkdownView (:48) both stamp with the
        * artifact's own path prop — so it proves WHICH file is mounted, not just
        * that something is.
+       *
+       * withTail DEFAULTS OFF, and the polling loop must leave it off.
+       * (No backticks in this comment — it lives inside a template literal.)
+       * WHY (2026-09-10): the tail reads innerText, which forces a synchronous
+       * layout of the whole pane. waitForViewer called this every 50 ms while
+       * timing an open, so the probe reflowed the very document it was timing —
+       * and the more there was to lay out, the more it charged. Measured with
+       * scripts/perf-lab/profile-open.mjs, whose poll touches no text: opening
+       * the 3.5 KB markdown fixture is 93 ms, against the 570 ms this reported.
+       * That gap was read as a Markdown-renderer problem and three fixes were
+       * filed against a renderer that turns the same file into a page in 30 ms.
+       * Keep the tail for FAILURE messages, where a reflow costs nothing and
+       * the app's own words are worth having.
        */
-      viewerState: () => {
+      viewerState: (withTail) => {
         const c = contentPane();
         const viewer = c ? $('[data-artifact-viewer]', c) : null;
         const cm = c ? $('.cm-content', c) : null;
@@ -474,7 +487,8 @@ export async function installArtifactHelpers(cdp) {
           // Tail of the pane's text, so a failure can quote the app's OWN error
           // copy (ActiveArtifactView renders read errors and save failures
           // inline, :500 and :544-551) instead of a rig-invented guess.
-          tail: c ? c.innerText.slice(-240) : '',
+          // Only on request — innerText forces layout; see the note above.
+          tail: (withTail && c) ? c.innerText.slice(-240) : '',
         };
       },
 
@@ -835,10 +849,14 @@ async function waitForViewer(cdp, pred, { timeoutMs = 30000, everyMs = 50 } = {}
   const t0 = Date.now();
   let last = null;
   while (Date.now() - t0 < timeoutMs) {
-    last = await cdp.evaluate(`window.__perfArt.viewerState()`);
+    // No tail while polling: reading it forces a layout of the pane, and this
+    // loop is what times an open. See viewerState()'s note.
+    last = await cdp.evaluate(`window.__perfArt.viewerState(false)`);
     if (pred(last)) return { ok: true, ms: Date.now() - t0, state: last };
     await sleep(everyMs);
   }
+  // Timed out — NOW the app's own words are worth a reflow.
+  try { last = await cdp.evaluate(`window.__perfArt.viewerState(true)`); } catch { /* keep the last good read */ }
   return { ok: false, ms: Date.now() - t0, state: last };
 }
 
@@ -1072,7 +1090,7 @@ export async function runArtifactScenario(app, fixture, {
         try {
           await waitFor(cdp, `window.__perfArt.html.state.loads.length > ${loadsBefore}`, { timeoutMs: 60000, everyMs: 25 });
         } catch (err) {
-          const st = await cdp.evaluate(`window.__perfArt.viewerState()`);
+          const st = await cdp.evaluate(`window.__perfArt.viewerState(true)`);
           throw new Error(
             `artifacts: the HTML preview never fired a load event for ${f.name} within 60s (${err.message}). ` +
             `The pane reports hasFrame=${st?.hasFrame} frameSrcLen=${st?.frameSrcLen}` +
@@ -1247,7 +1265,7 @@ export async function runArtifactScenario(app, fixture, {
 
         const armed = await cdp.evaluate(`window.__perfArt.keys.arm('.artifact-content-pane .cm-content')`);
         if (!armed.ok) throw new Error(`artifacts: could not arm the keystroke meter — ${armed.reason}`);
-        const lenBefore = (await cdp.evaluate(`window.__perfArt.viewerState()`)).cmTextLen;
+        const lenBefore = (await cdp.evaluate(`window.__perfArt.viewerState(false)`)).cmTextLen;
 
         // Only a-z and space, so no keystroke needs a modifier and none of them
         // can open a bracket pair or trigger auto-indent — the measurement is

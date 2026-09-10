@@ -103,16 +103,23 @@ export function strandedWorktrees(root, { now = Date.now(), idleHours = 24 } = {
         .split('\0').map(l => l.slice(3)).filter(Boolean);
     } catch { continue; }
 
-    // Unpushed = commits with no copy on a remote. A branch with an upstream compares
-    // against it; one without has never been pushed at all, so every commit past the
-    // default branch is local-only.
+    // Unpushed = commits no REMOTE REF can reach. `--not --remotes` asks exactly
+    // that, of every remote-tracking ref at once.
+    //
+    // WHY not the upstream, and why not origin/master (2026-09-10): both were the
+    // old test, and both lie in the same direction — they report backed-up work as
+    // lost. `git push origin <branch>` without `-u` pushes everything and sets NO
+    // upstream, so the fallback measured "commits past master" on a branch that was
+    // fully on the server. Measured that day: 77 branches across three repos looked
+    // unpushed, every one already on the server byte-identical; one of them sat 7
+    // commits past master and would have been reported as 7 lost commits. A check
+    // that cries wolf is worse than none — real stranded work is invisible inside
+    // dozens of false alarms, which is the failure this check exists to prevent.
     let unpushed = 0;
-    for (const range of ['@{upstream}..HEAD', 'origin/master..HEAD']) {
-      try {
-        const n = git(wt, 'rev-list', '--count', range);
-        if (/^\d+$/.test(n)) { unpushed = Number(n); break; }
-      } catch { /* no upstream, or no origin/master — try the next range */ }
-    }
+    try {
+      const n = git(wt, 'rev-list', '--count', 'HEAD', '--not', '--remotes');
+      if (/^\d+$/.test(n)) unpushed = Number(n);
+    } catch { /* unborn branch, or no remote configured — nothing countable */ }
     if (!dirty.length && !unpushed) continue;
 
     let newest = 0;

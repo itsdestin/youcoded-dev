@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: Android SessionService emits layoutInsets on every React layout report, but nothing collects it — delete or wire up?
 ---
+
+> **Resolved.** Deleted 2026-09-10 (youcoded#468): the flow, its data class and the React layout-update sender are gone.
 
 # Android `layoutInsets` flow is emitted into but never collected
 

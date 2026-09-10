@@ -131,15 +131,35 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
             # guard above is not a promise that no other git call can ever fail.
             wt_dirty=$(git -C "$wt_path" status --porcelain 2>/dev/null | wc -l | tr -d ' ' || echo 0)
             wt_ahead=$(git -C "$wt_path" rev-list --count "$repo_base..HEAD" 2>/dev/null || echo "?")
+            # AHEAD IS NOT UNPUSHED, and conflating them is how this list cried
+            # wolf. `git push origin <branch>` without -u backs the work up and
+            # sets no upstream, so a fully-pushed branch still reads N ahead of
+            # master. Measured 2026-09-10: 77 branches across three repos looked
+            # local-only and every one was already on the server; one sat 7
+            # commits past master. Ask the only question worth asking — can any
+            # remote reach these commits? — and keep `ahead` for what it is
+            # actually good for, spotting a worktree that is done with.
+            wt_unpushed=$(git -C "$wt_path" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)
             if [[ "$wt_ahead" == "?" ]]; then
-                wt_note="no upstream to compare against"
+                wt_note="cannot compare against $repo_base"
             elif [[ "$wt_ahead" == "0" ]]; then
                 wt_note="nothing ahead of $repo_base; merged or empty, candidate for cleanup"
             else
                 wt_note="${wt_ahead} commit(s) ahead"
             fi
             [[ "$wt_dirty" != "0" ]] && wt_note="${wt_note}, ${wt_dirty} uncommitted file(s)"
-            echo "  - $(basename "$wt_path") [$repo: ${wt_branch:-detached}] — ${wt_note}"
+            # The two states where work can actually be LOST get a marker, so they
+            # do not read as one more row in a list of fourteen. Uncommitted counts:
+            # a ref sweep is structurally blind to a working tree, and a full day of
+            # finished work was lost that way (2026-09-01).
+            wt_mark="-"
+            if [[ "$wt_unpushed" != "0" ]]; then
+                wt_note="${wt_note}; ⚠ ${wt_unpushed} commit(s) EXIST ONLY HERE — push"
+                wt_mark="⚠"
+            elif [[ "$wt_dirty" != "0" ]]; then
+                wt_mark="⚠"
+            fi
+            echo "  $wt_mark $(basename "$wt_path") [$repo: ${wt_branch:-detached}] — ${wt_note}"
             WT_ANY=1
         done < <(git -C "$WORKSPACE/$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
     done

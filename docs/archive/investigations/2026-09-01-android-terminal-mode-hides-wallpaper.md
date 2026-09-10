@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: Android terminal mode hides the wallpaper for a native terminal that no longer exists
 ---
+
+> **Resolved.** No longer reproduces (roadmap check 2026-09-02, terminal opacity floor P-20.2); closed with the Android parity audit consolidation 2026-09-10.
 
 # Android terminal mode hides the wallpaper to reveal a native terminal that no longer exists
 
