@@ -14,7 +14,7 @@
       "path": "Chat → the strip at the top of the conversation → Details",
       "headline": "Read every word here and tap through the five tabs. Keep the wording exactly as it stands?",
       "changed": "Nothing has moved since you picked this look. This asks about the WORDS on it: the title, the warning sentence, the list under What was left out and its two-word notes, the five tab names, the line that opens each tab, and the caption under the got-and-cut switch.",
-      "notice": "The warning is now the single sentence you asked for, ending with see details below. The three rows under THIS CHAT and the Assistant settings row carry their wording too.",
+      "notice": "Two things to look at. Your phrase see details below is NOT there any more: it was true only on Overview, and putting it on that tab alone shortened the warning by a line and moved the whole tab strip. Say Other if you want it back on Overview. Also, a tester who had never seen the app found context window and tokens hard words; they stay because the app's existing Context popup already uses them.",
       "risk": "Open and Assistant settings do nothing in this preview. No here reopens the wording only — the layout stays as you picked it.",
       "yes": "Keep the words",
       "no": "Change them",
@@ -39,6 +39,33 @@
         "round": 4,
         "candidate": "styled-full"
       }
+    },
+    {
+      "id": "G-4",
+      "surface": "What the assistant was given",
+      "path": "Project tab → What was cut",
+      "headline": "Open the Project tab, press What was cut in both, and pick the one you would rather read.",
+      "changed": "How the cut text is shown. Nothing on the record has ever decided this, and a tester who had never seen the app could not tell what the assistant ended up with.",
+      "notice": "The left one is the app's own before-and-after comparison, used on every tool card. The right one drops the colours and the numbers and shows only the text that was cut.",
+      "risk": "The plain one cannot show you what replaced the cut text, only what went missing. The comparison can, at the cost of reading like code.",
+      "live": {
+        "surface": "session-context",
+        "round": 4
+      },
+      "variants": [
+        {
+          "id": "compare",
+          "label": "Before and after",
+          "candidate": "styled-trimmed",
+          "summary": "Red is what was cut, green is the shorter version it got instead, with line numbers down the side."
+        },
+        {
+          "id": "plain",
+          "label": "Just what was cut",
+          "candidate": "styled-trimmed-plain",
+          "summary": "One line saying the assistant never saw this, then the cut text on its own. No colours, no numbers."
+        }
+      ]
     },
     {
       "id": "G-3",
