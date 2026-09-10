@@ -294,3 +294,43 @@ Still open, and NOT closed by this approval:
 
 Next gate per `.claude/rules/feature-flow.md` is the contract deck, written by a FRESH agent
 from `scripts/ui-review/contract-agent.md`, with a UX-tester run before implementation.
+
+## R2-14 closed — 2026-09-10, no backup surface
+
+R2-14 ("confused?") was re-asked as `error-states.questions-2.json` →
+`Q-backup-visibility`, and answered **other**:
+
+> "i'm confused as to what backup has to do with this? why are we messing with the sync
+> system for contribution flows?"
+
+Then, in chat:
+
+> "the workspace already has it's own startup/sync scripts, so i don't think we need to build
+> anything special. just install the folder as a youcoded managed workspace."
+
+**The question is closed by deletion, not by an answer.** No backup or sync status appears on
+the Contribute screen in any state. The screen stays exactly as approved at R4-20/R4-21.
+
+Where the confusion came from: goal 2 asked to install the workspace as a
+"youcoded-managed/**synced** project", and in this app those are one feature under two names —
+`SyncPanel.tsx:38` describes a synced folder as "your primary backup and the way your work
+follows you from computer to computer". The deck said "backup", which read as a second system
+being bolted onto contribution. It was never a second system, and the earlier slide showed an
+invented failure where real status would go. Both mistakes are the deck's, not the design's.
+
+**What A4 becomes.** Not a new subsystem — a target-path change plus registration:
+
+- `dev-tools.ts:588–616` clones to a fixed `~/youcoded-dev` and already runs the workspace's
+  own `setup.sh` (`:614`). The startup/sync scripts Destin names are that file and
+  `scripts/workspace-start.mjs`; nothing replaces them.
+- A managed project is a folder under `~/YouCoded/Projects/<name>` that is registered as a
+  space (`sync-spaces/service.ts:588–612`, `preload.ts:953–956` `createProject` /
+  `importProject`). Registration is create-if-absent and idempotent; `backfillRegistry()`
+  already registers projects found on disk.
+- So setup clones into a managed project path and registers it. If sync is on it syncs like
+  any other project; if sync is off it is an ordinary local folder and **the Contribute screen
+  says nothing either way** — the sync settings page keeps sole ownership of that status.
+- `Q-existing-folder` = `leave-existing` still binds: an existing folder is never adopted,
+  moved or updated. `importProject` MOVES a folder and is therefore not the path to use here.
+
+Open questions from this round: none. The design stage is closed.
