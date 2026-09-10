@@ -301,7 +301,14 @@ describe('compare.mjs PRIMARY contract', () => {
     // 75%; nothing bounded the CEILING, because a page loaded by scrolling up is
     // prepended and never removed. A gate that judged only the floor would sign off a
     // change that left accumulation exactly where it was.
-    assert.equal(PRIMARY.length, 23, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 23 -> 25 on 2026-09-09: the two projects paths. Destin reported Project View
+    // chugging when he clicks Files/Conversations back and forth; the clicks
+    // themselves painted in ~65 ms, so the cost was invisible to every renderer
+    // metric here — the MAIN process was unresponsive 7.2-8.0 s per eight clicks.
+    // open.openMs rides along so a thrash fix that pre-warms its way to a slower
+    // first open cannot pass.
+    assert.equal(PRIMARY.length, 25, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
     assert.ok(PRIMARY.includes('scrollback.median.ceilingPssMb'), 'the ceiling is the cycle-3 target and must be judged');
     assert.ok(!PRIMARY.includes('scrollback.median.releasedMb'),
       'releasedMb is HIGHER-is-better; every PRIMARY path is read as lower-is-better, so including it would score the cycle-3 win as a regression');

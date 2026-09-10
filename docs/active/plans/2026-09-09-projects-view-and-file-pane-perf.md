@@ -35,14 +35,24 @@ Files: `desktop/src/main/artifacts/project-watcher.ts`, `desktop/src/main/ipc-ha
     reuses the watcher. `dropSubscriber` (renderer died) keeps the same grace. Guard: a
     unit test — watch, unwatch, watch again within the grace → one chokidar instance, no
     second walk. WHY: tab thrash and close/reopen must never restart the walk.
-1.2 **Reply before `ready`.** `watchProject` registers the entry and returns `{ ok: true }`
-    once chokidar is constructed; the `ready`/`error` wait continues in the background
-    (keep the `stopped` teardown check after ready). The renderer only reads `ok`.
+1.2 **Reply before `ready` — DROPPED 2026-09-09, not implemented.** The renderer never
+    awaits `watchProject` for anything it renders (`useProjectWatch` fires and forgets),
+    and the freeze being measured is the fs walk itself hogging main's event loop, which
+    an early reply does not move. It would have bought nothing visible while making the
+    existing watcher tests race the `ignoreInitial` window. 1.1 removes the restarts and
+    1.3 makes the remaining walk small, which is where the time actually was.
 1.3 **Stop at nested repositories.** chokidar `ignored: (p, stats)` — when `stats?.isDirectory()`
     and `p !== root` and `join(p, '.git')` exists (dir OR file, worktrees use a file), ignore.
     Cache the answer per directory path for the watcher's lifetime. Keep the existing
     dot-dir/`WATCH_SKIP_DIRS`/`.tmp` rules. Guard: unit test with a nested repo whose file
-    change must NOT emit, and a sibling that must. **Verify first (unintended consequence):**
+    change must NOT emit, and a sibling that must.
+    **Precondition CONFIRMED 2026-09-09 → adopted.** `ipc-handlers.ts` APPEND_VERSION
+    broadcasts `ARTIFACT_IPC.CHANGED` with the real artifact id and `by: args.author`
+    ('agent' for Claude's edits), and `ActiveArtifactView` deliberately ignores `by` and
+    refetches on any changed event for its id. Agent edits inside a nested repo still
+    live-refresh the open file; only an OUTSIDE editor's change to a tracked file inside a
+    nested repo loses live refresh, which is the accepted trade.
+    **Original verification note (kept for the record):**
     Claude Code sessions run in youcoded-dev and edit files inside the nested `youcoded/`
     repo; the open viewer's live reload on an external change and the git-status refresh both
     listen to `artifacts:changed`. Before adopting 1.3, confirm that an agent edit recorded

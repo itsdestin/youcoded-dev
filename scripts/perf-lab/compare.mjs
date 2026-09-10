@@ -86,6 +86,18 @@ export const PRIMARY = [
   'artifacts.median.typing.codeLarge.keystroke.p95Ms',
   'artifacts.median.htmlNav.swap.medianMs',
   'artifacts.median.ipcSumOfSteps.totalStallMs',
+
+  // ── Project view (projects phase) ──────────────────────────────────────────
+  // Destin, 2026-09-09: "it becomes especially laggy/prominent if i just quickly
+  // click back-and-forth between files/conversations in project view". Eight
+  // rapid tab clicks left the MAIN process unresponsive 7.2-8.0 s in total —
+  // the clicks themselves painted in ~65 ms, so a renderer metric showed
+  // nothing. This is the number that has to stay down.
+  'projects.median.thrash.ipcStallMs',
+  // Cold open of the big project. Measured 2.1 s at Destin's data scale on the
+  // same run; a fix for the thrash that made the first open slower (a bigger
+  // warm-up, a pre-walk) would be a bad trade and only this path shows it.
+  'projects.median.open.openMs',
 ];
 
 // Dotted-path getter used everywhere below — keeps report shape out of the decision logic.

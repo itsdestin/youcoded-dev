@@ -77,6 +77,13 @@ const base = {
     ],
     median: { ceilingPssMb: 6800, deltaPssMb: 5080, perSize: { huge: { pageMedianMs: 90 } } },
   },
+  projects: {
+    runs: [
+      { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
+      { thrash: { ipcStallMs: 7300 }, open: { openMs: 2160 } },
+    ],
+    median: { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
+  },
   errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
 };
 const clone = () => JSON.parse(JSON.stringify(base));
