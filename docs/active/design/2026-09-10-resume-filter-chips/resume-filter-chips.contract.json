@@ -1,0 +1,125 @@
+{
+  "title": "Resume browser filter chips — contract",
+  "key": "resume-filter-chips-contract",
+  "out": "resume-filter-chips.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/resume-filter-chips",
+  "sources": {
+    "resume-filter-chips-review": "resume-filter-chips.review.json",
+    "resume-filter-chips-review-2": "resume-filter-chips.review-2.json",
+    "resume-filter-chips-review-3": "resume-filter-chips.review-3.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Resume Session",
+      "path": "Open a past conversation → the search box and the row of chips under it",
+      "headline": "This is what done means for the Projects, Tags and Most recent chips and their menus.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The three chips match the app's other filter chips in size and shape, with a chevron that points up while a menu is open.",
+          "checkedBy": "deck",
+          "threshold": "14 px chip text; 12 px chevron",
+          "source": "resume-filter-chips-review#S-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The Projects menu shows square check boxes, a count on each row, and a Clear button pinned at the bottom.",
+          "checkedBy": "deck",
+          "threshold": "28 px rows; 11 px counts",
+          "source": "resume-filter-chips-review#S-3"
+        },
+        {
+          "id": "R3",
+          "statement": "The Tags menu opens straight onto your tags, each with its count, and Clear sits at the bottom.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review#S-4",
+          "note": "remove manage tags here."
+        },
+        {
+          "id": "R4",
+          "statement": "A chip names the one tag or project you picked; two or more show as a count, like Tags 2.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/filter-menu-chip.test.tsx",
+          "threshold": "the named test passes",
+          "source": "resume-filter-chips-review#S-5"
+        },
+        {
+          "id": "R5",
+          "statement": "On a wide window the three chips stay as a full row; only a phone-width window folds them into the filter button.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review#S-7",
+          "note": "could we collapse into the expandable filter menu button thing used in the project view and session file view things? only on mobile/narrow, leave as full chips on desktop/wide"
+        },
+        {
+          "id": "R6",
+          "statement": "The sort chip flips the order with one tap; it does not open a menu.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review#Q-1"
+        },
+        {
+          "id": "R7",
+          "statement": "This screen keeps saying sessions: Resume Session, Search sessions, No matching sessions, and the reopen button stays Resume Session.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review#Q-2"
+        },
+        {
+          "id": "R8",
+          "statement": "The dialog keeps shrinking to fit a short list when you filter; it is not held at one fixed height.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review#Q-3"
+        },
+        {
+          "id": "R9",
+          "statement": "The sort chip carries the sort bars, three bars with a down arrow, and lights up while the order is oldest first.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review-2#C-1"
+        },
+        {
+          "id": "R10",
+          "statement": "Below 640 px the chips row is gone; the search pill holds the filter button, with a count badge when a filter is on.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review-2#S-8"
+        },
+        {
+          "id": "R11",
+          "statement": "Manage tags… is gone from the Tags menu; Clear stands alone in its footer, like the Projects menu.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review-2#S-10"
+        },
+        {
+          "id": "R12",
+          "statement": "The phone filter panel holds the desktop chips: Projects and Tags dropdowns and the Most recent sort chip, with Clear at the top.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review-3#S-11"
+        },
+        {
+          "id": "R13",
+          "statement": "A dropdown opened inside the phone panel is the desktop menu; picking rows keeps both open, and a tap outside closes them together.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review-3#S-12"
+        },
+        {
+          "id": "R14",
+          "statement": "After one tap the sort bars turn narrow-to-wide for oldest first, and nothing else on the row changes.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "resume-filter-chips-review-3#S-13"
+        }
+      ]
+    }
+  ]
+}
