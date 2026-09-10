@@ -1,0 +1,15 @@
+{
+ "deck": "stop-button-alive-live",
+ "started": "2026-09-10T22:21:11.577Z",
+ "submitted": "2026-09-10T22:21:57Z",
+ "cur": 0,
+ "answers": {
+  "L-1": {
+   "note": "glow is fine, but we should make the button and glow circumfrence a bit smaller",
+   "v": "other",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
