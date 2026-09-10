@@ -97,21 +97,34 @@ export const A = {
   moveTo: (at: number, dur: number, x: number, y: number, ease = E.inOutQuad): Action =>
     ({ at, dur, name: 'moveTo', run: (t, s, start) => { s.x = L(start.x, x, ease(t)); s.y = L(start.y, y, ease(t)); } }),
   /**
-   * A cautious walk to x: legs alternate, the body bobs and leans forward a
-   * touch, the arms swing opposite the legs. `steps` sets the cadence.
+   * A walk to x. `steps` is the number of STEPS (foot plants), not leg cycles: the legs
+   * pass each other once and reach their widest spread once per step. The body rides
+   * highest as the legs pass and settles lowest as a foot plants (a small squash there),
+   * the arms swing against the legs at a little over half their swing, and the whole
+   * thing leans a few degrees into the direction of travel.
+   *
+   * WHY (2026-09-09, Destin: the walk "doesn't look quite as smooth as I want … a little
+   * more natural"): the old walk counted `steps` as full leg CYCLES, so its default ran
+   * ten steps in 1.7 s with the legs at ±38° — a scurry — and bobbed the body on a
+   * different rhythm from the legs. One plant per step at ~3 a second, the bob locked to
+   * the legs, and a smaller arm swing read as walking in the frame check.
    */
-  walk: (at: number, dur: number, x: number, steps = 6): Action => ({ at, dur, name: 'walk', run: (t, s, start) => {
-    const e = E.inOutQuad(t);
-    s.x = L(start.x, x, e);
-    const ph = t * steps * Math.PI * 2;               // one full cycle per step
-    const gait = Math.sin(ph) * E.hump(t);            // fades in and out at the ends
+  walk: (at: number, dur: number, x: number, steps = 4): Action => ({ at, dur, name: 'walk', run: (t, s, start) => {
     const dir = Math.sign(x - start.x) || 1;
-    s.legL = 38 * gait; s.legR = -38 * gait;              // (28/18 read as a glide at half size — draft review)
-    s.armL = -30 * gait; s.armR = 30 * gait;
-    s.y = start.y - Math.abs(Math.sin(ph)) * 4 * E.hump(t);   // a small bob on each step
-    s.rot = dir * 5 * E.hump(t);                       // leans into the walk
-    s.sy = 1 - Math.abs(Math.sin(ph)) * 0.02; s.sx = 1 + Math.abs(Math.sin(ph)) * 0.02;
+    const fade = Math.min(1, t * 3, (1 - t) * 3);                    // the gait comes in over the first third and dies over the last
+    const u = t * steps;                                              // steps taken so far; integers = legs passing, halves = a plant
+    const spread = Math.sin(Math.PI * u) * fade;                      // +1 = left leg forward, −1 = right leg forward
+    const pass = Math.abs(Math.cos(Math.PI * u));                     // 1 as the legs pass (body highest), 0 at a plant
+    s.x = L(start.x, x, E.inOutQuad(t));
+    s.legL = 30 * spread; s.legR = -30 * spread;
+    s.armL = -18 * spread; s.armR = 18 * spread;                      // against the legs
+    s.y = start.y - 5 * pass * fade;
+    s.sy = 1 - 0.035 * (1 - pass) * fade; s.sx = 1 + 0.03 * (1 - pass) * fade;   // a touch of squash on each plant
+    s.rot = dir * 4 * fade;
+    s.shadow = 1; s.air = 0;
   } }),
+  /** Frames (from the walk's start) of each foot plant, for the footstep sounds. */
+  walkPlants: (dur: number, steps = 4): number[] => Array.from({ length: steps }, (_, i) => Math.round(((i + 0.5) / steps) * dur)),
   /**
    * A hop to x,y: crouch (anticipation), stretch on the way up, lean into the
    * travel, tuck at the top, stretch on the way down, squash on landing that
@@ -212,18 +225,40 @@ export const A = {
     s.shadow = 0;
   } }),
   /**
-   * Step out of the peek onto the ground at (x, y): the lean unwinds, the body slides
-   * into frame, the mittens slide back off the edge while the rig's own arms fade in
-   * (Host crossfades them by `peek`), and the cocked leg comes down. Normal arms from
-   * here on — nothing appears or vanishes in a single frame.
+   * Out of the peek onto the ground at (x, y), in three parts: it pulls itself upright on
+   * the edge first (the lean unwinds most of the way while the mittens still hold), then
+   * hops down — a small arc, the hands let go, the last of the lean goes in the air, the
+   * rig's own arms fade in (Host crossfades them by `peek`) — and lands in a squash that
+   * rings down. Normal arms from here on; nothing appears or vanishes in a single frame.
+   *
+   * WHY three parts (2026-09-09): the old step-out unwound the 75° lean WHILE sliding the
+   * body sideways onto the ground in one ease — Destin saw it "swing in from the side".
+   * Righting first, then dropping, gives the move a cause and some weight.
    */
   stepIn: (at: number, dur: number, x: number, y: number): Action => ({ at, dur, name: 'stepIn', run: (t, s, start) => {
-    const e = E.inOutQuad(t);
-    s.peek = 1 - e;
-    s.x = L(start.x, x, e); s.y = L(start.y, y, e); s.shadow = e;
-    s.mittens = 1 - Math.min(1, t / 0.55);                                      // hands let go over the first half
-    s.peekHand = t < 1 ? 'L' : null;
-    s.rot = 0; s.armL = 0; s.armR = 0; s.legL = 0; s.legR = L(start.legR, 0, E.outBack(t));
+    const RIGHT = 0.42, DROP = 0.72;                                          // fractions of dur: right itself, hop down, settle
+    s.rot = 0; s.armL = 0; s.armR = 0;
+    if (t < RIGHT) {
+      const k = E.outCubic(t / RIGHT);
+      s.peek = L(1, 0.22, k);
+      s.x = start.x + 8 * k; s.y = start.y - 10 * k;                          // pulls itself up a touch
+      s.mittens = 1; s.peekHand = 'L'; s.shadow = 0; s.legL = 0; s.legR = L(start.legR, 4, k);
+    } else if (t < DROP) {
+      const k = (t - RIGHT) / (DROP - RIGHT);
+      const arc = 4 * 26 * k * (1 - k);
+      s.peek = L(0.22, 0, E.outQuad(k));
+      s.x = L(start.x + 8, x, E.inOutQuad(k)); s.y = L(start.y - 10, y, k) - arc;
+      s.mittens = 1 - Math.min(1, k / 0.5); s.peekHand = k < 1 ? 'L' : null;   // the hands let go on the way down
+      s.air = Math.min(1, arc / 40); s.shadow = 0.6 * k;
+      s.sy = k < 0.5 ? L(1, 1.08, k * 2) : L(1.08, 1.1, (k - 0.5) * 2); s.sx = 2 - s.sy;   // stretches into the landing
+      const h = E.hump(k);
+      s.legL = -12 * h; s.legR = 12 * h; s.armL = 25 * h; s.armR = -25 * h;
+    } else {
+      const k = (t - DROP) / (1 - DROP); const b = E.settle(k);
+      s.peek = 0; s.mittens = 0; s.peekHand = null; s.x = x; s.y = y; s.air = 0; s.shadow = 1;
+      s.sy = L(0.84, 1, b); s.sx = 2 - s.sy; s.legL = 0; s.legR = 0;
+      s.armL = L(25, 0, E.outQuad(k)); s.armR = -s.armL;
+    }
   } }),
   // ---- presenting gestures (Destin, 2026-09-04: "the mascot kinda just moves around for no reason
   // … I really want it to feel like the mascot is presenting the app … more movement in the

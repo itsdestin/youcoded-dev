@@ -1,0 +1,15 @@
+{
+ "deck": "session-naming-review-5",
+ "started": "2026-09-09T09:47:30.432Z",
+ "submitted": "2026-09-09T09:48:32Z",
+ "cur": 0,
+ "answers": {
+  "R5-1": {
+   "note": "looks good, but we should keep the pencil icon and underline visible instead of them being hover/click effects",
+   "v": "yes",
+   "seconds": 60,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

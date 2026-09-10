@@ -53,8 +53,8 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 85 | 30 | 2 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 56 | 9 | 1 | 19 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 87 | 29 | 2 | 10 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 58 | 9 | 3 | 19 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 30 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 8 | 0 | 9 |
 | [android-only](docs/roadmap/android-only.md) — bugs in Android's own code | 19 | 10 | 1 | 1 |
@@ -64,7 +64,7 @@ Target: `v1.3`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 1 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 16 | 6 | 0 | 2 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 0 | 5 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 10 | 1 | 1 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 13 | 9 | 2 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 2 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 

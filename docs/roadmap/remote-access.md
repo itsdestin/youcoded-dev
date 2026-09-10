@@ -12,7 +12,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
 
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
-      `chat` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
+      `chat` `remote` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
 
 - [ ] Over remote access whole features are simply missing: the files panel cannot open any
       file (not even a small note), Project View tabs are thin, the game lobby signs in but

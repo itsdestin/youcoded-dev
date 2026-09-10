@@ -117,14 +117,14 @@ export function assemble(ids: BeatId[]) {
   return { nodes, themes, host, bubbles, sounds, overlays, total, first: beats[0] };
 }
 
-export const Film: React.FC<{ ids: BeatId[]; music?: boolean }> = ({ ids, music = false }) => {
+export const Film: React.FC<{ ids: BeatId[]; music?: boolean; track?: string }> = ({ ids, music = false, track = 'promo' }) => {
   const a = assemble(ids);
   const from = a.first.id === 'b1' ? PRELUDE : 0;
   const total = a.first.id === 'b1' ? FILM : a.total;
   void PRE;
   return (
     <AbsoluteFill style={{ background: '#000' }}>
-      {music && <Sequence from={PRELUDE}><Audio src={staticFile('promo.wav')} /></Sequence>}
+      {music && <Sequence from={PRELUDE}><Audio src={staticFile(`${track}.wav`)} /></Sequence>}
       <Backdrop themes={a.themes} total={total} from={from} />
       <TransitionSeries>{a.nodes}</TransitionSeries>
       <Host actions={a.host} base={{ ...REST, hidden: true, costume: 'midnight' }} />
@@ -135,7 +135,7 @@ export const Film: React.FC<{ ids: BeatId[]; music?: boolean }> = ({ ids, music 
     </AbsoluteFill>
   );
 };
-/** The whole film, with the music. */
-export const Promo: React.FC = () => <Film ids={BEATS.map((b) => b.id)} music />;
+/** The whole film, with the music — `track` names the file under public/ (promo, promo-lofi, promo-pop). */
+export const Promo: React.FC<{ track?: string }> = ({ track = 'promo' }) => <Film ids={BEATS.map((b) => b.id)} music track={track} />;
 /** Frames of a study made from a subset of beats. */
 export const studyFrames = (ids: BeatId[]) => assemble(ids).total;

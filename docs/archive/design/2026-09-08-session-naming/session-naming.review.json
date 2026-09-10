@@ -1,0 +1,16 @@
+{
+ "title":"Session naming — first UI preview",
+ "key":"session-naming-review",
+ "stage":"design",
+ "out":"session-naming.review.html",
+ "images":"images/session-naming.review",
+ "runs":{"before":"/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/before","after":"/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/after"},
+ "themes":["light"],
+ "crops":{"settings":["naming","settings","840x720+300+90"],"ai":["naming","ai","840x720+300+90"],"menu":["naming","menu","680x230+390+0"],"rename":["naming","rename","620x380+410+260"]},
+ "steps":[
+ {"id":"N-1","surface":"Assistant settings","path":"Settings → Assistant settings → General","crop":"settings","headline":"1. Choose Off, Basic, or AI naming in Assistant settings.","changed":"Basic starts selected, as you chose. It keeps a short name from the first message without AI. Off keeps current names and stops automatic naming.","notice":"Names you choose yourself stay unchanged in every mode. This is a UI preview with simulated saves, not the implemented naming service.","risk":"The extra section makes General settings longer."},
+ {"id":"N-2","surface":"AI naming","path":"Assistant settings → General → Session naming → AI","crop":"ai","runs":["after"],"highlight":{"box":[23,43,75,37]},"headline":"2. AI naming has its own model choice.","changed":"Use the conversation model or choose a separate naming model. The information button explains recurring reviews and provider usage.","notice":"The planned schedule is after replies 1 and 3, then every 25 completed replies. A review keeps the name when it still fits.","risk":"AI naming sends conversation excerpts to the chosen provider and can use plan allowance or incur charges. Generation is not connected in this preview."},
+ {"id":"N-3","surface":"Session menu","path":"Right-click a session in the top strip","crop":"menu","headline":"3. Rename a session from its menu.","changed":"A Rename session action appears above Move to new window.","notice":"You can give an active session a name without asking the assistant. Saved-session and phone entry points are not included in this first preview.","risk":"The current preview entry point is the desktop session menu only."},
+ {"id":"N-4","surface":"Rename session","path":"Session menu → Rename session","crop":"rename","runs":["after"],"highlight":{"box":[15,15,70,65]},"headline":"4. Saving a name protects it from automatic changes.","changed":"Edit the name and choose Save name. Saving unchanged text also makes it your chosen name; blank names cannot be saved.","notice":"Reopening a manually named session offers Use automatic name to remove that override. This does not change the global naming mode.","risk":"Only simulated local state changes in this preview. Durable saves, in-flight protection, and sync are still to be implemented."}
+ ]
+}

@@ -4,9 +4,9 @@ Read only the section needed for the task. `CLAUDE.md` is the operating core; th
 
 ### Git, worktrees, and shipping
 
-**Fetch into an isolated session workspace before working.** Use `workspace-start` below, not `git pull` in shared checkouts. New worktrees start from freshly fetched defaults; resumed ones preserve unfinished work. Updating an existing branch is a separate deliberate operation.
+**Start in an isolated session workspace before working.** Use `workspace-start` below, not a manual `git pull` in shared checkouts. It fetches published workspace authority on every invocation and prints the complete private reorientation report path. New workspace worktrees start from that immutable fetched commit; resumed session and component worktrees preserve unfinished branches, indexes and files. Read the report, changed guidance, `.claude/rules/`, `docs/MAP.md`, and scripts from the returned worktree before proceeding. The report is factual inventory, not a semantic interpretation; explain material meaning yourself. Uncommitted guidance is labeled as a proposal and does not automatically override committed guidance.
 
-**Shared checkouts may be dirty and behind; do not repair them just to start work.** `workspace-start` fetches without changing their working files and creates from origin defaults. Read `.claude/rules/`, `docs/MAP.md`, and scripts from the returned worktree, not the shared copy. On resume, existing worktrees intentionally retain their branch versions; inspect relevant changes against `origin/master` before relying on potentially outdated guidance, rather than automatically pulling over unfinished work.
+**Do not manually repair shared checkouts just to start work.** `workspace-start` may guardedly fast-forward shared `youcoded-dev` master when it proves a clean or unrelated dirty state is preserved. Overlaps, divergence, patch-equivalent/unique local commits, exact incoming copies without sufficient proof, unsupported types, collisions and uncertain state remain review-only, with private evidence and an isolated candidate where feasible. A candidate—even a clean textual one—is not applied or semantically approved. Resumed branches are never integrated automatically, and no startup action commits or pushes.
 
 **Use isolated worktrees for every development edit, including docs and small fixes.** Read instructions and run scripts from the returned workspace; use its absolute paths with file tools. Never edit shared files first and copy whole files into a newer branch afterward. Existing manually created worktrees can stay in use; do not migrate their unfinished work automatically.
 
@@ -37,11 +37,15 @@ Verify the commit landed on the remote default first: `git merge-base --is-ances
 
 ## Workspace Setup
 
-**Normal session startup:** `node scripts/workspace-start.mjs --session <stable-key> [repo…]`. Choose a unique lowercase session key once, and reuse it on resume. Workspace docs always get their own worktree; add `youcoded` or another component name when needed. The command prints absolute paths and supports `--json`; `--root` accepts the shared workspace or a linked workspace worktree. Read that worktree's `CLAUDE.md` and `docs/MAP.md` before proceeding. It cannot change this conversation's file-tool root: use absolute paths. Details and recovery: `docs/workspace-start.md`.
+**Normal session startup:** `node scripts/workspace-start.mjs --session <stable-key> [repo…]`. Choose a unique lowercase session key once, and reuse it on resume. Workspace docs always get their own worktree; add `youcoded` or another component name when needed. The command prints absolute paths and supports `--json`; `--root` accepts the shared workspace or a linked workspace worktree. It fetches workspace `origin/master` on every call; offline resume is allowed with freshness `unknown`, while a fresh workspace requires a successful fetch. Newly requested components retain their own fetch requirement; recorded components resume unchanged. Read the complete report and that worktree's `CLAUDE.md` and `docs/MAP.md` before proceeding. It cannot change this conversation's file-tool root: use absolute paths. Details and recovery: `docs/workspace-start.md`.
 
-**Installation / explicit maintenance only:** `bash setup.sh` clones missing repos and updates shared checkouts. It is not a prerequisite for each session. `workspace-start` only fetches for new worktrees; it never pulls, stashes, cleans, installs dependencies, or deletes unfinished work.
+**Installation / explicit maintenance only:** `bash setup.sh` clones missing repositories and remains maintenance, not a prerequisite for each session. Startup never stashes, cleans, resets, commits, pushes or deletes unfinished work. It does automatically provision configured dependencies for newly created components as a `cp -al` hardlink farm (or a real copy across filesystems), and lists them as `deps:`; resumed components are not reprovisioned. Follow the hardlink safety rule above.
 
-**A commit made IN the shared `youcoded-dev` checkout is refused by a pre-commit hook** (`scripts/git-hooks/pre-commit`, installed by `setup.sh`); commit from a linked worktree, which the hook always allows, and push from there. This is the rule that was already written down under "Workspace push via temp worktree" — it is now enforced, because ignoring it is what let this checkout reach 110 commits behind on 2026-09-03 while silently holding the only copy of five of Destin's product ideas. `setup.sh` no longer just refuses when it cannot pull: `scripts/workspace-sync.sh` tells a duplicate local commit (already upstream under another sha) from a unique one, catches the checkout up on its own when that is provably safe, and otherwise names the exact file or commit in the way. **It also DISCARDS leftover local copies of changes that are already on the remote** — a file whose exact bytes are a commit upstream, which is what the copy-to-a-worktree workflow leaves behind every time and what kept this checkout 175 commits behind for 31 hours on 2026-09-04; nothing is lost, because git still has the bytes. It merges what git can merge, and refuses only for files that genuinely disagree — printing, per file, how many lines exist only locally versus only on the remote, which is the number that decides whether the local copy is worth keeping (it is usually 0). **If you edited a workspace file here and landed it from a worktree, that is the whole story: leave the leftover alone, the next sync clears it.** Override, for a commit you genuinely mean to make here: `YOUCODED_ALLOW_MAIN_COMMIT=1 git commit …`.
+**Reports and recovery are private and retained.** Every run gets an owner-only directory under `<git-common-dir>/youcoded-sync/`: the parent/evidence directories are mode 0700; the complete machine-readable `report.json`, concise `report.md` briefing, diffs and other evidence files are mode 0600. The candidate's `git-safe.mjs` is intentionally owner-executable, and Git controls internal modes inside its standalone private repository. A guarded update first stores a recovery ref, raw index, patches and affected path state in `snapshot/`; it keeps those backups after success. Review-only cases may also contain a standalone `candidate/`, whose layer outcomes and conflicts are evidence—not an applied answer. Recovery is deliberate: inspect the report/current state and never restore automatically over newer edits.
+
+**Locks coordinate, but do not make a filesystem transaction.** `<git-common-dir>/youcoded-sync.lock` is shared by startup and `workspace-sync.sh`; per-session locks/manifests continue to protect provisioning ownership. Neither blocks arbitrary editors and neither is automatically stolen or removed when stale-looking. On contention, inspect the lock's owner metadata/process before deliberate removal. Startup reports workspace freshness as unknown while sync is busy.
+
+**A commit made IN the shared `youcoded-dev` checkout is refused by a pre-commit hook** (`scripts/git-hooks/pre-commit`, installed by `setup.sh`); commit from a linked worktree, which the hook always allows, and push from there. `scripts/workspace-sync.sh` is the explicit-maintenance compatibility entry point to the same preservation policy as startup: it can fast-forward only after capture and preservation checks, otherwise retaining local history/files and reporting review-required. Historical byte matches and patch-equivalent commits are evidence, never authority to discard or reset work. Override, for a commit you genuinely mean to make in the shared checkout: `YOUCODED_ALLOW_MAIN_COMMIT=1 git commit …`.
 
 **Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
 
@@ -114,27 +118,19 @@ cd youcoded/desktop && npm ci && npm run build
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
 
-# NEITHER Android command above can run on this machine today. Verified 2026-09-05:
-#   ls /home/destin/.android-sdk   -> No such file or directory
-#   ls /usr/lib/jvm               -> default, default-runtime, java-26-openjdk
-#   find /home/destin /opt -maxdepth 4 \( -name platform-tools -o -name build-tools \
-#        -o -name cmdline-tools \) -type d      -> nothing
-#   pacman -Qq | rg -i android    -> android-studio         (the IDE only)
-# Gradle stops at `SDK location not found` during CONFIGURATION, before compiling.
+# Both Android commands above DO run here (741 tests green, 2026-09-09) — Gradle
+# just needs ANDROID_HOME named, because the SDK is installed but not exported:
+#   JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
+#     ./gradlew test -x bundleWebUi
+# `-x bundleWebUi` skips the web-UI bundle, which would run npm against the
+# worktree's HARDLINKED node_modules and write through to the shared checkout.
 #
-# This block previously asserted the SDK WAS installed at that path, and named a
-# java-21-openjdk that is also absent. Both had been wrong long enough that nobody
-# noticed — which means sessions that ran this command and moved on recorded a
-# configuration failure as a completed "checked both platforms". A check that stops
-# checking goes quiet, not red. Do not report `./gradlew test` as passing here.
-#
-# Until the SDK is installed (open item: docs/roadmap/dev-workspace.md), a Kotlin
-# change can only be compiled file-by-file with the kotlinc inside /opt/android-studio.
-# Once it IS installed, this is the invocation. The JDK must be Android Studio's
-# bundled runtime (JDK 21.0.10) — the system default is 26, which AGP rejects. And
-# `-x bundleWebUi` is MANDATORY in a worktree: it transitively runs `npm ci`, which is
-# destructive against a hardlinked node_modules (see the worktree rule above).
-cd <worktree> && JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME=<the SDK, once installed> \
+# Read the result out of app/build/test-results/**/*.xml, not off the console:
+# a second run prints BUILD SUCCESSFUL with "103 tasks up-to-date" and executes
+# no tests at all. This block asserted for five days that Android could not be
+# built here — true when written, and by 2026-09-09 it had cost a session and a
+# subagent a false "unverifiable" each. Re-verify before trusting either claim.
+cd <worktree>/youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
   ./gradlew test -x bundleWebUi
 ```
 

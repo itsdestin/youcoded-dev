@@ -32,12 +32,16 @@ sign-off is a slide.
 | judge motion or a transition | **Clip** | Yes / No |
 | operate a design, or a real screen | **Live** | Yes / No, or pick one |
 | say whether it WORKS, in a dev window | **Try-it** | Yes it works / No |
-| ask before anything is drawn | **Question** | Yes / No / Don't know, or pick one |
+| ask anything answered in words — unbuilt, or already built | **Question** | Yes / No / Don't know, or pick one |
 | sign off the definition of done | **Contract** | Yes that is done / No |
 | accept the graded contract | **Acceptance** | Yes accept / No |
 
 Other + a note is on every slide. Several designs of one thing are ONE Choice slide, never a
 yes/no each. A slide shot in one theme carries `themes`.
+
+**A trade-off is a Question, even when the thing already works.** Hung off an Approve slide
+it reaches him as a picture he has seen and three ideas in one paragraph — on 2026-09-09 that
+came back as "confused". If "should it" fits your headline, it is a Question.
 
 ## A slide decides, not the deck
 **Invariant:** `runs`/`labels` (which pictures), `"pick": "several"` and `"answer": "words"` sit
@@ -63,9 +67,8 @@ decision. **Guard:** candidate.
 
 ## A change under `deck/` is reviewed on a deck
 **Invariant:** an edit to `page.css`, `page.js`, `page.html.tmpl` or `deck/fixture/` ships only
-after `selfie` has shown him before and after it; its `TODO:` headlines block the build until you
-write what moved. **Why:** five generated steps read as "no idea what i'm looking at".
-**Guard:** `test_cli.py`. Depth for every field: `deck/AUTHORING.md`.
+after `selfie` has shown him before and after it. **Why:** five generated steps read as "no idea
+what i'm looking at". **Guard:** `test_cli.py`. Depth for every field: `deck/AUTHORING.md`.
 
 ## The deck opens on the theme his app is on
 **Invariant:** never hand-order `themes` — `build`/`serve` read the app's; `--theme` overrides,

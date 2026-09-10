@@ -6,13 +6,15 @@ import { CAPTIONS } from '../captions';
 import { perch } from '../layout';
 import { BAR_S } from '../grid';
 import { markFrame, markSec, assertClipCovers } from '../marks';
-import { B, LEN, present, inWindow, type BeatModule } from './beat';
+import { B, LEN, present, inWindow, feetAt, type BeatModule } from './beat';
 
 // Beat 5 (6 bars): collaborate with your assistant — and where it all lives.
 // Its first two bars: the request goes out (fast); bars 2–4: the re-opened, sorted
 // sheet (slowed to fill them); bars 4–6: project view — Econ 201's hero and file
 // tree, one click to Instructions & Memories (the clip runs at 1.2× so the tab lands inside).
-const T_AFTER = B('b5', 2), T_PROJ = B('b5', 4), END = LEN('b5');
+// 2026-09-09 (60-frame bars): the sheet gets bars 2.25–3.85 and project view the rest, which is
+// exactly what the three lines need to be read (1.2 s + ¼ s a word each).
+const T_AFTER = B('b5', 2.25), T_PROJ = B('b5', 3.85), END = LEN('b5');
 const A_FROM = markFrame('promo-sheet', 'attach', 'start', -6);
 const A_RATE = Math.min(1.6, Math.max(1, (markSec('promo-sheet', 'reply', 'end') - markSec('promo-sheet', 'attach', 'start')) / (2 * BAR_S)));
 const B_FROM = markFrame('promo-sheet', 'after', 'end', 20);
@@ -42,8 +44,13 @@ const M = (mark: string, edge: 'start' | 'end' = 'start') => Math.round((markFra
 //   the re-opened sheet (the viewer fills the right half; the host stands in the empty file-list column left of it)
 //   the project's file grid (the Projects page; the host stands in the gap between the tab row and the search box, pointing down at the cards)
 const P5 = present('b5', [
-  { at: M('attach') + 4, say: 'Drop in a spreadsheet, ask the assistant for a sort.', target: inWindow(0.13, 0.85), stand: 'R', face: 'welcome', until: T_AFTER - 8 },
-  { at: T_AFTER + 4, say: 'View and edit the result together.', target: inWindow(0.58, 0.45), stand: 'L', face: 'happy', until: T_PROJ - 8 },
-  { at: T_PROJ + 10, say: 'Manage classes, coding projects, and more with Project View.', target: inWindow(0.5, 0.56), stand: 'above', face: 'welcome', until: END - 8 },
+  // 0.85 → 0.8 (2026-09-09): at 1.35 the host's feet sat on the composer; it now stands level with the chip's top half
+  { at: M('attach') + 4, say: 'Drop in a spreadsheet, ask the assistant for a sort.', target: inWindow(0.13, 0.8), stand: 'R', face: 'welcome', until: T_AFTER - 8 },
+  // re-measured at the 1.35 zoom (2026-09-09): lower in the file-list column (it sat on the two file entries), and
+  // right of the tab row on the Projects page (it sat on the end of the Instructions & Memories tab)
+  { at: T_AFTER + 4, say: 'View and edit the result together.', target: inWindow(0.58, 0.6), stand: 'L', face: 'happy', until: T_PROJ - 8 },
+  // …and at 1.35 there is no gap left between the tab row and the search box at all, so it stands ON the file grid
+  // (the cards are blank placeholders) pointing at the spreadsheet card; the bubble lands over the first card
+  { at: T_PROJ + 10, say: 'Manage classes, coding projects, and more with Project View.', spot: feetAt(0.3, 0.74), target: inWindow(0.5, 0.8), face: 'welcome', until: END - 8 },
 ], 'meadow-mist', P, END - 8);
 export const beat5: BeatModule = { id: 'b5', slug: 'meadow-mist', home: P5.home, Component: Beat5, host: P5.host, bubbles: P5.bubbles };
