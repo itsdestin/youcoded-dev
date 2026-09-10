@@ -1,0 +1,68 @@
+{
+  "title": "Round three — five ways to treat the conversation's heading",
+  "key": "resume-browser-heading",
+  "out": "resume-heading.choice.html",
+  "images": "images/resume-heading.choice",
+  "runs": {
+    "today": "runs/round3"
+  },
+  "labels": {
+    "today": "Draft"
+  },
+  "themes": ["midnight"],
+  "crops": {
+    "r3-hero": ["main", "r3-hero", "1020x690+210+105"],
+    "r3-band": ["main", "r3-band", "1020x690+210+105"],
+    "r3-windowbar": ["main", "r3-windowbar", "1020x690+210+105"],
+    "r3-document": ["main", "r3-document", "1020x690+210+105"],
+    "r3-sheet": ["main", "r3-sheet", "1020x690+210+105"]
+  },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Resume Session",
+      "path": "The sessions arrow at the top of the window, then Resume",
+      "headline": "Which of these gets closer to what you want?",
+      "notice": "Your three answers are already built into all five: the cards stay, the list never collapses and never hides itself, and the right half stays one line of text until you click. The first one is what you picked last round, kept here so you can see the others against it.",
+      "risk": "What still separates them is the seam down the middle. In the first one the left header is tall and the right one is short, so the divider steps where they meet — that is the part that reads as two things stuck together, and each of the other four attacks it differently.",
+      "variants": [
+        {
+          "id": "hero",
+          "label": "Last round's pick",
+          "crop": "r3-hero",
+          "summary": "What you chose: the window keeps its own 'Resume Session' title on the left, and the right half opens with the conversation's name, where it ran, when, how big and its tags, on a slightly raised strip.",
+          "risk": "The two headers are different heights and different colours, so the seam between them steps."
+        },
+        {
+          "id": "band",
+          "label": "One band, no window title",
+          "crop": "r3-band",
+          "summary": "The window stops naming itself — the conversation names it. Both headers are given the same floor, so the line between them runs dead straight and the two halves read as one strip. 'Show complete' becomes a pill with the other filters.",
+          "measured": "Both headers 104 px",
+          "risk": "Nothing on screen says 'Resume Session' any more. You would know what the window is by what is in it."
+        },
+        {
+          "id": "windowbar",
+          "label": "A bar for the window, a heading for the conversation",
+          "crop": "r3-windowbar",
+          "summary": "A slim bar across the top owns the window: its name, how many conversations are in it, and the way out. Nothing else competes for that job, so the heading underneath is free to be purely the conversation.",
+          "risk": "It costs a row of height, and the two headers underneath it are still slightly different sizes."
+        },
+        {
+          "id": "document",
+          "label": "Set as a document",
+          "crop": "r3-document",
+          "summary": "The right half is treated as a page: the name with a rule under it, the facts in small capitals beneath the rule, wider margins, and the conversation set inside those margins rather than running to the divider.",
+          "risk": "The wider margins mean noticeably less room for the conversation itself."
+        },
+        {
+          "id": "sheet",
+          "label": "On its own sheet",
+          "crop": "r3-sheet",
+          "summary": "The heading and the conversation are lifted together onto one inset panel with the window's own surface showing all the way around it — a page resting on a desk. The seam stops being a line and becomes a gap.",
+          "risk": "The border around the sheet is a second frame inside a window that already has one."
+        }
+      ]
+    }
+  ]
+}
