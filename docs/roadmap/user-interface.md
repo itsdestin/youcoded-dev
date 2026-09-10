@@ -2,6 +2,17 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] The before/after file comparison — the one shown on every tool card that edits a file —
+      is hard to read for anyone who is not a developer. In the light theme the small + and −
+      marks fail the app's own readability minimum (measured 2.31 and 3.5 against 4.5), and
+      with pale pink and green rows a colour-blind reader cannot tell added from removed at
+      all. Long lines break mid-word ("semantic toke / n system"), the box ends on a sliced
+      half-line that looks like a fault, and "Expand (44 lines)" is 15px-tall grey text a
+      finger cannot comfortably hit. Found 2026-09-09 by a context-free tester looking at the
+      session-context panel; the defects belong to the shared renderer, so they affect every
+      tool card (findings U18-U20 and U22)
+      `desktop` `confirmed` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-context-panel-ux-review-1.md
+
 - [ ] A second window keeps showing the old default model or project folder until its own
       Settings panel is opened and closed
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-07`

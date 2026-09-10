@@ -4,6 +4,23 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
+      mid-sentence and the assistant is told to "ask for the rest" without being told which file
+      that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules
+      are handled well (every heading survives, the file is named); skills, triggered rules and the
+      model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
+      are written up with options and how other tools handle each one — deck ready to serve, nothing
+      answered. Parked 2026-09-09 to finish the session-context panel first
+      `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+
+- [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
+      you picked — its own test says so and has been failing on master since the feature shipped
+      2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists
+      the same intent": both saves carry 20 after 50 was chosen). Found 2026-09-09 by a
+      `verify.sh` run on an unrelated branch; nobody has checked yet whether it reproduces in
+      the running app or is only true on the failure path the test exercises
+      `settings` `desktop` `needs-verify` `checked 2026-09-09`
+
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
       `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
@@ -112,11 +129,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       index it maintains and a flush before compaction. Sequenced after the eval CI gate and the
       request log above
       `desktop` `parked` `checked 2026-08-26`
-
-- [ ] When a small model's session has its project rules outlined, skills cut or MCP servers dropped
-      to fit the context budget, only the model is told — nothing on screen says so. In progress on
-      branch `feat/context-truncation-notice` (worktree `worktrees/context-truncation`)
-      `chat` `desktop` `in-flight` `checked 2026-09-01`
 
 - [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
       send function only accepts the literal provider names. No live caller today; fix when the retry

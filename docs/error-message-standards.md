@@ -24,6 +24,33 @@ When you genuinely can't surface a specific cause at that layer, use a *general*
 
 A general message is acceptable. A general message that *invents a plausible-sounding cause* is not.
 
+## The same rule, applied to what the app SAYS IT KNOWS
+
+Errors were the first place this bit, but the rule is not about errors — it is about
+never presenting a guess as knowledge. It governs any screen reporting the state of
+something: what the assistant was given, what a model can do, what is installed, what
+synced.
+
+Destin, 2026-09-10, on the session-context panel: *"reflect what we can reflect
+accurately. And then for the stuff that's less certain. We should reflect it as such."*
+
+Three shapes, and the third is the one that gets missed:
+
+1. **Known → state it**, and say how you know. The instruction files on disk and the
+   skills the app installed are facts about this machine, not claims about a CLI.
+2. **Not knowable here → say whose it is.** "Claude Code chooses its own tools for this
+   chat. YouCoded isn't told which, so listing them here would be a guess." Not silence,
+   and not a list recited from memory.
+3. **Never let "unknown" render as "none".** An unknown tool set sent as an empty list
+   reads as *"this assistant has no tools"* — false, and false in the direction that
+   makes someone trust it less than they should. Absent and empty are different values;
+   keep them different all the way to the screen. Pinned by
+   `desktop/tests/claude-code-context.test.ts`.
+
+A number nobody can check is the same failure wearing a friendlier face: the panel shows
+"Set by Claude Code" rather than a context window that depends on the user's plan as well
+as their model.
+
 ## Canonical anti-pattern (why this rule exists)
 
 The local llama.cpp engine (`engine-supervisor.ts`) threw:

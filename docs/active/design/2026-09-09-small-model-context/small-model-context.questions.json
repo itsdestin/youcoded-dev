@@ -1,0 +1,387 @@
+{
+  "title": "Small models — what we cut, and what should be left in its place",
+  "key": "small-model-context",
+  "out": "small-model-context.questions.html",
+  "intro": "A small model cannot hold everything the assistant would normally be given, so something has to go. Today three kinds of file are handled three different ways, and only one of those was ever decided on purpose — the others are how the code happened to grow. Your project rules are OUTLINED: every heading survives at any size, and the assistant is told which file to read for the detail. A skill is CUT at a character count, mid-sentence, and told nothing about where it came from. Add-on tool sets are DROPPED whole, from the end of your list, until the rest fits. Every option below says who else ships it and how it worked out for them, so you are choosing between things that exist rather than between ideas. The tools compared are opencode, Hermes (Nous Research), Pi, Cline, Roo Code, Goose and Aider. Where an option says nobody does it, that means I found none in a few hours of searching, not that I audited every tool.",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Any chat on a small model",
+      "path": "Not a screen — this is what the assistant is handed when a chat starts",
+      "headline": "When a file is too big to fit, what should the assistant get instead of the whole thing?",
+      "today": "It depends which file, and not on purpose. Your project rules are outlined — every heading survives and it is told which file to read for the rest. A skill is cut at a character count, wherever that lands, and told nothing.",
+      "problem": "A cut-off procedure is worse than no procedure. The assistant follows the half it received believing that is the whole thing. Step 7 of 9 simply does not exist, and nothing anywhere says so.",
+      "proposal": "Pick one shape for a cut and use it for everything.",
+      "options": [
+        {
+          "id": "outline",
+          "label": "Outline it, and name the file",
+          "summary": "Who else does it: nobody I could find. We already do it for project rules, and it is the only part of our truncation anyone designed on purpose. Everyone else either cuts blindly or does not manage instruction size at all.",
+          "pros": [
+            "Every heading survives, so the assistant always knows the full shape of what it was given.",
+            "It knows which file to read when it needs one step in full.",
+            "Already built and already trusted — it is exactly what your project rules use today.",
+            "If it holds up, it is a genuine advantage: opencode, Hermes, Pi, Cline, Roo and Goose all lose material silently."
+          ],
+          "cons": [
+            "The detail under most headings is missing until it goes and reads it.",
+            "Reading the file costs a turn, so the first step is slower.",
+            "Nobody else has proven it at scale, so we would be the ones finding its rough edges."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "both-ends",
+          "label": "Keep both ends, mark the middle",
+          "summary": "Who else does it: Hermes. It keeps 70 percent from the front and 20 percent from the end with a marker between them, sized against the model's window. Shipping and stable — the most considered cut anyone else performs.",
+          "pros": [
+            "Keeps the ending, where procedures usually put the finishing steps — a front-only cut like ours always loses those.",
+            "Simple, predictable, and proven in a shipping product.",
+            "Cheaper to build than outlining."
+          ],
+          "cons": [
+            "The middle disappears with no heading left behind, so the assistant cannot tell what it is missing.",
+            "Still hands over a fragment; just a differently shaped one.",
+            "Hermes pairs it with refusing any model under 64k, so it has never had to work on the small models we care about."
+          ]
+        },
+        {
+          "id": "leave-out",
+          "label": "Leave it out entirely and say so",
+          "summary": "Who else does it: nobody ships it. Someone proposed exactly this for opencode — skip the file, tell the agent to read it on demand — and the maintainers closed it as not planned.",
+          "pros": [
+            "No half-followed procedure — the assistant knows it does not have the thing.",
+            "The clearest possible signal that something is missing.",
+            "Costs almost nothing to build."
+          ],
+          "cons": [
+            "Throws away material that would have fitted.",
+            "A skill you asked for by name does nothing at all.",
+            "The one team asked to build it decided against it, which is weak evidence but not no evidence."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Any chat on a small model",
+      "path": "What happens after the assistant is told to go and read the rest",
+      "headline": "If the assistant is told to go read a file, should that cost you a permission prompt?",
+      "today": "Skills you install live outside your project folder, and the assistant's file reading is fenced to the project. So following a pointer to a skill would raise the \"this is outside your project — allow?\" prompt.",
+      "problem": "We would be handing the assistant an instruction it cannot follow without interrupting you — and interrupting you to approve reading a file the app itself chose to give it a moment earlier.",
+      "proposal": "Treat a file the app injected as already approved for the assistant to re-read.",
+      "options": [
+        {
+          "id": "free-reread",
+          "label": "Free to re-read what the app gave it",
+          "summary": "Who else does it: opencode, with a reading tool that only opens skill folders. Hermes does the same for oversized command output — it saves the full thing and lets the model read it back. And so do we already: our own command output works exactly this way.",
+          "pros": [
+            "A pointer actually works, instead of stopping to ask you.",
+            "You are never asked to approve something the app already decided to include.",
+            "Narrow by design — only files the app itself injected, not a general loosening of the fence.",
+            "Two other tools and one of our own features already work this way, so it is a well-worn path."
+          ],
+          "cons": [
+            "One more path that reads outside your project folder, even if a narrow one.",
+            "The fence becomes a rule with an exception, which is harder to explain."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-fence",
+          "label": "Keep the fence, approve each time",
+          "summary": "Who else does it: nobody, because no other tool fences instruction files this tightly in the first place. This is the strictest option on offer anywhere.",
+          "pros": [
+            "Nothing outside your project is ever read without you saying so.",
+            "No new code path and nothing new to explain.",
+            "Strictly safer than what any competitor does."
+          ],
+          "cons": [
+            "Every cut skill costs you an approval prompt in the middle of a task.",
+            "Most people will approve without reading it, which teaches exactly the wrong habit.",
+            "Makes the pointer in Q-1 much less useful, so the two answers interact."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Skills",
+      "intro": "Skills are the worst-served thing we have. There are two ways into one and they behave completely differently — not by decision, but because they were written at different times. No other tool has this split: opencode has a single door, and the rest have no skills at all."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Skills",
+      "path": "Typing a skill's name, versus the assistant choosing one itself",
+      "headline": "The two ways into a skill behave differently. Should they be made the same?",
+      "today": "When the assistant picks a skill itself it gets the whole file, limited only by a flat 30,000-character ceiling no matter how small the model is. When you type the skill's name, it is cut to fit the model. On a small model only the second way exists at all.",
+      "problem": "The same skill arrives in two different sizes depending on who asked for it. And the flat ceiling can hand a small model roughly half its entire working memory in one go.",
+      "proposal": "Put both routes through the same fitting.",
+      "options": [
+        {
+          "id": "same",
+          "label": "Same fitting both ways",
+          "summary": "Who else does it: opencode, by having only one door — its skill tool is the single way in, so a skill cannot arrive in two sizes. Our split is unique to us and was never a decision.",
+          "pros": [
+            "A skill is the same skill however it was reached.",
+            "Stops a single skill from swallowing a small model's whole working memory.",
+            "One behaviour to explain in the panel instead of two.",
+            "Matches the only other tool that has skills at all."
+          ],
+          "cons": [
+            "On mid-size models, the route where the assistant chooses gets less text than it does today.",
+            "opencode puts no size limit on a skill body at all, so matching them exactly would mean loosening rather than tightening."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave them as they are",
+          "summary": "Who else does it: nobody has two divergent routes, so there is no precedent either way. This is a defence of an accident.",
+          "pros": [
+            "No change, and the assistant-chosen route keeps as much detail as it can.",
+            "Nothing to break in code that currently works."
+          ],
+          "cons": [
+            "The mismatch stays, and the flat ceiling goes on being the wrong size for small models.",
+            "The panel has to describe two behaviours for one thing, which is hard to word honestly."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Skills",
+      "path": "Typing a skill's name on a model too small to hold it",
+      "headline": "You asked for a skill by name and it does not fit. Half of it, or none of it?",
+      "today": "You get as much as fits, cut mid-sentence, with a note saying it was shortened.",
+      "problem": "You asked for that skill deliberately, so you want it to run. But a procedure cut in half can be followed wrongly with complete confidence, which is worse than being told plainly that it will not fit.",
+      "proposal": "Decide what happens when you explicitly ask for something too big.",
+      "options": [
+        {
+          "id": "outline-run",
+          "label": "Outline it and start anyway",
+          "summary": "Who else does it: nobody. It only becomes possible if Q-1 goes the outlining way, so these two answers stand or fall together.",
+          "pros": [
+            "It runs, and every step is at least named.",
+            "It can read the detail of a step at the moment it reaches that step.",
+            "The only option that neither refuses you nor hands over a fragment."
+          ],
+          "cons": [
+            "Slower, because it stops to read.",
+            "On a very small model even the headings may crowd out the work.",
+            "Untried anywhere, so we would be discovering the failure modes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "refuse",
+          "label": "Refuse, and tell you why",
+          "summary": "Who else does it: Hermes and opencode take this posture, though at the level of the whole model rather than one skill — both simply refuse to run below a 64k window instead of degrading.",
+          "pros": [
+            "No half-run procedure, ever.",
+            "You can switch to a bigger model before wasting a turn.",
+            "The industry's instinct: two of the three serious tools refuse rather than degrade."
+          ],
+          "cons": [
+            "A skill you asked for does nothing at all.",
+            "Frustrating when the skill would have mostly worked.",
+            "Sits awkwardly with running small models at all, which is our whole difference."
+          ]
+        },
+        {
+          "id": "as-today",
+          "label": "As much as fits, as today",
+          "summary": "Who else does it: Hermes, for its context files, and us today. It is the most common shape of cut in the field, and the one our own code comments call worse than nothing.",
+          "pros": [
+            "It always does something, and sometimes the first half is all you needed.",
+            "Already built.",
+            "A shipping product does this and its users accept it."
+          ],
+          "cons": [
+            "The most likely route to confidently wrong work.",
+            "The assistant cannot tell you which steps it never saw.",
+            "Hermes only gets away with it because it refuses small models outright — we do not."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "The bigger calls",
+      "intro": "Three decisions about how far we go to support models that are genuinely too small, and what we owe you when we cannot fit everything. These are the ones where we differ most from everyone else."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Any chat on a small model",
+      "path": "What gets left out when there is not room for everything",
+      "headline": "When there is not room for everything, what should be given up first?",
+      "today": "Add-on tool sets go first — whole ones are dropped from the end of your list until the rest fits. Then rules and skills are shrunk to what is left. Nothing asks you, and nothing has ever decided this order.",
+      "problem": "The order is a consequence of how the code grew. For some projects the add-on tools are the entire point of the setup; for others the written rules are.",
+      "proposal": "Confirm the order, or let it be set per project.",
+      "options": [
+        {
+          "id": "keep-order",
+          "label": "Keep today's order, but show it",
+          "summary": "Who else does it: nobody budgets add-on tool descriptions the way we do. It is one of the quieter things we already do better, and the panel would be the first place any tool has shown you the result.",
+          "pros": [
+            "Tool descriptions take up room on every single turn, so dropping them frees the most space for the least loss.",
+            "The panel being built will show exactly which ones went and why.",
+            "Nothing new for you to configure.",
+            "No competitor manages this at all, so there is no better-tested order to copy."
+          ],
+          "cons": [
+            "An add-on you depend on can disappear in the project where it mattered most.",
+            "Dropping whole sets from the end of a list is arbitrary — the last one you installed is not the least important."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "per-project",
+          "label": "Let each project set the order",
+          "summary": "Who else does it: nobody, though opencode and Pi both let a project override plenty else. It is the natural place this ends up if the default order turns out to be wrong often.",
+          "pros": [
+            "A project that lives on one add-on can protect it.",
+            "Puts the choice with the person who knows what matters."
+          ],
+          "cons": [
+            "A setting most people will never find, for a problem they did not know they had.",
+            "Another thing to maintain and explain.",
+            "Better added later, once the panel has shown you whether the default order actually misfires."
+          ]
+        },
+        {
+          "id": "rules-first",
+          "label": "Rules first, then skills, then tools",
+          "summary": "Who else does it: opencode, in effect — it injects your rules file whole and never touches it. That is exactly what produced its worst reported failure: a 331KB rules file consumed 81 percent of a large window before any work began, and the fix was declined.",
+          "pros": [
+            "Your written instructions are never touched, whatever the model."
+          ],
+          "cons": [
+            "Tools are what the assistant acts with — keeping every rule and losing the tools leaves it well-informed and unable to do anything.",
+            "Rules are the cheapest thing to shorten well, since outlining already works.",
+            "The one tool that does this has a public failure to show for it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Choosing a model",
+      "path": "Starting a chat on a very small local model",
+      "headline": "Hermes and opencode refuse to run below 64k. Should we have a floor too?",
+      "today": "We run on anything and quietly do less. Below 32k the assistant stops choosing skills for itself, and everything it is given is squeezed into a small allowance.",
+      "problem": "Supporting genuinely small models is a real difference for us — the others simply refuse. But a model that is too small does bad work, and people blame the app, not the model.",
+      "proposal": "Decide where the honest line sits between refusing outright and quietly doing less.",
+      "options": [
+        {
+          "id": "run-anything",
+          "label": "Run anything, say plainly what is reduced",
+          "summary": "Who else does it: nobody does either half. Hermes and opencode refuse below 64k; Cline, Roo and Goose accept small models but say nothing, so the model silently forgets its instructions and people blame the tool. Telling you would be ours alone.",
+          "pros": [
+            "Keeps the thing that makes us different from every other tool.",
+            "The panel already tells them what was cut and why, which none of the others do.",
+            "Their hardware and their choice, made with the facts in front of them.",
+            "The tools that accept small models silently are the ones with the worst reputation for it."
+          ],
+          "cons": [
+            "Someone can still have a poor first experience on a model that was never going to work.",
+            "Explaining a reduced experience is harder than refusing one.",
+            "We carry the support burden the others opted out of."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "warn",
+          "label": "Warn before the first message, then continue",
+          "summary": "Who else does it: only in documentation. Cline's own guidance tells people to treat a small local model as a single-file assistant rather than an agent, but the app itself never says so.",
+          "pros": [
+            "The warning arrives before the work rather than after it.",
+            "Still their choice.",
+            "Cheaper than either alternative."
+          ],
+          "cons": [
+            "One more thing to click past, and people click past warnings.",
+            "Hard to word without sounding like the app itself is broken.",
+            "Advice in a document has demonstrably not worked for anyone."
+          ]
+        },
+        {
+          "id": "floor",
+          "label": "Refuse below a floor, as the others do",
+          "summary": "Who else does it: Hermes and opencode, both at 64k. Their reasoning is that a smaller window cannot hold enough working memory for multi-step tool work — which is a real finding, not laziness.",
+          "pros": [
+            "Nobody gets a bad experience from a hopeless model.",
+            "Simplest thing to support and explain.",
+            "Two serious teams reached this conclusion independently."
+          ],
+          "cons": [
+            "Throws away our clearest difference from everyone else.",
+            "A 16k model is genuinely useful for short single-file work, and this would ban it.",
+            "Their floor exists partly because they never built the fitting we already have."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Any chat",
+      "path": "Changing the model halfway through a conversation",
+      "headline": "Switching to a smaller model mid-chat does not re-fit anything. Fix it, or say so?",
+      "today": "What the assistant is given is worked out once, when the chat starts. Change the model halfway through and none of it is redone.",
+      "problem": "Switch from a big model to a small one and it is handed more than it can hold. Switch the other way and you keep a small model's cuts for no reason.",
+      "proposal": "Either redo the fitting when the model changes, or say plainly that the figures are from when the chat started.",
+      "options": [
+        {
+          "id": "say-so",
+          "label": "Say plainly it is from the start of the chat",
+          "summary": "Who else does it: nobody says anything at all, so this would be the honest version of what every tool already does. The reason to keep the behaviour is real: rewriting the start of a conversation makes a local model re-read the whole thing.",
+          "pros": [
+            "Honest, and costs nothing to build.",
+            "Avoids the expense of rewriting what was already sent, which on a local model makes every later turn slower.",
+            "The panel can simply date the figures."
+          ],
+          "cons": [
+            "The mismatch is still real — you just know about it.",
+            "A long chat after a model switch may quietly behave worse than the panel suggests."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "refit",
+          "label": "Redo the fitting on every switch",
+          "summary": "Who else does it: Hermes tries, and has an open bug for it — after switching to a smaller local model it sends oversized prompts, undercounts how much it is sending, and its squeezing can make the result bigger rather than smaller. This is the option with a worked example of going wrong.",
+          "pros": [
+            "What the assistant holds always matches the model actually answering.",
+            "Removes a whole class of confusing behaviour."
+          ],
+          "cons": [
+            "Rewrites the beginning of the conversation, so a local model must re-read the whole chat — noticeably slower and more expensive from then on.",
+            "More moving parts in the one piece of code that must never break.",
+            "The only team that attempted it has a public bug to show for it."
+          ]
+        },
+        {
+          "id": "fresh-chat",
+          "label": "Ask you to start a fresh chat instead",
+          "summary": "Who else does it: nobody, and it would be a step backwards for us — switching models mid-task is one of the things people like most about the app.",
+          "pros": [
+            "Always correct, and simple to build and explain."
+          ],
+          "cons": [
+            "You lose the conversation you were in the middle of.",
+            "Removes one of our better features to avoid a problem the other two options solve.",
+            "Nobody else needs this because most of them only support one model at a time anyway."
+          ]
+        }
+      ]
+    }
+  ]
+}

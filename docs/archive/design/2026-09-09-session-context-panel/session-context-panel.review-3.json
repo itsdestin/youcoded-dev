@@ -1,0 +1,51 @@
+{
+  "title": "What the assistant was given — styled like the app",
+  "key": "session-context-styled",
+  "out": "session-context-panel.review-3.html",
+  "intro": "You said the content is fine but the look still didn't match the app's other dialogs. Changes 1 to 12 (the words) stand. Here the look is rebuilt from the same pieces the Preferences, Permissions and Context dialogs use, nothing hand-drawn. Numbered from 13 so nothing already approved gets renumbered: (13) the header is the app's dialog header — title, one short line under it, the × at the right, a hairline; (14) the model line with the pill is gone, and the status is either the app's standard warning box or the green-dot-and-sentence line the app uses for “signed in”; (15) the body is eyebrow sections, the small uppercase labels every settings dialog uses, instead of cards with their own headings; (16) every row is the app's settings row — the same rounded card, spacing and chevron as the Preferences dialog; (17) model, context window and what was given are three plain rows under THIS CHAT, with the value on the right, the way every settings fact is shown; (18) the footer is gone, and Assistant settings is a navigating row with a chevron, like a Settings drawer row; (19) code blocks sit on the app's deepest surface with a hairline, at the app's caption size; (20) the “What it got | What was cut” switch is the app's real tab control, and the Open button beside a file is the app's small row button. Both panes on the first slide are running — click the tabs, the rows and Open.",
+  "live": {
+    "worktree": "/home/destin/youcoded-dev/worktrees/sessions/context-truncation/youcoded",
+    "paneWidth": 420
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "Small model that had to trim: does the restyled one now look like the rest of the app?",
+      "risk": "The warning box sits above the tabs, so the tabs start lower here than in the green state; Open and Assistant settings do nothing yet in this preview.",
+      "live": {
+        "surface": "session-context",
+        "round": 4
+      },
+      "variants": [
+        {
+          "id": "before",
+          "label": "Before",
+          "candidate": "r3-trimmed",
+          "summary": "The version you saw last: hand-drawn header, model line with a pill, cards with their own headings, a footer button."
+        },
+        {
+          "id": "after",
+          "label": "After",
+          "candidate": "styled-trimmed",
+          "summary": "Changes 13 to 20. Same words, built from the dialog pieces the app already uses everywhere else."
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "Cloud model that got everything: the same restyle in the green state. Keep it?",
+      "changed": "The warning box becomes one green-dot line in a settings card. Below it: the tabs, then THIS CHAT and MORE.",
+      "notice": "It is short on purpose. Nothing was cut, so there is no list of cuts, only the three facts and the settings row.",
+      "risk": "Check it does not feel empty next to the trimmed one.",
+      "live": {
+        "surface": "session-context",
+        "round": 4,
+        "candidate": "styled-full"
+      }
+    }
+  ]
+}
