@@ -1,6 +1,10 @@
 ---
-status: active
+status: superseded
+superseded_by: docs/archive/handoffs/2026-09-09-session-context-panel-handoff.md
 ---
+
+> Superseded 2026-09-09: the work was rebased onto master, reworded and restyled with Destin;
+> start at the 2026-09-09 handoff. This is kept for the original design rationale.
 
 # Handoff: session context panel (Step 3, broadened)
 

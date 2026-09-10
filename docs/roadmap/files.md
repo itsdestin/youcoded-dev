@@ -4,6 +4,29 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
+- [ ] Opening a Markdown file in the file pane freezes the app for ~1.5 s, and a SMALL one
+      still costs ~570 ms — a 3.5 KB Markdown is five times slower to open than a 400 KB
+      code file (117 ms), so this is a fixed cost in the Markdown path, not a size problem.
+      Timed against the perf rig's own 392 KB / 699-fence fixture, 2026-09-09: reading the
+      Markdown 292 ms, converting to HTML structure 217 ms, colouring the code blocks
+      377 ms, and the text extraction a plan had blamed 7 ms — 0.8%, so that is NOT the fix.
+      The remaining ~570 ms of the measured 1,455 ms is React building the node tree.
+      Candidates, none yet tried: render the first screen and fill the rest in afterwards;
+      colour code blocks lazily instead of all 699 up front; move the parse off the main
+      thread. Shared with the chat transcript, so any change has to be checked there too
+      `desktop` `confirmed` `checked 2026-09-09` `performance`
+
+- [ ] The git badge under an open file can go stale the first time the assistant writes to
+      a file that was opened straight from a path rather than picked out of the file list.
+      Such a file is known by its path until the first write, which gives it a permanent id
+      — and the change announcement carries the NEW id while the pane still holds the old
+      one, so the footer treats its own file as somebody else's and skips the refresh.
+      Found by review 2026-09-10 while narrowing which changes the footer listens to. Mostly
+      hidden today behind a louder existing bug: the pane usually reloads wholesale a moment
+      later and kicks the user back to the file list, which is the thing they would report.
+      Fix the two together — the footer needs to learn a file's id can change under it
+      `desktop` `confirmed` `checked 2026-09-10`
+
 - [ ] Git view: a file whose name has a quote, a backslash or an accent (an accented filename
       is the common case) shows no status at all, whatever was changed; a filename containing
       a literal " => " displays as a rename
