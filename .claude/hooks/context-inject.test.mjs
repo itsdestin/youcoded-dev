@@ -126,14 +126,19 @@ test('a worktree reports its uncommitted file count', () => {
   fs.rmSync(ws, { recursive: true, force: true });
 });
 
-test('a worktree with no upstream says so instead of printing a bare comma', () => {
+test('a worktree with nothing to compare against says so instead of printing a bare comma', () => {
   // The throwaway repo has no `origin`, so the ahead-count cannot be computed.
   // An unknown must read as unknown — the earlier draft emitted "— , 1 file(s)".
+  //
+  // The wording changed 2026-09-10, deliberately: it used to say "no upstream to
+  // compare against", and "upstream" is exactly the word that caused the
+  // confusion this hook was fixed for. A missing upstream says nothing about
+  // whether work is backed up; a missing ORIGIN is what stops the comparison.
   const { ws, repo } = makeWorkspace();
   const wtPath = path.join(ws, 'worktrees', 'plan-c');
   git(repo, 'worktree', 'add', '-q', '-b', 'feat/x', wtPath);
   const out = runHook(ws);
-  assert.match(out, /plan-c .*no upstream to compare against/);
+  assert.match(out, /plan-c .*cannot compare against/);
   assert.doesNotMatch(out, /— ,/, 'never emit an empty leading clause');
   fs.rmSync(ws, { recursive: true, force: true });
 });
@@ -293,4 +298,68 @@ test('a worktree whose directory is gone does not kill the rest of the hook', ()
   assert.match(out, /Where things are/, 'the orientation block must still print');
   assert.doesNotMatch(out, /stopped early/, 'the hook must reach its own end');
   fs.rmSync(ws, { recursive: true, force: true });
+});
+
+// --- what can actually be LOST ---------------------------------------------
+// The worktree list used to report "N commit(s) ahead" and leave the reader to
+// infer backup status from it. Ahead of master and absent from the server are
+// different facts: `git push origin <branch>` without -u backs the work up and
+// sets no upstream, so a fully-pushed branch stays N ahead forever. On
+// 2026-09-10, 77 branches across three repos read as local-only and every one
+// was already on the server.
+
+/** A workspace whose repo has a real bare origin — "pushed" needs a remote. */
+function makeWorkspaceWithRemote() {
+  const { ws, repo } = makeWorkspace();
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-inject-remote-'));
+  git(remote, 'init', '-q', '--bare', '-b', 'master');
+  git(repo, 'remote', 'add', 'origin', remote);
+  git(repo, 'push', '-q', '-u', 'origin', 'master');
+  git(repo, 'remote', 'set-head', 'origin', 'master');
+  return { ws, repo, remote };
+}
+
+test('a worktree whose commits are PUSHED (without -u) is not flagged as at risk', () => {
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  const wtPath = path.join(ws, 'worktrees', 'pushed');
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/pushed-no-u', wtPath);
+  fs.writeFileSync(path.join(wtPath, 'work.txt'), 'done\n');
+  git(wtPath, 'add', 'work.txt');
+  git(wtPath, 'commit', '-q', '-m', 'work');
+  git(wtPath, 'push', '-q', 'origin', 'session/pushed-no-u');   // deliberately no -u
+  const out = runHook(ws);
+  assert.match(out, /session\/pushed-no-u/, 'the worktree must still be listed');
+  assert.doesNotMatch(out, /EXIST ONLY HERE/,
+    'the commit is on the server — saying otherwise is the false alarm this fixes');
+  assert.match(out, /- pushed \[/, 'a backed-up worktree gets the plain marker, not the warning one');
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+});
+
+test('a worktree holding a commit NO remote has is flagged loudly', () => {
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  const wtPath = path.join(ws, 'worktrees', 'local-only');
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/local-only', wtPath);
+  fs.writeFileSync(path.join(wtPath, 'work.txt'), 'never pushed\n');
+  git(wtPath, 'add', 'work.txt');
+  git(wtPath, 'commit', '-q', '-m', 'local only');
+  const out = runHook(ws);
+  assert.match(out, /EXIST ONLY HERE/, 'work on one disk only must say so in words');
+  assert.match(out, /⚠ local-only \[/, 'and must carry the warning marker');
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+});
+
+test('uncommitted files carry the warning marker even when everything is pushed', () => {
+  // A ref sweep is structurally blind to a working tree; a full day of finished
+  // work was lost that way (2026-09-01). Committed is not the same as saved.
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  const wtPath = path.join(ws, 'worktrees', 'dirty');
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/dirty', wtPath);
+  fs.writeFileSync(path.join(wtPath, 'in-progress.txt'), 'unsaved\n');
+  const out = runHook(ws);
+  assert.match(out, /⚠ dirty \[/, 'uncommitted work is the case no push rule can reach');
+  assert.match(out, /1 uncommitted file\(s\)/);
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
 });

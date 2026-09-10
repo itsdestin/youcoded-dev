@@ -1,0 +1,64 @@
+{
+  "title": "Remote access \u2014 setup inside the panel you already have",
+  "key": "remote-access-review-3",
+  "out": "remote-access.review-3.html",
+  "images": "images/remote-access.review-3",
+  "runs": {
+    "before": "docs/archive/design/2026-09-09-remote-access/runs/r3-before",
+    "after": "docs/archive/design/2026-09-09-remote-access/runs/r3-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "setup": [
+      "setup",
+      "setup",
+      "460x650+490+125"
+    ],
+    "consent": [
+      "setup",
+      "consent",
+      "460x650+490+125"
+    ],
+    "connected": [
+      "connected",
+      "connected",
+      "460x650+490+125"
+    ]
+  },
+  "steps": [
+    {
+      "id": "1",
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "setup",
+      "headline": "Say what is actually missing, instead of warning about the other device first.",
+      "changed": "Today the panel opens with a yellow warning about your phone, even before anything is installed on this computer. It now says the plain thing \u2014 not set up yet \u2014 with the one button that moves you forward.",
+      "notice": "The box, the wording style and the button are the panel's existing ones. Nothing new was invented.",
+      "risk": "Simulated \u2014 nothing is installed."
+    },
+    {
+      "id": "2",
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access \u2192 after Install",
+      "crop": "consent",
+      "headline": "One yellow box asks before your computer's name is published.",
+      "changed": "A secure connection publishes this computer's name in a public certificate record. There is no step for that today. It uses the same yellow box the panel already uses for things to read first.",
+      "notice": "Your conversations and files stay private \u2014 only the machine name is public.",
+      "risk": "No certificate is issued here."
+    },
+    {
+      "id": "3",
+      "surface": "Remote access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "connected",
+      "headline": "Devices have names, and removing one actually removes its access.",
+      "changed": "Devices were raw IP addresses with a Disconnect that let them straight back in. They now have names, a device you are not using stays listed as Offline, and Revoke means it has to pair again. Skip password on Tailscale is gone.",
+      "notice": "Enabled, Password, Keep awake and Add Device are untouched.",
+      "risk": "Tailnet devices now need a password."
+    }
+  ]
+}

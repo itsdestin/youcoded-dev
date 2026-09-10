@@ -195,6 +195,11 @@ def _live_step(spec, st):
         'surface': st['surface'], 'path': st['path'],
         'headline': st['headline'], 'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
+        # WHY these ride along (2026-09-10): a live pane has no `runs`, so page.js's default
+        # falls to "Yes, build it" — the BRIEF wording, on a pane of the thing already built
+        # and running in front of him. `_words_step` has always passed these through; a live
+        # step silently dropped them, so the spec could ask for the right words and be ignored.
+        'yes': st.get('yes', ''), 'no': st.get('no', ''),
         'panes': panes,
         # A whole screen of the app needs room; an authored candidate is sized by the registry.
         'width': live.get('paneWidth', APP_PANE_WIDTH if _app_step(st) else pane_width(spec)),

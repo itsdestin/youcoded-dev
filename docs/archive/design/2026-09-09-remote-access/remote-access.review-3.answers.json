@@ -1,0 +1,27 @@
+{
+ "deck": "remote-access-review-3",
+ "started": "2026-09-09T21:31:51.199Z",
+ "submitted": "2026-09-09T21:32:53Z",
+ "cur": 2,
+ "answers": {
+  "1": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "3": {
+   "v": "yes",
+   "note": "change \"revoke\" to Unpair\". ",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

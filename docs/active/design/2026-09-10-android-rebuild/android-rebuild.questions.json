@@ -1,0 +1,197 @@
+{
+  "title": "Android rebuild — the five decisions before the work starts",
+  "key": "android-rebuild-questions",
+  "out": "android-rebuild.questions.html",
+  "themes": ["midnight", "light"],
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The Android app",
+      "path": "Chat on the phone — what answers when you send a message",
+      "headline": "What should the phone run: the built-in assistant, a newer Claude Code, or both?",
+      "today": "On the phone every conversation is a Claude Code terminal session. The phone's copy of Claude Code is frozen at a version from spring because newer versions ship in a form the phone's runtime cannot start. Desktop always gets the newest version, and also has its own built-in assistant that talks to ChatGPT, OpenRouter and local models.",
+      "problem": "The phone falls further behind every day, shows commands its Claude Code does not have, and cannot use ChatGPT or OpenRouter at all. Unfreezing Claude Code on the phone is a runtime rework of unknown size; bringing the built-in assistant over is a known 3-to-5-week port.",
+      "proposal": "Pick what the rebuild leads with. Either way the phone keeps a working chat throughout.",
+      "options": [
+        {
+          "id": "native-first",
+          "label": "Built-in assistant first",
+          "pros": [
+            "ChatGPT and OpenRouter on the phone in weeks, the same behaviour as desktop.",
+            "The frozen Claude Code stays available as it is today, labelled as the older option."
+          ],
+          "cons": [
+            "Claude Code on the phone stays at the spring version until someone takes on the runtime rework.",
+            "Two ways to chat on the phone, one of them visibly older."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "unfreeze-first",
+          "label": "Unfreeze Claude Code first",
+          "pros": [
+            "The one thing the phone does today gets current and stays current."
+          ],
+          "cons": [
+            "Unknown size: it means teaching the phone runtime to start a native program it cannot start today.",
+            "Still no ChatGPT or OpenRouter until the built-in assistant follows."
+          ]
+        },
+        {
+          "id": "native-then-unfreeze",
+          "label": "Built-in first, then unfreeze",
+          "pros": [
+            "Ends with both lanes current."
+          ],
+          "cons": [
+            "The longest path; the second half may never get scheduled."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The Android app",
+      "path": "Order of the rebuild",
+      "headline": "Which comes first: the built-in assistant, or the phone basics?",
+      "today": "The phone is missing two different kinds of thing. One is the built-in assistant (ChatGPT, OpenRouter). The other is ordinary phone behaviour: notifications that arrive, sharing into the app from other apps, access to your real folders, an update check, a proper first-launch screen.",
+      "problem": "Both are weeks of work and they do not overlap much. Whichever goes second is what testers will complain about in the meantime.",
+      "proposal": "Pick the order. Small fixes that make the current app honest (real version numbers, notification permission, clean refusals) happen first regardless.",
+      "options": [
+        {
+          "id": "harness-first",
+          "label": "Built-in assistant first",
+          "pros": [
+            "The biggest gap closes first; the phone becomes the same product as desktop.",
+            "The first-launch screen needs the assistant's sign-in anyway, so it is designed once."
+          ],
+          "cons": [
+            "Notifications, sharing and file access stay missing for another month or so."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "essentials-first",
+          "label": "Phone basics first",
+          "pros": [
+            "The app feels like a real phone app sooner: approval prompts arrive, you can share a screenshot into it."
+          ],
+          "cons": [
+            "It is still a Claude Code-only app during that time, and the first-launch screen gets designed before the assistant it should introduce."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "How it ships and what it keeps",
+      "intro": "The first page decided what the phone runs. These decide how people get it and how much of the desktop's file features it carries."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The Android app",
+      "path": "Installing and updating",
+      "headline": "Google Play, or keep the GitHub download with an in-app update check?",
+      "today": "The app is downloaded from GitHub as a file and installed by hand, with the security warnings that brings. There is no update check inside the app, so nobody finds out a newer build exists.",
+      "problem": "Most installed copies will quietly rot. A Play listing needs the company's identity paperwork, a data-safety form, a content rating, a slightly newer Android target and a first-launch consent screen; from 2027 Google requires a verified developer even for hand-installed apps.",
+      "proposal": "Pick the destination. The website's Android notice already says we are aiming for Google Play.",
+      "options": [
+        {
+          "id": "play",
+          "label": "Google Play",
+          "pros": [
+            "Installs and updates like every other app; no security warnings, no hunting for files.",
+            "Testing tracks let a few people try builds before everyone."
+          ],
+          "cons": [
+            "Store-readiness work and paperwork before the first listing; Google reviews each release.",
+            "Google's rules on downloaded code may constrain how the phone runs Claude Code."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "sideload-plus-check",
+          "label": "GitHub download plus an in-app update check",
+          "pros": [
+            "Nothing to file; ships whenever we like.",
+            "The update check alone fixes the rot."
+          ],
+          "cons": [
+            "Every install and update keeps the unknown-source warnings.",
+            "Runs into Google's 2027 developer-verification rule anyway."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both",
+          "pros": [
+            "Play for most people, GitHub for anyone who wants it."
+          ],
+          "cons": [
+            "Two distribution paths to keep in step."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Projects → Files, on the phone",
+      "headline": "How much of the desktop's file features should the phone get?",
+      "today": "On desktop, Files shows every file in a project, lets you import, rename, exclude and delete, search inside files, and shows git changes. On the phone only the files a conversation produced are listed; everything else answers \"not available\".",
+      "problem": "The full file view is a large port on its own, and a phone screen is a poor place for a git surface. But a phone that cannot browse a project's files is a thinner product than the website claims.",
+      "proposal": "Pick the scope for the rebuild's first release.",
+      "options": [
+        {
+          "id": "session-files",
+          "label": "Conversation files only",
+          "pros": [
+            "Already works; the rebuild spends its time elsewhere.",
+            "The screens that cannot work on the phone are hidden cleanly instead of failing."
+          ],
+          "cons": [
+            "No browsing a project's folder, no import, no git on the phone."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "browse-and-import",
+          "label": "Browse and import, no git",
+          "pros": [
+            "You can open any file in the project and add one from the phone."
+          ],
+          "cons": [
+            "A few more weeks of phone work; live refresh and content search are extra on top."
+          ]
+        },
+        {
+          "id": "full",
+          "label": "Everything desktop has",
+          "pros": [
+            "One product, no asterisks."
+          ],
+          "cons": [
+            "The largest option by far, and git on a phone screen has no design yet."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Backup and restore",
+      "path": "Settings → Sync, on the phone",
+      "headline": "Should the phone keep its old restore-from-backup wizard, which desktop no longer has?",
+      "today": "In July desktop replaced its Google Drive and GitHub backup system with the current Sync Spaces design and deleted the restore wizard. The phone still runs the old system: it backs up to Drive and can restore from a dated snapshot. Nothing else in the product can read those backups any more.",
+      "problem": "It is the only place restore still exists, it does not talk to the current sync, and it is a chunk of phone-only code that the rebuild would otherwise delete.",
+      "proposal": "Yes removes it on the phone so both platforms match, and the phone gets the current sync when the built-in assistant's runtime arrives. No keeps it until then. Don't know leaves it in place for now.",
+      "yes": "Remove it",
+      "no": "Keep it for now"
+    }
+  ]
+}

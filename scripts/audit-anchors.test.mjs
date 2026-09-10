@@ -646,6 +646,32 @@ test('strandedWorktrees: uncommitted work on a branch with zero commits is repor
   assert.ok(found[0].idleHours >= 24);
 });
 
+test('strandedWorktrees: a branch PUSHED WITHOUT -u is not reported as unpushed', t => {
+  // The false alarm this check used to raise, and the reason it raised it: a bare
+  // `git push origin <branch>` backs the work up completely and sets NO upstream.
+  // The old test fell back to "commits past origin/master" and counted every one
+  // of them as lost. 77 branches on this machine were flagged that way on
+  // 2026-09-10, every one already on the server; one sat 7 commits past master and
+  // would have read as 7 lost commits.
+  //
+  // The `now` offset is load-bearing: without it this worktree is merely young, so
+  // it would pass on "active session" and prove nothing about pushedness — which
+  // is how the first draft of this test passed against the BROKEN code.
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-pushed');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/pushed-no-u', wt);
+  fs.writeFileSync(path.join(wt, 'work.txt'), 'real work\n');
+  f.git(wt, 'add', 'work.txt');
+  f.git(wt, 'commit', '-qm', 'work past master');
+  f.git(wt, 'push', '-q', 'origin', 'session/pushed-no-u');    // deliberately no -u
+  assert.equal(f.git(wt, 'rev-list', '--count', 'origin/master..HEAD'), '1',
+    'fixture must actually sit past master, or it proves nothing');
+  assert.equal(f.git(wt, 'for-each-ref', '--format=%(upstream:track)', 'refs/heads/session/pushed-no-u'), '',
+    'fixture must have NO upstream, or it is not reproducing the reported case');
+  assert.deepEqual(strandedWorktrees(f.root, { now: Date.now() + 48 * 3600_000 }), [],
+    'the commit is on the server; a clean, fully-backed-up worktree must stay silent');
+});
+
 test('strandedWorktrees: committed-but-unpushed work is reported too', t => {
   const f = tempRepo(t);
   const wt = path.join(f.root, 'wt-unpushed');

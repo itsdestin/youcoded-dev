@@ -4,6 +4,35 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
+- [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
+      but still a visible pause. What is left is the sheer number of elements syntax
+      highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576
+      elements against 7,056 unhighlighted, and building them is now the whole cost
+      (measured 2026-09-10 with `scripts/perf-lab/profile-open.mjs`). Skipping layout for
+      off-screen code blocks and short-circuiting the path detector already took 1,487 ms →
+      939 ms with nothing visibly changed. The remaining lever DOES change what the user
+      sees, so it is Destin's call: stop colouring code in very large documents (est.
+      ~300-400 ms, but a huge file's code reads as plain text while a normal file's stays
+      coloured), or colour each block only as it scrolls into view (keeps colour everywhere;
+      harder, because the filepath chips inside code blocks are added AFTER highlighting and
+      a naive lazy pass would destroy them). Shared with the chat transcript, so any change
+      has to be checked there too.
+      NOTE for whoever picks this up: the old "a small Markdown file costs 570 ms" claim was
+      WRONG and is withdrawn — that number was the rig's own probe forcing a layout on every
+      poll. An ordinary Markdown file opens in ~60 ms
+      `desktop` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] The git badge under an open file can go stale the first time the assistant writes to
+      a file that was opened straight from a path rather than picked out of the file list.
+      Such a file is known by its path until the first write, which gives it a permanent id
+      — and the change announcement carries the NEW id while the pane still holds the old
+      one, so the footer treats its own file as somebody else's and skips the refresh.
+      Found by review 2026-09-10 while narrowing which changes the footer listens to. Mostly
+      hidden today behind a louder existing bug: the pane usually reloads wholesale a moment
+      later and kicks the user back to the file list, which is the thing they would report.
+      Fix the two together — the footer needs to learn a file's id can change under it
+      `desktop` `confirmed` `checked 2026-09-10`
+
 - [ ] Git view: a file whose name has a quote, a backslash or an accent (an accented filename
       is the common case) shows no status at all, whatever was changed; a filename containing
       a literal " => " displays as a rename

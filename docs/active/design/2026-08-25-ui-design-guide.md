@@ -157,7 +157,7 @@ rule — the validator does not check it (P-16, decided 2026-08-25: no new pack 
 | `Radio`/`RadioGroup` | 2–5 exclusive options with descriptions (Sound, permission mode) | SegmentedTabs when options need a second line |
 | `SegmentedTabs` | 2–5 exclusive *short* options or view switches (Haiku/Sonnet/Opus; Chat/Terminal; Plugins/Themes) | for filter categories (those are pills); for anything that wraps |
 | `TextInput`/`Textarea`/`Select`/`InputGroup` | every field; `InputGroup` when a button lives *inside* the field (search + clear, key + save) | icon buttons floating over a bare input (Skills drawer today) |
-| `SearchFilterPill` | every search-with-filter control (Projects, Session Files, Marketplace, Skills drawer, Resume) | four bespoke search boxes |
+| `SearchFilterPill` | every search-with-filter control (Projects, Session Files, Marketplace, Skills drawer; Resume at phone width only — Destin kept its desktop box over the pill, 2026-09-10 resume-filter-chips S-2, do not re-propose) | four bespoke search boxes |
 | `SettingRow` | any row that navigates or holds one control; **also every expand-in-place section** (`expanded` turns its right-hand chevron down) | hand-rolled `flex` rows with a chevron; **a bare leading “›” text toggle** (Destin, 2026-09-05: “I HATE the bare dropdowns with a chevron”) |
 | `Dialog` (`prompt` 340 / `panel` 420 / `document` 600) | all modals. `prompt` = one question + buttons; `panel` = a settings screen; `document` = long prose | choosing `prompt` for a list (Keyboard Shortcuts); headerless dialogs (Donate/Development) |
 | `Callout` | inline explainer or warning inside a panel | coloured borders on ad-hoc divs |

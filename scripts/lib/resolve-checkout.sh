@@ -1,5 +1,9 @@
-# Resolve "which youcoded checkout do you mean?" — shared by run-dev.sh and
-# run-workbench.sh so the two launchers accept the SAME names.
+# Resolve "which youcoded checkout do you mean?" — used by run-workbench.sh.
+#
+# (run-dev.sh still carries its own copy. This header claimed both used it from
+# the day it was written; corrected 2026-09-10, and folding run-dev into it is
+# filed in docs/roadmap/dev-workspace.md rather than done here — it is the
+# launcher that paints a real window on Destin's desktop.)
 #
 # WHY it is shared: run-workbench had its own three-line version that only knew
 # `worktrees/<name>/desktop`. Session worktrees live at
@@ -24,6 +28,18 @@ list_youcoded_worktrees() {
 
 resolve_youcoded_checkout() {
   local target="$1" root="$2"
+
+  # The caller passes the directory ABOVE scripts/, which inside a session
+  # worktree is the worktree — not the workspace. Every layout below is spelled
+  # relative to the workspace, so without this the session shapes can never
+  # match and the obvious name fails. Measured 2026-09-10: two failed launches
+  # from inside a worktree before falling back to the branch name.
+  local probe="$root"
+  while [[ ! -d "$probe/worktrees" && "$probe" != "/" ]]; do
+    probe="$(dirname "$probe")"
+  done
+  [[ -d "$probe/worktrees" && -d "$probe/youcoded" ]] && root="$probe"
+
   local main="$root/youcoded"
 
   # 1. no target → the main checkout
@@ -43,7 +59,11 @@ resolve_youcoded_checkout() {
     /^worktree / { path = substr($0, 10) }
     /^branch /   { br = substr($0, 8); sub("refs/heads/", "", br)
                    n = split(path, parts, "/"); base = parts[n]
-                   if (br == want || base == want) { print path; exit } }
+                   # A session worktree ALWAYS ends in /youcoded, so its basename
+                   # never distinguishes one session from another — the name that
+                   # does is the directory above it.
+                   sess = (base == "youcoded" && n > 1) ? parts[n-1] : ""
+                   if (br == want || base == want || sess == want) { print path; exit } }
   ')"
   [[ -n "$match" ]] && { echo "$match"; return 0; }
   return 1

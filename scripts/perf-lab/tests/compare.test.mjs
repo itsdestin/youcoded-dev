@@ -77,6 +77,13 @@ const base = {
     ],
     median: { ceilingPssMb: 6800, deltaPssMb: 5080, perSize: { huge: { pageMedianMs: 90 } } },
   },
+  projects: {
+    runs: [
+      { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
+      { thrash: { ipcStallMs: 7300 }, open: { openMs: 2160 } },
+    ],
+    median: { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
+  },
   errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
 };
 const clone = () => JSON.parse(JSON.stringify(base));
@@ -95,6 +102,61 @@ test('cpuTotalSeconds is derived for a report that predates it, so old baselines
   assert.equal(get(modern, 'workload.median.cpuTotalSeconds'), 122);
   // Nothing to derive from stays undefined, so the gate still fails closed.
   assert.equal(get({ workload: { median: {} } }, 'workload.median.cpuTotalSeconds'), undefined);
+});
+
+test('the thrash stall is derived for the report written before the field was promoted', () => {
+  // scenario-projects.mjs promoted `thrash.ipc.totalStallMs` to `thrash.ipcStallMs`
+  // in the same commit that checked in the first thrash report, so that report has
+  // the probe object and not the headline — and a missing PRIMARY path fails the
+  // gate CLOSED, retiring the only baseline this metric has.
+  const old = {
+    projects: {
+      runs: [
+        { thrash: { ipc: { totalStallMs: 6986 } } },
+        { thrash: { ipc: { totalStallMs: 7101 } } },
+        { thrash: { ipc: { totalStallMs: 7203 } } },
+      ],
+      // The median section never carried the probe object — only promoted numbers
+      // reach a median — so the median has to come back from the runs.
+      median: { thrash: { ipcMaxMs: 305 } },
+    },
+  };
+  assert.equal(get(old, 'projects.median.thrash.ipcStallMs'), 7101);
+  // And the per-run projection, which is what spreadPct reads.
+  assert.deepEqual(runsFor(old, 'projects.median.thrash.ipcStallMs'), [6986, 7101, 7203]);
+  // A report that carries the field is used as-is, never recomputed from the probe.
+  const modern = { projects: { runs: [{ thrash: { ipcStallMs: 0, ipc: { totalStallMs: 99 } } }], median: { thrash: { ipcStallMs: 0 } } } };
+  assert.equal(get(modern, 'projects.median.thrash.ipcStallMs'), 0);
+  // Nothing to derive from stays undefined, so the gate still fails closed.
+  assert.equal(get({ projects: { median: { thrash: {} } } }, 'projects.median.thrash.ipcStallMs'), undefined);
+});
+
+test('a phase NEITHER report ran is out of scope, but a phase only one ran still fails closed', () => {
+  // `--only projects` on both sides: 23 of the 25 PRIMARY paths belong to phases
+  // that were never measured. Refusing on those would print REJECT for reasons
+  // that have nothing to do with the change, on every single-phase comparison.
+  const onlyProjects = (stall, open) => ({
+    projects: {
+      runs: [{ thrash: { ipcStallMs: stall }, open: { openMs: open } }, { thrash: { ipcStallMs: stall + 2 }, open: { openMs: open + 2 } }],
+      median: { thrash: { ipcStallMs: stall }, open: { openMs: open } },
+    },
+    errors: { coldStarts: [0], scenarioBoot: 0 },
+  });
+  const v = verdict(onlyProjects(7101, 192), onlyProjects(0, 161), { target: 'projects.median.thrash.ipcStallMs', screens: {} });
+  assert.equal(v.keep, true, v.reasons.join('; '));
+  assert.equal(v.notRun.length, 23);
+  assert.deepEqual(v.missing, []);
+
+  // Asymmetric is the dangerous shape and still rejects: the baseline measured
+  // the artifacts phase and the candidate did not, so those metrics went unjudged.
+  const withArtifacts = onlyProjects(7101, 192);
+  withArtifacts.artifacts = {
+    runs: [{ open: { mdLarge: { openMs: 1400 } }, typing: { codeLarge: { keystroke: { p95Ms: 180 } } }, htmlNav: { swap: { medianMs: 210 } }, ipcSumOfSteps: { totalStallMs: 700 } }],
+    median: { open: { mdLarge: { openMs: 1400 } }, typing: { codeLarge: { keystroke: { p95Ms: 180 } } }, htmlNav: { swap: { medianMs: 210 } }, ipcSumOfSteps: { totalStallMs: 700 } },
+  };
+  const v2 = verdict(withArtifacts, onlyProjects(0, 161), { target: 'projects.median.thrash.ipcStallMs', screens: {} });
+  assert.equal(v2.keep, false);
+  assert.ok(v2.reasons.some((r) => r.includes('cannot judge 4 PRIMARY metric')), v2.reasons.join('; '));
 });
 
 test('the fixture carries every PRIMARY path, or every test below is judging a partial report', () => {
@@ -218,6 +280,36 @@ test('an older baseline that predates a metric cannot certify it', () => {
   assert.equal(v.missing.length, 3);
   assert.ok(v.reasons.some((r) => r.includes('cannot judge 3 PRIMARY metric')), v.reasons.join('; '));
   assert.ok(v.missing.every((m) => m.where === 'baseline'), JSON.stringify(v.missing));
+});
+
+test('a metric NEWER than the baseline is noted, not refused — but only within a phase the baseline ran', () => {
+  // Adding a PRIMARY path used to retire every existing baseline the day it
+  // landed: 2026-09-09, a baseline ninety minutes old lacked the new field and
+  // the gate refused everything. A field the baseline's own phase never carried
+  // is a new measurement, not a regression that went unseen.
+  const b = clone(); delete b.artifacts.median.htmlNav;   // phase ran; this field did not exist
+  for (const r of b.artifacts.runs) delete r.htmlNav;
+  const c = clone(); c.startup.median.sessionsListed = 800;
+  const v = verdict(b, c, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v.keep, true, v.reasons.join('; '));
+  assert.deepEqual(v.newMetric, ['artifacts.median.htmlNav.swap.medianMs']);
+  assert.deepEqual(v.missing, []);
+
+  // The distinction that keeps this honest: a whole PHASE the baseline never ran
+  // is a gap, and still refuses (the case the test above this one pins).
+  const noPhase = clone(); delete noPhase.replayStall;
+  const v2 = verdict(noPhase, c, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v2.keep, false);
+  assert.deepEqual(v2.newMetric, []);
+
+  // And the mirror image is always a refusal: a field the BASELINE has and the
+  // candidate does not is a field the writer dropped.
+  const dropped = clone(); dropped.startup.median.sessionsListed = 800;
+  delete dropped.artifacts.median.htmlNav;
+  for (const r of dropped.artifacts.runs) delete r.htmlNav;
+  const v3 = verdict(base, dropped, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v3.keep, false);
+  assert.ok(v3.missing.some((m) => m.where === 'candidate'), JSON.stringify(v3.missing));
 });
 
 test('a complete pair reports nothing missing', () => {

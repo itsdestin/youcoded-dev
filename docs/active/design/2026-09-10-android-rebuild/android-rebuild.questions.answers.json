@@ -1,0 +1,38 @@
+{
+ "deck": "android-rebuild-questions",
+ "started": "2026-09-10T12:39:21.220Z",
+ "submitted": "2026-09-10T12:42:55Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "native-first",
+   "seconds": 13,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "harness-first",
+   "seconds": 13,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "other",
+   "seconds": 62,
+   "theme": "midnight",
+   "note": "i think both maybe? i think for now i'd like to prioritize google play. we just recieved my duns number which i think was part of what was blocking us"
+  },
+  "Q-4": {
+   "v": "pick",
+   "seconds": 62,
+   "theme": "midnight",
+   "pick": "full",
+   "note": ""
+  },
+  "Q-5": {
+   "v": "yes",
+   "seconds": 62,
+   "theme": "midnight"
+  }
+ }
+}

@@ -5,6 +5,10 @@ type: investigation
 topic: Android ManagedSession bare-phrase screen scans can false-fire prompt cards
 ---
 
+> **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 21 in the
+> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
+
 # Android bare-phrase screen scans false-fire prompt cards
 
 **Symptom.** On Android, Claude's ordinary reply text can pop a phantom prompt card — the

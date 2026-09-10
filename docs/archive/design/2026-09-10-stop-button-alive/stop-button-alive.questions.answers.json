@@ -1,0 +1,36 @@
+{
+ "deck": "stop-button-alive-questions",
+ "started": "2026-09-10T22:06:25.031Z",
+ "submitted": "2026-09-10T22:07:21Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "only-working",
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "seconds": 11,
+   "theme": "midnight",
+   "pick": "still-when-asking"
+  },
+  "Q-3": {
+   "v": "pick",
+   "seconds": 11,
+   "theme": "midnight",
+   "pick": "round"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight"
+  }
+ }
+}

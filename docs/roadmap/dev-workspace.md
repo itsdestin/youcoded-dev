@@ -3,6 +3,40 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
+      never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
+      pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
+      hour. Nothing about the code changed between the green and red runs, so it is the runner's
+      Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
+      is recognised, but the fix is a longer or retried launch in the perf-lab harness
+      `n/a` `needs-verify` `checked 2026-09-10`
+- [ ] Desktop CI's Windows leg is red on master (seen 2026-09-10 on three runs in a row) on two
+      native-harness tests — "an unchanged attachment restores its bytes; a changed one
+      invalidates the whole checkpoint" and "publishes references to exact transcript content
+      and restores private metadata without duplicating transcript text" — while macOS and
+      Linux pass. Every merging session has to open the log to learn it is not theirs; two did
+      so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
+      broken on Windows; nobody has looked
+      `n/a` `needs-verify` `checked 2026-09-10` `regression`
+- [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
+      intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
+      in isolation immediately after — load-sensitive, not a regression from the remote-access
+      work that was running beside it. Likely a fixed sleep or an unawaited signal; see
+      `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
+      Fourth sighting 2026-09-10: failed in one `verify.sh` run on a branch touching only Android
+      Kotlin and the remote shim, passed twice alone and once alone on master, green on the
+      next full run (`expected [[50],[50]] to equal [[20],[20]]`, the Retry-persists test)
+      `n/a` `needs-verify` `checked 2026-09-10`
+- [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
+      has been red on master for it for weeks: `native-specialists.md` (764 words) and
+      `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every
+      session, so this is a standing tax on every conversation, and the red audit also
+      hides any NEW drift behind noise a session learns to skim past. The ledger records
+      native-specialists going over four separate times, each noticed and left because it
+      belongs to nobody's current branch. Fix is the one the rules README already
+      prescribes: move the overflow into the lazy doc the rule points at
+      `n/a` `confirmed` `checked 2026-09-10`
+
 - [ ] `use-provider-type.test.tsx` → "invalidation › is triggered by the ChatGPT card on a status
       transition" failed once in a `verify.sh --full` run on session/cache-competitor-survey
       (2026-09-10, `expected "vi.fn()" to be called at least once`, 1,224 ms) and passed 14/14 in
@@ -10,6 +44,39 @@ seen-on is always n/a here.
       likeliest read is the same shape as the step-guard entry below: a timer-dependent
       assertion under full-suite load
       `desktop` `needs-verify` `checked 2026-09-10`
+- [ ] The perf rig throws away a finished build when the machine is merely still calming
+      down. Its idle gate polls five times, 30 s apart, then aborts the whole run — but the
+      abort happens AFTER the multi-minute build, and a load average decaying from other
+      work can sit above the threshold for the whole 2.5 minutes while trending down. Hit
+      2026-09-09: five attempts at load 12.1 → 4.4 and abort, with the machine quiet a
+      minute later. Worked around twice with a hand-written waiter that requires three
+      consecutive settled samples before launching. Fix: wait until a deadline rather than a
+      fixed attempt count, require the load to be settled rather than momentarily under the
+      line, and print a "still waiting" line so a queued run is not mistaken for a hung one
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
+- [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
+      actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
+      phase opens the drawer but types into an editor rather than receiving a reply, so a
+      change that removes per-token drawer redraws measures as flat in both (2026-09-09:
+      artifacts and workload before/after within run-to-run spread, while a render count
+      showed 40 avoided redraws per 40 tokens). Nor does any phase change one file while a
+      DIFFERENT file is open, which is what makes the git footer re-run three git
+      subprocesses. Fix: a step that opens the drawer on a file, streams a reply, and edits
+      other files meanwhile — then the drawer's cost during a reply is a rig number instead
+      of a unit-test count
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
+- [ ] perf-lab's own `screenshots.test.mjs` fails about two runs in three: "each run removes its
+      throwaway Chrome profile" counts `perf-lab-diff-*` directories in the OS temp dir before and
+      after two headless launches and demands the count be unchanged, but the cleanup waits on an
+      async Chrome exit, so a run that finishes teardown late reads as a leak. `/tmp` on this
+      machine held ~160 orphaned profile directories from earlier runs, which is the same fault
+      seen from the other side — some really are left behind. Found 2026-09-09 while gating the
+      Project View watcher fix; reproduced on a pristine tree with the perf work stashed, so it is
+      not that change. Fix: have the test wait on the exit it is asserting about rather than on a
+      count, and sweep the orphans
+      `n/a` `confirmed` `checked 2026-09-09`
 
 - [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
       failed once in a full suite run and passed on the two full runs after it, plus three
@@ -22,8 +89,15 @@ seen-on is always n/a here.
       commits and applies the latest intent after the in-flight write" — in a full suite run
       on session/claude-auth-live-status, which touches no step-guard file at all; 3 of 3
       isolated re-runs green. Two of the file's eight tests have now flaked in full runs and
-      only in full runs, which points at the suite's shared timers rather than either test
-      `desktop` `confirmed` `checked 2026-09-09` `regression`
+      only in full runs, which points at the suite's shared timers rather than either test.
+      THIRD occurrence 2026-09-10, a THIRD test in the same file — "invalid text does not
+      save null and visibly restores the saved value" — in a `verify.sh --full` run on
+      perf/markdown-open, whose four changed files are markdown rendering and CSS and are
+      imported by nothing in this suite; 3 of 3 isolated re-runs green and the very next
+      full run green at 10,280 passed. Three of eight tests, three unrelated branches, never
+      once outside a full run: treat the file's shared timer setup as the suspect, not the
+      assertions. It costs a re-run on every branch that trips it
+      `desktop` `confirmed` `checked 2026-09-10` `regression`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
@@ -157,6 +231,11 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+
+- [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
+      contract check, hours later, refuses the later rounds' sources; a warning at build time
+      would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
+      `desktop` `confirmed` `checked 2026-09-10`
 - [ ] `roadmap-check.mjs --fix` rewrites items the session never touched: on today's master it
       downgrades two `confirmed` performance items (buddy reflow, remote replay buffer) to
       `needs-verify` every run. The filing grammar tells every session to run it before
@@ -210,8 +289,25 @@ seen-on is always n/a here.
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
       context-free tester cannot claim to have covered either. Add pointer and scale switches to
-      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them
-      `n/a` `confirmed` `checked 2026-09-04`
+      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them.
+      **Deeper than switches, found 2026-09-10:** `ui-probe.mjs` cannot produce REAL input at
+      all — it has no CDP `Input` domain, so the only ways to ask a hover/press question are a
+      synthetic `dispatchEvent` (which skips hit-testing, so it answers a different question
+      and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
+      synthetic dispatch "proved" disabled controls receive pointer events when it proved
+      nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
+      `--move-to x,y` on ui-probe would execute where a switch only asks
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
+      different subset of the layouts: `scripts/lib/resolve-checkout.sh` (run-workbench),
+      `run-dev.sh`'s own inline version, and `deck/serve.py:resolve_worktree`. Two of the
+      three were fixed on separate days for the same missing shape — the session layout
+      `worktrees/sessions/<name>/youcoded` — at a cost of three failed launches on
+      2026-09-09 and two more plus a failed deck serve on 2026-09-10. run-dev is the one
+      still carrying its own; folding it in was deliberately not done in a wrap-up because
+      it is the launcher that paints a real window on Destin's desktop
+      `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] Measure the feature flow's two reviewers: after three features have run through the
       2026-09-04 flow, count findings, accepted, rejected and rows failed at acceptance per
@@ -581,9 +677,11 @@ seen-on is always n/a here.
       `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
-      a verified developer even for sideloads. Blocked on the LLC's D-U-N-S number; then the bundle
-      upload, data-safety form, content rating and account-deletion link
-      `android` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
+      unblocked: next the Play developer account in the LLC's name, then the bundle upload,
+      data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
+      priority for the rebuilt app (deck Q-3)
+      `android` `confirmed` `checked 2026-09-10` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
@@ -628,6 +726,15 @@ seen-on is always n/a here.
       words would fix it; so would always keeping the branch name in the message
       `n/a` `confirmed` `checked 2026-09-05`
 
+- [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
+      orphans its Vite server. Stopping a dev instance the documented way — derive the pid
+      from its port, kill it — leaves the renderer's dev server holding port 5223, so the
+      next `run-dev.sh` dies with a bind error that names Vite rather than the leftover.
+      Cost 2026-09-10: one failed relaunch plus a second kill, mid-test, while Destin was
+      waiting on his phone. A `--stop` that kills the pair, or a pidfile the script cleans
+      up, would execute; the launcher already knows both ports
+      `n/a` `confirmed` `checked 2026-09-10`
+
 - [ ] `workbench-boot-check.mjs` boots only the `scenario=*` / `view=*` routes, so eleven of the
       eighteen `?switch=` values `mock-shim.ts` reads have never been booted by any check —
       `planUsage`, `chatgpt`, `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`,
@@ -638,3 +745,14 @@ seen-on is always n/a here.
       `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
       same instruction but cannot boot anything
       `n/a` `confirmed` `checked 2026-09-09`
+
+- [ ] `run-dev.sh --offset N` fails with a bare Vite "Port 5233 is already in use" when the offset
+      collides with another session's dev instance — after the whole launch sequence has run, and
+      without saying that a dev instance is what owns it or which offset is free. Hit 2026-09-10:
+      picked `--offset 60`, which another session's `remote-mesh-roadmap` instance already held.
+      With four-plus concurrent session worktrees on this machine this is the normal case, not the
+      rare one, and CLAUDE.md's "concurrent instances also need distinct --offset and --profile"
+      cannot help — the rule was followed, the guess was just taken. A preflight that checks the
+      three ports the offset resolves to, names the worktree holding one, and suggests the next
+      free offset would turn a cryptic late failure into a one-line answer
+      `n/a` `confirmed` `checked 2026-09-10`

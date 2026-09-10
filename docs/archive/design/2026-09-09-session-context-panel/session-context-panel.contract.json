@@ -1,0 +1,244 @@
+{
+  "title": "What the assistant was given — contract",
+  "key": "session-context-panel-contract",
+  "out": "session-context-panel.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/context-truncation",
+  "sources": {
+    "session-context-styled": "session-context-panel.review-3.json",
+    "session-context-record": "session-context-panel.review-4.json",
+    "session-context-r5": "session-context-panel.review-5.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "What the assistant was given",
+      "path": "Chat → the line at the top of the conversation → Details",
+      "headline": "This is what done means for the panel that shows what the assistant was given.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The panel is built from the same dialog pieces as the app's other settings dialogs, not its own look.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The header shows the title, one short line beneath it, and a close cross at the right, above a hairline.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R3",
+          "statement": "When something was left out, one line on Overview says so and opens to the full explanation.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R4",
+          "statement": "Sections are introduced by small uppercase labels rather than cards carrying headings of their own.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R5",
+          "statement": "Each item is a rounded row with a chevron, spaced exactly like the rows in the Preferences dialog.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R6",
+          "statement": "Model, context window and what was given sit as three plain rows under THIS CHAT, each value on the right.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R7",
+          "statement": "There is no footer button; Assistant settings sits at the bottom of Overview as a row with a chevron.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R8",
+          "statement": "Quoted file text sits on the app's deepest surface behind a hairline, at the app's small caption size.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R9",
+          "statement": "The What it got and What was cut switch is the app's own tab control, and Open is its small row button.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-1"
+        },
+        {
+          "id": "R10",
+          "statement": "When nothing was left out, the same restyled panel appears in its green everything-fit state.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-2"
+        },
+        {
+          "id": "R11",
+          "statement": "In the green state one green-dot line sits below the tabs, in place of the warning.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-2"
+        },
+        {
+          "id": "R12",
+          "statement": "With nothing cut there is no list of cuts, only the three facts and the settings row.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-styled#S-2"
+        },
+        {
+          "id": "R13",
+          "statement": "The tabs come first, above the warning line and above the green everything-fit line.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R14",
+          "statement": "The warning line shows only on Overview and is gone on the other four tabs.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R15",
+          "statement": "File and skill text is shown as formatted text through the app's own reader, not as raw source.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R16",
+          "statement": "The What it got and What was cut switch spans the full width of the panel.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R17",
+          "statement": "Each side of that switch says roughly how much text it holds, so the size is obvious.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R18",
+          "statement": "Each tool is a full-width row that opens in place, with a plain sentence saying what it does.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R19",
+          "statement": "The switch and its text sit in one card with the skill or file they belong to.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-1"
+        },
+        {
+          "id": "R20",
+          "statement": "In a chat where nothing was cut, skills that fit show their text too.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#R-2"
+        },
+        {
+          "id": "R21",
+          "statement": "The second tab is called System.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#G-2",
+          "note": "we should make this tab include both preset instructions and general system instructions. i want to be fully transparent about what models load in with"
+        },
+        {
+          "id": "R22",
+          "statement": "Cut text is shown side by side: red for what was cut, green for the shorter version, with line numbers.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#G-4",
+          "note": "i like the diff view"
+        },
+        {
+          "id": "R23",
+          "statement": "Every chat carries one line above the conversation saying what the assistant started with.",
+          "checkedBy": "live-app",
+          "threshold": "the line appears in a dev instance",
+          "source": "session-context-r5#G-3",
+          "note": "i think we can improve this a bit to match app styling a bit better. remove the checkmark. improve the button."
+        },
+        {
+          "id": "R24",
+          "statement": "That line turns amber when the model was small and some rules or skills were left out.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#G-3"
+        },
+        {
+          "id": "R25",
+          "statement": "Details on that line opens the panel.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#G-3"
+        },
+        {
+          "id": "R26",
+          "statement": "The line stays for the whole conversation, so it is always the way back in.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#G-3"
+        },
+        {
+          "id": "R27",
+          "statement": "The panel never opens by itself; the line above the conversation is the only way in.",
+          "checkedBy": "live-app",
+          "threshold": "no panel opens unasked in a dev instance",
+          "source": "session-context-r5#Q-1",
+          "note": "but the strip should have a warning state if stuff was cut"
+        },
+        {
+          "id": "R28",
+          "statement": "A chat given nothing extra still shows the line, saying nothing extra was given.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#Q-2"
+        },
+        {
+          "id": "R29",
+          "statement": "Open beside a file opens that file in YouCoded, exactly as pressing a file path in a chat does.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#S-1"
+        },
+        {
+          "id": "R30",
+          "statement": "On a narrow screen the five tabs scroll sideways, so no tab label is ever cut in half.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-context-r5#S-3"
+        },
+        {
+          "id": "R31",
+          "statement": "The panel's words stand as approved: title, warning sentence, list of what was left out, tab names, tab openers.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-context-record#G-1",
+          "note": "He kept the words and asked for seven changes in the same breath; those became rows R3, R13 to R19 after he approved them."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,363 @@
+{
+ "title": "Resume browser filter chips \u2014 contract \u2014 acceptance",
+ "key": "resume-filter-chips-contract-acceptance",
+ "out": "resume-filter-chips.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/resume-filter-chips",
+ "sources": {
+  "resume-filter-chips-review": "resume-filter-chips.review.json",
+  "resume-filter-chips-review-2": "resume-filter-chips.review-2.json",
+  "resume-filter-chips-review-3": "resume-filter-chips.review-3.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Resume Session",
+   "path": "Open a past conversation \u2192 the search box and the row of chips under it",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The three chips match the app's other filter chips in size and shape, with a chevron that points up while a menu is open.",
+     "checkedBy": "deck",
+     "threshold": "14 px chip text; 12 px chevron",
+     "source": "resume-filter-chips-review#S-1",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review/chips--light--after.png + --midnight; built scratch/grader/crops/R1-chips--light.png + --midnight (resume-filters/resume-browser 470x50+485+288), stacked in scratch/grader/cmp/R1-chips--*.png. Same chip size, pill shape, 14 px text and chevron in both themes; the only difference is the sort glyph (round-1 arrow vs the sort bars approved in round 2, C-1)."
+    },
+    {
+     "id": "R2",
+     "statement": "The Projects menu shows square check boxes, a count on each row, and a Clear button pinned at the bottom.",
+     "checkedBy": "deck",
+     "threshold": "28 px rows; 11 px counts",
+     "source": "resume-filter-chips-review#S-3",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review/projects-menu--light--after.png + --midnight; built scratch/grader/crops/R2-projects-menu--light.png + --midnight (resume-projects-open 640x180+400+288), stacked in scratch/grader/cmp/R2-projects-menu--*.png. Square boxes, counts 1/2/1 at the right edge, Clear pinned in the footer, chevron pointing up while open \u2014 identical in both themes."
+    },
+    {
+     "id": "R3",
+     "statement": "The Tags menu opens straight onto your tags, each with its count, and Clear sits at the bottom.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review#S-4",
+     "note": "remove manage tags here.",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review/tags-menu--light--after.png + --midnight; built scratch/grader/crops/R3-tags-menu--light.png + --midnight (resume-tags-open 640x190+400+288), stacked in scratch/grader/cmp/R3-tags-menu--*.png. Opens straight onto work/bug/idea with a count each and Clear at the bottom; Manage tags\u2026 is absent, as the row note asks (the approved picture still shows it; round 2 S-10 removed it)."
+    },
+    {
+     "id": "R4",
+     "statement": "A chip names the one tag or project you picked; two or more show as a count, like Tags 2.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/filter-menu-chip.test.tsx",
+     "threshold": "the named test passes",
+     "source": "resume-filter-chips-review#S-5",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && ./node_modules/.bin/vitest run tests/filter-menu-chip.test.tsx \u2014 Tests 9 passed (9). Read: 'chip labels (pickLabel \u2014 contract R4)' asserts one pick \u2192 its name, two \u2192 {text:'Tags', count:2}, four \u2192 count 4, and that ResumeBrowser renders pickLabel('Projects'/'Tags') with no comma-joined names or 'Projects (N)'."
+    },
+    {
+     "id": "R5",
+     "statement": "On a wide window the three chips stay as a full row; only a phone-width window folds them into the filter button.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review#S-7",
+     "note": "could we collapse into the expandable filter menu button thing used in the project view and session file view things? only on mobile/narrow, leave as full chips on desktop/wide"
+    },
+    {
+     "id": "R6",
+     "statement": "The sort chip flips the order with one tap; it does not open a menu.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review#Q-1"
+    },
+    {
+     "id": "R7",
+     "statement": "This screen keeps saying sessions: Resume Session, Search sessions, No matching sessions, and the reopen button stays Resume Session.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review#Q-2"
+    },
+    {
+     "id": "R8",
+     "statement": "The dialog keeps shrinking to fit a short list when you filter; it is not held at one fixed height.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review#Q-3"
+    },
+    {
+     "id": "R9",
+     "statement": "The sort chip carries the sort bars, three bars with a down arrow, and lights up while the order is oldest first.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review-2#C-1",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-2/sort-b--light--after.png (C-1 'bars'); built scratch/grader/crops/R9-sort-b--light.png (resume-browser over resume-sort-flipped, each 470x50+485+288), stacked in scratch/grader/cmp/R9-sort-b--light.png. At rest: Most recent with three bars wide-to-narrow and a down arrow, unlit; after one tap: Oldest first, lit, bars narrow-to-wide. Matches."
+    },
+    {
+     "id": "R10",
+     "statement": "Below 640 px the chips row is gone; the search pill holds the filter button, with a count badge when a filter is on.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review-2#S-8",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-2/narrow-row--light--after.png + --midnight; built scratch/grader/crops/R10b-narrow-row--light.png + --midnight (re-taken on ecef481c: resume-filters-narrow/resume-browser 390x150+0+90), side by side in scratch/grader/cmp/R10b-narrow-row--*.png \u2014 identical. Full shot scratch/grader/narrow-2/light/resume-browser.png: no chips row, the search pill with the filter button docked at its right end; scratch/grader/narrow-2/light/resume-filters-picked.png shows the count badge (1) on that button once a project is ticked."
+    },
+    {
+     "id": "R11",
+     "statement": "Manage tags\u2026 is gone from the Tags menu; Clear stands alone in its footer, like the Projects menu.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review-2#S-10",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-2/tags-menu-2--light--after.png + --midnight; built scratch/grader/crops/R11-tags-menu-2--light.png + --midnight (resume-tags-open 640x190+400+288), stacked in scratch/grader/cmp/R11-tags-menu-2--*.png. Footer holds Clear alone, centred, same as the Projects menu; no Manage tags\u2026."
+    },
+    {
+     "id": "R12",
+     "statement": "The phone filter panel holds the desktop chips: Projects and Tags dropdowns and the Most recent sort chip, with Clear at the top.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review-3#S-11",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-3/narrow-open--light--after.png + --midnight; built scratch/grader/crops/R12-narrow-open--light.png + --midnight (re-taken on ecef481c: resume-filters-narrow/resume-filters-open 390x330+0+90), side by side in scratch/grader/cmp/R12-narrow-open--*.png. The panel opens without the earlier crash and holds Filters, the Projects and Tags dropdown chips and the Most recent sort chip wrapped to a second line, same as approved in both themes; Clear appears at the top right once something is picked (scratch/grader/narrow-2/light/resume-filters-picked.png), which the approved at-rest picture does not show either. First run (0305f346) failed: tapping the filter button crashed to 'Maximum update depth exceeded' (scratch/grader/narrow/light/_unverified/resume-filters-open.png); fixed by ecef481c."
+    },
+    {
+     "id": "R13",
+     "statement": "A dropdown opened inside the phone panel is the desktop menu; picking rows keeps both open, and a tap outside closes them together.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review-3#S-12"
+    },
+    {
+     "id": "R14",
+     "statement": "After one tap the sort bars turn narrow-to-wide for oldest first, and nothing else on the row changes.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "resume-filter-chips-review-3#S-13",
+     "verdict": "pass",
+     "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-3/sort-bars--light--after.png + --midnight; built scratch/grader/crops/R14-sort-bars--light.png + --midnight (resume-sort-flipped 470x50+485+288), stacked in scratch/grader/cmp/R14-sort-bars--*.png. Oldest first lit with narrow-to-wide bars; Projects and Tags unchanged beside it. Identical in both themes."
+    },
+    {
+     "id": "R15",
+     "statement": "Dragging the window wider than a phone while the filter panel is open leaves Projects and Tags opening their menus as before.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F1",
+     "found": "review"
+    },
+    {
+     "id": "R16",
+     "statement": "With nothing picked a chip says Projects or Tags; one pick shows its name; more show the category and a count.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/filter-menu-chip.test.tsx",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F2",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && ./node_modules/.bin/vitest run tests/filter-menu-chip.test.tsx \u2014 Tests 9 passed (9). Read: pickLabel('Projects', []) \u2192 {text:'Projects'}; one name \u2192 that name; several \u2192 category + count; plus the source check that ResumeBrowser renders both chips through pickLabel."
+    },
+    {
+     "id": "R17",
+     "statement": "The developer note on the menu check box describes the rows as they are built, not a different pattern.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F3",
+     "found": "review"
+    },
+    {
+     "id": "R18",
+     "statement": "The developer note above the search box describes the two-width layout that is actually there.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F4",
+     "found": "review"
+    },
+    {
+     "id": "R19",
+     "statement": "The developer note on the tag manager no longer claims the Tags filter menu opens it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F5",
+     "found": "review"
+    },
+    {
+     "id": "R20",
+     "statement": "The chips' chevron is the one shared glyph the dropdown fields and the find bar draw, not a private copy.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-code-review.md#F6",
+     "found": "review"
+    },
+    {
+     "id": "R21",
+     "statement": "A tap outside an open menu closes only that menu; the list stays open and your filters stay set.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-ux-review-2.md#U2",
+     "found": "review"
+    },
+    {
+     "id": "R22",
+     "statement": "At phone width, when ticking a row shrinks the list, the open menu moves with its chip instead of floating loose.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-ux-review-2.md#U3",
+     "found": "review"
+    },
+    {
+     "id": "R23",
+     "statement": "On desktop a long picked name is cut short so all three chips still fit on the row.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-resume-filter-chips-ux-review-2.md#U11",
+     "found": "review"
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R5",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "On a wide window the three chips stay as a full row; only a phone-width window folds them into the filter button.",
+   "changed": "Checked by you. Your note at review: \u201ccould we collapse into the expandable filter menu button thing used in the project view and session file view things? only on mobile/narrow, leave as full chips on desktop/wide\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R6",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "The sort chip flips the order with one tap; it does not open a menu.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R7",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "This screen keeps saying sessions: Resume Session, Search sessions, No matching sessions, and the reopen button stays Resume Session.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R8",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "The dialog keeps shrinking to fit a short list when you filter; it is not held at one fixed height.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R13",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "A dropdown opened inside the phone panel is the desktop menu; picking rows keeps both open, and a tap outside closes them together.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R15",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "Dragging the window wider than a phone while the filter panel is open leaves Projects and Tags opening their menus as before.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R17",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "The developer note on the menu check box describes the rows as they are built, not a different pattern.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R18",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "The developer note above the search box describes the two-width layout that is actually there.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R19",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "The developer note on the tag manager no longer claims the Tags filter menu opens it.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R20",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "The chips' chevron is the one shared glyph the dropdown fields and the find bar draw, not a private copy.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R21",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "A tap outside an open menu closes only that menu; the list stays open and your filters stay set.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R22",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "At phone width, when ticking a row shrinks the list, the open menu moves with its chip instead of floating loose.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R23",
+   "words": true,
+   "surface": "Resume Session",
+   "path": "Acceptance",
+   "headline": "On desktop a long picked name is cut short so all three chips still fit on the row.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

@@ -56,6 +56,17 @@ import { join } from 'node:path';
 import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
 
 const [planPath, outDir, themeArg] = process.argv.slice(2);
+// WHY this check: the args are POSITIONAL, and passing a flag instead (`--out <dir>`, the
+// shape most scripts here take) put the literal "--out" in outDir. Every shot then rendered
+// and self-verified correctly before the manifest write crashed with an ENOENT naming a path
+// nobody typed — the run looked failed when the work was done. 2026-09-10.
+for (const arg of [planPath, outDir, themeArg]) {
+  if (arg?.startsWith('--')) {
+    console.error(`shot.mjs takes POSITIONAL arguments, not flags: got "${arg}".`);
+    console.error('Usage: node shot.mjs <plan.json> <outDir> [themes,comma,list]');
+    process.exit(2);
+  }
+}
 if (!planPath || !outDir) { console.error('usage: node shot.mjs <plan.json> <outDir> [themes]'); process.exit(2); }
 const plan = JSON.parse(readFileSync(planPath, 'utf8'));
 // SHARD=k/n runs every n-th shot starting at k, so run-review.sh can spread one plan

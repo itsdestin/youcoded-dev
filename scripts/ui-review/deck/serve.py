@@ -319,10 +319,23 @@ def record(spec, text, log=print):
 
 
 def resolve_worktree(name):
-    """A worktree name, a path holding desktop/, or the main checkout — the same three shapes
-    record-pair.sh accepts, so one spelling works everywhere."""
+    """A worktree name, a SESSION name, a path holding desktop/, or the main checkout.
+
+    WHY the session shape is in here (2026-09-10): `workspace-start` puts a session's app
+    checkout at `worktrees/sessions/<name>/youcoded`, which none of the other three shapes
+    matches — so a deck could only reach the branch its own session was working on by
+    spelling that path out, and the obvious names (the session key, the branch) both
+    failed. `scripts/lib/resolve-checkout.sh` learned this on 2026-09-09 for run-workbench
+    and run-dev; this resolver is the second copy and did not."""
     ws = workspace_root()
-    for candidate in (os.path.join(ws, 'worktrees', name), name, os.path.join(ws, name)):
+    bare = name[len('session/'):] if name.startswith('session/') else name
+    candidates = (
+        os.path.join(ws, 'worktrees', name),
+        os.path.join(ws, 'worktrees', 'sessions', bare, 'youcoded'),
+        name,
+        os.path.join(ws, name),
+    )
+    for candidate in candidates:
         if candidate and os.path.isdir(os.path.join(candidate, 'desktop')):
             return os.path.abspath(candidate)
     return None
