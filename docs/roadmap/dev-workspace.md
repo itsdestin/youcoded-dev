@@ -14,6 +14,16 @@ seen-on is always n/a here.
       line, and print a "still waiting" line so a queued run is not mistaken for a hung one
       `n/a` `confirmed` `checked 2026-09-09` `performance`
 
+- [ ] The perf rig can say WHICH step is slow (`explain.mjs`, 2026-09-09) but not which
+      STAGE inside it. Finding that opening a large Markdown file spends 292 ms parsing,
+      217 ms restructuring, 377 ms colouring code and 7 ms on the thing a plan had blamed
+      took a throwaway script run against the rig's own fixture — and that 7 ms is what
+      stopped a change nobody could have traced to an improvement. Worth a rig utility, but
+      not obviously general: the stages are specific to whatever pipeline is under the
+      microscope, so this may be a documented recipe rather than a tool. Deferred
+      2026-09-09 as the one item of six that was not clearly easy
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a

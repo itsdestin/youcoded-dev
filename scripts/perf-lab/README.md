@@ -106,7 +106,7 @@ themselves are tracked) and each boot's `desktop.log` copied to
 | Exit | Meaning |
 |---|---|
 | 0 | clean report |
-| 2 | error (build failed, machine never went idle, a scenario threw) |
+| 2 | error (build failed, the machine stayed busy for 20 minutes, a scenario threw) |
 | 3 | `--max-minutes` budget exceeded — app family killed first |
 | 4 | report is missing numbers a requested phase owed (see below) |
 | 130 | interrupted |
@@ -119,6 +119,44 @@ but **no per-run samples** behind it, which would make `spreadPct()` report 0% n
 and let pure jitter through the gate as a proven win. The report is still written
 (the numbers cost real minutes) but it is stamped `incomplete` in both the JSON and
 the Markdown.
+
+### Waiting for a quiet machine
+
+Every phase, and every repeat, passes an idle gate: load average under 4 and CPU
+under 10% measured over 3 seconds. Busy means **wait**, polling every 30 s for up
+to 20 minutes, printing how long it has been waiting so a queued run is never
+mistaken for a hung one. Only after that does it give up (exit 2).
+
+It used to stop after five polls — 2.5 minutes — and because the gate runs AFTER
+the build, giving up threw the whole build away. On 2026-09-09 that happened twice
+in one session while the load average was still coming down from other work
+(12.1 → 15.6 → 10.0 → 6.4 → 4.4 across the five polls, quiet a minute later), and
+both times the workaround was an external script doing exactly this wait. The
+budget is capped by the run's own `--max-minutes`, so a gate can never push a run
+past the deadline its caller set. Pinned by `run-report.test.mjs` → "the
+machine-idle gate".
+
+### Asking a report which STEP produced a number
+
+```
+node scripts/perf-lab/explain.mjs <report.json> --phase artifacts --run 2
+```
+
+Ranks every step in a run by what it cost, main-process stall and renderer
+long-tasks side by side, with the scenario's own verdict for who froze:
+
+```
+artifacts#2 — steps by main-process stall
+  step                           main stall   worst  renderer   worst  who
+  open.mdLarge                         1312    1362      1360     743  renderer
+  open.mdSmall                          279     329       833     421  renderer
+```
+
+A phase total says a run stalled for 1.6 s; it does not say where, and where is
+what decides whether a change is to blame. That example is real: it cleared a
+branch that had not touched the markdown viewer. `--by renderer` re-ranks by
+renderer cost — a disagreement between the two orderings is itself the signal,
+because work moved off the main thread is not work removed.
 
 ### The first run of a new scenario is a shakedown, not a baseline
 

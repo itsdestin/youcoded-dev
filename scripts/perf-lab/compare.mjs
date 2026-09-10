@@ -323,15 +323,33 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
   // dangerous case is the ASYMMETRIC one (measured on one side, absent on the
   // other) and that still fails closed, as does a phase that ran but whose path
   // is gone — the drift this block exists to catch.
+  // A SECOND exception, and it is about adding measurements rather than about
+  // drift: a metric the candidate has and the baseline does not, in a phase the
+  // baseline DID run, is a metric that did not exist when the baseline was taken.
+  // There is nothing to compare it against and nothing has gone wrong. Refusing
+  // there means every new PRIMARY path retires every existing baseline on the day
+  // it lands — which happened for real on 2026-09-09, to a baseline ninety minutes
+  // old, and the only way through was hand-writing a derivation in get().
+  // The mirror image still fails closed and is the one that matters: a path the
+  // BASELINE has and the candidate does not is a field the writer dropped, which
+  // is exactly the silent blinding this block exists to catch.
   const phaseRan = (report, p) => rawGet(report, p.split('.')[0]) != null;
   const missing = [];
   const notRun = [];
+  const newMetric = [];
   for (const p of PRIMARY) {
     if (p === target) continue; // the target's own absence is already named above
     const inBase = present(baseline, p);
     const inCand = present(candidate, p);
     if (inBase && inCand) continue;
     if (!phaseRan(baseline, p) && !phaseRan(candidate, p)) { notRun.push(p); continue; }
+    // `phaseRan(baseline, p)` is load-bearing, not belt-and-braces: without it this
+    // also swallows the case where the baseline never ran the PHASE at all, and
+    // waving that through is precisely the silent blinding the block exists to
+    // stop (judging a change against a baseline taken before the stall phase
+    // existed, and quietly not judging three metrics). A phase the baseline ran
+    // but a field it lacks is a new field; a phase it never ran is a gap.
+    if (!inBase && inCand && phaseRan(baseline, p)) { newMetric.push(p); continue; }
     missing.push({ path: p, where: !inBase && !inCand ? 'both' : (inBase ? 'candidate' : 'baseline') });
   }
   // Deliberately NOT pushed into `reasons` — `keep` is `reasons.length === 0`, so a
@@ -352,6 +370,7 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
     regressions,
     missing,
     notRun,
+    newMetric,
     screens,
     errors,
     reasons,
@@ -377,6 +396,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const skippedPhases = [...new Set(v.notRun.map((p) => p.split('.')[0]))];
   if (skippedPhases.length) {
     console.log(`  OUT OF SCOPE — neither report ran: ${skippedPhases.join(', ')} (${v.notRun.length} metric(s) not judged)`);
+  }
+  if (v.newMetric.length) {
+    console.log(`  NO BASELINE — newer than this baseline, so not judged: ${v.newMetric.join(', ')}`);
   }
   for (const p of PRIMARY) {
     const bv = get(b, p);

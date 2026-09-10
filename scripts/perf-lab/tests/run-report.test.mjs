@@ -25,7 +25,7 @@ import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as sta
 import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
-  EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
+  EXIT, NETWORK_PATHS, NOISE_GATE_MAX_WAIT_MS, NOISE_GATE_POLL_MS, PHASES, STALL_SIZES, USAGE,
   buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
@@ -792,5 +792,18 @@ describe('exit codes', () => {
     const vals = Object.values(EXIT);
     assert.equal(new Set(vals).size, vals.length);
     assert.equal(EXIT.OK, 0);
+  });
+});
+
+describe('the machine-idle gate', () => {
+  it('waits long enough to outlast other work rather than throwing a build away', () => {
+    // It used to stop after five 30s polls — 2.5 minutes — and the gate runs AFTER
+    // the multi-minute build, so giving up discards all of it. A load average
+    // decaying from someone else's build routinely takes longer than that:
+    // measured 12.1 -> 15.6 -> 10.0 -> 6.4 -> 4.4 across those five polls on
+    // 2026-09-09, with the machine quiet a minute after the abort.
+    assert.ok(NOISE_GATE_MAX_WAIT_MS >= 10 * 60_000,
+      `a gate that waits only ${NOISE_GATE_MAX_WAIT_MS / 60000} min throws away the build it is gating`);
+    assert.ok(NOISE_GATE_POLL_MS <= 60_000, 'poll often enough to start promptly once the machine frees up');
   });
 });

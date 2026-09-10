@@ -827,14 +827,33 @@ function readErrorLines(fixture, stem, boot) {
   return text.split('\n').filter((l) => l.includes('"level":"ERROR"')).length;
 }
 
+export const NOISE_GATE_POLL_MS = 30_000;
+// How long ONE gate will wait for a quiet machine before giving up.
+//
+// WHY it is a deadline and not an attempt count (changed 2026-09-09): it used to
+// stop after five polls, i.e. 2.5 minutes — and the gate runs AFTER the build, so
+// giving up throws several minutes of work away. A load average decaying from
+// other work routinely takes longer than that: measured 12.1 → 15.6 → 10.0 → 6.4
+// → 4.4 across the five attempts, with the machine genuinely quiet a minute after
+// the abort. Twice in one session that cost a full rebuild, and both times the
+// workaround was an external script doing exactly this wait.
+// 20 minutes is long enough to outlast a build, a test suite or an npm install in
+// another terminal, and is capped by the run's own --max-minutes deadline, so a
+// gate can never push a run past the budget its caller set.
+export const NOISE_GATE_MAX_WAIT_MS = 20 * 60_000;
+
 /**
- * Refuse to take official numbers while the machine is busy. Retries rather than
- * failing, because "a build finished in another terminal" is the common case and it
- * passes in 30 s. Every discard is counted into the report so a reader can see the
- * run happened on a noisy machine.
+ * Refuse to take official numbers while the machine is busy. WAITS rather than
+ * failing, because "a build finished in another terminal" is the common case.
+ * Every busy poll is counted into the report so a reader can see the run happened
+ * on a noisy machine.
+ *
+ * `deadline` is the run's absolute --max-minutes deadline, when there is one.
  */
-async function noiseGate(noise) {
-  for (let i = 0; i < 5; i++) {
+async function noiseGate(noise, deadline = Infinity) {
+  const startedAt = Date.now();
+  const giveUpAt = Math.min(startedAt + NOISE_GATE_MAX_WAIT_MS, deadline);
+  for (;;) {
     const la = loadAvg1();
     const busy = round1(await machineBusyPct(3));
     if (la < 4 && busy < 10) {
@@ -845,11 +864,16 @@ async function noiseGate(noise) {
       noise.maxBusyPctAccepted = Math.max(noise.maxBusyPctAccepted ?? 0, busy);
       return;
     }
-    log(`machine busy (load ${la}, ${busy}% cpu) — waiting 30s`);
+    const waitedS = Math.round((Date.now() - startedAt) / 1000);
+    if (Date.now() + NOISE_GATE_POLL_MS > giveUpAt) {
+      throw new Error(`perf-lab: the machine never went idle (load < 4 and CPU < 10% over 3s) in ${waitedS}s of waiting — last reading load ${la}, ${busy}% cpu; refusing to take official numbers on a busy machine.`);
+    }
+    // Says WAITING, and how long it has been, so a queued run is never mistaken
+    // for a hung one.
+    log(`machine busy (load ${la}, ${busy}% cpu) — waiting for a quiet machine (${waitedS}s so far, up to ${Math.round((giveUpAt - startedAt) / 60000)} min)`);
     noise.discardedRuns++;
-    await sleep(30_000);
+    await sleep(NOISE_GATE_POLL_MS);
   }
-  throw new Error('perf-lab: the machine never went idle (load < 4 and CPU < 10% over 3s) across 5 attempts; refusing to take official numbers on a busy machine.');
 }
 
 /** Resume a transcript and wait until the timeline has painted — for the screenshots. */
@@ -1096,7 +1120,7 @@ async function main(argv) {
       const runs = [];
       for (let i = 0; i < cfg.runs; i++) {
         checkDeadline();
-        await noiseGate(report.noise);
+        await noiseGate(report.noise, deadline);
         const fixture = buildFixture(SCRATCH, { log });
         const run = await withBoot(build, fixture, async (app) => {
           const startup = await collectStartup(app, fixture);
@@ -1140,7 +1164,7 @@ async function main(argv) {
       const wruns = [];
       for (let i = 0; i < cfg.workloadRepeats; i++) {
         checkDeadline();
-        await noiseGate(report.noise);
+        await noiseGate(report.noise, deadline);
         const fixture = buildFixture(SCRATCH, { log });
         await withBoot(build, fixture, async (app) => {
           const r = await runWorkloadScenario(app, fixture);
@@ -1155,7 +1179,7 @@ async function main(argv) {
     // ---- One scenario boot for history + screenshots -----------------------
     if (['history', 'shots'].some((p) => cfg.only.has(p))) {
       checkDeadline();
-      await noiseGate(report.noise);
+      await noiseGate(report.noise, deadline);
       const fixture = buildFixture(SCRATCH, { log });
       await withBoot(build, fixture, async (app) => {
         const shotDir = join(cfg.out, 'shots', stem);
@@ -1263,7 +1287,7 @@ async function main(argv) {
     // last. A clean boot is the only state in which the blame means anything.
     if (cfg.only.has('stall')) {
       checkDeadline();
-      await noiseGate(report.noise);
+      await noiseGate(report.noise, deadline);
       const { runReplayStallScenario, MEASURES: STALL_MEASURES } = await loadReplayStall();
       report.measures.stall = STALL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1291,7 +1315,7 @@ async function main(argv) {
     // keeps a failure in this phase from silently corrupting a different one.
     if (cfg.only.has('artifacts')) {
       checkDeadline();
-      await noiseGate(report.noise);
+      await noiseGate(report.noise, deadline);
       const { runArtifactScenario, medianRun: artifactMedian, MEASURES: ARTIFACT_MEASURES } = await loadArtifacts();
       report.measures.artifacts = ARTIFACT_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1317,7 +1341,7 @@ async function main(argv) {
     // rebuild contract still holds and nothing else ever sees the extra project.
     if (cfg.only.has('projects')) {
       checkDeadline();
-      await noiseGate(report.noise);
+      await noiseGate(report.noise, deadline);
       const { runProjectsScenario, seedProjectsFixture, medianRun: projectsMedian, MEASURES: PROJECTS_MEASURES } = await loadProjects();
       report.measures.projects = PROJECTS_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });
@@ -1344,7 +1368,7 @@ async function main(argv) {
     // look like a regression it did not cause. It runs LAST for the same reason.
     if (cfg.only.has('scrollback')) {
       checkDeadline();
-      await noiseGate(report.noise);
+      await noiseGate(report.noise, deadline);
       const { runScrollbackScenario, medianRun: scrollMedian, MEASURES: SCROLL_MEASURES } = await loadScrollback();
       report.measures.scrollback = SCROLL_MEASURES;
       const fixture = buildFixture(SCRATCH, { log });

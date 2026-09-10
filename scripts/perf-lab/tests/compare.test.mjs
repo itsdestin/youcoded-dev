@@ -282,6 +282,36 @@ test('an older baseline that predates a metric cannot certify it', () => {
   assert.ok(v.missing.every((m) => m.where === 'baseline'), JSON.stringify(v.missing));
 });
 
+test('a metric NEWER than the baseline is noted, not refused — but only within a phase the baseline ran', () => {
+  // Adding a PRIMARY path used to retire every existing baseline the day it
+  // landed: 2026-09-09, a baseline ninety minutes old lacked the new field and
+  // the gate refused everything. A field the baseline's own phase never carried
+  // is a new measurement, not a regression that went unseen.
+  const b = clone(); delete b.artifacts.median.htmlNav;   // phase ran; this field did not exist
+  for (const r of b.artifacts.runs) delete r.htmlNav;
+  const c = clone(); c.startup.median.sessionsListed = 800;
+  const v = verdict(b, c, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v.keep, true, v.reasons.join('; '));
+  assert.deepEqual(v.newMetric, ['artifacts.median.htmlNav.swap.medianMs']);
+  assert.deepEqual(v.missing, []);
+
+  // The distinction that keeps this honest: a whole PHASE the baseline never ran
+  // is a gap, and still refuses (the case the test above this one pins).
+  const noPhase = clone(); delete noPhase.replayStall;
+  const v2 = verdict(noPhase, c, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v2.keep, false);
+  assert.deepEqual(v2.newMetric, []);
+
+  // And the mirror image is always a refusal: a field the BASELINE has and the
+  // candidate does not is a field the writer dropped.
+  const dropped = clone(); dropped.startup.median.sessionsListed = 800;
+  delete dropped.artifacts.median.htmlNav;
+  for (const r of dropped.artifacts.runs) delete r.htmlNav;
+  const v3 = verdict(base, dropped, { target: 'startup.median.sessionsListed', screens: {} });
+  assert.equal(v3.keep, false);
+  assert.ok(v3.missing.some((m) => m.where === 'candidate'), JSON.stringify(v3.missing));
+});
+
 test('a complete pair reports nothing missing', () => {
   const c = clone(); c.startup.median.sessionsListed = 850;
   assert.deepEqual(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).missing, []);
