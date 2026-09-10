@@ -1,0 +1,22 @@
+{
+  "title": "The danger red — my picture was wrong, not the button",
+  "key": "buddy-danger-red",
+  "out": "buddy-danger-red.review.html",
+  "images": "images/buddy-danger-red",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["meadow-mist", "light"],
+  "crops": { "buddy_dangerous": ["buddy", "dangerous", "320x480+0+0"] },
+  "steps": [
+    {
+      "id": "S-3b",
+      "surface": "Buddy floater",
+      "path": "Press New Session, then turn Skip Permissions on",
+      "crop": "buddy_dangerous",
+      "headline": "It already is the main window's danger red — the picture I showed you was taken wrong.",
+      "changed": "Nothing in the code changed since you answered. The screenshot was broken: the shot was taken while the button was still fading from one colour to the next, and the headless browser used for screenshots freezes that fade partway. So you were shown a muddy brown the app never actually paints. This is the same moment shot correctly.",
+      "measured": "Before #DD4444 in every theme; now #C62828, the theme's own danger red",
+      "notice": "The floater's Create (Dangerous) button is now the identical red to the main window's — both take it from the same theme colour, so a theme pack moves them together. Before, the floater had one bright red typed into its code that stayed the same in every theme.",
+      "risk": "None to the button. The real risk was the screenshot rig, which could have quietly mis-coloured any future review picture taken after a click; it now has a switch that turns the fades off before it shoots."
+    }
+  ]
+}

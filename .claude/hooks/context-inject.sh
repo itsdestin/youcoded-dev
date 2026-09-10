@@ -8,6 +8,8 @@
 # Plain text output on stdout is injected into Claude's context at session start.
 
 set -euo pipefail
+# WHY: even read-only status may refresh Git's index unless optional locks are disabled.
+export GIT_OPTIONAL_LOCKS=0
 
 # WHY: everything below is injected into a session's context, and a hook that
 # dies part-way looks EXACTLY like a hook that had nothing more to say — which
@@ -23,7 +25,7 @@ WORKSPACE="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 # Startup only reports; it must not mutate or retarget a running session.
 if [[ -f "$WORKSPACE/scripts/workspace-start.mjs" ]]; then
-    echo 'Development edits: start/resume with node scripts/workspace-start.mjs --session <stable-key> [repo…]. Use returned absolute paths and read instructions there; do not pull shared checkouts.'
+    echo 'Development edits: start/resume with node scripts/workspace-start.mjs --session <stable-key> [repo…]. Read its reorientation report and changed guidance before proceeding; use returned absolute paths. Uncommitted guidance is a proposal, not automatically authoritative. Do not manually repair shared checkouts to start work.'
 fi
 
 collect_repo_state() {

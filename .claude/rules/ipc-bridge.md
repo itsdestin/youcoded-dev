@@ -32,6 +32,7 @@ Desktop, Android and a remote browser render the SAME React UI over the SAME JSO
 - **Message type strings must be IDENTICAL on every surface.** A typo silently breaks that feature on one platform. (`SessionService.handleBridgeMessage()`: ~286 types, counted 2026-09-06 from its `when` branch labels — the long-standing "~136" was under half.)
 - **Desktop handlers return raw values; Android wraps in `JSONObject`.** The shim normalizes both before React.
 - **A desktop-only channel must REJECT elsewhere, never resolve.** Kotlin's not-implemented arm answers `{ok:false}`; the shim errors ONLY for channels in `REJECT_ON_NOT_OK`. Miss it and a caller expecting an array gets an object — the first `.filter()` takes the screen down.
+- **A channel Kotlin has NO branch for answers `{ok:false, unsupported:true}`** (`MessageRouter.buildUnsupportedResponse`, the `when`'s final `else`, 2026-09-10) — the shim rejects and shows one plain notice per feature, worded "on the phone" via `isAndroidLocal()`. A bare `{error}` there RESOLVED as a value and crashed Project View. Channels polled on ordinary screens (`transcript:page`, `syncspaces:status`) are refused by the shim itself, quietly. Guard: `android-honest-build.test.ts`, `remote-shim-phone-refusals.test.ts`.
 
 ## Protocol & adding a method
 - Request `{type, id, payload}` → response `{type:"…:response", id, payload}`; push `{type, payload}`.

@@ -1,0 +1,28 @@
+{
+ "deck": "app-themed-tooltips-live-2",
+ "started": "2026-09-10T11:51:15.620Z",
+ "submitted": "2026-09-10T11:53:04Z",
+ "cur": 2,
+ "answers": {
+  "L-1": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "no",
+   "note": "keep hover tooltips actually.",
+   "seconds": 43,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-3": {
+   "v": "yes",
+   "note": "chat/terminal missing",
+   "seconds": 48,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

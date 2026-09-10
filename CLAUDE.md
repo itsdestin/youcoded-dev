@@ -42,7 +42,7 @@ Runtime verification goes through an isolated dev worktree and `bash scripts/run
 
 ### Git, worktrees, and shipping
 
-- Start/resume with `workspace-start`; never pull, stash, clean or repair shared checkouts merely to start work. New worktrees use freshly fetched defaults; resumed ones preserve unfinished work. Inspect relevant upstream changes before relying on old guidance.
+- Start/resume with `workspace-start`; read its complete reorientation report, changed guidance and returned workspace instructions before proceeding. It may guardedly fast-forward the shared workspace only when it proves local state is preserved; never manually pull, stash, clean or repair shared checkouts merely to start work. New worktrees use the fetched workspace commit; resumed session branches and component worktrees preserve unfinished work. Nothing is automatically committed or published, and uncommitted guidance is a proposal rather than authority.
 - Use absolute worktree paths with file tools; shell `cd` does not change their root. Do not migrate another session's work automatically.
 - **`workspace-start` auto-provisions a component's `node_modules`** (currently `youcoded/desktop`) as a `cp -al` hardlink farm from the source, listed in its output as `deps: …`. **Never symlink or junction `node_modules` to a shared checkout.** Hardlinks still share inodes, so dependency patchers must replace files rather than write in place. Do not run `npm ci` or Android `bundleWebUi` against shared/linked dependencies. Details: `docs/PITFALLS.md` → Worktrees.
 - Parallelize independent work when the runtime permits it. Do not assume multiple write-capable specialists can run concurrently.
@@ -111,18 +111,7 @@ Use existing tools before inventing a rig: `scripts/ui-probe.mjs` for an isolate
 
 **Before claiming a desktop change done, run `bash scripts/verify.sh [<worktree>]`.** It covers types, related tests plus source-scanning guards, knip, lint and ast-grep; `--full` forces the full suite. It covers desktop only. Android and Worker need their own checks.
 
-**Android builds and tests DO run on this machine.** Verified 2026-09-09 by compiling a
-Kotlin change: `/home/destin/.android-sdk` exists (build-tools, cmdline-tools, ndk, licenses)
-and `/usr/lib/jvm/java-21-openjdk` is present. The earlier "no SDK is installed, verified
-2026-09-05" note in this file was wrong and cost at least one session a false cross-platform
-claim. Run it as:
-
-    ANDROID_HOME=/home/destin/.android-sdk JAVA_HOME=/usr/lib/jvm/java-21-openjdk \
-      ./gradlew compileDebugKotlin -x bundleWebUi
-
-`-x bundleWebUi` protects the hardlinked dependencies. Full commands and build order:
-`docs/workspace-workflows.md` → Local build & test. A Kotlin change is not verified until
-this has been run and its output read.
+**Android DOES build and test on this machine** (741 tests green, 2026-09-09). `ANDROID_HOME` is simply unset, so Gradle needs it named: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk ./gradlew test -x bundleWebUi` from `youcoded/` — `-x bundleWebUi` protects hardlinked dependencies. This paragraph said the opposite until 2026-09-09, on a verification that was true when written; a session and a subagent both reported Android as unverifiable before running it once. Read the count out of `app/build/test-results/`: a green BUILD SUCCESSFUL with everything up-to-date is not a test result.
 
 ### Harness evals (native agent tools)
 

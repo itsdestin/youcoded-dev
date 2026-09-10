@@ -1,0 +1,194 @@
+{
+  "title": "The promo video, second draft",
+  "key": "promo-draft-2",
+  "out": "promo-draft-2.review.html",
+  "images": "images/promo-draft-2.review",
+  "runs": {
+    "before": "docs/active/design/2026-09-09-promo-second-draft/runs/before",
+    "after": "docs/active/design/2026-09-09-promo-second-draft/runs/after"
+  },
+  "labels": {
+    "before": "First film",
+    "after": "Second draft"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "bubble-classic": [
+      "promo",
+      "bubble-classic",
+      "1000x520+0+0"
+    ],
+    "bubble-card": [
+      "promo",
+      "bubble-card",
+      "1000x520+0+0"
+    ],
+    "bubble-accent": [
+      "promo",
+      "bubble-accent",
+      "1000x520+0+0"
+    ],
+    "bubble-glass": [
+      "promo",
+      "bubble-glass",
+      "1000x520+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "The promo video",
+      "path": "The first five seconds: the black screen with the wordmark",
+      "clip": {
+        "before": "images/promo-draft-2.review/clips/intro-walk--before.webm",
+        "after": "images/promo-draft-2.review/clips/intro-walk--after.webm"
+      },
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "The mascot now pulls itself up on the edge, hops down, and walks over in four real steps.",
+      "changed": "Before, the lean unwound while the body slid in sideways, then a quick scurry (ten tiny steps in under two seconds) with a three-way head tilt. Now it rights itself first, drops to the floor with a little landing squash, takes one look across, and walks in four steps with the bob timed to the feet.",
+      "measured": "5.0 s of silence before the punch, was 6.5 s",
+      "notice": "The walk-in reads as walking rather than gliding, and the whole open is a second and a half shorter.",
+      "risk": "It is quicker, so the peek over the edge gets less screen time than before."
+    },
+    {
+      "id": "C-1",
+      "surface": "The promo video",
+      "path": "Every line the mascot says, all through the film",
+      "runs": [
+        "after"
+      ],
+      "headline": "Which look should the mascot's speech bubbles have?",
+      "notice": "Each picture shows the same bubble on a light theme (top) and a dark one (bottom). Whichever you pick is used for every line in the film.",
+      "risk": "The frosted look leans on what is behind it, so on a busy wallpaper the text has a touch less contrast than a solid card.",
+      "variants": [
+        {
+          "id": "classic",
+          "label": "Today's card",
+          "crop": "bubble-classic",
+          "summary": "The first film's bubble: a solid white card with a thin coloured ring, unchanged."
+        },
+        {
+          "id": "card",
+          "label": "Paper card",
+          "crop": "bubble-card",
+          "summary": "A solid card with a fine coloured edge, a deeper soft shadow and no ring. The quietest change."
+        },
+        {
+          "id": "accent",
+          "label": "Theme colour",
+          "crop": "bubble-accent",
+          "summary": "The bubble is filled with the theme's own colour, the way the app draws your messages. The boldest.",
+          "risk": "On themes with a pale accent the bubble is bright and pulls the eye from the app."
+        },
+        {
+          "id": "glass",
+          "label": "Frosted glass",
+          "crop": "bubble-glass",
+          "summary": "A translucent, blurred pane over whatever is behind it — the app's own bubble style on wallpaper themes. My pick: it sits in the theme instead of on it."
+        }
+      ]
+    },
+    {
+      "id": "M-2",
+      "surface": "The promo video",
+      "path": "Any line the mascot says",
+      "clip": {
+        "before": "images/promo-draft-2.review/clips/bubble-motion--before.webm",
+        "after": "images/promo-draft-2.review/clips/bubble-motion--after.webm"
+      },
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "A bubble now arrives like a message and leaves the same way, instead of inflating like a balloon.",
+      "changed": "Before, the box sprang from nothing with a bounce past full size and vanished in six frames. Now it grows from half size with no bounce, lifts a few pixels as it lands, stretches a hair wider on the way in, and the words fade in just behind the box; on the way out it eases back toward the mascot and fades.",
+      "measured": "In: about 0.4 s. Out: 8 frames (0.27 s), was 6",
+      "notice": "Less pop, more glide. The frosted look is shown here; the motion is the same whichever look you pick.",
+      "risk": "The gentler arrival is a few frames slower to read than the old snap."
+    },
+    {
+      "id": "M-3",
+      "surface": "The promo video",
+      "path": "Describe a look: the three theme flips after the request",
+      "clip": {
+        "before": "images/promo-draft-2.review/clips/theme-scene--before.webm",
+        "after": "images/promo-draft-2.review/clips/theme-scene--after.webm"
+      },
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "The third theme is Devil's Garden now, with the mascot in its costume, and the whole scene is two seconds shorter.",
+      "changed": "Kuromi Dreamer and the 'Another kitty cat!' line are gone; the third flip goes to the latest Devil's Garden, the mascot twirls into its gold rig, and the line is 'Devilish!'. The typing runs a little faster and each theme holds for two seconds.",
+      "measured": "10 s for the scene, was 12.9 s",
+      "notice": "Golden hour, then the kitten, then the dark garden — a light-to-dark arc instead of two pink themes in a row.",
+      "risk": "Devil's Garden already appears later, on the phone scene, so it is now seen twice."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The promo video",
+      "path": "The music under the whole film",
+      "headline": "Which music should the film use?",
+      "today": "One synth track: a two-bar melody that loops through both drops and the games section, and a fast arpeggio that runs through every bar. Three drafts of the new film are in your Videos folder, one per track, so you can hear each under the picture.",
+      "problem": "By the end the same two bars have looped about seventeen times and the arpeggio never stops — it wears thin by the two-minute mark.",
+      "proposal": "All three candidates share the same beat grid, so every cut lands on the same downbeat whichever you pick. Each drops the arpeggio out of the quiet parts, makes the drops actually louder than the verses, and opens with the same punch.",
+      "options": [
+        {
+          "id": "promo",
+          "label": "Synthwave, reworked",
+          "recommended": true,
+          "pros": [
+            "Keeps the sound of the first film",
+            "The melody is four bars now, so it stops looping",
+            "Warm keys and a new chord progression in the last third give the ending somewhere to go"
+          ],
+          "cons": [
+            "Still the chiptune sound, if that itself was the problem"
+          ]
+        },
+        {
+          "id": "promo-lofi",
+          "label": "Warm lo-fi",
+          "pros": [
+            "Electric piano, laid-back drums, a little vinyl crackle — friendlier and softer",
+            "Plucked melody only in the big moments, so it never nags"
+          ],
+          "cons": [
+            "Less punch on the drops and the theme flips",
+            "Reads calmer than 'quick guided tour'"
+          ]
+        },
+        {
+          "id": "promo-pop",
+          "label": "Bright indie-pop",
+          "pros": [
+            "Four-on-the-floor, a plucked riff and a round whistling lead — the most upbeat of the three",
+            "Closest to a 'guided tour' feel"
+          ],
+          "cons": [
+            "The furthest from the first film's sound",
+            "Busier under the spoken lines"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "The promo video",
+      "path": "The whole film, start to finish",
+      "headline": "The film runs 1:49 now, down from 2:03, with every line and scene kept.",
+      "changed": "The tempo went from 112 to 120 beats a minute, the silent open lost a second and a half, the theme scene and the games scene each lost a bar, and the typing and picking shots run a little faster. Every line still gets its reading time (1.2 s plus a quarter second a word), which is what sets the floor.",
+      "notice": "Cuts come sooner and the app moves quicker inside the window. Getting under 1:40 would mean shortening lines or dropping one.",
+      "yes": "Fast enough",
+      "no": "Still too slow"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+ "deck": "session-context-record",
+ "started": "2026-09-10T07:02:46.322Z",
+ "submitted": "2026-09-10T07:25:36Z",
+ "cur": 1,
+ "answers": {
+  "G-1": {
+   "v": "yes",
+   "seconds": 905,
+   "theme": "light",
+   "zoom": 1,
+   "note": "make \"not everything fit\" a 1-line expandable wraning card. can we use our markdown renderer for \"what it got\" and make this a switch element the length of the modal. we should also add a token/line/character count or something easy to insert for a rough ize idea. the not everything fit warning card should got below the switcher element and disappear on tabs that aren't overview. want to make the tools each full width expandable cards with descrtiptions and info"
+  },
+  "G-2": {
+   "note": "change youcoded to \"Sy",
+   "v": "skip",
+   "seconds": 463,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
