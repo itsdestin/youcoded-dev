@@ -1,0 +1,5127 @@
+{
+  "schemaVersion": 1,
+  "label": "file-pane-after",
+  "sha": "068c4de77f6949e1476f02110757d54c90cae607",
+  "branch": "fix/file-pane-spawns-and-redraw",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-09-10T06:00:39.438Z",
+  "machine": {
+    "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "ramGb": 121,
+    "kernel": "7.1.3-2-cachyos",
+    "node": "v26.4.0",
+    "renderer": {
+      "source": "SystemInfo",
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+      "softwareRendering": true,
+      "accelerated": false,
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "unavailable_off",
+        "vulkan": "disabled_off",
+        "webgl": "unavailable_off",
+        "video_decode": "unavailable_off"
+      },
+      "devices": [
+        {
+          "vendorId": 4098,
+          "deviceId": 5510,
+          "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+          "active": null
+        }
+      ],
+      "error": null,
+      "attempts": []
+    }
+  },
+  "noise": {
+    "loadAvgBefore": 1.8,
+    "machineBusyPctBefore": 4.1,
+    "maxLoadAvgAccepted": 3.42,
+    "maxBusyPctAccepted": 4.4,
+    "discardedRuns": 4
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": {
+    "runs": [
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "warnings": [],
+        "ccCreateMedianMs": 9,
+        "nativeCreateMs": 382,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 78,
+        "nativeFirstTokenMs": 1078,
+        "nativeFailure": null,
+        "nativeLayoutCost": {
+          "layouts": 33,
+          "recalcs": 180,
+          "frames": 180,
+          "commits": 32,
+          "records": 32,
+          "layoutDurationMs": 18.636,
+          "recalcStyleDurationMs": 16.818,
+          "layoutsPerFrame": 0.183,
+          "layoutsPerCommit": 1.031,
+          "commitsPerFrame": 0.178,
+          "elapsedMs": 3009.7999999821186,
+          "attached": true,
+          "verdict": "stream-too-slow",
+          "reason": "only 32 commits across 180 frames (0.178/frame): a forced layout per delta cannot outrun the frame rate when deltas are slower than frames, so this window cannot distinguish the defect from healthy behaviour"
+        },
+        "switchMedianMs": 76.3,
+        "switchP95Ms": 233.4,
+        "switchPaintedMedianMs": 99.6,
+        "switchPaintedP95Ms": 142.7,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 3,
+            "medianMs": 118.9,
+            "p95Ms": 119.1,
+            "medianEntries": 60,
+            "expectedEntries": 60,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "medium": {
+            "n": 3,
+            "medianMs": 93.2,
+            "p95Ms": 113.9,
+            "medianEntries": 152,
+            "expectedEntries": 152,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "small": {
+            "n": 3,
+            "medianMs": 89.6,
+            "p95Ms": 142.7,
+            "medianEntries": 166,
+            "expectedEntries": 166,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "empty": {
+            "n": 3,
+            "medianMs": 83.8,
+            "p95Ms": 100,
+            "medianEntries": 0,
+            "expectedEntries": 0,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "native": {
+            "n": 6,
+            "medianMs": 99.6,
+            "p95Ms": 122.7,
+            "medianEntries": 1,
+            "expectedEntries": null,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          }
+        },
+        "unsettledSwitches": 0,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 76.3,
+            "paintedMs": 119.1,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 80,
+            "paintedMs": 80,
+            "entries": 72,
+            "expected": 72,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 84.3,
+            "paintedMs": 84.4,
+            "entries": 86,
+            "expected": 86,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 45.7,
+            "paintedMs": 83.8,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 4,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 51.6,
+            "paintedMs": 85.4,
+            "entries": 1,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 5,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 52.1,
+            "paintedMs": 100.9,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 78.9,
+            "paintedMs": 118.9,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 7,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 93.1,
+            "paintedMs": 93.2,
+            "entries": 152,
+            "expected": 152,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 8,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 89.6,
+            "paintedMs": 89.6,
+            "entries": 166,
+            "expected": 166,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 9,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 48.7,
+            "paintedMs": 100,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 10,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 75,
+            "paintedMs": 122.7,
+            "entries": 1,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 11,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 50.6,
+            "paintedMs": 90,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 55.2,
+            "paintedMs": 101.5,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 113.7,
+            "paintedMs": 113.9,
+            "entries": 232,
+            "expected": 232,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 142.6,
+            "paintedMs": 142.7,
+            "entries": 244,
+            "expected": 244,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 35.2,
+            "paintedMs": 83.6,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 16,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 37.4,
+            "paintedMs": 84.8,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 17,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 49.5,
+            "paintedMs": 99.6,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 18,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 69.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 19,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 176.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 20,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 156.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 21,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 59.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 22,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 76.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 23,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 57.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 74.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 200.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 189.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 108.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 28,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 69.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 29,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 57.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 30,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 87.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 31,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 227.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 32,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 233.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 33,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 65.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 34,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 62.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 35,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 62.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 80.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 237.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 301.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 72.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          }
+        ],
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 1060,
+        "streamedTurns": 530,
+        "streamedFiles": 2,
+        "streamedInto": [
+          "medium",
+          "small"
+        ],
+        "streamedTurnsBySize": {
+          "medium": 265,
+          "small": 265
+        },
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 41,
+          "longtaskTotalMs": 4194,
+          "longtaskMaxMs": 327,
+          "frameGapCount": 65,
+          "frameGapMaxMs": 343,
+          "longtaskSupported": true,
+          "observedMs": 47719,
+          "frames": 2578,
+          "framesPerSec": 54,
+          "marks": [
+            {
+              "t": 3,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1385,
+              "label": "native-create:start"
+            },
+            {
+              "t": 1873,
+              "label": "native-send:start"
+            },
+            {
+              "t": 6280,
+              "label": "workload:start"
+            },
+            {
+              "t": 46294,
+              "label": "workload:end"
+            },
+            {
+              "t": 46347,
+              "label": "settings:open"
+            },
+            {
+              "t": 47718,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 40014,
+          "longtaskCount": 31,
+          "longtaskTotalMs": 2883,
+          "longtaskMaxMs": 203,
+          "longtaskSupported": true,
+          "frameGapCount": 54,
+          "frameGapMaxMs": 237
+        },
+        "cpuDuringPct": 650.7,
+        "cpuWindowSeconds": 40,
+        "cpuTotalSeconds": 260.3,
+        "pssAfterMb": 1700.4,
+        "pssBeforeSettingsMb": 1699.8,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      },
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "warnings": [],
+        "ccCreateMedianMs": 8,
+        "nativeCreateMs": 377,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 75,
+        "nativeFirstTokenMs": 1081,
+        "nativeFailure": null,
+        "nativeLayoutCost": {
+          "layouts": 36,
+          "recalcs": 181,
+          "frames": 181,
+          "commits": 36,
+          "records": 36,
+          "layoutDurationMs": 19.013,
+          "recalcStyleDurationMs": 13.134,
+          "layoutsPerFrame": 0.199,
+          "layoutsPerCommit": 1,
+          "commitsPerFrame": 0.199,
+          "elapsedMs": 3016.300000011921,
+          "attached": true,
+          "verdict": "stream-too-slow",
+          "reason": "only 36 commits across 181 frames (0.199/frame): a forced layout per delta cannot outrun the frame rate when deltas are slower than frames, so this window cannot distinguish the defect from healthy behaviour"
+        },
+        "switchMedianMs": 64.2,
+        "switchP95Ms": 185.8,
+        "switchPaintedMedianMs": 100.5,
+        "switchPaintedP95Ms": 117.4,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 3,
+            "medianMs": 101.9,
+            "p95Ms": 116.5,
+            "medianEntries": 60,
+            "expectedEntries": 60,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "medium": {
+            "n": 3,
+            "medianMs": 94.8,
+            "p95Ms": 114.8,
+            "medianEntries": 152,
+            "expectedEntries": 152,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "small": {
+            "n": 3,
+            "medianMs": 84.6,
+            "p95Ms": 86.7,
+            "medianEntries": 166,
+            "expectedEntries": 166,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "empty": {
+            "n": 3,
+            "medianMs": 101.3,
+            "p95Ms": 117.4,
+            "medianEntries": 0,
+            "expectedEntries": 0,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "native": {
+            "n": 6,
+            "medianMs": 100.5,
+            "p95Ms": 102.2,
+            "medianEntries": 1,
+            "expectedEntries": null,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          }
+        },
+        "unsettledSwitches": 0,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 55.9,
+            "paintedMs": 101.9,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 59.1,
+            "paintedMs": 59.1,
+            "entries": 72,
+            "expected": 72,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 64,
+            "paintedMs": 64.1,
+            "entries": 86,
+            "expected": 86,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 53.1,
+            "paintedMs": 101.3,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 4,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 53.9,
+            "paintedMs": 100.5,
+            "entries": 1,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 5,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 42.8,
+            "paintedMs": 85,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 64.2,
+            "paintedMs": 101.3,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 7,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 94.7,
+            "paintedMs": 94.8,
+            "entries": 152,
+            "expected": 152,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 8,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 86.6,
+            "paintedMs": 86.7,
+            "entries": 166,
+            "expected": 166,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 9,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 48.5,
+            "paintedMs": 117.4,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 10,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 51.8,
+            "paintedMs": 84,
+            "entries": 1,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 11,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 59,
+            "paintedMs": 102,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 72.5,
+            "paintedMs": 116.5,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 114.6,
+            "paintedMs": 114.8,
+            "entries": 232,
+            "expected": 232,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 84.5,
+            "paintedMs": 84.6,
+            "entries": 244,
+            "expected": 244,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 34.5,
+            "paintedMs": 89.3,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 16,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 56.4,
+            "paintedMs": 97.6,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 17,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 55.5,
+            "paintedMs": 102.2,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 18,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 65.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 19,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 184.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 20,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 156.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 21,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 48.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 22,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 66.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 23,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 58.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 80.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 204.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 185.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 96.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 28,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 46.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 29,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 43.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 30,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 67.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 31,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 158.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 32,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 154.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 33,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 72.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 34,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 59.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 35,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 33.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 55.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 172.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 189.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 44.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          }
+        ],
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 1060,
+        "streamedTurns": 530,
+        "streamedFiles": 2,
+        "streamedInto": [
+          "medium",
+          "small"
+        ],
+        "streamedTurnsBySize": {
+          "medium": 265,
+          "small": 265
+        },
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 30,
+          "longtaskTotalMs": 3212,
+          "longtaskMaxMs": 326,
+          "frameGapCount": 57,
+          "frameGapMaxMs": 349,
+          "longtaskSupported": true,
+          "observedMs": 48042,
+          "frames": 2656,
+          "framesPerSec": 55.3,
+          "marks": [
+            {
+              "t": 2,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1729,
+              "label": "native-create:start"
+            },
+            {
+              "t": 2210,
+              "label": "native-send:start"
+            },
+            {
+              "t": 6625,
+              "label": "workload:start"
+            },
+            {
+              "t": 46636,
+              "label": "workload:end"
+            },
+            {
+              "t": 46676,
+              "label": "settings:open"
+            },
+            {
+              "t": 48041,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 40011,
+          "longtaskCount": 21,
+          "longtaskTotalMs": 1969,
+          "longtaskMaxMs": 177,
+          "longtaskSupported": true,
+          "frameGapCount": 47,
+          "frameGapMaxMs": 203
+        },
+        "cpuDuringPct": 616.5,
+        "cpuWindowSeconds": 40,
+        "cpuTotalSeconds": 246.6,
+        "pssAfterMb": 1687.1,
+        "pssBeforeSettingsMb": 1687.9,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      },
+      {
+        "sessionsCreated": 6,
+        "sessionSizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "warnings": [],
+        "ccCreateMedianMs": 8,
+        "nativeCreateMs": 376,
+        "nativeSendStatus": "sent",
+        "nativeEchoMs": 73,
+        "nativeFirstTokenMs": 1093,
+        "nativeFailure": null,
+        "nativeLayoutCost": {
+          "layouts": 35,
+          "recalcs": 181,
+          "frames": 181,
+          "commits": 35,
+          "records": 35,
+          "layoutDurationMs": 19.23,
+          "recalcStyleDurationMs": 15.745,
+          "layoutsPerFrame": 0.193,
+          "layoutsPerCommit": 1,
+          "commitsPerFrame": 0.193,
+          "elapsedMs": 3016.2999999821186,
+          "attached": true,
+          "verdict": "stream-too-slow",
+          "reason": "only 35 commits across 181 frames (0.193/frame): a forced layout per delta cannot outrun the frame rate when deltas are slower than frames, so this window cannot distinguish the defect from healthy behaviour"
+        },
+        "switchMedianMs": 78.6,
+        "switchP95Ms": 237.5,
+        "switchPaintedMedianMs": 114.3,
+        "switchPaintedP95Ms": 193.3,
+        "switchPaintedBySize": {
+          "huge": {
+            "n": 3,
+            "medianMs": 126.1,
+            "p95Ms": 142.5,
+            "medianEntries": 60,
+            "expectedEntries": 60,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "medium": {
+            "n": 3,
+            "medianMs": 114.3,
+            "p95Ms": 193.3,
+            "medianEntries": 152,
+            "expectedEntries": 152,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "small": {
+            "n": 3,
+            "medianMs": 128.2,
+            "p95Ms": 130.6,
+            "medianEntries": 166,
+            "expectedEntries": 166,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "empty": {
+            "n": 3,
+            "medianMs": 125.7,
+            "p95Ms": 137.7,
+            "medianEntries": 0,
+            "expectedEntries": 0,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          },
+          "native": {
+            "n": 6,
+            "medianMs": 107.5,
+            "p95Ms": 124.9,
+            "medianEntries": 1,
+            "expectedEntries": null,
+            "short": 0,
+            "over": 0,
+            "unsettled": 0
+          }
+        },
+        "unsettledSwitches": 0,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 52.8,
+            "paintedMs": 92.7,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 51.4,
+            "paintedMs": 51.4,
+            "entries": 72,
+            "expected": 72,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 57.9,
+            "paintedMs": 58,
+            "entries": 86,
+            "expected": 86,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 67.3,
+            "paintedMs": 110.2,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 4,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 79.4,
+            "paintedMs": 124.9,
+            "entries": 1,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 5,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 70.2,
+            "paintedMs": 107.5,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 81.5,
+            "paintedMs": 126.1,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 7,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 114.1,
+            "paintedMs": 114.3,
+            "entries": 152,
+            "expected": 152,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 8,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 130.5,
+            "paintedMs": 130.6,
+            "entries": 166,
+            "expected": 166,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 9,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 78.6,
+            "paintedMs": 125.7,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 10,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 67.6,
+            "paintedMs": 112.4,
+            "entries": 1,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 11,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 57.1,
+            "paintedMs": 100.4,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 85.6,
+            "paintedMs": 142.5,
+            "entries": 60,
+            "expected": 60,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 193.1,
+            "paintedMs": 193.3,
+            "entries": 232,
+            "expected": 232,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 128,
+            "paintedMs": 128.2,
+            "entries": 244,
+            "expected": 244,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 75.5,
+            "paintedMs": 137.7,
+            "entries": 0,
+            "expected": 0,
+            "settled": true,
+            "short": false,
+            "over": false
+          },
+          {
+            "i": 16,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 46,
+            "paintedMs": 92.9,
+            "entries": 2,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 17,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 35.2,
+            "paintedMs": 75.5,
+            "entries": 0,
+            "expected": null,
+            "settled": true,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 18,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 49.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 19,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 97.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 20,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 103.7,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 21,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 39.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 22,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 43.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 23,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 32.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 46.9,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 191.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 189.6,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 93.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 28,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 75.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 29,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 58.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 30,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 90.4,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 31,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 237.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 32,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 221.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 33,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 86.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 34,
+            "idx": 4,
+            "name": "native-0",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 72.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 35,
+            "idx": 5,
+            "name": "native-1",
+            "size": "native",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 77.5,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "size": "huge",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 86.3,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "size": "medium",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 241.8,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "size": "small",
+            "streaming": true,
+            "mode": "pill",
+            "ok": true,
+            "ms": 321.2,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "size": "empty",
+            "streaming": false,
+            "mode": "pill",
+            "ok": true,
+            "ms": 66.1,
+            "paintedMs": null,
+            "entries": null,
+            "expected": null,
+            "settled": null,
+            "short": null,
+            "over": null
+          }
+        ],
+        "clickSwitches": 40,
+        "ipcSwitches": 0,
+        "menuSwitches": 0,
+        "menuSwitchMedianMs": null,
+        "failedSwitches": 0,
+        "switchFailures": [],
+        "verifiedSwitches": 40,
+        "overflowed": false,
+        "firstSwitchMode": "pill",
+        "streamedLines": 1060,
+        "streamedTurns": 530,
+        "streamedFiles": 2,
+        "streamedInto": [
+          "medium",
+          "small"
+        ],
+        "streamedTurnsBySize": {
+          "medium": 265,
+          "small": 265
+        },
+        "streamErrors": [],
+        "probe": {
+          "longtaskCount": 41,
+          "longtaskTotalMs": 4163,
+          "longtaskMaxMs": 318,
+          "frameGapCount": 63,
+          "frameGapMaxMs": 338,
+          "longtaskSupported": true,
+          "observedMs": 47990,
+          "frames": 2605,
+          "framesPerSec": 54.3,
+          "marks": [
+            {
+              "t": 2,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1404,
+              "label": "native-create:start"
+            },
+            {
+              "t": 2127,
+              "label": "native-send:start"
+            },
+            {
+              "t": 6546,
+              "label": "workload:start"
+            },
+            {
+              "t": 46564,
+              "label": "workload:end"
+            },
+            {
+              "t": 46615,
+              "label": "settings:open"
+            },
+            {
+              "t": 47989,
+              "label": "settings:closed"
+            }
+          ],
+          "errors": []
+        },
+        "probeWorkloadWindow": {
+          "windowMs": 40018,
+          "longtaskCount": 32,
+          "longtaskTotalMs": 2947,
+          "longtaskMaxMs": 216,
+          "longtaskSupported": true,
+          "frameGapCount": 53,
+          "frameGapMaxMs": 250
+        },
+        "cpuDuringPct": 678.1,
+        "cpuWindowSeconds": 40,
+        "cpuTotalSeconds": 271.3,
+        "pssAfterMb": 1679.6,
+        "pssBeforeSettingsMb": 1694,
+        "settings": {
+          "opened": true,
+          "closed": true
+        }
+      }
+    ],
+    "median": {
+      "sessionsCreated": 6,
+      "sessionSizes": {
+        "cc-0": null,
+        "cc-1": null,
+        "cc-2": null,
+        "cc-3": null,
+        "native-0": null,
+        "native-1": null
+      },
+      "ccCreateMedianMs": 8,
+      "nativeCreateMs": 377,
+      "nativeSendStatus": null,
+      "nativeEchoMs": 75,
+      "nativeFirstTokenMs": 1081,
+      "nativeFailure": null,
+      "nativeLayoutCost": {
+        "layouts": 35,
+        "recalcs": 181,
+        "frames": 181,
+        "commits": 35,
+        "records": 35,
+        "layoutDurationMs": 19.013,
+        "recalcStyleDurationMs": 15.745,
+        "layoutsPerFrame": 0.193,
+        "layoutsPerCommit": 1,
+        "commitsPerFrame": 0.193,
+        "elapsedMs": 3016.2999999821186,
+        "attached": true,
+        "verdict": "stream-too-slow",
+        "reason": "only 32 commits across 180 frames (0.178/frame): a forced layout per delta cannot outrun the frame rate when deltas are slower than frames, so this window cannot distinguish the defect from healthy behaviour"
+      },
+      "switchMedianMs": 76.3,
+      "switchP95Ms": 233.4,
+      "switchPaintedMedianMs": 100.5,
+      "switchPaintedP95Ms": 142.7,
+      "switchPaintedBySize": {
+        "huge": {
+          "n": 3,
+          "medianMs": 118.9,
+          "p95Ms": 119.1,
+          "medianEntries": 60,
+          "expectedEntries": 60,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "medium": {
+          "n": 3,
+          "medianMs": 94.8,
+          "p95Ms": 114.8,
+          "medianEntries": 152,
+          "expectedEntries": 152,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "small": {
+          "n": 3,
+          "medianMs": 89.6,
+          "p95Ms": 130.6,
+          "medianEntries": 166,
+          "expectedEntries": 166,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "empty": {
+          "n": 3,
+          "medianMs": 101.3,
+          "p95Ms": 117.4,
+          "medianEntries": 0,
+          "expectedEntries": 0,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        },
+        "native": {
+          "n": 6,
+          "medianMs": 100.5,
+          "p95Ms": 122.7,
+          "medianEntries": 1,
+          "expectedEntries": null,
+          "short": 0,
+          "over": 0,
+          "unsettled": 0
+        }
+      },
+      "unsettledSwitches": 0,
+      "clickSwitches": 40,
+      "ipcSwitches": 0,
+      "menuSwitches": 0,
+      "menuSwitchMedianMs": null,
+      "failedSwitches": 0,
+      "verifiedSwitches": 40,
+      "overflowed": null,
+      "firstSwitchMode": null,
+      "streamedLines": 1060,
+      "streamedTurns": 530,
+      "streamedFiles": 2,
+      "streamedTurnsBySize": {
+        "medium": 265,
+        "small": 265
+      },
+      "probe": {
+        "longtaskCount": 41,
+        "longtaskTotalMs": 4163,
+        "longtaskMaxMs": 326,
+        "frameGapCount": 63,
+        "frameGapMaxMs": 343,
+        "longtaskSupported": null,
+        "observedMs": 47990,
+        "frames": 2605,
+        "framesPerSec": 54.3
+      },
+      "probeWorkloadWindow": {
+        "windowMs": 40014,
+        "longtaskCount": 31,
+        "longtaskTotalMs": 2883,
+        "longtaskMaxMs": 203,
+        "longtaskSupported": null,
+        "frameGapCount": 53,
+        "frameGapMaxMs": 237
+      },
+      "cpuDuringPct": 650.7,
+      "cpuWindowSeconds": 40,
+      "cpuTotalSeconds": 260.3,
+      "pssAfterMb": 1687.1,
+      "pssBeforeSettingsMb": 1694,
+      "settings": {
+        "opened": null,
+        "closed": null
+      }
+    },
+    "pssBreakdownFirstRun": [
+      {
+        "pid": 1521145,
+        "type": "main",
+        "mb": 181.4
+      },
+      {
+        "pid": 1521147,
+        "type": "zygote",
+        "mb": 12.2
+      },
+      {
+        "pid": 1521148,
+        "type": "zygote",
+        "mb": 12.2
+      },
+      {
+        "pid": 1521177,
+        "type": "zygote",
+        "mb": 92
+      },
+      {
+        "pid": 1521181,
+        "type": "utility",
+        "mb": 29.3
+      },
+      {
+        "pid": 1521267,
+        "type": "zygote",
+        "mb": 417.9
+      },
+      {
+        "pid": 1521327,
+        "type": "pty-worker",
+        "mb": 18.9
+      },
+      {
+        "pid": 1521334,
+        "type": "fake-claude",
+        "mb": 18.4
+      },
+      {
+        "pid": 1521342,
+        "type": "utility",
+        "mb": 22.7
+      },
+      {
+        "pid": 1521376,
+        "type": "pty-worker",
+        "mb": 18.9
+      },
+      {
+        "pid": 1521383,
+        "type": "fake-claude",
+        "mb": 18.4
+      },
+      {
+        "pid": 1521391,
+        "type": "pty-worker",
+        "mb": 18.9
+      },
+      {
+        "pid": 1521398,
+        "type": "fake-claude",
+        "mb": 18.3
+      },
+      {
+        "pid": 1521406,
+        "type": "pty-worker",
+        "mb": 18.9
+      },
+      {
+        "pid": 1521413,
+        "type": "fake-claude",
+        "mb": 18.4
+      },
+      {
+        "pid": 1521438,
+        "type": "llama-server",
+        "mb": 10
+      },
+      {
+        "pid": 1521483,
+        "type": "llama-server",
+        "mb": 773.6
+      }
+    ]
+  },
+  "replayStall": null,
+  "artifacts": {
+    "runs": [
+      {
+        "projectRoot": "/home/destin/youcoded-dev/worktrees/sessions/2026-09-09-projects-perf/scratch/perf-lab/home/projects/alpha",
+        "resumedTranscript": {
+          "sessionId": "a24ee6d5-ce4a-473d-888d-dea6724419c6",
+          "turns": 50
+        },
+        "artifactsRegistered": 6,
+        "files": {
+          "codeSmall": {
+            "name": "perf-small.ts",
+            "rel": "perf-artifacts/perf-small.ts",
+            "bytes": 3247
+          },
+          "codeLarge": {
+            "name": "perf-large.ts",
+            "rel": "perf-artifacts/perf-large.ts",
+            "bytes": 400258
+          },
+          "mdSmall": {
+            "name": "perf-small.md",
+            "rel": "perf-artifacts/perf-small.md",
+            "bytes": 3539,
+            "fences": 6
+          },
+          "mdLarge": {
+            "name": "perf-large.md",
+            "rel": "perf-artifacts/perf-large.md",
+            "bytes": 401775,
+            "fences": 699
+          },
+          "htmlSmall": {
+            "name": "perf-small.html",
+            "rel": "perf-artifacts/perf-small.html",
+            "bytes": 4289,
+            "sections": 4
+          },
+          "htmlLarge": {
+            "name": "perf-large.html",
+            "rel": "perf-artifacts/perf-large.html",
+            "bytes": 345049,
+            "sections": 6
+          }
+        },
+        "create": {
+          "ok": true,
+          "createMs": 22,
+          "resumedTurns": 50,
+          "probe": {
+            "windowMs": 724,
+            "longtaskCount": 3,
+            "longtaskTotalMs": 550,
+            "longtaskMaxMs": 394,
+            "longtaskSupported": true,
+            "frameGapCount": 3,
+            "frameGapMaxMs": 411
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 1,
+            "medianMs": 34,
+            "p95Ms": 114,
+            "maxMs": 114,
+            "over100ms": 1,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 64,
+            "worst": [
+              {
+                "atMs": 600,
+                "roundTripMs": 114
+              },
+              {
+                "atMs": 537,
+                "roundTripMs": 34
+              },
+              {
+                "atMs": 722,
+                "roundTripMs": 2
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 114ms, under the 250ms stall threshold"
+          }
+        },
+        "drawerOpen": {
+          "ok": true,
+          "openMs": 5,
+          "listedMs": 58,
+          "probe": {
+            "windowMs": 108,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 2,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 53,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 0
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "open": {
+          "codeSmall": {
+            "ok": true,
+            "openMs": 100,
+            "bytes": 3247,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-small.ts",
+            "probe": {
+              "windowMs": 104,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 15,
+              "p95Ms": 15,
+              "maxMs": 15,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 85,
+                  "roundTripMs": 15
+                },
+                {
+                  "atMs": 101,
+                  "roundTripMs": 3
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 15ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": true
+          },
+          "codeLarge": {
+            "ok": true,
+            "openMs": 89,
+            "bytes": 400258,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-large.ts",
+            "probe": {
+              "windowMs": 108,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 46
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": 0,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 46,
+              "p95Ms": 46,
+              "maxMs": 46,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 60,
+                  "roundTripMs": 46
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 46ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": false
+          },
+          "mdSmall": {
+            "ok": true,
+            "openMs": 689,
+            "bytes": 3539,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-small.md",
+            "probe": {
+              "windowMs": 692,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 644,
+              "longtaskMaxMs": 505,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 649
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 22,
+              "p95Ms": 22,
+              "maxMs": 22,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 653,
+                  "roundTripMs": 22
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 22ms, under the 250ms stall threshold"
+            },
+            "fences": 6
+          },
+          "mdLarge": {
+            "ok": true,
+            "openMs": 1459,
+            "bytes": 401775,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-large.md",
+            "probe": {
+              "windowMs": 1480,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 1388,
+              "longtaskMaxMs": 738,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 1384
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 18,
+              "p95Ms": 18,
+              "maxMs": 18,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1462,
+                  "roundTripMs": 18
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 18ms, under the 250ms stall threshold"
+            },
+            "fences": 699
+          },
+          "htmlSmall": {
+            "ok": true,
+            "openMs": 137,
+            "bytes": 4289,
+            "viewer": null,
+            "docPath": null,
+            "probe": {
+              "windowMs": 141,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 73,
+              "longtaskMaxMs": 73,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 81
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 6,
+              "p95Ms": 6,
+              "maxMs": 6,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 100,
+                  "roundTripMs": 6
+                },
+                {
+                  "atMs": 82,
+                  "roundTripMs": 2
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "htmlNav": {
+          "ok": true,
+          "swaps": [
+            {
+              "to": "htmlLarge",
+              "ms": 123,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 76,
+              "ok": true,
+              "bytes": 4289
+            },
+            {
+              "to": "htmlLarge",
+              "ms": 108,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 72,
+              "ok": true,
+              "bytes": 4289
+            }
+          ],
+          "swap": {
+            "count": 4,
+            "medianMs": 108,
+            "p95Ms": 123,
+            "maxMs": 123
+          },
+          "swapSmall": {
+            "count": 2,
+            "medianMs": 76,
+            "p95Ms": 76,
+            "maxMs": 76
+          },
+          "swapLarge": {
+            "count": 2,
+            "medianMs": 123,
+            "p95Ms": 123,
+            "maxMs": 123
+          },
+          "inPage": {
+            "count": 4,
+            "medianMs": 26.3,
+            "p95Ms": 27.5,
+            "maxMs": 27.5
+          },
+          "inPageNavs": [
+            {
+              "to": "#s1",
+              "ms": 27.5,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s2",
+              "ms": 16.7,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s3",
+              "ms": 26.3,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s1",
+              "ms": 15.4,
+              "ok": true,
+              "reason": null
+            }
+          ],
+          "inPageReason": null,
+          "framesBound": 5,
+          "probe": {
+            "windowMs": 525,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 4,
+            "frameGapMaxMs": 70
+          },
+          "ipc": {
+            "pings": 10,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 5,
+            "maxMs": 5,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 350,
+                "roundTripMs": 5
+              },
+              {
+                "atMs": 156,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 450,
+                "roundTripMs": 2
+              },
+              {
+                "atMs": 53,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+          }
+        },
+        "typing": {
+          "codeSmall": {
+            "ok": true,
+            "bytes": 3247,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 26.2,
+              "p95Ms": 31.3,
+              "maxMs": 32.9
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 11,
+              "p95Ms": 23,
+              "maxMs": 25
+            },
+            "saveMs": 32,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2221,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 64
+            },
+            "ipc": {
+              "pings": 44,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 4,
+              "maxMs": 13,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 450,
+                  "roundTripMs": 13
+                },
+                {
+                  "atMs": 750,
+                  "roundTripMs": 9
+                },
+                {
+                  "atMs": 1274,
+                  "roundTripMs": 4
+                },
+                {
+                  "atMs": 60,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          "codeLarge": {
+            "ok": true,
+            "bytes": 400258,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 25,
+              "p95Ms": 30.7,
+              "maxMs": 31.5
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 16,
+              "p95Ms": 22,
+              "maxMs": 27
+            },
+            "saveMs": 71,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2466,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 90,
+              "longtaskMaxMs": 90,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 95
+            },
+            "ipc": {
+              "pings": 46,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 7,
+              "maxMs": 10,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 90,
+                  "roundTripMs": 10
+                },
+                {
+                  "atMs": 153,
+                  "roundTripMs": 7
+                },
+                {
+                  "atMs": 513,
+                  "roundTripMs": 7
+                },
+                {
+                  "atMs": 570,
+                  "roundTripMs": 6
+                },
+                {
+                  "atMs": 602,
+                  "roundTripMs": 5
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "copy": {
+          "ok": true,
+          "source": "chat-transcript",
+          "clickToCopiedMs": 23.9,
+          "codeBlocksInScope": 1,
+          "copiedChars": 2310,
+          "probe": {
+            "windowMs": 28,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "sizeScaling": {
+          "bytesRatio": 123.3,
+          "codeOpenRatio": 0.89,
+          "markdownOpenRatio": 2.12,
+          "markdownFenceRatio": 116.5,
+          "keystrokeRatio": 0.95,
+          "htmlSwapRatio": 1.62
+        },
+        "probe": {
+          "longtaskCount": 9,
+          "longtaskTotalMs": 2745,
+          "longtaskMaxMs": 738,
+          "frameGapCount": 16,
+          "frameGapMaxMs": 1384,
+          "longtaskSupported": true,
+          "observedMs": 8717,
+          "frames": 343,
+          "framesPerSec": 39.3,
+          "marks": [
+            {
+              "t": 3,
+              "label": "artifacts:session:start"
+            },
+            {
+              "t": 727,
+              "label": "artifacts:session:end"
+            },
+            {
+              "t": 766,
+              "label": "artifacts:drawer-open:start"
+            },
+            {
+              "t": 874,
+              "label": "artifacts:drawer-open:end"
+            },
+            {
+              "t": 878,
+              "label": "artifacts:open-codeSmall:start"
+            },
+            {
+              "t": 982,
+              "label": "artifacts:open-codeSmall:end"
+            },
+            {
+              "t": 1019,
+              "label": "artifacts:open-codeLarge:start"
+            },
+            {
+              "t": 1127,
+              "label": "artifacts:open-codeLarge:end"
+            },
+            {
+              "t": 1134,
+              "label": "artifacts:open-mdSmall:start"
+            },
+            {
+              "t": 1826,
+              "label": "artifacts:open-mdSmall:end"
+            },
+            {
+              "t": 1834,
+              "label": "artifacts:open-mdLarge:start"
+            },
+            {
+              "t": 3314,
+              "label": "artifacts:open-mdLarge:end"
+            },
+            {
+              "t": 3318,
+              "label": "artifacts:open-htmlSmall:start"
+            },
+            {
+              "t": 3459,
+              "label": "artifacts:open-htmlSmall:end"
+            },
+            {
+              "t": 3462,
+              "label": "artifacts:html-nav:start"
+            },
+            {
+              "t": 3987,
+              "label": "artifacts:html-nav:end"
+            },
+            {
+              "t": 3989,
+              "label": "artifacts:type-codeSmall:start"
+            },
+            {
+              "t": 6210,
+              "label": "artifacts:type-codeSmall:end"
+            },
+            {
+              "t": 6216,
+              "label": "artifacts:type-codeLarge:start"
+            },
+            {
+              "t": 8682,
+              "label": "artifacts:type-codeLarge:end"
+            },
+            {
+              "t": 8686,
+              "label": "artifacts:copy-code:start"
+            },
+            {
+              "t": 8714,
+              "label": "artifacts:copy-code:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 112,
+          "totalStallMs": 64,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 114
+        },
+        "warnings": []
+      },
+      {
+        "projectRoot": "/home/destin/youcoded-dev/worktrees/sessions/2026-09-09-projects-perf/scratch/perf-lab/home/projects/alpha",
+        "resumedTranscript": {
+          "sessionId": "a24ee6d5-ce4a-473d-888d-dea6724419c6",
+          "turns": 50
+        },
+        "artifactsRegistered": 6,
+        "files": {
+          "codeSmall": {
+            "name": "perf-small.ts",
+            "rel": "perf-artifacts/perf-small.ts",
+            "bytes": 3247
+          },
+          "codeLarge": {
+            "name": "perf-large.ts",
+            "rel": "perf-artifacts/perf-large.ts",
+            "bytes": 400258
+          },
+          "mdSmall": {
+            "name": "perf-small.md",
+            "rel": "perf-artifacts/perf-small.md",
+            "bytes": 3539,
+            "fences": 6
+          },
+          "mdLarge": {
+            "name": "perf-large.md",
+            "rel": "perf-artifacts/perf-large.md",
+            "bytes": 401775,
+            "fences": 699
+          },
+          "htmlSmall": {
+            "name": "perf-small.html",
+            "rel": "perf-artifacts/perf-small.html",
+            "bytes": 4289,
+            "sections": 4
+          },
+          "htmlLarge": {
+            "name": "perf-large.html",
+            "rel": "perf-artifacts/perf-large.html",
+            "bytes": 345049,
+            "sections": 6
+          }
+        },
+        "create": {
+          "ok": true,
+          "createMs": 12,
+          "resumedTurns": 50,
+          "probe": {
+            "windowMs": 200,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 68,
+            "longtaskMaxMs": 68,
+            "longtaskSupported": true,
+            "frameGapCount": 1,
+            "frameGapMaxMs": 77
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": 0,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 95,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "drawerOpen": {
+          "ok": true,
+          "openMs": 2,
+          "listedMs": 3,
+          "probe": {
+            "windowMs": 39,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "open": {
+          "codeSmall": {
+            "ok": true,
+            "openMs": 53,
+            "bytes": 3247,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-small.ts",
+            "probe": {
+              "windowMs": 80,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 6,
+              "p95Ms": 6,
+              "maxMs": 6,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 79,
+                  "roundTripMs": 6
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": true
+          },
+          "codeLarge": {
+            "ok": true,
+            "openMs": 78,
+            "bytes": 400258,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-large.ts",
+            "probe": {
+              "windowMs": 101,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 21,
+              "p95Ms": 21,
+              "maxMs": 21,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 78,
+                  "roundTripMs": 21
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 21ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": false
+          },
+          "mdSmall": {
+            "ok": true,
+            "openMs": 893,
+            "bytes": 3539,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-small.md",
+            "probe": {
+              "windowMs": 899,
+              "longtaskCount": 3,
+              "longtaskTotalMs": 833,
+              "longtaskMaxMs": 421,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 556
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 329,
+              "p95Ms": 329,
+              "maxMs": 329,
+              "over100ms": 1,
+              "over250ms": 1,
+              "over1000ms": 0,
+              "totalStallMs": 279,
+              "worst": [
+                {
+                  "atMs": 559,
+                  "roundTripMs": 329
+                },
+                {
+                  "atMs": 894,
+                  "roundTripMs": 5
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "renderer",
+              "why": "IPC stalled 329ms while the renderer ran a 421ms long task — the renderer thread was the one blocked"
+            },
+            "fences": 6
+          },
+          "mdLarge": {
+            "ok": true,
+            "openMs": 1461,
+            "bytes": 401775,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-large.md",
+            "probe": {
+              "windowMs": 1478,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 1360,
+              "longtaskMaxMs": 743,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 1348
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1362,
+              "p95Ms": 1362,
+              "maxMs": 1362,
+              "over100ms": 1,
+              "over250ms": 1,
+              "over1000ms": 1,
+              "totalStallMs": 1312,
+              "worst": [
+                {
+                  "atMs": 66,
+                  "roundTripMs": 1362
+                },
+                {
+                  "atMs": 1466,
+                  "roundTripMs": 19
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "renderer",
+              "why": "IPC stalled 1362ms while the renderer ran a 743ms long task — the renderer thread was the one blocked"
+            },
+            "fences": 699
+          },
+          "htmlSmall": {
+            "ok": true,
+            "openMs": 275,
+            "bytes": 4289,
+            "viewer": null,
+            "docPath": null,
+            "probe": {
+              "windowMs": 278,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 77,
+              "longtaskMaxMs": 77,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 85
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 3,
+              "medianMs": 125,
+              "p95Ms": 125,
+              "maxMs": 125,
+              "over100ms": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 75,
+              "worst": [
+                {
+                  "atMs": 85,
+                  "roundTripMs": 125
+                },
+                {
+                  "atMs": 250,
+                  "roundTripMs": 0
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 125ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "htmlNav": {
+          "ok": true,
+          "swaps": [
+            {
+              "to": "htmlLarge",
+              "ms": 175,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 95,
+              "ok": true,
+              "bytes": 4289
+            },
+            {
+              "to": "htmlLarge",
+              "ms": 129,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 64,
+              "ok": true,
+              "bytes": 4289
+            }
+          ],
+          "swap": {
+            "count": 4,
+            "medianMs": 129,
+            "p95Ms": 175,
+            "maxMs": 175
+          },
+          "swapSmall": {
+            "count": 2,
+            "medianMs": 95,
+            "p95Ms": 95,
+            "maxMs": 95
+          },
+          "swapLarge": {
+            "count": 2,
+            "medianMs": 175,
+            "p95Ms": 175,
+            "maxMs": 175
+          },
+          "inPage": {
+            "count": 4,
+            "medianMs": 23.5,
+            "p95Ms": 27.7,
+            "maxMs": 27.7
+          },
+          "inPageNavs": [
+            {
+              "to": "#s1",
+              "ms": 27.7,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s2",
+              "ms": 14.4,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s3",
+              "ms": 23.5,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s1",
+              "ms": 11.3,
+              "ok": true,
+              "reason": null
+            }
+          ],
+          "inPageReason": null,
+          "framesBound": 5,
+          "probe": {
+            "windowMs": 611,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 4,
+            "frameGapMaxMs": 67
+          },
+          "ipc": {
+            "pings": 12,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 5,
+            "maxMs": 5,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 320,
+                "roundTripMs": 5
+              },
+              {
+                "atMs": 216,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 100,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 400,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+          }
+        },
+        "typing": {
+          "codeSmall": {
+            "ok": true,
+            "bytes": 3247,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 25.6,
+              "p95Ms": 32.5,
+              "maxMs": 33.8
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 9,
+              "p95Ms": 15,
+              "maxMs": 22
+            },
+            "saveMs": 34,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2159,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 57
+            },
+            "ipc": {
+              "pings": 43,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 1,
+              "maxMs": 11,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1250,
+                  "roundTripMs": 11
+                },
+                {
+                  "atMs": 63,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 103,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 150,
+                  "roundTripMs": 1
+                },
+                {
+                  "atMs": 200,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 11ms, under the 250ms stall threshold"
+            }
+          },
+          "codeLarge": {
+            "ok": true,
+            "bytes": 400258,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 25.6,
+              "p95Ms": 31.1,
+              "maxMs": 31.5
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 17,
+              "p95Ms": 21,
+              "maxMs": 21
+            },
+            "saveMs": 79,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2463,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 86,
+              "longtaskMaxMs": 86,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 92
+            },
+            "ipc": {
+              "pings": 47,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 8,
+              "maxMs": 10,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 82,
+                  "roundTripMs": 10
+                },
+                {
+                  "atMs": 1300,
+                  "roundTripMs": 9
+                },
+                {
+                  "atMs": 151,
+                  "roundTripMs": 8
+                },
+                {
+                  "atMs": 323,
+                  "roundTripMs": 8
+                },
+                {
+                  "atMs": 673,
+                  "roundTripMs": 6
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "copy": {
+          "ok": true,
+          "source": "chat-transcript",
+          "clickToCopiedMs": 24.1,
+          "codeBlocksInScope": 1,
+          "copiedChars": 2310,
+          "probe": {
+            "windowMs": 28,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "sizeScaling": {
+          "bytesRatio": 123.3,
+          "codeOpenRatio": 1.47,
+          "markdownOpenRatio": 1.64,
+          "markdownFenceRatio": 116.5,
+          "keystrokeRatio": 1,
+          "htmlSwapRatio": 1.84
+        },
+        "probe": {
+          "longtaskCount": 8,
+          "longtaskTotalMs": 2424,
+          "longtaskMaxMs": 743,
+          "frameGapCount": 13,
+          "frameGapMaxMs": 1348,
+          "longtaskSupported": true,
+          "observedMs": 8452,
+          "frames": 347,
+          "framesPerSec": 41.1,
+          "marks": [
+            {
+              "t": 3,
+              "label": "artifacts:session:start"
+            },
+            {
+              "t": 203,
+              "label": "artifacts:session:end"
+            },
+            {
+              "t": 248,
+              "label": "artifacts:drawer-open:start"
+            },
+            {
+              "t": 287,
+              "label": "artifacts:drawer-open:end"
+            },
+            {
+              "t": 290,
+              "label": "artifacts:open-codeSmall:start"
+            },
+            {
+              "t": 370,
+              "label": "artifacts:open-codeSmall:end"
+            },
+            {
+              "t": 379,
+              "label": "artifacts:open-codeLarge:start"
+            },
+            {
+              "t": 480,
+              "label": "artifacts:open-codeLarge:end"
+            },
+            {
+              "t": 487,
+              "label": "artifacts:open-mdSmall:start"
+            },
+            {
+              "t": 1386,
+              "label": "artifacts:open-mdSmall:end"
+            },
+            {
+              "t": 1393,
+              "label": "artifacts:open-mdLarge:start"
+            },
+            {
+              "t": 2871,
+              "label": "artifacts:open-mdLarge:end"
+            },
+            {
+              "t": 2899,
+              "label": "artifacts:open-htmlSmall:start"
+            },
+            {
+              "t": 3177,
+              "label": "artifacts:open-htmlSmall:end"
+            },
+            {
+              "t": 3181,
+              "label": "artifacts:html-nav:start"
+            },
+            {
+              "t": 3792,
+              "label": "artifacts:html-nav:end"
+            },
+            {
+              "t": 3794,
+              "label": "artifacts:type-codeSmall:start"
+            },
+            {
+              "t": 5953,
+              "label": "artifacts:type-codeSmall:end"
+            },
+            {
+              "t": 5956,
+              "label": "artifacts:type-codeLarge:start"
+            },
+            {
+              "t": 8419,
+              "label": "artifacts:type-codeLarge:end"
+            },
+            {
+              "t": 8421,
+              "label": "artifacts:copy-code:start"
+            },
+            {
+              "t": 8449,
+              "label": "artifacts:copy-code:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 113,
+          "totalStallMs": 1666,
+          "over250ms": 2,
+          "over1000ms": 1,
+          "maxMs": 1362
+        },
+        "warnings": []
+      },
+      {
+        "projectRoot": "/home/destin/youcoded-dev/worktrees/sessions/2026-09-09-projects-perf/scratch/perf-lab/home/projects/alpha",
+        "resumedTranscript": {
+          "sessionId": "a24ee6d5-ce4a-473d-888d-dea6724419c6",
+          "turns": 50
+        },
+        "artifactsRegistered": 6,
+        "files": {
+          "codeSmall": {
+            "name": "perf-small.ts",
+            "rel": "perf-artifacts/perf-small.ts",
+            "bytes": 3247
+          },
+          "codeLarge": {
+            "name": "perf-large.ts",
+            "rel": "perf-artifacts/perf-large.ts",
+            "bytes": 400258
+          },
+          "mdSmall": {
+            "name": "perf-small.md",
+            "rel": "perf-artifacts/perf-small.md",
+            "bytes": 3539,
+            "fences": 6
+          },
+          "mdLarge": {
+            "name": "perf-large.md",
+            "rel": "perf-artifacts/perf-large.md",
+            "bytes": 401775,
+            "fences": 699
+          },
+          "htmlSmall": {
+            "name": "perf-small.html",
+            "rel": "perf-artifacts/perf-small.html",
+            "bytes": 4289,
+            "sections": 4
+          },
+          "htmlLarge": {
+            "name": "perf-large.html",
+            "rel": "perf-artifacts/perf-large.html",
+            "bytes": 345049,
+            "sections": 6
+          }
+        },
+        "create": {
+          "ok": true,
+          "createMs": 9,
+          "resumedTurns": 50,
+          "probe": {
+            "windowMs": 211,
+            "longtaskCount": 1,
+            "longtaskTotalMs": 82,
+            "longtaskMaxMs": 82,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 3,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": 1,
+            "p95Ms": 1,
+            "maxMs": 1,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": [
+              {
+                "atMs": 107,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 150,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          }
+        },
+        "drawerOpen": {
+          "ok": true,
+          "openMs": 2,
+          "listedMs": 4,
+          "probe": {
+            "windowMs": 31,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "open": {
+          "codeSmall": {
+            "ok": true,
+            "openMs": 54,
+            "bytes": 3247,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-small.ts",
+            "probe": {
+              "windowMs": 75,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 0,
+              "frameGapMaxMs": 0
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 6,
+              "p95Ms": 6,
+              "maxMs": 6,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 74,
+                  "roundTripMs": 6
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": true
+          },
+          "codeLarge": {
+            "ok": true,
+            "openMs": 101,
+            "bytes": 400258,
+            "viewer": "cm6",
+            "docPath": "perf-artifacts/perf-large.ts",
+            "probe": {
+              "windowMs": 103,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 42
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 4,
+              "p95Ms": 4,
+              "maxMs": 4,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 94,
+                  "roundTripMs": 4
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            },
+            "chunkLoadIncluded": false
+          },
+          "mdSmall": {
+            "ok": true,
+            "openMs": 861,
+            "bytes": 3539,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-small.md",
+            "probe": {
+              "windowMs": 866,
+              "longtaskCount": 3,
+              "longtaskTotalMs": 817,
+              "longtaskMaxMs": 409,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 541
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 323,
+              "p95Ms": 323,
+              "maxMs": 323,
+              "over100ms": 1,
+              "over250ms": 1,
+              "over1000ms": 0,
+              "totalStallMs": 273,
+              "worst": [
+                {
+                  "atMs": 537,
+                  "roundTripMs": 323
+                },
+                {
+                  "atMs": 864,
+                  "roundTripMs": 2
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "renderer",
+              "why": "IPC stalled 323ms while the renderer ran a 409ms long task — the renderer thread was the one blocked"
+            },
+            "fences": 6
+          },
+          "mdLarge": {
+            "ok": true,
+            "openMs": 1391,
+            "bytes": 401775,
+            "viewer": "rendered",
+            "docPath": "perf-artifacts/perf-large.md",
+            "probe": {
+              "windowMs": 1421,
+              "longtaskCount": 2,
+              "longtaskTotalMs": 1267,
+              "longtaskMaxMs": 739,
+              "longtaskSupported": true,
+              "frameGapCount": 2,
+              "frameGapMaxMs": 1267
+            },
+            "ipc": {
+              "pings": 1,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 26,
+              "p95Ms": 26,
+              "maxMs": 26,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1401,
+                  "roundTripMs": 26
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 26ms, under the 250ms stall threshold"
+            },
+            "fences": 699
+          },
+          "htmlSmall": {
+            "ok": true,
+            "openMs": 135,
+            "bytes": 4289,
+            "viewer": null,
+            "docPath": null,
+            "probe": {
+              "windowMs": 140,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 72,
+              "longtaskMaxMs": 72,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 88
+            },
+            "ipc": {
+              "pings": 2,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 3,
+              "p95Ms": 3,
+              "maxMs": 3,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 80,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 100,
+                  "roundTripMs": 1
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "htmlNav": {
+          "ok": true,
+          "swaps": [
+            {
+              "to": "htmlLarge",
+              "ms": 254,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 83,
+              "ok": true,
+              "bytes": 4289
+            },
+            {
+              "to": "htmlLarge",
+              "ms": 175,
+              "ok": true,
+              "bytes": 345049
+            },
+            {
+              "to": "htmlSmall",
+              "ms": 91,
+              "ok": true,
+              "bytes": 4289
+            }
+          ],
+          "swap": {
+            "count": 4,
+            "medianMs": 175,
+            "p95Ms": 254,
+            "maxMs": 254
+          },
+          "swapSmall": {
+            "count": 2,
+            "medianMs": 91,
+            "p95Ms": 91,
+            "maxMs": 91
+          },
+          "swapLarge": {
+            "count": 2,
+            "medianMs": 254,
+            "p95Ms": 254,
+            "maxMs": 254
+          },
+          "inPage": {
+            "count": 4,
+            "medianMs": 16,
+            "p95Ms": 42.7,
+            "maxMs": 42.7
+          },
+          "inPageNavs": [
+            {
+              "to": "#s1",
+              "ms": 4.9,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s2",
+              "ms": 16,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s3",
+              "ms": 42.7,
+              "ok": true,
+              "reason": null
+            },
+            {
+              "to": "#s1",
+              "ms": 9.1,
+              "ok": true,
+              "reason": null
+            }
+          ],
+          "inPageReason": null,
+          "framesBound": 5,
+          "probe": {
+            "windowMs": 745,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 3,
+            "frameGapMaxMs": 68
+          },
+          "ipc": {
+            "pings": 13,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 1,
+            "medianMs": 1,
+            "p95Ms": 63,
+            "maxMs": 63,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 13,
+            "worst": [
+              {
+                "atMs": 50,
+                "roundTripMs": 63
+              },
+              {
+                "atMs": 351,
+                "roundTripMs": 3
+              },
+              {
+                "atMs": 200,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 250,
+                "roundTripMs": 1
+              },
+              {
+                "atMs": 400,
+                "roundTripMs": 1
+              }
+            ]
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 63ms, under the 250ms stall threshold"
+          }
+        },
+        "typing": {
+          "codeSmall": {
+            "ok": true,
+            "bytes": 3247,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 26.3,
+              "p95Ms": 32.8,
+              "maxMs": 32.8
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 9,
+              "p95Ms": 17,
+              "maxMs": 17
+            },
+            "saveMs": 32,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2123,
+              "longtaskCount": 0,
+              "longtaskTotalMs": 0,
+              "longtaskMaxMs": 0,
+              "longtaskSupported": true,
+              "frameGapCount": 1,
+              "frameGapMaxMs": 43
+            },
+            "ipc": {
+              "pings": 42,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 4,
+              "maxMs": 19,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 55,
+                  "roundTripMs": 19
+                },
+                {
+                  "atMs": 1250,
+                  "roundTripMs": 10
+                },
+                {
+                  "atMs": 200,
+                  "roundTripMs": 4
+                },
+                {
+                  "atMs": 1154,
+                  "roundTripMs": 3
+                },
+                {
+                  "atMs": 1000,
+                  "roundTripMs": 2
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 19ms, under the 250ms stall threshold"
+            }
+          },
+          "codeLarge": {
+            "ok": true,
+            "bytes": 400258,
+            "charsTyped": 30,
+            "renderedTextDelta": 30,
+            "keystroke": {
+              "count": 30,
+              "medianMs": 26.1,
+              "p95Ms": 32.4,
+              "maxMs": 32.5
+            },
+            "keystrokesBehind": 0,
+            "dispatch": {
+              "count": 30,
+              "medianMs": 16,
+              "p95Ms": 21,
+              "maxMs": 24
+            },
+            "saveMs": 76,
+            "saved": true,
+            "saveReason": null,
+            "probe": {
+              "windowMs": 2449,
+              "longtaskCount": 1,
+              "longtaskTotalMs": 83,
+              "longtaskMaxMs": 83,
+              "longtaskSupported": true,
+              "frameGapCount": 3,
+              "frameGapMaxMs": 90
+            },
+            "ipc": {
+              "pings": 46,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0,
+              "medianMs": 1,
+              "p95Ms": 10,
+              "maxMs": 17,
+              "over100ms": 0,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "totalStallMs": 0,
+              "worst": [
+                {
+                  "atMs": 1250,
+                  "roundTripMs": 17
+                },
+                {
+                  "atMs": 85,
+                  "roundTripMs": 10
+                },
+                {
+                  "atMs": 165,
+                  "roundTripMs": 10
+                },
+                {
+                  "atMs": 2408,
+                  "roundTripMs": 6
+                },
+                {
+                  "atMs": 338,
+                  "roundTripMs": 5
+                }
+              ]
+            },
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 17ms, under the 250ms stall threshold"
+            }
+          }
+        },
+        "copy": {
+          "ok": true,
+          "source": "chat-transcript",
+          "clickToCopiedMs": 21.1,
+          "codeBlocksInScope": 1,
+          "copiedChars": 2310,
+          "probe": {
+            "windowMs": 24,
+            "longtaskCount": 0,
+            "longtaskTotalMs": 0,
+            "longtaskMaxMs": 0,
+            "longtaskSupported": true,
+            "frameGapCount": 0,
+            "frameGapMaxMs": 0
+          },
+          "ipc": {
+            "pings": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0,
+            "medianMs": null,
+            "p95Ms": null,
+            "maxMs": null,
+            "over100ms": 0,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "totalStallMs": 0,
+            "worst": []
+          },
+          "stall": {
+            "verdict": "unknown",
+            "why": "one of the two probes reported no data for this step"
+          }
+        },
+        "sizeScaling": {
+          "bytesRatio": 123.3,
+          "codeOpenRatio": 1.87,
+          "markdownOpenRatio": 1.62,
+          "markdownFenceRatio": 116.5,
+          "keystrokeRatio": 0.99,
+          "htmlSwapRatio": 2.79
+        },
+        "probe": {
+          "longtaskCount": 8,
+          "longtaskTotalMs": 2321,
+          "longtaskMaxMs": 739,
+          "frameGapCount": 13,
+          "frameGapMaxMs": 1267,
+          "longtaskSupported": true,
+          "observedMs": 8318,
+          "frames": 343,
+          "framesPerSec": 41.2,
+          "marks": [
+            {
+              "t": 3,
+              "label": "artifacts:session:start"
+            },
+            {
+              "t": 214,
+              "label": "artifacts:session:end"
+            },
+            {
+              "t": 257,
+              "label": "artifacts:drawer-open:start"
+            },
+            {
+              "t": 288,
+              "label": "artifacts:drawer-open:end"
+            },
+            {
+              "t": 290,
+              "label": "artifacts:open-codeSmall:start"
+            },
+            {
+              "t": 365,
+              "label": "artifacts:open-codeSmall:end"
+            },
+            {
+              "t": 373,
+              "label": "artifacts:open-codeLarge:start"
+            },
+            {
+              "t": 476,
+              "label": "artifacts:open-codeLarge:end"
+            },
+            {
+              "t": 479,
+              "label": "artifacts:open-mdSmall:start"
+            },
+            {
+              "t": 1345,
+              "label": "artifacts:open-mdSmall:end"
+            },
+            {
+              "t": 1372,
+              "label": "artifacts:open-mdLarge:start"
+            },
+            {
+              "t": 2793,
+              "label": "artifacts:open-mdLarge:end"
+            },
+            {
+              "t": 2824,
+              "label": "artifacts:open-htmlSmall:start"
+            },
+            {
+              "t": 2964,
+              "label": "artifacts:open-htmlSmall:end"
+            },
+            {
+              "t": 2967,
+              "label": "artifacts:html-nav:start"
+            },
+            {
+              "t": 3712,
+              "label": "artifacts:html-nav:end"
+            },
+            {
+              "t": 3714,
+              "label": "artifacts:type-codeSmall:start"
+            },
+            {
+              "t": 5837,
+              "label": "artifacts:type-codeSmall:end"
+            },
+            {
+              "t": 5840,
+              "label": "artifacts:type-codeLarge:start"
+            },
+            {
+              "t": 8289,
+              "label": "artifacts:type-codeLarge:end"
+            },
+            {
+              "t": 8292,
+              "label": "artifacts:copy-code:start"
+            },
+            {
+              "t": 8316,
+              "label": "artifacts:copy-code:end"
+            }
+          ],
+          "errors": []
+        },
+        "ipcSumOfSteps": {
+          "pings": 112,
+          "totalStallMs": 286,
+          "over250ms": 1,
+          "over1000ms": 0,
+          "maxMs": 323
+        },
+        "warnings": []
+      }
+    ],
+    "median": {
+      "open": {
+        "codeSmall": {
+          "openMs": 54
+        },
+        "codeLarge": {
+          "openMs": 89
+        },
+        "mdSmall": {
+          "openMs": 861
+        },
+        "mdLarge": {
+          "openMs": 1459
+        },
+        "htmlSmall": {
+          "openMs": 137
+        }
+      },
+      "htmlNav": {
+        "swap": {
+          "medianMs": 129,
+          "p95Ms": 175
+        },
+        "swapSmall": {
+          "medianMs": 91
+        },
+        "swapLarge": {
+          "medianMs": 175
+        }
+      },
+      "typing": {
+        "codeSmall": {
+          "keystroke": {
+            "medianMs": 26.2,
+            "p95Ms": 32.5
+          }
+        },
+        "codeLarge": {
+          "keystroke": {
+            "medianMs": 25.6,
+            "p95Ms": 31.1
+          }
+        }
+      },
+      "copy": {
+        "clickToCopiedMs": 23.9
+      },
+      "probe": {
+        "longtaskTotalMs": 2424,
+        "longtaskMaxMs": 739
+      },
+      "ipcSumOfSteps": {
+        "totalStallMs": 286,
+        "maxMs": 323,
+        "over250ms": 1,
+        "pings": 112
+      }
+    },
+    "warnings": []
+  },
+  "projects": null,
+  "scrollback": null,
+  "measures": {
+    "workload": {
+      "scenario": "workload",
+      "question": "Is the app responsive while several sessions are open, one is streaming, and the user switches between them?",
+      "configuration": [
+        "6 sessions open at once (4 Claude Code + 2 native)",
+        "3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small), each in its transcript's own project folder; the 4th is deliberately left EMPTY as a control",
+        "a transcript streams into the medium and small sessions throughout the window — never into huge (the one clean loaded switch) and never into the empty control; the run records streamedInto and streamedTurnsBySize",
+        "40 switches spread evenly across the same window the CPU sample covers",
+        "every repeat is its OWN boot with a freshly built fixture — nothing (transcript bytes, the app's own transcript mirror, caches, leftover sessions, memory) carries from one repeat to the next; the streamed-into transcripts are also cut back to their built bytes after each repeat and their size is checked before it"
+      ],
+      "clocks": {
+        "switchMedianMs": "click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.",
+        "switchPaintedMedianMs": "click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. For the two STREAMING sessions the count never holds still, so their clock stops at the first frame showing everything that had arrived by the click. This is the number a user would recognise.",
+        "switchPaintedBySize.huge.medianMs": "the same clock, for switches INTO the huge conversation only — the PRIMARY switch metric, because it is the case Destin lives in and the only bucket no stream touches",
+        "cpuDuringPct": "whole-process CPU across the workload window, from /proc — a RATE. Context only; never compare it across runs of different duration.",
+        "cpuTotalSeconds": "CPU-seconds of whole-process work across the workload window (rate x window). Duration-independent, so this is the one the keep/reject gate compares."
+      },
+      "blindTo": [
+        "conversation sizes beyond the fixture huge transcript",
+        "switching under memory pressure from many MORE than 6 sessions",
+        "anything requiring a real GPU. MEASURED, not assumed, since 2026-09-03: report.machine.renderer records what Chromium actually used, and under Xvfb it is llvmpipe with gpu_compositing disabled. Check that field before comparing two reports — if it ever says otherwise, this line is wrong",
+        "per-TOKEN streaming TIME. The Claude Code streamer appends WHOLE turns (~7 renders/s per target), never the native harness's hundreds of same-turn deltas per second, so a per-delta fix is under-represented in every DURATION here. Since 2026-09-03 the per-delta WORK is measured instead — nativeLayoutCost counts layouts per commit over a native-streaming window (see layout-cost.mjs) — which is what re-gates cycle 1. What is still blind: the buddy window (no scenario opens one) and layout ATTRIBUTION (the counter is renderer-wide and cannot name the effect that forced it)",
+        "whether a switch into a STREAMING session feels slow because of the stream or because of the size — medium and small carry both; only huge and empty are clean",
+        "ENTRIES_PER_TURN is a measured constant, not read from the app — if the app changes what a timeline entry is, every resumed switch stops settling and the report says so, but the rig cannot fix itself"
+      ]
+    },
+    "artifacts": {
+      "scenario": "artifacts",
+      "question": "What does the files panel cost to open, edit, and navigate?",
+      "configuration": [
+        "one session, resumed from the small transcript",
+        "six artifacts registered: code / markdown / HTML, each in a small and a large size",
+        "30 keystrokes typed into a real CodeMirror editor at ~45ms spacing"
+      ],
+      "clocks": {
+        "open.*.openMs": "click the row -> the viewer reports the right document mounted",
+        "typing.*.keystroke": "keydown -> painted, measured in-page via beforeinput",
+        "htmlNav.swap": "select a different HTML artifact -> the iframe load event"
+      },
+      "blindTo": [
+        "documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there",
+        "real clipboard cost: MarkdownContent fires writeText without awaiting it",
+        "GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor. MEASURED, not assumed, since 2026-09-03: see report.machine.renderer (llvmpipe, gpu_compositing disabled)"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [
+      0,
+      0,
+      0
+    ],
+    "stallBoot": null,
+    "artifactsBoot": 0,
+    "projectsBoot": null,
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}
