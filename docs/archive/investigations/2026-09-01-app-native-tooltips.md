@@ -1,11 +1,24 @@
 ---
 date: 2026-09-01
-status: active
+status: superseded
 type: investigation
 topic: App-native hover tooltips — replacing browser `title=` hints on the surfaces users watch
 ---
 
 # App-native hover tooltips
+
+> **Superseded 2026-09-10** by the work in
+> `docs/active/design/2026-09-10-app-themed-tooltips/`. Two things below were WRONG and are
+> corrected here rather than edited away, because both shaped the estimate:
+>
+> **The count was 354; the real number is 236.** That figure came from a raw `title=` grep,
+> which also matches component PROPS of the same name — `<Dialog title=…>`, `<SettingRow
+> title=…>` — which are headings, not hover hints. Roughly a third of the hits were never
+> tooltips at all, and the number was re-verified twice without anyone noticing.
+>
+> **"Each swap turns an attribute into a wrapper element, which can perturb flex/grid"** —
+> the whole basis for pricing the work and for doing only part of it. A wrapper is not
+> required: the primitive CLONES its child, so the DOM is unchanged and no row can move.
 
 **Symptom (Destin, 2026-07-28):** browser-default tooltips (the OS-drawn `title=` bubble)
 look foreign to the app. First noticed on the `/clear` hint ("Cleared — still here to read,

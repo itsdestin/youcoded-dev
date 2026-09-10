@@ -28,9 +28,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       needs its own workbench mockup round before any build
       `android` `parked` `checked 2026-09-02`
 
-- [ ] Browser-default hover tooltips look foreign to the app — first noticed 2026-07-28 on the
-      /clear "Cleared — still here to read" hint; every hover hint in the app is one of these
-      `all` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-app-native-tooltips.md
+- [ ] Browser-default hover tooltips look foreign to the app — the whole main chat screen is
+      done (`<Tooltip>`, ~88 hints); what is left is settings, the marketplace and project
+      view, which Destin deferred until those files are touched anyway
+      `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
 - [ ] Error messages still guess at causes in many places — the app-wide audit of every error
       string (desktop, Android, Worker), choosing a specific message or the two-button

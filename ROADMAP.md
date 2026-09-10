@@ -26,8 +26,10 @@ decorative, there is no agent memory, and the Agents & Automations view has no d
 
 **Accessibility.** Copy and menus have been through one consistency migration (shared
 primitives, tokens, review decks); error states have one component; onboarding is still
-the conversational wizard. Blocking: the misleading-error audit (v1.3.1), browser-default
-tooltips across the app, and a first-run screen that does not exist yet.
+the conversational wizard. Hover hints are the app's own on the whole main chat screen —
+themed, and reachable by press-and-hold where a pointer hover never was — with settings,
+the marketplace and project view still to convert. Blocking: the misleading-error audit
+(v1.3.1), those remaining tooltips, and a first-run screen that does not exist yet.
 
 **Platforms.** Windows, macOS and Linux desktop, Android with an on-device runtime, and any
 browser through remote access; sync, backup and restore on all of them. Blocking for
@@ -53,7 +55,7 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 87 | 29 | 2 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 88 | 29 | 2 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 58 | 9 | 3 | 19 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 30 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 8 | 0 | 9 |

@@ -202,8 +202,25 @@ seen-on is always n/a here.
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
       context-free tester cannot claim to have covered either. Add pointer and scale switches to
-      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them
-      `n/a` `confirmed` `checked 2026-09-04`
+      shot.mjs and ui-probe.mjs (drag-fuzz already has both) and default the tester kit to them.
+      **Deeper than switches, found 2026-09-10:** `ui-probe.mjs` cannot produce REAL input at
+      all — it has no CDP `Input` domain, so the only ways to ask a hover/press question are a
+      synthetic `dispatchEvent` (which skips hit-testing, so it answers a different question
+      and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
+      synthetic dispatch "proved" disabled controls receive pointer events when it proved
+      nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
+      `--move-to x,y` on ui-probe would execute where a switch only asks
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
+      different subset of the layouts: `scripts/lib/resolve-checkout.sh` (run-workbench),
+      `run-dev.sh`'s own inline version, and `deck/serve.py:resolve_worktree`. Two of the
+      three were fixed on separate days for the same missing shape — the session layout
+      `worktrees/sessions/<name>/youcoded` — at a cost of three failed launches on
+      2026-09-09 and two more plus a failed deck serve on 2026-09-10. run-dev is the one
+      still carrying its own; folding it in was deliberately not done in a wrap-up because
+      it is the launcher that paints a real window on Destin's desktop
+      `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] Measure the feature flow's two reviewers: after three features have run through the
       2026-09-04 flow, count findings, accepted, rejected and rows failed at acceptance per
