@@ -11,85 +11,51 @@
     "appicon": ["icons", "appicon-compare", "800x330+0+0"],
     "inst-badge": ["icons", "choice-inst-badge", "800x330+0+0"],
     "inst-tray": ["icons", "choice-inst-tray", "800x330+0+0"],
-    "inst-strip": ["icons", "choice-inst-strip", "800x330+0+0"],
-    "taskbar-today": ["icons", "taskbar-today", "800x330+0+0"],
-    "taskbar-tinted": ["icons", "taskbar-tinted", "800x330+0+0"],
-    "taskbar-purple": ["icons", "taskbar-purple", "800x330+0+0"]
+    "inst-strip": ["icons", "choice-inst-strip", "800x330+0+0"]
   },
   "steps": [
     {
       "id": "B-1",
       "surface": "The app's icon",
-      "path": "The Start menu, desktop shortcut, Dock and app list, once YouCoded is installed",
-      "headline": "Replace the app's icon with the robot from the youcoded.ai header?",
+      "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
+      "headline": "Replace the app's icon with the robot tile from the youcoded.ai header?",
       "themes": ["light"],
       "crop": "appicon",
       "labels": {"today": "Today (left) and new (right), big and at real sizes"},
       "highlight": {"box": [400, 0, 400, 330]},
-      "changed": "The dark terminal square with \"YC\" becomes the purple rounded square with the white robot, the same picture the website shows in its browser tab.",
-      "notice": "YouCoded looks like its website everywhere the icon appears. On a Mac the square sits inside a little empty margin, so it lines up with other apps in the Dock.",
-      "risk": "Anyone who already has YouCoded sees a different icon after updating and may look twice before recognising it."
+      "changed": "The dark terminal square with \"YC\" becomes the header's lavender tile with the solid purple robot, in every place the app's icon appears, including the taskbar while it runs.",
+      "notice": "YouCoded looks like its website. On a Mac the tile sits inside a little empty margin, so it lines up with other apps in the Dock.",
+      "risk": "The icon no longer changes colour with your theme; that comes back later, from the roadmap."
     },
     {
       "id": "C-1",
       "surface": "The installer file",
-      "path": "The downloaded installer, in Downloads and in search results (the Mac disk too)",
+      "path": "The downloaded installer, in Downloads and in search results (the opened Mac disk too)",
       "headline": "Which installer icon should the download use?",
       "themes": ["light"],
       "notice": "Each is shown big and at the three sizes Windows really uses, on a light and a dark background.",
-      "risk": "All three keep the robot and the purple, so the installer still reads as YouCoded.",
+      "risk": "All three keep the lavender tile and the purple robot, so the installer still reads as YouCoded.",
       "variants": [
         {
           "id": "badge",
           "label": "Arrow badge",
           "crop": "inst-badge",
-          "summary": "The app icon with a white arrow badge in the corner, like a notification dot. Closest to the app icon.",
+          "summary": "The app icon with a purple arrow badge in the corner, like a notification dot. Closest to the app icon.",
           "risk": "At the smallest size the badge shrinks to a dot, so it looks almost like the app itself."
         },
         {
           "id": "tray",
           "label": "Arrow into tray",
           "crop": "inst-tray",
-          "summary": "A small robot above a big download arrow and tray. Reads as a download at any size.",
+          "summary": "A small robot above a download arrow and tray. Reads as a download at any size.",
           "risk": "At the smallest size the robot is too small to make out."
         },
         {
           "id": "strip",
           "label": "Arrow strip",
           "crop": "inst-strip",
-          "summary": "The robot, with a darker band along the bottom carrying the arrow. A middle ground between the other two.",
+          "summary": "The robot, with a purple band along the bottom carrying a white arrow. A middle ground between the other two.",
           "risk": "At the smallest size the arrow is hard to see."
-        }
-      ]
-    },
-    {
-      "id": "C-2",
-      "surface": "The app's icon while it runs",
-      "path": "The taskbar or Dock icon while YouCoded is open, in each of the app's themes",
-      "headline": "While YouCoded is open, should its taskbar icon stay purple or take the colours of your theme?",
-      "themes": ["light"],
-      "notice": "Today the running app redraws its taskbar icon in your theme's colours. The built-in themes' colours are black, grey and white, so a themed robot is not purple in any of them.",
-      "risk": "Themes that bring their own icon keep it, whichever you pick.",
-      "variants": [
-        {
-          "id": "purple",
-          "label": "Always purple",
-          "crop": "taskbar-purple",
-          "summary": "The same purple robot in every theme, matching the installed icon and the website."
-        },
-        {
-          "id": "tinted",
-          "label": "Theme colours",
-          "crop": "taskbar-tinted",
-          "summary": "The robot in each theme's own colours, the way the website's tab icon changes with its theme.",
-          "risk": "The icon changes between launching (purple) and running (your theme), which can look like two apps."
-        },
-        {
-          "id": "today",
-          "label": "Keep today's",
-          "crop": "taskbar-today",
-          "summary": "Leave the running icon as the \"YC\" terminal square; only the installed icon changes.",
-          "risk": "The icon swaps from robot to letters the moment the app opens."
         }
       ]
     }
