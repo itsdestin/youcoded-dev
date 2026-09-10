@@ -4,6 +4,18 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
+- [ ] Opening a Markdown file in the file pane freezes the app for ~1.5 s, and a SMALL one
+      still costs ~570 ms — a 3.5 KB Markdown is five times slower to open than a 400 KB
+      code file (117 ms), so this is a fixed cost in the Markdown path, not a size problem.
+      Timed against the perf rig's own 392 KB / 699-fence fixture, 2026-09-09: reading the
+      Markdown 292 ms, converting to HTML structure 217 ms, colouring the code blocks
+      377 ms, and the text extraction a plan had blamed 7 ms — 0.8%, so that is NOT the fix.
+      The remaining ~570 ms of the measured 1,455 ms is React building the node tree.
+      Candidates, none yet tried: render the first screen and fill the rest in afterwards;
+      colour code blocks lazily instead of all 699 up front; move the parse off the main
+      thread. Shared with the chat transcript, so any change has to be checked there too
+      `desktop` `confirmed` `checked 2026-09-09` `performance`
+
 - [ ] Project view chugs, "especially if I just quickly click back-and-forth between
       files/conversations" (Destin, 2026-09-09, solid theme): every return to the Files tab
       restarts the project file watcher over the whole folder, and the watcher walks nested

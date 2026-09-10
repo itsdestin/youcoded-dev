@@ -3,6 +3,18 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
+      actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
+      phase opens the drawer but types into an editor rather than receiving a reply, so a
+      change that removes per-token drawer redraws measures as flat in both (2026-09-09:
+      artifacts and workload before/after within run-to-run spread, while a render count
+      showed 40 avoided redraws per 40 tokens). Nor does any phase change one file while a
+      DIFFERENT file is open, which is what makes the git footer re-run three git
+      subprocesses. Fix: a step that opens the drawer on a file, streams a reply, and edits
+      other files meanwhile — then the drawer's cost during a reply is a rig number instead
+      of a unit-test count
+      `n/a` `confirmed` `checked 2026-09-09` `performance`
+
 - [ ] perf-lab's own `screenshots.test.mjs` fails about two runs in three: "each run removes its
       throwaway Chrome profile" counts `perf-lab-diff-*` directories in the OS temp dir before and
       after two headless launches and demands the count be unchanged, but the cleanup waits on an
