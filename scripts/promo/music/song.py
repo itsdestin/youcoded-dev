@@ -312,9 +312,15 @@ def promo_track() -> Song:
                 s.hits("clap", "x...............", bar, S.clap, gain=0.7)
         elif sec == "build":
             k = bar - 38                                           # 0, 1, 2: the roll tightens bar by bar
+            s.hits("kick", KICK, bar, S.kick, gain=0.6 + 0.1 * k)  # the kick stays through the build (it left with the break before — too stark, Destin 2026-09-09)
             s.hits("hat", ("x.x.x.x.x.x.x.x.", "x.x.x.x.xxxxxxxx", "xxxxxxxxxxxxxxxx")[k], bar, S.hat, gain=0.45)
             s.hits("snare", ("x...x...x...x...", "x.x.x.x.x.x.x.x.", "x.x.x.x.xxxxxxxx")[k], bar, S.snare, gain=0.5 + 0.05 * k)
-        elif sec in ("intro", "break"):
+        elif sec == "break":
+            # the break keeps a soft four-on-the-floor and the hats under the keys — the full drop-out
+            # "goes quiet for a sec … too stark a change" into Devil's Garden (Destin, 2026-09-09)
+            s.hits("kick", KICK, bar, S.kick, gain=0.55, punch=0.7)
+            s.hits("hat", "x.x.x.x.x.x.x.x.", bar, S.hat, gain=0.32)
+        elif sec == "intro":
             s.hits("hat", "..x...x...x...x.", bar, S.hat, gain=0.4)
             if bar == 0: _impact(s)
         elif sec == "end":
@@ -326,13 +332,14 @@ def promo_track() -> Song:
             for step, n in pat:
                 s.note("bass", bar, step, S.bass_saw(n, s.beat / 2 * 0.9, cutoff=700 + 200 * bright, sweep=1600), 0.9)
         elif sec == "break":
-            s.note("bass", bar, 0, S.bass_sub(root, s.bar * 0.95), 0.9)
-        # --- arp: 16ths only where the track is full; 8ths in the grooves; rests in the break and end
-        if sec not in ("end", "break"):
+            for step in (0, 6, 8, 14):                                     # a slow pulse on the root, not a held drone
+                s.note("bass", bar, step, S.bass_sub(root, s.beat * 0.9), 0.85)
+        # --- arp: 16ths only where the track is full; 8ths in the grooves; thin in the break; rests on the end bar
+        if sec != "end":
             seq = ch + [m + 12 for m in ch] + [ch[2] + 12, ch[1] + 12]
             if bar % 2: seq = seq[::-1]                            # down one bar, up the next
             full = bright or sec == "hook"
-            thin = sec in ("intro", "outro")
+            thin = sec in ("intro", "outro", "break")
             for i in range(16):
                 if not full and i % 2 == 1: continue
                 s.note("arp", bar, i, S.chip_pulse(seq[i % len(seq)] + 12, s.beat / 4 * 0.85, duty=0.25 if full else 0.4), 0.5 if full else 0.36 if not thin else 0.3)
@@ -394,7 +401,10 @@ def promo_track_lofi() -> Song:
             k = bar - 38
             s.hits("hat", ("x.x.x.x.x.x.x.x.", "x.x.x.x.xxxxxxxx", "xxxxxxxxxxxxxxxx")[k], bar, S.hat, gain=0.35)
             s.hits("snare", ("x...x...x...x...", "x.x.x.x.x.x.x.x.", "x.x.x.x.xxxxxxxx")[k], bar, S.clap, gain=0.5)
-        elif sec in ("intro", "break"):
+        elif sec == "break":
+            s.hits("kick", "x.......x.......", bar, S.kick, gain=0.5, punch=0.6)
+            s.hits("hat", "x.x.x.x.x.x.x.x.", bar, S.hat, gain=0.25)
+        elif sec == "intro":
             s.hits("hat", "..x...x...x...x.", bar, S.hat, gain=0.3)
             if bar == 0: _impact(s)
         elif sec == "end":
@@ -454,7 +464,10 @@ def promo_track_pop() -> Song:
             k = bar - 38
             s.hits("hat", ("x.x.x.x.x.x.x.x.", "x.x.x.x.xxxxxxxx", "xxxxxxxxxxxxxxxx")[k], bar, S.hat, gain=0.4)
             s.hits("snare", ("x...x...x...x...", "x.x.x.x.x.x.x.x.", "x.x.x.x.xxxxxxxx")[k], bar, S.snare, gain=0.5)
-        elif sec in ("intro", "break"):
+        elif sec == "break":
+            s.hits("kick", "x.......x.......", bar, S.kick, gain=0.45, punch=0.7)   # a half-time pulse: the full four sat as loud as the drop
+            s.hits("shaker", SHAKER, bar, S.hat, gain=0.12)
+        elif sec == "intro":
             s.hits("shaker", "x.x.x.x.x.x.x.x.", bar, S.hat, gain=0.12)
             if bar == 0: _impact(s)
         elif sec == "end":
