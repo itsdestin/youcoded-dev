@@ -16,6 +16,17 @@ searched or resumed (chat-data).
       thread. Shared with the chat transcript, so any change has to be checked there too
       `desktop` `confirmed` `checked 2026-09-09` `performance`
 
+- [ ] The git badge under an open file can go stale the first time the assistant writes to
+      a file that was opened straight from a path rather than picked out of the file list.
+      Such a file is known by its path until the first write, which gives it a permanent id
+      — and the change announcement carries the NEW id while the pane still holds the old
+      one, so the footer treats its own file as somebody else's and skips the refresh.
+      Found by review 2026-09-10 while narrowing which changes the footer listens to. Mostly
+      hidden today behind a louder existing bug: the pane usually reloads wholesale a moment
+      later and kicks the user back to the file list, which is the thing they would report.
+      Fix the two together — the footer needs to learn a file's id can change under it
+      `desktop` `confirmed` `checked 2026-09-10`
+
 - [ ] Project view chugs, "especially if I just quickly click back-and-forth between
       files/conversations" (Destin, 2026-09-09, solid theme): every return to the Files tab
       restarts the project file watcher over the whole folder, and the watcher walks nested
