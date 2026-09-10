@@ -110,14 +110,24 @@ A fresh reviewer found two user-visible faults the change itself introduced — 
 tab holding the Escape key / Android back button, and the hidden tab's refresh re-running
 the uncached tree walk — both fixed in `69cde4e8` with guards.
 
-**Branch 2 `fix/file-pane-spawns-and-redraw` — built, verified, reviewed by me only.
-Awaiting Destin's merge call.** Two commits (`068c4de7` the fix, `d8fd8414` the guard).
+**Branch 2 `fix/file-pane-spawns-and-redraw` — built, verified, reviewed. Awaiting Destin's
+merge call.** Three commits (`068c4de7` the fix, `d8fd8414` the guard, `3db9b793` the
+review follow-ups).
 The rig measured **flat** before and after, and that is a coverage gap rather than a null
 result: no phase opens the file pane while a reply streams, and none changes one file while
 a different one is open. Both filed (`docs/roadmap/dev-workspace.md` → tests). The claims
 are counts and are pinned as counts: 40 streamed tokens caused 40 full drawer re-renders
 before and 0 after; a change to any other file no longer costs three git subprocesses.
-No fresh-eyes review yet.
+A fresh reviewer (2026-09-10) confirmed the memo holds at both call sites and cleared the
+debounce of stale-closure and leak faults, and found three things fixed in `3db9b793`:
+the debounce had been applied to `git:changed` too, which desynced the footer from the
+review list directly above it on every Stage/Commit; the per-file filter dropped
+`.gitignore` edits, which decide whether the open file is untracked at all; and the
+context-memo guard read only that `useMemo` was called, never its dependencies, so an
+empty dependency list — a frozen context, app-wide — would have passed. One finding was
+deliberately left open and filed to `docs/roadmap/files.md`: the footer cannot follow a
+file whose id changes under it, which is entangled with the wholesale-reload bug that
+currently masks it.
 
 **Not done:** Branch 3 in full; the Markdown open (2.3, re-scoped above and filed).
 
