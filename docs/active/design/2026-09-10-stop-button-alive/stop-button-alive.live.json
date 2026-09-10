@@ -40,7 +40,8 @@
           "label": "Slow glow",
           "candidate": "glow",
           "summary": "The button's own glow swells and settles; nothing leaves the button. The calmest of the three.",
-          "measured": "One swell every 2.2 s"
+          "measured": "One swell every 2.2 s",
+          "risk": "On Light and Crème, where the button is black, the glow looks more like a soft dark shadow than light."
         }
       ]
     }
