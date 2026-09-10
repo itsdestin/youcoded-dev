@@ -1,6 +1,6 @@
 ---
 date: 2026-09-09
-status: draft
+status: shipped
 type: investigation
 topic: The Projects view and the session-file pane chug — measured outside the app and in the perf rig at Destin's data scale (fast on an idle app, no freeze over 136 ms), so the chug points at the per-card wallpaper blur, concurrent agent load, or machine state; ranked proposal revised
 ---

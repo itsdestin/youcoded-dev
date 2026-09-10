@@ -1,6 +1,6 @@
 ---
 date: 2026-09-09
-status: active
+status: shipped
 type: plan
 topic: Fix the Projects-view tab-thrash chug (watcher restart over nested repos) and the session-file pane's spawn/redraw costs, each branch proven before/after with the perf rig
 ---

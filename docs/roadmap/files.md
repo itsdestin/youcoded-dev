@@ -27,16 +27,6 @@ searched or resumed (chat-data).
       Fix the two together — the footer needs to learn a file's id can change under it
       `desktop` `confirmed` `checked 2026-09-10`
 
-- [ ] Project view chugs, "especially if I just quickly click back-and-forth between
-      files/conversations" (Destin, 2026-09-09, solid theme): every return to the Files tab
-      restarts the project file watcher over the whole folder, and the watcher walks nested
-      repos and worktrees that the file list never shows — 9,583 directories under
-      youcoded-dev, 4 s to start with 300+ ms freezes each time; reproduced in the perf rig
-      (8 rapid clicks = 8.4 s of backend stall, worst 857 ms). Fix: stop the watcher where
-      discovery stops, keep it alive while Project view is open, reply before it is ready,
-      keep both tabs mounted
-      `files-panel` `desktop` `confirmed` `checked 2026-09-09` `performance` → docs/active/investigations/2026-09-09-projects-view-and-file-pane-chug.md
-
 - [ ] Git view: a file whose name has a quote, a backslash or an accent (an accented filename
       is the common case) shows no status at all, whatever was changed; a filename containing
       a literal " => " displays as a rename
