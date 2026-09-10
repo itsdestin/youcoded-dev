@@ -28,7 +28,7 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `out` | yes | the HTML file `build` writes, beside the spec |
 | `steps` | yes | the steps, in the order he reads them |
 | `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
-| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. A slide shows all of them unless it names its own (below) |
+| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. **Paths resolve from where you run the command (the workspace root), not from the spec** — `docs/active/design/<feature>/runs/after`, not `runs/after` (two builds failed on that, 2026-09-09). A slide shows all of them unless it names its own (below) |
 | `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
@@ -107,6 +107,11 @@ last run.
 | `measured` / `risk` / `highlight` | no | a number, this design's own risk, a box inside its picture |
 
 He **picks one**, or *None of these* / Other.
+
+Pictures that are not workbench shots (a Remotion still, a frame of a film, a montage) go in
+a run folder by hand: `<run>/shots-<plan>/<theme>/<shot>.png`, with the spec's `crops` naming
+`["<plan>", "<shot>", "WxH+0+0"]` at the picture's own size. Every run's picture must be the
+same size, or the before/after diff cannot box the change.
 
 ### Decide — written options over one picture (`decide.json`)
 
@@ -371,6 +376,10 @@ deck whose point IS one theme.
 4. `serve` in the background; put the printed `[deck] http://…` line in chat as the last line
    of your turn, and stop.
 5. Its exit is the notification; read the summary it prints.
+
+To change a picture on a deck he is looking at, `build` it again and tell him to reload — the
+server keeps serving the file it was started on; only a second `serve` of the same spec is refused
+(2026-09-09).
 
 A deck he has ALREADY answered is re-served with `serve --no-build` — never rebuilt. Rebuilding
 a historical deck means "fixing" the record of a past decision, and ten committed specs

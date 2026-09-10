@@ -155,7 +155,10 @@ seen-on is always n/a here.
       match. Reverting needs THREE steps, because re-running `--fix` to repair the index
       re-applies the downgrade — revert the area file, revert the index, then hand-correct the
       one index row. Two sessions have now had to work that out from scratch; the fix wanted is
-      for `--fix` to touch only files the run was asked about
+      for `--fix` to touch only files the run was asked about. It has now reached master: on
+      2026-09-09 `ROADMAP.md` there said native-harness had 11 needs-verify items while
+      `native-harness.md` said 10 — the index half of a downgrade shipped without the file half,
+      so `roadmap-check` is RED on master until someone matches them
       `desktop` `confirmed` `checked 2026-09-09`
 
 - [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
