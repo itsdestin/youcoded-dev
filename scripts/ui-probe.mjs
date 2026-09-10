@@ -27,6 +27,17 @@
 //   --fail-on-error     exit 1 if the page logged a console error or threw
 //   --keep-going        do not exit 1 when a --wait times out (still reported)
 //
+// DO NOT TRUST THIS FOR PAINTED STATE THAT JUST CHANGED. Measured 2026-09-10:
+// after clicking a tab, `getComputedStyle` here reported the PREVIOUS tab as
+// still carrying the active background and the new one as transparent —
+// stably, across reloads and multi-second settles, while the DOM classes and
+// aria-selected were both correct. The screenshot agreed with the stale values,
+// so it looked exactly like a real rendering bug and was filed as one. The same
+// control in a real Electron dev instance was correct. Headless Chrome does not
+// settle style recalculation for these elements on its own. Use this for
+// content, structure, text and geometry; check colour and highlight state in a
+// dev instance (`bash scripts/run-dev.sh`), not here.
+//
 // Examples:
 //   node scripts/ui-probe.mjs http://127.0.0.1:8791/deck.html \
 //     --wait 'window.__deckReady' --eval 'document.body.dataset.layout' --shot /tmp/deck.png
