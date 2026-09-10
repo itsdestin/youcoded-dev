@@ -4,6 +4,16 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
+      mid-sentence and the assistant is told to "ask for the rest" without being told which file
+      that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules
+      are handled well (every heading survives, the file is named); skills, triggered rules and the
+      model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
+      are written up with options and how other tools handle each one — deck ready to serve, nothing
+      answered. Parked 2026-09-09 to finish the session-context panel first
+      `desktop` `parked` `checked 2026-09-09`
+      → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+
 - [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
       you picked — its own test says so and has been failing on master since the feature shipped
       2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists

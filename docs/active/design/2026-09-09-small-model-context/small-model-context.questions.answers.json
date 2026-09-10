@@ -1,0 +1,12 @@
+{
+ "deck": "small-model-context",
+ "started": "2026-09-10T06:37:18.964Z",
+ "submitted": null,
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "both-ends"
+  }
+ }
+}
