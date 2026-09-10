@@ -1,0 +1,100 @@
+{
+  "title": "The buddy floater's two session buttons",
+  "key": "buddy-session-screens",
+  "out": "buddy-session-screens.review.html",
+  "images": "images/buddy-session-screens",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "meadow-mist",
+    "light"
+  ],
+  "crops": {
+    "buddy_newform": [
+      "buddy",
+      "newform",
+      "320x480+0+0"
+    ],
+    "buddy_resume": [
+      "buddy",
+      "resume",
+      "320x480+0+0"
+    ],
+    "buddy_dangerous": [
+      "buddy",
+      "dangerous",
+      "320x480+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Buddy floater",
+      "path": "Open the floater's chat with no conversation running, then press Resume Session",
+      "crop": "buddy_resume",
+      "headline": "Resume Session opens your recent conversations instead of a line of text telling you to go elsewhere.",
+      "changed": "The button used to print one grey sentence — \"Open Resume from the main window for now\" — and do nothing else. It now lists your recent conversations right there; tap one to open it and pick it back up without leaving the floater.",
+      "measured": "20 conversations listed, newest first",
+      "notice": "You can carry on in the floater. Each row gives the conversation's name, its project folder and how long ago you touched it. Ones you marked complete stay hidden, the way they do in the main window.",
+      "risk": "This is a short shelf, not the full browser — no search, no project filter, no tags or notes. For those you still open the main window."
+    },
+    {
+      "id": "S-2",
+      "surface": "Buddy floater",
+      "path": "Press New Session, then the Model row",
+      "crop": "buddy_newform",
+      "headline": "New Session can now start a conversation on any model you have set up, not only the four Claude ones.",
+      "changed": "The model row was four fixed buttons — Haiku, Sonnet, Opus, Fable — and the floater always started a Claude Code session no matter what. It is now the same searchable model list the main window uses, so ChatGPT and local models are reachable, and each row names where it comes from.",
+      "measured": "4 fixed models before; every provider you have set up now",
+      "notice": "If your default model is a ChatGPT or local one, the floater finally opens on it. It used to ignore that setting and quietly start Claude Sonnet instead, with nothing on screen saying so.",
+      "risk": "The list is the full one in a 320px-wide window, so you see about four models before it scrolls."
+    },
+    {
+      "id": "S-3",
+      "surface": "Buddy floater",
+      "path": "Press New Session, then turn Skip Permissions on",
+      "crop": "buddy_dangerous",
+      "headline": "The danger red is your theme's red now, instead of one bright red typed into the floater's code.",
+      "changed": "The Skip Permissions switch, its warning line and the Create button were drawn by hand here with a fixed red written into the file. They now use the app's shared controls, which take their red from whatever theme you are on.",
+      "measured": "1 fixed colour removed; 3 hand-drawn controls replaced",
+      "notice": "On Meadow Mist the Create button was a bright red that belonged to no part of the theme. It now sits in the theme's own palette, matching the same button everywhere else in the app.",
+      "risk": "A theme whose destructive colour is understated will make this button less alarming than the hard red was."
+    },
+    {
+      "id": "Q-1",
+      "surface": "Buddy floater",
+      "today": "Tapping a conversation in the new Resume list opens the row rather than resuming straight away: it shows which model it will run on, with a Resume button underneath. So picking a conversation back up is two taps.",
+      "problem": "Two taps is one more than it could be. But the model matters — a conversation that ran on a local or ChatGPT model has to be told which model to restart on, because the app deliberately never guesses that for you. If a tap resumed immediately, those conversations would behave differently from Claude ones, and you would not know which kind you were tapping until it either opened or did not.",
+      "proposal": "Keep every row behaving the same way — tap to open it, see the model, press Resume — so the list never surprises you.",
+      "options": [
+        {
+          "id": "same",
+          "label": "Every row opens first",
+          "recommended": true,
+          "pros": [
+            "Every conversation behaves identically, and you always see which model it will restart on before it starts costing you anything."
+          ],
+          "cons": [
+            "Two taps for a Claude conversation that did not really need the extra step."
+          ]
+        },
+        {
+          "id": "one-tap-claude",
+          "label": "One tap for Claude ones",
+          "pros": [
+            "Faster for the common case — a Claude conversation reopens the moment you tap it."
+          ],
+          "cons": [
+            "The same gesture does two different things depending on a conversation's engine, which you cannot see in the row.",
+            "Tapping the wrong one starts a session you did not mean to start."
+          ]
+        }
+      ],
+      "words": true,
+      "path": "Press Resume Session, then tap a conversation in the list",
+      "headline": "Should tapping a conversation reopen it straight away, or open the row first?"
+    }
+  ]
+}
