@@ -1,0 +1,233 @@
+{
+  "title": "Resume browser — the Projects, Tags and Most recent chips and their menus",
+  "key": "resume-filter-chips-review",
+  "out": "resume-filter-chips.review.html",
+  "images": "images/resume-filter-chips.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "chips": [
+      "resume-filters",
+      "resume-browser",
+      "470x50+485+288"
+    ],
+    "search": [
+      "resume-filters",
+      "resume-browser",
+      "470x48+485+248"
+    ],
+    "projects-menu": [
+      "resume-filters",
+      "resume-projects-open",
+      "640x180+400+288"
+    ],
+    "tags-menu": [
+      "resume-filters",
+      "resume-tags-open",
+      "640x190+400+288"
+    ],
+    "picked": [
+      "resume-filters",
+      "resume-tags-picked",
+      "470x50+485+288"
+    ],
+    "sort": [
+      "resume-filters",
+      "resume-sort-flipped",
+      "470x50+485+288"
+    ],
+    "narrow": [
+      "resume-filters-narrow",
+      "resume-tags-open",
+      "390x300+0+90"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Resume Session",
+      "path": "Open a past conversation → the row of chips under the search box",
+      "crop": "chips",
+      "headline": "The three chips are now the same size and shape as every other filter chip in the app, with a real chevron.",
+      "changed": "Chip text went from 11 px to 14 px, the tiny grey triangle became the chevron the app's dropdown fields use, and it turns to point up while a menu is open.",
+      "measured": "11 px → 14 px text; 9 px triangle → 12 px chevron",
+      "notice": "The row reads at a glance, and a chip with a filter applied is solid, the way a lit category chip in the Marketplace is.",
+      "risk": "A lit chip is bolder than the old faint tint, so a filtered list is harder to miss. That was the aim, but it is a stronger look."
+    },
+    {
+      "id": "S-2",
+      "surface": "Resume Session",
+      "path": "Open a past conversation → the search box",
+      "crop": "search",
+      "headline": "The search box is the same rounded search pill the Projects screen and the Marketplace use.",
+      "changed": "It was its own squarer box with a dimmer outline. Now it is the shared search pill, so it matches the chips directly under it.",
+      "notice": "Search and the chips read as one group instead of two different kinds of box.",
+      "risk": "The pill is a little shorter than the old box, so the list starts a few pixels higher."
+    },
+    {
+      "id": "S-3",
+      "surface": "Resume Session",
+      "path": "Chips row → Projects",
+      "crop": "projects-menu",
+      "headline": "The Projects menu has square check boxes, a count on each row, and a Clear button pinned at the bottom.",
+      "changed": "Rows are 28 px tall with the app's own check box, which stays square on rounded themes instead of turning into a circle. Counts only include what the list can show, so a project's number matches the rows you get. The uppercase CLEAR header moved to the bottom as a footer button that closes the menu and dims when nothing is picked.",
+      "measured": "28 px rows; counts 10 px → 11 px",
+      "notice": "Ticks look like ticks, the count sits at the right edge, and with many projects the list scrolls while Clear stays in place."
+    },
+    {
+      "id": "S-4",
+      "surface": "Resume Session",
+      "path": "Chips row → Tags",
+      "crop": "tags-menu",
+      "headline": "The Tags menu opens straight onto your tags, with Clear and Manage tags… together at the bottom.",
+      "changed": "Manage tags… moved from an uppercase header row to a footer beside a new Clear button, which is where every other menu in the app keeps its Manage… entry. Each tag row shows how many conversations carry it, like the project rows.",
+      "notice": "The first thing under the chip is a tag you can tick, not a settings link."
+    },
+    {
+      "id": "S-5",
+      "surface": "Resume Session",
+      "path": "Chips row → pick one tag or one project",
+      "crop": "picked",
+      "headline": "A chip names the one thing you picked, and shows a count when you pick more.",
+      "changed": "One tag picked reads as that tag's name instead of '1 tag'; two or more read as 'Tags 2'. Projects does the same, and the old comma-joined list of two or three project names is gone.",
+      "notice": "Chips stay short enough for a phone, and you can see what the one filter is without opening the menu.",
+      "risk": "Two or three chosen projects no longer show their names on the chip; open the menu to see which ones."
+    },
+    {
+      "id": "S-6",
+      "surface": "Resume Session",
+      "path": "Chips row → Most recent",
+      "crop": "sort",
+      "headline": "The sort chip uses a drawn arrow that turns over, and lights up when the order is not newest-first.",
+      "changed": "The ↓ and ↑ characters inside the label became a drawn arrow like the app's other icons; it points down for newest first and turns up for oldest first.",
+      "notice": "One tap flips the order, the arrow turns, and the chip lights so you can tell the list is not in its usual order.",
+      "risk": "The lit chip is the strongest thing on the row while the order is flipped."
+    },
+    {
+      "id": "S-7",
+      "surface": "Resume Session",
+      "path": "On a phone-width window → chips row",
+      "crop": "narrow",
+      "themes": [
+        "midnight",
+        "light"
+      ],
+      "headline": "On a phone the chips keep to one line and slide sideways instead of squashing Most recent onto two lines.",
+      "changed": "The row scrolls sideways when the chips do not fit, the way the quick chips above the message box do, with a soft fade at the edge that has more; no chip ever wraps its own label.",
+      "notice": "Every chip stays a single readable pill at 390 px wide.",
+      "risk": "The third chip can be partly off the right edge on a narrow phone until you slide the row; the fade is the only hint."
+    },
+    {
+      "id": "Q-1",
+      "surface": "Resume Session",
+      "path": "Chips row → Most recent",
+      "words": true,
+      "headline": "Should the sort chip open a small menu like Projects and Tags do, or stay a one-tap flip?",
+      "today": "The third chip flips the order with one tap and shows an arrow. The two beside it open menus and show a chevron.",
+      "problem": "Three chips in a row, two behaviours: the arrow chip opens nothing, which can surprise on the first tap.",
+      "proposal": "Keep the one-tap flip shown on this deck, or make the chip a menu with two rows, Most recent and Oldest first, so all three chips behave the same way.",
+      "options": [
+        {
+          "id": "flip",
+          "label": "One-tap flip",
+          "recommended": true,
+          "pros": [
+            "One tap changes the order",
+            "The arrow shows the current order at a glance"
+          ],
+          "cons": [
+            "One chip behaves differently from its two neighbours"
+          ]
+        },
+        {
+          "id": "menu",
+          "label": "Two-row menu",
+          "pros": [
+            "All three chips open a list, so the gesture is the same everywhere",
+            "Room to add other orders later, such as by name"
+          ],
+          "cons": [
+            "Two taps to flip the order",
+            "A two-row menu for what is really a yes-or-no choice"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "surface": "Resume Session",
+      "path": "The whole past-conversations screen",
+      "words": true,
+      "headline": "Should this screen say conversations instead of sessions, to match the chat?",
+      "today": "The chat calls them conversations (\"Continue this conversation in a new tab\"). This screen says Resume Session, Search sessions, No matching sessions, and its reopen button is also Resume Session.",
+      "problem": "A beta tester read two words for one thing and took the reopen button for the title repeated.",
+      "proposal": "Rename the copy on this screen only: title Past conversations, search box Search conversations, empty state No conversations match, reopen button Continue. Nothing else changes.",
+      "options": [
+        {
+          "id": "conversations",
+          "label": "Say conversations",
+          "recommended": true,
+          "pros": [
+            "One word for one thing across the app",
+            "The reopen button stops reading like the title"
+          ],
+          "cons": [
+            "Session still appears in the top bar and status bar until those are renamed too"
+          ]
+        },
+        {
+          "id": "sessions",
+          "label": "Keep sessions",
+          "pros": [
+            "Nothing to relearn for anyone used to it"
+          ],
+          "cons": [
+            "The chat and this screen keep using different words"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "surface": "Resume Session",
+      "path": "Pick a project or tag and watch the dialog",
+      "words": true,
+      "headline": "Should the past-conversations dialog keep one height so it stops jumping when a filter shrinks the list?",
+      "today": "The dialog is as tall as its list, up to a limit, and sits centred. Picking a filter that leaves one row shrinks it and re-centres it, so it drops about 120 px on screen.",
+      "problem": "The beta tester's single most confusing moment: the row they had just clicked slid away from under the pointer. The open menu now follows, so nothing is mis-clicked any more, but the lurch remains.",
+      "proposal": "Give the dialog a fixed height whenever there is room, so the frame stays put and only the rows inside change. With very few conversations the lower part of the dialog is empty space.",
+      "options": [
+        {
+          "id": "fixed",
+          "label": "One steady height",
+          "recommended": true,
+          "pros": [
+            "Nothing moves when you filter or type in the search",
+            "Chips and menus stay exactly where you clicked"
+          ],
+          "cons": [
+            "A short list leaves empty space at the bottom of the dialog"
+          ]
+        },
+        {
+          "id": "shrink",
+          "label": "Keep it shrinking",
+          "pros": [
+            "A short list gets a compact dialog"
+          ],
+          "cons": [
+            "The dialog keeps re-centring as you filter"
+          ]
+        }
+      ]
+    }
+  ]
+}

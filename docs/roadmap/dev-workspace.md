@@ -207,6 +207,11 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+
+- [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
+      contract check, hours later, refuses the later rounds' sources; a warning at build time
+      would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
+      `desktop` `confirmed` `checked 2026-09-10`
 - [ ] `roadmap-check.mjs --fix` rewrites items the session never touched: on today's master it
       downgrades two `confirmed` performance items (buddy reflow, remote replay buffer) to
       `needs-verify` every run. The filing grammar tells every session to run it before

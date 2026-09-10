@@ -1,0 +1,121 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 3500,
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "resume-browser",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ],
+   "expect": "[placeholder^='Search sessions']"
+  },
+  {
+   "name": "resume-filters-open",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector('[aria-label^=\"Filter\"]')",
+     "settle": 500
+    }
+   ],
+   "expect": "js:!![...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))"
+  },
+  {
+   "name": "resume-filters-projects-open",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector('[aria-label^=\"Filter\"]')",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))",
+     "settle": 500
+    }
+   ],
+   "expect": "js:!!document.querySelector('[role=option]')"
+  },
+  {
+   "name": "resume-filters-picked",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector('[aria-label^=\"Filter\"]')",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))",
+     "settle": 500
+    },
+    {
+     "click": "js:document.querySelector('[role=option]')",
+     "settle": 700
+    }
+   ],
+   "expect": "[role=dialog][aria-label='Filters']"
+  },
+  {
+   "name": "resume-tags-open",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    },
+    {
+     "click": "js:document.querySelector('[aria-label^=\"Filter\"]')",
+     "settle": 500
+    }
+   ],
+   "expect": "js:!![...document.querySelectorAll('[role=dialog][aria-label=\"Filters\"] button')].find(b=>b.textContent.trim().startsWith('Projects'))"
+  }
+ ]
+}

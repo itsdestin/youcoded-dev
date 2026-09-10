@@ -1,0 +1,92 @@
+{
+ "deck": "resume-filter-chips-contract-acceptance",
+ "started": "2026-09-10T12:58:58.990Z",
+ "submitted": "2026-09-10T13:00:19Z",
+ "cur": 13,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R5": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R13": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R15": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R17": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R18": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R19": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R20": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R21": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R22": {
+   "v": "yes",
+   "seconds": 0,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R23": {
+   "v": "yes",
+   "seconds": 0,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
