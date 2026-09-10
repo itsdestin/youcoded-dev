@@ -2,6 +2,19 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] Phone-width polish the batch 2/3 UX tester found while driving a phone browser over
+      remote access (2026-09-10), none of it specific to remote access: "Session Files" and
+      "Session in <project>" (a student does not call a chat a session); the "Deliverables"
+      pill; file rows saying "delivered" and mixing "3h ago" with full dates; the filter
+      popup's "Code & configs" and "VISIBILITY / Show deleted"; the three Projects tabs
+      collapsing to bare icons a first-timer cannot read; "on disk · modified" in the file
+      viewer and a code box clipped on the right with no way to scroll; "Already fitted to the
+      pane" and a hover-only Magnify that cannot work on touch; a Conversations card that is
+      inert with no hint why; "3 context files · active <date>"; the hover-only Remove control
+      on file rows, unreachable on a phone; "224 B" for a file size. Each has a proposed shorter
+      wording in the review file
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-batch-2-3-ux-review-1.md
+
 - [ ] The files filter panel (Project View and the Files drawer) draws its own 12 px filter chip
       instead of the shared 14 px filter pill, the size the design guide already rejected as the
       smallest text in the app (noticed while building the Resume browser's phone filter panel, 2026-09-10)
