@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 
 # Remote access — first secure, reliable milestone
@@ -24,9 +24,15 @@ UI correction (Destin, round-1 review 2026-09-09): preserve the existing Remote 
 panel and its Enabled toggle, password field, Keep awake controls and Add Device.
 Secure setup is contextual, not a replacement wizard; no unfamiliar bottom-left
 primary action or technical wall of text. Both initial visual steps were not approved.
-See `docs/active/design/2026-09-09-remote-access/remote-access.review.answers.json`.
+See `docs/archive/design/2026-09-09-remote-access/remote-access.review.answers.json`.
 
 ## Deliver in reviewed batches
+
+**Batch 1 merged 2026-09-10.** Tailscale Serve turned out to be unnecessary: the host binds
+its tailnet address directly, which gives Tailscale-only access with no Serve route, no
+certificate and no admin password. Certificates became an optional second level (approved,
+unbuilt). Design and record: `docs/archive/specs/2026-09-09-remote-access-batch1-technical-design.md`,
+`docs/archive/design/2026-09-09-remote-access/`. Batches 2 and 3 are open roadmap items.
 
 1. **Secure connection and recovery:** secure setup, actual listener-health status,
    durable device revocation, bounded authentication/liveness, safe reconnect and

@@ -1,0 +1,444 @@
+{
+ "title": "Remote access \u2014 contract \u2014 acceptance",
+ "key": "remote-access-contract-acceptance",
+ "out": "remote-access.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/remote-mesh-roadmap",
+ "sources": {
+  "remote-access-questions": "remote-access.questions.json",
+  "remote-access-host-review-2": "remote-access.review-2.json",
+  "remote-access-review-3": "remote-access.review-3.json",
+  "remote-access-questions-2": "remote-access.questions-2.json",
+  "remote-access-questions-3": "remote-access.questions-3.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Remote access",
+   "path": "Settings \u2192 Remote Access",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "Setup walks you through each change, waits for your approval, and then checks the connection worked.",
+     "checkedBy": "live-app",
+     "threshold": "a dev instance completes setup with approval prompts and a connection check",
+     "source": "remote-access-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "A message typed while the connection is down waits as a draft until you press Send yourself.",
+     "checkedBy": "live-app",
+     "threshold": "the draft survives a dropped connection and nothing sends on its own",
+     "source": "remote-access-questions#Q-2"
+    },
+    {
+     "id": "R3",
+     "statement": "Your phone stays on the conversation you were reading, even when the desktop moves to another one.",
+     "checkedBy": "live-app",
+     "threshold": "the phone's conversation survives a desktop switch and a reconnect",
+     "source": "remote-access-questions#Q-3"
+    },
+    {
+     "id": "R4",
+     "statement": "Enabled, Password, Keep awake and Add Device stay where they are in the panel you already know.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "remote-access-host-review-2#2",
+     "verdict": "pass",
+     "evidence": "Approved: docs/archive/design/2026-09-09-remote-access/images/remote-access.review-2/remote-host--midnight--after.png. Re-taken from session/remote-mesh-roadmap on the workbench (5233, remote=connected&remotePreview=ready): /home/destin/.claude/jobs/a655b946/tmp/shots/midnight/remote-host.png (crop /home/destin/.claude/jobs/a655b946/tmp/shots/midnight/crop-remote-host.png). Side by side: /home/destin/.claude/jobs/a655b946/tmp/pairs/R4.png. Built panel keeps the same order and place: SERVER > Enabled toggle > Password (Set) > Keep awake (Off/1h/4h/8h/24h) > Add Device, then DEVICES. The only changes below them are ones separately approved: Revoke renamed Unpair (questions-2 Q-4) and a new ADVANCED > Browser encryption row added under DEVICES (review-4). None of the four named controls moved."
+    },
+    {
+     "id": "R5",
+     "statement": "The panel says plainly that it is not set up yet, with one button that moves you forward.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "remote-access-review-3#1",
+     "verdict": "pass",
+     "evidence": "Approved: docs/archive/design/2026-09-09-remote-access/images/remote-access.review-3/setup--midnight--after.png. Re-taken (remote=setup&remotePreview=not-installed): /home/destin/.claude/jobs/a655b946/tmp/shots/midnight/setup.png (crop crop-setup.png). Side by side: /home/destin/.claude/jobs/a655b946/tmp/pairs/R5.png. The panel opens with the same box reading 'Not set up yet.' and exactly one button, 'Install Tailscale'. No phone warning above it. Only differences from the approved still are mock-state ones outside the row's statement: Enabled shows off and the password field reads 'Set password...' rather than 'Change password...'."
+    },
+    {
+     "id": "R6",
+     "statement": "One yellow box asks you first, before this computer's name is published in a public record.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "remote-access-review-3#2",
+     "verdict": "pass",
+     "evidence": "MOCKUP ONLY - the browser-encryption level is a workbench preview in this batch, not a shipped path; nothing here issues a certificate. Approved: images/remote-access.review-3/consent--midnight--after.png (yellow 'Before continuing:' box + 'Approve and continue', shown inside setup) and images/remote-access.review-4/consent--midnight--after.png (the same warning moved under Advanced). Re-taken: the review-3 recipe (remote=setup&remotePreview=consent) no longer shows any consent box - /home/destin/.claude/jobs/a655b946/tmp/shots/midnight/consent-old-recipe.png - because the box moved off the ordinary setup path, which now publishes nothing. The built home for it is Settings > Remote Access > ADVANCED > Browser encryption: /home/destin/.claude/jobs/a655b946/tmp/shots/midnight/consent-advanced.png, and after pressing the toggle /home/destin/.claude/jobs/a655b946/tmp/shots3/midnight/encryption-consent-step.png. Side by side: /home/destin/.claude/jobs/a655b946/tmp/pairs/R6.png and /home/destin/.claude/jobs/a655b946/tmp/pairs/extra.png. There is exactly one yellow box ('This cannot be undone: This computer's name is added to a public list of issued certificates...'), it sits above the toggle, the toggle stays Off after the first press, and an explicit 'I understand - continue' button is required before anything is published. That is the approved substance, in the second-level screen Destin asked for in his review-4 step 2 note."
+    },
+    {
+     "id": "R7",
+     "statement": "Devices are listed by name, and removing one means that device has to pair again to return.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "remote-access-review-3#3",
+     "verdict": "pass",
+     "evidence": "Approved: docs/archive/design/2026-09-09-remote-access/images/remote-access.review-3/connected--midnight--after.png. Re-taken (remote=connected&remotePreview=ready): /home/destin/.claude/jobs/a655b946/tmp/shots/midnight/connected.png (crop crop-connected.png). Side by side: /home/destin/.claude/jobs/a655b946/tmp/pairs/R7.png. DEVICES lists 'My phone / Online' and 'My tablet / Offline' by name, no raw IP addresses. The removal control reads Unpair (approved rename from Revoke) and its confirm, captured at /home/destin/.claude/jobs/a655b946/tmp/shots2/midnight/unpair-confirm.png, reads 'Unpair this device? It must pair again to reconnect.' with Cancel / Confirm unpair."
+    },
+    {
+     "id": "R8",
+     "statement": "The button that removes a device's access reads Unpair, and confirming says it must pair again.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "remote-access-questions-2#Q-4"
+    },
+    {
+     "id": "R9",
+     "statement": "Skip password on Tailscale is gone: a device always needs the password, whatever network it is on.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "remote-access-questions-2#Q-5"
+    },
+    {
+     "id": "R10",
+     "statement": "Other devices reach this computer only through Tailscale; its direct home-network address no longer answers.",
+     "checkedBy": "live-app",
+     "threshold": "a dev instance answers over Tailscale and refuses the plain network address",
+     "source": "remote-access-questions-3#Q-6"
+    },
+    {
+     "id": "R11",
+     "statement": "Every device that has paired stays in the list, marked Online or Offline, until you unpair it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "remote-access-questions-3#Q-7"
+    },
+    {
+     "id": "R12",
+     "statement": "Remote Access opens fully filled in on a phone, instead of showing a blank panel.",
+     "checkedBy": "live-app",
+     "threshold": "a phone opens Settings > Remote Access and sees the settings, the device list and the status, not a blank panel",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F1",
+     "found": "review"
+    },
+    {
+     "id": "R13",
+     "statement": "A phone cannot unpair a device, and a change this computer refuses never looks like it worked.",
+     "checkedBy": "mechanical",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F2",
+     "guard": "youcoded/desktop/tests/remote-host-admin-desktop-only.test.ts",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "npx vitest run youcoded/desktop/tests/remote-host-admin-desktop-only.test.ts - 4 passed. The missing half was added after this grader failed the row: a new case asserts the host answers HOST_ADMIN_REFUSAL for remote:devices:rename and :unpair, and that the Unpair button carries disabled={hostOnly}, anchored to that button. Verified by deleting the prop and watching the test go red - a bare 'disabled={hostOnly}' search had passed while it was gone, because two other controls carry it."
+    },
+    {
+     "id": "R14",
+     "statement": "A device leaves the list only when this computer confirms it lost access.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F11",
+     "found": "review"
+    },
+    {
+     "id": "R15",
+     "statement": "An action you were already told had failed never runs later on its own when the connection returns.",
+     "checkedBy": "live-app",
+     "threshold": "a dev instance drops and restores the connection and nothing re-runs",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F4",
+     "found": "review"
+    },
+    {
+     "id": "R16",
+     "statement": "Switching remote access off after a failed start makes the panel say it is off, not still failed.",
+     "checkedBy": "mechanical",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F5",
+     "guard": "youcoded/desktop/tests/remote-server.test.ts",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "npx vitest run tests/remote-server.test.ts from youcoded/desktop - 'Test Files 1 passed (1) / Tests 79 passed (79)'. The row's test is it('stops meaning stopped, even after a start that failed') at tests/remote-server.test.ts:437: it forces listen to error, asserts start() rejects and getStatus().state is 'failed', then calls stop() and asserts getStatus().state is 'stopped', getStatus().reason is undefined, and that a 'stopped' status was pushed to an onStatusChange subscriber. That is exactly the row's statement, including the 'the panel is told' half."
+    },
+    {
+     "id": "R17",
+     "statement": "One paired device can never learn whether another device's action went through.",
+     "checkedBy": "mechanical",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F13",
+     "guard": "youcoded/desktop/tests/remote-server.test.ts",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "npx vitest run tests/remote-server.test.ts from youcoded/desktop - 'Test Files 1 passed (1) / Tests 79 passed (79)'. The row's test is it('answers about this device's requests and nobody else's') at tests/remote-server.test.ts:522: it notes 'phone-a:1:7' and 'phone-b:1:9' completed, then drives handleMessage with a client whose deviceId is 'phone-a' asking remote:request-outcome for both ids, and asserts the answer is 'completed' for its own and 'unknown' for the other device's. That is the row's statement, driven through the host rather than scraped from source."
+    },
+    {
+     "id": "R18",
+     "statement": "A computer that is already connected and has a password never tells you it is not set up yet.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-code-review.md#F15",
+     "found": "review"
+    },
+    {
+     "id": "R19",
+     "statement": "An error explains a cause we recognise in plain words, and says plainly when we do not know it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U2",
+     "found": "review"
+    },
+    {
+     "id": "R20",
+     "statement": "While it checks, the screen says it takes a few seconds and to leave YouCoded open.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U22",
+     "found": "review"
+    },
+    {
+     "id": "R21",
+     "statement": "The password row shows Saved once one exists, so it is not mistaken for a second button.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U9",
+     "found": "review"
+    },
+    {
+     "id": "R22",
+     "statement": "Pressing Add Device brings the pairing panel into view instead of leaving it below the fold.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U7",
+     "found": "review"
+    },
+    {
+     "id": "R23",
+     "statement": "Once it is working, the panel shows the address for your phone, and clicking it copies it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U3",
+     "found": "review"
+    },
+    {
+     "id": "R24",
+     "statement": "The screen that tells you to pair a device below lets you press Add Device.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U1",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "No approved deck still exists for this state - it came from UX finding U1, after the last deck. Compared against the row's own statement and the UX tester's pre-fix shot of the same screen, docs/archive/reviews/2026-09-10-remote-access-ux-review-2-shots/s-checked.png, where Add Device is greyed out. Re-taken from the built branch (remote=connected&remotePreview=checked): /home/destin/.claude/jobs/a655b946/tmp/shots-new/midnight/r24-checked.png, side by side with the About shot at /home/destin/.claude/jobs/a655b946/tmp/pairs/N1.png. The shot's own expect asserted it, not just the picture: the Add Device button exists inside the dialog and button.disabled is false. The screen reads 'This computer is listening at http://100.82.14.7:9900. No device has connected yet - pair one below to try it.' and the Add Device button below it is live."
+    },
+    {
+     "id": "R25",
+     "statement": "In the settings list, remote access whose check failed reads Not running rather than finished.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U4",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "No approved deck still exists - from UX finding U4. Compared against the row's own statement and the pre-fix shot docs/archive/reviews/2026-09-10-remote-access-ux-review-2-shots/s-checked-failed.png, where the list row read 'Setup checked'. Re-taken three settings-list states from the built branch, all self-verified: /home/destin/.claude/jobs/a655b946/tmp/shots-r25/midnight/r25-list-failed.png (checked-failed), r25-list-checked.png (checked, listening) and r25-list-silent.png (checked-silent); side by side at /home/destin/.claude/jobs/a655b946/tmp/pairs/N3.png. The Remote Access row in the settings list reads 'Not running' with a grey dot for checked-failed AND for checked-silent, and 'Connected' with a green dot only when the check found the listener. 'Setup checked' no longer appears in any of the three."
+    },
+    {
+     "id": "R26",
+     "statement": "The button that continues past the warning sits fully inside the dialog, even in a short window.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U12",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "No approved deck still exists - from UX finding U12. Compared against the row's own statement and the pre-fix shot docs/archive/reviews/2026-09-10-remote-access-ux-review-2-shots/n4-short-consent.png, taken at the same 900x620 window, where the continue button is not on screen at all. Re-taken at width 900 height 620, Settings > Remote Access > ADVANCED > Browser encryption > toggle, remotePreview=consent: /home/destin/.claude/jobs/a655b946/tmp/shots-r26/midnight/r26-short-consent.png, shown at /home/destin/.claude/jobs/a655b946/tmp/pairs/N2.png. Measured rather than eyeballed - the shot plan recorded [role=dialog] at x240 y48 w420 h524 (bottom edge 572) and the 'I understand - continue' button at x257 y491 w386 h28 (bottom edge 519). The button is fully inside the dialog on all four sides, with 53px of clearance below it."
+    },
+    {
+     "id": "R27",
+     "statement": "Once browser encryption is on, its warning is written as something already done, not still ahead.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U13",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "No approved deck still exists - from UX finding U13. Compared against the row's own statement and the pre-fix shot docs/archive/reviews/2026-09-10-remote-access-ux-review-2-shots/m4-encrypted-screen.png, which read 'This cannot be undone:' while encryption was already on. Re-taken (remote=connected&remotePreview=encrypted, then ADVANCED > Browser encryption): /home/destin/.claude/jobs/a655b946/tmp/shots-new/midnight/r27-encrypted.png, shown at /home/destin/.claude/jobs/a655b946/tmp/pairs/N2.png. The shot's expect required the string 'Already done:' to be present. The yellow box is now titled 'Already done:' and reads 'This computer's name is now on a public list of issued certificates. Turning this off does not remove it...' - past tense throughout, and the row below reads 'On - your phone can use the microphone, copy buttons and font picker.'"
+    },
+    {
+     "id": "R28",
+     "statement": "The explainer says to install Tailscale on your phone and sign in, then scan the code here.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-10-remote-access-ux-review-2.md#U17",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "No approved deck still exists - from UX finding U17. Compared against the row's own statement and the pre-fix shot docs/archive/reviews/2026-09-10-remote-access-ux-review-2-shots/i1-info.png, which read 'Connect your other device to Tailscale, then use Add Device to open YouCoded and pair'. Re-taken (remote=connected&remotePreview=ready, then the (i) 'What is this?' header button): /home/destin/.claude/jobs/a655b946/tmp/shots-new/midnight/r28-about.png, shown at /home/destin/.claude/jobs/a655b946/tmp/pairs/N1.png. The About Remote Access panel now reads 'On your phone: install Tailscale and sign in to the same account. Then tap Add Device here and scan the code. A paired phone can use the assistant, not just read conversations - so keep this computer awake while you are away from it.' - install on the phone, sign in, then scan the code here, in that order."
+    }
+   ],
+   "no": "No, something is wrong",
+   "yes": "Yes, accept"
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Setup walks you through each change, waits for your approval, and then checks the connection worked.",
+   "changed": "Checked by you.",
+   "notice": "a dev instance completes setup with approval prompts and a connection check",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R2",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "A message typed while the connection is down waits as a draft until you press Send yourself.",
+   "changed": "Checked by you.",
+   "notice": "the draft survives a dropped connection and nothing sends on its own",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Your phone stays on the conversation you were reading, even when the desktop moves to another one.",
+   "changed": "Checked by you.",
+   "notice": "the phone's conversation survives a desktop switch and a reconnect",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R8",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "The button that removes a device's access reads Unpair, and confirming says it must pair again.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R9",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Skip password on Tailscale is gone: a device always needs the password, whatever network it is on.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R10",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Other devices reach this computer only through Tailscale; its direct home-network address no longer answers.",
+   "changed": "Checked by you.",
+   "notice": "a dev instance answers over Tailscale and refuses the plain network address",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R11",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Every device that has paired stays in the list, marked Online or Offline, until you unpair it.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R12",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Remote Access opens fully filled in on a phone, instead of showing a blank panel.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "a phone opens Settings > Remote Access and sees the settings, the device list and the status, not a blank panel",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R14",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "A device leaves the list only when this computer confirms it lost access.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R15",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "An action you were already told had failed never runs later on its own when the connection returns.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "a dev instance drops and restores the connection and nothing re-runs",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R18",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "A computer that is already connected and has a password never tells you it is not set up yet.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R19",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "An error explains a cause we recognise in plain words, and says plainly when we do not know it.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R20",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "While it checks, the screen says it takes a few seconds and to leave YouCoded open.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R21",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "The password row shows Saved once one exists, so it is not mistaken for a second button.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R22",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Pressing Add Device brings the pairing panel into view instead of leaving it below the fold.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R23",
+   "words": true,
+   "surface": "Remote access",
+   "path": "Acceptance",
+   "headline": "Once it is working, the panel shows the address for your phone, and clicking it copies it.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

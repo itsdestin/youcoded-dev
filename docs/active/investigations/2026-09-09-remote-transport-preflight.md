@@ -113,7 +113,7 @@ the bind alone, or the bypass alone, leaves the hole open.
 ## Approved UI direction
 
 Submitted answers at
-`docs/active/design/2026-09-09-remote-access/remote-access.questions.answers.json`:
+`docs/archive/design/2026-09-09-remote-access/remote-access.questions.answers.json`:
 Q-1 guided setup; Q-2 keep offline messages as drafts for explicit Send; Q-3 independent
 phone selection preserved on reconnect. Next gate is real-renderer Before/After mockups,
 fresh UX test and signed UI contract. These answers authorize design, not live setup.
