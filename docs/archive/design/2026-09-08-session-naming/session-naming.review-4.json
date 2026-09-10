@@ -1,0 +1,28 @@
+{
+  "title": "Session naming — edit the name directly",
+  "key": "session-naming-review-4",
+  "stage": "review",
+  "out": "session-naming.review-4.html",
+  "images": "images/session-naming.review-4",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-4-before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-4-after"
+  },
+  "themes": ["light"],
+  "crops": {
+    "saved": ["naming", "saved", "480x530+480+190"]
+  },
+  "steps": [
+    {
+      "id": "R4-1",
+      "surface": "Saved session names",
+      "path": "Resume Session → click a session name",
+      "crop": "saved",
+      "headline": "Click the dotted-underlined name to edit it.",
+      "changed": "The pencil matches the size, muted color and outline style of the tag and complete icons. The entire name opens the existing rename dialog.",
+      "highlight": {"box": [40, 172, 225, 30]},
+      "notice": "Click the name, or focus it and press Enter or Space. Editing does not open resume controls. Your other approved changes stay unchanged.",
+      "risk": "Checked in the isolated preview; durable naming storage is not connected."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+ "deck": "session-naming-questions",
+ "started": "2026-09-09T05:52:01.240Z",
+ "submitted": "2026-09-09T05:52:17Z",
+ "cur": 0,
+ "answers": {
+  "default": {
+   "v": "pick",
+   "pick": "basic",
+   "seconds": 8,
+   "theme": "cotton-candy-sky"
+  },
+  "cadence": {
+   "v": "pick",
+   "pick": "fixed",
+   "seconds": 8,
+   "theme": "cotton-candy-sky"
+  }
+ }
+}

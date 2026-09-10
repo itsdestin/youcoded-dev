@@ -23,7 +23,7 @@ verify:
     contains: "quiesce"
   - path: youcoded/desktop/src/main/harness/native-session-host.ts
     contains: "SUBAGENT_DISPLAY_TYPES"
-  - path: youcoded/desktop/src/main/native-title-feeder.ts
+  - path: youcoded/desktop/src/main/session-namer.ts
   - path: youcoded/desktop/src/main/conversations/portable-model.ts
   - path: youcoded/desktop/src/renderer/components/model/ModelPicker.tsx
   - path: youcoded/desktop/src/main/providers/provider-registry.ts
@@ -40,7 +40,7 @@ verify:
   - test: youcoded/desktop/tests/native-session-host.test.ts
   - test: youcoded/desktop/tests/native-send.test.ts
   - test: youcoded/desktop/tests/native-home.test.ts
-  - test: youcoded/desktop/tests/native-title-feeder.test.ts
+  - test: youcoded/desktop/tests/session-namer.test.ts
   - test: youcoded/desktop/tests/provider-registry.test.ts
   - test: youcoded/desktop/tests/ipc-channels.test.ts
   - test: youcoded/desktop/tests/permission-engine.test.ts

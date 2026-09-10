@@ -16,12 +16,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
-- [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
-      next step of a tool turn, so a long tool-using turn may re-think work it already did —
-      slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
-      on the free plan, so nothing is broken today; a paid plan is the case to check
-      `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/specs/2026-09-05-chatgpt-signin-backend-design.md
-
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —
       six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
       chasing the sidecar crash; not the crash cause, a few hundred bytes each)
@@ -261,8 +255,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       affinity and prefix stability, then measure the first post-resume request rather than trusting
       historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
       stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
-      survives the gap between messages
-      `desktop` `confirmed` `checked 2026-09-08` → docs/active/investigations/2026-08-17-cache-efficiency.md
+      survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
+      shipped in youcoded#461 (2026-09-09). The eight remaining ways the app breaks caching — no
+      Anthropic cache_control, local trimming before compaction, rolling prune rewrites, in-place
+      summaries, the ChatGPT summary cache key, no OpenRouter session id, the Task tool's live
+      roster description, and the Reuse chip hiding cold requests — are the handoff
+      `desktop` `confirmed` `checked 2026-09-09` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
