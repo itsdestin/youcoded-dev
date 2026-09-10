@@ -159,3 +159,14 @@ Filing test: reaching the app from another device — the protocol, the browser 
       asset paths rewritten to point at the host, and a judgement about how much a phone
       should download before the first screen appears
       `remote` `confirmed` `checked 2026-09-10`
+
+- [ ] Opening the conversation browser over remote access sometimes shows nothing, and works
+      on the second try. Destin, 2026-09-10: "oh wait it worked the second try for resume.
+      idk why nothing appeared the first time." The computer's own listing was fine at that
+      moment (946 conversations, 318KB), so the request failed somewhere between the phone
+      and the host and the screen reported it as an empty history. The screen now says the
+      load failed and offers Retry, so the next occurrence is visible instead of silent —
+      but the CAUSE is unidentified. A request in flight when the connection blips is not
+      cancelled or retried; it waits out its own 30-second timeout and then rejects, which
+      fits the symptom without being proven
+      `remote` `needs-verify` `checked 2026-09-10`
