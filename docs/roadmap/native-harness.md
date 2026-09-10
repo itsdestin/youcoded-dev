@@ -142,6 +142,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 ## tools
+- [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where
+      are the model settings" it guesses. Wanted (Destin, 2026-09-10 guide deck): a line in the
+      system prompt or an info-desk tool it reaches for whenever a user asks how YouCoded or its
+      settings work, answering from a maintained description of the app rather than from memory
+      `all` `parked` `checked 2026-09-10`
+
 - [ ] The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
       not have it reaches straight for a script or an outside service instead of the plugin that
       already does the job. Wanted: a tool it can call to search plugins and integrations, so
@@ -222,6 +228,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
+- [ ] The first time someone turns on Skip Permissions or picks Full auto, nothing explains that
+      the assistant will now change files without asking and that a mistake reaches the files
+      before they see it; the first session on a small model (roughly 9 to 40 billion parameters)
+      gets no word that small models make more mistakes. Wanted (Destin, 2026-09-10): a plain,
+      honest explainer the first time each happens; the two dangerous switches need an
+      "I understand" checkbox before Continue. Being built with the first-run guide
+      `settings/permissions` `all` `in-flight` `checked 2026-09-10` → docs/active/specs/2026-09-10-first-run-guide-design.md
+
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
