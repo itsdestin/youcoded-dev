@@ -27,7 +27,7 @@ App worktree:
 - `docs/native-runtime.md`
 
 Workspace:
-- `docs/active/investigations/2026-09-09-cache-stage2-report.md`
+- `docs/archive/investigations/2026-09-09-cache-stage2-report.md`
 
 ## Behavior pinned
 

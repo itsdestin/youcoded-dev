@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-09
 ---
 # Stage 4 implementer brief: private accepted-history restoration

@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-09
 ---
 # ChatGPT cache diagnostics — Stage 1 implementation report

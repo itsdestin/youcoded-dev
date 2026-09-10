@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 stage: 3
 updated: 2026-09-09
 ---

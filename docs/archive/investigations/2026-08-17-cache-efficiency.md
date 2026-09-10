@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-08-17
 type: investigation
 tags: [cache, prompt-caching, kv-cache, deepseek, openrouter, llm, cost]

@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-09
 ---
 # Cache Stage 4 architecture: durable accepted history
