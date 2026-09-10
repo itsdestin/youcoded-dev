@@ -14,8 +14,9 @@ workbench; that is no longer where it lives.
 
 ## State in one line
 
-**The design is finished and signed off across five review rounds; the panel is now the real
-shipping component; nothing feeds it real data yet.**
+**The design is finished and signed off across five review rounds; the panel is the real
+shipping component; the backend landed 2026-09-10 and it now runs on real data.** What is
+left is Destin's call on Claude Code sessions, the two never-decked items, and the reviews.
 
 ## Where it lives
 
@@ -53,7 +54,7 @@ Look, words and behaviour are settled. The contract's 31 rows are the authority;
 
 ## Remaining work, in order
 
-### 1. Two things built from notes, never seen on a deck
+### 1. Three things built from notes, never seen on a deck
 The contract agent flagged both. They are in the code but not approved:
 - **What the System tab contains.** His note: "include both preset instructions and general
   system instructions. i want to be fully transparent about what models load in with." Built as
@@ -61,33 +62,36 @@ The contract agent flagged both. They are in the code but not approved:
   `prompt-assembly.ts` actually assembles. He has not seen it.
 - **The strip tidy-up** — "remove the checkmark. improve the button." Done; not seen.
 
-Show both on the next deck. They can ride the acceptance deck rather than needing one of
+- **What the backend found, and what it changed on screen** (2026-09-10). Reading the harness
+  showed the design had assumed things the code does not do, and three deviations followed:
+  a skill's card now opens to its text rather than showing it (47 skills would otherwise be
+  47 open cards, and 619 KB to build them); a skill row says "would be shortened when used"
+  instead of claiming a cut that has not happened; and the amber state is driven by what was
+  ACTUALLY left out — including the big one, that a small model is never told its skills exist.
+  Reasons in `docs/active/specs/2026-09-10-session-context-backend-design.md`.
+
+Show all three on the next deck. They can ride the acceptance deck rather than needing one of
 their own.
 
-### 2. The backend — the bulk of what is left
-Nothing supplies `SessionContext` today; the panel runs on workbench fixtures.
+### 2. The backend — DONE (2026-09-10, commit `acab1255`)
+`NativeSessionHost.buildSessionContext` emitted from `wire()`, forwarded as
+`native:session-context`, with `native:session-context-text` answering the panel's on-demand
+read of one file. Five surfaces, pinned by `ipc-channels.test.ts`; `native.onSessionContext`
+is off the mock-only list. Design and the three surprises that shaped it:
+`docs/active/specs/2026-09-10-session-context-backend-design.md`.
 
-A session-start push carrying:
-- `fitProjectInstructions` result — `prompt-assembly.ts` currently discards `truncated`.
-- `fitInjection` per skill and rule (`harness-session.ts`, `native-session-host.ts`).
-- `HarnessSession.droppedMcpServers`.
-- `fullText` for the diff (CLAUDE.md / SKILL.md from disk).
-- **`systemPromptSections`** — the new field. `assembleSystemPrompt` already builds the prompt
-  from exactly these parts; the honest implementation returns them rather than re-splitting a
-  finished string.
+**Open, and Destin's to answer: what a Claude Code chat shows.** Contract R23 says EVERY chat
+carries the line, but Claude Code assembles its own instructions — YouCoded does not build its
+prompt, read its skills, or cut anything for it, so there is nothing truthful to report beyond
+the model and its window. Today a CC chat gets no line at all. The three ways forward, with
+what each costs, are in the design doc's own "Claude Code sessions" section. Nothing else waits
+on this.
 
-New channel on all four surfaces (`preload.ts`, `remote-shim.ts`, `ipc-handlers.ts`,
-`SessionService.kt`), pinned by `ipc-channels.test.ts`. Then delete the
-`native.onSessionContext` row from `mock-only.ts`.
-
-**Known trap:** the budget is fixed at session start and `setBinding` does NOT re-apply it, so
-a model switch mid-chat does not re-trim. The panel must not imply that it does. (Filed as a
-question in the parked truncation rework — see below.)
-
-### 3. Android parity
-The React panel is shared, so it comes along, but `SessionService.kt` needs the channel.
-Nothing about Android has been checked. `JAVA_HOME=/usr/lib/jvm/java-21-openjdk
-ANDROID_HOME=$HOME/.android-sdk ./gradlew test -x bundleWebUi` from `youcoded/`.
+### 3. Android parity — DONE
+`SessionService.kt` answers `native:session-context-text` with the honest
+not-implemented reply; the push reaches a phone inside `chat:hydrate` over the remote
+WebSocket, so it needs no case. **741 Android tests, 0 failed** (2026-09-10, first time this
+branch has been checked on Android at all).
 
 ### 4. Reviews and close-out
 Code reviewer + UX tester run 2 in parallel (`scripts/ui-review/{code-reviewer,ux-tester}.md`),
@@ -107,9 +111,19 @@ delete now that the real component exists — Destin's call, no urgency.
 
 ## Verified state
 
-`bash scripts/verify.sh <youcoded worktree>` — **green** (types, related tests + 44
-source-scanning guards, knip, lint, ast-grep). All 16 workbench routes mount. Probed in the
-running app: the panel does not auto-open, and Details opens it.
+`bash scripts/verify.sh <youcoded worktree>` — **green** (types, related tests + 45
+source-scanning guards, knip, lint, ast-grep), re-run after the backend. All 16 workbench
+routes mount. **Android: 741 tests, 0 failed.** Probed in the workbench: the strip renders from
+the pushed record, Details opens the panel, and expanding a skill fetches its text and shows
+the got/cut comparison.
+
+**One visual defect found and filed, not fixed:** the selected tab paints as if a different tab
+were selected — the highlight stays on Overview and the Skills label goes invisible. The
+classes on the buttons are correct; the paint is one state behind, so it is stale paint in a
+shared control inside a glass panel, not this feature's markup. Reproducible in headless
+Chrome across themes — **worth 10 seconds of Destin's eyes in a dev instance before anyone
+spends longer on it**, since headless rendering may be the whole explanation.
+`docs/roadmap/user-interface.md`.
 
 ## Not part of this feature (filed, do not chase here)
 
