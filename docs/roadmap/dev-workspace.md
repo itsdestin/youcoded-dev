@@ -3,6 +3,17 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] perf-lab's own `screenshots.test.mjs` fails about two runs in three: "each run removes its
+      throwaway Chrome profile" counts `perf-lab-diff-*` directories in the OS temp dir before and
+      after two headless launches and demands the count be unchanged, but the cleanup waits on an
+      async Chrome exit, so a run that finishes teardown late reads as a leak. `/tmp` on this
+      machine held ~160 orphaned profile directories from earlier runs, which is the same fault
+      seen from the other side — some really are left behind. Found 2026-09-09 while gating the
+      Project View watcher fix; reproduced on a pristine tree with the perf work stashed, so it is
+      not that change. Fix: have the test wait on the exit it is asserting about rather than on a
+      count, and sweep the orphans
+      `n/a` `confirmed` `checked 2026-09-09`
+
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
       so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
