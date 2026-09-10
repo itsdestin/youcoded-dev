@@ -55,7 +55,7 @@ Target: `v1.3`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 93 | 30 | 2 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 61 | 11 | 3 | 21 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 62 | 11 | 4 | 21 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 31 | 16 | 0 | 6 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 25 | 8 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |

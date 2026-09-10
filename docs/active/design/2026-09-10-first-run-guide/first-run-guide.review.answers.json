@@ -1,0 +1,109 @@
+{
+ "deck": "first-run-guide-review",
+ "started": "2026-09-10T23:08:35.895Z",
+ "submitted": "2026-09-10T23:20:41Z",
+ "cur": 14,
+ "answers": {
+  "W-1": {
+   "v": "yes",
+   "note": "this is good. i'm also realizing we should probably create a mechanism for users to launch a new session without using a project folder at all. not sure how we'd do this. could be a zero-context/instruction launch, or we could start all users with a new \"Home\" directory or something that contains some overarching/global assistant settings? maybe just start with a none/zero-context option for now and add the other to roadmap?",
+   "seconds": 248,
+   "theme": "light",
+   "zoom": 1
+  },
+  "T-1": {
+   "note": "\"this takes about a minute\" what is this? we don't describe. also next should be at the far-right, skip tour to the left of it. keep next as the white/shaded button and skip tour as the bare text styling.",
+   "v": "other",
+   "seconds": 61,
+   "theme": "light",
+   "zoom": 1
+  },
+  "T-2": {
+   "note": "i think we can make this a bit more clear/concise for users who haven't really used apps like this, local ai, openrouter, etc and are just used to claude.ai and chatgpt/gemini web.",
+   "v": "other",
+   "seconds": 52,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-1": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "E-1": {
+   "note": "this button should be the full width of the text. can improve the copy to be clear/concise for new users with no context. tagline \"folder you keep coming back to\" feels a bit like meaningless word salad.",
+   "v": "yes",
+   "seconds": 69,
+   "theme": "light",
+   "zoom": 1
+  },
+  "H-1": {
+   "note": "",
+   "v": "yes",
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "H-2": {
+   "note": "",
+   "v": "yes",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Z-1": {
+   "note": "\"With your permission, the assistant may create, change, or delete files on your device. Create backups for anything you cannot replace.",
+   "v": "yes",
+   "seconds": 63,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "other",
+   "note": "see previous",
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Z-2": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "light",
+   "zoom": 1,
+   "note": "your assistant"
+  },
+  "G-1": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "yes",
+   "note": "awesome job with this copy",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "no",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "note": "",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -4,6 +4,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] Every session must start in a project folder; there is no way to just talk to the
+      assistant. Destin's note on the first-run guide's review deck (2026-09-10): a
+      zero-context "no folder" choice for now, and later perhaps a "Home" folder every
+      install starts with, holding overarching assistant settings that apply everywhere. The
+      no-folder choice is being built with the first-run guide; the Home folder is this item
+      `all` `decision` `checked 2026-09-10`
+
 - [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
       mid-sentence and the assistant is told to "ask for the rest" without being told which file
       that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules

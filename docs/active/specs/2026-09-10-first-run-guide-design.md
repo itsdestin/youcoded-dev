@@ -15,10 +15,10 @@ call and the review deck is where he sees it.
 
 ## 1. What a new person gets
 
-1. The setup wizard is unchanged up to sign-in. The sign-in step gains one sentence: the
-   assistant can create, change and delete files in the folders it is pointed at, and backups
-   are the user's own (decided: on the wizard, where nobody can skip it; wording is Destin's
-   and is proposed on the review deck).
+1. The setup wizard is unchanged up to sign-in. The sign-in step gains one sentence, in
+   Destin's words (review deck 2026-09-10, Z-1): "With your permission, the assistant may
+   create, change, or delete files on your device. Create backups for anything you cannot
+   replace."
 2. The "You're all set" card no longer lists three things to try. It says the buddy will show
    them around, and the app opens with the tour already started (decided: right after setup,
    once).
@@ -34,7 +34,14 @@ call and the review deck is where he sees it.
    replays the tour (decided: S-2, Q-5, Q-6).
 5. Screens that must explain themselves to someone who skipped the tour: the Projects screen
    with no projects (an explainer card), the between-sessions screen for someone with no
-   sessions (a first-time version), and three smaller empty screens (decided: Q-7, Q-8, S-3).
+   sessions (a first-time version), and two smaller empty screens: a project's Conversations
+   tab and the session note's placeholder (decided: Q-7, Q-8, S-3; the chat pane's extra
+   line was declined on the review deck, C-1).
+9. A way to start a session with no project folder at all (Destin's note on W-1): a "No
+   folder" choice on the new-session form, which runs the session in an empty folder the
+   app owns, so the assistant starts with no instructions and no files. Asked as its own
+   question with the contract. The fuller idea, a "Home" folder every install starts with
+   that holds settings applying everywhere, is on the roadmap (native-harness → sessions).
 6. Settings gains a Help & feedback page: Show me around, the tips switch, the community at
    r/youcoded, Report a bug, Known issues, the version. Report a bug stays reachable from
    Development too (decided: Q-9, Q-10).
