@@ -65,7 +65,7 @@ Target: `v1.3`
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 0 | 0 |
 
