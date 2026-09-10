@@ -29,3 +29,21 @@ test('the last beat carries the audio tail, and the film is the prelude plus the
   const total = BEATS.reduce((t, b) => t + sequenceFrames(b, barFrame) - transitionFrames(b), 0);
   assert.equal(total, PRELUDE + barFrame(49) + TAIL_FRAMES);
 });
+// The music's sections and the film's beats are written in two places (music/song.py PLAN and
+// BEATS above) and both were re-keyed by hand three times on 2026-09-09. This pins the joints
+// that must agree: drop 1 is the theme beat's third bar (the first flip), drop 2 opens the
+// marketplace beat, the break opens the phone beat, groove2 opens the conversations beat and
+// the end bar is the last bar of the close. Reads the grid the sequencer wrote.
+import { readFileSync } from 'node:fs';
+test('the music plan agrees with the beat list at every joint', () => {
+  const grid = JSON.parse(readFileSync(new URL('../public/promo.grid.json', import.meta.url), 'utf8')) as { bars: number; sections: { name: string; bar: number }[] };
+  const at = (name: string) => grid.sections.find((s) => s.name === name)!.bar;
+  const beat = (id: string) => BEATS.find((b) => b.id === id)!;
+  assert.equal(grid.bars, BEATS.at(-1)!.bars[1]);
+  assert.equal(at('drop1'), beat('b3').bars[0] + 2);
+  assert.equal(at('drop2'), beat('b9').bars[0]);
+  assert.equal(at('hook'), beat('b6').bars[0]);
+  assert.equal(at('break'), beat('b8').bars[0]);
+  assert.equal(at('groove2'), beat('b7').bars[0]);
+  assert.equal(at('end'), beat('b10').bars[1] - 1);
+});
