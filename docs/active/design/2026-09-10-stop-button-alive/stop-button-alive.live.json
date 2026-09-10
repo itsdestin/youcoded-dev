@@ -1,0 +1,48 @@
+{
+  "title": "Livelier stop button",
+  "key": "stop-button-alive-live",
+  "out": "stop-button-alive.live.html",
+  "stage": "design",
+  "live": {
+    "worktree": "stop-button-alive",
+    "paneWidth": 460
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Message box · stop button",
+      "path": "The round button left of Send, while a reply is being written",
+      "headline": "Which stop button looks alive while the assistant works?",
+      "changed": "The stop button is round now, as you picked. While the assistant works it moves; every few seconds each pane fakes a stuck reply, and the button holds still.",
+      "notice": "Watch each one for a few loops: the moving part says “working”, the still part says “something is off”. Tap it any time; it stays a stop button.",
+      "risk": "All three tick in small steps to save battery, so up close none of them is perfectly smooth.",
+      "live": {
+        "surface": "stop-button-alive",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "halo",
+          "label": "Breathing ring",
+          "candidate": "halo",
+          "summary": "A soft ring grows out of the button and fades, over and over.",
+          "measured": "One breath every 1.6 s, ring reaches 9 px"
+        },
+        {
+          "id": "orbit",
+          "label": "Circling light",
+          "candidate": "orbit",
+          "summary": "A thin light chases around the outside of the button, like a loading ring around the stop mark.",
+          "measured": "One lap every 1.2 s, in 16 ticks"
+        },
+        {
+          "id": "glow",
+          "label": "Slow glow",
+          "candidate": "glow",
+          "summary": "The button's own glow swells and settles; nothing leaves the button. The calmest of the three.",
+          "measured": "One swell every 2.2 s"
+        }
+      ]
+    }
+  ]
+}
