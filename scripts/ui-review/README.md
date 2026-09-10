@@ -320,10 +320,35 @@ turn → red stalled card), `?firstRun=<STEP>` (onboarding wizard; added 2026-08
 `?marketplace=empty` (registry-less Marketplace/Library; the default is a sampled registry
 fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
+
+Provider and account state — **a shot of Settings → Cloud providers that omits these gets
+a card drawn in its EMPTY state, which reads as a missing feature rather than a missing
+flag.** On 2026-09-09 a review deck shipped a Claude Code card with no usage bars for
+exactly this reason, and Destin filed a request for something that had shipped four days
+earlier: `?planUsage=1` (the Claude plan's 5-hour/7-day windows on `status:data` — without
+it the Claude card has no bars while ChatGPT's has two),
+`?chatgpt=signed-out|waiting|signed-in|free|blocked` (the ChatGPT account card; default
+signed-in on Plus), `?claudeCode=signed-in|signed-out|apikey|not-installed|unknown`
+(Claude Code's own sign-in; default signed-in on Max), `?authMode=oauth|chatgpt|apikey`
+(pins the first-run sign-in screen mid-round-trip), `?signedIn=1` (a YouCoded account and
+a fake friend).
+
+The rest: `?arcade=<game>` (open a game the scenario cannot reach),
+`?remote=setup|connected` (Remote Access popup state), `?lease=held:<device>` (a resume
+raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
+`?student=1` (the student persona's files, project and history),
+`?voice=<phrase>` (dictation without a microphone), `?reply=<name>` (which fixture the
+"model" speaks), `?seed=none`, `?title=`, `?model=`, `?platform=android`,
+`?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls).
+
 Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron),
 Backup & Sync crashes on mock data, theme `localStorage` key is honoured (Electron ignores
 it and uses the profile's theme). Marketplace install counts/ratings come from the live
-worker even in the workbench. `expect` checks on marketplace text must be case-insensitive
+worker even in the workbench. **`window.claude` is a Proxy: an `{"eval": …}` step that
+overrides ONE method (`window.claude.firstRun.getState = …`) is silently dropped and the
+shot captures the unchanged fixture — replace the whole namespace
+(`window.claude.firstRun = { getState: … }`), which does stick.** Found 2026-09-09 after a
+"before" shot came back identical to the "after" one and looked like a passing comparison. `expect` checks on marketplace text must be case-insensitive
 — the eyebrows are uppercased by CSS, so `textContent` still says "Featured".
 
 If the workbench dies with `ENOSPC` (file watchers), start it with `VITE_NO_WATCH=1`

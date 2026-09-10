@@ -149,8 +149,14 @@ seen-on is always n/a here.
       `needs-verify` every run. The filing grammar tells every session to run it before
       committing, so each one either ships another session's silent downgrade or has to spot
       it and revert by hand. Seen twice on 2026-09-07, once from a stale checkout and once
-      from a freshly merged one
-      `desktop` `confirmed` `checked 2026-09-07`
+      from a freshly merged one. THIRD occurrence 2026-09-09, a different item and a different
+      file: it downgraded the native-harness cache-efficiency item to `needs-verify` while a
+      session was filing an unrelated dev-workspace entry, and rewrote ROADMAP.md's counts to
+      match. Reverting needs THREE steps, because re-running `--fix` to repair the index
+      re-applies the downgrade — revert the area file, revert the index, then hand-correct the
+      one index row. Two sessions have now had to work that out from scratch; the fix wanted is
+      for `--fix` to touch only files the run was asked about
+      `desktop` `confirmed` `checked 2026-09-09`
 
 - [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
       read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
@@ -611,3 +617,14 @@ seen-on is always n/a here.
       message was rewritten to describe the feature for Destin. Matching the commit rather than the
       words would fix it; so would always keeping the branch name in the message
       `n/a` `confirmed` `checked 2026-09-05`
+
+- [ ] `workbench-boot-check.mjs` boots only the `scenario=*` / `view=*` routes, so eleven of the
+      eighteen `?switch=` values `mock-shim.ts` reads have never been booted by any check —
+      `planUsage`, `chatgpt`, `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`,
+      `student`, `voice`, `buddyHelper`. `scripts/ui-review/README.md` → Extending has told
+      every session to add a route for a new switch since the file was written; none of the
+      eleven has one. A switch that crashes the mock would surface as a failed screenshot in
+      whichever session next used it, not as a red check. Counted 2026-09-09 while adding the
+      `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
+      same instruction but cannot boot anything
+      `n/a` `confirmed` `checked 2026-09-09`
