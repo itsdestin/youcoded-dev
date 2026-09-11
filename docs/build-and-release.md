@@ -27,6 +27,13 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 2. Regenerate the landing-page demos: `bash scripts/ui-review/site-assets.sh <worktree>`, review `docs/gallery` + `docs/media`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.
 3. Tag `vX.Y.Z` in youcoded on master
 4. Both platform workflows trigger → single GitHub Release with all artifacts
+5. Confirm `youcoded-release.json` and `youcoded-release.json.sig` are on the release — without them
+   the in-app Update button refuses the release. If `Sign release manifest` warned instead, sign by
+   hand: download every desktop installer from the release into one folder, then from `youcoded/`
+   run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key
+   ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with
+   desktop/src/main/update-signing-key.ts` and `gh release upload vX.Y.Z <folder>/youcoded-release.json
+   <folder>/youcoded-release.json.sig`.
 
 ### Toolkit (youcoded-core)
 1. Bump `version` field in `youcoded-core/plugin.json` on master
@@ -118,6 +125,15 @@ gh release edit 1.3.0-beta.72 --repo itsdestin/youcoded --draft=false
 Build first, upload second: `--draft` keeps it invisible while ~1 GB uploads, and a draft
 creates no tag at all, so nothing can fire early.
 
+**Attach the signed manifest too (2026-09-11).** A dispatch from `master` also runs a `sign` job: it
+signs that beta's installers with `UPDATE_SIGNING_KEY` exactly as a tagged release is signed, fails
+if the result does not verify against the public key built into the app, and uploads
+`youcoded-release.json` + `.sig` as the `youcoded-release-manifest` artifact. A green `sign` job is
+the proof the release key works before a release depends on it. Attach both files to the
+pre-release so its downloads can be checked; the website ignores them, since it picks files by
+extension. Branch dispatches skip the job and produce three artifacts, not four.
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "youcoded-release-manifest"} -->
+
 **A pre-release does not touch anyone's installed app.** The in-app update checker reads
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
@@ -160,16 +176,28 @@ over the same LevelDB.
 **Betas number themselves (2026-08-15).** The workflow appends its own GitHub run counter to the
 `base` prefix (`1.3.0-beta` → `1.3.0-beta.71`, `.72`, …), so every beta sorts above the previous one
 and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
-share a name — or a hand-typed number sort *below* the installed one — is gone. `compareVersions`
-reads that fourth number, which is what makes the ordering work.
+share a name — or a hand-typed number sort *below* the installed one — is gone.
 
-**The `base` prefix is still load-bearing — read this before changing it.** `compareVersions`
-(`ipc-handlers.ts`) parses naively: `'1.2.4-beta'.split('.').map(Number)` → `Number('4-beta')` →
-`NaN` → `|| 0` → `[1,2,0]`, which is **lower** than a released `1.2.4`. The installed beta would
-then show "update available" and offer to downgrade itself to the release it's meant to be ahead
-of. **Bump the minor and suffix** (`1.3.0-beta` → `[1,3,0]`), never patch-suffix the current
-version. Corollary: once the real `1.3.0` ships it compares *equal* to `1.3.0-beta`, so the beta
-never prompts to update — that's fine, you re-dispatch to move forward.
+**How the app orders versions (2026-09-11).** One `compareVersions` (`update-manifest-verify.ts`)
+serves both the update check (`update-release-status.ts`) and the install gate, and it orders the
+semver way: X.Y.Z first, then a full release above every pre-release of it, then pre-release parts
+left to right, numbers as numbers — `1.2.4` < `1.3.0-beta.77` < `1.3.0-beta.78` < `1.3.0`. **So a beta
+is offered the full release it leads up to, and the gate installs it.** Before this the two halves
+disagreed and both were wrong: the check read `1.3.0-beta.76` as `[1,3,0,76]`, above `1.3.0`, and the
+gate dropped the suffix and refused `1.3.0` as not newer. **Every beta published before the fix —
+1.3.0-beta.76 and earlier — still behaves that way and will never offer 1.3.0 on its own**; those
+testers reinstall from the website once. The pill also waits until the release carries this
+computer's installer, because one tag starts the Android and desktop workflows separately and the
+release can exist for a while with only some of its files. v1.2.4 IS offered 1.3.0, but its Update
+button predates the allow-listed download host, fails, and offers "Open in browser instead".
+<!-- verify: {"test": "youcoded/desktop/tests/update-release-status.test.ts"} -->
+<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "readReleaseStatus"} -->
+
+**The `base` prefix is still load-bearing — read this before changing it.** The in-app check only
+ever looks at the newest *stable* release, so a beta must sort above it. `1.3.0-beta` does;
+`1.2.4-beta.N` sorts *below* a released `1.2.4`, so it would show "update available" and offer to
+downgrade itself to the release it is meant to be ahead of. **Bump the minor and suffix**, never
+patch-suffix the current version.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
 
 **Why the version step exists at all:** only `desktop-release.yml` patches `package.json` (from the

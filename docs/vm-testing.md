@@ -360,8 +360,8 @@ gh release download v1.2.4 -p 'YouCoded.Setup.*.exe' -D ~/vms/share
 ```
 
 The build stamps `<base>.<GitHub run number>` automatically (2026-08-15), so there is no number to
-type; the `base` prefix (default `1.3.0-beta`) **must sort above the latest release** — `compareVersions` parses naively, so
-`1.2.4-beta` → `[1,2,0]`, which is *lower* than `1.2.4` and the build offers to "update" itself back
+type; the `base` prefix (default `1.3.0-beta`) **must sort above the latest release** — `compareVersions` orders
+semver-style, so `1.2.4-beta.N` is *lower* than `1.2.4` and the build offers to "update" itself back
 to the release. Bump the minor and suffix (`1.3.0-beta`), don't patch the current version.
 
 **A VM is the right home for these builds.** Per `version-line.ts`, test builds install *over* a real
