@@ -273,8 +273,11 @@ seen-on is always n/a here.
       an empty review diff a reviewer was pointed at (both 2026-09-10), `$V boot` in the installer
       session. `.claude/hooks/glob-guard.py` already stops the zsh glob trap the same way; teach
       it (with `glob-guard.test.mjs` cases) to refuse `kill $VAR`, `set -- $VAR` and
-      `for x in $VAR` unless wrapped in `bash -c` or written `${=VAR}`
-      `n/a` `confirmed` `checked 2026-09-10`
+      `for x in $VAR` unless wrapped in `bash -c` or written `${=VAR}`.
+      RECURRED 2026-09-11 (site-scroll-motion): `set -- $spot` left a pixel comparison with no
+      arguments, every screenshot failed identically, and the loop printed "0 differing px" for
+      all six spots — a false proof of "identical" that was nearly reported to Destin
+      `n/a` `confirmed` `checked 2026-09-11`
 
 - [ ] Implementation plans keep prescribing tests that cannot fail, because the rule that forbids
       them never loads while a plan is being written. The 2026-09-10 freeze-fixes plan shipped five

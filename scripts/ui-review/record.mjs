@@ -32,7 +32,12 @@ const ZOOM = scene.zoom ?? 1;
 const CW = Math.round(W / ZOOM), CH = Math.round(H / ZOOM);
 // Scenes hardcode the workbench default (127.0.0.1:5473); swap it for whatever
 // port this worktree's workbench actually started on, same trick as shot.mjs's `wb()`.
-let url = scene.base.replace(/127\.0\.0\.1:\d+/, `127.0.0.1:${WB_PORT}`);
+// ONLY that port. WHY (2026-09-11): this used to rewrite ANY 127.0.0.1 port, so a
+// scene filming a page on its own server (site-hero-cycler.json on :8765; a site
+// scroll served on :8817) silently filmed Chrome's "refused to connect" page on
+// :5473 and died as "only 1 frames" — four clips and ~10 calls before a kept
+// frame showed the error page.
+let url = scene.base.replace(/127\.0\.0\.1:5473\b/, `127.0.0.1:${WB_PORT}`);
 // BASE_URL=<origin>: record the same scene against another server entirely (a static
 // page at two commits, a remote build) — the scene's path and query are kept, only the
 // origin changes. Used by record-pair.sh for review-deck CLIP steps.
