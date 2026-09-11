@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: the remote server's rolling PTY replay buffer does an O(4 MB) string copy per output chunk, with zero clients connected
 ---

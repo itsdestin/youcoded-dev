@@ -67,11 +67,6 @@ searched or resumed (chat-data).
       but can never be opened — refused as an orphan on every platform, never repaired
       `files-panel` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-dotdot-artifact-records-unrepaired.md
 
-- [ ] The per-project file-history record (`.youcoded/artifacts.json`) only ever grows — the
-      workspace's own went 4.4 MB → 6.4 MB in twelve days — and a long-lived project gets
-      slower to record and list files; two out-of-memory crashes were reachable through it
-      `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-sidecar-versions-unbounded.md
-
 - [ ] Files panel opens after a reply delivers a file but the file is not selected — the list
       shows instead; cosmetic, never data loss (one instance fixed 2026-08-25, the class remains)
       `files-panel` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-artifact-list-replace-orphans-selection.md

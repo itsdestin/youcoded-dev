@@ -120,19 +120,27 @@ cd youcoded/desktop && npm ci && npm run build
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
 
-# Both Android commands above DO run here (741 tests green, 2026-09-09) — Gradle
-# just needs ANDROID_HOME named, because the SDK is installed but not exported:
-#   JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
-#     ./gradlew test -x bundleWebUi
+# CHECK FIRST — whether the SDK is here has flipped twice in six days, and every
+# version of this comment has been true when written and wrong days later:
+#   ls $HOME/.android-sdk/platform-tools /usr/lib/jvm
+# absent 2026-09-04 -> present 2026-09-09 (741 tests green) -> absent 2026-09-10,
+# the last confirmed by an exhaustive `find / -name platform-tools`. Do not rewrite
+# this into an assertion either way; that flip-flop is what cost a session and a
+# subagent a false "unverifiable" each, and then cost the next session a false
+# "it works".
+#
+# WHEN PRESENT: ANDROID_HOME is still unset, so name it. Any JDK 21 works;
+# /opt/android-studio/jbr has outlived every /usr/lib/jvm one on this machine.
 # `-x bundleWebUi` skips the web-UI bundle, which would run npm against the
 # worktree's HARDLINKED node_modules and write through to the shared checkout.
-#
 # Read the result out of app/build/test-results/**/*.xml, not off the console:
 # a second run prints BUILD SUCCESSFUL with "103 tasks up-to-date" and executes
-# no tests at all. This block asserted for five days that Android could not be
-# built here — true when written, and by 2026-09-09 it had cost a session and a
-# subagent a false "unverifiable" each. Re-verify before trusting either claim.
-cd <worktree>/youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
+# no tests at all.
+#
+# WHEN ABSENT: Gradle stops at `SDK location not found` during CONFIGURATION,
+# before compiling. Report the Android half as unverified. Kotlin can still be
+# compiled file-by-file with the kotlinc inside /opt/android-studio.
+cd <worktree>/youcoded && JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME=$HOME/.android-sdk \
   ./gradlew test -x bundleWebUi
 ```
 

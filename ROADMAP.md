@@ -53,20 +53,20 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 33 | 4 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 30 | 4 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 11 | 4 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 16 | 1 | 6 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 28 | 7 | 0 | 3 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 26 | 11 | 4 | 2 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 25 | 8 | 0 | 9 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 27 | 11 | 4 | 2 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 27 | 6 | 0 | 3 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 8 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 2 | 5 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 15 | 5 | 2 | 5 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
-| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 0 | 0 |
+| [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,
