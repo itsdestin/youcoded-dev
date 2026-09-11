@@ -242,6 +242,13 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] A new worktree's libraries can be older than the ones CI installs, so a green local check may
+      not be the check CI runs. On 2026-09-11 a worktree held fourteen packages at a different
+      version than the lockfile — the React hooks lint plugin a whole major version behind, plus
+      knip, typescript-eslint, zod and the AI SDK. Filling in missing packages at startup does not
+      touch packages that are present but outdated. Found while fixing a missing one, 2026-09-11
+      `n/a` `needs-verify` `checked 2026-09-11`
+
 - [ ] The speed-test comparison can call a change KEEP even though the Projects or long-scrollback
       boots logged errors: `scripts/perf-lab/compare.mjs`'s `errorTotal` counts error lines from
       the workload and terminal boots but ignores `projectsBoot` and `scrollbackBoot`. Found while

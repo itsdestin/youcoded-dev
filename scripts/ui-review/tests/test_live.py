@@ -160,6 +160,30 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(self.data['steps'][0]['width'], PANE_WIDTH)
 
 
+class AnswerWordsTests(unittest.TestCase):
+    """A yes/no slide on a screen of the APP shows work that is built and running in the pane,
+    so its buttons are keep / revert. 2026-09-11: labels had been made overridable (2026-09-10)
+    but the default still fell to page.js's one-picture "Yes, build it", and the next live deck
+    shipped to its contact sheet with the brief wording anyway."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def _try_this(self, mutate):
+        return deck_data(spec_with(self.tmp, mutate), {})['steps'][1]
+
+    def test_a_screen_of_the_app_defaults_to_keep_or_revert(self):
+        st = self._try_this(lambda r: r['steps'][1].update({'live': {'app': 'default'}}))
+        self.assertEqual((st['yes'], st['no']), ('Yes, keep it', 'No, revert it'))
+
+    def test_an_authored_design_keeps_the_page_default(self):
+        st = self._try_this(lambda r: None)
+        self.assertEqual((st['yes'], st['no']), ('', ''))
+
+    def test_words_the_spec_names_still_win(self):
+        st = self._try_this(lambda r: r['steps'][1].update({'live': {'app': 'default'}, 'yes': 'Looks right'}))
+        self.assertEqual(st['yes'], 'Looks right')
+
+
 class ValidationTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
