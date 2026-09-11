@@ -75,6 +75,16 @@ them. Not here: the theme renders wrong (themes).
       Destin's call — candidate "No leaked secrets found"
       `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
+- [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
+      to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to
+      deleting the account), NOT the user's GitHub account, computer or files. Pre-launch review rated
+      it MEDIUM, and the exploitable pool is smallest at launch (the attack needs an existing account),
+      so it is deferred — but fix before the accounts/social features get real traction. Fix designed
+      (device-flow → loopback proof); needs a real phone and a staged Worker rollout. Exploit detail is
+      kept out of this public repo — full record in the private security folder
+      (~/system/youcoded-security-2026-09-10/, "#5").
+      `all` `parked` `checked 2026-09-10` `security`
+
 ## install
 
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows
