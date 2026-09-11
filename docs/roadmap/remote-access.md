@@ -246,14 +246,16 @@ Filing test: reaching the app from another device — the protocol, the browser 
       deck: a step count changes an approved screen
       `remote` `needs-verify` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
 
-- [ ] A phone gets the theme's colours but not its wallpaper or glass. The colour tokens now
-      cross the connection, so a paired phone matches the computer's palette — but the
-      background image and the blur behind panels stay behind, because a theme's wallpaper is
-      a file on the computer that owns the theme and its path means nothing in a phone
-      browser. Serving those assets over the connection is the fix; it needs the theme's
+- [ ] A phone gets the theme's colours but not its wallpaper, glass or mascot pictures. The colour
+      tokens now cross the connection, so a paired phone matches the computer's palette — but the
+      background image, the blur behind panels and a theme's mascot drawings stay behind, because
+      they are files on the computer that owns the theme and their paths mean nothing in a phone
+      browser. (Destin, 2026-09-11, a screenshot of "No Active Session" with a broken image where
+      Meadow Mist's mascot belongs; the phone now shows the app's default mascot instead of a
+      broken image.) Serving those assets over the connection is the fix; it needs the theme's
       asset paths rewritten to point at the host, and a judgement about how much a phone
       should download before the first screen appears
-      `remote` `confirmed` `checked 2026-09-10`
+      `remote` `confirmed` `checked 2026-09-11`
 
 - [ ] Opening the conversation browser over remote access sometimes shows nothing, and works
       on the second try. Destin, 2026-09-10: "oh wait it worked the second try for resume.
