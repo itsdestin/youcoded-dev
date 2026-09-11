@@ -16,7 +16,9 @@ seen-on is always n/a here.
       and restores private metadata without duplicating transcript text" — while macOS and
       Linux pass. Every merging session has to open the log to learn it is not theirs; two did
       so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
-      broken on Windows; nobody has looked
+      broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
+      installer (a failed test step skips packaging) — the installer-icon session needed a
+      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch
       `n/a` `needs-verify` `checked 2026-09-10` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
@@ -459,6 +461,14 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
+      `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
+      byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped
+      as youcoded#449). Three wrap-ups in a row reported it and left it, because deleting another
+      session's records is not a branch's call — so every session now reads a red audit and learns
+      to skim past it. Needs Destin's one-word OK to delete the two `docs/active/` copies
+      `n/a` `decision` `checked 2026-09-10`
+
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
       ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.

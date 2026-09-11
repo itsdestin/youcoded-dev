@@ -53,7 +53,7 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 33 | 3 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 33 | 4 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 11 | 4 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 16 | 1 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 28 | 7 | 0 | 3 |
@@ -64,7 +64,7 @@ Target: `v1.3`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 2 | 5 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 0 | 0 |
 

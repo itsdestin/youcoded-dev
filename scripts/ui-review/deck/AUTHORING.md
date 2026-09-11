@@ -85,7 +85,7 @@ Two runs; the rig boxes the pixels that differ.
 | `notice` | yes | the *You'll notice* card — what is different for him while using it |
 | `risk` | no | the *Risk* card. Keep it to one sentence |
 | `measured` | no | a number that proves it (must contain a digit) |
-| `highlight` | no | `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [x, y, w, h]}` |
+| `highlight` | no | `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
 
 He answers **Yes keep it / No revert it / Other**.
 

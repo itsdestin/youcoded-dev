@@ -60,6 +60,19 @@ class SpecTests(unittest.TestCase):
         s['steps'][0]['highlight'] = {'box': [1, 2, 3, 4]}; errors, warnings = validate(s)
         self.assertEqual(errors, []); self.assertTrue(any('hand-placed box' in w for w in warnings))
         s['steps'][0]['highlight'] = {'nothing': 1}; self.assertTrue(any('selector, text or box' in e for e in validate(s)[0]))
+    def test_box_is_percent_of_the_crop(self):
+        # WHY: page.js writes a box as left/top/width/height PERCENT. On 2026-09-10 pixel boxes
+        # ([12, 38, 110, 136] and [0, 196, 80, 76]) drew nothing or a stray frame, and built clean.
+        s = load_spec(write_spec(self.d, runs={"today": "/a"}))
+        for good in ([3, 15, 26, 52], [0, 0, 100, 100], [1.5, 8, 97.5, 88]):
+            s['steps'][0]['highlight'] = {'box': good}
+            self.assertEqual([e for e in validate(s)[0] if 'box' in e], [], good)
+        for bad in ([12, 38, 110, 136], [0, 196, 80, 76], [-1, 0, 10, 10], [50, 50, 60, 10], [0, 0, 0, 10]):
+            s['steps'][0]['highlight'] = {'box': bad}
+            self.assertTrue(any('PERCENT of the crop' in e for e in validate(s)[0]), bad)
+        for malformed in ([1, 2, 3], ['1', 2, 3, 4], [True, 2, 3, 4], 'x'):
+            s['steps'][0]['highlight'] = {'box': malformed}
+            self.assertTrue(any('four numbers' in e for e in validate(s)[0]), malformed)
     def test_whole_crop_box_highlights_nothing(self):
         # WHY: crops.py only measures coverage for "auto", so a hand-placed box was the way to
         # silence its "covers N% of the crop" warning. A real deck shipped [2, 2, 96, 96].

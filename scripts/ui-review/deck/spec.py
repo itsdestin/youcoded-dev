@@ -476,6 +476,22 @@ def _headline_and_words(st, sid, errors):
             errors.append(f'{sid}: {k} uses banned word "{w}"')
 
 
+def box_errors(box, sid):
+    """A hand-placed box is [left, top, width, height] in PERCENT of the crop.
+
+    WHY (2026-09-10): crops.py hands the four numbers to page.js unchanged, and page.js writes
+    them as left/top/width/height percentages. Pixel values drew the box off the picture or not
+    at all, with nothing refusing them; one review deck took two extra rebuilds to find that out.
+    """
+    if (not isinstance(box, list) or len(box) != 4
+            or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in box)):
+        return [f'{sid}: highlight box must be four numbers [left, top, width, height], in percent of the crop']
+    left, top, width, height = box
+    if min(box) < 0 or width <= 0 or height <= 0 or left + width > 100 or top + height > 100:
+        return [f'{sid}: highlight box {box} leaves the picture — box numbers are PERCENT of the crop (0-100), not pixels']
+    return []
+
+
 def validate(spec):
     """Returns (errors, warnings) as 'step-id: message' lines. Errors block crop/build."""
     errors, warnings, ids = [], [], set()
@@ -559,6 +575,7 @@ def validate(spec):
             elif 'box' in hl:
                 warnings.append(f'{sid}: hand-placed box — prefer a selector so the rig measures it')
                 _warn_whole_crop_box(hl, sid, warnings)
+                errors.extend(box_errors(hl['box'], sid))
         else:
             errors.append(f'{sid}: highlight must be "auto" or an object')
         th = st.get('themes')
