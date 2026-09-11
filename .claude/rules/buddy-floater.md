@@ -66,7 +66,7 @@ Geometry is pure (`shared/buddy-geometry.ts`); windows belong to `BuddyWindowMan
 **`BuddyOverlayManager` is DORMANT** — `chooseBuddyStrategy` returns `windows` everywhere,
 and on Wayland `setIgnoreMouseEvents` is a no-op that would make a screen-sized overlay an
 invisible click-eater. Reachable only via `YOUCODED_BUDDY_STRATEGY=overlay`. Read its rules
-first: `docs/active/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
+first: `docs/archive/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
 
 ## Linux Wayland
 **Counter-intuitive throughout, all measured — never re-derive one; read
