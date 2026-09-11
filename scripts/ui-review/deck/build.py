@@ -163,6 +163,13 @@ def _app_step(st):
     return is_app_pane(live) or any(is_app_pane(v) for v in st.get('variants') or [])
 
 
+def _live_words(st):
+    """The yes/no button words for a live step (see the WHY where _live_step uses it)."""
+    built = _app_step(st) and not st.get('variants')
+    return {'yes': st.get('yes') or ('Yes, keep it' if built else ''),
+            'no': st.get('no') or ('No, revert it' if built else '')}
+
+
 def _live_step(spec, st):
     """Panes onto the RUNNING app instead of pictures. One pane for a try-this, one per
     variant for a pick-one — the question shape is the existing one, only the picture is new.
@@ -199,7 +206,11 @@ def _live_step(spec, st):
         # falls to "Yes, build it" — the BRIEF wording, on a pane of the thing already built
         # and running in front of him. `_words_step` has always passed these through; a live
         # step silently dropped them, so the spec could ask for the right words and be ignored.
-        'yes': st.get('yes', ''), 'no': st.get('no', ''),
+        # 2026-09-11: passing them through was not enough — a spec that named no words still
+        # got the brief wording on a yes/no pane of the app itself. A screen of the app is the
+        # worktree's own build, so its default is keep / revert. An authored candidate is a
+        # sketch of something not built, so it keeps page.js's default.
+        **_live_words(st),
         'panes': panes,
         # A whole screen of the app needs room; an authored candidate is sized by the registry.
         'width': live.get('paneWidth', APP_PANE_WIDTH if _app_step(st) else pane_width(spec)),

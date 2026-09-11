@@ -1,0 +1,26 @@
+{
+  "title": "Resume preview — the top card gets out of the way",
+  "key": "resume-header-tuck-live",
+  "out": "resume-header-tuck.live.html",
+  "live": {
+    "worktree": "resume-preview-hide-header",
+    "offset": 420
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Resume",
+      "path": "Type /resume in the message box, then click any conversation in the list",
+      "headline": "Pick a conversation in Resume and scroll up — does the top card slide away, and return when you scroll down?",
+      "changed": "Scrolling up through the conversation on the right slides the card at the top out of sight. Scrolling down slides it back.",
+      "measured": "260 ms slide, after 6 px of scrolling in one direction",
+      "notice": "Pressing Load older at the top keeps the card hidden. Picking a different conversation always brings the card back.",
+      "risk": "The card holds the rename and tag buttons, so reaching them means scrolling down a little first. While its tag panel is open, the card stays put.",
+      "yes": "Yes, keep it",
+      "no": "No, revert it",
+      "live": {
+        "app": "default"
+      }
+    }
+  ]
+}
