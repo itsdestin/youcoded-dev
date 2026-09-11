@@ -186,6 +186,16 @@ the installer rename). That reverts the *code* only — it does **not** un-migra
 before installing a beta that's far ahead of your release (there's precedent: the 776 MB
 `claude-snapshot.tar.gz` taken 2026-07-12 before the two-device dogfood).
 
+**Every app, installer and Android launcher icon is generated — never hand-edit one.** The
+source is `youcoded/desktop/assets/icon-mascot.svg` (the waving sticker mascot Destin picked
+2026-09-10); `node scripts/build-icons.mjs` from `youcoded/` writes the desktop SVG/PNG/ICO/ICNS
+files and the Android `mipmap-*` layers from it (needs `rsvg-convert`, `magick`, and Python with
+Pillow). The design rounds and the one-off generator that made the mascot drawing are in
+`docs/active/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
+platform reads, because electron-builder and Android both fall back to a default icon silently.
+<!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "icon-mascot.svg"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/app-icons.test.ts"} -->
+
 **macOS ships two dmgs, and the x64 one is built on an arm64 runner.** `electron-builder.yml`
 targets both `x64` and `arm64`, but both workflows run on `macos-latest` (Apple Silicon) and cut
 both dmgs from a single `node_modules` with `npmRebuild: false`. Any dependency that ships its
