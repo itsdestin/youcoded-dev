@@ -523,10 +523,6 @@ seen-on is always n/a here.
       has not seen it in his own app — check whether a maximized-at-launch window avoids it)
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
-- [ ] The landing redesign's five clips exist only in the mockup folder; the site-assets script that
-      regenerates every loop does not know their names, so the next regeneration drops them
-      `n/a` `confirmed` `checked 2026-09-03`
-
 - [ ] The landing mockup's generator still carries the two phrases removed from the live page on
       2026-09-03 ("self-improving", "does real work"); the next rebuild-and-port reintroduces them
       `n/a` `confirmed` `checked 2026-09-03`
