@@ -18,8 +18,23 @@ seen-on is always n/a here.
       so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
       broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
       installer (a failed test step skips packaging) — the installer-icon session needed a
-      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch
-      `n/a` `needs-verify` `checked 2026-09-10` `regression`
+      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch.
+      **Much bigger than two tests, and two root causes are now known (2026-09-11, run
+      34658554351 at master `f774891d`): 12 test files / 17 tests fail on Windows** while Linux
+      is fully green (10,871 local) and macOS failed only one unrelated flake
+      (`shell-registry.test.ts`, "expected '' to be 'hello\n'"). (1) `remote-password-always-required.test.ts`
+      builds its scan root as `new URL('..', import.meta.url).pathname`, which on Windows is
+      `/D:/a/…`; joining that yields `D:\D:\a\…` and ENOENT. `fileURLToPath` is the fix, and
+      `remote-phone-findings.test.ts` carries the same pattern. (2) the rest are Windows-only test
+      assumptions, not product bugs on their face: `installer-artifact-names.test.ts` reads
+      `electron-builder.yml` and gets `null` for every value, `managed-workspace-setup.test.ts`
+      compares `C:\Users\runneradmin\…` against the 8.3 short form `C:\Users\RUNNER~1\…`, and
+      `remote-paths.test.ts` expects POSIX separators. A 13th failure that run was
+      `release-manifest-roundtrip.test.ts`, caused by `generate-release-manifest.mjs` comparing
+      `file://` + `process.argv[1]`; fixed in `e82d38a1`. **The important part: no published beta's
+      Windows installer has been tested.** beta.78's Windows log reads `Run tests: skipped`, and
+      beta.80 (2026-09-11) was dispatched the same way to get an installer at all
+      `n/a` `confirmed` `checked 2026-09-11` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access
