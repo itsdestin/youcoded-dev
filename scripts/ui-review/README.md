@@ -422,8 +422,18 @@ raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
 "model" speaks), `?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
 `?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls).
 
+Failure switches, for review shots of error states (added 2026-09-11):
+`?fail=<ns.method>[,<ns.method>…]` makes those channels REJECT from the very first call —
+`?fail=skills.list`, `?fail=tags.list`, nested `?fail=theme.marketplace.list`. Use it for any
+read that runs when the app starts (the skills drawer, the Library, the tag registry): a
+shot's `eval` only runs after boot, too late to fail a startup read. `skills.list` also feeds
+Marketplace and Library, so failing it fails all three — as in the real app.
+`?update=available` puts an available update (1.2.4 → 1.3.0) on `status:data`, which shows
+the status-bar version pill and lets its Update panel open; `update.download` answers a
+fake file and `update.getCachedDownload` answers nothing.
+
 Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron),
-Backup & Sync crashes on mock data, theme `localStorage` key is honoured (Electron ignores
+theme `localStorage` key is honoured (Electron ignores
 it and uses the profile's theme). Marketplace install counts/ratings come from the live
 worker even in the workbench. **`window.claude` is a Proxy: an `{"eval": …}` step that
 overrides ONE method (`window.claude.firstRun.getState = …`) is silently dropped and the
