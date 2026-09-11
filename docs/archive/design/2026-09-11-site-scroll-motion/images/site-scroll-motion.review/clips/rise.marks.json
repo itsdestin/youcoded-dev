@@ -1,0 +1,36 @@
+{
+ "fps": 30,
+ "width": 1600,
+ "height": 960,
+ "duration": 12.098,
+ "actions": [
+  {
+   "i": 0,
+   "kind": "eval",
+   "mark": null,
+   "start": -0.11,
+   "end": -0.109
+  },
+  {
+   "i": 1,
+   "kind": "hold",
+   "mark": null,
+   "start": -0.108,
+   "end": 0.591
+  },
+  {
+   "i": 2,
+   "kind": "evalFile",
+   "mark": null,
+   "start": 0.591,
+   "end": 10.076
+  },
+  {
+   "i": 3,
+   "kind": "hold",
+   "mark": null,
+   "start": 10.078,
+   "end": 11.685
+  }
+ ]
+}
