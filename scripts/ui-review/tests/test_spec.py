@@ -73,6 +73,21 @@ class SpecTests(unittest.TestCase):
         for malformed in ([1, 2, 3], ['1', 2, 3, 4], [True, 2, 3, 4], 'x'):
             s['steps'][0]['highlight'] = {'box': malformed}
             self.assertTrue(any('four numbers' in e for e in validate(s)[0]), malformed)
+    def test_whole_crop_box_highlights_nothing(self):
+        # WHY: crops.py only measures coverage for "auto", so a hand-placed box was the way to
+        # silence its "covers N% of the crop" warning. A real deck shipped [2, 2, 96, 96].
+        s = load_spec(write_spec(self.d, runs={"today": "/a"}))
+        s['steps'][0]['highlight'] = {'box': [2, 2, 96, 96]}
+        errors, warnings = validate(s)
+        self.assertEqual(errors, [])
+        self.assertTrue(any('highlights nothing' in w for w in warnings), warnings)
+        # a box that actually points at something stays quiet beyond the generic hand-placed note
+        s['steps'][0]['highlight'] = {'box': [10, 60, 40, 12]}
+        self.assertFalse(any('highlights nothing' in w for w in validate(s)[1]))
+        # a malformed box must not crash validation
+        for bad in ([1, 2, 3], 'nope', [1, 2, 'x', 4]):
+            s['steps'][0]['highlight'] = {'box': bad}
+            self.assertFalse(any('highlights nothing' in w for w in validate(s)[1]))
     def test_warnings_for_long_risk_and_numberless_measured(self):
         s = load_spec(write_spec(self.d)); s['steps'][0]['risk'] = ' '.join(['r'] * 41); s['steps'][0]['measured'] = 'a bit taller'
         _, warnings = validate(s); self.assertEqual(len(warnings), 2)

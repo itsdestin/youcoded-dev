@@ -1,0 +1,190 @@
+{
+  "title": "Development screens — contract",
+  "key": "error-states-development-contract",
+  "out": "error-states.contract.html",
+  "stage": "contract",
+  "themes": ["midnight"],
+  "branch": "session/error-states-development",
+  "sources": {
+    "error-states-development-questions": "error-states.questions.json",
+    "error-states-workspace-clarifications": "error-states.workspace-questions.json",
+    "error-states-development-review": "error-states.review.json",
+    "error-states-development-review-2": "error-states.review-2.json",
+    "error-states-development-review-3": "error-states.review-3.json",
+    "error-states-development-review-4": "error-states.review-4.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Settings → Development",
+      "path": "Contribute to YouCoded, and the bug and feature ticket screens",
+      "headline": "This is what done means for the two Development screens you approved.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The walkthrough of how contributing works lives inside Contribute to YouCoded, not on the Development list.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-2#R2-8"
+        },
+        {
+          "id": "R2",
+          "statement": "The walkthrough explains contributing in plain words: describe it, review the design, try it, run checks, then choose to propose it.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-questions#S-explainer"
+        },
+        {
+          "id": "R3",
+          "statement": "Nothing becomes a public proposal until you approve it at the last step of the walkthrough.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review#S-2"
+        },
+        {
+          "id": "R4",
+          "statement": "The walkthrough has no gray warning box under its five steps.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-2#R2-9",
+          "note": "just delete the wierd warning in the gray box. what is \"workspace details\"? \"set up separate workspace\"? why not jsut \"set up development workspace\"?"
+        },
+        {
+          "id": "R5",
+          "statement": "Contribute to YouCoded leads with one sentence about its purpose and one setup action.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-2#R2-13"
+        },
+        {
+          "id": "R6",
+          "statement": "The setup action is a full-width main button like the app's other dialogs, with no caption beneath it.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-4#R4-20"
+        },
+        {
+          "id": "R7",
+          "statement": "The same full-width button sits under the five walkthrough steps.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-4#R4-21"
+        },
+        {
+          "id": "R8",
+          "statement": "The Contribute screen matches the app's other settings pages: short text, clear headings, evenly sized buttons.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review#S-6",
+          "note": "this is also just ugly, too much text, poor visual heirarchy, weirdly sized buttons. doesn't match our other settings pages."
+        },
+        {
+          "id": "R9",
+          "statement": "Setup leaves an existing development folder untouched and explains that the new project is separate.",
+          "checkedBy": "live-app",
+          "threshold": "an existing folder is unchanged after setup runs in a dev instance",
+          "source": "error-states-workspace-clarifications#Q-existing-folder"
+        },
+        {
+          "id": "R10",
+          "statement": "You can start working in the new project on this device even when its backup has not connected.",
+          "checkedBy": "live-app",
+          "threshold": "setup finishes and the project opens with backup unavailable",
+          "source": "error-states-workspace-clarifications#Q-sync-unavailable"
+        },
+        {
+          "id": "R11",
+          "statement": "A ticket starts with the error and app version; recent logs are only included when you choose them.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-questions#Q-report-evidence"
+        },
+        {
+          "id": "R12",
+          "statement": "You can write, review and send a ticket without any AI help; asking an assistant is a separate choice.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-questions#Q-ai-help"
+        },
+        {
+          "id": "R13",
+          "statement": "You prepare and review a ticket in YouCoded, then finish attaching approved screenshots or files in GitHub.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-questions#Q-attachments"
+        },
+        {
+          "id": "R14",
+          "statement": "Before you attach a file, the screen says GitHub uploads it immediately, before you submit the ticket.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review#S-5"
+        },
+        {
+          "id": "R15",
+          "statement": "The ticket screen opens with an editable title and description, a public-sharing notice, and optional error details.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review#S-3"
+        },
+        {
+          "id": "R16",
+          "statement": "Both the bug tab and the feature tab sit under one heading: Submit a ticket.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-2#R2-10"
+        },
+        {
+          "id": "R17",
+          "statement": "Optional AI help appears only on the review step, behind a disclosure you open yourself.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-2#R2-12"
+        },
+        {
+          "id": "R18",
+          "statement": "The ticket's optional evidence sits in three plain rows under one heading, each explained by the (i) on its row.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-3#R3-18"
+        },
+        {
+          "id": "R19",
+          "statement": "The ticket screens use the same compact rows as other settings menus, without dense blocks of text.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review#S-4",
+          "note": "there's way too much poorly organized copy with unclear visual heirarchy. we need to simplify this and make it better match existing settings menus."
+        },
+        {
+          "id": "R20",
+          "statement": "Review ticket is a full-width main button that stays inactive until you have typed a title and description.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-4#R4-22"
+        },
+        {
+          "id": "R21",
+          "statement": "No preview or mockup captions appear anywhere; Submit is the main button with Back to draft beneath it.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-4#R4-23"
+        },
+        {
+          "id": "R22",
+          "statement": "Error details shows your real app version rather than a line saying nothing was collected.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review-4#R4-23"
+        },
+        {
+          "id": "R23",
+          "statement": "If sending a ticket fails, your title, description and chosen details stay in the draft and you can retry.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "error-states-development-review#S-7"
+        }
+      ]
+    }
+  ]
+}

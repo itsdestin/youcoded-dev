@@ -1,0 +1,20 @@
+{
+ "deck": "error-states-workspace-clarifications",
+ "started": "2026-09-09T04:10:11.799Z",
+ "submitted": "2026-09-09T04:11:55Z",
+ "cur": 0,
+ "answers": {
+  "Q-existing-folder": {
+   "v": "pick",
+   "pick": "leave-existing",
+   "seconds": 51,
+   "theme": "midnight"
+  },
+  "Q-sync-unavailable": {
+   "v": "pick",
+   "pick": "allow-local",
+   "seconds": 51,
+   "theme": "midnight"
+  }
+ }
+}

@@ -100,6 +100,14 @@ seen-on is always n/a here.
       once outside a full run: treat the file's shared timer setup as the suspect, not the
       assertions. It costs a re-run on every branch that trips it
       `desktop` `confirmed` `checked 2026-09-10` `regression`
+- [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
+      still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
+      one-second `setInterval` and a previous session already lifted the timeout 3s -> 8s with a
+      comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
+      in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
+      a signal the card emits, so the test waits on the transition rather than on the clock. Not
+      done here because it is another feature's test and a bad rewrite is worse than a slow one
+      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
@@ -298,7 +306,12 @@ seen-on is always n/a here.
       and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
       synthetic dispatch "proved" disabled controls receive pointer events when it proved
       nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
-      `--move-to x,y` on ui-probe would execute where a switch only asks
+      `--move-to x,y` on ui-probe would execute where a switch only asks.
+      **Recurred the same day (unselectable-chrome):** proving a text box still drag-selects
+      took TWO more throwaway CDP scripts (a mouse drag, then a rerun with
+      `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
+      the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
+      and focus emulation on by default, beside `--hover`
       `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
@@ -565,6 +578,15 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## release
+
+- [ ] Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from
+      brand-new accounts, copies Reddit bug reports and ideas into real roadmap entries, and
+      flips posts to Fixed or Planned himself. Set up automation for the repetitive parts, such as
+      turning new Bug Report and Feature Idea posts into roadmap entries, and marking a post Fixed
+      when its fix ships. Reddit stopped giving out new API access in November 2025, so the route
+      is Reddit's own Mod Tools Automations or a Community App, not a script with an API key.
+      Current setup is recorded in ~/Documents/youcoded-subreddit-setup.md
+      `n/a` `decision` `checked 2026-09-10`
 
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build

@@ -1,0 +1,157 @@
+{
+  "title": "The Resume window as a screen, not a dialog",
+  "key": "resume-browser-shell",
+  "out": "resume-shell.choice.html",
+  "images": "images/resume-shell.choice",
+  "runs": {
+    "today": "runs/shells"
+  },
+  "labels": {
+    "today": "Draft"
+  },
+  "themes": ["midnight"],
+  "crops": {
+    "shell-drawer": ["main", "shell-drawer", "1020x690+210+105"],
+    "shell-searchbar": ["main", "shell-searchbar", "1020x690+210+105"],
+    "shell-hero": ["main", "shell-hero", "1020x690+210+105"],
+    "shell-page": ["main", "shell-page", "1020x690+0+0"],
+    "page-collapsed": ["main", "page-collapsed", "1020x690+0+0"],
+    "drawer-empty": ["main", "drawer-empty", "1020x690+210+105"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Resume Session",
+      "path": "The sessions arrow at the top of the window, then Resume",
+      "headline": "Which shape should the Resume window take once it has two halves?",
+      "notice": "All four replace the layout from the first round — a list bolted to a transcript with two separate headers. Each of these borrows from the Session Files panel instead: one bar across the top, a quiet list column, and the reading area given the room.",
+      "risk": "Every one of these still falls back to today's single-column list below 640 px — a phone, or the remote browser on a small screen.",
+      "variants": [
+        {
+          "id": "drawer",
+          "label": "Files-panel chrome",
+          "crop": "shell-drawer",
+          "summary": "One bar across the top holding the conversation's name, a Resume button and a ✕ — the same bar, in the same order, as the Session Files panel. The list loses its cards and becomes plain rows on a recessed column, with an accent bar down the one you picked. A quiet line along the bottom carries the project, date and size.",
+          "measured": "340 px list, 1000 px window",
+          "risk": "The list rows are no longer cards, so the boundary between one conversation and the next is a hairline rather than a gap."
+        },
+        {
+          "id": "page",
+          "label": "Full screen",
+          "crop": "shell-page",
+          "summary": "The same chrome as the one above, but filling the window instead of floating in the middle of it, and the conversation set in a centred reading column rather than stretched edge to edge. The ≡ button hides the list when you want the whole width to read in.",
+          "measured": "760 px reading column",
+          "risk": "It covers the app completely — no chat behind it, no sense of what you were doing before you opened it."
+        },
+        {
+          "id": "searchbar",
+          "label": "Search across the top",
+          "crop": "shell-searchbar",
+          "summary": "Search gets the full width as a header, the way a page's search box does, with the filters underneath it in the list column. Each half below is only its own content, and the conversation's name and Resume sit at the top of the right half.",
+          "measured": "1000 px window",
+          "risk": "Search is the biggest thing on screen even when you are not searching, and the conversation's name reads as a smaller heading than the empty search field above it."
+        },
+        {
+          "id": "hero",
+          "label": "Conversation heading",
+          "crop": "shell-hero",
+          "summary": "The list keeps today's cards. The right half opens with a proper heading block for the conversation — name at page size, where it ran, when, how big, its tags, and Resume — and the transcript runs beneath it.",
+          "measured": "1000 px window",
+          "risk": "The two halves still have separate headers, which is the part of the first round that read as two things stuck together."
+        }
+      ]
+    },
+    {
+      "id": "D-1",
+      "surface": "Resume Session",
+      "path": "The ≡ button at the top left",
+      "crop": "page-collapsed",
+      "headline": "When should the list get out of the way so the conversation has the whole width?",
+      "notice": "The picture shows the list hidden. Only the two shells with a top bar can do this at all.",
+      "highlight": {
+        "box": [0.8, 4.0, 3.4, 5.6]
+      },
+      "options": [
+        {
+          "id": "button",
+          "label": "Only when you press ≡",
+          "pros": [
+            "Nothing moves unless you move it.",
+            "The list is where you left it every time you come back."
+          ],
+          "cons": [
+            "Most people will never find the button, so most people never get the wide read."
+          ],
+          "cost": "Nothing beyond the button.",
+          "summary": "What the draft does today."
+        },
+        {
+          "id": "onread",
+          "label": "It slides away when you start reading",
+          "pros": [
+            "The wide read happens without you having to know about it.",
+            "This is what the Session Files panel already does, so the two behave alike."
+          ],
+          "cons": [
+            "The list disappearing under your hands is a surprise the first time.",
+            "Clicking back to the list is an extra step you did not used to need."
+          ],
+          "cost": "The list has to notice when you scroll or click into the conversation.",
+          "recommended": true
+        },
+        {
+          "id": "never",
+          "label": "Never — the list always stays",
+          "pros": [
+            "One layout, always. Nothing to learn and nothing to undo."
+          ],
+          "cons": [
+            "A long line of code or a wide table in the conversation is cramped for good."
+          ],
+          "cost": "Drop the button."
+        }
+      ]
+    },
+    {
+      "id": "D-2",
+      "surface": "Resume Session",
+      "path": "The right half, before you have clicked anything",
+      "crop": "drawer-empty",
+      "headline": "What should the right half show in the moment before you have picked a conversation?",
+      "notice": "This is the state the window opens in, every single time.",
+      "highlight": {
+        "box": [40, 44, 55, 10]
+      },
+      "options": [
+        {
+          "id": "blank",
+          "label": "One line of text",
+          "pros": [
+            "Nothing is read off disk that you did not ask for.",
+            "The window opens the same way every time."
+          ],
+          "cons": [
+            "Half the window is empty at the moment you open it.",
+            "You have to click once before you learn anything you did not already know."
+          ],
+          "summary": "What the draft does today.",
+          "cost": "Nothing to build."
+        },
+        {
+          "id": "auto",
+          "label": "Open the most recent one",
+          "pros": [
+            "The window is useful the second it appears.",
+            "Getting back to what you were last working on takes no clicks at all."
+          ],
+          "cons": [
+            "A conversation is read every time you open the window, whether you wanted it or not.",
+            "The top row is always highlighted, which can read as 'already chosen'."
+          ],
+          "cost": "Reads one conversation on open.",
+          "recommended": true
+        }
+      ]
+    }
+  ]
+}

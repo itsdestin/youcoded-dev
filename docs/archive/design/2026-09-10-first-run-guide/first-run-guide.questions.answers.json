@@ -1,0 +1,98 @@
+{
+ "deck": "first-run-guide",
+ "started": "2026-09-10T21:46:24.572Z",
+ "submitted": "2026-09-10T21:53:48Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "corner-bubble",
+   "note": "but i think i do want to add a line to the system prompt or a new tool to better allow the assistant to view/explain it's own capabilities. \"If a user asks you how to do x or y or about how youcoded works or its settings menus, use *youcoded-info-desk* to answer. this can be roadmapped for now.",
+   "seconds": 66,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "after-setup-once",
+   "seconds": 66,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "explain-plus-button",
+   "note": "should also open some settings pages and projects view so the user can see what the assistant is talking about as it explains.",
+   "seconds": 66,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 66,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "wizard-card",
+   "note": "that reminds me. as part of this work, i also want to add some clearer warnings/popups the first time some things are done. like when a user enables skip permissions or full auto, or uses a small small model for the first time (like 9b-40b class) we should very cleary explain that these actions are more likely to result in damage and data loss, especially when used with less capable models. we should be honest without being scary, so a user just has pragmatic expectations. full auto and skip permissions should require a \"i understand\" checkbox with a continue button. just want to cover our asses for obvious liability issues",
+   "seconds": 66,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "buddy-main-window",
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "relevant-moment",
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "explainer-card",
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "first-time-version",
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "wrote",
+   "text": "r/youcoded",
+   "seconds": 13,
+   "theme": "midnight"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "help-page",
+   "seconds": 13,
+   "theme": "midnight"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "fresh-installs-only",
+   "seconds": 7,
+   "theme": "midnight"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "desktop-tour-shared-rest",
+   "seconds": 7,
+   "theme": "midnight"
+  }
+ }
+}

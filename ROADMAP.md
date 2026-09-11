@@ -49,20 +49,19 @@ Target: `v1.3`
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
 - native-harness: **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
 - other-features: **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
-- other-features: Nothing on first run tells a new user the assistant can change and delete files and that
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 33 | 3 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 61 | 11 | 3 | 22 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 32 | 15 | 1 | 6 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 33 | 4 | 10 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 11 | 4 | 23 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 16 | 1 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 28 | 7 | 0 | 3 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 11 | 4 | 2 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 26 | 11 | 4 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 25 | 8 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 6 | 2 | 6 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 6 | 2 | 5 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |

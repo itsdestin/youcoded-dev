@@ -332,8 +332,17 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   gets a *Clear filters* action; the message never appears twice on one screen.
 - Loading: `LoadingState` naming the thing ("Loading projects…"); quiet skeletons only
   where the spec protects them (Providers). Spinners are `fg-muted`.
-- Error: `ErrorState` `recoverable` (specific message + Retry) or `general` (two-action
-  card). Never a red sentence.
+- Error: `ErrorState` — a specific accurate message, or a general title + explainer. Retry,
+  Report bug and Diagnose with Claude are independent: a fault can need a retry AND a report,
+  so the old either/or split is gone (2026-09-10). An error with no action, or no text, is
+  refused by the type. Never a red sentence.
+- **G-28 Where a button sits**: an action is either **full width** of its container or on the
+  **right**. A single filled button at the bottom LEFT of a card or dialog is prohibited — it
+  reads as stray rather than as the thing to press. An action that belongs to one line of text
+  stays inline with that text, on its right. Destin, 2026-09-10, on the ticket-failure card:
+  *"put these retry buttons at the bottom right, not the bottom left… buttons should either be
+  full modal width or on the righthand side."* Guard: `tests/error-state.test.tsx`
+  ("puts its actions on the right").
 - Disabled: 50% opacity **plus** a reason within reach (tooltip or subtitle) — "Max" in the
   effort picker must say why.
 
@@ -401,4 +410,4 @@ G-9 button vocabulary (§3) · G-10 dialog header · G-11 dialog body/scroll · 
 field · G-13 welcome screen · G-14 chips · G-15 status bar · G-16 full-screen header ·
 G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header · G-21 menus · G-22 find-bar
 lane · G-23 attachment card · G-24 terminal backing floor · G-25 session row · G-26 session
-status pill · G-27 tags in a list row.
+status pill · G-27 tags in a list row · G-28 button placement (full width or right).

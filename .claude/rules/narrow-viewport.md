@@ -57,6 +57,13 @@ Inset the pane with **margins**, not by un-hiding spacers: `ChatView`'s
 `framed-shell` has two `.frame-edge` children, `TerminalRightSlot`'s clone has one,
 so the spacer route fixes chat view and leaves terminal view broken.
 
+**A test that renders a viewport-branching component must DECLARE the viewport.**
+jsdom has no `matchMedia`, and the hook reads its absence as wide — so such a test
+silently exercises whichever branch the environment hands it. Two ResumeBrowser
+suites had been pinning the narrow layout's behaviour from the wide branch, and
+only said so when the wide branch changed under them. Stub `matchMedia` with the
+`NARROW_VIEWPORT_QUERY` answer you mean. · guard: none — candidate.
+
 **Hover-only affordances have no touch path.** `opacity-0 group-hover:` never
 resolves on the bundle phones actually run. Add `.touch-reveal` (visible under
 `pointer: coarse`) and `.coarse-hit` for a 44px target. `title=` tooltips also
@@ -70,3 +77,9 @@ Remote-specific trap: the server sends `platform: 'desktop'` and the shim adopts
 `preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone browser. Feature-detect
 (`matchMedia('(pointer: coarse)')`) rather than trusting the platform string —
 see the open item in `docs/roadmap/remote-access.md` ("the remote shim overwrites the device platform").
+
+**`pointer: coarse` is the PRIMARY pointer only — false on a touchscreen laptop.**
+Chromium reports "fine" whenever any touchpad or mouse-like device exists (the Z13
+read `pointer: fine`, `any-pointer: coarse` with its cover detached, 2026-09-10).
+For "is the user touching right now", follow the last `pointerdown`'s `pointerType`. ·
+guard: `InputBar.test.tsx` ("idle unfocus vs the on-screen keyboard").

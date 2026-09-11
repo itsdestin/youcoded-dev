@@ -1,0 +1,26 @@
+{
+ "deck": "resume-preview-panel",
+ "started": "2026-09-10T12:43:58.289Z",
+ "submitted": null,
+ "cur": 0,
+ "answers": {
+  "B-1": {
+   "v": "skip",
+   "seconds": 77,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "skip",
+   "seconds": 63,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "skip",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

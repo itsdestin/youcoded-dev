@@ -1,0 +1,36 @@
+{
+  "title": "Contribution setup — two clarifications",
+  "key": "error-states-workspace-clarifications",
+  "out": "error-states.workspace-questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-existing-folder",
+      "words": true,
+      "surface": "Contribute to YouCoded",
+      "path": "Settings → Development → Contribute to YouCoded",
+      "headline": "If someone already has a development folder, should setup leave it alone?",
+      "today": "A person may already have a youcoded-dev folder containing unfinished changes. You have one yourself. New contributors usually have no such folder.",
+      "problem": "My earlier question mixed two things: setting up new contributors and moving an existing folder. Moving an existing folder can break sessions using its old location.",
+      "proposal": "For new contributors, create the managed project you requested. If an older development folder exists, leave it untouched and explain that the new managed project is separate. This work would not move or modify your current workspace.",
+      "options": [
+        {"id": "leave-existing", "label": "Leave the old folder alone", "pros": ["Existing work and running sessions stay untouched.", "New contributors still get the managed project."], "cons": ["Someone who already has a workspace may end up with two copies."], "recommended": true},
+        {"id": "ask-to-move", "label": "Offer to move it later", "pros": ["Someone with an existing workspace can choose to keep just one copy."], "cons": ["Moving requires separate checks and closing sessions using that folder.", "It makes setup more complicated for existing contributors."]}
+      ]
+    },
+    {
+      "id": "Q-sync-unavailable",
+      "words": true,
+      "surface": "Contribution project backup",
+      "path": "Installing the managed contribution project",
+      "headline": "If backup cannot connect, can the user start working on this device?",
+      "today": "Your requested setup will create a managed project and connect its private backup. Connecting can fail, for example when GitHub sign-in is needed.",
+      "problem": "The project files may be ready even though backup is not. We must not label it synced when nothing has been uploaded.",
+      "proposal": "Try to finish backup setup. If it fails, clearly say 'Saved on this device only' and offer to finish connecting. Decide whether opening the project should remain available meanwhile.",
+      "options": [
+        {"id": "allow-local", "label": "Let them start locally", "pros": ["A backup problem does not prevent contributing.", "The project keeps a visible backup warning and a way to retry."], "cons": ["Work stays on that device until backup succeeds."], "recommended": true},
+        {"id": "wait-for-backup", "label": "Wait for backup", "pros": ["The setup does not offer to start work until backup is ready."], "cons": ["A sign-in or connection problem blocks starting, even when the files are ready."]}
+      ]
+    }
+  ]
+}
