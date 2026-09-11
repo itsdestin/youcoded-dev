@@ -16,10 +16,9 @@ verify:
 # Narrow viewport (phone / remote browser)
 
 The renderer runs unchanged in a phone browser over remote access. Before the
-2026-07-20 pass it had **four disagreeing breakpoints** — a 700px CSS collapse,
-a 640px game button, 560px header labels, a 480px hard-pinned drawer — and
-nothing below 700px propagated into components' own Tailwind widths. Several
-features were not merely cramped but **unreachable**.
+2026-07-20 pass **four breakpoints disagreed** (700 CSS collapse / 640 game
+button / 560 header labels / 480 drawer) and nothing below 700px reached
+components' own Tailwind widths, leaving several features **unreachable**.
 
 **640px is the breakpoint; `useNarrowViewport()` is the source of truth.**
 Use the hook when the DOM structure branches, Tailwind's `max-sm:`/`sm:` when
@@ -70,13 +69,13 @@ resolves on the bundle phones actually run. Add `.touch-reveal` (visible under
 never fire on touch — don't put load-bearing copy there.
 
 **The chat/terminal toggle shows the view you'd switch TO** on narrow, not the
-current one. Reads correct either way in source; only obviously wrong in the
-running app. · guard: `NarrowViewToggle.test.tsx`.
+current one — reads correct either way in source, wrong only in the running app.
+· guard: `NarrowViewToggle.test.tsx`.
 
-Remote-specific trap: the server sends `platform: 'desktop'` and the shim adopts it unless
-`preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone browser. Feature-detect
-(`matchMedia('(pointer: coarse)')`) rather than trusting the platform string —
-see the open item in `docs/roadmap/remote-access.md` ("the remote shim overwrites the device platform").
+Remote trap: the server sends `platform: 'desktop'` and the shim adopts it unless
+`preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone
+browser. Feature-detect — but not with `pointer: coarse`, see below. ·
+`docs/roadmap/remote-access.md`.
 
 **`pointer: coarse` is the PRIMARY pointer only — false on a touchscreen laptop.**
 Chromium reports "fine" whenever any touchpad or mouse-like device exists (the Z13
