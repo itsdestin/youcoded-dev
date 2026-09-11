@@ -1,0 +1,116 @@
+{
+  "title": "youcoded.ai — the demo cards' slide, across the whole page",
+  "key": "site-scroll-motion",
+  "out": "site-scroll-motion.review.html",
+  "images": "images/site-scroll-motion.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "This version"
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "youcoded.ai",
+      "path": "From the last demo card to the bottom of the page. Scroll it yourself: http://127.0.0.1:8817/index.html?motion=stack",
+      "clip": {
+        "before": "images/site-scroll-motion.review/clips/today.webm",
+        "after": "images/site-scroll-motion.review/clips/stack.webm"
+      },
+      "headline": "Full card stack: each section is a glass card that stops under the top bar while the next one slides over it.",
+      "changed": "Every section below the demo, heading included, now sits in one glass card. It stops at the same line the demo cards stop on, and shrinks and fades as the next card covers it.",
+      "measured": "Page is about 765px longer (10,508 vs 9,743 at 1600x960); a covered card shrinks 3.5 hundredths",
+      "notice": "The whole page moves like the demo cards, so they no longer feel like a one-off. The FAQ, being taller than the window, stops with its bottom showing.",
+      "risk": "Section headings move inside the cards, which changes how the page looks at rest. More scrolling to reach the bottom. The top bar's About and FAQ links may land a little off."
+    },
+    {
+      "id": "M-2",
+      "surface": "youcoded.ai",
+      "path": "From the last demo card to the bottom of the page. Scroll it yourself: http://127.0.0.1:8817/index.html?motion=rise",
+      "clip": {
+        "before": "images/site-scroll-motion.review/clips/today.webm",
+        "after": "images/site-scroll-motion.review/clips/rise.webm"
+      },
+      "headline": "Rise and recede: nothing stops, but every piece floats up into place and shrinks away under the top bar.",
+      "changed": "Headings, panels, each account card and each FAQ question rise into place a beat faster than the page as they come up, and fade and shrink as they leave the top.",
+      "measured": "Rises 56px and grows from 94 hundredths; the four account cards arrive one after another",
+      "notice": "The page looks exactly as it does today once you stop scrolling. Nothing ever sits on top of what you are reading.",
+      "risk": "Subtler than the demo cards, so the two may not feel like one design. Text fades as it nears the top bar, a little earlier than you might finish reading it."
+    },
+    {
+      "id": "M-3",
+      "surface": "youcoded.ai",
+      "path": "From the last demo card to the bottom of the page. Scroll it yourself: http://127.0.0.1:8817/index.html?motion=mix",
+      "clip": {
+        "before": "images/site-scroll-motion.review/clips/today.webm",
+        "after": "images/site-scroll-motion.review/clips/mix.webm"
+      },
+      "headline": "Mix: About, Story and Get started stop as cards; Integrations, FAQ and Gallery rise and recede.",
+      "changed": "Story and Get started become cards that stop, and Get started slides over Story. When plain heading text comes next, the stopped card fades out before that text reaches it.",
+      "measured": "A card with plain text after it fades over 16 hundredths of the window, with extra space below it",
+      "notice": "The card moment happens in a few places rather than everywhere, and tall sections never stop.",
+      "risk": "Two kinds of motion on one page. Some cards are covered and some just fade on their own, which can read as inconsistent."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "youcoded.ai",
+      "path": "The whole page, below the demo cards",
+      "headline": "Which one should the site keep?",
+      "today": "Only the \"What you get\" demo cards slide over each other as you scroll. Everything else on the page just scrolls.",
+      "problem": "The demo cards feel premium and the rest of the page does not, so the page feels uneven.",
+      "proposal": "Keep one of the three versions for the whole page, on desktop. Phones stay as they are, and people who turn off animations get today's page.",
+      "options": [
+        {
+          "id": "stack",
+          "label": "Full card stack",
+          "pros": [
+            "Closest to the demo cards, so the page reads as one design.",
+            "The strongest premium moment, on every section."
+          ],
+          "cons": [
+            "Headings move inside cards, so the page looks different at rest.",
+            "More scrolling to reach the bottom."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "rise",
+          "label": "Rise and recede",
+          "pros": [
+            "The page looks exactly like today when you stop scrolling.",
+            "Nothing ever covers what you are reading."
+          ],
+          "cons": [
+            "Subtler; may not feel like the demo cards.",
+            "Text starts fading near the top bar."
+          ]
+        },
+        {
+          "id": "mix",
+          "label": "Mix of both",
+          "pros": [
+            "Card moments without making tall sections stop."
+          ],
+          "cons": [
+            "Two kinds of motion on one page can feel inconsistent.",
+            "Some cards fade without anything covering them."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "Keep today's page",
+          "pros": [
+            "No change and no risk."
+          ],
+          "cons": [
+            "The demo cards stay the only premium moment."
+          ]
+        }
+      ]
+    }
+  ]
+}
