@@ -56,6 +56,19 @@ Filing test: reaching the app from another device — the protocol, the browser 
       actually run, so choosing one saves a default that quietly does nothing there
       `settings/defaults` `remote` `confirmed` `checked 2026-09-07`
 
+- [ ] Destin 2026-09-11, on his phone during the batch 2/3 test: "i cant use native sessions";
+      "in the model selector i see native sessions when i search but clicking them resets the
+      selector to empty"; "a bunch of options are missing from the assistant settings screen
+      for me to add native providers and such". Not a regression: the app's own engine is
+      switched off for every remote client on master (`RuntimeBinding.tsx` `isNativeSupported`,
+      `remote-shim.ts` `native.supported: false`), which also hides the provider, local-model
+      and search-key pages. Two halves with different answers: starting and using native
+      sessions from a phone is a missing feature; adding provider keys from a phone is a
+      credential entering over the remote channel, which the milestone brief says to restrict
+      explicitly — a decision for Destin before building. The picker showing native models in
+      search and then clearing is its own bug either way: it offers what it cannot select
+      `model-picker` `remote` `confirmed` `checked 2026-09-11`
+
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
             Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
