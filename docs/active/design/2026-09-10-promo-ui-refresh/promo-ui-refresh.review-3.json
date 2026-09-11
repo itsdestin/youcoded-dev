@@ -21,7 +21,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row1-any-ai--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row1-any-ai--after.webm" },
       "headline": "The switch-to-Grok clip, shorter and a little larger.",
       "changed": "Replies play twice as fast and the clip moves on as soon as each reply lands, instead of waiting a fixed few seconds.",
-      "measured": "25.9 s → 18.1 s",
+      "measured": "24.5 s → 17.5 s",
       "notice": "Same three messages and the model switch, with less dead air."
     },
     {
@@ -32,7 +32,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row2-artifact-edit--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row2-artifact-edit--after.webm" },
       "headline": "The spreadsheet-to-chart clip, shorter and a little larger.",
       "changed": "The same steps — chart, open it, edit the colour, save — with the doubled pauses between them removed and a slightly narrower file panel so the zoomed chat still fits.",
-      "measured": "32.6 s → 17.1 s",
+      "measured": "29.5 s → 15.8 s",
       "notice": "The colour change still lands before the loop restarts."
     },
     {
@@ -43,7 +43,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/row2-does-things--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row2-does-things--after.webm" },
       "headline": "The morning-inbox clip, shorter and a little larger.",
       "changed": "All three approvals stay. Its reply is the longest, so it plays at two and a half times speed instead of two, and the pauses around each Yes are shorter.",
-      "measured": "32.9 s → 18.0 s",
+      "measured": "32.7 s → 17.6 s",
       "notice": "Every approval is still on screen.",
       "risk": "It is the longest clip and the one with the most reading; the reply text moves quickly."
     },
@@ -55,7 +55,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/row3-projects--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row3-projects--after.webm" },
       "headline": "The Project View clip, a little larger with the shared pauses.",
       "changed": "Same three steps with shorter pauses between them.",
-      "measured": "11.2 s → 9.3 s",
+      "measured": "11.8 s → 9.9 s",
       "notice": "Files and instructions are easier to read at the larger size."
     },
     {
@@ -66,7 +66,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/row4-organized--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row4-organized--after.webm" },
       "headline": "The tags clip, shorter and a little larger, still opening the conversation in the preview.",
       "changed": "Tag, search and preview are all kept; the pauses between them are shorter.",
-      "measured": "20.9 s → 15.7 s",
+      "measured": "21.7 s → 16.5 s",
       "notice": "The preview stays open long enough to see what it shows."
     },
     {
@@ -77,9 +77,9 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row5-follow--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row5-follow--after.webm" },
       "headline": "The computer half of the laptop-to-phone clip, shorter and a little larger.",
       "changed": "The reply plays twice as fast and the long wait after it is gone.",
-      "measured": "18.3 s → 9.5 s",
+      "measured": "15.5 s → 7.9 s",
       "notice": "The whole reply still shows before the loop restarts.",
-      "risk": "At under ten seconds it loops about twice as often as the others."
+      "risk": "At about eight seconds it loops about twice as often as the others."
     },
     {
       "id": "S-7",
@@ -89,7 +89,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row5-phone--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row5-phone--after.webm" },
       "headline": "The phone half, shortened the same way and still in step with the computer half.",
       "changed": "Same script and pauses as the computer half; the phone is not zoomed, because a larger phone screen would rearrange itself.",
-      "measured": "17.3 s → 8.9 s",
+      "measured": "18.0 s → 9.7 s",
       "notice": "Both halves still show the same moment together."
     },
     {
@@ -100,7 +100,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/row6-yours--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row6-yours--after.webm" },
       "headline": "The theme-builder clip, shorter and a little larger.",
       "changed": "The clip moves to the marketplace as soon as the reply finishes, instead of waiting six and a half seconds, and each marketplace step is quicker.",
-      "measured": "25.3 s → 16.0 s",
+      "measured": "26.1 s → 16.8 s",
       "notice": "It still ends on the Golden Sunbreak window."
     },
     {
@@ -111,7 +111,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row7-play--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row7-play--after.webm" },
       "headline": "The games clip, shorter and a little larger.",
       "changed": "The theme's drifting background is paused for this clip — it was slowing every click to about a second and a half. The opponent still thinks for a moment before each move.",
-      "measured": "26.1 s → 17.3 s",
+      "measured": "27.2 s → 18.3 s",
       "notice": "Clicks land promptly and the win arrives sooner.",
       "risk": "The background pattern is still there but does not drift in this clip."
     },
@@ -123,7 +123,7 @@
       "clip": { "before": "images/promo-ui-refresh.review-3/clips/row8-builders--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row8-builders--after.webm" },
       "headline": "The builders clip, a little larger with the shared pauses.",
       "changed": "Same steps into Assistant settings with shorter pauses.",
-      "measured": "13.0 s → 10.0 s",
+      "measured": "13.8 s → 10.7 s",
       "notice": "Settings text is easier to read at the larger size.",
       "risk": "The second conversation it opens shows a yellow notice about a small context window; that is the sample conversation, and it was in the earlier clip too."
     }
