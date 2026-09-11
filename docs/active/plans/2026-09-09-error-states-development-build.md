@@ -1,16 +1,22 @@
 ---
 status: active
 date: 2026-09-09
-supersedes-next-steps-in: docs/active/handoffs/2026-09-09-error-states-development-HANDOFF.md
 ---
 
 # Error states, reporting and contribution — the build plan
 
-**Read this first, then the handoff** (`docs/active/handoffs/2026-09-09-error-states-development-HANDOFF.md`)
-for evidence locations, and the audit
+**Units B and C are what remains. Start here, then the audit**
 (`docs/active/investigations/2026-09-08-error-states-development-audit.md`) for every finding
-cited by ID below. The design record with Destin's own words per decision is
-`docs/active/design/2026-09-08-error-states-development/ui-design-ledger.md`.
+cited by ID below — it is the evidence for unit B and is still active.
+
+Unit A's records are archived and read-only now:
+`docs/archive/design/2026-09-08-error-states-development/ui-design-ledger.md` has Destin's own
+words per decision, `…/error-states.contract.json` the signed definition of done, and
+`docs/archive/reviews/2026-09-10-*` the three acceptance reviews. The 2026-09-09 handoff is
+archived and its next-steps were already superseded by this file — do not act on it.
+
+Pick the work up with:
+`node scripts/workspace-start.mjs --session error-states-unit-b youcoded`
 
 ## UNIT A SHIPPED — 2026-09-11
 
