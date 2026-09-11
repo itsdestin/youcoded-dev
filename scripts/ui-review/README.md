@@ -252,6 +252,57 @@ real pixels. Actions address elements by selector, so nothing else in the scene 
 fourteen desktop `promo-*` scenes carry 1.35 (Destin, 2026-09-04: "hit the + a bit so it's easier
 for viewers to track what's happening"); the phone scenes stay at 1.
 
+## Editing copy on the site (youcoded.ai)
+
+Destin's "let me edit the website" request. `site-copy-editor.py` serves the **real
+`youcoded/docs/index.html`** — its own CSS, wallpaper, mascots, feature loops, gallery and the
+live embed iframe — with every text block editable in place. It writes the edits to disk so a
+session can apply them.
+
+```bash
+# background it and put the printed URL in chat as the last line of the turn
+python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html --out-dir /tmp/site-copy-edit
+```
+
+| | |
+|---|---|
+| **Edit** | click any text and type; the block outlines orange. Autosaves ~800ms after each keystroke. |
+| **Show editable** | outlines every editable block. |
+| **Submit edits** | writes `<out-dir>/edits.json` **and** `<out-dir>/edits.md` (old → new per block). Tell the session to read the `.md` and apply it. |
+| `build` instead of `serve` | writes `<out-dir>/index.html` without starting a server (for inspecting what gets marked). |
+
+**How it works, and the traps already paid for:**
+
+- It mirrors the site's sibling folders (`media/`, `gallery/`, `icons/`, `site/`, …) into
+  `--out-dir` by symlink so relative asset paths resolve. A lone HTML file served from `/tmp`
+  renders a page with no pictures — the first version did exactly that (2026-09-10).
+- Marking walks **opening tags only**. The earlier whole-element regex let a matched ancestor
+  (`<div class="origin-story">`) consume its nested blocks — that is what left the first FAQ
+  answer permanently uneditable — so nested prose is now all reachable.
+- Class matching is **substring by default, exact for `{"a"}`** — the FAQ answers use
+  `class="a"`, and as a substring that captures nearly every div on the page.
+- Markup inside `<script>`/`<style>`/comments is skipped, so the install-modal HTML that lives in
+  a JS string never becomes a phantom block.
+- The server is **threaded** (`ThreadingHTTPServer`): the first version was single-threaded and one
+  stalled connection froze the whole page mid-edit.
+- The toolbar sits **bottom-right** with `z-index: 2147483647` — the site's own centred docked
+  pill (`.dlfloat`, bottom:34px) collides with a centred toolbar.
+- All `<details>` panes are **forced open** in the editor only, so collapsed prose is visible and
+  clickable; the editor-only force-open is undone before text comparison so it is never recorded
+  as an edit.
+- Whitespace-only container blocks are **dropped on the page**, so no bare gap is clickable.
+
+Guarded by `tests/test_site_copy_editor.py` (marking, the exact-`a` rule, nesting, script
+skipping, the save output). **Not** the review deck and **not** `copy-preview.py` below: this is
+the whole real page for free-form copy editing, not a per-step approve/deny review.
+
+### Copy-preview and copy-review (earlier tools)
+
+`copy-preview.py` builds a page-shaped preview of **proposed** copy (old text on a toggle, per-row
+loop verdicts) — for reviewing a rewrite before it lands. `copy-review.py` is the older
+old/new table, rejected 2026-08-28 as "chunked up and displayed all kinds of weird". Neither
+serves the live page; reach for `site-copy-editor.py` when Destin wants to edit the site himself.
+
 ## Hero mascots, the tab icon, and the share image (2026-09-04)
 
 The last three hand-made assets on `youcoded/docs/index.html` are generated now. All three
@@ -389,14 +440,14 @@ They are `unittest` and `node --test`, not pytest, and they live outside a packa
 start directory has to be the top level too. `-t .` fails with *"Start directory is not
 importable"*, which is why nothing ran them for months:
 
-The five binary-free suites, which is what CI runs:
+The six binary-free suites, which is what CI runs:
 
 <!-- runnable -->
 ```bash
-cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract
+cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract test_site_copy_editor
 ```
 
-Everything (132 tests, ~20s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
+Everything (241 tests, ~15s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
 
 <!-- runnable: local -->
 ```bash
@@ -413,7 +464,7 @@ months.
 
 | Suite | Needs |
 |---|---|
-| `test_spec`, `test_tokens`, `test_live`, `test_words`, `test_contract` | nothing — **these five run in `workspace-ci.yml`** |
+| `test_spec`, `test_tokens`, `test_live`, `test_words`, `test_contract`, `test_site_copy_editor` | nothing — **these six run in `workspace-ci.yml`** |
 | `probe-ports.test.sh`, `cdp-ports.test.sh` | `python3` and `ss` (they hold real ports) |
 | `test_boxes`, `test_build`, `test_crops`, `test_cli`, `test_serve` | `magick` (they cut real crops) |
 | `deck-render.test.mjs`, `coverage.test.mjs`, `shot-measure.test.mjs` | Chrome; the clip fixture also needs `ffmpeg` |
