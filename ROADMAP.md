@@ -54,14 +54,14 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 98 | 33 | 2 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 33 | 3 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 61 | 11 | 3 | 22 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 32 | 15 | 1 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 28 | 7 | 0 | 3 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 26 | 11 | 4 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 25 | 8 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 10 | 1 | 4 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 6 | 2 | 6 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 18 | 6 | 3 | 6 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
