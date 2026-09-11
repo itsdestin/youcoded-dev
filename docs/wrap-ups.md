@@ -415,3 +415,11 @@ recurred — the repetition is the data.
 - Destin restated "every error state offers an action", written in no doc → applied: `docs/error-message-standards.md`
 - The docs audit read red on the branch only because sub-repos resolve from a main checkout 172 commits behind → dropped: the audit already prints that note
 - deleted/merged: batch 1's deck folder and code review moved to `docs/archive/`; the two throwaway "before" worktrees and their branches removed
+
+## 2026-09-11 — youcoded.ai: the demo cards' scroll feel across the whole page (session/landing-scroll-motion, youcoded + workspace)
+- `record.mjs` rewrote ANY 127.0.0.1 port in a scene to the workbench's :5473, so four clips of a static page served on :8817 filmed Chrome's "refused to connect" page and died as "only 1 frames — did the page paint?"; `site-hero-cycler.json` (:8765) had the same exposure → applied: only :5473 is rewritten, WHY in `scripts/ui-review/record.mjs`  [2 failed recording runs, ~10 calls; found only by keeping a frame]
+- RECURRED (4th session): zsh no-word-split — `set -- $spot` made a before/after pixel comparison print "0 differing px" for every spot from shots that had all failed, a false proof nearly reported to Destin → roadmap: the existing `dev-workspace.md` item now records it; prose has failed four times, the glob-guard refusal is the fix  [1 rerun]
+- A parallel probe run photographed pages before their web fonts landed, so identical code compared as 21k–73k differing pixels → applied: `scripts/ui-probe.mjs` header, wait on `document.fonts.status === 'loaded'` before comparing  [2 extra comparison runs]
+- Asked in a question menu to pick between three DESCRIBED scroll motions, Destin said "confused, think i need to see these"; with the three built he picked in one line → applied: `~/system/me/preferences.md`
+- Live review slides only show the app, so reviewing site motion meant a clip deck with hand-named files plus a local server link → dropped: existing tools covered it once the port bug was fixed; worked example (scenes + `scroll-tour.js`) in `docs/archive/design/2026-09-11-site-scroll-motion/`
+- deleted/merged: the stack and mix prototypes and the `?motion=` switch (100 lines out of `docs/index.html`); review deck archived

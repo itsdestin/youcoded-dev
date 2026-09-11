@@ -65,6 +65,12 @@
 //     having run, not a broken page.
 //   * The gallery and the media loops are lazy — they load on scroll, so they read
 //     `naturalWidth 0` / `readyState 0` in a probe that never scrolls.
+//   * Web fonts can land AFTER `readyState === 'complete'` and the intro's end,
+//     most often when several probes run at once. The fallback font wraps text
+//     differently, so a pixel comparison of two shots reads as a layout change
+//     (measured 2026-09-11: 21k-73k "different" pixels between identical pages,
+//     0-297 once both waited). Add `document.fonts.status === 'loaded'` to --wait
+//     before comparing shots.
 //
 // Examples:
 //   node scripts/ui-probe.mjs http://127.0.0.1:8791/deck.html \
