@@ -24,6 +24,14 @@ When you genuinely can't surface a specific cause at that layer, use a *general*
 
 A general message is acceptable. A general message that *invents a plausible-sounding cause* is not.
 
+### Every error state offers an action
+
+Destin, 2026-09-11: a message with nothing to press is a dead end. Every error state carries at
+least one of **Retry**, **Report bug** or **Diagnose** — Retry when retrying can help, Report bug
+wherever the cause is not known, both when both are true. `<ErrorState>` refuses an error with
+no action by type (`tests/error-state.test.tsx`), and its buttons sit in one fixed order with
+Retry last, at the right-hand end.
+
 ## The same rule, applied to what the app SAYS IT KNOWS
 
 Errors were the first place this bit, but the rule is not about errors — it is about
