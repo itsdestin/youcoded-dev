@@ -67,9 +67,14 @@ they were wired in, and the doc did not follow. Corrected 2026-09-03 against the
 
 ```bash
 node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--history-repeats 5] \
-  [--workload-repeats 3] [--only startup,history,workload,shots] [--force-build] \
+  [--workload-repeats 3] [--terminal-repeats 3] [--only startup,history,workload,shots] [--force-build] \
   [--label <text>] [--out perf-reports/] [--max-minutes 45] [--dry-run]
 ```
+
+(`--help` lists every `--*-repeats` flag.) **A default-run baseline taken before the
+`terminal` phase existed (before 2026-09-10) fails CLOSED against a newer default run**
+on its three `terminal.*` PRIMARY paths — compare.mjs judges a phase only one report ran
+as unjudgeable, by design. Re-take the baseline, or compare with `--only` phases both ran.
 
 It builds the **packaged** app, boots it repeatedly against a throwaway fixture HOME
 under a virtual X display, and writes **one JSON report** (plus a Markdown summary)
@@ -404,15 +409,31 @@ plus the app's own counter `window.__terminalRegistry.atlasClears` read around e
 terminals share (TerminalView's heal), so each switch re-rasterises every terminal.
 **Look first at `atlasClearsPerSwitch`** — about 1 proves the heal engaged; well below
 means the timings do not describe it, well above means resize heals fire on switches
-too (`lateClears` counts those). Then `switchPaintedMedianMs` (click -> the other
-terminal on screen, next to the workload's chat-view switch), `longtaskMaxMs` and
-`ipc.totalStallMs`. `renderer` on each run says whether xterm got WebGL or the DOM
-fallback, where the clear is only a repaint.
+too. `clearsOutsideSlots` counts clears the settled totals saw but no switch's
+one-second slot did (the few-ms gaps between slots and the settle after the last), so a
+non-zero value means a clear landed after its switch's slot closed. Then
+`switchPaintedMedianMs` (click -> the other terminal on screen, next to the workload's
+chat-view switch), `longtaskMaxMs` and `ipc.totalStallMs`. `renderer` on each run says
+whether xterm got WebGL or the DOM fallback, where the clear is only a repaint.
+
+**How the IPC stall is measured:** each switch owns a one-second slot. The IPC probe
+(a ping every 50 ms) is installed at the slot's start and read just before the next
+switch, so the time between switches is probed, not just the click. A ping still in
+flight when a slot closes counts its wait so far beyond the ping interval
+(`ipc.openStalls` counts those slots), and a slot whose reading failed is counted in
+`ipc.readErrors` and named in a warning — the total is then a floor. Still unprobed: the
+few ms of CDP round trips between slots, and each slot's first 50 ms (probe-ipc's first
+ping fires one interval after install).
 
 **Glyph fill:** the terminal shows the fake `claude`'s PTY, not a shell, so there is no
-`seq`. `fake-claude.cjs` answers exactly one typed line, `perf-lab-glyphs <n>`, with n
-lines of ASCII plus Claude Code's box-drawing glyphs in seven colours (bold every fifth
-line) and a sentinel the scenario waits for. Every other line is echoed as before.
+`seq`. `fake-claude.cjs` answers one typed line, `perf-lab-glyphs <n>` (surrounding
+whitespace ignored, anything else on the line is not), with n lines of ASCII plus Claude
+Code's box-drawing glyphs in seven colours (bold every fifth line) and a sentinel the
+scenario waits for. Every other line is echoed as before.
+
+**A default run now depends on this phase working.** Like every other phase (projects
+included), a throw here aborts the whole run with exit 2, and `scrollback`, which runs
+after it, never runs. Shake it down with `--only terminal` before trusting a default run.
 
 **Blind to, by construction:** the GPU re-upload cost — the rig is llvmpipe under Xvfb,
 so WebGL may not initialise and the clear is then only a DOM repaint; wallpaper themes;

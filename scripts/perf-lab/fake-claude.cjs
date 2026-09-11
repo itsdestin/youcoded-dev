@@ -104,8 +104,9 @@ process.stdout.write(`\x1b[2Jfake claude ${sessionId.slice(0, 8)} ready\r\n> `);
 // status symbols Claude Code's TUI draws, in seven colours with bold every fifth
 // line (the atlas keys each glyph by colour and weight too).
 //
-// Only an exact whole line matching the command does anything, so every other
-// scenario — which never types it — sees the byte-for-byte echo it always had.
+// Only a line that is the command and nothing else — leading/trailing whitespace
+// is ignored (the line is trimmed), any other text on it is not — does anything, so
+// every other scenario, which never types it, sees the byte-for-byte echo it always had.
 // The final line is a fixed sentinel the scenario waits for instead of sleeping.
 const GLYPH_CMD = /^perf-lab-glyphs (\d{1,5})$/;
 const GLYPH_ASCII = Array.from({ length: 95 }, (_, i) => String.fromCharCode(32 + i)).join('');

@@ -105,11 +105,17 @@ export const PRIMARY = [
   // switchPaintedMedianMs is the A/B target for throttling that heal: click ->
   // the other terminal on screen. longtaskMaxMs is the worst renderer freeze
   // across the 40 switches — the other number the throttle decision reads.
-  // ipc.totalStallMs guards the app-wide half: a change that moved the cost off
-  // the renderer and onto the main process would improve the first two and show
-  // up only here. NOT gated: atlasClearsPerSwitch (a mechanism count that proves
-  // the heal engaged, validated by run.mjs) and switchPaintedP95Ms (one switch's
-  // tail on a software renderer; reported beside the median instead).
+  // ipc.totalStallMs is main-process unresponsiveness beyond the 50 ms ping
+  // interval, summed over the 40 one-second switch slots: the IPC probe is
+  // installed at each slot's start and read just before the next switch, so the
+  // time between switches is probed too, and a ping still in flight at a slot's
+  // close counts its wait so far (not the few ms of CDP round trips between slots,
+  // nor each slot's first ping interval). A change that moved the cost off the
+  // renderer and onto the main process would improve the first two and show up
+  // only here. NOT gated: atlasClearsPerSwitch (a mechanism count that proves the
+  // heal engaged, validated by run.mjs) and switchPaintedP95Ms — the throttle
+  // decision (Task 5B's gate) reads the median and the worst long task, not the
+  // p95, so the p95 is reported beside the median instead of gated.
   'terminal.median.switchPaintedMedianMs',
   'terminal.median.longtaskMaxMs',
   'terminal.median.ipc.totalStallMs',

@@ -1,8 +1,8 @@
 // scripts/perf-lab/scenario-terminal.mjs — the terminal-view journey: the six
 // workload sessions open, the four Claude Code sessions switched to TERMINAL view
 // and each filled with ~2,000 lines of mixed glyphs, then 40 switches between
-// them in terminal view — both probes over every switch, and the app's own
-// glyph-atlas clear counter read around each one.
+// them in terminal view — both probes over every switch's one-second slot, and the
+// app's own glyph-atlas clear counter read around each slot.
 //
 // WHY THIS SCENARIO EXISTS
 // Destin's freeze reports (2026-08-27) are app-wide stalls, and the terminal view
@@ -23,8 +23,10 @@
 //  2. `FitAddon.fit()` per size change, and the debounced RESIZE heal that rides
 //     it (flushResize). Switching between sessions that are all in terminal view
 //     should not change any terminal's size, so a per-switch clear count well
-//     ABOVE 1 means resize heals are firing on switches too — `lateClears` counts
-//     clears that landed after a switch had already painted (the 120 ms debounce).
+//     ABOVE 1 means resize heals are firing on switches too. `clearsOutsideSlots`
+//     counts clears the settled totals saw but no switch's one-second slot did —
+//     the few-ms CDP gaps between slots and the settle after the last one — so a
+//     non-zero value means a clear arrived after its switch's slot had closed.
 //  3. The DOM-renderer fallback path. If WebGL did not initialise, xterm renders
 //     through DOM rows and clearTextureAtlas() is only a full repaint (core
 //     optional-chains the atlas call away). `renderer` records which path this
@@ -33,8 +35,8 @@
 // GLYPH COVERAGE — HOW, AND WHY NOT `seq 1 2000`
 // The terminal view shows each session's Claude PTY, which under the rig is
 // fake-claude.cjs, not a shell — there is nowhere to run `seq`. The least
-// invasive fill: fake-claude recognises ONE exact typed line,
-// `perf-lab-glyphs <n>`, and prints n lines of printable ASCII plus the
+// invasive fill: fake-claude recognises ONE typed line (surrounding whitespace
+// ignored), `perf-lab-glyphs <n>`, and prints n lines of printable ASCII plus the
 // box-drawing/status glyphs Claude Code's TUI draws, in seven colours with bold
 // every fifth line (the atlas keys a glyph by colour and weight too). The scenario
 // types that line into each PTY with window.claude.session.sendInput and waits for
@@ -78,8 +80,13 @@ export const glyphCommand = (n = GLYPH_LINES) => `perf-lab-glyphs ${n}`;
 export const GLYPH_SENTINEL = (n = GLYPH_LINES) => `[perf-lab] glyph fill complete: ${n} lines`;
 /** Switches in terminal view per repeat. 40 is the workload's count, so p95 has >= 20 samples. */
 export const SWITCH_COUNT = 40;
-/** Due-time spacing between switches — the workload spaces its 40 over 40 s, so each switch has its own window. */
+/**
+ * One switch per slot. The workload spaces its 40 over 40 s, so each switch has its
+ * own window; here each slot is also the IPC probe's window (see the switch loop).
+ */
 export const SWITCH_EVERY_MS = 1000;
+/** IPC ping interval inside a slot: ~20 pings per one-second slot. */
+export const IPC_PING_MS = 50;
 // How long the atlas counter must hold still before a reading counts as settled.
 // Above the resize heal's 120 ms debounce, with margin for a busy software renderer.
 const CLEARS_QUIET_MS = 1000;
@@ -186,15 +193,48 @@ async function settledClears(cdp, warnings, label) {
 // ---------------------------------------------------------------------------
 
 /**
- * The run's headline numbers from its per-switch rows.
+ * The IPC fields one slot's row keeps, from a readIpcStallProbe() result.
+ *
+ * WHY `openStallMs` and `rejectedPings` are kept (review, 2026-09-10): the first
+ * version dropped both. `openStallMs` is a ping still outstanding when the slot
+ * closed — the probe is stopped right after the read, so that ping's round trip is
+ * NEVER recorded as a sample; dropping it means a main process blocked across a
+ * slot boundary reads as a responsive app. `rejectedPings` are round trips that came
+ * back as errors, not replies, and would otherwise pass as fast pings.
+ * `everyMs` travels with the row so the open stall can be counted the same way
+ * probe-ipc counts a finished one (only the part beyond the ping interval).
+ * A failed read keeps its error so summariseSwitches can count it.
+ */
+export function ipcRow(read, everyMs) {
+  if (!read || read.error) return { error: read?.error ?? 'no IPC probe reading' };
+  return {
+    everyMs,
+    pings: read.pings,
+    totalStallMs: read.totalStallMs,
+    maxMs: read.maxMs,
+    over250ms: read.over250ms,
+    over1000ms: read.over1000ms,
+    openStallMs: typeof read.openStallMs === 'number' ? read.openStallMs : null,
+    rejectedPings: read.rejectedPings ?? 0,
+    missedTicks: read.missedTicks ?? 0,
+  };
+}
+
+/**
+ * The run's headline numbers from its per-slot rows.
  *
  * Only VERIFIED switches (the target terminal actually became the visible one)
  * feed the timings — a switch that landed on nothing is fast precisely because
  * nothing happened (the workload's 2026-08-27 fix). `atlasClearsPerSwitch` is the
  * TOTAL clear count across the switch window (settled reading minus the reading
- * before the first switch) over verified switches, so a clear that lands after a
- * switch painted — the 120 ms resize-heal debounce — is still counted; the
- * immediate per-row counts are kept to show how many landed late.
+ * before the first switch) over verified switches; each row's `clears` covers its
+ * own slot, and `clearsOutsideSlots` is what the rows did not see.
+ *
+ * IPC: summed over every slot whose probe reading came back. A ping still in flight
+ * at a slot's close counts its wait so far beyond the ping interval — exactly how
+ * probe-ipc counts a finished ping — and toward maxMs and the over-threshold counts.
+ * Slots whose reading errored are COUNTED (`ipc.readErrors`), never silently
+ * dropped, because a total over fewer slots is a floor.
  * Every field is null, never 0, when it was not measured.
  */
 export function summariseSwitches({ switches, clearsBefore, clearsAfter }) {
@@ -202,18 +242,23 @@ export function summariseSwitches({ switches, clearsBefore, clearsAfter }) {
   const painted = ok.map((s) => s.ms).filter((n) => typeof n === 'number' && Number.isFinite(n));
   const haveClears = typeof clearsBefore === 'number' && typeof clearsAfter === 'number';
   const clearsTotal = haveClears ? clearsAfter - clearsBefore : null;
-  const immediate = switches.map((s) => s.clears).filter((n) => typeof n === 'number');
-  const immediateSum = immediate.length ? immediate.reduce((a, b) => a + b, 0) : null;
+  const inSlots = switches.map((s) => s.clears).filter((n) => typeof n === 'number');
+  const inSlotsSum = inSlots.length ? inSlots.reduce((a, b) => a + b, 0) : null;
   const ipc = switches.reduce((acc, s) => {
     const i = s.ipc;
-    if (!i || i.error) return acc;
+    if (!i || i.error) { acc.readErrors++; return acc; }
+    const open = typeof i.openStallMs === 'number' ? i.openStallMs : null;
+    const openBeyond = open === null ? 0 : Math.max(0, open - (i.everyMs ?? 0));
     acc.pings += i.pings ?? 0;
-    acc.totalStallMs += i.totalStallMs ?? 0;
-    acc.over250ms += i.over250ms ?? 0;
-    acc.over1000ms += i.over1000ms ?? 0;
-    acc.maxMs = Math.max(acc.maxMs ?? 0, i.maxMs ?? 0);
+    acc.totalStallMs += (i.totalStallMs ?? 0) + openBeyond;
+    acc.over250ms += (i.over250ms ?? 0) + (open !== null && open > 250 ? 1 : 0);
+    acc.over1000ms += (i.over1000ms ?? 0) + (open !== null && open > 1000 ? 1 : 0);
+    const slotMax = Math.max(i.maxMs ?? 0, open ?? 0);
+    acc.maxMs = acc.maxMs === null ? slotMax : Math.max(acc.maxMs, slotMax);
+    if (openBeyond > 0) acc.openStalls++;
+    acc.rejectedPings += i.rejectedPings ?? 0;
     return acc;
-  }, { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: null });
+  }, { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: null, openStalls: 0, rejectedPings: 0, readErrors: 0 });
   const verdicts = {};
   for (const s of switches) { const v = s.stall?.verdict ?? 'unknown'; verdicts[v] = (verdicts[v] ?? 0) + 1; }
   return {
@@ -225,7 +270,7 @@ export function summariseSwitches({ switches, clearsBefore, clearsAfter }) {
     switchPaintedP95Ms: painted.length ? p95(painted) : null,
     atlasClearsTotal: clearsTotal,
     atlasClearsPerSwitch: haveClears && ok.length ? round1(clearsTotal / ok.length) : null,
-    lateClears: haveClears && immediateSum !== null ? clearsTotal - immediateSum : null,
+    clearsOutsideSlots: haveClears && inSlotsSum !== null ? clearsTotal - inSlotsSum : null,
     ipc,
     stallVerdicts: verdicts,
   };
@@ -238,12 +283,14 @@ export function summariseSwitches({ switches, clearsBefore, clearsAfter }) {
 export const NUMERIC_PATHS = [
   // The clock a user feels: click -> the other terminal on screen.
   'switchPaintedMedianMs', 'switchPaintedP95Ms',
-  // Suspect 1's engagement check, and suspect 2's tell (clears landing late).
-  'atlasClearsPerSwitch', 'atlasClearsTotal', 'lateClears',
+  // Suspect 1's engagement check, and suspect 2's tell (clears outside every slot).
+  'atlasClearsPerSwitch', 'atlasClearsTotal', 'clearsOutsideSlots',
   // Renderer cost across the switch window.
   'longtaskMaxMs', 'longtaskTotalMs', 'longtaskCount', 'frameGapMaxMs',
-  // Main-process cost, summed over the switch steps; pings proves the probe replied.
+  // Main-process cost, summed over the slots; pings proves the probe replied, and
+  // readErrors says how many slots the sum is missing.
   'ipc.totalStallMs', 'ipc.maxMs', 'ipc.over250ms', 'ipc.pings',
+  'ipc.openStalls', 'ipc.rejectedPings', 'ipc.readErrors',
   'verifiedSwitches', 'failedSwitches',
 ];
 
@@ -268,7 +315,7 @@ export const MEASURES = {
   configuration: [
     'the workload\'s six sessions (4 Claude Code — huge / medium / small resumed plus an empty control — and 2 native), opened with the same openJourneySessions',
     'the four Claude Code sessions each switched to terminal view (Ctrl+`) and filled with 2,000 lines of mixed glyphs (printable ASCII + TUI box-drawing, seven colours, bold every fifth line) printed by fake-claude on the typed line `perf-lab-glyphs 2000`',
-    '40 switches between those four in terminal view, one per second; the two native sessions stay open in chat view and are never switched to (no PTY, and a switch through one flips every terminal\'s inset)',
+    '40 switches between those four in terminal view, one per one-second slot; the two native sessions stay open in chat view and are never switched to (no PTY, and a switch through one flips every terminal\'s inset)',
     'every repeat is its OWN boot with a freshly built fixture, like the workload',
     'stock theme, no wallpaper',
   ],
@@ -276,13 +323,14 @@ export const MEASURES = {
     switchPaintedMedianMs: 'click the session pill -> that session\'s terminal is the visible one AND two animation frames have painted (the atlas clear\'s full refresh lands in the first of them)',
     atlasClearsPerSwitch: 'window.__terminalRegistry.atlasClears after the switch window settled (counter still for 1 s) minus before the first switch, over verified switches; ~1 means one hide->show heal per switch',
     longtaskMaxMs: 'the renderer long-task probe over the marked switch window only (setup and fill excluded)',
-    'ipc.totalStallMs': 'the IPC ping probe, installed per switch step and summed over the 40 steps',
+    'ipc.totalStallMs': 'the IPC ping probe (every 50 ms) installed at the START of each switch\'s one-second slot and read just before the NEXT switch (the last slot is held open for its full second), so the time between switches is covered; a ping still in flight at a slot\'s close counts its wait so far beyond the ping interval; summed over the 40 slots, with slots whose reading failed counted in ipc.readErrors',
   },
   blindTo: [
     'GPU cost: the rig runs on llvmpipe under Xvfb (report.machine.renderer), so WebGL may not initialise and clearTextureAtlas() then only forces a full DOM repaint — the GPU texture re-upload cost on real hardware is NOT measured here; `renderer` on each run says which path it got',
     'wallpaper themes: the stock theme has no wallpaper, so the terminal\'s see-through container and backing layer are not in play',
     'switching through native sessions in terminal view, and toggling chat <-> terminal (both resize every terminal and fire the resize heal)',
     'the transient GPU texture corruption (sleep/resume, VRAM reclaim) the heal still defends against — whether glyphs stay correct needs a human on real hardware',
+    'the few milliseconds between one slot\'s probe read and the next slot\'s install (CDP round trips), and the first ping interval of each slot (probe-ipc sends its first ping one interval after install)',
   ],
 };
 
@@ -290,7 +338,8 @@ export const MEASURES = {
 // The scenario
 // ---------------------------------------------------------------------------
 
-async function switchStep(cdp, i, idx, name, sessionCount, { pingMs = 50 } = {}) {
+/** Open one switch's slot: atlas reading, probe mark, IPC probe installed, then the click. */
+async function openSlot(cdp, i, idx, name, sessionCount, pingMs) {
   const label = `terminal:switch-${i}`;
   const clearsPre = await call(cdp, 'h.atlasClears()');
   await mark(cdp, `${label}:start`);
@@ -301,19 +350,27 @@ async function switchStep(cdp, i, idx, name, sessionCount, { pingMs = 50 } = {})
   } catch (err) {
     r = { ok: false, mode: 'none', reason: err.message };
   }
-  await mark(cdp, `${label}:end`);
-  let ipc = null;
-  try { ipc = await readIpcStallProbe(cdp); } catch (err) { ipc = { error: err.message }; }
+  return { i, idx, name, label, clearsPre, r };
+}
+
+/** Close a slot: read + stop the IPC probe FIRST (so no later work lands in it), then the renderer window and the atlas. */
+async function closeSlot(cdp, slot, pingMs) {
+  let read;
+  try { read = await readIpcStallProbe(cdp); } catch (err) { read = { error: err.message }; }
   try { await stopIpcStallProbe(cdp); } catch { /* page gone */ }
+  await mark(cdp, `${slot.label}:end`);
   let probe = null;
-  try { probe = await readProbeWindow(cdp, `${label}:start`, `${label}:end`); } catch (err) { probe = { error: err.message }; }
+  try { probe = await readProbeWindow(cdp, `${slot.label}:start`, `${slot.label}:end`); } catch (err) { probe = { error: err.message }; }
   const clearsPost = await call(cdp, 'h.atlasClears()');
+  const ipc = ipcRow(read, pingMs);
+  const { r } = slot;
   return {
-    i, idx, name, ok: !!r.ok, mode: r.mode, ms: r.ms ?? null, reason: r.reason ?? null,
-    clears: typeof clearsPre === 'number' && typeof clearsPost === 'number' ? clearsPost - clearsPre : null,
-    ipc: ipc && !ipc.error ? { pings: ipc.pings, totalStallMs: ipc.totalStallMs, maxMs: ipc.maxMs, over250ms: ipc.over250ms, over1000ms: ipc.over1000ms } : ipc,
+    i: slot.i, idx: slot.idx, name: slot.name, ok: !!r.ok, mode: r.mode, ms: r.ms ?? null, reason: r.reason ?? null,
+    slotMs: probe?.windowMs ?? null,
+    clears: typeof slot.clearsPre === 'number' && typeof clearsPost === 'number' ? clearsPost - slot.clearsPre : null,
+    ipc,
     longtaskMaxMs: probe?.longtaskMaxMs ?? null,
-    stall: attributeStall(ipc, probe),
+    stall: attributeStall(read && !read.error ? read : null, probe),
   };
 }
 
@@ -323,7 +380,7 @@ async function switchStep(cdp, i, idx, name, sessionCount, { pingMs = 50 } = {})
  * @param {object} [opts]
  */
 export async function runTerminalScenario(app, fixture, {
-  switchCount = SWITCH_COUNT, switchEveryMs = SWITCH_EVERY_MS, glyphLines = GLYPH_LINES,
+  switchCount = SWITCH_COUNT, switchEveryMs = SWITCH_EVERY_MS, glyphLines = GLYPH_LINES, pingMs = IPC_PING_MS,
 } = {}) {
   const cdp = app.cdp;
   const ids = [];
@@ -376,17 +433,31 @@ export async function runTerminalScenario(app, fixture, {
       warnings.push('terminal: this build has no window.__terminalRegistry.atlasClears (it predates the instrument), so atlas clears per switch are UNMEASURED — the timings cannot be tied to the heal');
     }
 
-    // ── 40 switches in terminal view, spaced like the workload's ─────────
+    // ── 40 switches in terminal view, one per slot ───────────────────────
+    // WHY each slot is held open until the NEXT switch is due (review fix,
+    // 2026-09-10). The first version read and stopped the IPC probe the moment the
+    // in-page switch returned — a few frames after the click. probe-ipc's first ping
+    // fires one interval after install, so each step got 0–2 samples, the ~900 ms
+    // between switches was never probed, and a ping still in flight was thrown away.
+    // With a 1 ms zero-baseline floor in compare.mjs, one late ping could REJECT a
+    // good change. Now the probe is installed at the slot's start and read just
+    // before the next switch (the last slot is held its full second too), so the
+    // slots tile the switch window and a pending ping is counted (ipcRow).
     await mark(cdp, 'terminal:switches:start');
     const switches = [];
     const startedAt = Date.now();
     for (let i = 0; i < switchCount; i++) {
-      const wait = startedAt + i * switchEveryMs - Date.now();
-      if (wait > 0) await sleep(wait);
+      const due = startedAt + i * switchEveryMs - Date.now();
+      if (due > 0) await sleep(due);
       // Setup ended on the LAST PTY session and this starts at the first, so
       // switch 0 always moves; every later switch goes to the next session.
       const idx = ptyIdx[i % ptyIdx.length];
-      switches.push(await switchStep(cdp, i, idx, names[idx], ids.length));
+      const slot = await openSlot(cdp, i, idx, names[idx], ids.length, pingMs);
+      // A switch that overran its slot closes at once, and the next slot opens
+      // straight after — the slots stay contiguous either way.
+      const close = startedAt + (i + 1) * switchEveryMs - Date.now();
+      if (close > 0) await sleep(close);
+      switches.push(await closeSlot(cdp, slot, pingMs));
     }
     await mark(cdp, 'terminal:switches:end');
     const clearsAfter = clearsBefore === null ? null : await settledClears(cdp, warnings, 'post-switch');
@@ -402,11 +473,18 @@ export async function runTerminalScenario(app, fixture, {
     if (summary.menuSwitches > 0) {
       warnings.push(`terminal: ${summary.menuSwitches} switches went through the overflow menu (a pill did not fit), which also pays for opening the menu`);
     }
+    if (summary.ipc.readErrors > 0) {
+      const first = switches.find((s) => s.ipc?.error)?.ipc?.error;
+      warnings.push(`terminal: ${summary.ipc.readErrors}/${summary.switchCount} switch slots lost their IPC probe reading (first: ${first}) — ipc.totalStallMs is summed over the remaining slots only, so it is a FLOOR`);
+    }
+    if (summary.ipc.rejectedPings > 0) {
+      warnings.push(`terminal: ${summary.ipc.rejectedPings} IPC pings came back as rejections, not replies — those round trips say nothing about responsiveness`);
+    }
     if (typeof summary.atlasClearsPerSwitch === 'number' && summary.atlasClearsPerSwitch < 0.5) {
       warnings.push(`terminal: only ${summary.atlasClearsPerSwitch} atlas clears per switch — the hide->show heal did NOT engage on most switches, so these timings do not describe its cost`);
     }
     if (typeof summary.atlasClearsPerSwitch === 'number' && summary.atlasClearsPerSwitch > 1.5) {
-      warnings.push(`terminal: ${summary.atlasClearsPerSwitch} atlas clears per switch (${summary.lateClears} landed after the switch painted) — more than the one hide->show heal, so resize heals (suspect 2) are firing on switches too`);
+      warnings.push(`terminal: ${summary.atlasClearsPerSwitch} atlas clears per switch (${summary.clearsOutsideSlots} of them outside every switch's slot) — more than the one hide->show heal, so resize heals (suspect 2) are firing on switches too`);
     }
 
     return {

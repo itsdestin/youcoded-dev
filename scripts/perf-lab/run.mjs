@@ -608,9 +608,11 @@ export function renderMarkdown(report, stem) {
     lines.push(
       `| **terminal.switch, other terminal on screen** (median of ${runN}; ${n(t.verifiedSwitches, 'verified switches')} each; xterm renderer ${renderers}) | **${n(t.switchPaintedMedianMs, 'ms')} / ${n(t.switchPaintedP95Ms, 'ms')} p95** |`,
       // The engagement check travels with the timing — see validateReport.
-      `| terminal atlas clears per switch | ${n(t.atlasClearsPerSwitch)} (${n(t.atlasClearsTotal, 'clears')} total, ${n(t.lateClears, 'after the switch painted')}) |`,
+      `| terminal atlas clears per switch | ${n(t.atlasClearsPerSwitch)} (${n(t.atlasClearsTotal, 'clears')} total, ${n(t.clearsOutsideSlots, 'outside every switch\'s one-second slot')}) |`,
       `| terminal long tasks across the switches | max ${n(t.longtaskMaxMs, 'ms')}, total ${n(t.longtaskTotalMs, 'ms')}, worst frame gap ${n(t.frameGapMaxMs, 'ms')} |`,
-      `| terminal IPC stall (sum over switches) | ${n(t.ipc?.totalStallMs, 'ms')}, max ${n(t.ipc?.maxMs, 'ms')}, from ${n(t.ipc?.pings, 'probe replies')} |`,
+      // Pending pings and lost readings sit beside the total: a sum over fewer slots
+      // is a floor, and a reader must be able to see that without opening the JSON.
+      `| terminal IPC stall (sum over the one-second switch slots) | ${n(t.ipc?.totalStallMs, 'ms')}, max ${n(t.ipc?.maxMs, 'ms')}, from ${n(t.ipc?.pings, 'probe replies')}; ${n(t.ipc?.openStalls, 'slots closed on a pending ping')}, ${n(t.ipc?.readErrors, 'slots lost their reading')} |`,
     );
   }
 
@@ -1445,7 +1447,7 @@ async function main(argv) {
         await withBoot(build, fixture, async (app) => {
           const r = await runTerminalScenario(app, fixture);
           truns.push(r);
-          log(`terminal ${i + 1}/${cfg.terminalRepeats}: switch painted median ${r.switchPaintedMedianMs}ms (p95 ${r.switchPaintedP95Ms}ms, ${r.verifiedSwitches}/${r.switchCount} verified, renderer ${r.renderer}), atlas clears/switch ${r.atlasClearsPerSwitch} (${r.lateClears} late), long task max ${r.longtaskMaxMs}ms, ipc stall ${r.ipc?.totalStallMs}ms from ${r.ipc?.pings} pings`);
+          log(`terminal ${i + 1}/${cfg.terminalRepeats}: switch painted median ${r.switchPaintedMedianMs}ms (p95 ${r.switchPaintedP95Ms}ms, ${r.verifiedSwitches}/${r.switchCount} verified, renderer ${r.renderer}), atlas clears/switch ${r.atlasClearsPerSwitch} (${r.clearsOutsideSlots} outside the slots), long task max ${r.longtaskMaxMs}ms, ipc stall ${r.ipc?.totalStallMs}ms from ${r.ipc?.pings} pings (${r.ipc?.readErrors} slots lost their reading)`);
           for (const w of r.warnings ?? []) log(`terminal warning: ${w}`);
           report.errors.terminalBoots.push(readErrorLines(fixture, stem, `terminal-${i + 1}`));
         });

@@ -216,8 +216,8 @@ const terminalRun = (i) => ({
   glyphs: { lines: 2000, terminals: 4, fillMs: [900, 910, 905, 920] },
   switchCount: 40, verifiedSwitches: 40, failedSwitches: 0, menuSwitches: 0,
   switchPaintedMedianMs: 140 + i, switchPaintedP95Ms: 260 + i,
-  atlasClearsTotal: 40, atlasClearsPerSwitch: 1, lateClears: 0,
-  ipc: { pings: 700 + i, totalStallMs: 30 + i, over250ms: 0, over1000ms: 0, maxMs: 180 + i },
+  atlasClearsTotal: 40, atlasClearsPerSwitch: 1, clearsOutsideSlots: 0,
+  ipc: { pings: 780 + i, totalStallMs: 30 + i, over250ms: 0, over1000ms: 0, maxMs: 180 + i, openStalls: 0, rejectedPings: 0, readErrors: 0 },
   stallVerdicts: { none: 40 },
   longtaskMaxMs: 120 + i, longtaskTotalMs: 900 + i, longtaskCount: 12 + i, frameGapMaxMs: 150 + i,
   switches: [],
@@ -252,7 +252,7 @@ function scrollbackRun(i) {
   };
 }
 
-function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3, scrollbackRepeats = 3 } = {}) {
+function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3, terminalRepeats = 3, scrollbackRepeats = 3 } = {}) {
   const cold = Array.from({ length: runs }, (_, i) => startupRun(i));
   const wruns = Array.from({ length: workloadRepeats }, (_, i) => workloadRun(i));
   const report = emptyReport({ label: 'contract', timestamp: '2026-08-26T09:30:00.000Z' });
@@ -282,7 +282,7 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   const pruns = Array.from({ length: artifactRepeats }, (_, i) => projectsRun(i));
   report.projects = buildProjectsSection(pruns, projectsMedian);
   // Through run.mjs's REAL builder and the scenario's REAL medianRun, like projects.
-  const truns = Array.from({ length: workloadRepeats }, (_, i) => terminalRun(i));
+  const truns = Array.from({ length: terminalRepeats }, (_, i) => terminalRun(i));
   report.terminal = buildTerminalSection(truns, terminalMedian);
   report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES, scrollback: SCROLL_MEASURES };
   report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, terminalBoots: [0, 0, 0], scrollbackBoot: 0 };
