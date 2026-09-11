@@ -62,12 +62,21 @@ Filing test: reaching the app from another device — the protocol, the browser 
       for me to add native providers and such". Not a regression: the app's own engine is
       switched off for every remote client on master (`RuntimeBinding.tsx` `isNativeSupported`,
       `remote-shim.ts` `native.supported: false`), which also hides the provider, local-model
-      and search-key pages. Two halves with different answers: starting and using native
-      sessions from a phone is a missing feature; adding provider keys from a phone is a
-      credential entering over the remote channel, which the milestone brief says to restrict
-      explicitly — a decision for Destin before building. The picker showing native models in
-      search and then clearing is its own bug either way: it offers what it cannot select
-      `model-picker` `remote` `confirmed` `checked 2026-09-11`
+      and search-key pages. The switch is a leftover: `native.supported` was added hard-false
+      everywhere on 2026-07-10 ("until Phase 1"), the desktop was later turned on, the remote
+      shim never was. The host already answers 56 of the 67 native/provider/engine channels
+      over remote, including `provider:set-key` and `search:set-key` (only the remote-access
+      password, config, rename and unpair are refused as host administration); the 11 it does
+      not are mostly live events (`engine:status-changed`, `engine:install-progress`,
+      `engine:models-changed`, `models:download-progress`, `specialists:event`,
+      `native:shell-event`, `native:model-state`) plus `native:clear`, `native:compact`,
+      `native:invoke-skill`, `native:session-context`. The picker showing native models in
+      search and then clearing goes away with the switch.
+      Destin 2026-09-11: "native sessions should work fine in remote access, no? remote access
+      should be identical to the desktop?" — then "we will do it after": its own batch, right
+      after batches 2/3, starting at technical design. Still open for him: whether a phone may
+      add or change provider keys (identical to desktop) or keys stay computer-only
+      `model-picker` `remote` `decision` `checked 2026-09-11`
 
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
