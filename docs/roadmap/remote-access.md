@@ -1,6 +1,19 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] Some chat cards can sit in a different place on the phone than on the computer. A "Usage
+      limit reached" style prompt card is drawn by each device when it notices the prompt on its
+      own copy of the terminal, so each places it where it happened to notice; and the "Switched
+      to Opus" and clear dividers exist only on the device where the command was typed. Found by
+      the 2026-09-11 message-order investigation (proved with the real chat logic); the bigger
+      causes it found were fixed that day
+      `chat` `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] On the phone, files attached to a message in a YouCoded-runtime (native) session are dropped:
+      only the text reaches the computer. Spotted by the 2026-09-11 message-order investigation;
+      belongs with the native-sessions-on-a-phone batch
+      `remote` `needs-verify` `checked 2026-09-11`
+
 - [ ] After a phone's connection drops and comes back, some screens can still stay empty or wrong
       until they are reopened: the model list, the native provider list in the new-session form,
       Project View's projects and conversations, the Themes tab in the marketplace, the Remote

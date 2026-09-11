@@ -155,3 +155,27 @@ app) in dev-workspace.md, the wasted reconnect re-asks in remote-access.md.
   (`tests/remote-shim-overlap.test.ts`)
 
 Recheck on the phone after the dev window restart.
+
+## After the reliability fixes (2026-09-11, afternoon)
+
+- Destin: "each sign in seems to create a new device entry in the remote access menu? even though
+  all the same device". The dev store held four "Chrome on Android" rows for one phone (created
+  08:14, 08:15 and 10:51 local, plus one from 09-10): each was a password sign-in after the phone
+  had lost its key, which the old page did on any failed sign-in. Fixed `c8e8deb8`: the browser
+  remembers its row per computer apart from its key and names it on a password sign-in; the host
+  gives that row a new key (`RemoteDeviceStore.pairAgain`). Unpaired rows are not reused; the host
+  still never matches by name. The four existing rows stay until removed on the computer.
+- The dev log showed the phone as an "older page" after the restart: it had not reloaded since
+  before the reliability fixes, so none had reached it. Destin asked to reload.
+- Destin: "still having issues with messages not always appearing in the same order". An
+  investigator proved four causes with the real parser and reducer, checked here against the 400
+  newest local transcripts:
+  1. A message typed while Claude is working is recorded ONLY as a `queued_command` attachment
+     (84 found; 82 typed by a person, 2 sent by another Claude Code session; 1,218 background-task
+     notices). The watcher skipped it: the typing device kept the bubble pinned to the bottom, the
+     other device never showed it. — fixed (watcher + Kotlin mirror read typed queued messages)
+  2. Slash commands strip to nothing, so never confirmed. — fixed (read as a command that starts no
+     turn; /compact and /clear echoes stay hidden)
+  3. A message with a picture is recorded as `[Image #1] …`, never matching its bubble. — fixed
+     (matching sets attachment paths and image placeholders aside)
+  4. Prompt cards and model/clear dividers are drawn per device. — filed `docs/roadmap/remote-access.md`
