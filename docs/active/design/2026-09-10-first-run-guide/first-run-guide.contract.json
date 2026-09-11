@@ -2,11 +2,14 @@
   "title": "First run guide — contract",
   "key": "first-run-guide-contract",
   "out": "first-run-guide.contract.html",
-  "themes": ["midnight"],
+  "themes": [
+    "midnight"
+  ],
   "branch": "session/first-run-buddy-tutorial",
   "sources": {
     "first-run-guide": "first-run-guide.questions.json",
-    "first-run-guide-review": "first-run-guide.review.json"
+    "first-run-guide-review": "first-run-guide.review.json",
+    "first-run-guide-review-2": "first-run-guide.review-2.json"
   },
   "steps": [
     {
@@ -219,6 +222,63 @@
           "guard": "youcoded/desktop/tests/first-time-warnings.test.ts",
           "threshold": "the named test passes",
           "source": "first-run-guide-review#S-1"
+        },
+        {
+          "id": "R28",
+          "statement": "The bubble's buttons read Back, Skip tour, Next; Next (or Done) is filled at the far right, Skip tour bare text.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-1"
+        },
+        {
+          "id": "R29",
+          "statement": "\"This takes about a minute\" is gone; stop 1 greets you as your buddy and says where to find it again.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-1"
+        },
+        {
+          "id": "R30",
+          "statement": "Stops 2 to 8 open New Session, Projects, Cloud providers, Appearance and Help & feedback for real, closing each as the tour moves on.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/first-run-guide.test.tsx",
+          "threshold": "the named test passes",
+          "source": "first-run-guide-review-2#N-2"
+        },
+        {
+          "id": "R31",
+          "statement": "Stop 6 says your signed-in account answers you, and a different or free local AI service is added here; no \"provider\" or \"model\".",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-2"
+        },
+        {
+          "id": "R32",
+          "statement": "The empty Projects card reads \"Projects keep your work together\" with the approved three sentences, and Add a project is as wide as the text.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-3"
+        },
+        {
+          "id": "R33",
+          "statement": "The wizard's last card says \"Your assistant will show you around once the app opens.\"",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-4"
+        },
+        {
+          "id": "R34",
+          "statement": "The sign-in card's file-safety sentence is Destin's wording exactly, ending at \"cannot replace.\"",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-5"
+        },
+        {
+          "id": "R35",
+          "statement": "The Project Folder list starts with a \"No folder\" entry; that session runs in an empty folder the app owns, with no instructions.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "first-run-guide-review-2#N-6"
         }
       ]
     }
