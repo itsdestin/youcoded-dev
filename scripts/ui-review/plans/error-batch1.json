@@ -13,7 +13,7 @@
       "name": "sync-retry-failed",
       "actions": [
         {
-          "eval": "const o=window.claude.sync.getStatus; window.claude.sync.getStatus=async()=>({...(await o()),warnings:[{code:'PUSH_FAILED',level:'warning',title:'Google Drive backup failed',body:'The last upload did not finish.',backendId:'drive-1',dismissible:true,fixAction:{kind:'retry',label:'Retry',payload:{backendId:'drive-1'}}}]}); window.claude.sync.pushBackend=async()=>({success:false,error:'Mock failure: the upload stopped.'});"
+          "eval": "const o=window.claude.sync.getStatus; window.claude.sync.getStatus=async()=>({...(await o()),warnings:[{code:'PUSH_FAILED',level:'warning',title:'Google Drive backup failed',body:'The last upload did not finish.',backendId:'drive-1',dismissible:true,fixAction:{kind:'retry',label:'Retry',payload:{backendId:'drive-1'}}}]}); window.claude.sync.pushBackend=async()=>({success:false,error:\"Some files didn't upload.\"});"
         },
         {
           "click": "[data-hint='Settings']",
@@ -28,7 +28,7 @@
           "settle": 500
         }
       ],
-      "expect": "js:[...document.querySelectorAll('[role=dialog] *')].some(e=>['Error','Uploaded!'].includes(e.textContent.trim()))"
+      "expect": "js:[...document.querySelectorAll('[role=dialog] *')].some(e=>['Error','Uploaded!'].includes(e.textContent.trim())||e.textContent.trim().startsWith('Upload failed'))"
     },
     {
       "name": "sync-wizard-upload-failed",
@@ -112,7 +112,7 @@
           "settle": 700
         }
       ],
-      "expect": "js:window.seen('Copied to clipboard','copy it yourself')"
+      "expect": "js:window.seen('Copied to clipboard','copy it yourself',\"Couldn't copy\")"
     },
     {
       "name": "file-link-failed",
