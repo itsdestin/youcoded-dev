@@ -12,7 +12,30 @@ for evidence locations, and the audit
 cited by ID below. The design record with Destin's own words per decision is
 `docs/active/design/2026-09-08-error-states-development/ui-design-ledger.md`.
 
-## Where this stands (2026-09-09)
+## UNIT A SHIPPED — 2026-09-11
+
+Merged to master. The Development screens are real for every user: the ticket flow
+carries the error that opened it, shows every piece of evidence before it leaves the
+machine, works with no AI, reports three honest submission outcomes, and keeps the draft
+through a failure; setup creates a managed workspace that never touches an existing
+folder and survives the dialog closing. `<ErrorState>` was widened first, so retry and
+report are independent — **unit B migrates onto that.**
+
+Records that survive: `docs/archive/design/2026-09-08-error-states-development/` (the
+ledger, every deck and answer, the signed contract and its verdicts), and the three
+acceptance reviews in `docs/archive/reviews/`.
+
+**Units B and C have not started.** Everything below from "Step 3" is the remaining work,
+and the audit it cites is still in `docs/active/investigations/`.
+
+Two decisions from unit A that bind unit B:
+- The **assistant is named by `utils/assistant-name.ts`**, never spelled in a string.
+  Product names ("Claude Code", "Claude Pro/Max", the account) stay.
+- A screen must not branch on `?mode=workbench` — `scripts/ast-grep/rules/
+  no-workbench-gate-in-shipped-ui.yml` fails the build. Design UI ahead of its backend by
+  registering the CHANNEL in `mock-only.ts`, so there is only ever one screen.
+
+## Where this stood at the start (2026-09-09)
 
 Session key `error-states-development`; workspace
 `worktrees/sessions/error-states-development`; branch `session/error-states-development` in
