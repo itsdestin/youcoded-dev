@@ -199,7 +199,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] Closing a dialog opened from the Development menu closes the menu behind it too, and
       "Known issues" closes everything with nothing on screen acknowledging it. Found by a
-      context-free UX tester on 2026-09-10 (`docs/active/reviews/2026-09-10-error-states-unit-a-ux-review-2.md`
+      context-free UX tester on 2026-09-10 (`docs/archive/reviews/2026-09-10-error-states-unit-a-ux-review-2.md`
       U9). It is shared dialog behaviour, not one screen's — changing it alters every menu in
       the app, so it was filed rather than special-cased inside a feature
       `settings/development` `desktop` `confirmed` `checked 2026-09-10`
