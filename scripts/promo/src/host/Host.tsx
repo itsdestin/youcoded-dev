@@ -1,18 +1,19 @@
 import React from 'react';
 import { useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
 import { PIVOT, type Face } from '../poses';
-import { THEMES, rigFor, companionsFor, inkFor, type Slug } from '../themes';
+import { THEMES, rigFor, companionsFor, mascotPaint } from '../themes';
 import { evaluate, type Action, type HostState } from './engine';
-import { withFaces, type FaceStyle } from './faces';
+import { withFaces, withFilmFaces, type FaceStyle } from './faces';
 
 const FACES: Face[] = ['idle', 'welcome', 'curious', 'shocked', 'dizzy', 'happy', 'smug', 'shutdown', 'asleep', 'dozy'];
-const DEFAULT_RIG_SLUGS: Slug[] = ['midnight', 'creme', 'light', 'meadow-mist', 'devils-garden', 'cotton-candy-sky', 'golden-sunbreak'];
 
 /** One rig, posed from a HostState. `scope` keeps its style rules from leaking into another rig on screen. */
 const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, style, scope }) => {
   const t = THEMES[s.costume];
-  // Golden Sunbreak's rig shares the default face geometry, so the new faces fit it too.
-  const svg = DEFAULT_RIG_SLUGS.includes(s.costume) ? withFaces(rigFor(s.costume), style) : rigFor(s.costume);
+  // WHY every rig keeps its own faces now (2026-09-10): the rigs carry the warm set themselves,
+  // so the film only adds the faces they lack (faces.ts withFilmFaces). The other styles are
+  // the retired studies' and still swap the whole set.
+  const svg = style === 'warm' ? withFilmFaces(rigFor(s.costume)) : withFaces(rigFor(s.costume), style);
   const blink = s.blink > 0.5;
   // A theme's own rig has only the contract's five faces; the warm set's happy/smug/shutdown (and
   // a rig may skip dizzy) do not exist there, and a face the rig lacks drew NOTHING — Kuromi went
@@ -21,7 +22,7 @@ const Rig: React.FC<{ s: HostState; style: FaceStyle; scope: string }> = ({ s, s
   const face: Face = has(s.face) ? s.face : s.face === 'dizzy' ? (has('shocked') ? 'shocked' : 'welcome') : s.face === 'shutdown' || s.face === 'asleep' || s.face === 'dozy' ? (has('idle') ? 'idle' : 'welcome') : 'welcome';
   return (
     <div className={scope} style={{ width: '100%', height: '100%',
-      ['--rig-accent' as string]: t.accent, ['--rig-on-accent' as string]: inkFor(s.costume), ['--rig-line' as string]: t.fg }}>
+      ...mascotPaint(s.costume), ['--rig-line' as string]: t.fg }}>
       <style>{`
 .${scope} svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .${scope} #rig-arm-left { transform-box: view-box; transform-origin: ${PIVOT['rig-arm-left']}; transform: translate(${(1.6 * s.tuck).toFixed(2)}px, ${(5.4 * s.tuck).toFixed(2)}px) rotate(${s.armL.toFixed(2)}deg); }

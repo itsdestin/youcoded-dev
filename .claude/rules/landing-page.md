@@ -44,6 +44,8 @@ workbench serving another tree and refuses to overwrite the gallery if any shot 
 verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
 The last three followed on 2026-09-04: `gen-hero-mascots.py` and `gen-og-image.mjs` (bump
 `?v=` on `og:image` or a shared link keeps the old one).
+`site-assets.sh` maps each file `index.html` plays to its scene. Loop length, zoom and pace:
+README → "The landing loops' standard".
 **Why:** the previous site drifted for four months on hand-drawn mockups; the share image
 stayed a screenshot of the pre-redesign app.
 **Guard:** the script's own checks; `scripts/workbench-boot-check.mjs`.
@@ -85,12 +87,6 @@ the hook survives only for the workbench deck); never a reload; the iframe ignor
 pointer until the visitor clicks once.
 **Why:** a reload flashed the poster; an interactive iframe under the wheel trapped page
 scroll ("janky").
-
-## Motion in a review deck
-**Invariant:** an animation, hover or visual bug is reviewed as a deck CLIP step
-(`"clip": "<scene>"`, recordings from `scripts/ui-review/record-pair.sh <scene> <before> <after> <clips-dir>`),
-never as a prose description or a still that can't show it.
-**Guard:** `tests/test_spec.py` ClipStepTests, `tests/deck-render.test.mjs` (clip step).
 
 ## Copy and review
 **Invariant:** "let me edit the website" → `site-copy-editor.py serve youcoded/docs/index.html`

@@ -32,17 +32,27 @@ export const THEMES: Record<Slug, Theme> = {
   'cotton-candy-sky':   T({ slug: 'cotton-candy-sky', name: 'Cotton Candy Sky', dark: false, canvas: '#FBF5FC', accent: '#8B47B8', onAccent: '#FFFFFF', fg: '#21152C', wallpaper: 'themes/cotton-candy-sky/wallpaper.jpg', font: 'Comfortaa' }),
 };
 /**
- * The ink the default rig draws its eyes and mouth in: a DEEP SHADE OF THE BODY
- * COLOUR, never the theme's on-accent. WHY: on Cotton Candy, Meadow Mist and
- * Halftone the on-accent is white, and white eyes on a coloured body read as
- * glowing and soulless (Destin, 2026-09-04). Golden Sunbreak's own rig uses a
- * very dark brown on gold — the same idea, done by hand.
+ * How the app paints its DEFAULT mascot on a theme — mirrors youcoded
+ * desktop/src/renderer/components/mascot/default-mascot-paint.ts (2026-09-10): Light and
+ * Crème have their own approved mascot colours (a pale body, a dark face); every other theme
+ * keeps an accent body and an on-accent face. WHY this replaced the film's own ink rule
+ * (accent × 0.32): the host IS the app's buddy, so it wears what the app paints now. The old
+ * rule existed because white eyes on a coloured body read as soulless (Destin, 2026-09-04) —
+ * the three themes it was written for now ship their own rigs, and all three themes left on
+ * the default rig get a dark face here. A theme's own rig ignores these; it paints itself.
  */
-export const inkFor = (slug: Slug): string => {
-  const hex = THEMES[slug].accent.replace('#', '');
-  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
-  const k = 0.32;                                   // keep 32 % of the body colour, the rest black (0.22 read a smidge too dark — Destin, 2026-09-04)
-  return '#' + [r, g, b].map((v) => Math.round(v * k).toString(16).padStart(2, '0')).join('');
+const DEFAULT_MASCOT_PALETTES: Partial<Record<Slug, { body: string; face: string; catchlight: string }>> = {
+  light: { body: '#DCE5E2', face: '#263832', catchlight: '#FFFFFF' },
+  creme: { body: '#EAD7B4', face: '#3D2D23', catchlight: '#FFF4D0' },
+};
+export const mascotPaint = (slug: Slug): Record<string, string> => {
+  const t = THEMES[slug], p = DEFAULT_MASCOT_PALETTES[slug];
+  const body = p?.body ?? t.accent, face = p?.face ?? t.onAccent, catchlight = p?.catchlight ?? t.accent;
+  return {
+    '--default-mascot-body': body, '--default-mascot-face': face, '--default-mascot-catchlight': catchlight,
+    // the retired study face sets (faces.ts SOFT/DOT/WARM via withFaces) still draw in the rig contract's names
+    '--rig-accent': catchlight, '--rig-on-accent': face,
+  };
 };
 /** The rig a theme dresses the host in: its own if it ships one, else the app's default rig tinted with the theme accent. */
 export const rigFor = (slug: Slug): string => RIGS[slug] ?? DEFAULT_BUDDY_RIG;

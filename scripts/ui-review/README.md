@@ -121,7 +121,7 @@ scripts/ui-review/scenes/row2-does-things.json
 | action | does |
 |---|---|
 | `click` / `clickText` (+`tag`) | move the cursor there (interpolated, visible) and click; `js:` selectors work as in shots |
-| `typeSlow` (+`cps`) | per-key typing at N chars/second |
+| `typeSlow` (+`cps`) | per-key typing at N chars/second, kept to the CLOCK: each letter has a due time, so a busy page (a theme's moving background) no longer drags a loop to a third of its setting (2026-09-11). The landing page's ten loops all type at 32 |
 | `key` (+`modifiers`) | one key — `Enter`, `Escape`, … |
 | `waitFor` / `waitForText` (+`tag`, `timeout`) | poll until the element is on screen (contains-match for text; default 20 s). **Use this before clicking anything a scripted reply produces** — a fixed `settle` is a race |
 | `hold` | keep recording for N ms; `settle` on any action is the pause after it |
@@ -144,6 +144,16 @@ tool cards, permission asks (the loop answers them with a real click), one
 a signed-in account with a scripted friend for the games. The workbench serves with
 `VITE_NO_WATCH=1`, so **restart it after editing a fixture or the mock shim** — the
 recorder otherwise films the previous code and every frame still "verifies".
+
+**The landing loops' standard (Destin, 2026-09-11 — keep it when re-recording).** About 15 s,
+never more than 20, with nothing real cut. Desktop takes `"zoom": 1.15` (the phone take stays at
+1, or it reflows). Replies at `&replySpeed=2` (the inbox loop 2.5, its reply is three times
+longer), and every wait is for the reply itself (`waitForText` its last words), never a fixed
+settle. The same rhythm everywhere: a 0.3 s opening hold, typing at 32 a second, short settles
+after clicks, a 1.5 s closing hold. A theme loop swaps through `window.__workbenchAppearanceSync(
+{theme})` the moment the reply finishes — no marketplace trip. Demo jokes are goofy, never
+actually offensive. Quote a loop's length from the file (`ffprobe`), which is what the player
+shows.
 
 ### The theme a deck opens on
 
@@ -339,27 +349,26 @@ file alone leaves an already-shared link showing the old picture.
 
 ### The art is each theme's own rig
 Vendored to `youcoded/docs/mascots/<slug>.rig.svg` from
-`wecoded-themes/themes/<slug>/assets/mascot-rig.svg`. Only four themes ship one
-(golden-sunbreak, halftone-dimension, kuromi-dreamer, strawberry-kitty); anything else falls
-back to the app's `DEFAULT_BUDDY_RIG` and is tinted.
+`wecoded-themes/themes/<slug>/assets/mascot-rig.svg` — copy them fresh before regenerating.
+Since 2026-09-05 seven themes ship one (Cotton Candy Sky, Meadow Mist and Devil's Garden joined
+the first four), so all four picker buttons wear their theme's own character; a theme without
+a rig would still fall back to the app's `DEFAULT_BUDDY_RIG`, tinted.
 
 **Do not strip `slot-hat` / `slot-eyewear` as empty scaffolding.** Each theme's SIGNATURE
 lives there — Halftone's visor is eyewear, Kuromi's horns and Strawberry Kitty's ears-and-bow
 are hats. Stripping them turned Halftone into a featureless blob and left both cats bald.
 
-### Faces and ink come from the promo film
-`worktrees/promo` (branch `feat/promo-video`), `scripts/promo/src/`:
+### Faces come from the rigs; poses from the promo film
+The warm face set the film introduced (every expression keeps the welcome face's big sparkled
+eyes; brows, lids and the mouth carry it — nothing is a hollow black disc, which is what made
+the old surprised face scary) now lives IN every theme rig and the app's default rig
+(wecoded-themes 817e6b6, youcoded b8eef02f). So since 2026-09-10 `gen-hero-mascots.py` passes
+`WARM = False` on every row: overwriting a rig's faces would paint older copies over the
+characters' current ones. Its own ink rule (`accent × 0.32`, never a white on-accent) matters
+only to a tinted default rig, which the picker no longer shows.
 
-- **`themes.ts → inkFor`** — the tinted rig's eyes and mouth are a deep shade of the BODY
-  colour, `accent × 0.32`. NEVER the theme's on-accent: that is white on three of the
-  picker's four themes, and white eyes on a coloured body are "terrifying" (Destin).
-- **`host/faces.ts → WARM`** — every expression keeps the welcome face's big sparkled eyes;
-  brows, lids and the mouth carry the expression. Nothing is ever a hollow black disc, which
-  is what made the old surprised face scary.
-- **`host/Host.tsx → DEFAULT_RIG_SLUGS`** — which rigs take the warm set. Halftone keeps its
-  visor faces and the two cats keep their cat faces; those ARE those characters.
-- **`host/engine.ts`** — the pose library and its angles: wave −150 with a waggle, cheer
-  ±150 with a jump, shrug ±75, tada ±115, think −165, startle ±160.
+- **`scripts/promo/src/host/engine.ts`** — the pose library and its angles: wave −150 with a
+  waggle, cheer ±150 with a jump, shrug ±75, tada ±115, think −165, startle ±160.
 
 `happy` is deliberately unused on the site: its eyes are two thin closed arcs and at 45px
 they read as "the eyes have gone missing". And never ask a rig for a face it lacks — an

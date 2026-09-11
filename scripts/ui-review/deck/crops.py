@@ -74,7 +74,7 @@ def crop_images(spec, log=print):
                     missing.append(f'{st["id"]}: {theme}/{run} — {src} not captured')
                     continue
                 if dst not in cut:   # steps sharing a crop share the file — cut it once
-                    subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
+                    subprocess.run(['magick', src, '+repage', '-crop', geo, '+repage', dst], check=True)  # +repage FIRST: a hand-made picture (a film still, a crop of a crop) can carry a page offset, and -crop then misses the whole image ("geometry does not contain image") — three builds on 2026-09-10
                     cut.add(dst)
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
@@ -122,7 +122,7 @@ def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
                 missing.append(f'{st["id"]}/{v["id"]}: {theme}/{run} — {src} not captured')
                 continue
             if dst not in cut:
-                subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
+                subprocess.run(['magick', src, '+repage', '-crop', geo, '+repage', dst], check=True)  # +repage FIRST: a hand-made picture (a film still, a crop of a crop) can carry a page offset, and -crop then misses the whole image ("geometry does not contain image") — three builds on 2026-09-10
                 cut.add(dst)
             hl = v.get('highlight')
             if not hl:

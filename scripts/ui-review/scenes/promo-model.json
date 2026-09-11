@@ -12,7 +12,7 @@
       "hold": 900
     },
     {
-      "click": "[title$='click to change model']",
+      "click": "[title$='click to change model'], [data-hint$='click to change model']",
       "settle": 0
     },
     {
@@ -36,7 +36,7 @@
       "mark": "pick"
     },
     {
-      "waitFor": "[title^='x-ai/grok-4']",
+      "waitFor": "[title^='x-ai/grok-4'], [data-hint^='x-ai/grok-4']",
       "settle": 700,
       "mark": "chip2"
     },
