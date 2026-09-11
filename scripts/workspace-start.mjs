@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Session startup provisions new worktrees; maintenance of shared checkouts stays in setup.sh.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -83,6 +84,80 @@ function copyTree(src, dest) {
   }
 }
 
+/**
+ * Fetches the packages a component's package-lock.json requires but its
+ * hardlink farm lacks, each into a directory that did not exist before.
+ *
+ * WHY (2026-09-11): the farm is a copy of whatever was last installed in the
+ * shared checkout — 213 commits behind master that day — so a dependency added
+ * to master since then is simply absent, and the first test run dies at import
+ * (`Failed to resolve import "dompurify"`; 85 suites in one session). Three
+ * sessions hit it that day, and each found the manual recipe only after the
+ * failure. `npm install` cannot be the fix: it rewrites
+ * node_modules/.package-lock.json IN PLACE through the shared inode
+ * (PITFALLS.md → Worktrees). `npm pack` + `tar` into a fresh directory creates
+ * inodes only this worktree sees.
+ *
+ * Only MISSING, required, this-platform packages. The 25 missing that day were
+ * otherwise all optional other-platform binaries, and the 31 a patch version
+ * behind loaded fine — refetching those is a network round trip each for a
+ * failure nobody has hit. Best-effort like the copy: a failed fetch is a note.
+ */
+const MAX_FILLED_PACKAGES = 15;
+function platformAllows(list, value) {
+  if (!Array.isArray(list)) return true;
+  if (list.includes(`!${value}`)) return false;
+  const allowed = list.filter(item => !item.startsWith('!'));
+  return allowed.length === 0 || allowed.includes(value);
+}
+export function fillMissingPackages(componentDir, label = path.basename(componentDir)) {
+  let lock;
+  try { lock = JSON.parse(fs.readFileSync(path.join(componentDir, 'package-lock.json'), 'utf8')); } catch { return []; }
+  const missing = [];
+  for (const [key, entry] of Object.entries(lock.packages ?? {})) {
+    // inBundle packages arrive inside their parent's tarball; link entries are workspaces.
+    if (!key.startsWith('node_modules/') || !entry?.version || entry.link || entry.inBundle || entry.optional) continue;
+    if (!platformAllows(entry.os, process.platform) || !platformAllows(entry.cpu, process.arch)) continue;
+    if (exists(path.join(componentDir, key))) continue;
+    const name = key.slice(key.lastIndexOf('node_modules/') + 'node_modules/'.length);
+    missing.push({ key, spec: `${name}@${entry.version}` });
+  }
+  if (missing.length === 0) return [];
+  if (missing.length > MAX_FILLED_PACKAGES) {
+    // Deleting a hardlink farm only drops link counts, so a real install is safe from here.
+    return [`${label}/node_modules is missing ${missing.length} packages, too many to fetch one by one — delete it and run npm ci in ${componentDir}`];
+  }
+  const filled = [], failed = [];
+  let scratch;
+  try {
+    scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'workspace-deps-'));
+    for (const { key, spec } of missing) {
+      const dest = path.join(componentDir, key);
+      try {
+        // shell on Windows only: npm is npm.cmd there, which Node will not spawn without one.
+        const file = execFileSync('npm', ['pack', spec, '--pack-destination', scratch, '--silent'],
+          { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120_000, shell: process.platform === 'win32' })
+          .trim().split('\n').pop().trim();
+        fs.mkdirSync(dest, { recursive: true });
+        execFileSync('tar', ['-xzf', path.join(scratch, file), '-C', dest, '--strip-components=1'], { stdio: ['ignore', 'pipe', 'pipe'] });
+        filled.push(spec);
+      } catch {
+        // Never leave an empty directory behind: the next check would read it as installed.
+        fs.rmSync(dest, { recursive: true, force: true });
+        failed.push(spec);
+      }
+    }
+  } catch (error) {
+    return [`${label}/node_modules: could not check for missing packages (${String(error.message).trim()})`];
+  } finally {
+    if (scratch) fs.rmSync(scratch, { recursive: true, force: true, maxRetries: 3 });
+  }
+  const notes = [];
+  if (filled.length) notes.push(`${label}/node_modules: fetched ${filled.length} package(s) the shared install lacks (${filled.join(', ')})`);
+  if (failed.length) notes.push(`${label}/node_modules: could not fetch ${failed.join(', ')} — node scripts/fill-missing-deps.mjs ${componentDir}`);
+  return notes;
+}
+
 function provisionNodeModules(name, source, destination) {
   const notes = [];
   for (const sub of NODE_MODULES_PROVISIONS[name] ?? []) {
@@ -99,7 +174,9 @@ function provisionNodeModules(name, source, destination) {
       notes.push(`${sub}/node_modules (${copyTree(srcModules, destModules)})`);
     } catch (error) {
       notes.push(`${sub}/node_modules (FAILED: ${String(error.message).trim()} — run 'cd ${path.join(destination, sub)} && npm ci')`);
+      continue;
     }
+    notes.push(...fillMissingPackages(path.join(destination, sub), sub));
   }
   return notes;
 }
