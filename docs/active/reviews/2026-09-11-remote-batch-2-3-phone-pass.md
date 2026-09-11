@@ -26,7 +26,16 @@ status is `fixed <commit>`, `open`, or `filed <roadmap entry>`.
 - Android Settings Remove does not unpair while connected; remote "No folder" session skips
   the No-folder swap (both found by the batch 3 builder). — filed `docs/roadmap/remote-access.md`
 
-## Open — file pills in the session drawer (found 2026-09-11)
+## File pills in the session drawer (found 2026-09-11) — 1–4 fixed
+
+Fixed in `76983d25`, `a2dec565`, `1eb68349`, `4c8a858f`, `4bf3ec4e`: exact matching for
+absolute, relative and `~` paths; one host lookup `artifacts:resolve-path` on all five surfaces
+(Android stub falls back to the old lookup); "Opening {name}…" while it runs; a per-session
+stale-tap guard; specific refusal notes. Builder's own reviewer found 10 issues, all fixed or
+disclosed (backslash inside-root check, chat-only folders answer `not-tracked` without touching
+disk). verify.sh --full green; Android 807 tests, 0 failures. Still to recheck on the phone.
+Known gap: picking another file from the list while a tap is still resolving lets the tapped
+file land afterwards (unchanged from before).
 
 Evidence from a read-only probe of `projectAllFiles('/home/destin/youcoded-dev')` on the host:
 3,090 records, `truncated: true`, ~1.0 MB of JSON.
