@@ -1,0 +1,402 @@
+{
+  "_why": "Error-states batch 1 before/after deck (2026-09-11). Every failure is a workbench-only override or URL switch (?fail=, ?update=available); nothing real is touched. Expectations accept the old OR the new wording so both runs verify; the deck compares the pictures. Fresh page per shot resets overrides.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {
+      "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); /* WHY: mock namespaces are get-only catch-all proxies, so assigning one method is dropped. Wrap each namespace with a local override map. */ for(const ns of ['sync','session','native','artifacts','providers','skills','tags','update']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.seen=(...parts)=>parts.some(p=>document.body.innerText.includes(p));"
+    }
+  ],
+  "shots": [
+    {
+      "name": "sync-retry-failed",
+      "actions": [
+        {
+          "eval": "const o=window.claude.sync.getStatus; window.claude.sync.getStatus=async()=>({...(await o()),warnings:[{code:'PUSH_FAILED',level:'warning',title:'Google Drive backup failed',body:'The last upload did not finish.',backendId:'drive-1',dismissible:true,fixAction:{kind:'retry',label:'Retry',payload:{backendId:'drive-1'}}}]}); window.claude.sync.pushBackend=async()=>({success:false,error:'Mock failure: the upload stopped.'});"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1200
+        },
+        {
+          "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Retry')",
+          "settle": 500
+        }
+      ],
+      "expect": "js:[...document.querySelectorAll('[role=dialog] *')].some(e=>['Error','Uploaded!'].includes(e.textContent.trim()))"
+    },
+    {
+      "name": "sync-wizard-upload-failed",
+      "actions": [
+        {
+          "eval": "const o=window.claude.sync.getStatus; window.claude.sync.getStatus=async()=>({...(await o()),backends:[]}); window.claude.sync.setup={checkPrereqs:async()=>({icloudPath:null,rcloneInstalled:true,gdriveConfigured:true,ghInstalled:true,ghAuthenticated:true})}; window.claude.sync.pushBackend=async()=>({success:false,error:'Mock failure: the upload stopped.'});"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1200
+        },
+        {
+          "eval": "document.querySelector('[title^=\"Additional backups off\"]').click()",
+          "settle": 900
+        },
+        {
+          "eval": "[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().endsWith('Google Drive')).click()",
+          "settle": 1500
+        },
+        {
+          "click": "[aria-label='Give this backup a name']",
+          "settle": 200
+        },
+        {
+          "type": "My Google Drive"
+        },
+        {
+          "eval": "[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Start Backup').click()",
+          "settle": 1800
+        }
+      ],
+      "expect": "js:window.seen('first backup','all set')"
+    },
+    {
+      "name": "native-send-unconfirmed",
+      "actions": [
+        {
+          "eval": "window.claude.native.send=async()=>{throw new Error('Mock failure: no answer.')}"
+        },
+        {
+          "click": "[data-hint='theme contrast pass']",
+          "settle": 900
+        },
+        {
+          "click": "[placeholder^='Message']",
+          "settle": 200
+        },
+        {
+          "type": "hello"
+        },
+        {
+          "key": "Enter",
+          "settle": 700
+        }
+      ],
+      "expect": "js:window.seen('confirm your message','could not be sent')"
+    },
+    {
+      "name": "slash-copy-failed",
+      "actions": [
+        {
+          "eval": "Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>Promise.reject(new Error('denied')),readText:()=>Promise.reject(new Error('denied'))}}); document.execCommand=()=>false;"
+        },
+        {
+          "click": "[data-hint='theme contrast pass']",
+          "settle": 900
+        },
+        {
+          "click": "[placeholder^='Message']",
+          "settle": 200
+        },
+        {
+          "type": "/copy"
+        },
+        {
+          "key": "Enter",
+          "settle": 700
+        }
+      ],
+      "expect": "js:window.seen('Copied to clipboard','copy it yourself')"
+    },
+    {
+      "name": "file-link-failed",
+      "actions": [
+        {
+          "click": "[data-hint='theme contrast pass']",
+          "settle": 900
+        },
+        {
+          "click": "[placeholder^='Message']",
+          "settle": 200
+        },
+        {
+          "type": "please read notes/mock-missing.md"
+        },
+        {
+          "key": "Enter",
+          "settle": 1500
+        },
+        {
+          "eval": "window.claude.artifacts.listProject=async()=>{throw new Error('Mock failure: the file list could not be read.')}"
+        },
+        {
+          "clickText": "mock-missing.md",
+          "tag": "button",
+          "settle": 1000
+        }
+      ],
+      "expect": "js:window.seen('Couldn’t open mock-missing.md',\"Couldn't open mock-missing.md\")"
+    },
+    {
+      "name": "model-picker-native-failed",
+      "actions": [
+        {
+          "eval": "window.claude.providers.list=async()=>{throw new Error('Mock failure: providers could not be read.')}"
+        },
+        {
+          "click": "[data-hint='theme contrast pass']",
+          "settle": 900
+        },
+        {
+          "click": "js:document.querySelector('[data-hint$=\"click to change model\"]')",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't load your models\",'not set up any model providers')"
+    },
+    {
+      "name": "file-save-unchecked",
+      "actions": [
+        {
+          "click": "[aria-label='Session Files']",
+          "settle": 900
+        },
+        {
+          "clickText": "scroll-stick-notes.md",
+          "settle": 900
+        },
+        {
+          "eval": "window.claude.artifacts.get=async()=>{throw new Error('Mock failure: read failed.')}"
+        },
+        {
+          "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Edit').click()",
+          "settle": 900
+        },
+        {
+          "eval": "const t=[...document.querySelectorAll('textarea')].find(x=>x.value.startsWith('# Scroll')); t.focus(); t.setSelectionRange(t.value.length, t.value.length);",
+          "settle": 200
+        },
+        {
+          "type": " edited"
+        },
+        {
+          "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Save').click()",
+          "settle": 1000
+        }
+      ],
+      "expect": "js:window.seen(\"couldn't check whether this file changed\") || ![...document.querySelectorAll('textarea')].some(x=>x.value.includes('edited'))"
+    },
+    {
+      "name": "close-prompt-meta-unreadable",
+      "actions": [
+        {
+          "eval": "window.claude.session.getMeta=async()=>{throw new Error('Mock failure: the note could not be read.')}"
+        },
+        {
+          "click": "[data-hint='All Sessions']",
+          "settle": 700
+        },
+        {
+          "click": "js:document.querySelector('[data-hint=\"Close Session\"]')",
+          "settle": 1100
+        }
+      ],
+      "expect": "[role=dialog]"
+    },
+    {
+      "name": "marketplace-uninstall-failed",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 900
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 1600
+        },
+        {
+          "click": "js:document.querySelector('[data-marketplace-card=\"civic-report\"]')",
+          "settle": 1100
+        },
+        {
+          "eval": "window.claude.skills.uninstall=async()=>{throw new Error('Mock failure: uninstall stopped.')}"
+        },
+        {
+          "clickText": "Uninstall",
+          "tag": "button",
+          "settle": 500
+        },
+        {
+          "key": "Escape",
+          "settle": 500
+        }
+      ],
+      "expect": "js:window.seen('uninstall Civic Report','install Civic Report')"
+    },
+    {
+      "name": "tag-refresh-failed",
+      "actions": [
+        {
+          "click": "js:document.querySelector(\"[data-hint^='Tags & note']\")",
+          "settle": 700
+        },
+        {
+          "clickText": "Manage tags…",
+          "settle": 900
+        },
+        {
+          "eval": "window.claude.tags.list=async()=>{throw new Error('Mock failure: tags could not be read.')}"
+        },
+        {
+          "click": "[aria-label='New tag name']",
+          "settle": 200
+        },
+        {
+          "type": "Later"
+        },
+        {
+          "clickText": "Create",
+          "tag": "button",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't refresh your tags\",'No tags yet')"
+    },
+    {
+      "name": "approval-card-unconfirmed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=tools",
+      "actions": [
+        {
+          "eval": "window.claude.session.respondToPermission=async()=>{throw new Error('Mock failure: no answer.')}"
+        },
+        {
+          "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Yes').scrollIntoView({block:'center'})",
+          "settle": 600
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Yes')",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen('Run the test suite')"
+    },
+    {
+      "name": "question-card-unconfirmed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&view=tools",
+      "actions": [
+        {
+          "eval": "window.claude.session.respondToPermission=async()=>{throw new Error('Mock failure: no answer.')}"
+        },
+        {
+          "clickText": "React",
+          "settle": 300
+        },
+        {
+          "clickText": "Charts",
+          "settle": 300
+        },
+        {
+          "clickText": "Submit",
+          "tag": "button",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen('Submit')"
+    },
+    {
+      "name": "skills-drawer-load-failed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&fail=skills.list",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't load your skills\",'No skills installed')"
+    },
+    {
+      "name": "library-plugins-load-failed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&fail=skills.list",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 900
+        },
+        {
+          "click": "[title^='Your Library']",
+          "settle": 1400
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't load your installed plugins\",'Nothing installed yet')"
+    },
+    {
+      "name": "library-themes-load-failed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&fail=theme.marketplace.list",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 900
+        },
+        {
+          "click": "[title^='Your Library']",
+          "settle": 1400
+        },
+        {
+          "clickText": "Themes",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't load your installed themes\",'No themes installed')"
+    },
+    {
+      "name": "tag-manager-load-failed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&fail=tags.list",
+      "actions": [
+        {
+          "click": "js:document.querySelector(\"[data-hint^='Tags & note']\")",
+          "settle": 700
+        },
+        {
+          "clickText": "Manage tags…",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't load your tags\",'No tags yet')"
+    },
+    {
+      "name": "tag-picker-load-failed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&fail=tags.list",
+      "actions": [
+        {
+          "click": "js:document.querySelector(\"[data-hint^='Tags & note']\")",
+          "settle": 700
+        }
+      ],
+      "expect": "js:window.seen(\"Couldn't load your tags\",'Manage tags')"
+    },
+    {
+      "name": "update-download-failed",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&update=available",
+      "actions": [
+        {
+          "eval": "window.claude.update.download=async()=>{throw new Error(\"Error invoking remote method 'update:download': UpdateInstallError: network-failed: Mock failure\")}"
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Update Available'))",
+          "settle": 1100
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.startsWith('Update Now'))",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen('Download failed','Launch failed')"
+    }
+  ]
+}
