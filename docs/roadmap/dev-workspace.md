@@ -3,6 +3,11 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
+      new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
+      five times in isolation right after; the run's changes touched nothing it imports.
+      Load-sensitive, like the step-guard entry below
+      `n/a` `needs-verify` `checked 2026-09-11`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access

@@ -54,7 +54,7 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 97 | 31 | 2 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 98 | 32 | 2 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 61 | 11 | 3 | 22 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 34 | 7 | 1 | 3 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 33 | 15 | 1 | 6 |
