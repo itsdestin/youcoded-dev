@@ -2,7 +2,7 @@
 import fs from 'fs'; import { execFileSync } from 'child_process';
 import { faceSet } from '/home/destin/youcoded-dev/wecoded-marketplace/wecoded-themes-plugin/skills/theme-builder/scripts/mascot-faces.mjs';
 const SKIN = fs.readFileSync('/home/destin/youcoded-dev/wecoded-themes/mascots/skins/sticker.svg', 'utf8');
-const RUN = '/home/destin/youcoded-dev/worktrees/sessions/installer-rename-cleanup/docs/active/design/2026-09-10-app-icon/runs/today/shots-icons/light/';
+const RUN = '/home/destin/youcoded-dev/docs/archive/design/2026-09-10-app-icon/runs/today/shots-icons/light/';
 const ACC = '#8B47B8', LIGHT = '#B98AD6', SHADE = '#5E2A82', TILE = '#E7D4EF', EDGE = '#D6C0E2', HI = '#F7F1FA', W = '#FFFFFF';
 // The website's ink rule: a deep shade of the body colour (gen-hero-mascots.py ink_for); 0.32 is Destin's number.
 const ink = (k) => '#' + [1, 3, 5].map((i) => Math.round(parseInt(ACC.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');

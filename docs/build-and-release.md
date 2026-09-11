@@ -197,7 +197,7 @@ source is `youcoded/desktop/assets/icon-mascot.svg` (the waving sticker mascot D
 2026-09-10); `node scripts/build-icons.mjs` from `youcoded/` writes the desktop SVG/PNG/ICO/ICNS
 files and the Android `mipmap-*` layers from it (needs `rsvg-convert`, `magick`, and Python with
 Pillow). The design rounds and the one-off generator that made the mascot drawing are in
-`docs/active/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
+`docs/archive/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
 <!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "icon-mascot.svg"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/app-icons.test.ts"} -->
