@@ -1,13 +1,15 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: A resumed Claude Code conversation's files list is keyed by a desktop session id that changes on every resume
 ---
 
 # Resumed Claude Code conversation: files from before the resume are missing from its files list
 
-**Symptom (current shape).** Resume a Claude Code conversation and open its files list: nothing
+**Closure 2026-09-08:** Closed at Destin's explicit direction as already complete. This session did not independently locate the fix commit or rerun its reproduction. The diagnosis below is historical, not a claim about current code.
+
+**Symptom (historical shape).** Resume a Claude Code conversation and open its files list: nothing
 from before the resume is there; only files the new turns touch appear. Native (app-agent)
 conversations are unaffected.
 

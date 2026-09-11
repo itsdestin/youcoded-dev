@@ -4,11 +4,6 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
-- [ ] Git view: a file whose name has a quote, a backslash or an accent (an accented filename
-      is the common case) shows no status at all, whatever was changed; a filename containing
-      a literal " => " displays as a rename
-      `files-panel` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-status-quoted-paths.md
-
 - [ ] Git review: after amending or rebasing while "Show more" pages are open, the next "Show
       more" can silently skip commits until the review is reopened
       `files-panel` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-review-show-more-after-rewrite.md
@@ -23,11 +18,6 @@ searched or resumed (chat-data).
       wasn't found in this project", and the chip shows only the bare filename so two READMEs
       look identical; the same click on a project file works (Destin, 2026-09-03)
       `chat` `desktop` `needs-verify` `checked 2026-09-03`
-
-- [ ] Resume a Claude Code conversation: its files list has nothing from before the resume,
-      only files the new turns touch (until 2026-08-27 the same defect showed as every resume
-      re-recording all the files instead); native conversations are fine
-      `files-panel` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-resumed-cc-session-files-drawer.md
 
 - [ ] Stutters when editing a file in the files pane, copying text out of a code block, or
       moving around an HTML preview (Destin, 2026-08-27) — still unmeasured; the perf-lab

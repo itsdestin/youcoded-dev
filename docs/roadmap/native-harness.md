@@ -313,7 +313,11 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] MCP servers can only be set up by hand-editing a config file on disk — there is no
       settings screen to add, edit or remove one, and servers Claude Code already knows about
       stay invisible to the app's own agent (desktop; deferred from phase 1, 2026-08-05; still
-      unbuilt 2026-09-01)
+      unbuilt 2026-09-01). Destin 2026-09-08: later, design one management surface for MCP
+      integrations, skills and installed marketplace plugins, with individual and marketplace-wide
+      enable/disable settings for new sessions. Keep installation separate from enablement;
+      exact scope and package/component interactions need design. This is SEPARATE from the
+      YouCoded-owned skills foundation below, not part of its first implementation.
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
 - [ ] **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
@@ -322,7 +326,9 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
       as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
       is Claude Code parity only and must be superseded or expanded before implementation.
-      `all` `blocked` `checked 2026-09-05` `v1.3`
+      Destin 2026-09-08: investigate/elaborate this foundation first; enable/disable defaults
+      and the combined MCP/skills/plugin management surface are separate later work.
+      `all` `blocked` `checked 2026-09-08` `v1.3`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a
       slash command and the text vanishes; the common `/home/…` shape was fixed 2026-08-10. Destin

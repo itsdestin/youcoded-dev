@@ -3,20 +3,11 @@ Filing test: everything kept about a chat — transcript, title, tags, notes, se
 resume state. Not here: the model is running right now (native-harness); the files a chat
 produced and the panel that shows them (files).
 
-- [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
-      browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
-      still closes it (seen in the workbench while filming the promo, 2026-09-03)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-03`
-
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
       unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is)
       `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
-
-- [ ] After switching models in a chat, the saved conversation record still shows the model from
-      before the swap (desktop, 2026-08-27); a red test for it sits on branch test/last-used-model-pin
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-metadata-only-save-keeps-old-last-used-model.md
 
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —

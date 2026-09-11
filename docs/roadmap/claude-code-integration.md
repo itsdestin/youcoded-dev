@@ -39,11 +39,6 @@ chat-data).
       failure honestly. Found in the permission-timeout review; fix rides that same branch
       `tool-cards` `desktop` `needs-verify` `checked 2026-07-31`
 
-- [ ] After resuming a Claude Code session, some tool cards still show as running — a tool cannot be
-      live in a session that was closed. The native-session half shipped (PR #287); what remains is
-      Claude Code sessions, where the app has no mid-turn idle signal to reap them on
-      `tool-cards` `all` `needs-verify` `checked 2026-09-01`
-
 - [ ] The session id the app hands Claude Code leaks into every process that session starts, so a
       `claude` launched from inside a session (Bash tool, script, background job) reports its hooks
       under the parent session's id — this is what once repointed a live chat view at a foreign

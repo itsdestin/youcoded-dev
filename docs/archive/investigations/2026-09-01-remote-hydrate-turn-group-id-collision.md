@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: remote hydrate — `turn-`/`group-` id collisions corrupt the hydrated chat
 ---
@@ -17,7 +17,11 @@ of id. The 2026-07-20 fix (youcoded `2f8132cf`) gave `msg-` ids a per-boot `ID_E
 true for `msg-` and false for the other two: `nextGroupId()` returns `group-${++n}` and
 `nextTurnId()` returns `turn-${++n}` — both start at 0 per renderer boot, carry no epoch,
 and are reseeded nowhere on `chat:hydrate`.
-<!-- claim: {"path": "youcoded/desktop/src/renderer/state/chat-reducer.ts", "contains": "return .turn-\\$\\{\\+\\+turnCounter\\}."} -->
+<!-- claim: {"path": "youcoded/desktop/src/renderer/state/chat-reducer.ts", "contains": "turn-\\$\\{ID_EPOCH\\}"} -->
+
+## Correctness batch (2026-09-07, landed 2026-09-08)
+
+Both turn and group generators now use the same per-boot epoch as message IDs. The new `src/renderer/state/__tests__/chat-hydration.test.ts` regression creates host history, serializes it through JSON, resets the module to model a fresh client, hydrates and delivers new live text/tools. It asserts old turns/groups/timeline entries remain intact and new content occupies distinct keys. Before the fix it failed with one turn/group instead of two and overwritten old values; afterward the focused chat/store run passed 249 tests. Desktop `scripts/verify.sh` also passed. No browser connection, visual redesign, protocol extension or live-app probing was needed for this deterministic state regression. Runtime browser/Android testing remains unperformed. Earlier mechanism describes pre-fix code; roadmap remains in-flight (now landed).
 
 Both ARE looked up by key: `assistantTurns.set(currentTurnId, …)` appears at nine sites
 in the reducer (`rg -c 'assistantTurns\.set\(' → 9`, 2026-09-01). A freshly connected
@@ -36,3 +40,7 @@ pages within one renderer and stays true; the hydrate boundary is a second rende
 Finding 1, which had been recorded as FIXED; the 2026-07-15 "remote access rework"
 umbrella listed it as its item 1). Re-checked against `master` 2026-09-01: unchanged.
 Handoff: `docs/active/handoffs/2026-07-10-remote-access-review-handoff.md`.
+
+## Landing
+
+App fixes landed on origin/master as `03faf5e4` on 2026-09-08. Roadmap closures are in shipped.md; historical branch-local descriptions above record pre-landing evidence. No release tag was created.

@@ -10,10 +10,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       actually run, so choosing one saves a default that quietly does nothing there
       `settings/defaults` `remote` `confirmed` `checked 2026-09-07`
 
-- [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
-      morphs into a copy of the newest streaming one — every connect, not a race
-      `chat` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
-
 - [ ] Over remote access whole features are simply missing: the files panel cannot open any
       file (not even a small note), Project View tabs are thin, the game lobby signs in but
       stays empty, several buttons throw. Which namespaces are safe to expose over a
