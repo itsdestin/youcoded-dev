@@ -48,11 +48,11 @@ because its label is false and it disables the recovery.
 | 16 | Tag manager: "No tags yet" when reading tags failed | `tags/TagManagerPopup.tsx` + `ipc-handlers.ts` tags:list | 3 |
 | 17 | Update download failure reads "Launch failed" with Retry disabled | `UpdatePanel.tsx` code parsing | 2 |
 
-### Batch 1 status — all seventeen fixed on `session/error-states-unit-b` (2026-09-11)
+### Batch 1 status — all seventeen fixed, merged 2026-09-11 (youcoded `72bd4093`)
 
 Each fix landed test-first: a test written against the old code, seen failing for the real
 reason, then green. Not merged. A fresh code review found nine gaps in these fixes
-(`docs/active/reviews/2026-09-11-error-states-batch-1-code-review.md`); all nine are fixed the
+(`docs/archive/reviews/2026-09-11-error-states-batch-1-code-review.md`); all nine are fixed the
 same way, listed under the table.
 
 | # | Commit (youcoded) | Also fixed while there |
@@ -80,7 +80,7 @@ F7 `9641c54d` (a backup that never started) · F8 `47a40975` · F9 `bde913e0` ·
 `9981cf60` (tag picker, Resume Browser tag filter) · F6 `58d3048b` (Android, file over the size
 cap). Review-deck switches: `5dee518f` (`?fail=`, `?update=available`).
 
-**Destin's review (2026-09-11), three decks in `docs/active/design/2026-09-11-error-batch-1/`:**
+**Destin's review (2026-09-11), three decks in `docs/archive/design/2026-09-11-error-batch-1/`:**
 13 of 15 steps kept as built. His notes, all applied: /copy failure reads "Couldn't copy — please
 try again." (`9843cc29`); the Backup & Sync upload failure is a full error block under its row —
 Retry, plus Report bug when the cause is unknown — and stays until the next upload, with the

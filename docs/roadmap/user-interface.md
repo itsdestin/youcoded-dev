@@ -62,10 +62,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       view, which Destin deferred until those files are touched anyway
       `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
-- [ ] Error messages still guess at causes in many places — the app-wide audit of every error
-      string (desktop, Android, Worker), choosing a specific message or the two-button
-      Report/Diagnose card at each site, has not been done
-      `all` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-misleading-error-audit.md
+- [ ] Error messages still guess at causes in many places — the app-wide re-audit is done and
+      batch 1 of 7 (the seventeen messages that stated something false) shipped 2026-09-11;
+      left: Android + crash plumbing, one Report/Diagnose block, "couldn't load" shown as
+      "none", silent action failures, look and wording, guards. Destin's rule: every error
+      state offers an action
+      `all` `confirmed` `checked 2026-09-11` `v1.3.1` → docs/active/investigations/2026-09-10-error-inventory/README.md
 
 - [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
       sessions showed no "Start a conversation" text; Destin said ignore for now
