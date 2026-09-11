@@ -400,3 +400,45 @@ test('ALLOWS a health request whose result is not feeding a decision', () => {
 test('ALLOWS a chained curl to an endpoint that is not a readiness check', () => {
   assert.equal(run('curl -s http://127.0.0.1:5000/models && echo listed').blocked, false);
 });
+
+// ---------------------------------------------------------------------------
+// Guard 7 — zsh does not word-split an unquoted $VAR, so the value arrives as
+// ONE word and nothing errors. Observed: `kill $PIDS` stopping nothing and
+// `set -- $r` giving an empty review diff (2026-09-10); `set -- $spot` printing
+// "0 differing px" for six failed shots, and `pids="$pids $pid"; kill $pids`
+// stopping none of 67 processes (2026-09-11).
+// ---------------------------------------------------------------------------
+
+test('blocks a for loop over an unquoted variable, and names the zsh spelling that works', () => {
+  const { blocked, message } = run('pids=$(pgrep node); for p in $pids; do echo $p; done');
+  assert.ok(blocked);
+  assert.match(message, /\$\{=VAR\}/);
+});
+
+test('blocks set -- $VAR (the empty-review-diff and 0-differing-px shape)', () => {
+  assert.ok(run('for pair in "mine 1" "before 2"; do set -- $pair; echo $2; done').blocked);
+});
+
+test('blocks kill on a variable built up as a list, or filled by pgrep', () => {
+  assert.ok(run('pids=""; for p in /proc/[0-9]*; do pids="$pids ${p#/proc/}"; done; kill $pids').blocked);
+  assert.ok(run('P=$(pgrep -x vite); kill -TERM $P').blocked);
+});
+
+test('ALLOWS the spellings the message recommends: ${=VAR}, a zsh array, and bash', () => {
+  assert.equal(run('for p in ${=pids}; do kill $p; done').blocked, false);
+  assert.equal(run('files=(a.txt b.txt); for f in $files; do echo $f; done').blocked, false);
+  assert.equal(run("bash <<'EOF'\nfor p in $pids; do echo $p; done\nEOF").blocked, false);
+  assert.equal(run("bash -c 'set -- $pair; echo $2'").blocked, false);
+});
+
+test('ALLOWS loops and sets that do not split a bare variable', () => {
+  assert.equal(run('for i in $(seq 1 3); do echo $i; done').blocked, false);
+  assert.equal(run('for f in "$@"; do echo "$f"; done').blocked, false);
+  assert.equal(run('for f in $dir/*.md; do echo $f; done').blocked, false);
+  assert.equal(run('set -- "$@"').blocked, false);
+});
+
+test('ALLOWS kill on a variable that holds one word', () => {
+  assert.equal(run('P=$(ss -ltnp | rg ":8199" | rg -o "pid=[0-9]+" | cut -d= -f2); kill $P').blocked, false);
+  assert.equal(run('kill $!').blocked, false);
+});

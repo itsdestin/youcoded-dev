@@ -428,6 +428,14 @@ def main() -> int:
         pass   # fail open
 
     try:
+        shape = word_split_offender(command)
+        if shape:
+            print(WORD_SPLIT_MESSAGE.format(shape=shape), file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
+
+    try:
         if rg_replace_offender(command):
             print(RG_REPLACE_MESSAGE, file=sys.stderr)
             return 2
@@ -452,6 +460,75 @@ def main() -> int:
     first = command.strip().split()[0] if command.strip().split() else "the tool"
     print(MESSAGE.format(tok=token, glob=glob_part(token), cmd=first), file=sys.stderr)
     return 2
+
+
+# ── guard 7: zsh does not word-split an unquoted `$VAR` ──────────────────────────────────
+# bash splits `$VAR` on whitespace; zsh — the shell Claude Code runs here — does not, unless
+# asked with `${=VAR}`. A value holding several words arrives as ONE word and nothing errors:
+# `for p in $pids` runs once over the whole list, `set -- $pair` sets one argument, `kill $pids`
+# gets one garbled argument. Each has manufactured a false result: `kill $PIDS` "stopped" a rig
+# that kept running and `set -- $r` produced an empty review diff (both 2026-09-10); `set --
+# $spot` printed "0 differing px" for six failed screenshots, and `pids="$pids $pid"; kill
+# $pids` stopped none of 67 leftover processes (both 2026-09-11). A note in
+# ~/system/tools/claude-code-bash-shell.md did not stop five recurrences; this refuses the shapes.
+#
+# Deliberately narrow, because a wrongly blocked command costs more than the trap:
+#   - `for x in $VAR` and `set -- $VAR` exist only to split, so they are wrong in zsh — EXCEPT
+#     when VAR is a zsh array (`VAR=(…)` in the same command), which expands element by element.
+#   - `kill $VAR` only when the same command BUILDS VAR as a list (`VAR="$VAR …"`, `VAR+=`) or
+#     fills it from a pid-listing command (pgrep, pidof, lsof, fuser). `P=$(ss … | cut …); kill
+#     $P` holds one word and works, so it is left alone.
+#   - Anything handed to bash is exempt: `bash -c '…'`, and `bash <<'EOF'` (its body is stripped).
+BASH_HANDOFF = re.compile(r"(?:^|[|&;(]\s*|\s)(?:bash|sh)\s+-c\s")
+FOR_IN_VARS = re.compile(r"\bfor\s+\w+\s+in\s+((?:\$[A-Za-z_]\w*\s*)+)(?=;|\n|do\b|$)")
+SET_DASH_VAR = re.compile(r"\bset\s+--\s+\$([A-Za-z_]\w*)\b")
+KILL_VAR = re.compile(r"(?:^|[|&;(]\s*)kill\s+(?:-[A-Za-z0-9]+\s+)*\$([A-Za-z_]\w*)\b")
+PID_LISTERS = r"(?:pgrep|pidof|lsof|fuser)"
+
+
+def _is_zsh_array(name: str, command: str) -> bool:
+    return re.search(rf"(?:^|[\s;&|(]){re.escape(name)}\+?=\(", command) is not None
+
+
+def _built_as_list(name: str, command: str) -> bool:
+    n = re.escape(name)
+    return bool(
+        re.search(rf"\b{n}=\"\${{?{n}}}?\s", command)                              # VAR="$VAR x"
+        or re.search(rf"\b{n}\+=", command)                                        # VAR+=x
+        or re.search(rf"\b{n}=[\"']?(?:\$\(|`)[^\n]*?\b{PID_LISTERS}\b", command)  # VAR=$(pgrep …)
+    )
+
+
+def word_split_offender(command: str):
+    """The first shape zsh silently runs as ONE word, else None."""
+    if BASH_HANDOFF.search(command):
+        return None
+    body = strip_heredocs(command)
+    for m in FOR_IN_VARS.finditer(body):
+        names = re.findall(r"\$([A-Za-z_]\w*)", m.group(1))
+        if any(not _is_zsh_array(n, body) for n in names):
+            return m.group(0).strip()
+    m = SET_DASH_VAR.search(body)
+    if m and not _is_zsh_array(m.group(1), body):
+        return m.group(0).strip()
+    for m in KILL_VAR.finditer(body):
+        if _built_as_list(m.group(1), body):
+            return m.group(0).strip()
+    return None
+
+
+WORD_SPLIT_MESSAGE = (
+    "Blocked before it ran: `{shape}` — this shell is zsh, and zsh does NOT split an unquoted "
+    "`$VAR` into words the way bash does. The whole value arrives as ONE word and nothing "
+    "errors: a `for` loop runs once over the entire list, `set --` sets a single argument, "
+    "`kill` gets one garbled argument and stops nothing. Each has already faked a result here "
+    "(a rig reported stopped that kept running, an empty review diff, \"0 differing px\" for "
+    "six failed screenshots).\n"
+    "Use one of:\n"
+    "  ${{=VAR}}                       # zsh's explicit split: for x in ${{=VAR}}; kill ${{=VAR}}\n"
+    "  VAR=(a b c); for x in $VAR    # a real array expands element by element\n"
+    "  bash <<'EOF' … EOF            # or run the loop in bash, which splits"
+)
 
 
 if __name__ == "__main__":

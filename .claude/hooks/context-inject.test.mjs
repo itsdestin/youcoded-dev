@@ -360,6 +360,11 @@ test('uncommitted files carry the warning marker even when everything is pushed'
   const out = runHook(ws);
   assert.match(out, /⚠ dirty \[/, 'uncommitted work is the case no push rule can reach');
   assert.match(out, /1 uncommitted file\(s\)/);
+  // 2026-09-11: a folder with nothing committed but unsaved files was labelled
+  // "candidate for cleanup" — the one label that invites deleting the only copy.
+  assert.doesNotMatch(out, /dirty \[[^\n]*candidate for cleanup/,
+    'a worktree holding unsaved files must never be offered up for cleanup');
+  assert.match(out, /dirty \[[^\n]*NOT a cleanup candidate/);
   fs.rmSync(ws, { recursive: true, force: true });
   fs.rmSync(remote, { recursive: true, force: true });
 });

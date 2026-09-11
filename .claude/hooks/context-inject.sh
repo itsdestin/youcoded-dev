@@ -142,6 +142,13 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
             wt_unpushed=$(git -C "$wt_path" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)
             if [[ "$wt_ahead" == "?" ]]; then
                 wt_note="cannot compare against $repo_base"
+            elif [[ "$wt_ahead" == "0" && "$wt_dirty" != "0" ]]; then
+                # WHY: this used to fall through to "candidate for cleanup", which
+                # invites deleting the ONLY copy of uncommitted work. On 2026-09-11 two
+                # days of sync-safety work sat under that label (the ⚠ trailed behind
+                # the suggestion). Nothing committed + unsaved files is the most
+                # fragile state there is, so it must never read as done-with.
+                wt_note="nothing committed beyond $repo_base — NOT a cleanup candidate, its unsaved files exist only here"
             elif [[ "$wt_ahead" == "0" ]]; then
                 wt_note="nothing ahead of $repo_base; merged or empty, candidate for cleanup"
             else

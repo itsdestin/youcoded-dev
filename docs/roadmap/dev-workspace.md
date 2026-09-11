@@ -18,8 +18,14 @@ seen-on is always n/a here.
       so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
       broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
       installer (a failed test step skips packaging) — the installer-icon session needed a
-      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch
-      `n/a` `needs-verify` `checked 2026-09-10` `regression`
+      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch.
+      WORSE 2026-09-11: every master run that day (8+) failed the same 13 Windows tests — the two
+      above plus `app-icons.test.ts` (5, the electron-builder icon paths), `installer-artifact-
+      names.test.ts` (3), `chatsearch-transcript-reader` → `containedTranscriptPath`,
+      `managed-workspace-setup` → "never puts the workspace where sync would upload it", and
+      `remote-phone-findings.test.ts` failing to load. The icon and installer-name ones read like
+      path-separator assumptions, and they guard exactly what a Windows installer ships
+      `n/a` `needs-verify` `checked 2026-09-11` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access
@@ -39,13 +45,6 @@ seen-on is always n/a here.
       prescribes: move the overflow into the lazy doc the rule points at
       `n/a` `confirmed` `checked 2026-09-10`
 
-- [ ] `use-provider-type.test.tsx` → "invalidation › is triggered by the ChatGPT card on a status
-      transition" failed once in a `verify.sh --full` run on session/cache-competitor-survey
-      (2026-09-10, `expected "vi.fn()" to be called at least once`, 1,224 ms) and passed 14/14 in
-      an isolated re-run. That branch changes no renderer file and no ChatGPT card code, so the
-      likeliest read is the same shape as the step-guard entry below: a timer-dependent
-      assertion under full-suite load
-      `desktop` `needs-verify` `checked 2026-09-10`
 - [ ] The perf rig throws away a finished build when the machine is merely still calming
       down. Its idle gate polls five times, 30 s apart, then aborts the whole run — but the
       abort happens AFTER the multi-minute build, and a load average decaying from other
@@ -106,8 +105,11 @@ seen-on is always n/a here.
       comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
       in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
       a signal the card emits, so the test waits on the transition rather than on the clock. Not
-      done here because it is another feature's test and a bad rewrite is worse than a slow one
-      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
+      done here because it is another feature's test and a bad rewrite is worse than a slow one.
+      Also seen in a local `verify.sh --full` on session/cache-competitor-survey (2026-09-10,
+      passed 14/14 alone; that entry was a duplicate of this one and is merged here), and on the
+      macOS CI leg of youcoded `be0ee90c` (2026-09-11), green on a re-run of the same commit
+      `n/a` `confirmed` `checked 2026-09-11` `needs-repro`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
@@ -146,8 +148,10 @@ seen-on is always n/a here.
       on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
       prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
       3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
-      but it fails whole runs, which is how a real failure next to it gets ignored
-      `n/a` `confirmed` `checked 2026-09-03`
+      but it fails whole runs, which is how a real failure next to it gets ignored. Seen again
+      2026-09-11 on the macOS leg of youcoded `be0ee90c` (in "interruptFromUser mirrors the
+      outcome mapping"), green on a re-run of the same commit
+      `n/a` `confirmed` `checked 2026-09-11`
 
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
@@ -273,18 +277,6 @@ seen-on is always n/a here.
       `compare.mjs` could mark a pair "not comparable" when the runs' load differs by more than
       a set factor, instead of printing REJECT
       `n/a` `confirmed` `checked 2026-09-10` `performance`
-
-- [ ] The Bash tool's zsh does not word-split an unquoted variable, and it has now bitten three
-      sessions despite `~/system/tools/claude-code-bash-shell.md`: `kill $PIDS` signalled nothing
-      while a check loop reported the rig stopped (and an agent was told so), `set -- $r` produced
-      an empty review diff a reviewer was pointed at (both 2026-09-10), `$V boot` in the installer
-      session. `.claude/hooks/glob-guard.py` already stops the zsh glob trap the same way; teach
-      it (with `glob-guard.test.mjs` cases) to refuse `kill $VAR`, `set -- $VAR` and
-      `for x in $VAR` unless wrapped in `bash -c` or written `${=VAR}`.
-      RECURRED 2026-09-11 (site-scroll-motion): `set -- $spot` left a pixel comparison with no
-      arguments, every screenshot failed identically, and the loop printed "0 differing px" for
-      all six spots — a false proof of "identical" that was nearly reported to Destin
-      `n/a` `confirmed` `checked 2026-09-11`
 
 - [ ] Implementation plans keep prescribing tests that cannot fail, because the rule that forbids
       them never loads while a plan is being written. The 2026-09-10 freeze-fixes plan shipped five
@@ -540,6 +532,20 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] `audit-anchors.mjs` reports every sub-repo anchor and MAP path newer than the shared
+      `youcoded/` checkout as missing. On 2026-09-11 three sessions each got 17 MAP paths and 3
+      anchors red that all exist on app GitHub master, and each dropped it because the audit
+      already prints a "N commits behind" note — but the red still reads as a failure every
+      session has to disprove by hand. Fix: when a sub-repo checkout is behind, check its anchors
+      with `git cat-file` against the fetched `origin/<default>` instead of the working tree
+      `n/a` `confirmed` `checked 2026-09-11`
+- [ ] No one command answers "what is open across the six repos — what landed, what is
+      superseded, what exists only on this laptop". The 2026-09-11 open-work session spent ~40
+      hand-built calls on it (ahead and unique-patch counts per branch, whether a branch's files
+      already match master, PR states, unsaved folders, programs still running in them). The
+      unreviewed `feat/dev-dashboard` + `design/dev-dashboard` branches build most of this as a
+      page; a read-only `scripts/open-work.sh` printing the same table would serve a session
+      `n/a` `confirmed` `checked 2026-09-11`
 - [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
       `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
       byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped
