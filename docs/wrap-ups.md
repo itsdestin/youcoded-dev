@@ -423,3 +423,16 @@ recurred — the repetition is the data.
 - Asked in a question menu to pick between three DESCRIBED scroll motions, Destin said "confused, think i need to see these"; with the three built he picked in one line → applied: `~/system/me/preferences.md`
 - Live review slides only show the app, so reviewing site motion meant a clip deck with hand-named files plus a local server link → dropped: existing tools covered it once the port bug was fixed; worked example (scenes + `scroll-tour.js`) in `docs/archive/design/2026-09-11-site-scroll-motion/`
 - deleted/merged: the stack and mix prototypes and the `?motion=` switch (100 lines out of `docs/index.html`); review deck archived
+
+## 2026-09-08 — plan-limit card Upgrade plan button (session/warn-upgrade-btn; recorded 2026-09-11 when it merged)
+- The workbench "isn't clickable" scare was NOT the button: inactive sessions render pointer-events:none, so a fixture session's card looks dead until the session is activated → dropped: a future session should click the session strip first  [~8 probes]
+- Piping `run-workbench.sh` through `head` SIGPIPEs vite and kills the workbench mid-session — cost 2-3 restarts and confusing stale "exited" notices → applied: detach-with-redirect recipe in `scripts/run-workbench.sh` usage header
+- The workbench mock's `shell.openExternal` fell through to the catch-all and silently did nothing, so real clicks looked dead → applied: real `openExternal` (window.open) in `dev/workbench/mock-shim.ts`
+- Destin's final card decision (stated twice): Upgrade plan = transparent/secondary + LEFT; Switch Providers = green/primary + RIGHT → applied: `docs/archive/handoffs/2026-09-05-chatgpt-signin-START-HERE.md` and the AttentionBanner WHY comments
+
+## 2026-09-11 — open-work inventory, then three merges and a branch cleanup (session/2026-09-11-open-work-merges, youcoded + workspace)
+- The session-start report calls a folder with nothing committed but unsaved files "candidate for cleanup" (with a ⚠); `sync-safety-audit-20260908` holds two days of unsaved work under that label → recorded here; the inventory flagged it to Destin rather than cleaning it
+- The branch the upgrade-button record lived on (`session/wrapup-warn-upgrade-btn`) had rewritten `docs/wrap-ups.md` wholesale, deleting ten other sessions' entries; only its additions were carried over by hand
+- The fresh app worktree lacked `dompurify` (added to master this week), so the first full verify failed 85 files at import; fixed with the documented npm pack + tar recipe, then all checks passed. RECURRENCE of the 2026-09-11 error-states entry above → dropped: the recipe in `docs/workspace-workflows.md` worked as written
+- The docs audit reported 17 "missing" MAP paths and 3 broken anchors; all exist on app GitHub master — the audit resolves sub-repos from a shared checkout 213 commits behind → dropped: the audit already prints that note
+- deleted/merged: crash diagnostics, the Upgrade plan button and the Settings reorder merged (youcoded `be0ee90c`); superseded work removed — 31 folder copies, 56 laptop branches and 26 GitHub branches, PR #29 closed, 67 leftover programs from deleted session folders stopped
