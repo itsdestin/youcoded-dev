@@ -37,11 +37,13 @@ call and the review deck is where he sees it.
    sessions (a first-time version), and two smaller empty screens: a project's Conversations
    tab and the session note's placeholder (decided: Q-7, Q-8, S-3; the chat pane's extra
    line was declined on the review deck, C-1).
-9. A way to start a session with no project folder at all (Destin's note on W-1): a "No
-   folder" choice on the new-session form, which runs the session in an empty folder the
-   app owns, so the assistant starts with no instructions and no files. Asked as its own
-   question with the contract. The fuller idea, a "Home" folder every install starts with
-   that holds settings applying everywhere, is on the roadmap (native-harness → sessions).
+9. A "No folder" choice at the top of the new-session form's folder list (decided: round 2,
+   N-6, from Destin's note on W-1). The renderer sends a sentinel; main swaps it for an
+   empty folder the app owns, `<userData>/No folder`, before the session starts, so the
+   assistant begins with no instructions and no files and every header shows "No folder".
+   Desktop and remote only: the phone's runtime creates sessions from the folder it is
+   handed. The fuller idea, a "Home" folder every install starts with that holds settings
+   applying everywhere, is on the roadmap (native-harness → sessions).
 6. Settings gains a Help & feedback page: Show me around, the tips switch, the community at
    r/youcoded, Report a bug, Known issues, the version. Report a bug stays reachable from
    Development too (decided: Q-9, Q-10).
