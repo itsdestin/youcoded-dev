@@ -187,3 +187,13 @@ Filing test: reaching the app from another device — the protocol, the browser 
       changes, and certificates expire in ~90 days so renewal has to be handled. Design
       approved in the round-4 deck; start at the technical design, not at questions
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json
+
+- [ ] Verify the merged remote-access security fixes on a real phone, and finish the Android
+      device-token reuse. Two things wait for a real device: (1) confirm the WebSocket origin
+      allow-list accepts the actual Android WebView — it sends an opaque `null` origin, now
+      allowed, but that path was only reasoned about, never seen on a phone; and (2) make the
+      phone reuse its saved pairing credential instead of re-sending the password on every
+      reconnect (today it re-pairs and grows a new device row each time — a UX wart, not a
+      security hole; design ready in the private security record). Destin 2026-09-11: do this
+      in the Android rebuild's testing phase — a lot of device testing happens there anyway.
+      `remote` `parked` `checked 2026-09-11` `security`
