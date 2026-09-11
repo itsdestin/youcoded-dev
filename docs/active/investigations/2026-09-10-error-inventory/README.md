@@ -80,6 +80,14 @@ F7 `9641c54d` (a backup that never started) · F8 `47a40975` · F9 `bde913e0` ·
 `9981cf60` (tag picker, Resume Browser tag filter) · F6 `58d3048b` (Android, file over the size
 cap). Review-deck switches: `5dee518f` (`?fail=`, `?update=available`).
 
+**Destin's review (2026-09-11), three decks in `docs/active/design/2026-09-11-error-batch-1/`:**
+13 of 15 steps kept as built. His notes, all applied: /copy failure reads "Couldn't copy — please
+try again." (`9843cc29`); the Backup & Sync upload failure is a full error block under its row —
+Retry, plus Report bug when the cause is unknown — and stays until the next upload, with the
+backend's reason in plain words on desktop and phone (`c29a87b7`, `9d956b21`); and every error
+block puts Retry last, at the right (`89243b49`). The standing rule he restated: **every error
+state offers an action.**
+
 **Left for later batches, found during batch 1:**
 - The phone's `tags:list` still answers `[]` on purpose (tagging UI deferred on Android), so the tag manager can still say "No tags yet" on a phone — batch 2 (Android).
 - Nothing listens for remote-shim's `OUTCOME_UNKNOWN_EVENT`, so "couldn't confirm" is never followed up with "it went through after all" — batch 2.
