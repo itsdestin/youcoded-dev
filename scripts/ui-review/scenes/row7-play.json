@@ -1,7 +1,8 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&signedIn=1&seed=none&title=meeting+notes",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&signedIn=1&seed=none&title=meeting+notes&bot=passive",
   "theme": "halftone-dimension",
   "boot": 3000,
+  "why": "2026-09-10: Connect 4 is no longer its own header button and its board is no longer the old blue class soup -- the arcade opens from the Games button (a hover hint, so data-hint, not title) and the board addresses its columns by data-col. Same route as the film's promo-connect4 scene, including &bot=passive so the opponent answers each drop.",
   "actions": [
     {
       "hold": 600
@@ -19,26 +20,32 @@
       "settle": 1500
     },
     {
-      "click": "[title='Connect 4']",
-      "settle": 1500
+      "click": "button[title='Games'], button[data-hint='Games']",
+      "settle": 900
     },
     {
-      "hold": 1200
+      "clickText": "Connect 4",
+      "tag": "span",
+      "settle": 400
     },
     {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(4)",
+      "waitFor": "[data-col='3']",
+      "settle": 1200
+    },
+    {
+      "click": "[data-col='3']",
       "settle": 1600
     },
     {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(3)",
+      "click": "[data-col='2']",
       "settle": 1600
     },
     {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(5)",
+      "click": "[data-col='4']",
       "settle": 1600
     },
     {
-      "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(2)",
+      "click": "[data-col='1']",
       "settle": 1600
     },
     {

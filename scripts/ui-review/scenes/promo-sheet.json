@@ -19,7 +19,7 @@
       "mark": "attach"
     },
     {
-      "click": "button[title='Session Files'], button[aria-label='Session Files']",
+      "click": "button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']",
       "settle": 900
     },
     {

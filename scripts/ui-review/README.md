@@ -270,27 +270,26 @@ file alone leaves an already-shared link showing the old picture.
 
 ### The art is each theme's own rig
 Vendored to `youcoded/docs/mascots/<slug>.rig.svg` from
-`wecoded-themes/themes/<slug>/assets/mascot-rig.svg`. Only four themes ship one
-(golden-sunbreak, halftone-dimension, kuromi-dreamer, strawberry-kitty); anything else falls
-back to the app's `DEFAULT_BUDDY_RIG` and is tinted.
+`wecoded-themes/themes/<slug>/assets/mascot-rig.svg` — copy them fresh before regenerating.
+Since 2026-09-05 seven themes ship one (Cotton Candy Sky, Meadow Mist and Devil's Garden joined
+the first four), so all four picker buttons wear their theme's own character; a theme without
+a rig would still fall back to the app's `DEFAULT_BUDDY_RIG`, tinted.
 
 **Do not strip `slot-hat` / `slot-eyewear` as empty scaffolding.** Each theme's SIGNATURE
 lives there — Halftone's visor is eyewear, Kuromi's horns and Strawberry Kitty's ears-and-bow
 are hats. Stripping them turned Halftone into a featureless blob and left both cats bald.
 
-### Faces and ink come from the promo film
-`worktrees/promo` (branch `feat/promo-video`), `scripts/promo/src/`:
+### Faces come from the rigs; poses from the promo film
+The warm face set the film introduced (every expression keeps the welcome face's big sparkled
+eyes; brows, lids and the mouth carry it — nothing is a hollow black disc, which is what made
+the old surprised face scary) now lives IN every theme rig and the app's default rig
+(wecoded-themes 817e6b6, youcoded b8eef02f). So since 2026-09-10 `gen-hero-mascots.py` passes
+`WARM = False` on every row: overwriting a rig's faces would paint older copies over the
+characters' current ones. Its own ink rule (`accent × 0.32`, never a white on-accent) matters
+only to a tinted default rig, which the picker no longer shows.
 
-- **`themes.ts → inkFor`** — the tinted rig's eyes and mouth are a deep shade of the BODY
-  colour, `accent × 0.32`. NEVER the theme's on-accent: that is white on three of the
-  picker's four themes, and white eyes on a coloured body are "terrifying" (Destin).
-- **`host/faces.ts → WARM`** — every expression keeps the welcome face's big sparkled eyes;
-  brows, lids and the mouth carry the expression. Nothing is ever a hollow black disc, which
-  is what made the old surprised face scary.
-- **`host/Host.tsx → DEFAULT_RIG_SLUGS`** — which rigs take the warm set. Halftone keeps its
-  visor faces and the two cats keep their cat faces; those ARE those characters.
-- **`host/engine.ts`** — the pose library and its angles: wave −150 with a waggle, cheer
-  ±150 with a jump, shrug ±75, tada ±115, think −165, startle ±160.
+- **`scripts/promo/src/host/engine.ts`** — the pose library and its angles: wave −150 with a
+  waggle, cheer ±150 with a jump, shrug ±75, tada ±115, think −165, startle ±160.
 
 `happy` is deliberately unused on the site: its eyes are two thin closed arcs and at 45px
 they read as "the eyes have gone missing". And never ask a rig for a face it lacks — an

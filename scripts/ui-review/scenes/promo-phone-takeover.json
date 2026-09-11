@@ -11,7 +11,7 @@
    "hold": 600
   },
   {
-   "click": "[title='All Sessions']",
+   "click": "[title='All Sessions'], [data-hint='All Sessions']",
    "settle": 600
   },
   {
@@ -62,7 +62,7 @@
    "hold": 1500
   },
   {
-   "click": "[title='Menu']",
+   "click": "[title='Menu'], [data-hint='Menu']",
    "settle": 600
   },
   {

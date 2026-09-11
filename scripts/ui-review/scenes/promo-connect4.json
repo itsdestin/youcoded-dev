@@ -26,7 +26,7 @@
       "settle": 700
     },
     {
-      "click": "button[title='Games']",
+      "click": "button[title='Games'], button[data-hint='Games']",
       "settle": 900,
       "mark": "games"
     },

@@ -22,11 +22,11 @@
       "hold": 800
     },
     {
-      "click": "[title='Browse skills']",
+      "click": "[title='Browse skills'], [data-hint='Browse skills']",
       "settle": 800
     },
     {
-      "click": "[title='Open marketplace']",
+      "click": "[title='Open marketplace'], [data-hint='Open marketplace']",
       "settle": 1500
     },
     {

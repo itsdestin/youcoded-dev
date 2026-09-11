@@ -22,20 +22,21 @@
       "hold": 600
     },
     {
-      "click": "[title*='click to change model']",
+      "click": "[title*='click to change model'], [data-hint*='click to change model']",
       "settle": 900
     },
     {
-      "hold": 700
-    },
-    {
-      "clickText": "Grok 4",
-      "tag": "button",
+      "_why": "2026-09-10: the model list's rows read 'Grok 4 · OpenRouter' now, so an exact-text click found nothing; same route as the film's promo-model scene. The picker closes itself after a pick, so the old Escape is gone (with nothing open, Escape interrupts the chat) and the scene waits for the status bar to name the new model instead.",
+      "waitFor": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
       "settle": 700
     },
     {
-      "key": "Escape",
-      "settle": 500
+      "click": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
+      "settle": 300
+    },
+    {
+      "waitFor": "[title^='x-ai/grok-4'], [data-hint^='x-ai/grok-4']",
+      "settle": 700
     },
     {
       "click": "[placeholder^='Message']",

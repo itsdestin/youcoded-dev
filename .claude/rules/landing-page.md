@@ -43,8 +43,10 @@ Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-lan
 workbench serving another tree and refuses to overwrite the gallery if any shot failed
 verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
 The last three followed on 2026-09-04: `youcoded/docs/tools/gen-hero-mascots.py` (picker
-mascots — theme rigs, ink `accent x 0.32` never on-accent, WARM faces, a lifted arm scaled
-~1.7-2x) and `gen-og-image.mjs` (bump `?v=` on `og:image` or a shared link keeps the old one).
+mascots — each theme's own rig copied fresh from the registry, its own faces kept, a lifted
+arm scaled ~1.7-2x) and `gen-og-image.mjs` (bump `?v=` on `og:image` or a shared link keeps the old one).
+The loops are recorded under the names `index.html` plays (`landing-row1-any-ai` ← scene
+`row1-any-ai`, `landing-row5-follow` ← `row5-follow-mirror`, …); `site-assets.sh` holds the map.
 **Why:** the previous site drifted for four months on hand-drawn mockups; the share image
 stayed a screenshot of the pre-redesign app.
 **Guard:** the script's own checks; `scripts/workbench-boot-check.mjs`.

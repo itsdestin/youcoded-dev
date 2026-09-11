@@ -12,12 +12,12 @@
       "hold": 900
     },
     {
-      "click": "[title='Browse skills']",
+      "click": "[title='Browse skills'], [data-hint='Browse skills']",
       "settle": 900,
       "mark": "drawer"
     },
     {
-      "click": "[title='Open marketplace']",
+      "click": "[title='Open marketplace'], [data-hint='Open marketplace']",
       "settle": 1800,
       "mark": "market"
     },

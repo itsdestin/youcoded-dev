@@ -30,7 +30,7 @@
       "hold": 900
     },
     {
-      "click": "button[title='Session Files'], button[aria-label='Session Files']",
+      "click": "button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']",
       "settle": 900
     },
     {
@@ -47,7 +47,7 @@
       "hold": 2000
     },
     {
-      "click": "button[title='Hide list']",
+      "click": "button[title='Hide list'], button[data-hint='Hide list']",
       "settle": 1100
     },
     {

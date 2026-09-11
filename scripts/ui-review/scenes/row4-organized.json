@@ -2,7 +2,7 @@
   "theme": "dark", "boot": 3000,
   "actions": [
     {"hold": 600},
-    {"click": "[title^='Tags & note']", "settle": 900}, {"hold": 700},
+    {"click": "[title^='Tags & note'], [data-hint^='Tags & note']", "settle": 900}, {"hold": 700},
     {"clickText": "work", "tag": "button", "settle": 700},
     {"click": "[placeholder^='Search or create']", "settle": 200}, {"typeSlow": "midterm", "cps": 16}, {"key": "Enter", "settle": 800},
     {"key": "Escape", "settle": 600},
