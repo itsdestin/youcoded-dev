@@ -279,3 +279,43 @@ Filing test: reaching the app from another device — the protocol, the browser 
       changes, and certificates expire in ~90 days so renewal has to be handled. Design
       approved in the round-4 deck; start at the technical design, not at questions
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json
+
+- [ ] A reconnect costs far more than what was missed. The computer replays a full copy of every
+      conversation (the phone's reducer replaces its whole state, so every visible message is
+      redrawn) plus every buffered tool event per session — up to 10,000, all types, not only the
+      questions still waiting — and the screens then make about fifteen requests, with skills and
+      the / commands asked twice (the shim's re-ask list AND each screen's own reconnect listener).
+      Cheapest first step: replay only open asks and drop the duplicate pair. Found 2026-09-11 in
+      the speed/sync review (`docs/active/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
+      Destin: "it currently feels unresponsive and lags behind desktop sometimes."
+      `remote` `confirmed` `checked 2026-09-11` `performance`
+
+- [ ] Buttons on the phone wait for the computer before anything on screen changes: Stop (it only
+      sends Escape and waits for Claude Code to record the interruption), a permission answer (the
+      card clears on the reply), closing a session, sending in a YouCoded-runtime chat, and the
+      YouCoded-runtime permission mode. Each should change at once and undo itself with a plain
+      message if the computer refuses. Destin, 2026-09-11: "i [want] all buttons to feel as close
+      to instantaneous as possible."
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] Things only one window knows, so the phone and the computer disagree: YouCoded-runtime queued
+      messages (renderer-local by design note), the YouCoded-runtime permission mode (never
+      announced), the model label (corrects only on the next reply), the "working" dots on the
+      device that did not type, and the status bar (pushed on a 10 s timer). The computer should
+      announce each to every screen; moving the queue to the computer would also let it survive a
+      page reload. Destin, 2026-09-11: "the interface should almost always match the desktop ui."
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] A dropped connection should resume rather than re-sync: number what the computer sends per
+      session, let a returning phone ask for "everything after N", and keep the full copy as the
+      fallback for a gap too old or a computer that restarted. The terminal already does exactly
+      this per session; nothing else does. Would also let a request cut off mid-flight be answered
+      from the computer's record instead of asked about. Big — file behind the cheaper items above.
+      `remote` `confirmed` `checked 2026-09-11` `performance`
+
+- [ ] A YouCoded-runtime ("native") session started from a phone never starts, and a "No folder" one
+      opens in the home folder: the host's `session:create` calls `sessionManager.createSession`
+      only — no `nativeHost.create`/`resume`, no `resolveNoFolderCwd`, unlike the desktop's own
+      handler. Messages then fail as `not-live`. Belongs with the native-sessions-on-a-phone batch;
+      found 2026-09-11 while fixing the create flow.
+      `remote` `confirmed` `checked 2026-09-11`

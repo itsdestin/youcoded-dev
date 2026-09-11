@@ -198,3 +198,73 @@ quick saved-key sign-in now shows only the boot spinner (words after 1.5 s).
 the whole page on any connection drop, which a real phone never does, so the live-code default is
 the wrong thing to judge reconnect feel on; use `--phone-build` for that and rebuild after renderer
 edits.
+
+## Speed and sync review (Destin, 2026-09-11, evening)
+
+Destin: "how can we improve the reliability/speed of state updates/sync between the remote client
+and the desktop device? it currently feels unresponsive and lags behind desktop sometimes. i [want]
+all buttons to feel as close to instantaneous as possible and the interface should almost always
+match the desktop ui."
+
+Read-only review of the shim, the host, App and the chat reducer, with three investigators and the
+dev log. What the code says:
+
+1. **New chat content is NOT delayed on the phone.** Transcript, hook and PTY events go to the
+   desktop window and every remote client in the same pass (`ipc-handlers.ts` ~2412, ~2853;
+   `remote-server.broadcast`), both screens batch them the same way (`transcript-batch.ts`), and the
+   watcher has no debounce (2 s poll as a backstop). Claude Code writes its log in chunks, which
+   both devices feel equally.
+2. **The phone's socket died every 55–90 s in the 09-11 log** (seven drops in ten minutes, mostly
+   1006, one preceded by "no answer to the last ping"). The host's check ran every 20 s and gave up
+   after ONE miss, and `close()` then waited out ws's 30 s handshake timer, so a locked or
+   radio-pausing phone was cut off and the log was stamped ~30 s late. No times in the log, so a
+   lock could not be told from a real fault.
+3. **The page had no liveness check of its own while in use.** Only visibilitychange / online /
+   pageshow ran one. A tap into a silently dead socket waited the full 30 s request timeout.
+4. **Every reconnect is a full re-sync:** full chat snapshot (replaces the whole reducer state,
+   `chat-reducer.ts` ~885), every buffered hook event per session (up to 10,000 — `bufferHookEvent`
+   keeps ALL types, not only open asks; the comment at the replay says otherwise), plus ~15 screen
+   requests, with skills and commands asked twice (shim rehydrate AND the listeners).
+5. **Buttons that wait for the computer:** Stop (sends Escape, nothing local — `StopButton.tsx`),
+   permission answers (card clears only on the reply — `ToolCard.tsx` ~594), closing a session,
+   native sends, native permission mode.
+6. **State only one window knows:** native queued messages (`QueuedMessagesStrip` is renderer-local
+   by its own note), native permission mode (never announced), the model label (corrects only on the
+   next reply), the "working" dots on the device that did not type, and the status bar (10 s timer).
+7. **Creating a session from the phone:** the form closes on tap without waiting, the reply was used
+   only to patch `harnessId`, and the session appeared only via `session:created` — which is queued
+   while a phone is restoring, and even then `mayAutoSelect()` is false on a remote client until the
+   hydrate lands. Hence "it just immediately resets to the create session screen".
+8. **False "Start your first session":** `hasResumable` was set to false when `session:browse`
+   FAILED (drop, timeout, or a non-list answer), and was never asked again.
+9. **Native/No-folder sessions started from a phone never start at all** — `remote-server`'s
+   `session:create` calls `sessionManager.createSession` only, with no `nativeHost.create/resume`
+   and no `resolveNoFolderCwd`. Belongs with the native-sessions-on-a-phone batch.
+
+### Landed (2026-09-11 evening) — fixes 1–3 of the numbered list
+
+1.  **Creating a session says so on the tap.** `startingSession` / `startFailed` in App;
+    "Starting your session…" replaces the New Session buttons; the session is adopted from the
+    computer's ANSWER (`adoptCreatedSession`, which also settles the remote place so a hydrate
+    cannot move him), so the Initializing screen appears without waiting for the announcement; a
+    failed start shows `ErrorState` with Retry instead of the empty screen.
+2.  **The page watches its own connection** (`probeConnection`, `startHeartbeat`): while it is in
+    front and the computer has been quiet 12 s, it asks the cheap `remote:ping` and replaces the
+    connection if nothing answers in 5 s. Hidden longer than 60 s → reconnect on sight, no question.
+    Host: `MAX_MISSED_PINGS = 3` (about a minute of grace) and `terminate()` instead of `close()`.
+    Log lines now carry an ISO time and the drop says how long the client had been silent.
+3.  **The first-run screen is honest.** `showFirstRunWelcome()` (own module, own tests): a failed or
+    non-list answer is unknown, not "none"; the question is asked again on reconnect; the screen
+    waits for the open-session list; a new computer clears the old answer; and the form no longer
+    opens itself during a catch-up.
+
+Tests: `create-session-feedback.test.ts`, `remote-heartbeat.test.ts`, plus the liveness/log guards in
+`remote-recovery.test.ts` and `remote-host-reliability.test.ts`.
+
+### Not landed, in the order proposed to Destin
+4. Lighter reconnects (replay only open asks; drop the duplicate skills/commands re-ask) — ~1 day.
+5. Optimistic buttons (Stop, permission answers, close, native send) with undo — 1–2 days.
+6. Announce what only one window knows (native mode, model, working, queued messages; status bar on
+   change) — 2–3 days.
+7. Update chats in place on reconnect instead of replacing them — ~1 week.
+8. Numbered event log with resume — 2–3 weeks.
