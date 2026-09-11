@@ -71,6 +71,17 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       sessions showed no "Start a conversation" text; Destin said ignore for now
       `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
+- [ ] Switching sessions in terminal view redraws the letters of EVERY open terminal each time
+      (the black-glyph safety net in `TerminalView.tsx`). Measured 2026-09-10 with the new perf-lab
+      terminal scenario: no change warranted on software rendering — a terminal-view switch settles
+      in ~137 ms against ~124 ms in chat view, inside the run-to-run spread (103–158 ms), with one
+      redraw per switch (perf-reports/2026-09-11-0358-a6544d7-atlas-baseline.md). NOT measured: the
+      graphics-card cost on real hardware, which the rig cannot see. Open check: in a dev instance
+      with six busy terminals, switch rapidly in terminal view and say whether it feels slower than
+      chat view; if it does, the throttle is written up as Task 5B of the 2026-09-10 main-thread
+      freeze-fixes plan
+      `chat` `desktop` `needs-verify` `checked 2026-09-10` `performance`
+
 - [ ] File and model sizes disagree with websites — the Local Models row says 74.2 GB for a
       download Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based, the site
       1000-based). Decided 2026-09-02: count 1000-based everywhere, the way websites, phones

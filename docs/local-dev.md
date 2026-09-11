@@ -169,3 +169,9 @@ live-acceptance run):
    synthetic KeyboardEvents).
 5. Never do any of this against the live app (live-app-safety rule) — the flag-launched
    dev instance only.
+6. **A session you create here is a REAL conversation in Destin's synced archive.** `--profile`
+   isolates `userData` only (see "What is shared" above): the transcript lands in the real
+   `~/.claude/projects`, the reconciler mirrors it into `~/YouCoded/Personal`, and sync pushes
+   it to his other machines. On 2026-09-10 three throwaway "Reply with just the word ok."
+   runtime checks did exactly that. For scripted checks that must create sessions, launch
+   against a throwaway `HOME` the way `scripts/perf-lab/launch.mjs` does, or say so to Destin first.

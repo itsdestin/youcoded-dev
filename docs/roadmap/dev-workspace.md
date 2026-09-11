@@ -242,6 +242,43 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] The speed-test comparison can call a change KEEP even though the Projects or long-scrollback
+      boots logged errors: `scripts/perf-lab/compare.mjs`'s `errorTotal` counts error lines from
+      the workload and terminal boots but ignores `projectsBoot` and `scrollbackBoot`. Found while
+      reviewing the new terminal scenario, 2026-09-10
+      `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] The speed-test comparison judges two runs taken at very different machine load as if
+      they were alike. On 2026-09-10 two freeze-fix branches both read 16–20% slower than master
+      on long-conversation switches; it took a second master run and a second run of each branch
+      (~25 min of rig time) to show the gap tracked load — busy repeats at 750–900% CPU against
+      quiet ones at 300–400% — not code. Every report already records `cpuDuringPct`/load, so
+      `compare.mjs` could mark a pair "not comparable" when the runs' load differs by more than
+      a set factor, instead of printing REJECT
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] The Bash tool's zsh does not word-split an unquoted variable, and it has now bitten three
+      sessions despite `~/system/tools/claude-code-bash-shell.md`: `kill $PIDS` signalled nothing
+      while a check loop reported the rig stopped (and an agent was told so), `set -- $r` produced
+      an empty review diff a reviewer was pointed at (both 2026-09-10), `$V boot` in the installer
+      session. `.claude/hooks/glob-guard.py` already stops the zsh glob trap the same way; teach
+      it (with `glob-guard.test.mjs` cases) to refuse `kill $VAR`, `set -- $VAR` and
+      `for x in $VAR` unless wrapped in `bash -c` or written `${=VAR}`
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] Implementation plans keep prescribing tests that cannot fail, because the rule that forbids
+      them never loads while a plan is being written. The 2026-09-10 freeze-fixes plan shipped five
+      such tests (a "hung write" test, a liveness smoke, two burst tests and a no-custom-CSS case)
+      with "Expected: FAIL" lines that were never true; review and mutation proofs caught all
+      five, at the cost of an extra fix wave. `test-suite-hygiene.md` → "A guard you did not break
+      is a guard you did not test" already says it, but its `paths:` cover test files only. Adding
+      `"**/docs/*/plans/**"` is blocked by the checker, not by the idea: `audit-anchors.mjs`'s
+      `globToRegex` turns a leading `**/` into `.*/`, which needs at least one folder in front, so
+      no `**/docs/...` glob can match the workspace's own top-level `docs/` and the audit reports
+      it as "matching nothing". Fix the matcher (`**/` = zero or more folders, with a test that
+      `worktreeBlindGlobs` still flags blind globs), then add the plans glob
+      `n/a` `confirmed` `checked 2026-09-10`
+
 - [ ] **The blank-content instrument measures partly with its own weight, which is the exact
       shape the perf-lab README now forbids.** `late-content.mjs`'s per-frame `sample()` runs
       `querySelectorAll('.timeline-entry')` over the whole list and a `getBoundingClientRect()`
@@ -259,12 +296,13 @@ seen-on is always n/a here.
       found the same class in the rig's artifact-open timing
       `n/a` `confirmed` `checked 2026-09-10` `performance`
 
-- [ ] The terminal is the largest part of the app with NO speed measurement at all, and it is
-      where output volume is highest — so the one surface most likely to feel slow is the one
-      surface no number covers. Needs a scenario built from scratch: drive a command that
-      prints a great deal, measure what it costs to draw and what it costs the main process.
-      Carried over from the cycle-3 handoff (2026-09-03) when that document was archived; it
-      had never been filed as an item of its own
+- [ ] The terminal's DRAWING of a large burst of output has no speed measurement, and it is
+      where output volume is highest. Half-covered since 2026-09-10: perf-lab's `terminal`
+      scenario (`scripts/perf-lab/scenario-terminal.mjs`) measures session switches in terminal
+      view — painted time, long tasks, atlas clears per switch — but it fills each terminal
+      before measuring, so the cost of printing a great deal while you watch, and what that
+      costs the main process, is still unmeasured. Carried over from the cycle-3 handoff
+      (2026-09-03) when that document was archived
       `n/a` `confirmed` `checked 2026-09-10` `performance`
 
 - [ ] Every perf number is taken software-rendered, and that is now MEASURED rather than

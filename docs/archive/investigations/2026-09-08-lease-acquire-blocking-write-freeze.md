@@ -1,6 +1,6 @@
 ---
 date: 2026-09-08
-status: active
+status: shipped
 type: investigation
 topic: The whole app froze solid for 6+ minutes right after a lease acquire; a synchronous file write on the main process is the leading suspect
 ---

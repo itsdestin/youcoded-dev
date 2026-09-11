@@ -49,15 +49,15 @@ reading the report. Do not let this table drift optimistic.
 | layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
 | blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
 | which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
-| terminal | — | **NOT covered** |
+| terminal (six sessions, 40 switches in terminal view, atlas clears per switch) | `scenario-terminal.mjs` | **covered** since 2026-09-10 — software GL only, GPU upload cost NOT measured |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**All eight phases are reachable from the CLI.** `run.mjs`'s phase list is
-`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'scrollback']`
-— pick any subset with `--only`. (This paragraph previously said the list was four
+**All nine phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'scrollback']`
+— pick any subset with `--only`. (`terminal` added 2026-09-10.) (This paragraph previously said the list was four
 phases and that `stall` and `artifacts` were unreachable; that stopped being true when
 they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
 
@@ -67,9 +67,14 @@ they were wired in, and the doc did not follow. Corrected 2026-09-03 against the
 
 ```bash
 node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--history-repeats 5] \
-  [--workload-repeats 3] [--only startup,history,workload,shots] [--force-build] \
+  [--workload-repeats 3] [--terminal-repeats 3] [--only startup,history,workload,shots] [--force-build] \
   [--label <text>] [--out perf-reports/] [--max-minutes 45] [--dry-run]
 ```
+
+(`--help` lists every `--*-repeats` flag.) **A default-run baseline taken before the
+`terminal` phase existed (before 2026-09-10) fails CLOSED against a newer default run**
+on its two `terminal.*` PRIMARY paths — compare.mjs judges a phase only one report ran
+as unjudgeable, by design. Re-take the baseline, or compare with `--only` phases both ran.
 
 It builds the **packaged** app, boots it repeatedly against a throwaway fixture HOME
 under a virtual X display, and writes **one JSON report** (plus a Markdown summary)
@@ -393,6 +398,49 @@ under llvmpipe a blur is software-rasterised anyway. That cost is real on Destin
 display and this scenario says nothing about it. Also blind to a project over the
 2,000-file discovery cap and to a conversation-heavy project (the transcript project has
 three).
+
+### `scenario-terminal.mjs` — switching sessions in terminal view *(one boot per repeat; added 2026-09-10)*
+Opens the workload's same six sessions, puts the four Claude Code sessions into
+terminal view (Ctrl+`), fills each terminal with 2,000 lines of mixed glyphs, then
+makes 40 switches between those four, one a second — both probes over every switch,
+plus the app's own counter `window.__terminalRegistry.atlasClears` read around each.
+
+**Why:** every hidden -> visible terminal clears the glyph atlas that ALL open
+terminals share (TerminalView's heal), so each switch re-rasterises every terminal.
+**Look first at `atlasClearsPerSwitch`** — about 1 proves the heal engaged; well below
+means the timings do not describe it, well above means resize heals fire on switches
+too. `clearsOutsideSlots` counts clears the settled totals saw but no switch's
+one-second slot did (the few-ms gaps between slots and the settle after the last), so a
+non-zero value means a clear landed after its switch's slot closed. Then
+`switchPaintedMedianMs` (click -> the other terminal on screen, next to the workload's
+chat-view switch), `longtaskMaxMs` and `ipc.totalStallMs`. `renderer` on each run says
+whether xterm got WebGL or the DOM fallback, where the clear is only a repaint.
+
+**How the IPC stall is measured:** each switch owns a one-second slot. The IPC probe
+(a ping every 50 ms) is installed at the slot's start and read just before the next
+switch, so the time between switches is probed, not just the click. A ping still in
+flight when a slot closes counts its wait so far beyond the ping interval
+(`ipc.openStalls` counts those slots), and a slot whose reading failed is counted in
+`ipc.readErrors` and named in a warning — the total is then a floor. Still unprobed: the
+few ms of CDP round trips between slots, and each slot's first 50 ms (probe-ipc's first
+ping fires one interval after install).
+
+**Glyph fill:** the terminal shows the fake `claude`'s PTY, not a shell, so there is no
+`seq`. `fake-claude.cjs` answers one typed line, `perf-lab-glyphs <n>` (surrounding
+whitespace ignored, anything else on the line is not), with n lines of ASCII plus Claude
+Code's box-drawing glyphs in seven colours (bold every fifth line) and a sentinel the
+scenario waits for. Every other line is echoed as before.
+
+**A default run now depends on this phase working.** Like every other phase (projects
+included), a throw here aborts the whole run with exit 2, and `scrollback`, which runs
+after it, never runs. Shake it down with `--only terminal` before trusting a default run.
+
+**Blind to, by construction:** the GPU re-upload cost — the rig is llvmpipe under Xvfb,
+so WebGL may not initialise and the clear is then only a DOM repaint; wallpaper themes;
+switching through native sessions or toggling views (both resize every terminal); and
+whether glyphs stay correct after sleep/resume, which needs a human on real hardware.
+The app build must carry the counter: against an older build `atlasClearsPerSwitch` is
+null and the report is refused (exit 4).
 
 ---
 
