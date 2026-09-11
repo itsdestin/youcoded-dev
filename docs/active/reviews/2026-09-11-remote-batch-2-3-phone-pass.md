@@ -179,3 +179,22 @@ Recheck on the phone after the dev window restart.
   3. A message with a picture is recorded as `[Image #1] …`, never matching its bubble. — fixed
      (matching sets attachment paths and image placeholders aside)
   4. Prompt cards and model/clear dividers are drawn per device. — filed `docs/roadmap/remote-access.md`
+
+## The phone was running the 09-10 23:47 build all day (found 2026-09-11, ~11:50)
+
+Destin: "still flashes the password screen at me on refresh/reconnect and takes a while to load
+back in/sync up". Cause: the dev window's remote server served ANY built copy on disk, and
+`desktop/dist/renderer` held one from the Android releaseTest build at 09-10 23:47. Every dev window
+restart since served that copy, so no phone-side (renderer) fix made on 09-11 reached the phone:
+message order (`cc154f17`), theme sync's phone half, file pills, sign-in screen, wake check, screen
+reloads, device-row memory, reducer order fixes. Host-side changes did apply. The device log's
+"older page" on every connect was the tell.
+
+Fixed: a dev window serves live code unless `run-dev.sh --phone-build` makes a fresh copy; the log
+names the copy and its build time (app commit after `0e9a2b52`; `choosePhonePageSource`). Also: a
+quick saved-key sign-in now shows only the boot spinner (words after 1.5 s).
+
+**Every phone check from 09-11 must be redone on the fresh build.** Vite's page code also reloads
+the whole page on any connection drop, which a real phone never does, so the live-code default is
+the wrong thing to judge reconnect feel on; use `--phone-build` for that and rebuild after renderer
+edits.

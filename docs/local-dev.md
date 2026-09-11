@@ -169,3 +169,16 @@ live-acceptance run):
    synthetic KeyboardEvents).
 5. Never do any of this against the live app (live-app-safety rule) — the flag-launched
    dev instance only.
+
+## Testing on a phone
+
+A phone's browser gets the app from the dev window's remote server. By default that is **live code
+from Vite**: every renderer edit reaches the phone, but hundreds of separate module files load slowly
+over a phone connection, and Vite's own page code reloads the whole page whenever its connection
+drops (sleep, wake, a dev restart), which a real phone never does.
+
+`bash scripts/run-dev.sh … --phone-build` builds the app once and serves that copy instead: it loads
+and reconnects like the installed app. Renderer edits reach the phone only after another build, so
+restart with the flag after changing renderer code. The dev log's first remote line says which copy
+the phone gets (`[RemoteServer] phone page: …`). Before 2026-09-11 the server served ANY built copy
+it found on disk, and one left by an Android test build hid a day of phone-side fixes.

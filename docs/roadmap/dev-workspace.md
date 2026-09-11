@@ -3,6 +3,11 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
+      timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
+      builds ran beside it; it passed three times alone right after and in the full verify before.
+      Load-sensitive, like the entries below
+      `n/a` `needs-verify` `checked 2026-09-11`
 - [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
       new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
       five times in isolation right after; the run's changes touched nothing it imports.

@@ -26,6 +26,8 @@
 #                     so concurrent dev instances are tellable apart. Defaults to the branch name.
 #   --profile <name>  Electron userData profile (default: dev → %APPDATA%/youcoded-<name>/).
 #                     Two concurrent instances MUST use different profiles or they share state.
+#   --phone-build     Build the app once and serve THAT to a phone's browser: it loads like the
+#                     installed app, but renderer edits reach the phone only after another build.
 #   --list            List registered worktrees (path + branch) and exit.
 #   --dry-run         Resolve + print target/branch/ports/profile, but don't launch.
 #   -h, --help        This help.
@@ -44,6 +46,7 @@ MAIN_CHECKOUT="$ROOT/youcoded"
 
 WORKTREE=""
 EXPLICIT_PATH=""
+PHONE_BUILD=0
 OFFSET="${YOUCODED_PORT_OFFSET:-50}"
 # Remote-debugging port on by default for dev instances; --no-devtools turns it off.
 DEVTOOLS=1
@@ -67,9 +70,10 @@ list_worktrees() {
 # --- arg parsing ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -h|--help)  sed -n '2,37p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help)  sed -n '2,39p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --list)     list_worktrees; exit 0 ;;
     --dry-run)  DRY_RUN=1; shift ;;
+    --phone-build) PHONE_BUILD=1; shift ;;
     --path)     EXPLICIT_PATH="${2:-}"; [[ -n "$EXPLICIT_PATH" ]] || die "--path needs a directory"; shift 2 ;;
     --offset)   OFFSET="${2:-}"; [[ -n "$OFFSET" ]] || die "--offset needs a number"; shift 2 ;;
     --no-devtools) DEVTOOLS=0; shift ;;
@@ -191,6 +195,11 @@ echo "  Window title:  YouCoded - $YOUCODED_DEV_LABEL"
 echo "  Profile:       $PROFILE  (userData → %APPDATA%/youcoded-$PROFILE/)"
 echo "  Vite:          http://localhost:$((5173 + YOUCODED_PORT_OFFSET))"
 echo "  Remote server: port $((9900 + YOUCODED_PORT_OFFSET)) (if enabled in dev)"
+if [[ "$PHONE_BUILD" == "1" ]]; then
+  echo "  Phone page:    a built copy (--phone-build; rebuild after renderer edits)"
+else
+  echo "  Phone page:    live code from Vite"
+fi
 if [[ "$DEVTOOLS" == "1" ]]; then
   echo "  Debugger:      http://127.0.0.1:$((9222 + OFFSET))/json/list  (localhost only; --no-devtools to disable)"
 else
@@ -204,4 +213,14 @@ if [[ "$DRY_RUN" == "1" ]]; then
 fi
 
 cd "$DESKTOP"
+if [[ "$PHONE_BUILD" == "1" ]]; then
+  # WHY opt-in, and built fresh here: the remote server used to serve any built copy it found on disk,
+  # and one left by an Android test build hid a whole day of phone-side fixes (2026-09-11). A dev
+  # window now serves live code unless this flag builds a current copy (choosePhonePageSource).
+  echo "Building the app for the phone…"
+  mkdir -p dist/renderer/data
+  cp src/renderer/data/skill-registry.json dist/renderer/data/skill-registry.json
+  npx vite build || die "phone build failed"
+  export YOUCODED_REMOTE_BUILT=1
+fi
 npm run dev
