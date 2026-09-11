@@ -62,7 +62,7 @@ Evidence from a read-only probe of `projectAllFiles('/home/destin/youcoded-dev')
    the remote proxy), and no code closes the drawer on reconnect. Not reproduced since —
    recheck once without edits in flight.
 
-## Reliability investigation (found 2026-09-11) — all open
+## Reliability investigation (found 2026-09-11) — 1–6 fixed, 7 and 9 filed, 8 not a bug
 
 Destin: projects in the new-session picker were missing, then "randomly popped back in"; the
 password screen "occasionally flickering before loading back in without actually needing a
@@ -107,3 +107,51 @@ password". Read-only investigation plus one scratch test; nothing changed yet.
 Not established: why the picker's request failed on Destin's phone. The host logs no connects,
 closes or catch-up timing, so the dev log cannot show it; (3)+(4) is the only path found that
 produces "empty, then later full".
+
+### Fixed (2026-09-11, Destin: "lets fix these. check your own changes for unintended consequences")
+
+App commits `e4b04666`, `1629727d`, then the review fixes after them. verify.sh --full green on
+each.
+
+1–2. `remote-gate.tsx` (moved out of index.tsx): a saved key shows "Connecting to your
+     computer…"; an unreachable computer says so, retries, offers Try now / Enter password
+     instead. Only a refusal the key can never survive deletes it.
+3.   Wake check on visible / online / pageshow: reconnect now if down; if up, `remote:ping`,
+     replaced after 10 s of complete silence. Network back before the first sign-in retries the
+     saved key.
+4.   `useOnRemoteReconnect`: FolderSwitcher (also reloads when opened; "Couldn't load your
+     projects." + Retry), skills + commands, signed-in state, session defaults, tags, session
+     tags/note; platform and provider lookups no longer cache a failure. The rest of the sweep's
+     screens are filed in `docs/roadmap/remote-access.md`.
+5.   A page that sends `readyHandshake` is waited on for 30 s before the fallback catch-up.
+6.   Host answers theme:list, commands:list, appearance:get-favorite-themes, platform:get.
+7.   Host log lines per connection: connect, drop code and duration, catch-up trigger and time,
+     ping timeout, slow-client close (8-character device id only).
+
+Filed: item 7 (React warning) in other-features.md, item 9 (dev theme shared with the live
+app) in dev-workspace.md, the wasted reconnect re-asks in remote-access.md.
+
+### Fresh review of those fixes — 11 findings
+
+- 1 (high) Android app refused by its computer: two local-bridge sockets; unpaired on any
+  refusal. — accepted, fixed (sockets retired in connect(); fallback only for a dead key)
+- 2 (medium) a late connection attempt flipped a working one to authenticating/disconnected.
+  — accepted, fixed (every handler bound to its own socket)
+- 3 (medium) wake check false alarms; cut-off requests reported timed out, never checked.
+  — accepted, fixed (10 s, any message counts; a drop fails sent requests as "may have run")
+- 4 (medium) unpaired / password changed while away: "Reconnecting" forever, no password box.
+  — accepted, fixed (page returns to the password box with a reason)
+- 5 (low–medium) a re-read overwrote a note being typed; a failed re-read blanked it.
+  — accepted, fixed
+- 6 (low) `online` ignored before the first sign-in. — accepted, fixed
+- 7 (low) Try now showed nothing while running. — accepted, fixed ("Trying to connect…")
+- 8 (low) platform:get now hides Marketplace integrations the computer cannot install.
+  — rejected: intended, the integrations install on the computer
+- 9 (low) re-pairing by password adds a row to the computer's device list. — rejected: the
+  host's pairing rule, unchanged
+- 10 (low) unreachable 4029 copy; "Invalid password" for refusals that are not about the
+  password. — accepted, fixed
+- 11 (low) online / pageshow untested; no tests for 1–3. — accepted, tests added
+  (`tests/remote-shim-overlap.test.ts`)
+
+Recheck on the phone after the dev window restart.
