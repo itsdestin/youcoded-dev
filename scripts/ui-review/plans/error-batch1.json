@@ -28,7 +28,32 @@
           "settle": 500
         }
       ],
-      "expect": "js:[...document.querySelectorAll('[role=dialog] *')].some(e=>['Error','Uploaded!'].includes(e.textContent.trim())||e.textContent.trim().startsWith('Upload failed'))"
+      "expect": "js:[...document.querySelectorAll('[role=dialog] *')].some(e=>['Error','Uploaded!'].includes(e.textContent.trim()))||[...document.querySelectorAll('[role=alert]')].some(a=>a.textContent.includes('Upload failed'))"
+    },
+    {
+      "name": "sync-retry-report-bug",
+      "actions": [
+        {
+          "eval": "const o=window.claude.sync.getStatus; window.claude.sync.getStatus=async()=>({...(await o()),warnings:[{code:'PUSH_FAILED',level:'warning',title:'Google Drive backup failed',body:'The last upload did not finish.',backendId:'drive-1',dismissible:true,fixAction:{kind:'retry',label:'Retry',payload:{backendId:'drive-1'}}}]}); window.claude.sync.pushBackend=async()=>({success:false,error:\"Some files didn't upload.\"});"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1200
+        },
+        {
+          "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Retry')",
+          "settle": 500
+        },
+        {
+          "eval": "[...document.querySelectorAll('[role=alert]')].find(a=>a.textContent.includes('Upload failed')).querySelector('button:last-of-type').click()",
+          "settle": 900
+        }
+      ],
+      "expect": "js:window.seen('Submit a ticket')"
     },
     {
       "name": "sync-wizard-upload-failed",
