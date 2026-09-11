@@ -24,7 +24,8 @@
           "label": "Chips under the name",
           "candidate": "tinted",
           "summary": "Words on a second line, each on a softly coloured chip. Every row becomes two lines tall.",
-          "measured": "Rows 53 px tall, up from 33 today"
+          "measured": "Rows 53 px tall, up from 33 today",
+          "risk": "In a narrow window a row with three tags (a downloaded model) wraps its speed tag onto a third line."
         },
         {
           "id": "dot",
