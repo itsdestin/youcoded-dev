@@ -59,10 +59,10 @@ Target: `v1.3`
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 28 | 6 | 0 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 27 | 11 | 4 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 8 | 0 | 9 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 19 | 10 | 1 | 5 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 10 | 1 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 5 | 2 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 15 | 5 | 2 | 5 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
