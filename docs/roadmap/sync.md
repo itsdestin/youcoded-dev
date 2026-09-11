@@ -1,20 +1,6 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
-- [ ] The whole app froze solid for 6+ minutes (no CPU use, no crash, every log line — not just
-      lease's own — went silent at once) right after a `[lease] acquire` log line. Leading
-      hypothesis, source-verified but not caught live: `acquire()` in
-      `conversations/lease-client.ts` calls `writeLeaseFile()`, which uses blocking
-      `fs.mkdirSync`/`fs.writeFileSync` instead of the async style the rest of the module uses to
-      "never block" — a disk stall there would freeze the whole process exactly like this. Ruled
-      out: the machine's known SMU power-wedge, the 2026-08-25 kwallet CPU-spin bug (checked live,
-      daemon answered instantly). A few other main-process files write synchronously on hot paths
-      the same way and are worth the same async conversion if this pans out:
-      `conversations/transcript-mirror.ts`, `sync-spaces/git-transport.ts`,
-      `conversations/conversation-store.ts`, `project-registry.ts`, `device-registry.ts`. Destin,
-      2026-09-08.
-      `desktop` `needs-verify` `checked 2026-09-08` → docs/active/investigations/2026-09-08-lease-acquire-blocking-write-freeze.md
-
 - [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
       unrelated event refreshes it (other phones update fine). Found 2026-08-22.
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
