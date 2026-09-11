@@ -1,16 +1,19 @@
 ---
-status: draft
+status: active
 branch: session/remote-first-connect
 ---
 
 # Remote access, batches 2 and 3 — conversation restoration and file reading
 
-Revision 3. Two review rounds so far: 16 and 19 findings, all accepted
-(`docs/active/reviews/2026-09-10-remote-batch-2-3-design-review-{1,2}.md`). Round 1
+Revision 4, final. Three review rounds found 16, 19 and 8 problems; all 43 were accepted
+(`docs/active/reviews/2026-09-10-remote-batch-2-3-design-review-{1,2,3}.md`). Round 1
 reshaped the restore half (per-session apply, queue everything, a terminal backlog);
 round 2 closed a symlink hole in file authorization, made the Android download reach the
-download manager, made resume actually resumable, and pinned down where the queue's cut
-line sits relative to the snapshot. Round 3 is a targeted pass over §1, §6, §7 and §10.
+download manager, made resume actually resumable, and placed the queue's cut line; round 3
+found that the cut line's premise needed the renderer's transcript batch flushed first,
+that a permission answered on the desktop had no way to reach the phone, and that the
+backpressure pause opened a gap the replay had to close. Round 3 is the cap set by
+`.claude/rules/feature-flow.md`; nothing is left open.
 
 Covers batches 2 and 3 of `2026-09-09-remote-access-first-milestone.md`. Every "today"
 claim was read against app HEAD `cbe8b4e8` on this branch. The user-facing promises are
@@ -61,20 +64,36 @@ first time a listener is added for `chat:hydrate` after `auth:ok`, and immediate
 `auth:ok` on a reconnect (the listener is still registered). `seq` is a counter that is
 **monotonic for the shim's lifetime**, never reset per connection; the host echoes it in
 `chat:hydrate` (§6). `reconnect` says the client held state before; `ptyOffsets` is per
-session `{ epoch, units }` (§7). App changes nothing. `handleMessage` is stamped with the
-connection generation and drops a message from any other socket (R2-17).
+session `{ epoch, units }` (§7). App changes nothing. The shim sends it **at most once per
+connection generation** (a flag reset on `auth:ok`): App's `chat:hydrate` listener is
+re-added on an effect re-run or a StrictMode double mount, and a second `client:ready`
+must not restart the sequence (R3-4). `handleMessage` is stamped with the connection
+generation and drops a message from any other socket (R2-17).
 
-*B. A per-client phase on the host: `restoring` → `live`.* A fresh client starts
-`restoring`. Every broadcast to a restoring client is **queued in arrival order**, except
-`pty:output` and, on a first connect only, `hook:event` — those two are in the buffers the
-flush replays. On `client:ready` the host: cancels the old-client fallback timer; sends
-`session:created` per session, `session:renamed`, `status:data`; records
-`snapshotIndex = queue.length`; requests the snapshot (§2); sends `chat:hydrate { seq }`;
-replays the PTY (§7) and hook buffers; flushes the queue; moves the client to `live`.
+*B. A per-client phase on the host: `restoring` → `readying` → `live`.* A fresh client
+starts `restoring`. Every broadcast to a restoring client is **queued in arrival order**,
+except `pty:output` (the cursor-based replay in §7 covers it up to the moment the client
+goes `live`) and, on a first connect only, `hook:event` **until the hook buffer pass
+starts** — from then on hook events are queued too, and the one possible overlap is a
+repeat `PermissionRequest`, which the reducer treats as idempotent while the card is
+awaiting approval (R3-3). On the first `client:ready` the host moves the client to
+`readying` (any further `client:ready` before `live` is ignored, R3-4), cancels the
+old-client fallback timer, sends `session:created` per session, `session:renamed`,
+`status:data`, records `snapshotIndex = queue.length`, requests the snapshot (§2), sends
+`chat:hydrate { seq }`, runs the PTY replay as a cursor (§7) and the hook pass, flushes the
+queue, and moves the client to `live` only after a PTY pass that found nothing new.
 
-*The cut line (R2-5).* Main hands each event to the owning window and broadcasts it in the
-same synchronous handler, so every queued event below `snapshotIndex` was in that window's
-reducer when it serialized. On flush, `transcript:event`, `transcript:shrink` and
+*The cut line (R2-5, R3-1).* Main hands each event to the owning window and broadcasts it
+in the same synchronous handler (`ipc-handlers.ts:2476`), and the export request travels
+the same ordered channel — but the window applies transcript events in animation-frame
+batches (`App.tsx:1236`; a throttled timer when hidden), and the exporter today reads a
+render-lagged ref (`RemoteSnapshotExporter.tsx:15`). So the batcher moves out of App's
+closure into a module with `flushTranscriptActions()`, the exporter calls it and then
+serializes the synchronous store (`chat-context.ts` gains `getState`), and the phone's
+hydrate handler calls the same flush before dispatching `HYDRATE_CHAT_STATE`. With that,
+every queued event below `snapshotIndex` **is** in the serialized state by construction —
+IPC order plus synchronous apply — and nothing above it is. **This is the one thing the
+builder must not get wrong**; a test that fakes the exporter cannot see it. On flush, `transcript:event`, `transcript:shrink` and
 `native:*` entries below `snapshotIndex` are skipped — the uuid dedup does not cover the
 native harness's per-delta text (`chat-reducer.ts:415`) — while lifecycle entries
 (`session:*`, `status:data`, `hook:event`, `specialists:event`, `native:shell-event`) are
@@ -183,6 +202,11 @@ from the **shim**, which alone knows the connection's state:
 flushes with the same cut line, and returns it to `live` — §1's sequence minus the buffer
 replay. The shim applies only a hydrate whose `seq` is the latest it sent.
 
+**The shim learns what was kept.** The kept set is decided inside the reducer's degraded
+branch, which the shim cannot see; App's hydrate handler reports `{ seq, kept: string[] }`
+back through `remote.reportHydrate` and the shim derives the phase from that plus
+`degraded` (R3-8).
+
 **The reducer applies per session, never whole-state, when the snapshot is degraded.**
 `HYDRATE_CHAT_STATE` keeps the replace for a complete snapshot; for `degraded: true` it
 replaces only sessions the snapshot holds with a non-empty copy, keeps the client's copy of
@@ -217,12 +241,26 @@ stalled phone grows the host's socket buffer until the liveness ping closes it (
   `pty:reset:<sid>` then the full buffer, through the same ordered backlog (§1C);
   `TerminalView` calls `reset()` and jumps to the bottom. `PTY_BUFFER_SIZE` is renamed
   `PTY_BUFFER_UNITS`.
-- *Consent does not lie (R2-8).* On a reconnect the hook replay sends only unresolved
-  permission requests and ends with `hook:replay-complete { sessionId, pendingRequestIds }`;
-  App dispatches `PERMISSION_EXPIRED` (`hook-dispatcher.ts:71`) for every card on screen
-  not in the list. A session the reducer **kept** from before the drop (degraded apply)
-  has stale turn state — `isThinking`, `activeTurnToolIds` — until a Refresh replaces it;
-  the strip stays `incomplete` while any session was kept, so the person is told.
+- *Consent does not lie (R2-8, R3-2).* `PermissionResolved`, which the host already
+  broadcasts (`remote-server.ts:654`), gains a dispatcher case → a new reducer action
+  `PERMISSION_RESOLVED_ELSEWHERE { requestId }`: it clears the ask and moves the tool to
+  the reducer's existing "ask overwritten" shape (`chat-reducer.ts:2130`) with a neutral
+  note — "Answered on the computer; Refresh to see the result" — never `failed`, never a
+  claim about a socket. That alone fixes a live phone, which today never learns the desktop
+  answered, and a request answered during the snapshot wait, whose queued resolution now
+  lands. On a reconnect the hook replay sends only unresolved requests and ends, **for every
+  session in `listSessions()`**, with `hook:replay-complete { sessionId,
+  pendingRequestIds }`; App applies the same action to every card on screen not in the
+  list. A session the reducer **kept** (degraded apply) has stale turn state —
+  `isThinking`, `activeTurnToolIds` — until a Refresh replaces it; the strip stays
+  `incomplete` while any session was kept.
+- *The replay is a cursor (R3-3).* Per client `sentUnits[sid]`; each pass sends from the
+  cursor to the buffer's current total, and the client goes `live` only after a pass that
+  found nothing new — so output that arrives while the send gate is paused is sent by the
+  next pass, not lost, and the live broadcast takes over with no gap and no overlap. The
+  buffer's monotonic count keeps a `base` that advances on **every** head trim, including
+  the single-chunk slice at `:640`; a phone offset **outside** `[base, base + length]` —
+  below a trimmed head as well as beyond the end — resets.
 - *Backpressure (R2-15).* A per-client send gate: while `ws.bufferedAmount` is above 8 MB
   the replay and the flush pause and resume as it drains; above 32 MB the client is closed
   with a code the strip renders as reconnecting.
@@ -292,19 +330,27 @@ authenticated socket:
 The shim opens the URL through an `<a download>` click, so the browser's own download UI
 shows progress and the finished file, and announces the R18 notice.
 
-*Android (R2-2).* In `shouldOverrideUrlLoading`, a URL on the paired host whose path
-starts with `/download/` is enqueued on `DownloadManager`
+*Android (R2-2, R3-5).* A pure Kotlin function decides, for any URL: `/download/` on
+any `http(s)` host → download (the 256-bit token is the secret; Kotlin cannot see the
+paired host, which lives in the WebView's storage, and a host check would add nothing);
+local → load; anything else → open externally. Both entry points feed it:
+`shouldOverrideUrlLoading` (the path a cross-origin `<a download>` click takes from the
+`file://` page) and a `setDownloadListener` (the path a same-origin click would take, so
+it cannot go dark). Download enqueues on `DownloadManager`
 (`setDestinationInExternalPublicDir(DIRECTORY_DOWNLOADS, name)`,
-`setNotificationVisibility(VISIBLE_NOTIFY_COMPLETED)`) and the override returns `true`;
-everything else keeps today's behaviour. The decision — intercept, download, or open
-externally, for a URL and a paired host — is a pure Kotlin function with its own unit
-test; the framework call is not what is tested. No separate `DownloadListener`.
+`setNotificationVisibility(VISIBLE_NOTIFY_COMPLETED)`). The function is what the unit
+test drives; the framework call is not. Runtime proof: `DownloadManager` fetches from its
+own process, so cleartext `http://100.x` must be allowed for it, not only in the app's
+network-security config.
 
 `GET /download/<token>`, matched **before** the static handler:
 - unknown, expired, or minted for a device whose record is `revokedAt` → 404, empty body;
-- `fs.open` the stored real path with `O_NOFOLLOW`, `fstat` the handle, and refuse (404,
-  close) when `dev`/`ino` differ from the mint-time stat or the real path is now sensitive
-  — that, not the name, closes the race between mint and open (R2-1);
+- `fs.open` the stored real path with `O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0)` —
+  the flag does not exist on Windows (R3-6) — `fstat` the handle with `{ bigint: true }`,
+  and refuse (404, close; `ELOOP` → 404) when `dev`/`ino` differ from the mint-time stat
+  or the real path is now sensitive. The identity compare, not the flag, is the guard on
+  every platform; a mint whose `stat` reports `ino === 0n` (a filesystem without stable
+  ids) is refused as `not-allowed` rather than accepted unpinnable (R2-1);
 - stream from the handle with `Range` (206; 416 when unsatisfiable), `Accept-Ranges: bytes`,
   `Content-Length`, `ETag: "<dev>-<ino>-<size>-<mtimeMs>"`, `Last-Modified`, and `If-Range`
   honoured (a mismatched validator answers 200 from byte 0) — what Android's download
@@ -314,12 +360,16 @@ test; the framework call is not what is tested. No separate `DownloadListener`.
   characters; `Content-Type: application/octet-stream`; `X-Content-Type-Options: nosniff`;
   `Cache-Control: no-store`. A file is never displayed by the browser — S-1's save-only
   promise;
-- at most 2 **live** streams per socket (by intent: a dropped socket's streams finish and
-  release themselves; two tabs are two sockets), counted up on open and down on `res
-  'close'`, with `stream.destroy()` on a client abort; a third `artifacts:download` answers
-  `{ ok: false, error: 'busy' }` and the card says so.
+- at most 2 **live** streams per socket, keyed on the token's `socketId` (a GET has no
+  socket of its own; a resume after a drop counts against the dead id, never the new
+  socket — by intent, two tabs are two sockets), counted up on open and down on `res
+  'close'` with the entry deleted at zero, `stream.destroy()` on a client abort; a third
+  `artifacts:download` answers `{ ok: false, error: 'busy' }` and the card says so (R3-7).
 
-Tokens die with the process and with `remote:devices:unpair` (R10). A host restart
+Expiry is **sliding**: each successful GET renews `expiresAt`, so a paused download that
+is still being retried stays alive; after five idle minutes the link is dead and the card
+mints a fresh one from byte 0. Tokens die with the process and with
+`remote:devices:unpair` (R10). A host restart
 mid-download: the stream ends, the next request gets 404, the socket reconnects and the
 strip says reconnecting; Download mints a fresh link.
 
@@ -344,6 +394,8 @@ render. Nothing more to build there; §8's cases are what make the lists fill.
 | `session:selected` (renderer → main) | sends | caches per window | no-op | ignores | — |
 | `pty:reset:<sid>` (push) | declared, never fires | — | backlogs; `TerminalView` resets | sends | — |
 | `hook:replay-complete` (push) | declared, never fires | — | listens | sends | — |
+| `hook:event` `PermissionResolved` (push, exists) | exists | — | **new dispatcher case** | exists | — |
+| `remote.reportHydrate` (shim-internal) | no-op | — | receives `{ seq, kept }` | — | — |
 | `remote:conversation-status` (push) | declared, never fires | — | emits | — | — |
 | `remote:rehydrate` | declared | `{ok:false, code:'not-remote'}` | invokes | handles | else → unsupported |
 | `artifacts:list-session`, `list-all-files`, `list-project`, `get`, `read-binary`, `search-content`, `check-existence`, `watch-project`, `unwatch-project` | exist | call read-service | exist; two join `REHYDRATE_ON_RECONNECT` | **new cases** → read-service | exist (own impl) |
@@ -368,8 +420,12 @@ plus the explicit names `client:ready` and `pty:reset`, so every new case is cov
    broadcast between `client:ready` and the hydrate reaches the client after it. A
    **native per-delta** transcript event broadcast *before* the snapshot request is applied
    once; one broadcast *after* it is applied once; for an omitted session, both are applied.
-   No `setTimeout(…, 500)` in `replayBuffers` (source guard via `guard-scope.ts`,
-   known-positive: the 5 s fallback). A message from an abandoned socket is dropped.
+   Two `client:ready` within 100 ms yield one hydrate and one replay. **The real batcher
+   and exporter under jsdom**, never a fake: a delta delivered in the frame before the
+   export request is in the snapshot and applied once; the hidden-window case (batch
+   stalled on a timer) too. No `setTimeout(…, 500)` in `replayBuffers` (source guard via
+   `guard-scope.ts`, known-positive: the 5 s fallback). A message from an abandoned socket
+   is dropped.
 2. **Terminal backlog.** A `pty:output:<sid>` and a `pty:reset:<sid>` dispatched before any
    listener are delivered in order on the first `addListener`; the backlog caps at 256 KB.
 3. **Windows.** Two windows, session 2 owned by window 2: the merged snapshot holds window
@@ -389,11 +445,15 @@ plus the explicit names `client:ready` and `pty:reset`, so every new case is cov
    a degraded hydrate emits `incomplete`; `remote:rehydrate` re-enters `restoring`, a
    transcript event broadcast during the refresh is applied once, a hydrate whose `seq` is
    stale is ignored, `seq` does not restart after a reconnect; a Refresh with a queued
-   message and a pending bubble keeps both.
+   message and a pending bubble keeps both; a Refresh with a pending phone-side batch
+   applies each delta once; a degraded apply that kept a session leaves the strip
+   `incomplete`.
 7. **Reconnect cost and consent.** A phone offset mid-chunk receives exactly the units past
    it; an epoch mismatch resets and the terminal jumps to the bottom; only unresolved
-   permission requests are replayed; a request resolved during the drop is expired on
-   reconnect; a kept session leaves the strip `incomplete`.
+   permission requests are replayed; a request resolved during the drop is cleared on
+   reconnect with the neutral note and is not `failed`; a request that arrives and is
+   answered during the snapshot wait shows no card after the flush; a live phone clears a
+   card the desktop answers; a session with no hook history still gets a replay-complete.
 8. **Files.** One fixture, both transports driven end to end — `handleMessage` with a fake
    socket and the registered `ipcMain.handle` — answer the same for each channel except the
    remote `maxBytes` divergence, which the test expects: a 1.5 MB text file and a 24 MB PDF
@@ -408,15 +468,19 @@ plus the explicit names `client:ready` and `pty:reset`, so every new case is cov
    with an empty body, not `index.html`; a `.html` file carries `attachment` and `nosniff`;
    a name containing `"; \r\n` and an emoji produces a valid header; a 60 MB file
    downloads; a listed tracked-internal text file downloads; a symlink to a sensitive file
-   answers 404 at GET; a file replaced between mint and GET (different inode) answers 404;
-   host restart → 404 and a fresh mint works.
+   answers 404 at GET — also with the no-follow flag forced to 0, through the identity
+   compare alone; a file replaced between mint and GET (different inode) answers 404; a
+   mint on a file whose inode is 0 answers `not-allowed`; a GET renews the expiry; host
+   restart → 404 and a fresh mint works.
 10. **Sealed.** `HtmlView`'s `sandbox` attribute contains no `allow-same-origin`
     (known-positive: it contains `allow-scripts`).
 11. **Backpressure.** With a fake socket whose `bufferedAmount` is held above 8 MB, the
-    replay is delivered across more than one tick and resumes when it drains; above 32 MB
-    the client is closed with the reconnect code.
-12. **Android.** The URL decision function: `/download/` on the paired host → download; any
-    other host URL → open externally; local → load; `./gradlew test` green with the count
+    replay is delivered across more than one tick and resumes when it drains; a
+    `pty:output` and a `PermissionRequest` arriving during the pause reach the client
+    exactly once; above 32 MB the client is closed with the reconnect code.
+12. **Android.** The URL decision function: `/download/` on any http(s) host → download;
+    any other remote URL → open externally; local → load; driven from both the override and
+    the download listener; `./gradlew test` green with the count
     read from `app/build/test-results/`.
 
 ## Not in this batch
