@@ -1,0 +1,131 @@
+{
+  "title": "Website clips — shorter, zoomed in, one rhythm",
+  "key": "promo-ui-refresh-review-3",
+  "out": "promo-ui-refresh.review-3.html",
+  "images": "images/promo-ui-refresh.review-3",
+  "stage": "review",
+  "runs": {
+    "before": "runs3/before",
+    "after": "runs3/after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Website",
+      "path": "youcoded.ai — card 1, \"Tools and conversations work across any model.\"",
+      "themes": ["midnight"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row1-any-ai--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row1-any-ai--after.webm" },
+      "headline": "The switch-to-Grok clip, shorter and a little larger.",
+      "changed": "Replies play twice as fast and the clip moves on as soon as each reply lands, instead of waiting a fixed few seconds.",
+      "measured": "25.9 s → 18.1 s",
+      "notice": "Same three messages and the model switch, with less dead air."
+    },
+    {
+      "id": "S-2",
+      "surface": "Website",
+      "path": "youcoded.ai — card 2, \"Hand it a spreadsheet, get something you can actually read.\"",
+      "themes": ["meadow-mist"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row2-artifact-edit--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row2-artifact-edit--after.webm" },
+      "headline": "The spreadsheet-to-chart clip, shorter and a little larger.",
+      "changed": "The same steps — chart, open it, edit the colour, save — with the doubled pauses between them removed and a slightly narrower file panel so the zoomed chat still fits.",
+      "measured": "32.6 s → 17.1 s",
+      "notice": "The colour change still lands before the loop restarts."
+    },
+    {
+      "id": "S-3",
+      "surface": "Website",
+      "path": "youcoded.ai — card 3, \"Give it a task and it gets done, with boundaries you can trust.\"",
+      "themes": ["creme"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/row2-does-things--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row2-does-things--after.webm" },
+      "headline": "The morning-inbox clip, shorter and a little larger.",
+      "changed": "All three approvals stay. Its reply is the longest, so it plays at two and a half times speed instead of two, and the pauses around each Yes are shorter.",
+      "measured": "32.9 s → 18.0 s",
+      "notice": "Every approval is still on screen.",
+      "risk": "It is the longest clip and the one with the most reading; the reply text moves quickly."
+    },
+    {
+      "id": "S-4",
+      "surface": "Website",
+      "path": "youcoded.ai — card 4, \"Project view keeps your files, conversations, and assistant instructions organized.\"",
+      "themes": ["light"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/row3-projects--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row3-projects--after.webm" },
+      "headline": "The Project View clip, a little larger with the shared pauses.",
+      "changed": "Same three steps with shorter pauses between them.",
+      "measured": "11.2 s → 9.3 s",
+      "notice": "Files and instructions are easier to read at the larger size."
+    },
+    {
+      "id": "S-5",
+      "surface": "Website",
+      "path": "youcoded.ai — card 5, \"Tags, notes, and shortcuts.\"",
+      "themes": ["dark"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/row4-organized--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row4-organized--after.webm" },
+      "headline": "The tags clip, shorter and a little larger, still opening the conversation in the preview.",
+      "changed": "Tag, search and preview are all kept; the pauses between them are shorter.",
+      "measured": "20.9 s → 15.7 s",
+      "notice": "The preview stays open long enough to see what it shows."
+    },
+    {
+      "id": "S-6",
+      "surface": "Website",
+      "path": "youcoded.ai — card 6, \"Start on your laptop. Finish on your phone.\" (the computer half)",
+      "themes": ["meadow-mist"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row5-follow--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row5-follow--after.webm" },
+      "headline": "The computer half of the laptop-to-phone clip, shorter and a little larger.",
+      "changed": "The reply plays twice as fast and the long wait after it is gone.",
+      "measured": "18.3 s → 9.5 s",
+      "notice": "The whole reply still shows before the loop restarts.",
+      "risk": "At under ten seconds it loops about twice as often as the others."
+    },
+    {
+      "id": "S-7",
+      "surface": "Website",
+      "path": "youcoded.ai — card 6, \"Start on your laptop. Finish on your phone.\" (the phone half)",
+      "themes": ["meadow-mist"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row5-phone--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row5-phone--after.webm" },
+      "headline": "The phone half, shortened the same way and still in step with the computer half.",
+      "changed": "Same script and pauses as the computer half; the phone is not zoomed, because a larger phone screen would rearrange itself.",
+      "measured": "17.3 s → 8.9 s",
+      "notice": "Both halves still show the same moment together."
+    },
+    {
+      "id": "S-8",
+      "surface": "Website",
+      "path": "youcoded.ai — card 7, \"Describe a look. Install a plugin. Share both.\"",
+      "themes": ["midnight"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/row6-yours--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row6-yours--after.webm" },
+      "headline": "The theme-builder clip, shorter and a little larger.",
+      "changed": "The clip moves to the marketplace as soon as the reply finishes, instead of waiting six and a half seconds, and each marketplace step is quicker.",
+      "measured": "25.3 s → 16.0 s",
+      "notice": "It still ends on the Golden Sunbreak window."
+    },
+    {
+      "id": "S-9",
+      "surface": "Website",
+      "path": "youcoded.ai — card 8, \"Four games, beside the conversation.\"",
+      "themes": ["halftone-dimension"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/landing-row7-play--before.webm", "after": "images/promo-ui-refresh.review-3/clips/landing-row7-play--after.webm" },
+      "headline": "The games clip, shorter and a little larger.",
+      "changed": "The theme's drifting background is paused for this clip — it was slowing every click to about a second and a half. The opponent still thinks for a moment before each move.",
+      "measured": "26.1 s → 17.3 s",
+      "notice": "Clicks land promptly and the win arrives sooner.",
+      "risk": "The background pattern is still there but does not drift in this clip."
+    },
+    {
+      "id": "S-10",
+      "surface": "Website",
+      "path": "youcoded.ai — card 9, \"Made to be customized and work with you.\"",
+      "themes": ["midnight"],
+      "clip": { "before": "images/promo-ui-refresh.review-3/clips/row8-builders--before.webm", "after": "images/promo-ui-refresh.review-3/clips/row8-builders--after.webm" },
+      "headline": "The builders clip, a little larger with the shared pauses.",
+      "changed": "Same steps into Assistant settings with shorter pauses.",
+      "measured": "13.0 s → 10.0 s",
+      "notice": "Settings text is easier to read at the larger size.",
+      "risk": "The second conversation it opens shows a yellow notice about a small context window; that is the sample conversation, and it was in the earlier clip too."
+    }
+  ]
+}
