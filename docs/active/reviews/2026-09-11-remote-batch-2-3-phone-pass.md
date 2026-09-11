@@ -61,3 +61,49 @@ Evidence from a read-only probe of `projectAllFiles('/home/destin/youcoded-dev')
    shows a Vite page reload at 04:52 caused by a diagnostic edit (HMR reaches the phone through
    the remote proxy), and no code closes the drawer on reconnect. Not reproduced since —
    recheck once without edits in flight.
+
+## Reliability investigation (found 2026-09-11) — all open
+
+Destin: projects in the new-session picker were missing, then "randomly popped back in"; the
+password screen "occasionally flickering before loading back in without actually needing a
+password". Read-only investigation plus one scratch test; nothing changed yet.
+
+1. **Password screen during automatic sign-in.** `index.tsx` Root renders `<LoginScreen>` whenever
+   the shim is installed and auth:ok has not arrived, including while a saved key is being tried.
+   Every page load (a phone tab the browser reloaded after sleep, a dev reload) shows it for the
+   length of the handshake. Predates the branch.
+2. **A page-load sign-in that fails for any reason erases the saved key.** `connect(storedToken)
+   .catch(() => removeItem('youcoded-remote-token'))`: a timeout or an unreachable computer (phone
+   just woke, tailnet not up) unpairs the phone and nothing retries. Only a refusal should.
+   Predates the branch.
+3. **The phone never checks its connection on wake.** No visibilitychange / online / pageshow
+   handling and no client-side liveness check; the host pings every 20 s. After sleep the phone
+   can hold a dead socket, or sit in a reconnect backoff of up to 30 s, while the page keeps
+   sending requests that time out at 30 s.
+4. **Screens load once and stay empty after one failed request.** FolderSwitcher (`load()` on
+   mount, `catch {}`, renders nothing for an empty list) is one of ~24 found by a sweep: skills
+   and commands drawer (`skill-context.tsx`), signed-in state (`account-context.tsx`), model and
+   provider lists, session defaults (`App.tsx:584`), Project View, tags, session tags/notes,
+   presence incognito, the Remote settings panel. Only SessionDrawer reloads on reconnect
+   (`useProjectWatch`). `rehydrate()` re-asks its reads but the replies settle no caller, so they
+   reach no screen. Failure caches that last the page's life: `state/platform.ts` (rejected
+   promise kept), `use-provider-type.ts`, `useSpecialists.ts`, `AttachmentChip.tsx`.
+5. **The host's 5 s old-page fallback raced a slow page.** Dev log: `client:ready ignored in phase
+   live` — the page took over 5 s from auth:ok to App's chat:hydrate listener, so the host ran the
+   catch-up into a page with no listeners; the phone then shows "may be out of date". Batch 2.
+6. **Channels the host does not answer, logged during the pass:** theme:list, commands:list (also
+   in REHYDRATE_ON_RECONNECT), platform:get, theme-marketplace:list,
+   appearance:get-favorite-themes, marketplace:get-packages, skills:get-featured,
+   performance:get-config, account:refresh. Each fails fast and its screen falls back empty.
+7. **React warning in the dev log** ("Cannot update a component (`AppInner`) while rendering a
+   different component"): App's session:created handler calls `dispatch` and `setSessionId`
+   inside a `setSessions` updater. Predates the branch. Low.
+8. **Checked, not a bug:** a failed theme list does not reset the phone to the default theme or
+   save it to the computer (scratch ThemeProvider test, file read at 0 and 50 ms; deleted).
+9. **Dev isolation gap (not a phone bug):** the dev host writes `~/.claude/youcoded-appearance.json`,
+   the same file the live app reads (`ipc-handlers.ts` on master), so theme changes made while
+   testing carry into the live app's next launch. `--profile` does not isolate it.
+
+Not established: why the picker's request failed on Destin's phone. The host logs no connects,
+closes or catch-up timing, so the dev log cannot show it; (3)+(4) is the only path found that
+produces "empty, then later full".
