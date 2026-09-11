@@ -4,6 +4,11 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] A "Home" folder every install starts with, holding overarching assistant settings that
+      apply everywhere (Destin's note on the first-run guide's review deck, 2026-09-10). The
+      zero-context "No folder" choice on the new-session form shipped 2026-09-11 as the first
+      half; this is the fuller idea
+      `all` `decision` `checked 2026-09-11`
 
 - [ ] Idea (Destin, 2026-09-08): "YouCoded Mesh" automatically chooses an available, suitable
       device of yours for remote requests and scheduled/autonomous duties, without making you
@@ -156,6 +161,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 ## tools
+- [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where
+      are the model settings" it guesses. Wanted (Destin, 2026-09-10 guide deck): a line in the
+      system prompt or an info-desk tool it reaches for whenever a user asks how YouCoded or its
+      settings work, answering from a maintained description of the app rather than from memory
+      `all` `parked` `checked 2026-09-10`
+
 - [ ] The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
       not have it reaches straight for a script or an outside service instead of the plugin that
       already does the job. Wanted: a tool it can call to search plugins and integrations, so

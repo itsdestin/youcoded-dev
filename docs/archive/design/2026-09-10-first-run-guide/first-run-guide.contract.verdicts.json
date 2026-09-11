@@ -1,0 +1,102 @@
+{
+  "R2": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-run-guide.test.tsx — 9 passed — 'owes a tour only after the wizard hands off, and settles it on done'; Show me around is App.tsx's onShowMeAround → setTourOpen(true)"
+  },
+  "R11": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-run-guide.test.tsx — 9 passed — 'refuse to fire until armed, then fire once each and one per sitting'; GuideTipHost holds a tip while busy (isThinking)"
+  },
+  "R12": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-run-guide.test.tsx — 9 passed — '\"Stop showing tips\" disarms them for good'; GuideTipHost renders Got it and Stop showing tips on every tip"
+  },
+  "R23": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-run-guide.test.tsx — 9 passed — the pending flag is written only by armGuideForFreshInstall, called from App's first-run hand-off; resetGuideState shows an install without it owes nothing"
+  },
+  "R25": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-time-warnings.test.ts — 19 passed — 'Continue disabled until ticked', 'Cancel never continues', once-only acknowledgement round trip"
+  },
+  "R26": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-time-warnings.test.ts — 19 passed — isSmallModel cases (32b true, 70b false, 30b-a3b true, size fallback) and 'small-model has no checkbox'"
+  },
+  "R27": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-time-warnings.test.ts — 19 passed — 'always-asks list verbatim' on the full-auto kind, checkbox present; App.tsx gates cycleNativePermission into full-auto with the same hook"
+  },
+  "R30": {
+    "verdict": "pass",
+    "evidence": "npx vitest run youcoded/desktop/tests/first-run-guide.test.tsx — 9 passed — 'opens each stop's screen' and 'walk forward through the app in the order Destin approved' (screens: welcome-form, projects ×2, settings:cloud, settings:appearance, settings:help)"
+  },
+  "R1": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/tour-1.png and light/tour-1.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/tour-1--midnight--after.png; bubble in the bottom-right corner, ring drawn by GuideRing on the stop's anchor (stop 2 rings the form, stop 6 the providers list)"
+  },
+  "R5": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/wizard-auth.png and light/wizard-auth.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/wizard-signin--midnight--after.png; the sentence sits on the sign-in step under the sign-in line"
+  },
+  "R8": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/wizard-done.png and light/wizard-done.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/wizard-done--midnight--after.png; one line and the spinner; the three bullets are gone"
+  },
+  "R9": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/tip.png and light/tip.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/tip--midnight--after.png; same bubble and buddy, TIP eyebrow, Got it and Stop showing tips"
+  },
+  "R14": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/projects-empty.png and light/projects-empty.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/projects-empty--midnight--after.png; explainer card, buddy beside it, one Add a project button"
+  },
+  "R15": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/projects-empty.png and light/projects-empty.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/projects-empty--midnight--after.png; no \"artifacts\" on the screen; ProjectView renders the card only when the loaded index is empty"
+  },
+  "R16": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/welcome.png and light/welcome.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/welcome--midnight--after.png; \"Start your first session\", the sentence, the form open"
+  },
+  "R17": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/welcome.png and light/welcome.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/welcome--midnight--after.png; no Resume button on the first-time screen; App shows it again once session.browse() lists anything"
+  },
+  "R20": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/help-popup.png and light/help-popup.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/help-popup--midnight--after.png; Help & feedback page; DevelopmentPopup still carries Report a Bug"
+  },
+  "R21": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/settings-drawer.png and light/settings-drawer.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/drawer-rows--midnight--after.png; the row sits directly above Development; rows below unchanged against the Today capture"
+  },
+  "R22": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/help-popup.png and light/help-popup.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/help-popup--midnight--after.png; six rows: Show me around, Tips for new users switch, Community on Reddit, Report a bug, Known issues, version line"
+  },
+  "R28": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/tour-1.png and light/tour-1.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/tour-1--midnight--after.png; buttons read Skip tour then Next at the far right, Next filled; Back appears from stop 2"
+  },
+  "R29": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/tour-1.png and light/tour-1.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/tour-1--midnight--after.png; stop 1: \"Hi, I’m your buddy. I’ll show you around the app. Skip any time, and find me again under Settings, Help & feedback.\""
+  },
+  "R31": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/tour-4.png and light/tour-4.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/tour-4--midnight--after.png; stop 6 text as approved on N-2, over the real Cloud providers page"
+  },
+  "R32": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/projects-empty.png and light/projects-empty.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/projects-empty--midnight--after.png; \"Projects keep your work together\", the two approved sentences, Add a project full width"
+  },
+  "R33": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/wizard-done.png and light/wizard-done.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/wizard-done--midnight--after.png; \"Your assistant will show you around once the app opens.\""
+  },
+  "R34": {
+    "verdict": "pass",
+    "evidence": "rebuilt branch: docs/archive/design/2026-09-10-first-run-guide/runs/after/shots-guide/midnight/wizard-auth.png and light/wizard-auth.png, beside the approved crop docs/archive/design/2026-09-10-first-run-guide/images/first-run-guide.review/wizard-signin--midnight--after.png; \"With your permission, the assistant may create, change, or delete files on your device. Create backups for anything you cannot replace.\""
+  }
+}

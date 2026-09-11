@@ -16,7 +16,9 @@ seen-on is always n/a here.
       and restores private metadata without duplicating transcript text" — while macOS and
       Linux pass. Every merging session has to open the log to learn it is not theirs; two did
       so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
-      broken on Windows; nobody has looked
+      broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
+      installer (a failed test step skips packaging) — the installer-icon session needed a
+      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch
       `n/a` `needs-verify` `checked 2026-09-10` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
@@ -98,6 +100,14 @@ seen-on is always n/a here.
       once outside a full run: treat the file's shared timer setup as the suspect, not the
       assertions. It costs a re-run on every branch that trips it
       `desktop` `confirmed` `checked 2026-09-10` `regression`
+- [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
+      still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
+      one-second `setInterval` and a previous session already lifted the timeout 3s -> 8s with a
+      comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
+      in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
+      a signal the card emits, so the test waits on the transition rather than on the clock. Not
+      done here because it is another feature's test and a bad rewrite is worse than a slow one
+      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
@@ -237,6 +247,40 @@ seen-on is always n/a here.
       the workload and terminal boots but ignores `projectsBoot` and `scrollbackBoot`. Found while
       reviewing the new terminal scenario, 2026-09-10
       `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] **The blank-content instrument measures partly with its own weight, which is the exact
+      shape the perf-lab README now forbids.** `late-content.mjs`'s per-frame `sample()` runs
+      `querySelectorAll('.timeline-entry')` over the whole list and a `getBoundingClientRect()`
+      on every spacer — on the huge fixture that is ~7,000 rect reads a frame, ~2.4 M across a
+      pass — on the main thread, inside the same frame as the scroll it is judging. The README
+      (added 2026-09-10, after this shipped) states the general rule it breaks: anything a poll
+      touches must not force style, layout or text serialisation, and `getBoundingClientRect` is
+      named in it. The bias runs toward FALSE POSITIVES: the probe slows the renderer it is
+      asking to keep up. It did not manufacture one in the single clean run we have, but that is
+      luck, not design, and this instrument already had three artefacts corrected before it
+      shipped. Fix shape: an `IntersectionObserver` rooted on the pane maintains the in-view set
+      with no synchronous geometry, and the spacer test itself (`childElementCount`,
+      `textContent`) already forces nothing. RECURRENCE — `docs/wrap-ups.md` calls
+      "a check that reports for the wrong reason" its most-repeated lesson, and 2026-09-10
+      found the same class in the rig's artifact-open timing
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] The terminal is the largest part of the app with NO speed measurement at all, and it is
+      where output volume is highest — so the one surface most likely to feel slow is the one
+      surface no number covers. Needs a scenario built from scratch: drive a command that
+      prints a great deal, measure what it costs to draw and what it costs the main process.
+      Carried over from the cycle-3 handoff (2026-09-03) when that document was archived; it
+      had never been filed as an item of its own
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] Every perf number is taken software-rendered, and that is now MEASURED rather than
+      assumed — `report.machine.renderer` says llvmpipe with GPU compositing off (2026-09-06).
+      Measuring what Destin actually sees would need a real display with a compositor, which
+      means putting windows on his screen while he works. Deliberately not attempted; filed so
+      the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
+      GPU" should cite this
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
@@ -301,7 +345,12 @@ seen-on is always n/a here.
       and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
       synthetic dispatch "proved" disabled controls receive pointer events when it proved
       nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
-      `--move-to x,y` on ui-probe would execute where a switch only asks
+      `--move-to x,y` on ui-probe would execute where a switch only asks.
+      **Recurred the same day (unselectable-chrome):** proving a text box still drag-selects
+      took TWO more throwaway CDP scripts (a mouse drag, then a rerun with
+      `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
+      the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
+      and focus emulation on by default, beside `--hover`
       `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
@@ -414,7 +463,7 @@ seen-on is always n/a here.
       (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
       metrics, a per-pane count proving the mechanism engaged, and a settle window before every
       reading — the last two exist because three different bugs all presented as the same 6%.
-      What remains, ranked: docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md
+      What remains, ranked: docs/archive/handoffs/2026-09-03-perf-next-steps-handoff.md
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
@@ -451,6 +500,14 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
+      `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
+      byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped
+      as youcoded#449). Three wrap-ups in a row reported it and left it, because deleting another
+      session's records is not a branch's call — so every session now reads a red audit and learns
+      to skim past it. Needs Destin's one-word OK to delete the two `docs/active/` copies
+      `n/a` `decision` `checked 2026-09-10`
+
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
       ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.
@@ -560,6 +617,15 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## release
+
+- [ ] Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from
+      brand-new accounts, copies Reddit bug reports and ideas into real roadmap entries, and
+      flips posts to Fixed or Planned himself. Set up automation for the repetitive parts, such as
+      turning new Bug Report and Feature Idea posts into roadmap entries, and marking a post Fixed
+      when its fix ships. Reddit stopped giving out new API access in November 2025, so the route
+      is Reddit's own Mod Tools Automations or a Community App, not a script with an API key.
+      Current setup is recorded in ~/Documents/youcoded-subreddit-setup.md
+      `n/a` `decision` `checked 2026-09-10`
 
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
@@ -700,29 +766,6 @@ seen-on is always n/a here.
       CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
       the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
-
-- [ ] Perf rig records nothing about which RENDERER it got, so "the rig is blind to GPU" — repeated
-      in five scenarios' `blindTo` lists and used to dismiss whole classes of finding — has never
-      been verified. The app already resolves it (`main.ts` `app.getGPUInfo('complete')` →
-      `auxAttributes.glRenderer`) and the rig throws it away; `/dev/dri/renderD128` is
-      world-readable on this machine, so the runs may already have hardware acceleration. Record
-      it in `report.machine` and the claim becomes checkable instead of assumed
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
-
-- [ ] Perf rig cannot see per-TOKEN streaming cost, so perf cycle 1 can never be re-gated and the
-      known buddy-window twin has no detector. Measuring TIME needs a native stream and is hostage
-      to local-model speed; measuring WORK does not — cycle 1's defect was one forced layout per
-      token, and the CDP `Performance` domain the rig already calls exposes layout and
-      style-recalc counters. Count layouts per streamed delta and the defect class becomes an
-      exact integer, not a noisy duration (confirm the counter names on first use)
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
-
-- [ ] Perf rig cannot see CONTENT ARRIVING LATE, which is the class that hid perf cycle 3's
-      pop-in through three clean measurement runs until Destin scrolled slowly and saw it
-      (2026-09-03). It is countable rather than visual: while scrolling, count entries that are
-      inside the viewport but still rendering as a spacer — that number must always be zero.
-      Generalises past folding to any lazy render: is anything late to the screen?
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
       merge commit's message was written by hand instead of left as git's default, because it looks

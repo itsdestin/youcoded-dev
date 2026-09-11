@@ -1,0 +1,14 @@
+{
+ "deck": "error-states-development-questions-2",
+ "started": "2026-09-10T04:04:48.256Z",
+ "submitted": "2026-09-10T04:05:36Z",
+ "cur": 0,
+ "answers": {
+  "Q-backup-visibility": {
+   "note": "i'm confused as to what  backup has to do with this? why are we messing with the sync system for contribution flows? ",
+   "v": "other",
+   "seconds": 46,
+   "theme": "light"
+  }
+ }
+}

@@ -1,0 +1,97 @@
+{
+  "title": "New app and installer icons — tested on a real Windows install",
+  "key": "app-icon-review",
+  "out": "app-icon.review.html",
+  "stage": "review",
+  "images": "images/app-icon.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Before (1.2.4)",
+    "after": "After (this branch)"
+  },
+  "_comment_boxes": "A hand-placed highlight box is [left, top, width, height] in PERCENT of the crop (deck/crops.py passes it straight to page.js), not pixels.",
+  "crops": {
+    "start-search": ["vm", "start-search", "775x480+125+40"],
+    "downloads": ["vm", "downloads", "420x260+290+200"],
+    "installer-window": ["vm", "installer-window", "420x200+300+280"],
+    "running": ["vm", "running", "620x60+200+708"],
+    "desktop": ["vm", "desktop", "420x290+0+0"],
+    "platforms": ["vm", "platforms", "1024x220+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Windows Start menu",
+      "path": "Press the Windows key and type youcoded, after installing",
+      "headline": "Searching youcoded on Windows now shows the app and its installer as two different icons.",
+      "themes": ["light"],
+      "crop": "start-search",
+      "changed": "The installed app shows the purple mascot tile; the downloaded installer shows the mascot above a purple strip with an arrow, and its name says Installer. Before, both were the same YC square.",
+      "notice": "The report that started this, two identical YouCoded results, no longer happens: the one to click is the tile without the arrow.",
+      "risk": "Tested on a clean Windows 11 test computer, not on every Windows setup; search layout can differ slightly between Windows versions."
+    },
+    {
+      "id": "R-2",
+      "surface": "The downloaded installer",
+      "path": "File Explorer, Downloads folder, large icons",
+      "headline": "The downloaded file is named as an installer and has its own icon.",
+      "themes": ["light"],
+      "crop": "downloads",
+      "highlight": {"box": [3, 15, 26, 52]},
+      "changed": "YouCoded.Setup.1.2.4 with the app's YC icon became YouCoded-Installer-1.3.0-beta.78 with the mascot-and-arrow icon.",
+      "notice": "In Downloads, the file reads as the thing you run once, not the app itself.",
+      "risk": "Only new downloads get the new name; files people downloaded before keep the old one."
+    },
+    {
+      "id": "R-3",
+      "surface": "The installer window",
+      "path": "Running the installer on Windows",
+      "headline": "The small installing window shows the installer icon.",
+      "themes": ["light"],
+      "crop": "installer-window",
+      "changed": "The title bar, the icon beside the progress bar, and the taskbar button while installing all show the new installer icon.",
+      "notice": "The few seconds of installing look like part of the same product as the new app icon."
+    },
+    {
+      "id": "R-4",
+      "surface": "The taskbar",
+      "path": "The taskbar button while YouCoded is open",
+      "headline": "While YouCoded runs, its taskbar button shows the new mascot tile.",
+      "themes": ["light"],
+      "crop": "running",
+      "changed": "The YC square became the purple mascot on the lavender tile. It stays that icon in every theme; themes that ship their own icon still use theirs.",
+      "notice": "The Start menu, desktop shortcut and taskbar now all show the same icon.",
+      "risk": "The icon no longer changes colour with your theme; theme-matched icons are parked on the themes roadmap."
+    },
+    {
+      "id": "R-5",
+      "surface": "The desktop shortcut",
+      "path": "The Windows desktop, right after installing",
+      "headline": "The desktop shortcut the installer creates shows the new app icon.",
+      "themes": ["light"],
+      "runs": ["after"],
+      "labels": {"after": "After installing (this branch)"},
+      "crop": "desktop",
+      "highlight": {"box": [1, 67, 15, 28]},
+      "changed": "A YouCoded shortcut with the mascot tile appears under Microsoft Edge.",
+      "notice": "The icon people click every day matches the Start menu and the taskbar."
+    },
+    {
+      "id": "R-6",
+      "surface": "Android and Mac icons",
+      "path": "The Android home screen, and the Mac disk and app",
+      "headline": "Android and Mac get the same mascot, each shaped for its own system.",
+      "themes": ["light"],
+      "runs": ["after"],
+      "labels": {"after": "After (this branch)"},
+      "crop": "platforms",
+      "highlight": {"box": [1, 8, 98, 88]},
+      "changed": "Android: the mascot on lavender, sized so no launcher shape cuts it, plus a one-colour version for themed icons. Mac: the disk shows the installer icon and the app shows the mascot tile with Apple's margin. Both, and the Windows icon, came out of the real GitHub builds matching the generated files exactly.",
+      "notice": "The phone and the computer show the same character, and the Mac disk no longer looks like a second app.",
+      "risk": "The Mac build was opened and inspected here, not run; Android was compiled and previewed, not tried on a phone."
+    }
+  ]
+}

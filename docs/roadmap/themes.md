@@ -26,6 +26,11 @@ here: installing or browsing themes (marketplace).
       shipped theme does any of this yet, noted 2026-08-07
       `all` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
 
+- [ ] Destin's ask (2026-09-10): the app's taskbar and Dock icon should change to match the
+      theme, drawn from the new robot icon. Until then, every theme shows the same lavender robot
+      icon, because the old theme matching redrew the retired "YC" square
+      `window-chrome` `desktop` `parked` `checked 2026-09-10`
+
 - [ ] A theme's icon overrides are accepted, and the Library shows a "custom icons" badge for
       them, but no icon anywhere in the app ever changes; build the feature or remove the
       field — Destin's call, deferred 2026-07-22

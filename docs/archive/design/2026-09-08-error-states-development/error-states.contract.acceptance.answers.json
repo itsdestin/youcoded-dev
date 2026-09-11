@@ -1,0 +1,82 @@
+{
+ "deck": "error-states-development-contract-acceptance",
+ "started": "2026-09-11T03:05:50.012Z",
+ "submitted": "2026-09-11T03:06:46Z",
+ "cur": 11,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R8": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R9": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R10": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R12": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R13": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R19": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R20": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R22": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R23": {
+   "v": "yes",
+   "seconds": 0,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-handover": {
+   "v": "pick",
+   "pick": "keep",
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-backup-warning": {
+   "v": "pick",
+   "pick": "leave",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

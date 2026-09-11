@@ -16,10 +16,9 @@ verify:
 # Narrow viewport (phone / remote browser)
 
 The renderer runs unchanged in a phone browser over remote access. Before the
-2026-07-20 pass it had **four disagreeing breakpoints** — a 700px CSS collapse,
-a 640px game button, 560px header labels, a 480px hard-pinned drawer — and
-nothing below 700px propagated into components' own Tailwind widths. Several
-features were not merely cramped but **unreachable**.
+2026-07-20 pass **four breakpoints disagreed** (700 CSS collapse / 640 game
+button / 560 header labels / 480 drawer) and nothing below 700px reached
+components' own Tailwind widths, leaving several features **unreachable**.
 
 **640px is the breakpoint; `useNarrowViewport()` is the source of truth.**
 Use the hook when the DOM structure branches, Tailwind's `max-sm:`/`sm:` when
@@ -57,19 +56,26 @@ Inset the pane with **margins**, not by un-hiding spacers: `ChatView`'s
 `framed-shell` has two `.frame-edge` children, `TerminalRightSlot`'s clone has one,
 so the spacer route fixes chat view and leaves terminal view broken.
 
+**A test that renders a viewport-branching component must DECLARE the viewport.**
+jsdom has no `matchMedia`, and the hook reads its absence as wide — so such a test
+silently exercises whichever branch the environment hands it. Two ResumeBrowser
+suites had been pinning the narrow layout's behaviour from the wide branch, and
+only said so when the wide branch changed under them. Stub `matchMedia` with the
+`NARROW_VIEWPORT_QUERY` answer you mean. · guard: none — candidate.
+
 **Hover-only affordances have no touch path.** `opacity-0 group-hover:` never
 resolves on the bundle phones actually run. Add `.touch-reveal` (visible under
 `pointer: coarse`) and `.coarse-hit` for a 44px target. `title=` tooltips also
 never fire on touch — don't put load-bearing copy there.
 
 **The chat/terminal toggle shows the view you'd switch TO** on narrow, not the
-current one. Reads correct either way in source; only obviously wrong in the
-running app. · guard: `NarrowViewToggle.test.tsx`.
+current one — reads correct either way in source, wrong only in the running app.
+· guard: `NarrowViewToggle.test.tsx`.
 
-Remote-specific trap: the server sends `platform: 'desktop'` and the shim adopts it unless
-`preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone browser. Feature-detect
-(`matchMedia('(pointer: coarse)')`) rather than trusting the platform string —
-see the open item in `docs/roadmap/remote-access.md` ("the remote shim overwrites the device platform").
+Remote trap: the server sends `platform: 'desktop'` and the shim adopts it unless
+`preservePlatform` is set (`remote-shim.ts`), so `isTouchDevice()` is false in a phone
+browser. Feature-detect — but not with `pointer: coarse`, see below. ·
+`docs/roadmap/remote-access.md`.
 
 **`pointer: coarse` is the PRIMARY pointer only — false on a touchscreen laptop.**
 Chromium reports "fine" whenever any touchpad or mouse-like device exists (the Z13

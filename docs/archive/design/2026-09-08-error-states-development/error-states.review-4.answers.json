@@ -1,0 +1,32 @@
+{
+ "deck": "error-states-development-review-4",
+ "started": "2026-09-09T22:01:36.345Z",
+ "submitted": "2026-09-09T22:02:03Z",
+ "cur": 3,
+ "answers": {
+  "R4-20": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-21": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-22": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-23": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

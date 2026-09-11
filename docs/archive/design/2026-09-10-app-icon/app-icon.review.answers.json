@@ -1,0 +1,44 @@
+{
+ "deck": "app-icon-review",
+ "started": "2026-09-11T03:24:55.127Z",
+ "submitted": "2026-09-11T03:27:07Z",
+ "cur": 5,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "seconds": 90,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "yes",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
