@@ -71,7 +71,13 @@ def pane_width(spec):
 # into compare/registry.tsx for one comparison. Asking him to operate a real screen of the app —
 # the actual chat, the actual settings — had no shape at all, so a live slide could only ever
 # offer drafts.
-APP_SCENARIOS = ('default', 'empty', 'no-providers', 'refused', 'stress', 'site')
+APP_SCENARIOS = ('default', 'empty', 'no-providers', 'refused', 'stress', 'site',
+                 # The status-bar scenarios: the ONLY ones that push a status:data
+                 # fixture, so the cost / tokens / cache / lines chips have figures
+                 # and render at all. Everything they carry is invisible in 'default'
+                 # — the chips bail when they have no value (spec §3, rule 1).
+                 'statusbar-cc', 'statusbar-local', 'statusbar-metered',
+                 'statusbar-unpriced', 'statusbar-delegated')
 APP_VIEWS = ('tools', 'compare', 'assistant-final', 'attachments', 'session-pills')
 # A whole screen of the app at the registry's 360px would render its narrow phone layout, which
 # is not what "show me the real screen" means. Panes wrap, so a wide one costs nothing.

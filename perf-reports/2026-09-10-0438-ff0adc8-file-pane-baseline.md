@@ -1,0 +1,96 @@
+# perf-lab 2026-09-10-0438-ff0adc8-file-pane-baseline
+
+sha ff0adc89a2f8ad01447941f3211a1efa8ffea4bc (fix/file-pane-spawns-and-redraw) — 2026-09-10T04:38:47.496Z
+machine: AMD RYZEN AI MAX+ 395 w/ Radeon 8060S · 121 GB · kernel 7.1.3-2-cachyos · node v26.4.0
+  renderer: ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39)) — SOFTWARE, gpu_compositing=disabled_software (via SystemInfo)
+
+| metric | median |
+|---|---|
+| startup.whenReady | — |
+| startup.createWindowAt | — |
+| startup.blankWindowMs | — |
+| startup.didFinishLoad | — |
+| startup.firstContentfulPaint | — |
+| startup.appMounted | — |
+| startup.sessionsListed | — |
+| startup.postWindowDone (network) | — |
+| idle PSS | — |
+| idle CPU | — |
+| switch, pane swapped (median of 3) | 74.8 ms / 211.6 ms p95 |
+| **switch, messages on screen** | **105.4 ms / 145 ms p95** |
+| switch into a 'huge' conversation (n=3, 60 entries of 60 expected) | 113.2 ms / 130.4 ms p95 |
+| switch into a 'medium' conversation (n=3, 152 entries of 152 expected) | 108 ms / 121.1 ms p95 |
+| switch into a 'small' conversation (n=3, 166 entries of 166 expected) | 110.4 ms / 125.5 ms p95 |
+| switch into a 'empty' conversation (n=3, 0 entries of 0 expected) | 110 ms / 125.8 ms p95 |
+| switch into a 'native' conversation (n=6, 1 entries) | 97.6 ms / 112.1 ms p95 |
+| streamed into, during the switches | medium, small |
+| long tasks | 38 tasks (4074 ms total, max 353 ms) |
+| frame gaps > 40ms | 58 gaps (max 363 ms) |
+| native first token | 1068 ms |
+| **layouts per streamed token (native)** | **stream-too-slow** — 34 layouts over 34 commits / 181 frames (0.188 /frame, 1 /commit) — ⚠ NOT a clean reading |
+| CPU during workload | 644 % |
+| PSS after workload | 1696.2 MB |
+| artifacts.open code small / large (median of 3) | 81 ms / 117 ms |
+| artifacts.open markdown small / large | 570 ms / 1455 ms |
+| artifacts.html swap median / p95 | 108 ms / 124 ms |
+| artifacts.keystroke small median / p95 | 26.1 ms / 32.3 ms |
+| artifacts.keystroke large median / p95 | 27 ms / 32.1 ms |
+| artifacts.copy click -> "Copied!" | 21.3 ms |
+| artifacts long tasks | 2499 ms total, max 737 ms |
+| artifacts IPC stall (sum over steps) | 77 ms, max 127 ms, from 113 probe replies |
+
+noise: load 1.63, busy 7.3%, worst accepted load 3.74 / busy 7.3%, discarded 5
+errors (desktop.log "level":"ERROR" lines): cold starts [], scenario boot —, workload boots [0,0,0], stall boot —, artifacts boot 0, projects boot —, scrollback boot —
+A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.
+
+## What was actually measured
+
+Every number above was produced in a specific configuration. Three wrong conclusions
+in this project came from a number measured where the defect could not appear, and none
+of them failed loudly — they returned clean numbers. Read the configuration with the number.
+
+### workload
+
+**Question:** Is the app responsive while several sessions are open, one is streaming, and the user switches between them?
+
+**Configuration:**
+- 6 sessions open at once (4 Claude Code + 2 native)
+- 3 of the 4 CC sessions are RESUMED from real transcripts (huge, medium, small), each in its transcript's own project folder; the 4th is deliberately left EMPTY as a control
+- a transcript streams into the medium and small sessions throughout the window — never into huge (the one clean loaded switch) and never into the empty control; the run records streamedInto and streamedTurnsBySize
+- 40 switches spread evenly across the same window the CPU sample covers
+- every repeat is its OWN boot with a freshly built fixture — nothing (transcript bytes, the app's own transcript mirror, caches, leftover sessions, memory) carries from one repeat to the next; the streamed-into transcripts are also cut back to their built bytes after each repeat and their size is checked before it
+
+**Where each clock starts and stops:**
+- `switchMedianMs` — click -> the visible pane CONTAINER swapped (2 animation frames). Does NOT wait for messages.
+- `switchPaintedMedianMs` — click -> the messages are on screen: entry count stable for 3 frames AND at least what the conversation holds (2 per turn, plus what streamed in so far). A stable count below that is a render pause or the wrong conversation, not a settle. For the two STREAMING sessions the count never holds still, so their clock stops at the first frame showing everything that had arrived by the click. This is the number a user would recognise.
+- `switchPaintedBySize.huge.medianMs` — the same clock, for switches INTO the huge conversation only — the PRIMARY switch metric, because it is the case Destin lives in and the only bucket no stream touches
+- `cpuDuringPct` — whole-process CPU across the workload window, from /proc — a RATE. Context only; never compare it across runs of different duration.
+- `cpuTotalSeconds` — CPU-seconds of whole-process work across the workload window (rate x window). Duration-independent, so this is the one the keep/reject gate compares.
+
+**Blind to:**
+- conversation sizes beyond the fixture huge transcript
+- switching under memory pressure from many MORE than 6 sessions
+- anything requiring a real GPU. MEASURED, not assumed, since 2026-09-03: report.machine.renderer records what Chromium actually used, and under Xvfb it is llvmpipe with gpu_compositing disabled. Check that field before comparing two reports — if it ever says otherwise, this line is wrong
+- per-TOKEN streaming TIME. The Claude Code streamer appends WHOLE turns (~7 renders/s per target), never the native harness's hundreds of same-turn deltas per second, so a per-delta fix is under-represented in every DURATION here. Since 2026-09-03 the per-delta WORK is measured instead — nativeLayoutCost counts layouts per commit over a native-streaming window (see layout-cost.mjs) — which is what re-gates cycle 1. What is still blind: the buddy window (no scenario opens one) and layout ATTRIBUTION (the counter is renderer-wide and cannot name the effect that forced it)
+- whether a switch into a STREAMING session feels slow because of the stream or because of the size — medium and small carry both; only huge and empty are clean
+- ENTRIES_PER_TURN is a measured constant, not read from the app — if the app changes what a timeline entry is, every resumed switch stops settling and the report says so, but the rig cannot fix itself
+
+### artifacts
+
+**Question:** What does the files panel cost to open, edit, and navigate?
+
+**Configuration:**
+- one session, resumed from the small transcript
+- six artifacts registered: code / markdown / HTML, each in a small and a large size
+- 30 keystrokes typed into a real CodeMirror editor at ~45ms spacing
+
+**Where each clock starts and stops:**
+- `open.*.openMs` — click the row -> the viewer reports the right document mounted
+- `typing.*.keystroke` — keydown -> painted, measured in-page via beforeinput
+- `htmlNav.swap` — select a different HTML artifact -> the iframe load event
+
+**Blind to:**
+- documents above EDIT_MAX_BYTES (3 MB) — the pane serves a read-only prefix, so typing is not measured there
+- real clipboard cost: MarkdownContent fires writeText without awaiting it
+- GPU-accelerated scrolling in the viewer — headless Xvfb has no compositor. MEASURED, not assumed, since 2026-09-03: see report.machine.renderer (llvmpipe, gpu_compositing disabled)
+

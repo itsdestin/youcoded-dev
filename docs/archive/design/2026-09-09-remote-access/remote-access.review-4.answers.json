@@ -1,0 +1,27 @@
+{
+ "deck": "remote-access-review-4",
+ "started": "2026-09-10T09:01:08.492Z",
+ "submitted": "2026-09-10T09:06:47Z",
+ "cur": 2,
+ "answers": {
+  "1": {
+   "v": "yes",
+   "seconds": 168,
+   "theme": "light",
+   "zoom": 1
+  },
+  "2": {
+   "note": "i think this whold browser protection menu should be hidden behind a second level popup",
+   "v": "other",
+   "seconds": 155,
+   "theme": "light",
+   "zoom": 1
+  },
+  "3": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

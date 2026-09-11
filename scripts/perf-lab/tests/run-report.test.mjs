@@ -20,12 +20,13 @@ import { describe, it } from 'node:test';
 import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
 import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
+import { MEASURES as PROJECTS_MEASURES, medianRun as projectsMedian } from '../scenario-projects.mjs';
 import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
-  EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
-  buildArtifactsSection, buildIdleSection, buildStartupSection, buildWorkloadSection,
+  EXIT, NETWORK_PATHS, NOISE_GATE_MAX_WAIT_MS, NOISE_GATE_POLL_MS, PHASES, STALL_SIZES, USAGE,
+  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
 } from '../run.mjs';
@@ -190,6 +191,23 @@ const artifactRun = (i) => ({
   warnings: [],
 });
 
+/** One Projects-view run, shaped as scenario-projects.mjs's runProjectsScenario returns it. */
+const projectsRun = (i) => ({
+  project: { name: 'gamma', files: 1600, folders: 40, bytes: 2400000, openedOn: 'gamma' },
+  open: { ok: true, openMs: 900 + i, countsMs: 1500 + i, fileCards: 24, folderCards: 8, nodes: 2200 + i },
+  search: { ok: true, firstKeyMs: 400 + i, keystroke: { count: 7, medianMs: 60 + i, p95Ms: 140 + i }, fileCards: 110, nodes: 3000 },
+  filter: { ok: true, codeMs: 1200 + i, fileCards: 720, nodes: 9000 + i },
+  scrollFlat: { ok: true, steps: 12, longtaskTotalMs: 800 + i, longtaskMaxMs: 210 + i, frameGapMaxMs: 180 + i, img: 40, iframe: 30 },
+  listView: { ok: true, ms: 300 + i },
+  switch: { smallMs: 500 + i, bigMs: 1100 + i },
+  conversations: { ok: true, ms: 200 + i, rows: 3 },
+  thrash: { ok: true, rounds: 8, toFiles: { medianMs: 150 + i, p95Ms: 400 + i, maxMs: 500 + i }, toConversations: { medianMs: 90 + i, maxMs: 200 + i }, longtaskTotalMs: 300 + i, frameGapMaxMs: 120 + i, ipcMaxMs: 210 + i, ipcStallMs: 2000 + i },
+  reopen: { ok: true, openMs: 600 + i },
+  probe: { longtaskCount: 30 + i, longtaskTotalMs: 4200 + i, longtaskMaxMs: 600 + i },
+  ipcSumOfSteps: { pings: 1200, totalStallMs: 900 + i, over250ms: 3, over1000ms: 0, maxMs: 420 + i },
+  warnings: [],
+});
+
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
 /**
  * One scroll-back repeat. Every number is plausible rather than round, and
@@ -245,8 +263,10 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   // is: `perSize.*.reachedTopEveryRun` is computed there, and a hand-assembled median
   // would keep passing after the scenario stopped carrying it.
   report.scrollback = { runs: sruns, median: scrollMedian(sruns), warnings: [] };
-  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, scrollback: SCROLL_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, scrollbackBoot: 0 };
+  const pruns = Array.from({ length: artifactRepeats }, (_, i) => projectsRun(i));
+  report.projects = buildProjectsSection(pruns, projectsMedian);
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, scrollback: SCROLL_MEASURES };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -281,7 +301,14 @@ describe('compare.mjs PRIMARY contract', () => {
     // 75%; nothing bounded the CEILING, because a page loaded by scrolling up is
     // prepended and never removed. A gate that judged only the floor would sign off a
     // change that left accumulation exactly where it was.
-    assert.equal(PRIMARY.length, 23, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 23 -> 25 on 2026-09-09: the two projects paths. Destin reported Project View
+    // chugging when he clicks Files/Conversations back and forth; the clicks
+    // themselves painted in ~65 ms, so the cost was invisible to every renderer
+    // metric here — the MAIN process was unresponsive 7.2-8.0 s per eight clicks.
+    // open.openMs rides along so a thrash fix that pre-warms its way to a slower
+    // first open cannot pass.
+    assert.equal(PRIMARY.length, 25, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
     assert.ok(PRIMARY.includes('scrollback.median.ceilingPssMb'), 'the ceiling is the cycle-3 target and must be judged');
     assert.ok(!PRIMARY.includes('scrollback.median.releasedMb'),
       'releasedMb is HIGHER-is-better; every PRIMARY path is read as lower-is-better, so including it would score the cycle-3 win as a regression');
@@ -470,7 +497,7 @@ describe('every scenario declares what it measures', () => {
   // every unit test. It is included because a rename there was the one mutation
   // the earlier tests did not catch.
   const load = async () => Object.fromEntries(await Promise.all(
-    ['workload', 'replay-stall', 'artifacts', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
+    ['workload', 'replay-stall', 'artifacts', 'projects', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
   ));
 
   it('exports MEASURES from every scenario module', async () => {
@@ -541,6 +568,24 @@ describe('stall phase wiring', () => {
     for (const row of ['artifacts.open markdown', 'artifacts.keystroke large', 'artifacts.html swap', 'artifacts IPC stall']) {
       assert.ok(md.includes(row), `summary is missing the "${row}" row`);
     }
+    for (const row of ['projects.open to first cards', 'projects.filter', 'projects.scroll flat grid', 'projects IPC stall']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+  });
+
+  it('refuses a projects run whose Files tab never painted rather than reading null as instant', () => {
+    const report = completeReport();
+    report.projects.median.open.openMs = null;
+    const problems = validateReport(report, new Set(['projects']));
+    assert.ok(problems.some((p) => /projects: open-to-first-cards was never measured/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms projects stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.projects.runs) r.ipcSumOfSteps = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: 0 };
+    report.projects = buildProjectsSection(report.projects.runs, projectsMedian);
+    const problems = validateReport(report, new Set(['projects']));
+    assert.ok(problems.some((p) => /projects: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
   });
 });
 
@@ -747,5 +792,18 @@ describe('exit codes', () => {
     const vals = Object.values(EXIT);
     assert.equal(new Set(vals).size, vals.length);
     assert.equal(EXIT.OK, 0);
+  });
+});
+
+describe('the machine-idle gate', () => {
+  it('waits long enough to outlast other work rather than throwing a build away', () => {
+    // It used to stop after five 30s polls — 2.5 minutes — and the gate runs AFTER
+    // the multi-minute build, so giving up discards all of it. A load average
+    // decaying from someone else's build routinely takes longer than that:
+    // measured 12.1 -> 15.6 -> 10.0 -> 6.4 -> 4.4 across those five polls on
+    // 2026-09-09, with the machine quiet a minute after the abort.
+    assert.ok(NOISE_GATE_MAX_WAIT_MS >= 10 * 60_000,
+      `a gate that waits only ${NOISE_GATE_MAX_WAIT_MS / 60000} min throws away the build it is gating`);
+    assert.ok(NOISE_GATE_POLL_MS <= 60_000, 'poll often enough to start promptly once the machine frees up');
   });
 });

@@ -1,0 +1,79 @@
+{
+ "deck": "session-context-r5",
+ "started": "2026-09-10T07:41:37.752Z",
+ "submitted": "2026-09-10T08:47:38Z",
+ "cur": 9,
+ "answers": {
+  "R-1": {
+   "v": "pick",
+   "pick": "after",
+   "seconds": 157,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "wrote",
+   "text": "System",
+   "note": "we should make this tab include both preset instructions and general system instructions. i want to be fully transparent about what models load in with",
+   "seconds": 178,
+   "theme": "light",
+   "zoom": 1
+  },
+  "G-4": {
+   "note": "i like the diff view",
+   "v": "pick",
+   "pick": "compare",
+   "seconds": 66,
+   "theme": "light",
+   "zoom": 1
+  },
+  "G-3": {
+   "note": "i think we can improve this a bit to match app styling a bit better. remove the checkmark. improve the button.",
+   "v": "yes",
+   "seconds": 79,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "never",
+   "note": "but the strip should have a warning state if stuff was cut",
+   "seconds": 26,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "always-show",
+   "note": "",
+   "seconds": 322,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 82,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "no",
+   "note": "drop for now",
+   "seconds": 34,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

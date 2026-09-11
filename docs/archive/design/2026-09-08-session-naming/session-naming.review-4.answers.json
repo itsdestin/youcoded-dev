@@ -1,0 +1,15 @@
+{
+ "deck": "session-naming-review-4",
+ "started": "2026-09-09T09:17:37.753Z",
+ "submitted": "2026-09-09T09:18:43Z",
+ "cur": 0,
+ "answers": {
+  "R4-1": {
+   "note": "the session artifact viewer already implements this pencil icon/dotted underline rename style. use the same styling from the session artifact viewer. same icon, same underline style",
+   "v": "other",
+   "seconds": 64,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

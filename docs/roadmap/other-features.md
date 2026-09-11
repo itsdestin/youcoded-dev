@@ -95,6 +95,21 @@ has passed ~8 items — graduate it to its own file.
 
 ## misc
 
+- [ ] Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari
+      pointed at another device that runs it. Options to weigh: a native app around the shared
+      interface (the Android shape, minus the on-device runtime, which App Store rules on
+      downloaded executable code would refuse), a pair-to-desktop-only app, or a proper web
+      client over an encrypted remote connection. Wanted: a written comparison of cost, App Store
+      constraints and what each option can and cannot do, before any build. The website's iOS
+      popup says we are exploring this (2026-09-10)
+      `n/a` `decision` `checked 2026-09-10`
+
+- [ ] Nothing in the app or on youcoded.ai points to r/youcoded, the community Destin opened on
+      2026-09-10 for bug reports, feature ideas, themes and things people make with the app.
+      Proposed, not yet answered: a "Community" link in Settings and in the site footer, added
+      once the subreddit has a few posts so visitors don't land on an empty page
+      `all` `decision` `checked 2026-09-10`
+
 - [ ] Idea: automation results delivered to Telegram, Discord or email, each channel a plugin. Only
       meaningful once the Agents & Automations view exists
       `all` `parked` `checked 2026-09-01`

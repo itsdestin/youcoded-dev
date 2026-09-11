@@ -17,6 +17,13 @@
 // Usage:
 //   node scripts/ui-probe.mjs <url> [options]
 //
+//   THE WORKBENCH FRAMES THE APP. `?mode=workbench` is a toolbar page with the app
+//   in an <iframe>, so `document.querySelector('.status-bar')` finds nothing and a
+//   select-all selects the toolbar. Reach in with
+//   `document.querySelector('iframe').contentDocument` (2026-09-10: two probes
+//   wasted, same trap a UX tester hit the same day). Headless focus also never
+//   reaches `:focus` inside that frame, so a focus-dependent style reads unfocused.
+//
 //   --size WxH          viewport; repeatable, and the whole probe runs once per size
 //   --wait <js>         poll this expression until truthy before measuring (30s cap)
 //   --settle <ms>       extra pause after --wait (default 400)
@@ -26,6 +33,23 @@
 //   --json              machine-readable output instead of aligned lines
 //   --fail-on-error     exit 1 if the page logged a console error or threw
 //   --keep-going        do not exit 1 when a --wait times out (still reported)
+//   --no-motion         kill CSS transitions/animations before the --evals run.
+//                       USE THIS whenever a probe clicks something and then reads
+//                       or photographs a COLOUR: this browser's animation clock
+//                       does not reliably advance, so a transitioning colour is
+//                       measured at the value it started from. See the note at
+//                       the injection site — it cost a wrong review answer once.
+//
+// DO NOT TRUST THIS FOR PAINTED STATE THAT JUST CHANGED. Measured 2026-09-10:
+// after clicking a tab, `getComputedStyle` here reported the PREVIOUS tab as
+// still carrying the active background and the new one as transparent —
+// stably, across reloads and multi-second settles, while the DOM classes and
+// aria-selected were both correct. The screenshot agreed with the stale values,
+// so it looked exactly like a real rendering bug and was filed as one. The same
+// control in a real Electron dev instance was correct. Headless Chrome does not
+// settle style recalculation for these elements on its own. Use this for
+// content, structure, text and geometry; check colour and highlight state in a
+// dev instance (`bash scripts/run-dev.sh`), not here.
 //
 // Examples:
 //   node scripts/ui-probe.mjs http://127.0.0.1:8791/deck.html \
@@ -52,7 +76,11 @@ if (!argv.length || argv.some((a) => HELP.test(a))) {
 }
 
 // ── arguments ────────────────────────────────────────────────────────────────
-const opts = { sizes: [], evals: [], wait: null, settle: 400, shot: null, json: false, failOnError: false, keepGoing: false };
+// What counts as "asking how it looks". Deliberately broad: a false warning
+// costs three lines of stderr, a missed one cost a session.
+const PAINT_QUERY = /getComputedStyle|backgroundColor|\bcolor\b|currentColor|\.style\b/;
+
+const opts = { sizes: [], evals: [], wait: null, settle: 400, shot: null, json: false, failOnError: false, keepGoing: false, noMotion: false };
 let url = null;
 for (let i = 0; i < argv.length; i++) {
   const a = argv[i];
@@ -69,6 +97,7 @@ for (let i = 0; i < argv.length; i++) {
   else if (a === '--json') opts.json = true;
   else if (a === '--fail-on-error') opts.failOnError = true;
   else if (a === '--keep-going') opts.keepGoing = true;
+  else if (a === '--no-motion') opts.noMotion = true;
   else if (a.startsWith('--')) { console.error(`ui-probe: unknown option ${a}`); process.exit(2); }
   else if (url === null) url = a;
   else { console.error(`ui-probe: unexpected argument ${a}`); process.exit(2); }
@@ -159,9 +188,46 @@ for (const size of opts.sizes) {
     }
     if (!waited) timedOut = true;
   }
+  // --no-motion: kill transitions and animations BEFORE the --eval clicks run.
+  //
+  // WHY IT EXISTS (2026-09-10, and it cost a wrong review answer). This browser
+  // is headless, and its animation clock does not reliably advance: a CSS
+  // transition started by a click sat at currentTime 0 three seconds later
+  // (`CSSTransition background-color dur=150 t=0`). getComputedStyle during a
+  // running transition returns the CURRENT interpolated value, so a colour that
+  // transitions on a state change reads — and photographs — as the value it was
+  // BEFORE the change, or as a blend partway there.
+  //
+  // Concretely: turning Skip Permissions on in a new-session form makes its
+  // Create button `bg-destructive`. The clone of that button rendered the right
+  // red; the real one reported the accent it was transitioning FROM. The review
+  // deck then showed Destin a wrong-coloured button and he correctly flagged a
+  // colour the app never actually paints.
+  //
+  // So any probe that CLICKS something and then measures or photographs colour
+  // wants this. It is opt-in because a probe about motion needs the opposite.
+  if (opts.noMotion) {
+    await evaluate(`(() => {
+      const s = document.createElement('style');
+      s.textContent = '*,*::before,*::after{transition:none !important;animation:none !important}';
+      document.head.appendChild(s);
+      return true;
+    })()`).catch(() => {});
+  }
   await sleep(opts.settle);
 
   const evals = [];
+  // A colour read right after a click is measured at the value it STARTED from:
+  // this browser's animation clock does not reliably advance, so a transitioning
+  // colour never finishes transitioning (see --no-motion at the injection site).
+  // Two sessions have now paid for this — one lost a review answer, and on
+  // 2026-09-10 one filed an app bug against a tab strip that was fine. The flag
+  // fixes it; this makes sure nobody has to already know the flag exists.
+  if (!opts.noMotion && opts.evals.some((e) => PAINT_QUERY.test(e))) {
+    console.error('ui-probe: WARNING — this reads painted state (colour/style) without --no-motion.');
+    console.error('  A colour that is mid-transition measures at its OLD value here, stably, and the');
+    console.error('  screenshot agrees. Re-run with --no-motion, which kills transitions first.');
+  }
   for (const expr of opts.evals) {
     try { evals.push({ expr, value: await evaluate(expr) }); }
     catch (e) { evals.push({ expr, error: String(e.message || e) }); }

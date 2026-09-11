@@ -1,0 +1,39 @@
+{
+  "title": "Session naming — your three refinements",
+  "key": "session-naming-review-3",
+  "stage": "review",
+  "out": "session-naming.review-3.html",
+  "images": "images/session-naming.review-3",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-3-before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-3-after"
+  },
+  "themes": ["light"],
+  "crops": {
+    "general": ["naming", "ai", "640x600+490+170"],
+    "saved": ["naming", "saved", "480x650+480+125"],
+    "manual": ["naming", "manual", "460x330+490+290"]
+  },
+  "steps": [
+    {
+      "id": "R3-1", "surface": "General settings", "path": "Assistant settings → General → Session naming", "crop": "general",
+      "headline": "1. Session naming matches the other General cards.",
+      "changed": "Uses the same background, rounded corners, padding and title styling as the surrounding options.",
+      "notice": "The naming choices and model picker stay together inside their card.",
+      "risk": "This is still the isolated preview; title generation is not connected."
+    },
+    {
+      "id": "R3-2", "surface": "Saved sessions", "path": "Resume Session → pencil beside a name", "crop": "saved",
+      "headline": "2. The pencil sits directly beside the saved name.",
+      "changed": "Removed the separate Rename button and its extra row. The visible pencil opens the same rename dialog.",
+      "notice": "The pencil is always visible, keyboard-labelled, and has a larger touch target."
+    },
+    {
+      "id": "R3-3", "surface": "Manual session names", "path": "Rename a manually named session", "crop": "manual",
+      "headline": "3. No automatic-name reset button.",
+      "changed": "Removed Use automatic name entirely, without adding another reset action.",
+      "notice": "Cancel and Save name are the only actions. Names you choose remain protected from automatic naming.",
+      "risk": "Saving and reopening were checked in the simulated preview, not durable backend storage."
+    }
+  ]
+}

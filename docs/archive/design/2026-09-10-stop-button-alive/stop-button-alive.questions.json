@@ -1,0 +1,142 @@
+{
+  "title": "Livelier stop button",
+  "key": "stop-button-alive-questions",
+  "out": "stop-button-alive.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Message box · stop button",
+      "path": "The square button left of Send, while a reply is being written",
+      "headline": "When a reply seems stuck, should the stop button stop moving?",
+      "today": "The stop button appears beside Send while the assistant replies. It stays through the amber “Still waiting on Claude” warning and the red “Provider may have stalled” card, because that is when you most want a way out.",
+      "problem": "A button that looks busy says the assistant is working. During a stall it would be the one thing on screen saying all is well while the card above it says otherwise.",
+      "proposal": "Pick when the lively look runs. In both options the button stays visible and tappable for the whole reply; only the motion changes.",
+      "options": [
+        {
+          "id": "only-working",
+          "label": "Moves only while working",
+          "pros": [
+            "Honest: the motion stopping is itself a sign something is wrong.",
+            "Agrees with the chat, which also swaps its “thinking” bubble for the warning."
+          ],
+          "cons": [
+            "A Claude Code reply that goes quiet for a long time can trigger the warning while still working, so the button may go still for a moment."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "whole-reply",
+          "label": "Moves the whole reply",
+          "pros": [
+            "One look from start to finish."
+          ],
+          "cons": [
+            "Keeps looking busy beside a red “may have stalled” card."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Message box · stop button",
+      "path": "The square button left of Send, while a permission card waits for you",
+      "headline": "While the assistant waits for your permission, should the stop button keep moving?",
+      "today": "When the assistant asks permission (the Yes / No card), the reply is paused until you answer, but the stop button stays so you can end the reply instead.",
+      "problem": "A lively button while it waits on you suggests the assistant is busy, and pulls your eye away from the card you need to answer.",
+      "proposal": "Pick one. Either way the button stays tappable.",
+      "options": [
+        {
+          "id": "still-when-asking",
+          "label": "Still while it asks you",
+          "pros": [
+            "Your eye goes to the permission card, the thing that needs you.",
+            "Motion always means “working”, never “waiting on you”."
+          ],
+          "cons": [
+            "In a reply with several permission asks, the button starts and stops moving several times."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-moving",
+          "label": "Keep moving",
+          "pros": [
+            "No change of look in the middle of a reply."
+          ],
+          "cons": [
+            "Looks busy while nothing happens until you answer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Message box · stop button",
+      "path": "The square button left of Send, while a reply is being written",
+      "headline": "Should the stop button also look different from Send when nothing is moving?",
+      "today": "Stop and Send sit side by side as two identical filled squares in the theme colour; only the small white mark inside differs, a square or an arrow. The mic, the other button in the box that shows something live, is round.",
+      "problem": "With motion switched off, or at a quick glance, the two read as the same button twice.",
+      "proposal": "The looks themselves come next, as live buttons you can watch in the real app. This decides whether they may change the button's shape, or only add motion. A red button is not offered: the app keeps red for deleting things, and Midnight and Dark stay black-and-white by design.",
+      "options": [
+        {
+          "id": "round",
+          "label": "Round, like the mic",
+          "pros": [
+            "Tells Stop from Send at a glance, even with motion off.",
+            "The two buttons that show something live share one shape."
+          ],
+          "cons": [
+            "One round button beside a square Send."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "motion-only",
+          "label": "Same square, motion only",
+          "pros": [
+            "Smallest change; the row keeps one shape."
+          ],
+          "cons": [
+            "With motion off it looks exactly like today, identical to Send."
+          ]
+        },
+        {
+          "id": "show-both",
+          "label": "Show me both",
+          "pros": [
+            "You decide with the buttons in front of you."
+          ],
+          "cons": [
+            "Twice as many looks to compare in the next round."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Message box · stop button",
+      "path": "Settings → Appearance → Reduce Visual Effects",
+      "headline": "With Reduce Visual Effects on, the stop button shows a still glow instead of moving.",
+      "changed": "Stated, not asked: the same rule the listening mic follows, and it also applies when the computer itself is set to reduce motion.",
+      "notice": "The button still reads as “working” without anything on screen moving.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Message box · stop button",
+      "path": "The square button left of Send, while a reply is being written",
+      "headline": "The motion ticks in small steps instead of gliding, so a long reply does not drain the battery.",
+      "changed": "Stated, not asked: every looping animation in the app works this way. Smooth looping motion was measured using about 30% of a processor core on a 180 Hz screen; stepped motion used about a third of that.",
+      "notice": "Up close the motion is a little less silky than a video; at the size of this button it reads as a soft pulse.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}

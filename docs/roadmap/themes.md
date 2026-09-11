@@ -8,13 +8,6 @@ here: installing or browsing themes (marketplace).
       Cleanup candidate, not a bug
       `themes-screen` `desktop` `confirmed` `checked 2026-09-06`
 
-- [ ] Everything the mascot learned this year is desktop-only (2026-09-05): on a phone or in
-      a browser the buddy is four still pictures — no blinking, no reacting, no eyes following
-      the cursor, and none of the new happy or asleep faces. Desktop gets all eight expressions
-      and the motion; the other two surfaces fall back to flat drawings because they cannot
-      load the animated format. Destin, told this: "okay this is fine for now"
-      `android` `confirmed` `checked 2026-09-05`
-
 - [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and
       friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31

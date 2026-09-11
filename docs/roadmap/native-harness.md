@@ -4,6 +4,37 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+
+- [ ] Idea (Destin, 2026-09-08): "YouCoded Mesh" automatically chooses an available, suitable
+      device of yours for remote requests and scheduled/autonomous duties, without making you
+      manage which device runs each request. Build on Agents & Automations and secure remote
+      access; account-based access is tracked in remote-access. Around v1.4, not a release promise.
+      Suitability, required files/tools, permissions and avoiding duplicate runs need design.
+      `all` `parked` `checked 2026-09-08` `v1.4`
+
+- [ ] Idea (Destin, 2026-09-08): "YouCoded Cloud" could run an automation when none of your
+      devices is online, as an optional, possibly paid fallback after YouCoded Mesh. Around v1.4
+      or later, not a release promise or agreed pricing. Consent, spending limits, required data
+      and credentials, privacy and safe handoff need design; do not assume offline-only files
+      are available to the cloud or treat device/cloud retries as permission to run work twice.
+      `all` `parked` `checked 2026-09-08` `v1.4`
+- [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
+      mid-sentence and the assistant is told to "ask for the rest" without being told which file
+      that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules
+      are handled well (every heading survives, the file is named); skills, triggered rules and the
+      model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
+      are written up with options and how other tools handle each one — deck ready to serve, nothing
+      answered. Parked 2026-09-09 to finish the session-context panel first
+      `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+
+- [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
+      you picked — its own test says so and has been failing on master since the feature shipped
+      2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists
+      the same intent": both saves carry 20 after 50 was chosen). Found 2026-09-09 by a
+      `verify.sh` run on an unrelated branch; nobody has checked yet whether it reproduces in
+      the running app or is only true on the failure path the test exercises
+      `settings` `desktop` `needs-verify` `checked 2026-09-09`
+
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
       `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
@@ -15,12 +46,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] The assistant should know which tools, instructions and automatic checks are actually
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
-
-- [ ] On a ChatGPT-plan model, YouCoded does not hand OpenAI's private reasoning back on the
-      next step of a tool turn, so a long tool-using turn may re-think work it already did —
-      slower and more expensive than it needs to be. Phase 0 measured no reasoning item at all
-      on the free plan, so nothing is broken today; a paid plan is the case to check
-      `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/specs/2026-09-05-chatgpt-signin-backend-design.md
 
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —
       six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
@@ -118,11 +143,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       index it maintains and a flush before compaction. Sequenced after the eval CI gate and the
       request log above
       `desktop` `parked` `checked 2026-08-26`
-
-- [ ] When a small model's session has its project rules outlined, skills cut or MCP servers dropped
-      to fit the context budget, only the model is told — nothing on screen says so. In progress on
-      branch `feat/context-truncation-notice` (worktree `worktrees/context-truncation`)
-      `chat` `desktop` `in-flight` `checked 2026-09-01`
 
 - [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
       send function only accepts the literal provider names. No live caller today; fix when the retry
@@ -246,7 +266,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] The session-cost chip reads low once a long session starts compacting — a step down at
       every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
-      `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
+      `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
 
 - [ ] Changing models while an answer is still streaming bills that whole turn at the new
       model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
@@ -261,8 +281,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       affinity and prefix stability, then measure the first post-resume request rather than trusting
       historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
       stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
-      survives the gap between messages
-      `desktop` `confirmed` `checked 2026-09-08` → docs/active/investigations/2026-08-17-cache-efficiency.md
+      survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
+      shipped in youcoded#461 (2026-09-09). Of the eight remaining breakers, youcoded#464
+      (2026-09-10) shipped six plus the backend half of the seventh: Anthropic caching switched on
+      and OpenRouter sessions pinned, compaction firing before the trimmer on every window,
+      pruning committed only on a prune decision, the summary reusing the conversation's warm
+      prefix and reporting its cost, an `expectedRebuild` flag on every turn, llama.cpp's reuse
+      count recorded per step, and the Task tool pinned byte-identical across catalog reloads.
+      The ChatGPT summary key was dropped on purpose (the summary shares the chat's key now).
+      What is left: the Reuse chip's DISPLAY of expected vs surprise misses (four layouts in the
+      survey, a deck for Destin), and a measurement pass in a dev instance — nothing reads the
+      recorded local reuse count yet, and whether OpenRouter honours the top-level cache field
+      and the session pin is asserted only against a stubbed network
+      `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account

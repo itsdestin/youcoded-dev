@@ -29,6 +29,8 @@ Confirm with `git log --oneline origin/master -1`, then do the cleanup above by 
 the merge.
 Verify the commit landed on the remote default first: `git merge-base --is-ancestor <sha> origin/master` must exit 0 (a stale local `master` is not the authority). Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
+**A red check on the PR: run `bash scripts/ci-red-vs-master.sh <pr> [<repo-dir>]` before opening a log.** It pulls the failing test names from the PR's failed jobs and from master's latest run of the same workflow and says which failures are already red on master (exit 0) and which are new (exit 1); build/install breaks with no test names are yours to read. Two known-red legs on 2026-09-10 — the workspace git-identity test and the desktop Windows harness checkpoint tests — cost four manual comparisons in one session before this existed.
+
 **Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
 
 **Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
@@ -118,27 +120,19 @@ cd youcoded/desktop && npm ci && npm run build
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
 
-# NEITHER Android command above can run on this machine today. Verified 2026-09-05:
-#   ls /home/destin/.android-sdk   -> No such file or directory
-#   ls /usr/lib/jvm               -> default, default-runtime, java-26-openjdk
-#   find /home/destin /opt -maxdepth 4 \( -name platform-tools -o -name build-tools \
-#        -o -name cmdline-tools \) -type d      -> nothing
-#   pacman -Qq | rg -i android    -> android-studio         (the IDE only)
-# Gradle stops at `SDK location not found` during CONFIGURATION, before compiling.
+# Both Android commands above DO run here (741 tests green, 2026-09-09) — Gradle
+# just needs ANDROID_HOME named, because the SDK is installed but not exported:
+#   JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
+#     ./gradlew test -x bundleWebUi
+# `-x bundleWebUi` skips the web-UI bundle, which would run npm against the
+# worktree's HARDLINKED node_modules and write through to the shared checkout.
 #
-# This block previously asserted the SDK WAS installed at that path, and named a
-# java-21-openjdk that is also absent. Both had been wrong long enough that nobody
-# noticed — which means sessions that ran this command and moved on recorded a
-# configuration failure as a completed "checked both platforms". A check that stops
-# checking goes quiet, not red. Do not report `./gradlew test` as passing here.
-#
-# Until the SDK is installed (open item: docs/roadmap/dev-workspace.md), a Kotlin
-# change can only be compiled file-by-file with the kotlinc inside /opt/android-studio.
-# Once it IS installed, this is the invocation. The JDK must be Android Studio's
-# bundled runtime (JDK 21.0.10) — the system default is 26, which AGP rejects. And
-# `-x bundleWebUi` is MANDATORY in a worktree: it transitively runs `npm ci`, which is
-# destructive against a hardlinked node_modules (see the worktree rule above).
-cd <worktree> && JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME=<the SDK, once installed> \
+# Read the result out of app/build/test-results/**/*.xml, not off the console:
+# a second run prints BUILD SUCCESSFUL with "103 tasks up-to-date" and executes
+# no tests at all. This block asserted for five days that Android could not be
+# built here — true when written, and by 2026-09-09 it had cost a session and a
+# subagent a false "unverifiable" each. Re-verify before trusting either claim.
+cd <worktree>/youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
   ./gradlew test -x bundleWebUi
 ```
 

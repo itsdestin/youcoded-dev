@@ -85,6 +85,8 @@ UI design precedes backend implementation. Read `.claude/rules/feature-flow.md` 
 
 Use the context-free UX tester before Destin's first deck and after implementation, a fresh code reviewer, and a fresh grader before acceptance. Briefs and execution: `scripts/ui-review/{ux-tester,code-reviewer,grader,contract-agent}.md`; full route: `.claude/rules/feature-flow.md`. This overrides generic brainstorming chat-question habits for YouCoded features.
 
+**Small changes, features or bug fixes with clear direction** may skip the questions deck, UX tester, reviewers, contract and acceptance rounds; a UI review deck is then the first thing Destin sees. Ask him before skipping to confirm that is what he wants.
+
 ### Asking Destin many questions at once
 
 Four or more questions go on a questions deck — a words-only review deck: copy `scripts/ui-review/templates/questions.json`, `preview` it and read the contact sheet, then `serve` it in the background and put the printed link in chat as the last line of your turn (it opens nothing itself). Every question carries context-free Today / Problem / Proposal / Options with user-facing pros and cons, as fields the builder enforces; questions share one scrolling page unless a page marker starts a new one. Fewer than four or wording-only questions may stay in chat, except where feature-flow requires a deck. Fields, kinds and commands: `.claude/rules/review-deck.md` and `scripts/ui-review/deck/AUTHORING.md`.
@@ -111,7 +113,7 @@ Use existing tools before inventing a rig: `scripts/ui-probe.mjs` for an isolate
 
 **Before claiming a desktop change done, run `bash scripts/verify.sh [<worktree>]`.** It covers types, related tests plus source-scanning guards, knip, lint and ast-grep; `--full` forces the full suite. It covers desktop only. Android and Worker need their own checks.
 
-**Android cannot be built or tested on this machine.** No SDK is installed — only Android Studio (verified 2026-09-05: `/home/destin/.android-sdk` absent, no `platform-tools`/`build-tools`/`cmdline-tools` anywhere under `/home/destin` or `/opt`, `/usr/lib/jvm` holds only java-26). Gradle stops at `SDK location not found` during configuration, before it compiles anything — so the documented command returns a configuration failure, never a test result. **Do not record running it as a completed cross-platform check**; a Kotlin change can only be compiled file-by-file with the kotlinc inside `/opt/android-studio`, and say so plainly rather than implying `./gradlew test` passed. Installing the SDK is an open item in `docs/roadmap/dev-workspace.md`; the commands for once it exists (JDK 21 from `/opt/android-studio/jbr`, `-x bundleWebUi` to protect hardlinked dependencies) are in `docs/workspace-workflows.md` → Local build & test.
+**Android DOES build and test on this machine** (741 tests green, 2026-09-09). `ANDROID_HOME` is simply unset, so Gradle needs it named: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk ./gradlew test -x bundleWebUi` from `youcoded/` — `-x bundleWebUi` protects hardlinked dependencies. This paragraph said the opposite until 2026-09-09, on a verification that was true when written; a session and a subagent both reported Android as unverifiable before running it once. Read the count out of `app/build/test-results/`: a green BUILD SUCCESSFUL with everything up-to-date is not a test result.
 
 ### Harness evals (native agent tools)
 

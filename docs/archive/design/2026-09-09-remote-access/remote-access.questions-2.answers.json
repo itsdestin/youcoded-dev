@@ -1,0 +1,20 @@
+{
+ "deck": "remote-access-questions-2",
+ "started": "2026-09-09T21:58:58.444Z",
+ "submitted": "2026-09-09T22:00:02Z",
+ "cur": 0,
+ "answers": {
+  "Q-4": {
+   "v": "pick",
+   "pick": "unpair",
+   "seconds": 32,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "remove",
+   "seconds": 32,
+   "theme": "midnight"
+  }
+ }
+}

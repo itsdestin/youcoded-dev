@@ -12,6 +12,13 @@ running a command* instead of being re-investigated from scratch. What is not a
 scenario is not measured — see the coverage table, and read it as the honest list it
 is.
 
+> **Nothing here appears on Destin's desktop.** Every rig entry point — `run.mjs`,
+> `profile-open.mjs`, the screenshot sweep — launches the app on an **Xvfb virtual
+> display**, not the real one. The standing "warn before opening a window" rule is
+> about `run-dev.sh` and the workbench; it does not apply to the rig, and a session
+> that assumes it does will either warn for nothing or avoid the right instrument.
+> (Stated here because a session did exactly that on 2026-09-10.)
+
 > **Terms, once.** *Main process* — the single background process that owns the app's
 > files, IPC and windows; there is exactly one, shared by every open session.
 > *Renderer* — the process that draws a window (the web page). *IPC* — the messages the
@@ -38,6 +45,7 @@ reading the report. Do not let this table drift optimistic.
 | memory ceiling once conversations are read back | `scenario-scrollback.mjs` | **covered** |
 | app-wide freeze on replay | `scenario-replay-stall.mjs` | **covered** (both its metrics currently read 0) |
 | artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **covered** |
+| Projects view (open, file search, type filter, flat-grid scroll, list view, project switch, Conversations tab, reopen) | `scenario-projects.mjs` | **covered** since 2026-09-09 — stock theme only, so the per-card wallpaper blur is NOT measured |
 | layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
 | blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
 | which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
@@ -47,8 +55,8 @@ reading the report. Do not let this table drift optimistic.
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**All seven phases are reachable from the CLI.** `run.mjs`'s phase list is
-`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'scrollback']`
+**All eight phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'scrollback']`
 — pick any subset with `--only`. (This paragraph previously said the list was four
 phases and that `stall` and `artifacts` were unreachable; that stopped being true when
 they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
@@ -105,7 +113,7 @@ themselves are tracked) and each boot's `desktop.log` copied to
 | Exit | Meaning |
 |---|---|
 | 0 | clean report |
-| 2 | error (build failed, machine never went idle, a scenario threw) |
+| 2 | error (build failed, the machine stayed busy for 20 minutes, a scenario threw) |
 | 3 | `--max-minutes` budget exceeded — app family killed first |
 | 4 | report is missing numbers a requested phase owed (see below) |
 | 130 | interrupted |
@@ -118,6 +126,88 @@ but **no per-run samples** behind it, which would make `spreadPct()` report 0% n
 and let pure jitter through the gate as a proven win. The report is still written
 (the numbers cost real minutes) but it is stamped `incomplete` in both the JSON and
 the Markdown.
+
+### Waiting for a quiet machine
+
+Every phase, and every repeat, passes an idle gate: load average under 4 and CPU
+under 10% measured over 3 seconds. Busy means **wait**, polling every 30 s for up
+to 20 minutes, printing how long it has been waiting so a queued run is never
+mistaken for a hung one. Only after that does it give up (exit 2).
+
+It used to stop after five polls — 2.5 minutes — and because the gate runs AFTER
+the build, giving up threw the whole build away. On 2026-09-09 that happened twice
+in one session while the load average was still coming down from other work
+(12.1 → 15.6 → 10.0 → 6.4 → 4.4 across the five polls, quiet a minute later), and
+both times the workaround was an external script doing exactly this wait. The
+budget is capped by the run's own `--max-minutes`, so a gate can never push a run
+past the deadline its caller set. Pinned by `run-report.test.mjs` → "the
+machine-idle gate".
+
+### Asking a report which STEP produced a number
+
+```
+node scripts/perf-lab/explain.mjs <report.json> --phase artifacts --run 2
+```
+
+Ranks every step in a run by what it cost, main-process stall and renderer
+long-tasks side by side, with the scenario's own verdict for who froze:
+
+```
+artifacts#2 — steps by main-process stall
+  step                           main stall   worst  renderer   worst  who
+  open.mdLarge                         1312    1362      1360     743  renderer
+  open.mdSmall                          279     329       833     421  renderer
+```
+
+A phase total says a run stalled for 1.6 s; it does not say where, and where is
+what decides whether a change is to blame. That example is real: it cleared a
+branch that had not touched the markdown viewer. `--by renderer` re-ranks by
+renderer cost — a disagreement between the two orderings is itself the signal,
+because work moved off the main thread is not work removed.
+
+### Asking WHICH FUNCTIONS made a step slow
+
+```
+node scripts/perf-lab/profile-open.mjs --file mdLarge --top 20
+```
+
+`explain.mjs` stops at the step. This takes a real V8 CPU profile across one
+artifact open in the real app — on Xvfb, like every rig run, so nothing appears
+on the desktop — and ranks functions by **self** time, bucketed by subsystem:
+
+```
+================ open mdLarge — 939 ms wall, 1037 ms sampled ================
+  by subsystem:
+    our app code                                     714 ms   69%
+    V8 / GC / runtime                                210 ms   20%
+```
+
+It writes the `.cpuprofile` too, so it can be opened in Chrome DevTools when the
+buckets are not enough. Build a different tree with `--checkout <path>`; it
+defaults to this worktree's `youcoded/`.
+
+**Why it exists.** On 2026-09-09 a small Markdown file measured 570 ms against
+117 ms for a code file twenty times its size, and three fixes were filed against
+the Markdown renderer — which turns that same file into a page in ~30 ms. Half a
+second was being attributed to code that was not running. The profile found it in
+the probe, not the app (next section). A step number that surprises you is worth
+one profile before it is worth a plan.
+
+### A probe that reads layout charges the app for its own cost
+
+`viewerState()`'s `tail` calls `innerText`, which forces a synchronous layout of
+the pane — and `waitForViewer` polled it every 50 ms *while timing an open*. The
+more document there was to lay out, the more the probe billed, which reads
+exactly like "markdown is slow" and is why the 570 ms above was believed. The
+tail is now opt-in: off in the polling loop, on when a wait times out and the
+app's own error copy is worth a reflow. Pinned by two tests in
+`scenario-artifacts.test.mjs`.
+
+Two consequences worth knowing. Artifacts-phase numbers recorded **before
+2026-09-10 are not comparable** with later ones — they include the probe. And the
+general rule: anything a poll touches must not force style, layout or text
+serialisation. `innerText`, `offsetHeight`, `getBoundingClientRect` and
+`getComputedStyle` all do.
 
 ### The first run of a new scenario is a shakedown, not a baseline
 
@@ -279,6 +369,30 @@ answers one suspect:
 The fixture files are generated from a seeded PRNG (`rng32`) so they are byte-identical
 between a baseline and a candidate run — otherwise "the large file got slower" could
 just mean "the large file got different".
+
+### `scenario-projects.mjs` — the Projects view *(own boot; added 2026-09-09)*
+Seeds a second saved project of ~1,600 generated files in 40 folders (45 % code, 25 %
+markdown, 12 % HTML, 10 % PNG, 8 % JSON — every card-preview kind), lists it and the
+transcript project in `~/.claude/youcoded-folders.json`, then: opens Projects from the
+header button, **types seven real key events** into the file search, flips the grid to
+flat mode with the "Code & configs" type filter, scrolls that grid to the bottom so every
+card crosses the viewport (previews are IntersectionObserver-gated), switches to list
+view, switches projects both ways, opens the Conversations tab, closes and reopens — both
+probes over every step.
+
+**Look first at `open.openMs` versus `open.countsMs`** ("when do I see cards" versus
+"when do the numbers land"), then `filter.codeMs` beside `filter.fileCards` (the cost of
+mounting every matching file as a card — there is no virtualization), then
+`scrollFlat.longtaskTotalMs` (the per-card preview fetch + render as cards scroll in),
+then `search.keystroke.p95Ms` (the per-keystroke re-filter/re-sort). A step whose
+`stall.verdict` is `main` is the backend fan-out, not the renderer.
+
+**Blind to, by construction:** the per-card `backdrop-filter` blur that wallpaper themes
+put on every `.layer-surface` card — the fixture boots the stock theme (no wallpaper), and
+under llvmpipe a blur is software-rasterised anyway. That cost is real on Destin's
+display and this scenario says nothing about it. Also blind to a project over the
+2,000-file discovery cap and to a conversation-heavy project (the transcript project has
+three).
 
 ---
 

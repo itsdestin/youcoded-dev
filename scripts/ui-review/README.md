@@ -249,7 +249,7 @@ different tree, and refuses to overwrite a gallery when any shot failed verifica
 app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
 pixels per CSS px, so the clip keeps its size and everything in it is `zoom` times bigger, in
 real pixels. Actions address elements by selector, so nothing else in the scene changes. The
-fourteen desktop `promo-*` scenes carry 1.25 (Destin, 2026-09-04: "hit the + a bit so it's easier
+fourteen desktop `promo-*` scenes carry 1.35 (Destin, 2026-09-04: "hit the + a bit so it's easier
 for viewers to track what's happening"); the phone scenes stay at 1.
 
 ## Hero mascots, the tab icon, and the share image (2026-09-04)
@@ -320,10 +320,38 @@ turn → red stalled card), `?firstRun=<STEP>` (onboarding wizard; added 2026-08
 `?marketplace=empty` (registry-less Marketplace/Library; the default is a sampled registry
 fixture, `dev/workbench/fixtures/marketplace/registry.ts`, added 2026-08-25),
 `?view=tools|compare` (tool gallery / permission-card comparison), `?latency=<ms>`.
+
+Provider and account state — **a shot of Settings → Cloud providers that omits these gets
+a card drawn in its EMPTY state, which reads as a missing feature rather than a missing
+flag.** On 2026-09-09 a review deck shipped a Claude Code card with no usage bars for
+exactly this reason, and Destin filed a request for something that had shipped four days
+earlier: `?planUsage=1` (the Claude plan's 5-hour/7-day windows on `status:data` — without
+it the Claude card has no bars while ChatGPT's has two),
+`?chatgpt=signed-out|waiting|signed-in|free|blocked` (the ChatGPT account card; default
+signed-in on Plus), `?claudeCode=signed-in|signed-out|apikey|not-installed|unknown`
+(Claude Code's own sign-in; default signed-in on Max), `?authMode=oauth|chatgpt|apikey`
+(pins the first-run sign-in screen mid-round-trip), `?signedIn=1` (a YouCoded account and
+a fake friend).
+
+The rest: `?arcade=<game>` (open a game the scenario cannot reach),
+`?remote=setup|connected` (Remote Access popup state),
+`?remotePreview=setup|consent|checking|checked|ready|conflict|error|disabled|not-installed|sign-in-required|checked-failed|checked-silent`
+(the mock-only setup-flow stages the remote-access decks were shot from; `checked-*` are the
+end-of-setup check's three answers), `?lease=held:<device>` (a resume
+raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
+`?student=1` (the student persona's files, project and history),
+`?voice=<phrase>` (dictation without a microphone), `?reply=<name>` (which fixture the
+"model" speaks), `?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
+`?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls).
+
 Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron),
 Backup & Sync crashes on mock data, theme `localStorage` key is honoured (Electron ignores
 it and uses the profile's theme). Marketplace install counts/ratings come from the live
-worker even in the workbench. `expect` checks on marketplace text must be case-insensitive
+worker even in the workbench. **`window.claude` is a Proxy: an `{"eval": …}` step that
+overrides ONE method (`window.claude.firstRun.getState = …`) is silently dropped and the
+shot captures the unchanged fixture — replace the whole namespace
+(`window.claude.firstRun = { getState: … }`), which does stick.** Found 2026-09-09 after a
+"before" shot came back identical to the "after" one and looked like a passing comparison. `expect` checks on marketplace text must be case-insensitive
 — the eyebrows are uppercased by CSS, so `textContent` still says "Featured".
 
 If the workbench dies with `ENOSPC` (file watchers), start it with `VITE_NO_WATCH=1`

@@ -30,8 +30,7 @@ session to disbelieve the suite. Twelve causes, and the twelve-day Windows PDF b
 hid: `docs/testing-under-load.md`.
 
 ## Never assert on wall-clock time
-**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never
-`Date.now()` / `performance.now()`.
+**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock.
 **Why:** wall time counts time descheduled while other workers hold the CPU — a 1,000ms
 budget read 1,339ms under load.
 **Guard:** none — candidate.
@@ -53,20 +52,18 @@ remain; convert any you touch.
 
 ## Budgets are measured, not guessed
 **Invariant:** suite-wide is 30s; **`vi.waitFor` is a SEPARATE 1s budget with no config
-option** (`tests/setup-waitfor.ts`). More needs a named constant with its measurement
-beside it, never a bare literal — and a budget raised twice is a treadmill: wait on a
-signal instead.
-**Why:** a timeout cuts a run mid-flight, so it *looks* like a logic bug — a
-misattribution that has cost three sessions.
+option** (`tests/setup-waitfor.ts`). More needs a named constant with its measurement beside
+it — and a budget raised twice is a treadmill: wait on a signal instead.
+**Why:** a timeout cuts a run mid-flight, so it *looks* like a logic bug — a misattribution
+that has cost three sessions.
 **Guard:** none — candidate.
 
 ## Real output goes to a temp dir, and its teardown retries
-**Invariant:** send real output somewhere disposable via an env override (e.g.
-`YOUCODED_EVAL_RUNS_DIR`), never snapshot-and-restore a real directory, and remove that
-root with a retrying remove (`maxRetries`), not `rmSync`.
+**Invariant:** send real output somewhere disposable via an env override, never
+snapshot-and-restore a real directory, and remove that root with a retrying remove
+(`maxRetries`), not `rmSync`.
 **Why:** snapshot-restore cannot be correct under concurrency; a fire-and-forget write
-landing mid-removal throws `ENOTEMPTY` into a test that already passed ·
-`docs/testing-under-load.md`.
+landing mid-removal throws `ENOTEMPTY` into a passing test · `docs/testing-under-load.md`.
 **Guard:** `harness-eval-orchestrator.test.ts` (`RUNS_ROOT`), `rmHostRoot()`.
 
 ## The HOME sandbox is per-run
@@ -77,17 +74,19 @@ removes it. **No import-time filesystem side effect** (`knip` imports it).
 **Guard:** `tests/home-isolation.test.ts`.
 
 ## A guard you did not break is a guard you did not test
-**Invariant:** invert what a test guards, watch it go red, put it back — and paste that run.
-Three ways red lies, each measured 2026-09-10: **run only the test you are proving**
-(`-t "<name>"`) — a tautological check "passed" because four OTHER tests went red;
-**confirm the break landed at the site under test** — a hardcoded line re-added to the
-first of two identical call sites left the rendered one working; **break it with the real
-regression, not a lookalike** — a guard matching ". " missed a sub-label with no full stop.
-**Why:** green suites full of tests proving nothing (three found 2026-09-04).
-**Guard:** `scripts/ast-grep/check.sh` fails a rule that fires on no fixture; the rest is
-habit.
+**Invariant:** invert what a test guards, watch it go red, restore it — and paste that run.
+Three ways red lies: **run only the test you are proving** (`-t "<name>"`) — a
+tautological check "passed" because four OTHER tests went red; **confirm the break landed at
+the site under test** — a hardcoded line re-added to the first of two identical call sites
+left the rendered one working; **use the real regression, not a lookalike** — a guard
+matching ". " missed a sub-label with no full stop.
+**Why:** green suites full of tests proving nothing (three, 2026-09-04).
+**Guard:** `tests/helpers/guard-scope.ts` (~20 source-scanning tests use it):
+`readStripped()` drops comments, `assertPatternMatches()` fails a pattern matching nothing.
+Anchor to the ONE thing you mean — bare `toContain('disabled={hostOnly}')` passed with that
+prop deleted. `scripts/ast-grep/check.sh` fails a rule firing on no fixture.
 
 ## Before calling a failure "flake"
 Run it in isolation (passes → load-sensitive) **and** in a pristine `origin/master`
-worktree (still fails → pre-existing). A deterministic failure everywhere is usually
-machine state. **A red CI leg you have not read is not noise.**
+worktree (still fails → pre-existing). Failing everywhere is usually machine state.
+**A red CI leg you have not read is not noise.**

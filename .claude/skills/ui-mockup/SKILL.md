@@ -10,6 +10,14 @@ approved changes — see `docs/archive/specs/2026-07-16-ui-consistency-design-sp
 output format it produced). That process still holds. What changed on 2026-07-29 is **where the
 rendering happens**.
 
+## Small work: ask about the short route first
+
+For a small change, small feature or bug fix with clear direction, ask Destin (one line in
+chat) whether to skip the questions deck, the UX tester and the contract/acceptance rounds. On
+yes, build it in the workbench and make a UI review deck the first thing he sees (a Live step
+for motion). Everything below is the full route. Rule: `.claude/rules/feature-flow.md` →
+Short route for small work.
+
 ## Before drawing anything: the questions deck
 
 Step 2 of the feature flow (`docs/active/specs/2026-09-01-feature-flow-design.md` §5) is a

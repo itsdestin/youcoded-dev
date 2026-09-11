@@ -1,6 +1,29 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
+      actionable for the user, when tailscale might just not be enabled on their phone" — the
+      phone gets the browser's own cannot-reach screen. Fix: install a service worker on the
+      first successful visit so a later failure serves OUR page instead. Newly possible: it
+      needs a secure context, which the Tailscale-only decision (`remote-access-questions-3#Q-6`)
+      provides. It cannot see VPN state, so it must not assert Tailscale is off — it can tell
+      "phone has no internet" from "phone is online but cannot reach the computer" and lead with
+      the likely fix. Limits: needs one prior successful visit; iOS evicts after ~7 days unused;
+      Add to Home Screen makes it stick and gives the app an icon. No service worker or web
+      manifest exists in the app today.
+      `remote` `confirmed` `checked 2026-09-09`
+
+- [ ] Destin 2026-09-09, same thread: the Android app can do better than any web page — it can
+      ask the system whether a VPN is active and say Tailscale is not running as a fact rather
+      than a guess. Separate from the browser fix above.
+      `android` `confirmed` `checked 2026-09-09`
+
+- [ ] Idea (Destin, 2026-09-08): sign in to a YouCoded account and connect to your computer
+      without installing Tailscale. Long-horizon, around v1.4 rather than a release commitment;
+      related to YouCoded Mesh and Cloud fallback in the native-harness backlog, but connecting
+      to a device is distinct from choosing where an automation runs. Hosting/privacy design open.
+      `remote` `parked` `checked 2026-09-08` `v1.4`
+
 - [ ] Saving a permission setting over remote access replaces the whole stored block instead
       of merging into it, and does not refresh what the app is enforcing until something local
       reads the settings again — harmless today because nothing writes those values any more
@@ -19,7 +42,10 @@ Filing test: reaching the app from another device — the protocol, the browser 
       stays empty, several buttons throw. Which namespaces are safe to expose over a
       password-only, unencrypted channel is a decision for Destin before any bridging
       Destin 2026-09-02: none of them until the remote channel is encrypted — blocked on that item below
-      `remote` `blocked` `checked 2026-09-02` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
+      2026-09-10: the channel now exists only on the Tailscale address (batch 1), which is what the
+      milestone counts as secure. Files are batch 3; projects, games and the rest wait for their
+      own batches — nothing is bridged automatically
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
 
 - [ ] Remote: "+ Add file" in the files panel uploads the file to the desktop, then the
       import fails — the upload has already landed on the host (found 2026-07-23)
@@ -61,10 +87,24 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Destin chose to defer the refactor on 2026-08-06
       `projects` `remote` `needs-verify` `checked 2026-08-06`
 
-- [ ] Remote access runs over a password-only connection that is not encrypted on the local network,
-      which is why files, projects and games stay switched off over it (Destin, 2026-09-02).
-      Encrypting the channel unblocks all three
-      `remote` `needs-verify` `checked 2026-09-02` `security`
+- [ ] Milestone batch 2 — conversation restoration. After a reconnect the phone must show the
+      conversation as it truly is: readiness, snapshot and event ordering instead of fixed waits,
+      the phone keeping its own selected conversation (questions deck Q-3, 2026-09-09), and which
+      desktop window a phone follows when several are open (undecided — needs its own questions
+      deck). Folds in the hydration, morphing-reply and first-connect items above once a phone pass
+      has confirmed which still bite, and the "did that action happen?" indicator below. Batch 1
+      (secure transport, device records, recovery) shipped 2026-09-10 — see shipped.md
+      Scope and acceptance: docs/active/specs/2026-09-09-remote-access-first-milestone.md
+      `remote` `confirmed` `checked 2026-09-10`
+
+- [ ] Milestone batch 3 — file reading over remote access: session and project file lists,
+      previews, downloads, and a list that refreshes after a reconnect rather than going stale
+      without saying so (which is why it follows batch 2). Large transfers must not block chat;
+      file content must open from an address separate from the app's own, so a file cannot act as
+      the app. Uploads and editing are a later, separately approved batch. Needs a questions deck:
+      what a phone shows for a big file, download versus preview, size limits
+      Scope and acceptance: docs/active/specs/2026-09-09-remote-access-first-milestone.md
+      `remote` `confirmed` `checked 2026-09-10`
 
 - [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers
       only allow a microphone on a secure (https) page, and remote access is plain http, so the
@@ -87,3 +127,67 @@ Filing test: reaching the app from another device — the protocol, the browser 
       another computer. Recovers on its own once the screen is reopened, or on Check again
       `input-bar` `android` `confirmed` `checked 2026-09-05`
 
+
+- [ ] An action whose answer never arrived is recorded but never shown. When a request is sent
+      over remote access and the reply is lost, the client now keeps the request instead of
+      claiming it failed, asks the host about it on reconnect, and announces the result on an
+      internal event — but nothing in the interface listens, so the person is told nothing
+      either way. Sending is safe (it never re-runs); it is the "we don't know whether that
+      happened" state that has no screen. The event and its reconciliation shipped with the
+      2026-09-09 secure-connection batch; the indicator on the affected card did not
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-code-review.md
+
+- [ ] The remote access password has no rules and no confirmation. "abc" is accepted, there is
+      no minimum length, no second box to type it again, and no way to reveal what you typed —
+      the only feedback is a tick while the field empties itself, so you cannot check what you
+      just set. It is the one secret standing between a paired device and the whole assistant.
+      Found by a beta tester setting remote access up from scratch, 2026-09-10
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] Removing a device has no "removed" message and no undo. The row simply disappears; the
+      removal is correct and immediate, but nothing confirms it happened and there is no way
+      back if the wrong row was tapped — the device has to be paired again from scratch
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] "Keep awake" never says what it does. No hint next to it, nothing about what happens when
+      the time runs out, and 4h is pre-selected without saying why — a person setting up remote
+      access has to guess whether this is the setting that keeps their phone able to reach the
+      computer. It is
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] Setup asks for three things one at a time with no sense of how many are left. "Install
+      Tailscale", then "Sign in", then "Set up" — each appears in the same spot after the last
+      one is done, so every time you think you have finished, a new demand appears. Needs a
+      deck: a step count changes an approved screen
+      `remote` `needs-verify` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] A phone gets the theme's colours but not its wallpaper or glass. The colour tokens now
+      cross the connection, so a paired phone matches the computer's palette — but the
+      background image and the blur behind panels stay behind, because a theme's wallpaper is
+      a file on the computer that owns the theme and its path means nothing in a phone
+      browser. Serving those assets over the connection is the fix; it needs the theme's
+      asset paths rewritten to point at the host, and a judgement about how much a phone
+      should download before the first screen appears
+      `remote` `confirmed` `checked 2026-09-10`
+
+- [ ] Opening the conversation browser over remote access sometimes shows nothing, and works
+      on the second try. Destin, 2026-09-10: "oh wait it worked the second try for resume.
+      idk why nothing appeared the first time." The computer's own listing was fine at that
+      moment (946 conversations, 318KB), so the request failed somewhere between the phone
+      and the host and the screen reported it as an empty history. The screen now says the
+      load failed and offers Retry, so the next occurrence is visible instead of silent —
+      but the CAUSE is unidentified. A request in flight when the connection blips is not
+      cancelled or retried; it waits out its own 30-second timeout and then rejects, which
+      fits the symptom without being proven
+      `remote` `needs-verify` `checked 2026-09-10`
+
+- [ ] Browser encryption — the optional second level — is an approved design with nothing
+      behind it. Destin went looking for it in the app on 2026-09-10 and found no trace: the
+      Advanced section renders only in the workbench mockup, and there is no certificate
+      code, no HTTPS server and no stored on/off state. What it buys is the microphone, copy
+      buttons and font picker on a phone, and a browser that stops saying "Not secure". What
+      it costs: he must enable HTTPS for the tailnet on Tailscale's own website, the
+      computer's name goes on a permanent public list, the address every paired device uses
+      changes, and certificates expire in ~90 days so renewal has to be handled. Design
+      approved in the round-4 deck; start at the technical design, not at questions
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json

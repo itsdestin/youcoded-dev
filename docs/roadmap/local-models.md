@@ -111,16 +111,6 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       downloads with nothing outside the app. Worth sharing that
       `settings/local-models` `all` `needs-verify` `checked 2026-09-05`
 
-- [ ] The Local Models list would crash a phone the day phones get a local engine. Asking "what
-      have I downloaded?" is the one engine question whose failure is still handed back as a
-      success: a phone answers "not supported on mobile" as an object, the screen expects a list,
-      and the first thing it does is filter it — which throws and takes the whole screen down.
-      Six sibling questions were fixed for exactly this on 2026-09-05 and this one was knowingly
-      left out. Not a browser problem: a remote browser talks to a desktop, which answers
-      properly. Nobody can observe it today either, because the whole section is hidden off the
-      desktop — it is a trap sprung by opening that gate, so it cannot be reproduced until then.
-      `settings/local-models` `android` `needs-verify` `checked 2026-09-06`
-
 - [ ] Open Model Providers on a computer whose models were downloaded before this feature and
       there are no "Add vision" links at all — they appear only if you close the screen and
       open it again. The lookup that decides which models could see images is deliberately

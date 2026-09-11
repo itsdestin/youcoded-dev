@@ -162,6 +162,15 @@ def load_spec(path):
         raise SpecError('runs must name at least one capture (today, or before and after)')
     spec['_base'] = os.path.dirname(os.path.abspath(path))
     spec['_stem'] = os.path.splitext(os.path.basename(path))[0]
+    # Run folders are documented as "relative to this file" (templates/*.json)
+    # and were resolved against the CURRENT DIRECTORY instead, so a relative
+    # path only worked if you happened to run from beside the spec. From
+    # anywhere else every crop reported "not captured" and the deck built with
+    # no pictures — an empty deck, not an error. Make the documentation true.
+    spec['runs'] = {
+        name: (folder if not folder or os.path.isabs(folder) else os.path.join(spec['_base'], folder))
+        for name, folder in spec['runs'].items()
+    }
     with open(os.path.join(UI_REVIEW, 'crops.json')) as f:
         shared = json.load(f)
     shared.pop('_comment', None)
