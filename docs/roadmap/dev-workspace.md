@@ -561,6 +561,15 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from
+      brand-new accounts, copies Reddit bug reports and ideas into real roadmap entries, and
+      flips posts to Fixed or Planned himself. Set up automation for the repetitive parts, such as
+      turning new Bug Report and Feature Idea posts into roadmap entries, and marking a post Fixed
+      when its fix ships. Reddit stopped giving out new API access in November 2025, so the route
+      is Reddit's own Mod Tools Automations or a Community App, not a script with an API key.
+      Current setup is recorded in ~/Documents/youcoded-subreddit-setup.md
+      `n/a` `decision` `checked 2026-09-10`
+
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
       from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
