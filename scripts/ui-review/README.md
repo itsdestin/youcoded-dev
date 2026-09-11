@@ -341,7 +341,7 @@ end-of-setup check's three answers), `?lease=held:<device>` (a resume
 raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
 `?student=1` (the student persona's files, project and history),
 `?voice=<phrase>` (dictation without a microphone), `?reply=<name>` (which fixture the
-"model" speaks), `?seed=none`, `?title=`, `?model=`, `?platform=android`,
+"model" speaks), `?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
 `?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls).
 
 Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron),
