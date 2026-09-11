@@ -42,9 +42,8 @@ Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-lan
 (loops + posters), `docs/gallery/` (48 stills) and `docs/site/` (embed). It refuses a
 workbench serving another tree and refuses to overwrite the gallery if any shot failed
 verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
-The last three followed on 2026-09-04: `youcoded/docs/tools/gen-hero-mascots.py` (picker
-mascots — theme rigs, ink `accent x 0.32` never on-accent, WARM faces, a lifted arm scaled
-~1.7-2x) and `gen-og-image.mjs` (bump `?v=` on `og:image` or a shared link keeps the old one).
+The last three followed on 2026-09-04: `gen-hero-mascots.py` and `gen-og-image.mjs` (bump
+`?v=` on `og:image` or a shared link keeps the old one).
 **Why:** the previous site drifted for four months on hand-drawn mockups; the share image
 stayed a screenshot of the pre-redesign app.
 **Guard:** the script's own checks; `scripts/workbench-boot-check.mjs`.
@@ -94,7 +93,10 @@ never as a prose description or a still that can't show it.
 **Guard:** `tests/test_spec.py` ClipStepTests, `tests/deck-render.test.mjs` (clip step).
 
 ## Copy and review
-**Invariant:** page copy is reviewed in place with `scripts/ui-review/copy-preview.py serve
-… [--media docs/media]` (edit text on a page-shaped preview; per-row loop verdicts) — never
-a table, contact sheet, or chat description (all rejected). The never-claim list is the audit's,
-referenced from the spec's "Not in scope"; the footer's Anthropic non-affiliation sentence is verbatim.
+**Invariant:** "let me edit the website" → `site-copy-editor.py serve youcoded/docs/index.html`
+(real page, edit in place, Submit writes `edits.md`). Proposed-copy review uses
+`copy-preview.py serve … [--media docs/media]` — never a table, contact sheet, or chat
+description (all rejected).
+**Why:** neither is the review deck. The never-claim list is the audit's, from the spec's "Not in
+scope"; the footer's Anthropic sentence is verbatim.
+How-to + traps paid for: `README.md` → "Editing copy on the site". Guard: `test_site_copy_editor.py`.
