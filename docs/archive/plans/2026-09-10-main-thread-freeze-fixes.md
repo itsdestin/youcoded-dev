@@ -1,6 +1,6 @@
 ---
 date: 2026-09-10
-status: active
+status: shipped
 type: plan
 topic: Five contained fixes that stop the app's coordinating thread from being blocked by disk work or by animation nobody asked for — no visible behaviour change, each proven with tests and the perf rig
 ---
