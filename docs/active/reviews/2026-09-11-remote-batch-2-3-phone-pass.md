@@ -17,6 +17,12 @@ status is `fixed <commit>`, `open`, or `filed <roadmap entry>`.
 - Phone kept an old theme until reloaded (dev on Meadow Mist, phone on Golden Sunbreak).
   `appearance.onSync`/`broadcast` were no-ops over remote. Predates the branch. — fixed `3185b6a0`
 
+- New-session project picker on the phone listed only the saved-folders file, not the synced
+  projects under ~/YouCoded/Projects. remote-server.ts had hand-copied folders:* handlers that
+  never gained the managed-projects merge (or Windows case-insensitive remove). Both transports
+  now call `src/main/folders-service.ts`; a guard fails if remote-server reads the file itself.
+  Predates the branch. — fixed `f6b44da0`
+
 ## Filed
 
 - Native sessions unusable from a phone; provider/local-model/search-key pages hidden;
