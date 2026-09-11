@@ -1,0 +1,15 @@
+{
+ "deck": "sync-safety-copy-review",
+ "started": "2026-09-09T09:01:10.966Z",
+ "submitted": "2026-09-09T09:02:06Z",
+ "cur": 0,
+ "answers": {
+  "S-conflict-copy": {
+   "v": "other",
+   "note": "that's worse then the original. extremely confusing for a normal user who doesn't want to understand the nitty gritty backend of our sync system. ",
+   "seconds": 54,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

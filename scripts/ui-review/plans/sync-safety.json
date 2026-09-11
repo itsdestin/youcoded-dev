@@ -1,0 +1,4 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&syncReview=conflict",
+ "shots": [{"name":"settings-backup-sync","actions":[{"click":"[title=Settings]","settle":700},{"click":"js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Backup & Sync'))","settle":900}],"expect":"[aria-label='Backup & Sync']","measure":["[aria-label='Backup & Sync']"]}]
+}

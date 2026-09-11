@@ -1,0 +1,21 @@
+{
+  "title": "Sync safety — explain conflicting files accurately",
+  "key": "sync-safety-copy-review",
+  "out": "sync-safety.review.html",
+  "images": "images/sync-safety.review",
+  "runs": {"before": "/home/destin/youcoded-dev/worktrees/sessions/sync-safety-audit-20260908/scratch/sync-safety-before", "after": "/home/destin/youcoded-dev/worktrees/sessions/sync-safety-audit-20260908/scratch/sync-safety-after"},
+  "themes": ["midnight", "halftone-dimension"],
+  "crops": {"sync-conflict": ["sync-safety", "settings-backup-sync", "450x600+495+150"]},
+  "steps": [
+    {
+      "id": "S-conflict-copy",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → conflict notice",
+      "crop": "sync-conflict",
+      "headline": "The conflict notice explains which version becomes the named copy.",
+      "changed": "The old notice reversed the two versions. The proposed notice identifies the local version as the named copy and accounts for deletions.",
+      "notice": "You can distinguish the saved copy from the other device’s change at the original filename. The help text uses the same explanation.",
+      "risk": "This is only a wording correction. Showing affected files and clearer status is still needed; the UX review confirmed those gaps. Backend safety fixes remain in progress."
+    }
+  ]
+}
