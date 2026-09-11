@@ -1,0 +1,635 @@
+{
+  "title": "Cost, intelligence and speed tags in the model list",
+  "key": "model-picker-tags-questions",
+  "out": "model-picker-tags.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list: New Session, or the model name in the status bar",
+      "headline": "What should the cost tag say?",
+      "today": "A row in the model list shows the model's name, where it comes from (\"GPT-5 · OpenRouter\") and a favourite star. Nothing says what it costs. The app already downloads every OpenRouter model's price once a day; only the running Session Cost at the bottom of a chat uses it.",
+      "problem": "Prices between models differ by more than a hundred times, and you only find out after the bill arrives. Published prices are written per million pieces of text, which means nothing to most people.",
+      "proposal": "Every priced model gets a small cost tag. Three ways it could read; the look (colours, shape) comes as pictures after this page.",
+      "options": [
+        {
+          "id": "levels",
+          "label": "Three price levels",
+          "summary": "Cheap, middle or pricey, cut at fixed dollar amounts. Hovering or pressing the tag shows the exact price.",
+          "pros": [
+            "Readable in a glance, with no maths.",
+            "Two models a hundred times apart can never look alike.",
+            "The exact figure is one hover away for anyone who wants it."
+          ],
+          "cons": [
+            "Where the lines sit is our choice; a model just under a line looks cheaper than one just over it.",
+            "Hides the difference between two models inside the same level."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "exact",
+          "label": "The exact price",
+          "summary": "The published figure on the tag itself, such as \"$3 in / $15 out per million\".",
+          "pros": [
+            "Nothing rounded, nothing judged by us."
+          ],
+          "cons": [
+            "Most people cannot tell whether $15 per million is a lot.",
+            "Long text; it would squeeze the model's name on a narrow window."
+          ]
+        },
+        {
+          "id": "per-reply",
+          "label": "Cost per reply",
+          "summary": "An estimate such as \"about 2¢ a reply\".",
+          "pros": [
+            "The only version in terms a person already thinks in."
+          ],
+          "cons": [
+            "The same model's reply costs many times more late in a long chat than early, because the whole conversation is re-sent each time. Any single number is wrong most of the time.",
+            "Invites \"it said 2¢\" when the bill says otherwise."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a model that runs on this computer",
+      "headline": "What should a model that runs on your own computer show for cost?",
+      "today": "Models running on your computer cost nothing per use. On 2026-08-26 you declined a \"Free\" label in the status bar during a chat: it would take up room permanently and always say the same word, and \"free\" is not quite true when it is your electricity.",
+      "problem": "The model list is a different situation from the status bar: you are comparing models side by side. If priced models carry a cost tag and yours carry nothing, the blank can read as \"price unknown\" rather than \"costs nothing\".",
+      "proposal": "Three answers. Whatever you pick applies only to the model list; the status bar stays as you decided.",
+      "options": [
+        {
+          "id": "free",
+          "label": "A \"Free\" tag",
+          "pros": [
+            "Says outright the thing a person choosing most wants to know.",
+            "Every row carries a cost tag, so nothing looks missing."
+          ],
+          "cons": [
+            "\"Free\" ignores electricity and wear on your machine.",
+            "Differs from the status bar, which stays silent for the same model."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "on-device",
+          "label": "A \"This device\" tag",
+          "pros": [
+            "True without arguing about electricity.",
+            "Also tells you it works without internet."
+          ],
+          "cons": [
+            "Does not answer the money question directly; a newcomer may not connect \"this device\" with \"no bill\".",
+            "The filter button already offers \"Runs on this device\", so it repeats something."
+          ]
+        },
+        {
+          "id": "nothing",
+          "label": "No cost tag",
+          "pros": [
+            "Matches the status bar decision exactly.",
+            "Least clutter."
+          ],
+          "cons": [
+            "A blank next to priced rows reads as \"we don't know\"."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a Claude or ChatGPT plan model",
+      "headline": "What should a model included in your Claude or ChatGPT plan show for cost?",
+      "today": "Haiku, Sonnet, Opus and Fable run on your Claude plan, and \"ChatGPT Plan\" models run on a ChatGPT subscription. Neither charges per use; each has a usage limit that resets. The app shows neither a price nor a limit in the list.",
+      "problem": "A bigger model uses your limit up faster, but neither company publishes exactly how much faster. A per-use price would be wrong for these rows, and nothing would be misleading in a different way.",
+      "proposal": "Three answers, for plan sign-ins only. The app can already tell a Claude plan from a pay-per-use Claude key, so someone signed in with a key gets the ordinary price tag instead.",
+      "options": [
+        {
+          "id": "in-plan",
+          "label": "An \"In your plan\" tag",
+          "pros": [
+            "True, and tells you there is no extra bill.",
+            "Nothing we would have to guess."
+          ],
+          "cons": [
+            "Says nothing about which one runs out your limit sooner."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "in-plan-plus",
+          "label": "Plan, plus limit use",
+          "summary": "\"In your plan\" plus a light, medium or heavy level for how fast it uses your limit, judged from the company's per-use price for the same model.",
+          "pros": [
+            "Warns you Opus eats the limit faster than Haiku before you find out the hard way."
+          ],
+          "cons": [
+            "Neither company says limits follow per-use prices, so it is our inference presented as a fact.",
+            "If a company changes how it counts, the tag is quietly wrong."
+          ]
+        },
+        {
+          "id": "nothing",
+          "label": "No cost tag",
+          "pros": [
+            "No claim we cannot back."
+          ],
+          "cons": [
+            "Plan rows look like rows whose price is unknown."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a model whose price could not be found",
+      "headline": "A price the app cannot find is left off, never shown as Free or guessed.",
+      "changed": "Stated, not asked: the price list can fail to load (no internet on first start) and some providers publish no price. In both cases the cost tag is left off, and hovering where it would be says the price is not available here.",
+      "notice": "Now and then a paid model shows no cost tag. It never shows a Free tag it has not earned, which is the same rule the status bar's Session Cost already follows.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "P-4",
+      "page": "Intelligence",
+      "intro": "Nothing in the app rates how capable a model is today. These decide where a rating comes from and how it reads."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the intelligence tag on a row",
+      "headline": "Where should the intelligence rating come from?",
+      "today": "The model list the app already downloads from OpenRouter every day now includes scores from Artificial Analysis, an independent lab that gives every model the same tests. Checked 2026-09-11: 136 of its 439 listings have a score, from 53 (Claude Fable 5.1) down to 4 (Gemma 3 12B).",
+      "problem": "Every rating is someone's choice of tests, and a model the source never tested gets no tag. A rating you cannot trust is worse than none.",
+      "proposal": "Three public sources. Whichever you pick is credited by name when you hover a tag. Levels we assign by hand are left out: they go stale the week a new model ships, which is why the July plan chose looked-up facts over hand-kept ones.",
+      "options": [
+        {
+          "id": "artificial-analysis",
+          "label": "Artificial Analysis",
+          "summary": "Through the OpenRouter list the app already downloads.",
+          "pros": [
+            "Arrives with a list the app already fetches: no account, no server of ours, nothing extra to keep running.",
+            "The same tests for every model, run by a lab with no model of its own to sell.",
+            "Can reach some downloadable models through the model they were made from."
+          ],
+          "cons": [
+            "Only about one listing in three has a score; GPT-5, DeepSeek V3.2 and Claude Opus 4.7 have none today.",
+            "OpenRouter's own instructions say the list needs an account; the open access could close.",
+            "The lab revises its tests now and then, which shifts every score at once.",
+            "Not yet confirmed that Artificial Analysis is happy for an app to show its scores this way; I would ask before shipping."
+          ],
+          "measured": "136 of 439 listings scored on 2026-09-11",
+          "recommended": true
+        },
+        {
+          "id": "epoch",
+          "label": "Epoch AI index",
+          "summary": "A research group's combined score from many public tests, published for anyone to reuse with credit.",
+          "pros": [
+            "Permission to reuse it is written down plainly.",
+            "Covers many models you can download and run yourself."
+          ],
+          "cons": [
+            "Not in any list the app already downloads: it needs a copy kept on our own server, or shipped inside app updates so new models wait for an update.",
+            "Matched to models by name, which now and then pairs the wrong model."
+          ],
+          "measured": "264 models"
+        },
+        {
+          "id": "arena",
+          "label": "LMArena votes",
+          "summary": "People compare two unnamed answers and vote for the better one; the rating is which models people prefer.",
+          "pros": [
+            "The widest coverage of the public sources.",
+            "Measures what feels better to use, not a test paper."
+          ],
+          "cons": [
+            "Rewards confident, pleasant answers whether or not they are right.",
+            "Same server copy and name-matching costs as Epoch."
+          ],
+          "measured": "399 models"
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the intelligence tag on a row",
+      "headline": "How should the intelligence tag read?",
+      "today": "Nothing in the app rates how capable a model is. Names rarely help (\"GPT-5.6 Luna\", \"Terra\", \"Sol\"). The Specialists screen has Budget and Frontier choices, but you fill them in yourself.",
+      "problem": "A public ranking gives a score such as 38, which means nothing without knowing that the best model today scores about 53 and a small one about 4.",
+      "proposal": "Three ways the tag could read. Hovering it always shows the real score and its source.",
+      "options": [
+        {
+          "id": "levels",
+          "label": "Three levels",
+          "summary": "Three words, such as basic, capable and top, cut at fixed scores.",
+          "pros": [
+            "Readable without knowing the scale.",
+            "Matches how the cost and speed tags read."
+          ],
+          "cons": [
+            "As better models arrive, today's \"top\" stays top by a fixed line, until we move the lines, which re-labels models overnight.",
+            "Two models just either side of a line look further apart than they are."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "score",
+          "label": "The score itself",
+          "summary": "The number from the ranking, such as \"62\".",
+          "pros": [
+            "Exact; nothing rounded by us.",
+            "Two close models show as close."
+          ],
+          "cons": [
+            "Meaningless without knowing the scale, and every ranking uses a different one."
+          ]
+        },
+        {
+          "id": "rank",
+          "label": "A rank",
+          "summary": "Its position among rated models, such as \"#12\".",
+          "pros": [
+            "Easy to grasp: lower is better."
+          ],
+          "cons": [
+            "A model's rank drops every time a better one is released, with nothing about it having changed.",
+            "#12 and #13 can be almost identical or very different; the rank hides which."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a model no ranking has scored",
+      "headline": "What should the intelligence tag show for a model with no rating?",
+      "today": "Whichever source you pick, most models are not in it. On OpenRouter about two listings in three have no score today, GPT-5 and DeepSeek V3.2 among them, and most files people download to run themselves have none.",
+      "problem": "Whatever \"no rating\" looks like will sit on most rows of a long search, so it decides how busy the list feels.",
+      "proposal": "Two answers.",
+      "options": [
+        {
+          "id": "leave-off",
+          "label": "Leave the tag off",
+          "pros": [
+            "The quietest list; tags appear only where there is something to say.",
+            "Same rule as a price that cannot be found."
+          ],
+          "cons": [
+            "A missing tag can be mistaken for \"still loading\" or for a fault."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "not-rated",
+          "label": "A dim \"Not rated\" tag",
+          "pros": [
+            "Says outright that nobody has tested it.",
+            "Every row lines up the same way."
+          ],
+          "cons": [
+            "Appears on most rows of a search.",
+            "Can read as a criticism of a model that may be excellent."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-13",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a model downloaded to run on this computer",
+      "headline": "Should a downloaded model borrow the rating of the model it was made from?",
+      "today": "Files you download to run yourself are usually shrunk copies of a published model, and Hugging Face records which model each one came from. The app does not read that record today.",
+      "problem": "Shrinking a model so it fits your computer costs it some ability, and no public source measures how much. The original's rating overstates the copy by an amount nobody knows.",
+      "proposal": "Two answers.",
+      "options": [
+        {
+          "id": "borrow",
+          "label": "Borrow it, and say so",
+          "summary": "The row shows the original's level; hovering says it is the original's rating and that this smaller copy may do somewhat worse.",
+          "pros": [
+            "Models you run yourself get a rating at all, where choosing is hardest.",
+            "Shows trade-offs names hide: OpenRouter rates Qwen3.6 27B at 21.9, above Qwen3.6 35B-A3B at 18.8, though the 35B writes far faster."
+          ],
+          "cons": [
+            "Overstates every copy, most of all the smallest, most shrunk ones.",
+            "Two copies of one model, one shrunk far more than the other, show the same level."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no-borrow",
+          "label": "Only its own rating",
+          "pros": [
+            "Never shows a rating that was measured on a different file."
+          ],
+          "cons": [
+            "Almost every model you run yourself shows no rating."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Speed",
+      "intro": "How the red / yellow / green speed tag you asked for on 2026-09-06 decides its colour."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a model that runs on this computer",
+      "headline": "Should red, yellow and green mean the same speeds on every computer?",
+      "today": "Nothing in the list says how fast a model will be. You picked Qwen 27B by its size and got about 4 words a second; Qwen 35B-A3B, the same size on disk, writes about 23 words a second on the same machine, because only a small part of it works on each word.",
+      "problem": "A fixed line can call every model red on a weak laptop. A line relative to your computer can call a painfully slow model green because everything else is slower.",
+      "proposal": "Two ways to set the lines. The numbers below are a starting point, adjustable after you have seen them.",
+      "options": [
+        {
+          "id": "fixed-feel",
+          "label": "Same lines everywhere",
+          "summary": "Set by how the wait feels: red under about 7 words a second (slower than you read), yellow up to about 22, green above.",
+          "pros": [
+            "Red always means \"you will sit waiting\", whatever the machine.",
+            "The same model on two of your computers tells you which computer to use it on."
+          ],
+          "cons": [
+            "On a modest laptop nearly every local model may be red, which is honest but discouraging."
+          ],
+          "measured": "Qwen 27B at 4 words a second is red; Qwen 35B-A3B at 23 is green",
+          "recommended": true
+        },
+        {
+          "id": "relative",
+          "label": "Relative to this computer",
+          "summary": "Green is the fastest third of what this machine can run, red the slowest third.",
+          "pros": [
+            "Always a spread of colours, so there is always a \"best choice here\"."
+          ],
+          "cons": [
+            "Green can still mean a reply you wait a minute for.",
+            "Colours move when you download or delete a model, with nothing about the model having changed."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a downloaded model you have never used",
+      "headline": "What should the speed tag show for a model you have never run on this computer?",
+      "today": "The app learns a model's real speed only by running it, and today it remembers just the last reply across all models, until the app closes.",
+      "problem": "The moment you most need the speed tag is before you have tried the model, which is exactly when there is no measurement.",
+      "proposal": "Two answers. Either way, after its first reply the tag uses what it really measured, and remembers it.",
+      "options": [
+        {
+          "id": "estimate",
+          "label": "An estimate, marked",
+          "summary": "Worked out from the model's size, how much of it works on each word, and this computer's memory, shown as \"about\" until a real reply replaces it.",
+          "pros": [
+            "Warns you off the 27B-style trap before you waste a download or a session on it.",
+            "Corrects itself after one reply."
+          ],
+          "cons": [
+            "The first guess can be off by a colour, most likely on unusual models or computers."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "after-first",
+          "label": "Blank until tried",
+          "pros": [
+            "Never shows a number the app has not measured."
+          ],
+          "cons": [
+            "Gives no help with the choice it exists for; you still find out the slow way."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, a model that runs online",
+      "headline": "What should the speed tag show for a model that runs online?",
+      "today": "The app already measures how fast replies arrive in every kind of chat, Claude plan chats included, but shows only the current chat's figure and forgets it afterwards. No free public source checked on 2026-09-11 publishes online models' speed: OpenRouter's spaces for it came back empty, and Artificial Analysis offers it only with an account whose rules say to keep the data on a server, not inside an app.",
+      "problem": "An online model's speed changes with how busy the company's computers are and with your own connection, so any published figure drifts.",
+      "proposal": "Three answers.",
+      "options": [
+        {
+          "id": "own-chats",
+          "label": "From your own chats",
+          "summary": "Blank until you have used the model here, then the average of your recent chats with it.",
+          "pros": [
+            "Measured on your connection, not someone else's.",
+            "No outside source, account or server."
+          ],
+          "cons": [
+            "Blank before you first use a model, the moment you most want it.",
+            "One slow evening can colour a model red for a while."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "aa-server",
+          "label": "Artificial Analysis, via our server",
+          "pros": [
+            "A speed for every tested model before you try it."
+          ],
+          "cons": [
+            "Needs an account with them, their permission, a server of ours kept running, and possibly a fee.",
+            "An average over everyone's use, not your connection."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No speed tag online",
+          "pros": [
+            "Simplest; nothing to measure or keep."
+          ],
+          "cons": [
+            "Online rows carry two tags where local rows carry three.",
+            "Loses speed for plan models, where the top ones can be slow."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-9",
+      "page": "Where tags appear",
+      "intro": "Which parts of the app get them, and what they lead to. Layout and colours come as pictures after this."
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Model list",
+      "path": "Every place the model list opens",
+      "headline": "Tags appear everywhere the model list appears, including the Specialists Budget and Frontier choices.",
+      "changed": "Stated, not asked: the same model list opens from eleven places, including New Session, the status bar, Resume, the default model in settings, the Specialists Budget and Frontier choices, and the buddy. All of them get the tags at once.",
+      "notice": "Picking a Budget or Frontier specialist becomes the easiest place to use them, since that choice is exactly cost against intelligence.",
+      "yes": "Everywhere",
+      "no": "Not everywhere"
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, hovering or pressing a tag",
+      "headline": "Hovering or pressing a tag shows the exact figure, where it came from, and when it was last updated.",
+      "changed": "Stated, not asked: each tag's hover hint gives the real number behind it (a price, a score, words a second), names its source, and says how old it is.",
+      "notice": "A tag you doubt can always be checked, and a figure from a public ranking always credits the ranking.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Model list",
+      "path": "The phone app, and a browser connected to your computer",
+      "headline": "Should the phone get the tags now?",
+      "today": "A browser connected to your computer through remote access shows the same model list as the desktop. The Android app's list shows only the four Claude models; OpenRouter, ChatGPT plan and local models never reach it, which is a separate gap already filed.",
+      "problem": "Tags on a phone list that only holds four models would help little, and filling that list is its own project.",
+      "proposal": "Two answers.",
+      "options": [
+        {
+          "id": "desktop-first",
+          "label": "Desktop and browser now",
+          "summary": "Tags ship on desktop and in a connected browser. The phone app gets them when its model list is rebuilt.",
+          "pros": [
+            "Ships sooner.",
+            "The phone gets tags on a full list, not on four rows."
+          ],
+          "cons": [
+            "The phone app looks different from the desktop until then."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "phone-too",
+          "label": "Phone list too",
+          "summary": "Build the phone app's full model list as part of this work.",
+          "pros": [
+            "Desktop and phone match when it ships."
+          ],
+          "cons": [
+            "Several times the work, on a part of the app that is due to be rebuilt anyway.",
+            "Delays the desktop tags until the phone half is done."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list's filter button",
+      "headline": "Should the list also filter or sort by cost, intelligence and speed?",
+      "today": "The list opens on your favourites; typing searches every model. The filter button narrows by where a model comes from and by \"Runs on this device\". There is no ordering except alphabetical within a search.",
+      "problem": "Tags help you compare models on screen, but not find \"the smartest cheap one\" among dozens.",
+      "proposal": "Three answers.",
+      "options": [
+        {
+          "id": "tags-only",
+          "label": "Tags only, for now",
+          "pros": [
+            "Smallest change; you see the tags in use before deciding what finding by them should look like.",
+            "Nothing new in the filter popup."
+          ],
+          "cons": [
+            "Finding the cheapest smart model still means scrolling a search."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "filters",
+          "label": "Add filters",
+          "summary": "Filter choices such as \"Cheap\", \"Top intelligence\" and \"Fast\" beside the existing ones.",
+          "pros": [
+            "Answers \"show me only the cheap ones\" in one press."
+          ],
+          "cons": [
+            "More choices in a popup that is small today.",
+            "Filters built before you have seen the tags may pick the wrong levels."
+          ]
+        },
+        {
+          "id": "sort",
+          "label": "Add sorting",
+          "summary": "A sort choice: cheapest, smartest or fastest first.",
+          "pros": [
+            "The best candidate for what you care about is at the top."
+          ],
+          "cons": [
+            "Your favourites no longer stay in the order you know.",
+            "Sorting by one quality hides the trade-off with the others."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Model list",
+      "path": "The model list, the three tags on one row",
+      "headline": "Should cost and intelligence be coloured like speed, or only speed?",
+      "today": "On 2026-09-06 you asked for a red / yellow / green speed tag. Cost and intelligence were not given colours. Colours in the app follow a rule that coloured small text must stay readable in every theme, so colour usually appears as a dot or tint beside plain words.",
+      "problem": "On speed, red plainly means bad. On cost and intelligence it is less clear: an expensive top model is not a bad choice, and a row showing red, green, red is hard to read at a glance.",
+      "proposal": "Three answers. The exact look comes as pictures next.",
+      "options": [
+        {
+          "id": "speed-only",
+          "label": "Only speed coloured",
+          "summary": "Speed is red / yellow / green; cost and intelligence are plain words.",
+          "pros": [
+            "Colour keeps one meaning: \"will I be waiting?\"",
+            "No red on a good model just because it is expensive."
+          ],
+          "cons": [
+            "Cost and intelligence are slower to scan down a long list."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all-three",
+          "label": "All three coloured",
+          "summary": "Green for cheap, smart and fast; red for pricey, basic and slow.",
+          "pros": [
+            "The whole row reads in one glance.",
+            "Consistent across the three."
+          ],
+          "cons": [
+            "Every top model shows red for cost, which reads as a warning against the best models.",
+            "Three colours per row across a long list is busy."
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No colours",
+          "pros": [
+            "Calmest list."
+          ],
+          "cons": [
+            "Drops the colour you asked for on speed."
+          ]
+        }
+      ]
+    }
+  ]
+}
