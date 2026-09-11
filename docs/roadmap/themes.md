@@ -17,8 +17,13 @@ here: installing or browsing themes (marketplace).
       chrome, costing a chunk of a CPU core for anyone who has NOT turned on Reduced Effects
       (Reduced Effects now stops it — see shipped.md 2026-09-10). Open decision: whether to
       cap always-on theme animation for users who never touch the setting, which would change
-      what theme authors shipped; options in the investigation's "Fix shape". No shipped theme
-      does this yet, noted 2026-08-07
+      what theme authors shipped; options in the investigation's "Fix shape". Known gaps in
+      the Reduced Effects half (review, 2026-09-10): an animation written as nested CSS
+      (`.x { &:hover { animation: … } }`) or inside `@layer` with `!important` is not
+      cancelled; cancelling a one-shot fade-in that ends visible (`animation-fill-mode:
+      forwards` from `opacity: 0`) would leave that element invisible; and a theme that
+      animates a broad selector (`svg`, `*`) would also freeze the app's own spinners. No
+      shipped theme does any of this yet, noted 2026-08-07
       `all` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
 
 - [ ] A theme's icon overrides are accepted, and the Library shows a "custom icons" badge for
