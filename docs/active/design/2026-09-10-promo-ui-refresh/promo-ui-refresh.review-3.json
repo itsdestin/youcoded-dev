@@ -45,7 +45,7 @@
       "changed": "All three approvals stay. Its reply is the longest, so it plays at two and a half times speed instead of two, and the pauses around each Yes are shorter.",
       "measured": "32.7 s → 17.6 s",
       "notice": "Every approval is still on screen.",
-      "risk": "It is the longest clip and the one with the most reading; the reply text moves quickly."
+      "risk": "It has the most reading of any clip, and the reply text moves quickly."
     },
     {
       "id": "S-4",
