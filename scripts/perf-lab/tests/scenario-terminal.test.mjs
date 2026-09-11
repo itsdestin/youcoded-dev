@@ -8,9 +8,10 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  GLYPH_LINES, GLYPH_SENTINEL, IPC_PING_MS, MEASURES, NUMERIC_PATHS, SWITCH_COUNT, SWITCH_EVERY_MS,
-  glyphCommand, ipcRow, medianRun, summariseSwitches,
+  GLYPH_LINES, GLYPH_SENTINEL, IPC_PING_MS, MEASURES, NUMERIC_PATHS, SQUEEZED_SLOT_MS, SWITCH_COUNT, SWITCH_EVERY_MS,
+  glyphCommand, ipcRow, medianRun, stallReading, summariseSwitches,
 } from '../scenario-terminal.mjs';
+import { attributeStall } from '../scenario-artifacts.mjs';
 
 const FAKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'fake-claude.cjs');
 // A glyph line as fake-claude prints it: colour SGR (bold every fifth), a 5-digit number.
@@ -186,4 +187,40 @@ test('MEASURES says what the scenario cannot see, and where the IPC clock starts
   assert.match(blind, /wallpaper/i);
   assert.match(MEASURES.clocks['ipc.totalStallMs'], /slot/, 'the IPC clock must say it covers the whole slot, not just the click');
   assert.match(MEASURES.clocks['ipc.totalStallMs'], /in flight/);
+});
+
+// ── Post-shakedown fixes (2026-09-11) ───────────────────────────────────────
+
+test('the per-slot stall verdict sees a ping still pending at the slot close', () => {
+  // Main process blocked across the close: finished pings topped out at 20 ms, one
+  // has been waiting 900 ms, and the renderer was quiet. attributeStall reads only
+  // maxMs, so without stallReading this slot's verdict was 'none'.
+  const read = probeRead({ maxMs: 20, openStallMs: 900 });
+  const quietRenderer = { longtaskMaxMs: 10, longtaskSupported: true };
+  assert.equal(attributeStall(read, quietRenderer).verdict, 'none', 'the premise: the raw reading hides the stall');
+  assert.equal(attributeStall(stallReading(read), quietRenderer).verdict, 'main');
+  assert.equal(stallReading(read).openStallMs, 900, 'the rest of the reading is untouched');
+  // Nothing pending leaves the finished max as it was.
+  assert.equal(stallReading(probeRead({ maxMs: 20, openStallMs: null })).maxMs, 20);
+  // No data at all stays null, so the verdict is 'unknown' rather than a clean 'none'.
+  assert.equal(stallReading(probeRead({ pings: 0, maxMs: null, openStallMs: null })).maxMs, null);
+  assert.equal(attributeStall(stallReading(probeRead({ pings: 0, maxMs: null, openStallMs: null })), quietRenderer).verdict, 'unknown');
+  assert.equal(stallReading({ error: 'gone' }), null);
+  assert.equal(stallReading(null), null);
+});
+
+test('slots squeezed below 900 ms by a slow earlier switch are counted', () => {
+  // A switch that overruns its second pushes the next slots' starts later while
+  // their ends stay on the schedule, so they probe less than a full second each.
+  const rows = [
+    { ...sw(0), slotMs: 1002 },
+    { ...sw(1), slotMs: 2400 },   // the slow switch itself: a long slot, not a squeezed one
+    { ...sw(2), slotMs: 610 },
+    { ...sw(3), slotMs: SQUEEZED_SLOT_MS },   // exactly at the line is not squeezed
+    { ...sw(4), slotMs: null },   // no reading: unknown, never counted as squeezed
+  ];
+  const s = summariseSwitches({ switches: rows, clearsBefore: 0, clearsAfter: 5 });
+  assert.equal(s.squeezedSlots, 1);
+  assert.equal(SQUEEZED_SLOT_MS, 900);
+  assert.ok(NUMERIC_PATHS.includes('squeezedSlots'), 'the count must reach the report median');
 });

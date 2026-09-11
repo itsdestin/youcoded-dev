@@ -87,6 +87,13 @@ export const SWITCH_COUNT = 40;
 export const SWITCH_EVERY_MS = 1000;
 /** IPC ping interval inside a slot: ~20 pings per one-second slot. */
 export const IPC_PING_MS = 50;
+/**
+ * A slot shorter than this was squeezed: a switch that overran its second makes the
+ * next slots start late while their ends stay on schedule, so they probe less time.
+ * The first real baseline (2026-09-11) ran every slot at 989–1009 ms, so 900 is
+ * clearly outside normal CDP jitter.
+ */
+export const SQUEEZED_SLOT_MS = 900;
 // How long the atlas counter must hold still before a reading counts as settled.
 // Above the resize heal's 120 ms debounce, with margin for a busy software renderer.
 const CLEARS_QUIET_MS = 1000;
@@ -221,6 +228,23 @@ export function ipcRow(read, everyMs) {
 }
 
 /**
+ * The IPC reading as attributeStall() should see it: a ping still outstanding when
+ * the slot closed is the slot's worst round trip so far.
+ *
+ * WHY (post-shakedown review, 2026-09-11): attributeStall reads only `maxMs`, which
+ * counts FINISHED pings. A main process blocked across a slot's close left `maxMs`
+ * small and the verdict 'none' while `openStallMs` held the real wait. Null (not
+ * 0) when neither number exists, so a slot with no data still reads 'unknown'.
+ */
+export function stallReading(read) {
+  if (!read || read.error) return null;
+  const finished = typeof read.maxMs === 'number' ? read.maxMs : null;
+  const open = typeof read.openStallMs === 'number' ? read.openStallMs : null;
+  if (finished === null && open === null) return { ...read, maxMs: null };
+  return { ...read, maxMs: Math.max(finished ?? 0, open ?? 0) };
+}
+
+/**
  * The run's headline numbers from its per-slot rows.
  *
  * Only VERIFIED switches (the target terminal actually became the visible one)
@@ -271,6 +295,10 @@ export function summariseSwitches({ switches, clearsBefore, clearsAfter }) {
     atlasClearsTotal: clearsTotal,
     atlasClearsPerSwitch: haveClears && ok.length ? round1(clearsTotal / ok.length) : null,
     clearsOutsideSlots: haveClears && inSlotsSum !== null ? clearsTotal - inSlotsSum : null,
+    // WHY (post-shakedown review, 2026-09-11): a slot squeezed by an earlier slow
+    // switch probes less than its second, so its IPC and long-task readings cover
+    // less time than the other slots'. A null slotMs is unknown, never squeezed.
+    squeezedSlots: switches.filter((s) => typeof s.slotMs === 'number' && s.slotMs < SQUEEZED_SLOT_MS).length,
     ipc,
     stallVerdicts: verdicts,
   };
@@ -285,6 +313,8 @@ export const NUMERIC_PATHS = [
   'switchPaintedMedianMs', 'switchPaintedP95Ms',
   // Suspect 1's engagement check, and suspect 2's tell (clears outside every slot).
   'atlasClearsPerSwitch', 'atlasClearsTotal', 'clearsOutsideSlots',
+  // How many slots probed less than their second (see SQUEEZED_SLOT_MS).
+  'squeezedSlots',
   // Renderer cost across the switch window.
   'longtaskMaxMs', 'longtaskTotalMs', 'longtaskCount', 'frameGapMaxMs',
   // Main-process cost, summed over the slots; pings proves the probe replied, and
@@ -370,7 +400,8 @@ async function closeSlot(cdp, slot, pingMs) {
     clears: typeof slot.clearsPre === 'number' && typeof clearsPost === 'number' ? clearsPost - slot.clearsPre : null,
     ipc,
     longtaskMaxMs: probe?.longtaskMaxMs ?? null,
-    stall: attributeStall(read && !read.error ? read : null, probe),
+    // A ping still pending at close is part of this slot's worst round trip (stallReading).
+    stall: attributeStall(stallReading(read), probe),
   };
 }
 
@@ -472,6 +503,10 @@ export async function runTerminalScenario(app, fixture, {
     }
     if (summary.menuSwitches > 0) {
       warnings.push(`terminal: ${summary.menuSwitches} switches went through the overflow menu (a pill did not fit), which also pays for opening the menu`);
+    }
+    if (summary.squeezedSlots > 0) {
+      const shortest = Math.min(...switches.map((s) => s.slotMs).filter((n) => typeof n === 'number'));
+      warnings.push(`terminal: ${summary.squeezedSlots}/${summary.switchCount} switch slots ran under ${SQUEEZED_SLOT_MS} ms (shortest ${shortest} ms) — an earlier switch overran its second, so those slots probed less time and their IPC and long-task readings are not like-for-like with the rest`);
     }
     if (summary.ipc.readErrors > 0) {
       const first = switches.find((s) => s.ipc?.error)?.ipc?.error;

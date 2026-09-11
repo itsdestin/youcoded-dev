@@ -139,7 +139,7 @@ test('the thrash stall is derived for the report written before the field was pr
 });
 
 test('a phase NEITHER report ran is out of scope, but a phase only one ran still fails closed', () => {
-  // `--only projects` on both sides: 26 of the 28 PRIMARY paths belong to phases
+  // `--only projects` on both sides: 25 of the 27 PRIMARY paths belong to phases
   // that were never measured. Refusing on those would print REJECT for reasons
   // that have nothing to do with the change, on every single-phase comparison.
   const onlyProjects = (stall, open) => ({
@@ -151,7 +151,7 @@ test('a phase NEITHER report ran is out of scope, but a phase only one ran still
   });
   const v = verdict(onlyProjects(7101, 192), onlyProjects(0, 161), { target: 'projects.median.thrash.ipcStallMs', screens: {} });
   assert.equal(v.keep, true, v.reasons.join('; '));
-  assert.equal(v.notRun.length, 26);
+  assert.equal(v.notRun.length, 25);
   assert.deepEqual(v.missing, []);
 
   // Asymmetric is the dangerous shape and still rejects: the baseline measured

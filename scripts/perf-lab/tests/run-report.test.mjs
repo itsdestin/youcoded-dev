@@ -331,7 +331,12 @@ describe('compare.mjs PRIMARY contract', () => {
     // painted switch median is the A/B target for throttling that heal, the worst
     // long task is the other number that decision reads, and the IPC stall total
     // catches a "fix" that moves the cost onto the main process.
-    assert.equal(PRIMARY.length, 28, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 28 -> 27 on 2026-09-11: terminal.median.ipc.totalStallMs left PRIMARY. The first
+    // real terminal baseline measured it at exactly 0 ms, and against a 0 baseline the
+    // 1 ms zero-baseline floor makes any candidate stall a REJECT — false rejections
+    // only. It stays in the report and in scenario-terminal's NUMERIC_PATHS.
+    assert.equal(PRIMARY.length, 27, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(!PRIMARY.includes('terminal.median.ipc.totalStallMs'), 'a metric whose baseline is 0 ms can only produce false REJECTs under ZERO_BASELINE_FLOOR');
     assert.ok(PRIMARY.includes('terminal.median.switchPaintedMedianMs'), 'the terminal switch clock is the atlas-heal A/B target and must be judged');
     assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
     assert.ok(PRIMARY.includes('scrollback.median.ceilingPssMb'), 'the ceiling is the cycle-3 target and must be judged');
@@ -617,7 +622,7 @@ describe('stall phase wiring', () => {
 describe('terminal phase wiring', () => {
   it('every terminal PRIMARY path is owned by the terminal phase', () => {
     const paths = PRIMARY.filter((x) => x.startsWith('terminal.'));
-    assert.equal(paths.length, 3);
+    assert.equal(paths.length, 2);
     for (const p of paths) assert.equal(phaseOfPath(p), 'terminal', `${p} is not owned by the terminal phase`);
     assert.ok(PHASES.includes('terminal'));
     assert.equal(PHASES.at(-1), 'scrollback', 'scrollback must stay the last phase — it drives memory to its worst case');

@@ -73,7 +73,7 @@ node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--history-repeats 5
 
 (`--help` lists every `--*-repeats` flag.) **A default-run baseline taken before the
 `terminal` phase existed (before 2026-09-10) fails CLOSED against a newer default run**
-on its three `terminal.*` PRIMARY paths — compare.mjs judges a phase only one report ran
+on its two `terminal.*` PRIMARY paths — compare.mjs judges a phase only one report ran
 as unjudgeable, by design. Re-take the baseline, or compare with `--only` phases both ran.
 
 It builds the **packaged** app, boots it repeatedly against a throwaway fixture HOME
