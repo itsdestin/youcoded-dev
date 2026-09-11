@@ -20,6 +20,19 @@ archived and its next-steps were already superseded by this file — do not act 
 Pick the work up with:
 `node scripts/workspace-start.mjs --session error-states-unit-b youcoded`
 
+**Unit B's shape, decided by Destin 2026-09-10** (after the inventory):
+- **Short route** — each batch reaches him as one before/after review deck; no questions deck,
+  contract or acceptance round. A fresh code reviewer still checks every batch.
+- **Merged batch by batch**, each on his word. Order: (1) the seventeen false messages in the
+  inventory README · (2) shared plumbing — raw IPC text in `preload.ts`, crash exit codes, the
+  unheard `OUTCOME_UNKNOWN_EVENT`, Android crash/hang, remote-server handler throws ·
+  (3) one Report/Diagnose building block · (4) "couldn't load" rendered as "none" ·
+  (5) silent action failures · (6) look and lower-impact wording · (7) guards per pattern, plus
+  the unaudited `App.tsx` and Worker messages.
+- Calls made in the proposal he did not overrule: a failed load gets Retry only (Report where the
+  cause is unknown); a save with no "last changed" token asks before writing rather than writing
+  blind.
+
 ## UNIT A SHIPPED — 2026-09-11
 
 Merged to master. The Development screens are real for every user: the ticket flow

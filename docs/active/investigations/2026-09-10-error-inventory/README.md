@@ -48,6 +48,35 @@ because its label is false and it disables the recovery.
 | 16 | Tag manager: "No tags yet" when reading tags failed | `tags/TagManagerPopup.tsx` + `ipc-handlers.ts` tags:list | 3 |
 | 17 | Update download failure reads "Launch failed" with Retry disabled | `UpdatePanel.tsx` code parsing | 2 |
 
+### Batch 1 status — all seventeen fixed on `session/error-states-unit-b` (2026-09-11)
+
+Each fix landed test-first: a test written against the old code, seen failing for the real
+reason, then green. Not merged; review deck and fresh code review still to come.
+
+| # | Commit (youcoded) | Also fixed while there |
+|---|---|---|
+| 1, 2 | `7809ff46` | "Backups happen automatically every 15 minutes" was false too (hourly poll); a paused new destination was reported as syncing; `force()` blamed the new destination for an old one's failure |
+| 3, 4 | `352c2bd7` | the compact strip left its buttons disabled forever after a rejection; the expiry text lost "socket" jargon |
+| 5 | `d83ce662` | a host-confirmed failure with an unknown reason no longer guesses "no response" |
+| 6 | `7a950efd` | — |
+| 7 | `73d3bf35` | on an http remote browser `/copy` threw before any toast; it now uses the execCommand fallback |
+| 8 | `1abb381d` | none of the four "wasn't found" branches checked the disk; each now says only what it knows |
+| 9 | `69cd411d` | — |
+| 10 | `cdca34b8` | — |
+| 11 | `53884535` | a save with no token now reads the file first rather than writing blind |
+| 12 | `008eedb4` | both hosts answered blanks for a missing store; `session:get-meta` now carries `unreadable` |
+| 13 | `3f66cd72` | a SecurityException on that read would have crashed the whole bridge handler (Android unit tests: 41 pass, 0 skipped) |
+| 14 | `db19d5b6` | install/update/uninstall RESOLVED their failures unread — failed installs posted telemetry and a failed theme install was starred |
+| 15 | `1797c8f3` | — |
+| 16 | `09f0b6d7` | main and remote-server both swallowed the read; a failed REFRESH also wiped tags already on screen |
+| 17 | `7149d657` | busy / url-rejected download failures were also labelled "Launch failed"; `stripInvokeWrapper` now shared with `plainMessage` |
+
+**Left for later batches, found during batch 1:**
+- The phone's `tags:list` still answers `[]` on purpose (tagging UI deferred on Android), so the tag manager can still say "No tags yet" on a phone — batch 2 (Android).
+- `useSessionMeta` and `usePreviewMeta` ignore the new `unreadable` field and still show a failed read as no tags/note — batch 4.
+- Nothing listens for remote-shim's `OUTCOME_UNKNOWN_EVENT`, so "couldn't confirm" is never followed up with "it went through after all" — batch 2.
+- The rarer permission rows (full-auto stop, always-allow confirm) got the same note but no test of their own.
+
 ## The seven repeated mistakes
 
 Almost every row is one of these, which is why fixing by pattern beats fixing by screen:
