@@ -85,6 +85,17 @@ them. Not here: the theme renders wrong (themes).
       (~/system/youcoded-security-2026-09-10/, "#5").
       `all` `parked` `checked 2026-09-10` `security`
 
+- [ ] Retire the old `wecoded-marketplace-api.destinj101.workers.dev` API address. It is kept alive
+      by `workers_dev = true` in worker/wrangler.toml only because shipped builds hardcode it —
+      stable v1.2.4 and every beta up to 1.3.0-beta.71 do. Attaching the api.youcoded.ai custom
+      domain on 2026-09-03 silently switched it off and took the games lobby, Backup & Sync and the
+      whole account API down for those users; a hand deploy brought it back on 2026-09-06, a later
+      deploy from master turned it off again, and the line finally landed on master 2026-09-11
+      (wecoded-marketplace#90 — the address answered 200 again the same day). Retire only once no
+      supported build names it: that needs a released build everyone is on, and ideally the address
+      read from config rather than compiled in, so the next move cannot repeat this
+      `all` `confirmed` `checked 2026-09-11`
+
 ## install
 
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows
