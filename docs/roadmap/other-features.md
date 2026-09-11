@@ -98,6 +98,13 @@ has passed ~8 items — graduate it to its own file.
       meaningful once the Agents & Automations view exists
       `all` `parked` `checked 2026-09-01`
 
+- [ ] YouCoded Pages: a new top-left tab beside Settings and Files for installable, customizable
+      app pages. A page can reorganize existing information or present its own data — for example,
+      projects arranged differently or weather — and can connect to plugins, scripts, app channels,
+      and eventually agents. People should be able to download pages from the marketplace; creators
+      need a skill that teaches an assistant how to build one and connect it safely. Undesigned.
+      `window-chrome` `all` `parked` `checked 2026-09-08`
+
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal window as a
       YouCoded session, no assistant attached. Half of it is built: the local engine's "Run in
       terminal" button already opens exactly that session, and it is a real session in the strip.
