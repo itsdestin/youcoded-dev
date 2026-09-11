@@ -217,6 +217,11 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] A dev instance shares the live app's saved theme choice: picking a theme in the dev window,
+      or on a phone connected to it, changes the theme the live app opens with next time.
+      `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
+      `desktop` `confirmed` `checked 2026-09-11`
+
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)

@@ -1,6 +1,20 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] After a phone's connection drops and comes back, some screens can still stay empty or wrong
+      until they are reopened: the model list, the native provider list in the new-session form,
+      Project View's projects and conversations, the Themes tab in the marketplace, the Remote
+      Access settings panel and the "incognito" choice for presence. A file preview that failed
+      once stays failed until the page reloads, and a specialist list that failed stays failed
+      until Settings is opened. Found by the 2026-09-11 reliability sweep; the project picker,
+      skills and commands, signed-in state, session defaults and tags were fixed the same day
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] After a reconnect the phone repeats a few requests (skills, commands, remote settings, file
+      lists) whose answers nothing on screen uses; the screens reload for themselves now.
+      Wasted traffic on every reconnect. Found 2026-09-11
+      `remote` `confirmed` `checked 2026-09-11`
+
 - [ ] The Android app's terminal is blank when the app is paired to a desktop. That surface
       reads only raw terminal bytes (the phone's own runtime sends them); a desktop host
       sends terminal text, never raw bytes, so a paired phone app gets nothing in the
