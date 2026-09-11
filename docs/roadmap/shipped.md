@@ -619,3 +619,19 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
   rows; Destin skipped the code reviewer, the second UX tester run and the acceptance deck.
   Records: `docs/archive/design/2026-09-09-session-context-panel/`,
   `docs/archive/specs/2026-09-10-session-context-backend-design.md`.
+- [x] 2026-09-11 onboarding — A new person's first days: the buddy stands in a corner of the real app
+  with a speech bubble and walks eight stops that open the real screens (the New Session form,
+  Projects, Cloud providers, Appearance, Help & feedback), once after setup and again from
+  Settings; tips arrive at their moments, one per sitting, with Got it and Stop showing tips;
+  "Start your first session" replaces "No Active Session" for a brand-new install; the empty
+  Projects screen explains what a project is; Settings gains Help & feedback (the tour, the
+  tips switch, r/youcoded, the bug report, known issues); the wizard's sign-in step carries
+  Destin's file-safety sentence; Skip Permissions and Full auto warn the first time with an
+  I-understand checkbox, a small model gets a Got-it explainer; and the new-session form gains
+  a "No folder" choice that runs in an empty folder the app owns. Everything pops up only for
+  installs that finish setup after this ships. Fifteen questions, two review rounds, a 35-row
+  contract, one UX tester run (17 of 33 findings applied); Destin skipped the code reviewer, the
+  second tester run and the grader to save tokens and reviewed by hand. App merge `5d023d15`.
+  Records: `docs/archive/design/2026-09-10-first-run-guide/`,
+  `docs/archive/specs/2026-09-10-first-run-guide-design.md`,
+  `docs/archive/reviews/2026-09-10-first-run-guide-ux-review-1.md`.

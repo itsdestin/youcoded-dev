@@ -4,12 +4,11 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
-- [ ] Every session must start in a project folder; there is no way to just talk to the
-      assistant. Destin's note on the first-run guide's review deck (2026-09-10): a
-      zero-context "no folder" choice for now, and later perhaps a "Home" folder every
-      install starts with, holding overarching assistant settings that apply everywhere. The
-      no-folder choice is being built with the first-run guide; the Home folder is this item
-      `all` `decision` `checked 2026-09-10`
+- [ ] A "Home" folder every install starts with, holding overarching assistant settings that
+      apply everywhere (Destin's note on the first-run guide's review deck, 2026-09-10). The
+      zero-context "No folder" choice on the new-session form shipped 2026-09-11 as the first
+      half; this is the fuller idea
+      `all` `decision` `checked 2026-09-11`
 
 - [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
       mid-sentence and the assistant is told to "ask for the rest" without being told which file
@@ -235,14 +234,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
-- [ ] The first time someone turns on Skip Permissions or picks Full auto, nothing explains that
-      the assistant will now change files without asking and that a mistake reaches the files
-      before they see it; the first session on a small model (roughly 9 to 40 billion parameters)
-      gets no word that small models make more mistakes. Wanted (Destin, 2026-09-10): a plain,
-      honest explainer the first time each happens; the two dangerous switches need an
-      "I understand" checkbox before Continue. Being built with the first-run guide
-      `settings/permissions` `all` `in-flight` `checked 2026-09-10` → docs/active/specs/2026-09-10-first-run-guide-design.md
-
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
