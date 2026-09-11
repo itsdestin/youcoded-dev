@@ -392,6 +392,17 @@ Alternatives if SMB misbehaves: the host is always `http://10.0.2.2` from inside
 (`python3 -m http.server 8010 -d ~/vms/share`), or download the release in the guest browser — which
 additionally exercises the real SmartScreen path.
 
+**Prefer HTTP for putting a file in the user's Downloads.** On 2026-09-10 (`clean` snapshot), copying
+from `\\10.0.2.4\qemu` inside the logged-in session — Run box, `powershell -c "copy …"` — silently
+copied nothing, twice; `powershell -c "iwr http://10.0.2.2:8010/<file> -OutFile $env:USERPROFILE\Downloads\<file>"`
+worked first time. The cause was not traced. Also: a backslash before a closing quote in a Run-box
+command (`…\Downloads\"`) swallows the quote and breaks the whole command.
+
+**Driving the guest with no window on the host:** `scripts/vm/vmctl.sh` — `boot` (revert `clean`, start
+`--display none` with a share dir), `keys` / `type` (monitor `sendkey`), `shot` (`screendump` → PNG),
+`exec` (the agent), `off`. The Windows desktop still renders for `screendump`; the 2026-09-10 before/after
+installer test ran entirely this way, with nothing painted on Destin's screen.
+
 ## Driving guests from a session: the QEMU guest agent
 
 **The most useful thing here.** quickemu's Windows answer file installs `qemu-ga` (plus spice-vdagent,

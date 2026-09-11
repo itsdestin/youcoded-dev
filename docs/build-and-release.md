@@ -91,6 +91,12 @@ gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
 gh run download --repo itsdestin/youcoded <run-id> -n youcoded-desktop-windows -D ./beta
 ```
 
+**Master's Windows tests red for someone else's reason? Add `-f skip_windows_tests=true`.** A failed
+`npm test` skips every later step, so a red Windows test means no Windows installer at all; with the
+switch only the Windows leg skips its tests (macOS and Linux still run them). On 2026-09-10 the
+installer-icon test needed a throwaway branch with the step deleted before this existed.
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "skip_windows_tests"} -->
+
 ### Publishing a beta as a PUBLIC pre-release (what youcoded.ai serves)
 
 Actions artifacts cannot be linked from the website: they need a GitHub login, they arrive
