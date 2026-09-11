@@ -13,10 +13,11 @@
       "surface": "Model list",
       "path": "The model list: New Session, or the model name in the status bar",
       "headline": "Which layout should the tags use? Hover or press any tag to see the figures behind it.",
-      "risk": "Every price and score is real, taken 11 September. The two estimated speeds (the ~ tags) are made up for the preview; the others are your own measurements.",
+      "risk": "Prices and scores are real, from 11 September. The two dashed speed tags are made-up estimates for this preview; the others are your own measurements.",
       "live": {
         "surface": "model-picker-tags",
-        "round": 1
+        "round": 1,
+        "height": 660
       },
       "variants": [
         {
@@ -33,7 +34,7 @@
           "candidate": "dot",
           "summary": "The same words on a second line, each behind a coloured dot, with no chip outline. Quieter; the colour is smaller.",
           "measured": "Rows 47 px tall, up from 33 today",
-          "risk": "The dot is about 5 px wide, so good and bad are harder to spot and colour is the only signal; the hollow \"Not rated\" dot nearly disappears on the Light theme."
+          "risk": "The 5 px dot is hard to spot and colour is its only signal; the hollow \"Not rated\" dot nearly vanishes on Light."
         },
         {
           "id": "compact",
