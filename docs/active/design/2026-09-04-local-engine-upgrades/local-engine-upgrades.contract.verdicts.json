@@ -1,0 +1,79 @@
+{
+ "_method": "Graded against the BUILT branch feat/local-engine-upgrades running as a real Electron dev instance (worktree /home/destin/youcoded-dev/worktrees/local-engine-upgrades, isolated HOME at /home/destin/youcoded-dev/scratch/le-accept-home, profile 'leaccept', Vite 5304 / CDP 9353, xvfb) against the REAL main process — real llama.cpp cache (hardlinked, never written), real GPU/ROCm detection, real fit estimator. Not the workbench mock. Captures: /home/destin/youcoded-dev/scratch/le-accept/real/. Approved mockup shots for comparison: /home/destin/youcoded-dev/scratch/ui-local-engine-after/shots-local-engine/ and the review decks' images/ folders.",
+ "R2": {
+  "verdict": "pass",
+  "evidence": "Real app, Settings > Model Providers > Installed > Settings for Qwen3.5-2B. Dialog rows in order: 'Context length' (plain row, 'Same as engine'), 'Keep loaded' (plain row + toggle), 'Advanced' (collapsed by default) unfolding 'Layers on graphics chip' (i) with an Auto select and a free-text 'Extra engine flags' box (i) placeholder 'e.g. --temp 0.6 --repeat-penalty 1.1'. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/model-settings-advanced.png (and model-settings.png for the collapsed state). Matches the approved model-settings crop in local-engine-upgrades.review-3.json P-17."
+ },
+ "R4": {
+  "verdict": "pass",
+  "evidence": "Real app, engine card > Advanced. Both rows present as standard toggle rows: 'Speculative decoding' and 'Compress context memory'. On a never-touched config both read aria-checked=\"true\" (queried live: [\"Speculative decoding=true\",\"Compress context memory=true\"]), i.e. on by default. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-advanced.png."
+ },
+ "R11": {
+  "verdict": "pass",
+  "evidence": "Real app, Installed list. gemma-4-E2B-it reports vision:'none' from window.claude.models.installed() and its row carries NO 'Add vision' link, while the five families that do have one show 'Add vision (0.6/0.8/0.9 GB)'. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/models-installed.png. NOTE for Destin: a text-only row is not literally unchanged — it does gain the small page glyph, because R22 requires that mark on every downloaded model. 'Nothing new' holds for the vision ACTION only."
+ },
+ "R13": {
+  "verdict": "pass",
+  "evidence": "Real app, engine card with Advanced closed: title 'Local engine' + state 'Stopped'; one fact line 'Engine b10665 · Vulkan · starts on first message'; a 'Faster engine for your AMD chip' row (this machine has an AMD chip, so the row is offered) with a Switch button; an 'Advanced' row. Nothing else on the card. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-card.png."
+ },
+ "R14": {
+  "verdict": "pass",
+  "evidence": "This machine HAS ROCm installed, so the box never appears normally. Re-run with the real detector seeing a machine without ROCm (electron launched under `bwrap --tmpfs /opt/rocm` plus an ldconfig shim that filters the three ROCm sonames — no code changed): window.claude.engine.prereqs('rocm') returned satisfied:false with the real CachyOS command. The Set up box then contains, in order: heading 'Install AMD’s ROCm software first' with an (i), one sentence 'Run this in a terminal (CachyOS). It will ask for your password.', the command 'sudo pacman -S --needed rocm-hip-runtime hipblas rocblas' with 'Copy' beside it, then 'Run in terminal' and 'Check again'. Nothing else. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-rocm-setup.png. NOTE: the heading + (i) is an extra element beyond the row's literal 'one sentence', but it is exactly what the approved P-10 (local-engine-upgrades.review-2.json) specified, so this is the approved design, not drift."
+ },
+ "R17": {
+  "verdict": "pass",
+  "evidence": "Real app, Advanced expands inside the engine card (no new dialog). Children in order: 'Speculative decoding' — 'Faster replies when text repeats.'; 'Compress context memory' — 'Halves the memory long chats use.'; 'Context length' — 'Default for every model.' with a number field (32768); one read-only 'Engine build' row whose description is the models folder and whose value is 'b10665 · Vulkan'. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-advanced.png."
+ },
+ "R18": {
+  "verdict": "pass",
+  "evidence": "npx vitest run tests/setting-row-authority.test.tsx (in /home/destin/youcoded-dev/worktrees/local-engine-upgrades/desktop) — 'Test Files 1 passed (1) / Tests 13 passed (13)'. Read the test: its adoption guard scans src/renderer/App.tsx plus components/*.tsx, components/development and components/ui, which DOES include this feature's three files (EngineCard.tsx, LocalModelsSection.tsx, RuntimeBinding.tsx), and none of them was added to the TOGGLES_OUTSIDE_A_ROW exemption list — so every new on/off setting on these screens is inside a <SettingRow>, verified visually too. NOTE: the row's threshold sentence ('no toggle anywhere in the desktop renderer') is broader than what the test actually asserts — it allows 14 documented exemptions in other files and does not scan marketplace / project-view / game / git / tags / context-menu / buddy. The statement about THESE screens is genuinely tested; the parenthetical about the whole renderer is not."
+ },
+ "R20": {
+  "verdict": "fail",
+  "evidence": "HOVER half passes: the size is one dotted-underlined number and hovering it opens 'What this needs' — Model file 4.8 GB / Vision file (sees images) 0.9 GB / Download 5.7 GB / Memory while running 6.2 GB / includes 0.5 GB for a 32k context. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/size-bubble-hover.png. TAP half FAILS. With Emulation.setTouchEmulationEnabled on, a real touch tap on the number fires pointerdown, touchstart, pointerup, touchend, mouseover, mouseenter, focus, click, mouseout, mouseleave — AnchorTip's hover mode opens on mouseenter/focus and closes on mouseleave, so the trailing mouseleave shuts the bubble in the same frame. Polled every 60 ms for 1.5 s after the tap: the bubble was never once on screen ([0,0,0,…]), while a programmatic .focus() on the same button opens it. The same is true of the eye/page marks. Destin uses a touchscreen, so on his machine the breakdown is hover-only in practice."
+ },
+ "R21": {
+  "verdict": "fail",
+  "evidence": "Alignment and direction pass: measured trigger left 654.7 / bubble left 654.7 (exact), trigger bottom 522.5 / bubble top 528.5 (opens below). 'Stays inside the dialog' FAILS: AnchorTip clamps to the viewport, not to the dialog, and has no flip. On a FULLY VISIBLE recommended row low in the list (Gemma 4 12B), the bubble measured top 710.1 / bottom 845.1 against a dialog bottom of 794 — it hangs 51.1 px outside the Model Providers panel, over the page behind it. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/size-bubble-low.png. Any size number within roughly the bottom 120 px of the panel does this."
+ },
+ "R22": {
+  "verdict": "pass",
+  "evidence": "Real app, after adding the vision file to Qwen3.5-2B: that row shows an eye glyph and hovering it names it — 'Sees images' / 'You can attach pictures and screenshots; the model reads them.' Every text-only row shows a page glyph, hover names it 'Text only'. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/modality-eye-hover.png and real/models-installed-vision-hover.png. The row says 'hovering', which holds; note that tapping does not open either bubble (see R20)."
+ },
+ "R23": {
+  "verdict": "pass",
+  "evidence": "Real app: the link under an eligible model reads exactly 'Add vision (0.9 GB)' (also 0.6 / 0.8 GB for other families), rendered as a short underlined text link (class 'underline text-fg-2 hover:text-fg'), not a button. 'Its hover points to it' is carried by the page glyph on the same row, whose bubble reads 'Text only — Reads text only for now. Add its vision file below to let it see images.' — which is exactly what the approved P-13 asked for. The link itself has no tooltip of its own. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/add-vision-hover.png, real/models-installed.png."
+ },
+ "R24": {
+  "verdict": "pass",
+  "evidence": "Real app: the row's Settings button opens a separate small dialog titled 'Model settings' with the subtitle 'Qwen3.5-2B'; the Installed list stays exactly as it was behind it. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/model-settings.png."
+ },
+ "R25": {
+  "verdict": "pass",
+  "evidence": "Real app, dialog rows in order: 'Context length' (plain), 'Keep loaded' (plain), 'Advanced' (disclosure) → 'Layers on graphics chip' with an (i) (aria-label 'About GPU layers') and 'Extra engine flags' with an (i) (aria-label 'About extra engine flags'). Shot: /home/destin/youcoded-dev/scratch/le-accept/real/model-settings-advanced.png."
+ },
+ "R27": {
+  "verdict": "pass",
+  "evidence": "Real app, new-session form with Qwen3.8-Flash-Next selected (real verdict 'tight' from the real estimator). Closed: one amber sentence 'This model may not fit in available memory' with a chevron. Clicking it opens the numbers line and the toggle row inside the same card. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/memory-warning-closed.png and real/memory-warning-open.png."
+ },
+ "R28": {
+  "verdict": "pass",
+  "evidence": "Real app, opened: the second line is '103.7 GB model + 1.0 GB for 32k context, with 0.0 GB already loaded.' — one sentence, model size + context memory + what is already loaded, no paragraph. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/memory-warning-open.png. NOTE for Destin: the new-session card is about 285 px wide, so that one sentence WRAPS onto three visual lines there. It is one line of content, not one line on screen."
+ },
+ "R29": {
+  "verdict": "pass",
+  "evidence": "Real app, measured: the 'Warn me about this model' row (title + 'Off skips this next time.' + toggle) sits inside the warning card (outer contains it), is inset 6 px on each side by a px-1.5/pb-1.5 wrapper (outer 684.7–915.3, sub-card 690.7–909.3), has its own rounded-lg, and is painted a different shade — opaque bg-inset rgb(33,38,45) against the card's half-opacity bg-inset/50. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/memory-warning-open.png."
+ },
+ "R30": {
+  "verdict": "fail",
+  "evidence": "Closed, it is one amber line in every theme, and on Halftone Dimension it reads clearly as a warning — measured contrast of the amber text against its painted background is 9.53:1 (text #FAB501 on #251432). Shot: /home/destin/youcoded-dev/scratch/le-accept/real/warning-closed-halftone-dimension.png. On Meadow Mist it does NOT: the same amber sits on that theme's pale-green card for a measured contrast of 1.05:1 (text #FEB903 on #BAD0B6) — effectively invisible, far under the 4.5:1 minimum, and it does not read as a warning at all. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/warning-closed-meadow-mist.png and the magnified crop real/meadow-warn-crop.png. Both themes were installed into the dev profile from the real marketplace and applied in the real app."
+ },
+ "R31": {
+  "verdict": "pass",
+  "evidence": "No installed model scores 'too-large' on this 128 GB machine (the largest, 103.7 GB, scores 'tight'), so the run was repeated with the real estimator reading a low-memory machine (electron under `bwrap --ro-bind fake-meminfo /proc/meminfo`, MemAvailable 2 GB — no code changed). The row is then the same expandable row in the danger colour rgb(212,92,92) reading 'This model is too large for this computer', opening to the numbers line '103.7 GB model + 1.0 GB for 32k context, with 0.0 GB already loaded.' and nothing else — queried live, no 'Warn me about this model' toggle exists in the DOM. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/warning-open-too-large.png, real/too-large-crop.png."
+ },
+ "R32": {
+  "verdict": "pass",
+  "evidence": "Real app: for Gemma 4 E4B the bubble lists 'Model file 4.8 GB', then 'Vision file (sees images) 0.9 GB', then 'Download 5.7 GB' — its own line, between Model file and Download. For a model without one (GPT-OSS 20B) the same bubble reads Model file / Download / Memory while running with no vision line at all. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/size-bubble-hover.png and real/size-bubble-bottom.png."
+ }
+}

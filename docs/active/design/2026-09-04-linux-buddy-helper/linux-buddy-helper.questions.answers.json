@@ -1,0 +1,38 @@
+{
+ "deck": "linux-buddy-helper-questions",
+ "started": "2026-09-04T10:50:40.346Z",
+ "submitted": "2026-09-04T10:52:08Z",
+ "cur": 3,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 37,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "b",
+   "note": "only uninstall on app uninstall.",
+   "note_kind": "noting",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

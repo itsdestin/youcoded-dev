@@ -1,0 +1,89 @@
+{
+  "title": "The buddy on Linux — four decisions",
+  "key": "linux-buddy-helper-questions",
+  "out": "linux-buddy-helper.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "Linux (KDE) only",
+      "headline": "When should the app ask permission to add the small helper to your desktop?",
+      "options": [
+        {
+          "id": "a",
+          "label": "The first time you switch the buddy on (recommended)",
+          "summary": "You are asked at the moment it is relevant, and only if you actually want the buddy. Anyone who never turns the buddy on is never asked at all. Downside: the buddy does not appear the instant you flip the switch — there is a question in between."
+        },
+        {
+          "id": "b",
+          "label": "During first-run setup, with everything else",
+          "summary": "Gets it out of the way while you are already answering setup questions, so the buddy just works later. Downside: you are asked about a feature you have not seen yet and may never use, and it lengthens setup."
+        },
+        {
+          "id": "c",
+          "label": "Never automatically — only a switch in Settings",
+          "summary": "The app never interrupts you; you find it yourself under Settings when you go looking. Downside: almost nobody will find it, so on Linux the buddy stays invisible in practice."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "Linux without the helper",
+      "headline": "If you say no — or you are on a Linux desktop this cannot work on — what should the buddy do?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Stay hidden, with one line in Settings saying why (recommended)",
+          "summary": "Nothing broken appears on screen. This is what happens today, except that today there is no explanation anywhere — you just never see a buddy. Downside: the feature is invisible, so you have to read Settings to learn it exists."
+        },
+        {
+          "id": "b",
+          "label": "Show it anyway, parked in a corner",
+          "summary": "You can see the buddy and read its messages, but you cannot drag it and other windows cover it. Downside: it looks broken rather than unavailable, and 'why can't I move this' is a support question forever."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "Turning the buddy off",
+      "headline": "When you turn the buddy off, should the helper be removed from your desktop settings again?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Remove it (recommended)",
+          "summary": "Nothing you did not ask for is left behind, and turning the feature off really does undo it. Downside: switching the buddy back on asks you again, or at least takes a moment to reinstall."
+        },
+        {
+          "id": "b",
+          "label": "Leave it installed",
+          "summary": "Turning the buddy back on is instant and silent. The helper does nothing at all unless the app is running. Downside: something stays in your desktop settings after you switched the feature off, which is exactly the kind of leftover that is hard to trace later."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "App updates",
+      "headline": "When an app update ships an improved helper, should it update silently?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Update it silently (recommended)",
+          "summary": "You already agreed to the helper once; being asked again on every app update is noise, and a stale helper would mean the buddy quietly misbehaves. Downside: a piece of your desktop settings changes without you being told."
+        },
+        {
+          "id": "b",
+          "label": "Ask again whenever it changes",
+          "summary": "Nothing about your desktop ever changes without you seeing it. Downside: a prompt after app updates you did not think were about the buddy, which is the kind of nag people learn to click through."
+        }
+      ]
+    }
+  ]
+}

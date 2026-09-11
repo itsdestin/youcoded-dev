@@ -1,0 +1,36 @@
+# RECOVERED FRAGMENT — another session's UNCOMMITTED wording-trim of .claude/rules/artifacts.md
+# was wiped from the working tree on 2026-08-27 ~03:10 by a script in the OOM session
+# (open(p,'w') before read). The committed file is intact. This is the first ~24 lines of
+# that diff as printed earlier in the session; the hunks after "## Binary viewers" (~5 of
+# 16 changed lines) were never displayed and are lost. Re-apply by hand or discard.
+# ipc-bridge.md's pending trim (22 lines) was NOT touched.
+@@ -46,34 +46,34 @@
+ ## Concept split — guards: `visible-artifacts.test.ts`, `project-file-discovery.test.ts`
+-- **ONE Files tab, ONE section** (2026-07-23). In-folder artifacts are UNDIFFERENTIATED — don't badge or re-split. An `External Artifacts` section was tried and REMOVED (~95% noise); **don't re-add it** — externals live in the Session Drawer only.
+-- **`LIST_ALL_FILES` is NOT pure discovery** — `projectAllFiles()` UNIONS tracked internal artifacts discovery missed. Keep the union; no extension allowlist.
+-- **`trackedArtifacts()` is the SOLE tracked-visibility decider.** Order: manually INCLUDED → EXCLUDED hidden → internal with ≥1 non-`read` version; externals hidden unless pinned (legacy pins stay; nothing WRITES pins now). Include/exclude paths are canonical ABSOLUTE — canonicalize BOTH sides.
+-- **`+ Add file` IMPORTS (Move/Copy), it does not pin.** `artifacts:import-file` reuses `authorizeArtifactWrite` **without** `confirmed`; each data-safety invariant has a test. `.youcoded-import-*.part` temps are filtered from discovery AND sync `DEFAULT_IGNORES`.
+-- **Discovery stops at nested git repos, no extension allowlist, bounded** (caps + 1.5s, 10s cache). `discovered:true` is NEVER persisted; skip it in `checkExistence`.
++- **ONE Files tab, ONE section** (2026-07-23). In-folder artifacts are UNDIFFERENTIATED — don't badge or re-split. An `External Artifacts` section was REMOVED (~95% noise); **don't re-add it** — externals live in the Session Drawer only.
++- **`LIST_ALL_FILES` is NOT pure discovery** — `projectAllFiles()` UNIONS tracked artifacts discovery missed. Keep the union.
++- **`trackedArtifacts()` is the SOLE tracked-visibility decider.** Order: INCLUDED → EXCLUDED hidden → internal with ≥1 non-`read` version; externals hidden unless pinned (legacy pins stay; nothing WRITES pins now). Include/exclude paths are canonical ABSOLUTE — canonicalize BOTH sides.
++- **`+ Add file` IMPORTS (Move/Copy), not pins.** `artifacts:import-file` reuses `authorizeArtifactWrite` **without** `confirmed`. `.youcoded-import-*.part` temps are filtered from discovery and sync `DEFAULT_IGNORES`.
++- **Discovery stops at nested git repos, no extension allowlist, bounded** (caps + 1.5s, 10s cache); `discovered:true` is NEVER persisted.
+ 
+ ## Recorded paths
+-- **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3, after the cross-OS remap; `..` stays external). `absolutePath` is contractually ABSOLUTE — guard **five** sites with `isAbsoluteRecorded`: `get`, `save`, `check-existence`, `countArtifacts`, `renameArtifact`.
+-- **`runSidecarMigration` repairs legacy records on open**, gated on `reclassified === 0`, never `$schema`; it must never throw into read handlers. **Drawer labels are SESSION-scoped.**
++- **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3, after the cross-OS remap; `..` stays external). `absolutePath` is contractually ABSOLUTE — guard **five** sites with `isAbsoluteRecorded`.
++- **`runSidecarMigration` repairs legacy records on open**, gated on `reclassified === 0`, never `$schema`; never throw into read handlers. **Drawer labels are SESSION-scoped.**
+ 
+ ## Paths & counts
+-- **Project list = saved folders (`youcoded-folders.json`), NOT the central index.** `buildSavedFolderProjects` reuses an index entry by canonical path, else synths one whose `id` IS the path (id-as-path fallback is traversal-guarded).
+-- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — don't recompute inline (282-vs-1209 drift). Badge subtracts orphans via `checkExistence`.
++- **Project list = saved folders (`youcoded-folders.json`), NOT the central index.** `buildSavedFolderProjects` reuses an index entry by canonical path, else synths one with `id` IS the path (traversal-guarded).
++- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — don't recompute inline. Badge subtracts orphans via `checkExistence`.
+ 
+ ## Concurrency
+-- **`casWrite` uses a mkdir-based lock** (bare CAS = TOCTOU data loss); central-index writers use `mutateFileUnderLock`. `appendVersion` retries CAS 5× — don't add a second loop.
+-- **Append path is burst-safe** (a replayed session = ~1,000 live tool events; 2026-08-15 OOM): `appendVersion` queues per project, `*Coalesced` helpers, one tracker refresh, dedupe on `(sessionId, toolUseId)`. Handlers never call `appendVersionsDirect`.
++- **`casWrite` uses a mkdir-based lock** (bare CAS = TOCTOU data loss); central-index writers use `mutateFileUnderLock`. `appendVersion` retries CAS 5×.
++- **Append path is burst-safe** (a replayed session = ~1,000 tool events; 2026-08-15 OOM): `appendVersion` queues per project, `*Coalesced` helpers, one tracker refresh, dedupe on `(sessionId, toolUseId)`. Handlers never call `appendVersionsDirect`.

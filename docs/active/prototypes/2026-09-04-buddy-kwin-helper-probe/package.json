@@ -1,0 +1,7 @@
+{
+  "name": "buddy-kwin-helper-probe",
+  "version": "1.0.0",
+  "description": "Probes whether a KWin helper script can position and raise the buddy floater on native Wayland — the route the 2026-07 investigation named but never tested.",
+  "main": "main.js",
+  "private": true
+}

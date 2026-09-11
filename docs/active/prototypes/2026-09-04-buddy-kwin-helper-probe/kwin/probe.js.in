@@ -1,0 +1,69 @@
+// KWin helper probe. Generated per-run by round0.sh with __MODE__/__X__/__Y__ filled in.
+//
+// WHY this exists: on native Wayland an app cannot position or raise its own
+// windows (proven 2026-07-22). KWin scripts run INSIDE the compositor, so they
+// are not bound by that restriction — kdotool and RememberWindowPositions both
+// move/raise real windows this way. This measures whether the same lever works
+// for the buddy floater, how accurately, and how fast.
+const TAG = "KWINHELPER";
+const MODE = "__MODE__";
+const TX = __X__;
+const TY = __Y__;
+
+function say(s) { print(TAG + "|" + s); }
+
+function findProbe() {
+  const list = workspace.windowList();
+  for (const w of list) {
+    if (w.caption && w.caption.indexOf("YOUCODED-KWIN-PROBE") !== -1) return w;
+  }
+  return null;
+}
+
+const w = findProbe();
+if (!w) {
+  say("NOTFOUND|mode=" + MODE + "|windows=" + workspace.windowList().length);
+} else {
+  const before = w.frameGeometry;
+  say("BEFORE|mode=" + MODE + "|x=" + before.x + ",y=" + before.y +
+      ",w=" + before.width + ",h=" + before.height +
+      "|keepAbove=" + w.keepAbove + "|class=" + w.resourceClass +
+      "|movable=" + w.moveable + "|caption=" + w.caption);
+
+  if (MODE === "keepabove") {
+    try {
+      w.keepAbove = true;
+      say("SET|keepAbove=true attempted");
+    } catch (e) { say("THREW|keepAbove|" + e); }
+  }
+
+  if (MODE === "move") {
+    // Strategy 1: whole-rect assignment (what kdotool does).
+    try {
+      w.frameGeometry = { x: TX, y: TY, width: before.width, height: before.height };
+      say("SET|frameGeometry assigned via object");
+    } catch (e) { say("THREW|frameGeometry-object|" + e); }
+
+    const mid = w.frameGeometry;
+    if (mid.x !== TX || mid.y !== TY) {
+      // Strategy 2: some KWin versions only honour per-field writes on a copy.
+      try {
+        const r = w.frameGeometry;
+        r.x = TX; r.y = TY;
+        w.frameGeometry = r;
+        say("SET|frameGeometry assigned via copied QRect");
+      } catch (e) { say("THREW|frameGeometry-copy|" + e); }
+    }
+  }
+
+  const after = w.frameGeometry;
+  say("AFTER|mode=" + MODE + "|x=" + after.x + ",y=" + after.y +
+      ",w=" + after.width + ",h=" + after.height + "|keepAbove=" + w.keepAbove);
+  if (MODE === "move") {
+    say("VERDICT|move|" + ((after.x === TX && after.y === TY) ? "MOVED" : "DID-NOT-MOVE") +
+        "|asked=" + TX + "," + TY + " got=" + after.x + "," + after.y);
+  }
+  if (MODE === "keepabove") {
+    say("VERDICT|keepabove|" + (w.keepAbove ? "SET" : "REFUSED"));
+  }
+}
