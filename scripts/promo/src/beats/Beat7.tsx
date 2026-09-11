@@ -44,7 +44,10 @@ const Beat7: React.FC = () => (
 //   is the same panel, so the one stand covers the tag and the note too
 const P7 = present('b7', [
   { at: MENU_AT + 4, say: 'Easily see the status of working assistants.', target: inWindow(0.62, 0.15), stand: 'bar', face: 'welcome', until: T_SEARCH - 4 },
-  { at: T_SEARCH + 10, say: 'Tag, search, and filter your previous conversations.', target: inWindow(0.68, 0.27), stand: 'R', face: 'welcome', until: END - 6 },
+  // WHY 'bar' (2026-09-11): with the found conversation opened in the preview, the old stand
+  // (right of the window, at 0.68 across) put the host ON the preview's header card and its text.
+  // From the title bar he points down at that header card — the tags on it — and covers nothing.
+  { at: T_SEARCH + 10, say: 'Tag, search, and filter your previous conversations.', target: inWindow(0.68, 0.14), stand: 'bar', face: 'welcome', until: END - 6 },
 ], 'midnight', P, END - 6);
 export const beat7: BeatModule = { id: 'b7', slug: 'midnight', home: P7.home, Component: Beat7,
   host: P7.host,
