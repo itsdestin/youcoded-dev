@@ -1,0 +1,40 @@
+{
+  "title": "The Resume window, before and after",
+  "key": "resume-panel-approve",
+  "out": "resume-panel.approve.html",
+  "images": "images/resume-panel.approve",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["midnight"],
+  "crops": {
+    "resume-window": ["resume-preview", "resume-preview-selected", "1020x690+210+105"],
+    "resume-window-stress": ["resume-preview", "resume-preview-stress", "1020x690+210+105"]
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Resume Session",
+      "path": "The sessions arrow at the top of the window, then Resume",
+      "crop": "resume-window",
+      "headline": "Clicking a conversation now shows it, instead of opening controls inside its card.",
+      "changed": "The window is twice as wide. The card you clicked lifts to the top of the right half and floats there while you read what was actually said; the model, the two switches and Resume sit in a card at the foot, where a real conversation puts its message box. The cards in the list never open up any more, so the list stops jumping.",
+      "measured": "450 px wide → 1000 px",
+      "notice": "The conversations here are the workbench's invented ones. The layout, spacing and controls are the real ones, and this is the real app running the real transcript reader.",
+      "risk": "Below 640 px — a phone, a narrow window — and in the Android app, it stays exactly as it is on the left. Android has no transcript reader, so the panel would only ever show an error there.",
+      "highlight": "auto"
+    },
+    {
+      "id": "A-2",
+      "surface": "Resume Session",
+      "path": "The same window, with the stress fixture's long titles and heavy tagging",
+      "crop": "resume-window-stress",
+      "headline": "The same window against long names, many tags, and a list too long to fit.",
+      "changed": "Nothing new here — this is the check that the two halves hold when the list is full and the titles run past their width.",
+      "notice": "The first row in this fixture cannot be resumed and cannot be read either: its transcript has not synced to this device yet, so clicking it does nothing and the panel stays on the row below.",
+      "risk": "A conversation whose project FOLDER is missing behaves differently: it now opens and reads normally, and the foot card explains why there is no Resume button rather than offering one that cannot work.",
+      "highlight": "auto"
+    }
+  ]
+}
