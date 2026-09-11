@@ -152,10 +152,20 @@ async function drag(fromExpr, toExpr, ms = 800) {
 }
 
 async function typeSlow(text, cps = 18) {
+  // Typing keeps time with the CLOCK, not with the page. WHY (2026-09-11): each letter used to
+  // wait for both key events to round-trip and THEN sleep a full gap, so a theme with a moving
+  // background (every event waits for its next frame) typed at a third of its setting — the games
+  // loop was set to 18 a second and typed 6, while its neighbours typed 26 ("varies wildly and
+  // crawls on some" — Destin). Now each letter has a due time and we sleep only what is left, and
+  // keyUp is not awaited (CDP delivers messages in order, so it still lands before the next keyDown).
+  const start = Date.now();
+  let due = 0;
   for (const ch of text) {
     await send('Input.dispatchKeyEvent', { type: 'keyDown', text: ch, key: ch });
-    await send('Input.dispatchKeyEvent', { type: 'keyUp', key: ch });
-    await sleep(1000 / cps * (0.7 + Math.random() * 0.6));
+    send('Input.dispatchKeyEvent', { type: 'keyUp', key: ch });
+    due += 1000 / cps * (0.7 + Math.random() * 0.6);
+    const left = start + due - Date.now();
+    if (left > 0) await sleep(left);
   }
 }
 // Space is the Flappy flap key. It needs `code: 'Space'` and a literal ' ' as
@@ -270,5 +280,10 @@ spawnSync('magick', [join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0'
 const CAPTURE_LAG_MS = 100;
 const marks = marksFile({ fps: scene.fps ?? 24, width: W, height: H, duration, firstFrameAt, stamps, captureLagMs: CAPTURE_LAG_MS });
 writeFileSync(`${outBase}.marks.json`, JSON.stringify(marks, null, 1));
-console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
+// WHY the file's own length, not `duration`: the frame-stamp count runs up to 1.6 s off the
+// encoded clip (2026-09-11 — a review card said 18.0 s beside a player showing 17.6), and a
+// quoted length is only useful if it matches what a viewer sees. `duration` still drives marks.
+const probe = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', `${outBase}.webm`]);
+const fileDuration = Number(probe.stdout?.toString().trim()) || duration;
+console.log(`frames=${frames.length} duration=${fileDuration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
 process.exit(0);

@@ -99,6 +99,15 @@ these — anything that writes under them must go through `NativeHome`'s
 mkdir-based file lock (ADR 008), which exists precisely because dev + built
 can both be running against the same home dir.
 
+**Not shared: saved API keys and the ChatGPT sign-in.** Both live in the
+profile's userData (`native-secrets.json`, `chatgpt-account.json` —
+`providers/secrets-store.ts`, `providers/chatgpt-auth.ts`), so a NEW
+`--profile` has none. Every native provider then reads not-ready, and a native
+conversation's model menu says "You have not set up any model providers" — while
+Claude Code, which reads `~/.claude/`, still works. That is the profile, not a
+regression: on 2026-09-11 it was reported as the Claude Code sign-in bug coming
+back. Reuse a profile that already has keys when a native model has to run.
+
 This is intentional — isolating these would mean dev can't test against your real plugins and settings, which defeats the point. Two coordination mechanisms keep it safe:
 
 1. **`.sync-lock` is a `mkdir`-based atomic lock.** Only one instance syncs at a time.

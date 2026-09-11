@@ -144,3 +144,28 @@ export function withFaces(rigSvg: string, style: FaceStyle): string {
   }
   return out;
 }
+
+/**
+ * The film's faces on ANY rig, leaving the rig's own faces alone.
+ * WHY (2026-09-10): every theme's rig and the app's default rig now ship the warm set
+ * themselves — idle, welcome, curious, shocked, dizzy, happy, shutdown (wecoded-themes
+ * 817e6b6, youcoded b8eef02f) — so replacing them (withFaces) would paint the film's older
+ * copies over each character's current face. Only the faces a rig lacks and the film still
+ * uses (smug, asleep, dozy) are added, in the rig's OWN ink and catchlight, read off its
+ * welcome face, and moved to where that rig's eyes sit (the two cats' eyes are 0.2 higher).
+ */
+export function withFilmFaces(rigSvg: string): string {
+  const welcome = /<g id="rig-face-welcome"[^>]*>([\s\S]*?)<g id="rig-face-curious"/.exec(rigSvg)?.[1] ?? '';
+  const eye = /<ellipse cx="9\.3" cy="([\d.]+)"[^>]*fill="([^"]+)"/.exec(welcome);
+  const ink = eye?.[2] ?? INK;
+  const catchlight = /<circle[^>]*fill="([^"]+)"/.exec(welcome)?.[1] ?? HI;
+  const dy = eye ? Number((Number(eye[1]) - 9.55).toFixed(2)) : 0;
+  let out = rigSvg;
+  for (const extra of EXTRA_FACES) {
+    const body = WARM[extra];
+    if (!body || out.includes(`id="rig-face-${extra}"`)) continue;
+    const painted = body.replaceAll(INK, ink).replace(/var\(--rig-accent, #[0-9a-f]{6}\)/g, catchlight);
+    out = out.replace(/(<g id="rig-face-blink")/, `<g id="rig-face-${extra}" style="display:none"><g transform="translate(0 ${dy})">${painted}</g></g>\n      $1`);
+  }
+  return out;
+}
