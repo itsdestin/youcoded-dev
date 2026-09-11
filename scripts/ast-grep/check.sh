@@ -40,7 +40,8 @@ fi
 # 2026-08-12: +3 for atomic-tmp-name-per-process (template + two concat spellings).
 # 2026-08-28: +1 for observer-ref-returns-cleanup (perf cycle 3 — an observed
 # element that is never released makes any later removal free nothing).
-EXPECTED_VIOLATIONS=9
+# 2026-09-10: +1 for no-workbench-gate-in-shipped-ui.
+EXPECTED_VIOLATIONS=10
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
@@ -55,10 +56,31 @@ count_findings() {
 
 fail=0
 
+# WHY a per-rule check and not just the total (2026-09-10): the count alone
+# cannot tell "every rule fired" from "the right NUMBER of findings appeared".
+# A rule added with no fixture — or one whose `files:` globs exclude the fixture
+# directory, which is easy to miss because rules are path-scoped and fixtures are
+# not — contributes zero findings, the total still matches, and the scan reports
+# OK. That is a rule guarding nothing, passing the check written to prevent
+# exactly that. Measured the day this was added: a new rule sailed through.
+rule_ids() { rg --no-filename -o '^id: \S+' "$HERE"/rules/*.yml | sed 's/^id: //' | sort -u; }
+firing_ids() {
+    "${AG[@]}" scan -c "$HERE/sgconfig.yml" --json "$HERE/fixtures" 2>/dev/null \
+        | { command -v jq >/dev/null 2>&1 && jq -r '.[].ruleId' || grep -o '"ruleId":"[^"]*"' | cut -d'"' -f4; } \
+        | sort -u
+}
+
 echo "== fixtures (every rule must fire) =="
 got="$(count_findings "$HERE/fixtures")"
 if [[ "$got" == "$EXPECTED_VIOLATIONS" ]]; then
     echo "  OK — $got/$EXPECTED_VIOLATIONS rules fired on the violation fixtures"
+    silent="$(comm -23 <(rule_ids) <(firing_ids))"
+    if [[ -n "$silent" ]]; then
+        echo "  FAIL — these rules fired on NO fixture, so they guard nothing:"
+        echo "$silent" | sed 's/^/         /'
+        echo "         Add a violation fixture, and name its path in the rule's files: globs."
+        fail=1
+    fi
 else
     echo "  FAIL — expected $EXPECTED_VIOLATIONS findings, got $got"
     echo "         A rule stopped matching. Run for detail:"
