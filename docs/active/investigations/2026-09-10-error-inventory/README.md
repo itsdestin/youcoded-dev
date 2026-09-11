@@ -51,7 +51,9 @@ because its label is false and it disables the recovery.
 ### Batch 1 status — all seventeen fixed on `session/error-states-unit-b` (2026-09-11)
 
 Each fix landed test-first: a test written against the old code, seen failing for the real
-reason, then green. Not merged; review deck and fresh code review still to come.
+reason, then green. Not merged. A fresh code review found nine gaps in these fixes
+(`docs/active/reviews/2026-09-11-error-states-batch-1-code-review.md`); all nine are fixed the
+same way, listed under the table.
 
 | # | Commit (youcoded) | Also fixed while there |
 |---|---|---|
@@ -71,9 +73,15 @@ reason, then green. Not merged; review deck and fresh code review still to come.
 | 16 | `09f0b6d7` | main and remote-server both swallowed the read; a failed REFRESH also wiped tags already on screen |
 | 17 | `7149d657` | busy / url-rejected download failures were also labelled "Launch failed"; `stripInvokeWrapper` now shared with `plainMessage` |
 
+**Code review fixes (2026-09-11), youcoded:** F2/F3 `0e2700c6` (a real download failure still
+read "Launch failed" — the test's error text had been wrong) · F4 `1f90c83e` (Library Themes) ·
+F7 `9641c54d` (a backup that never started) · F8 `47a40975` · F9 `bde913e0` · F1 `20cca05e`
+(the in-session tags chip and the drawer's preview sheet now lock on an unreadable note) · F5
+`9981cf60` (tag picker, Resume Browser tag filter) · F6 `58d3048b` (Android, file over the size
+cap). Review-deck switches: `5dee518f` (`?fail=`, `?update=available`).
+
 **Left for later batches, found during batch 1:**
 - The phone's `tags:list` still answers `[]` on purpose (tagging UI deferred on Android), so the tag manager can still say "No tags yet" on a phone — batch 2 (Android).
-- `useSessionMeta` and `usePreviewMeta` ignore the new `unreadable` field and still show a failed read as no tags/note — batch 4.
 - Nothing listens for remote-shim's `OUTCOME_UNKNOWN_EVENT`, so "couldn't confirm" is never followed up with "it went through after all" — batch 2.
 - The rarer permission rows (full-auto stop, always-allow confirm) got the same note but no test of their own.
 
