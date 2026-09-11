@@ -1,6 +1,14 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] The Android app's terminal is blank when the app is paired to a desktop. That surface
+      reads only raw terminal bytes (the phone's own runtime sends them); a desktop host
+      sends terminal text, never raw bytes, so a paired phone app gets nothing in the
+      terminal view while a phone browser gets everything. Found by the batch 2/3 design
+      review (R2-18, 2026-09-10); not a contract row of that batch, so it stays open here.
+      Fix: the host emits the raw-bytes form too, or the paired app reads text like a browser
+      `terminal` `android` `remote` `confirmed` `checked 2026-09-10`
+
 - [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
       actionable for the user, when tailscale might just not be enabled on their phone" — the
       phone gets the browser's own cannot-reach screen. Fix: install a service worker on the
