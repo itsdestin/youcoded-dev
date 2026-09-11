@@ -242,6 +242,23 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] **The blank-content instrument measures partly with its own weight, which is the exact
+      shape the perf-lab README now forbids.** `late-content.mjs`'s per-frame `sample()` runs
+      `querySelectorAll('.timeline-entry')` over the whole list and a `getBoundingClientRect()`
+      on every spacer — on the huge fixture that is ~7,000 rect reads a frame, ~2.4 M across a
+      pass — on the main thread, inside the same frame as the scroll it is judging. The README
+      (added 2026-09-10, after this shipped) states the general rule it breaks: anything a poll
+      touches must not force style, layout or text serialisation, and `getBoundingClientRect` is
+      named in it. The bias runs toward FALSE POSITIVES: the probe slows the renderer it is
+      asking to keep up. It did not manufacture one in the single clean run we have, but that is
+      luck, not design, and this instrument already had three artefacts corrected before it
+      shipped. Fix shape: an `IntersectionObserver` rooted on the pane maintains the in-view set
+      with no synchronous geometry, and the spacer test itself (`childElementCount`,
+      `textContent`) already forces nothing. RECURRENCE — `docs/wrap-ups.md` calls
+      "a check that reports for the wrong reason" its most-repeated lesson, and 2026-09-10
+      found the same class in the rig's artifact-open timing
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
 - [ ] The terminal is the largest part of the app with NO speed measurement at all, and it is
       where output volume is highest — so the one surface most likely to feel slow is the one
       surface no number covers. Needs a scenario built from scratch: drive a command that

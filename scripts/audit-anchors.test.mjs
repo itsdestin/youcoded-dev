@@ -8,7 +8,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
-  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
+  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor, REPOS,
   uncommittedPaths, strandedWorktrees, undocumentedWorkbenchSwitches,
 } from './audit-anchors.mjs';
 
@@ -550,6 +550,27 @@ test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a check
   assert.equal(baseFor(wt, 'docs/MAP.md'), wt, 'workspace paths stay on the worktree — that is the branch under audit');
   const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-bare-'));
   assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
+});
+
+test('subRepoRoot: ONE sub-repo linked into a worktree must not defeat the fallback', () => {
+  // THE BUG, measured 2026-09-10 in a real rig worktree: the perf rig needs `youcoded`
+  // present, and .gitignore explicitly contemplates symlinking it in. Doing so made
+  // `REPOS.some(...)` true, so the all-or-nothing fallback never fired and the OTHER
+  // FOUR repos' anchors were reported as drift: 429/446 anchors and 551/585 MAP paths,
+  // i.e. 51 false failures, in a check whose whole job is to be believed.
+  const { execFileSync } = require('node:child_process');
+  const main = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-partial-'));
+  const git = (...a) => execFileSync('git', ['-C', main, ...a], { stdio: ['ignore', 'pipe', 'ignore'] });
+  git('init', '-q');
+  git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '--allow-empty', '-m', 'root');
+  for (const r of REPOS) fs.mkdirSync(path.join(main, r, '.git'), { recursive: true });
+  const wt = path.join(main, 'wt');
+  git('worktree', 'add', '-q', wt);
+  // Exactly what a rig session does: link in the ONE repo it needs.
+  fs.symlinkSync(path.join(main, 'youcoded'), path.join(wt, 'youcoded'));
+  assert.equal(subRepoRoot(wt), main,
+    'a worktree holding SOME of the repos must still resolve from the checkout holding all of them');
+  assert.equal(baseFor(wt, 'wecoded-themes/x.json'), main, 'the four unlinked repos must resolve too');
 });
 
 // --- uncommittedPaths -------------------------------------------------------
