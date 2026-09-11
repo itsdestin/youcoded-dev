@@ -84,6 +84,13 @@ const base = {
     ],
     median: { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
   },
+  terminal: {
+    runs: [
+      { switchPaintedMedianMs: 140, longtaskMaxMs: 120, ipc: { totalStallMs: 30, pings: 700 } },
+      { switchPaintedMedianMs: 146, longtaskMaxMs: 126, ipc: { totalStallMs: 34, pings: 700 } },
+    ],
+    median: { switchPaintedMedianMs: 140, longtaskMaxMs: 120, ipc: { totalStallMs: 30, pings: 700 } },
+  },
   errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
 };
 const clone = () => JSON.parse(JSON.stringify(base));
@@ -132,7 +139,7 @@ test('the thrash stall is derived for the report written before the field was pr
 });
 
 test('a phase NEITHER report ran is out of scope, but a phase only one ran still fails closed', () => {
-  // `--only projects` on both sides: 23 of the 25 PRIMARY paths belong to phases
+  // `--only projects` on both sides: 26 of the 28 PRIMARY paths belong to phases
   // that were never measured. Refusing on those would print REJECT for reasons
   // that have nothing to do with the change, on every single-phase comparison.
   const onlyProjects = (stall, open) => ({
@@ -144,7 +151,7 @@ test('a phase NEITHER report ran is out of scope, but a phase only one ran still
   });
   const v = verdict(onlyProjects(7101, 192), onlyProjects(0, 161), { target: 'projects.median.thrash.ipcStallMs', screens: {} });
   assert.equal(v.keep, true, v.reasons.join('; '));
-  assert.equal(v.notRun.length, 23);
+  assert.equal(v.notRun.length, 26);
   assert.deepEqual(v.missing, []);
 
   // Asymmetric is the dangerous shape and still rejects: the baseline measured
@@ -179,6 +186,10 @@ test('new error lines reject', () => {
 });
 test('error lines in a per-repeat workload boot reject too (each repeat is its own boot since 2026-08-27)', () => {
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.workloadBoots = [0, 3, 0];
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
+});
+test('error lines in a per-repeat terminal boot reject too (each terminal repeat is its own boot since 2026-09-10)', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.errors.terminalBoots = [0, 0, 1];
   assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
 });
 test('keeps a real win with no regressions', () => {

@@ -49,15 +49,15 @@ reading the report. Do not let this table drift optimistic.
 | layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
 | blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
 | which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
-| terminal | — | **NOT covered** |
+| terminal (six sessions, 40 switches in terminal view, atlas clears per switch) | `scenario-terminal.mjs` | **covered** since 2026-09-10 — software GL only, GPU upload cost NOT measured |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**All eight phases are reachable from the CLI.** `run.mjs`'s phase list is
-`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'scrollback']`
-— pick any subset with `--only`. (This paragraph previously said the list was four
+**All nine phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'scrollback']`
+— pick any subset with `--only`. (`terminal` added 2026-09-10.) (This paragraph previously said the list was four
 phases and that `stall` and `artifacts` were unreachable; that stopped being true when
 they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
 
@@ -393,6 +393,33 @@ under llvmpipe a blur is software-rasterised anyway. That cost is real on Destin
 display and this scenario says nothing about it. Also blind to a project over the
 2,000-file discovery cap and to a conversation-heavy project (the transcript project has
 three).
+
+### `scenario-terminal.mjs` — switching sessions in terminal view *(one boot per repeat; added 2026-09-10)*
+Opens the workload's same six sessions, puts the four Claude Code sessions into
+terminal view (Ctrl+`), fills each terminal with 2,000 lines of mixed glyphs, then
+makes 40 switches between those four, one a second — both probes over every switch,
+plus the app's own counter `window.__terminalRegistry.atlasClears` read around each.
+
+**Why:** every hidden -> visible terminal clears the glyph atlas that ALL open
+terminals share (TerminalView's heal), so each switch re-rasterises every terminal.
+**Look first at `atlasClearsPerSwitch`** — about 1 proves the heal engaged; well below
+means the timings do not describe it, well above means resize heals fire on switches
+too (`lateClears` counts those). Then `switchPaintedMedianMs` (click -> the other
+terminal on screen, next to the workload's chat-view switch), `longtaskMaxMs` and
+`ipc.totalStallMs`. `renderer` on each run says whether xterm got WebGL or the DOM
+fallback, where the clear is only a repaint.
+
+**Glyph fill:** the terminal shows the fake `claude`'s PTY, not a shell, so there is no
+`seq`. `fake-claude.cjs` answers exactly one typed line, `perf-lab-glyphs <n>`, with n
+lines of ASCII plus Claude Code's box-drawing glyphs in seven colours (bold every fifth
+line) and a sentinel the scenario waits for. Every other line is echoed as before.
+
+**Blind to, by construction:** the GPU re-upload cost — the rig is llvmpipe under Xvfb,
+so WebGL may not initialise and the clear is then only a DOM repaint; wallpaper themes;
+switching through native sessions or toggling views (both resize every terminal); and
+whether glyphs stay correct after sleep/resume, which needs a human on real hardware.
+The app build must carry the counter: against an older build `atlasClearsPerSwitch` is
+null and the report is refused (exit 4).
 
 ---
 

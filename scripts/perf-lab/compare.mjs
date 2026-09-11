@@ -98,6 +98,21 @@ export const PRIMARY = [
   // same run; a fix for the thrash that made the first open slower (a bigger
   // warm-up, a pre-walk) would be a bad trade and only this path shows it.
   'projects.median.open.openMs',
+
+  // ── Terminal view (terminal phase, added 2026-09-10) ───────────────────────
+  // Every session switch in terminal view clears the glyph atlas SHARED by every
+  // open terminal (TerminalView's hide->show heal), so all of them re-rasterise.
+  // switchPaintedMedianMs is the A/B target for throttling that heal: click ->
+  // the other terminal on screen. longtaskMaxMs is the worst renderer freeze
+  // across the 40 switches — the other number the throttle decision reads.
+  // ipc.totalStallMs guards the app-wide half: a change that moved the cost off
+  // the renderer and onto the main process would improve the first two and show
+  // up only here. NOT gated: atlasClearsPerSwitch (a mechanism count that proves
+  // the heal engaged, validated by run.mjs) and switchPaintedP95Ms (one switch's
+  // tail on a software renderer; reported beside the median instead).
+  'terminal.median.switchPaintedMedianMs',
+  'terminal.median.longtaskMaxMs',
+  'terminal.median.ipc.totalStallMs',
 ];
 
 // Dotted-path getter used everywhere below — keeps report shape out of the decision logic.
@@ -243,7 +258,10 @@ const errorTotal = (r) =>
   + (r.errors?.stallBoot ?? 0)
   + (r.errors?.artifactsBoot ?? 0)
   // Each workload repeat is its own boot since 2026-08-27 (see run.mjs).
-  + (r.errors?.workloadBoots ?? []).reduce((a, b) => a + b, 0);
+  + (r.errors?.workloadBoots ?? []).reduce((a, b) => a + b, 0)
+  // Each terminal repeat is its own boot too (2026-09-10). Without this, a change that
+  // starts logging errors while switching in terminal view would still read as KEEP.
+  + (r.errors?.terminalBoots ?? []).reduce((a, b) => a + b, 0);
 
 /**
  * Decide KEEP or REJECT for one experiment.

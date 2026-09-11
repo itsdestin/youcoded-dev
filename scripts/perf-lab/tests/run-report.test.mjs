@@ -21,12 +21,13 @@ import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
 import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
 import { MEASURES as PROJECTS_MEASURES, medianRun as projectsMedian } from '../scenario-projects.mjs';
+import { MEASURES as TERMINAL_MEASURES, medianRun as terminalMedian } from '../scenario-terminal.mjs';
 import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
   EXIT, NETWORK_PATHS, NOISE_GATE_MAX_WAIT_MS, NOISE_GATE_POLL_MS, PHASES, STALL_SIZES, USAGE,
-  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildWorkloadSection,
+  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildTerminalSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
 } from '../run.mjs';
@@ -208,6 +209,21 @@ const projectsRun = (i) => ({
   warnings: [],
 });
 
+/** One terminal-view run, shaped as scenario-terminal.mjs's runTerminalScenario returns it. */
+const terminalRun = (i) => ({
+  sessions: { names: ['cc-0', 'cc-1', 'cc-2', 'cc-3', 'native-0', 'native-1'], switchedBetween: ['cc-0', 'cc-1', 'cc-2', 'cc-3'] },
+  renderer: 'webgl',
+  glyphs: { lines: 2000, terminals: 4, fillMs: [900, 910, 905, 920] },
+  switchCount: 40, verifiedSwitches: 40, failedSwitches: 0, menuSwitches: 0,
+  switchPaintedMedianMs: 140 + i, switchPaintedP95Ms: 260 + i,
+  atlasClearsTotal: 40, atlasClearsPerSwitch: 1, lateClears: 0,
+  ipc: { pings: 700 + i, totalStallMs: 30 + i, over250ms: 0, over1000ms: 0, maxMs: 180 + i },
+  stallVerdicts: { none: 40 },
+  longtaskMaxMs: 120 + i, longtaskTotalMs: 900 + i, longtaskCount: 12 + i, frameGapMaxMs: 150 + i,
+  switches: [],
+  warnings: [],
+});
+
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
 /**
  * One scroll-back repeat. Every number is plausible rather than round, and
@@ -265,8 +281,11 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   report.scrollback = { runs: sruns, median: scrollMedian(sruns), warnings: [] };
   const pruns = Array.from({ length: artifactRepeats }, (_, i) => projectsRun(i));
   report.projects = buildProjectsSection(pruns, projectsMedian);
-  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, scrollback: SCROLL_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, scrollbackBoot: 0 };
+  // Through run.mjs's REAL builder and the scenario's REAL medianRun, like projects.
+  const truns = Array.from({ length: workloadRepeats }, (_, i) => terminalRun(i));
+  report.terminal = buildTerminalSection(truns, terminalMedian);
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES, scrollback: SCROLL_MEASURES };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, terminalBoots: [0, 0, 0], scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -307,7 +326,13 @@ describe('compare.mjs PRIMARY contract', () => {
     // metric here — the MAIN process was unresponsive 7.2-8.0 s per eight clicks.
     // open.openMs rides along so a thrash fix that pre-warms its way to a slower
     // first open cannot pass.
-    assert.equal(PRIMARY.length, 25, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 25 -> 28 on 2026-09-10: the three terminal paths. Every session switch in
+    // terminal view clears the glyph atlas shared by every open terminal; the
+    // painted switch median is the A/B target for throttling that heal, the worst
+    // long task is the other number that decision reads, and the IPC stall total
+    // catches a "fix" that moves the cost onto the main process.
+    assert.equal(PRIMARY.length, 28, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(PRIMARY.includes('terminal.median.switchPaintedMedianMs'), 'the terminal switch clock is the atlas-heal A/B target and must be judged');
     assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
     assert.ok(PRIMARY.includes('scrollback.median.ceilingPssMb'), 'the ceiling is the cycle-3 target and must be judged');
     assert.ok(!PRIMARY.includes('scrollback.median.releasedMb'),
@@ -589,6 +614,51 @@ describe('stall phase wiring', () => {
   });
 });
 
+describe('terminal phase wiring', () => {
+  it('every terminal PRIMARY path is owned by the terminal phase', () => {
+    const paths = PRIMARY.filter((x) => x.startsWith('terminal.'));
+    assert.equal(paths.length, 3);
+    for (const p of paths) assert.equal(phaseOfPath(p), 'terminal', `${p} is not owned by the terminal phase`);
+    assert.ok(PHASES.includes('terminal'));
+    assert.equal(PHASES.at(-1), 'scrollback', 'scrollback must stay the last phase — it drives memory to its worst case');
+  });
+
+  it('renderMarkdown renders the terminal rows, renderer and clears included', () => {
+    const md = renderMarkdown(completeReport(), 'test-stem');
+    for (const row of ['terminal.switch, other terminal on screen', 'terminal atlas clears per switch', 'terminal long tasks across the switches', 'terminal IPC stall']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+    assert.match(md, /xterm renderer webgl/);
+    assert.match(md, /### terminal/, 'the terminal MEASURES descriptor must reach the summary');
+  });
+
+  // README rule 1: measure that the mechanism ENGAGED. A build that predates the
+  // counter (or a run where no switch verified) returns null here, and the switch
+  // timings would then describe a heal nobody saw happen.
+  it('refuses a terminal run whose atlas counter was never read rather than reading null as zero clears', () => {
+    const report = completeReport();
+    for (const r of report.terminal.runs) { r.atlasClearsPerSwitch = null; r.atlasClearsTotal = null; }
+    report.terminal = buildTerminalSection(report.terminal.runs, terminalMedian);
+    const problems = validateReport(report, new Set(['terminal']));
+    assert.ok(problems.some((p) => /terminal: atlas clears per switch was never read/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms terminal stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.terminal.runs) r.ipc = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: null };
+    report.terminal = buildTerminalSection(report.terminal.runs, terminalMedian);
+    assert.equal(get(report, 'terminal.median.ipc.totalStallMs'), 0, 'the premise: the metric itself looks flawless');
+    const problems = validateReport(report, new Set(['terminal']));
+    assert.ok(problems.some((p) => /terminal: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
+  });
+
+  it('parseArgs accepts --terminal-repeats and defaults it to 3', () => {
+    assert.equal(parseArgs([]).terminalRepeats, 3);
+    assert.equal(parseArgs(['--terminal-repeats', '1', '--only', 'terminal']).terminalRepeats, 1);
+    assert.throws(() => parseArgs(['--terminal-repeats', '0']), /whole number >= 1/);
+  });
+});
+
 describe('medianTree', () => {
   it('recurses into nested plain objects', () => {
     const t = medianTree([{ a: 1, n: { b: 10 } }, { a: 3, n: { b: 30 } }, { a: 5, n: { b: 50 } }]);
@@ -665,7 +735,7 @@ describe('parseArgs', () => {
 
   it('USAGE names every flag it accepts', () => {
     for (const f of [...PHASES]) assert.ok(USAGE.includes(f), `USAGE never mentions phase ${f}`);
-    for (const f of ['--runs', '--only', '--dry-run', '--max-minutes', '--force-build', '--label', '--out', '--checkout', '--history-repeats', '--workload-repeats']) {
+    for (const f of ['--runs', '--only', '--dry-run', '--max-minutes', '--force-build', '--label', '--out', '--checkout', '--history-repeats', '--workload-repeats', '--terminal-repeats']) {
       assert.ok(USAGE.includes(f), `USAGE never mentions ${f}`);
     }
   });

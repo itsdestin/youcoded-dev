@@ -64,7 +64,11 @@ const CDP_PORT = 9555;
  */
 // `projects` (added 2026-09-09) also takes its own boot: it seeds a ~1,600-file project
 // and a saved-folders file the other phases must not see.
-export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'scrollback'];
+// `terminal` (added 2026-09-10) takes one boot PER REPEAT, like `workload`: it opens
+// the workload's same six sessions, and resuming the same transcripts twice in one
+// boot is not a configuration the app is built for. It sits before `scrollback`,
+// which runs last on purpose.
+export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'scrollback'];
 
 /**
  * The transcript sizes the `stall` phase measures. Duplicated from
@@ -234,7 +238,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // carries its own answer, and on this machine that answer is llvmpipe: software.
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, scrollback: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -242,7 +246,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, scrollbackBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], scrollbackBoot: null },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -263,8 +267,23 @@ export function phaseOfPath(path) {
   if (path.startsWith('replayStall.')) return 'stall';
   if (path.startsWith('artifacts.')) return 'artifacts';
   if (path.startsWith('projects.')) return 'projects';
+  if (path.startsWith('terminal.')) return 'terminal';
   if (path.startsWith('scrollback.')) return 'scrollback';
   return null;
+}
+
+/**
+ * `terminal` section. Unlike the artifacts/projects builders there is nothing to
+ * graft on: scenario-terminal.mjs's medianRun already carries `ipc.pings` (the
+ * zero-pings tell) and `atlasClearsPerSwitch` (the did-the-heal-engage tell), and
+ * validateReport reads both. `medianRun` is passed in for the same lazy-load reason.
+ */
+export function buildTerminalSection(truns, medianRun) {
+  return {
+    runs: truns,
+    median: medianRun(truns),
+    warnings: [...new Set(truns.flatMap((r) => r.warnings ?? []))],
+  };
 }
 
 /**
@@ -362,6 +381,23 @@ export function validateReport(report, only) {
       const pings = report.projects?.median?.ipcSumOfSteps?.pings;
       need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
         'projects: the IPC responsiveness probe never got a single reply, so projects.median.ipcSumOfSteps.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive');
+    }
+  }
+  if (only.has('terminal')) {
+    need(report.terminal?.runs?.length > 0, 'terminal: no runs were recorded');
+    if (report.terminal?.runs?.length > 0) {
+      // README rule 1: measure that the mechanism ENGAGED. atlasClearsPerSwitch is
+      // null when the build under test has no window.__terminalRegistry.atlasClears
+      // (it predates the instrument) or no switch verified — either way the switch
+      // timings cannot be tied to the heal they exist to measure.
+      const clears = report.terminal?.median?.atlasClearsPerSwitch;
+      need(typeof clears === 'number' && Number.isFinite(clears),
+        'terminal: atlas clears per switch was never read — the app build has no window.__terminalRegistry.atlasClears (it predates the instrument) or no switch verified, so whether the glyph-atlas heal ENGAGED is UNKNOWN and the timings cannot be attributed to it');
+      // Same zero-pings tell as artifacts/projects: a stall total of 0 behind zero
+      // probe replies is "never measured", not "never stalled".
+      const pings = report.terminal?.median?.ipc?.pings;
+      need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
+        'terminal: the IPC responsiveness probe never got a single reply, so terminal.median.ipc.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive');
     }
   }
   if (only.has('scrollback')) {
@@ -563,6 +599,21 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  if (report.terminal) {
+    const t = report.terminal.median ?? {};
+    const runN = report.terminal.runs?.length ?? 0;
+    // Renderer per run, not a median: WebGL vs the DOM fallback decides what an
+    // atlas clear even costs, and a mixed set must be visible as mixed.
+    const renderers = [...new Set((report.terminal.runs ?? []).map((r) => r.renderer ?? '?'))].join(', ') || '—';
+    lines.push(
+      `| **terminal.switch, other terminal on screen** (median of ${runN}; ${n(t.verifiedSwitches, 'verified switches')} each; xterm renderer ${renderers}) | **${n(t.switchPaintedMedianMs, 'ms')} / ${n(t.switchPaintedP95Ms, 'ms')} p95** |`,
+      // The engagement check travels with the timing — see validateReport.
+      `| terminal atlas clears per switch | ${n(t.atlasClearsPerSwitch)} (${n(t.atlasClearsTotal, 'clears')} total, ${n(t.lateClears, 'after the switch painted')}) |`,
+      `| terminal long tasks across the switches | max ${n(t.longtaskMaxMs, 'ms')}, total ${n(t.longtaskTotalMs, 'ms')}, worst frame gap ${n(t.frameGapMaxMs, 'ms')} |`,
+      `| terminal IPC stall (sum over switches) | ${n(t.ipc?.totalStallMs, 'ms')}, max ${n(t.ipc?.maxMs, 'ms')}, from ${n(t.ipc?.pings, 'probe replies')} |`,
+    );
+  }
+
   lines.push('');
   lines.push(
     `noise: load ${report.noise?.loadAvgBefore ?? '—'}, busy ${report.noise?.machineBusyPctBefore ?? '—'}%, ` +
@@ -572,7 +623,7 @@ export function renderMarkdown(report, stem) {
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
     `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
-    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, projects boot ${report.errors?.projectsBoot ?? '—'}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
+    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, projects boot ${report.errors?.projectsBoot ?? '—'}, terminal boots ${JSON.stringify(report.errors?.terminalBoots ?? [])}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
   );
   lines.push('A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.');
 
@@ -587,6 +638,7 @@ export function renderMarkdown(report, stem) {
   if (stallWarnings.length) lines.push('', '## Stall warnings', '', ...stallWarnings.map((w) => `- ${w}`));
   if (report.artifacts?.warnings?.length) lines.push('', '## Artifact warnings', '', ...report.artifacts.warnings.map((w) => `- ${w}`));
   if (report.projects?.warnings?.length) lines.push('', '## Projects warnings', '', ...report.projects.warnings.map((w) => `- ${w}`));
+  if (report.terminal?.warnings?.length) lines.push('', '## Terminal warnings', '', ...report.terminal.warnings.map((w) => `- ${w}`));
   if (report.scrollback) {
     const s = report.scrollback.median ?? {};
     const runN = report.scrollback.runs?.length ?? 0;
@@ -656,7 +708,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
+const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
 const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
@@ -671,6 +723,7 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --stall-repeats <n>       replay-stall passes per size (default 3)
   --artifact-repeats <n>    artifact-panel passes        (default 3)
   --projects-repeats <n>    Projects-view passes         (default 3)
+  --terminal-repeats <n>    terminal-view switch passes  (default 3, one boot each)
   --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
   --force-build             rebuild even if the tree fingerprint is unchanged
   --label <text>            appended to the output filename stem
@@ -721,6 +774,9 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     stallRepeats: posInt('stall-repeats', 3),
     artifactRepeats: posInt('artifact-repeats', 3),
     projectsRepeats: posInt('projects-repeats', 3),
+    // 3 like the workload, and for the same reason each is its own boot: the gate
+    // needs a run-to-run spread, and one boot cannot resume the same six sessions twice.
+    terminalRepeats: posInt('terminal-repeats', 3),
     // 3 by default like the other own-boot phases: compare.mjs judges a change
     // against the run-to-run spread, and one sample of a memory ceiling can
     // neither prove nor veto anything. Each repeat is a full scroll-back of three
@@ -984,6 +1040,14 @@ async function loadProjects() {
   }
 }
 
+async function loadTerminal() {
+  try {
+    return await import('./scenario-terminal.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the terminal phase needs scripts/perf-lab/scenario-terminal.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
+
 async function loadScrollback() {
   try {
     return await import('./scenario-scrollback.mjs');
@@ -1045,19 +1109,22 @@ async function main(argv) {
       `  stall module      ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-replay-stall.mjs')) ? 'present' : 'ABSENT — the stall phase would fail'}`,
       `  artifacts module  ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-artifacts.mjs')) ? 'present' : 'ABSENT — the artifacts phase would fail'}`,
       `  scrollback module ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-scrollback.mjs')) ? 'present' : 'ABSENT — the scrollback phase would fail'}`,
+      `  terminal module   ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-terminal.mjs')) ? 'present' : 'ABSENT — the terminal phase would fail'}`,
       '',
       `  phases            ${PHASES.map((p) => `${p}${cfg.only.has(p) ? '' : ' (skipped)'}`).join(', ')}`,
       `  cold-start boots  ${cfg.only.has('startup') ? cfg.runs : 0}`,
       // Named separately rather than summed: the shared boot covers three phases,
       // while stall and artifacts each take one of their own (see their phase blocks).
       `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/shots) + ${cfg.only.has('workload') ? cfg.workloadRepeats : 0} workload (one per repeat)` +
-        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}${cfg.only.has('projects') ? ' + 1 projects' : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
+        `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}${cfg.only.has('projects') ? ' + 1 projects' : ''}` +
+        `${cfg.only.has('terminal') ? ` + ${cfg.terminalRepeats} terminal (one per repeat)` : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
       `  history repeats   ${cfg.only.has('history') ? `${cfg.historyRepeats} per size (small, medium, huge)` : '—'}`,
       `  workload passes   ${cfg.only.has('workload') ? `${cfg.workloadRepeats}${cfg.only.has('shots') ? ' + 1 screenshot pass (not in the median)' : ''}` : '—'}`,
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
       `  stall passes      ${cfg.only.has('stall') ? `${cfg.stallRepeats} per size (${STALL_SIZES.join(', ')}), own boot` : '—'}`,
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
       `  projects passes   ${cfg.only.has('projects') ? `${cfg.projectsRepeats}, own boot` : '—'}`,
+      `  terminal passes   ${cfg.only.has('terminal') ? `${cfg.terminalRepeats}, one boot each` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
@@ -1359,6 +1426,33 @@ async function main(argv) {
         report.projects = buildProjectsSection(runs, projectsMedian);
         report.errors.projectsBoot = readErrorLines(fixture, stem, 'projects');
       });
+    }
+
+    // ---- Terminal view: its OWN boot PER REPEAT ----------------------------
+    // WHY per repeat (like workload, not like projects): the phase opens the
+    // workload's six sessions, three of them resumed from fixture transcripts, and
+    // pointing two live sessions at one stored session is not a configuration the
+    // app is built for. A fresh fixture + fresh app per repeat also keeps one
+    // repeat's warm glyph atlas from flattering the next.
+    if (cfg.only.has('terminal')) {
+      const { runTerminalScenario, medianRun: terminalMedian, MEASURES: TERMINAL_MEASURES } = await loadTerminal();
+      report.measures.terminal = TERMINAL_MEASURES;
+      const truns = [];
+      for (let i = 0; i < cfg.terminalRepeats; i++) {
+        checkDeadline();
+        await noiseGate(report.noise, deadline);
+        const fixture = buildFixture(SCRATCH, { log });
+        await withBoot(build, fixture, async (app) => {
+          const r = await runTerminalScenario(app, fixture);
+          truns.push(r);
+          log(`terminal ${i + 1}/${cfg.terminalRepeats}: switch painted median ${r.switchPaintedMedianMs}ms (p95 ${r.switchPaintedP95Ms}ms, ${r.verifiedSwitches}/${r.switchCount} verified, renderer ${r.renderer}), atlas clears/switch ${r.atlasClearsPerSwitch} (${r.lateClears} late), long task max ${r.longtaskMaxMs}ms, ipc stall ${r.ipc?.totalStallMs}ms from ${r.ipc?.pings} pings`);
+          for (const w of r.warnings ?? []) log(`terminal warning: ${w}`);
+          report.errors.terminalBoots.push(readErrorLines(fixture, stem, `terminal-${i + 1}`));
+        });
+        // Built after EVERY repeat, not once at the end: a later repeat that throws
+        // aborts the run, and the repeats already measured still reach the report.
+        report.terminal = buildTerminalSection(truns, terminalMedian);
+      }
     }
 
     // ---- Scroll-back ceiling: its OWN boot ---------------------------------
