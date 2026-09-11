@@ -252,6 +252,63 @@ test('a component with no installed deps and a resume both provision nothing', t
   assert.equal(fs.existsSync(path.join(resumed.repositories.youcoded.path, 'desktop', 'node_modules')), false);
 });
 
+// Stands in for `npm pack <spec> --pack-destination <dir> --silent`: records what
+// it was asked for, builds a one-file tarball, prints its name like npm does.
+const FAKE_NPM = `#!/bin/sh
+echo "$@" >> "$NPM_LOG"
+spec="$2"; dest="$4"
+case "$spec" in broken@*) exit 1;; esac
+name="\${spec%@*}"; version="\${spec##*@}"
+work="$dest/work-$$"; mkdir -p "$work/package"
+printf '{"name":"%s","version":"%s"}\\n' "$name" "$version" > "$work/package/package.json"
+file="$(echo "$name" | sed 's/^@//; s#/#-#')-$version.tgz"
+tar -czf "$dest/$file" -C "$work" package
+rm -rf "$work"
+echo "$file"
+`;
+
+test('fetches required packages the shared install lacks, into fresh directories', t => {
+  // WHY: the shared checkout's install lags master, so a dependency master added
+  // since is absent from the hardlink farm (dompurify, three sessions, 2026-09-11).
+  const f = fixture(t), app = f.repo('app', 'master', path.join(f.root, 'youcoded'));
+  const lock = { lockfileVersion: 3, packages: {
+    '': { name: 'app' },
+    'node_modules/dep': { version: '1.0.0' },
+    'node_modules/newdep': { version: '2.0.0' },
+    'node_modules/@scope/scoped': { version: '3.0.0' },
+    'node_modules/optdep': { version: '1.0.0', optional: true },
+    'node_modules/otheros': { version: '1.0.0', os: [`!${process.platform}`] },
+    'node_modules/broken': { version: '1.0.0' },
+  } };
+  fs.mkdirSync(path.join(app.seed, 'desktop'));
+  fs.writeFileSync(path.join(app.seed, 'desktop', 'package-lock.json'), JSON.stringify(lock));
+  git(app.seed, 'add', '.'); git(app.seed, 'commit', '-m', 'lock'); git(app.seed, 'push', 'origin', 'master');
+  git(path.join(f.root, 'youcoded'), 'pull', '-q');
+  const srcDep = path.join(f.root, 'youcoded', 'desktop', 'node_modules', 'dep');
+  fs.mkdirSync(srcDep, { recursive: true });
+  fs.writeFileSync(path.join(srcDep, 'package.json'), '{"version":"1.0.0"}\n');
+  const bin = path.join(f.dir, 'bin'), log = path.join(f.dir, 'npm.log');
+  fs.mkdirSync(bin);
+  fs.writeFileSync(path.join(bin, 'npm'), FAKE_NPM, { mode: 0o755 });
+
+  const result = spawnSync(process.execPath, [cli, '--root', f.root, '--session', 'alpha', '--json', 'youcoded'],
+    { env: { ...env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, NPM_LOG: log }, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  const out = JSON.parse(result.stdout);
+  const modules = path.join(out.repositories.youcoded.path, 'desktop', 'node_modules');
+  for (const [name, version] of [['newdep', '2.0.0'], ['@scope/scoped', '3.0.0']]) {
+    const manifest = path.join(modules, name, 'package.json');
+    assert.equal(JSON.parse(fs.readFileSync(manifest, 'utf8')).version, version);
+    assert.equal(fs.statSync(manifest).nlink, 1); // its own inode — no other checkout sees it
+  }
+  // Optional and other-platform entries are never asked for; a failed fetch leaves no empty folder.
+  for (const skipped of ['optdep', 'otheros', 'broken']) assert.equal(fs.existsSync(path.join(modules, skipped)), false);
+  assert.doesNotMatch(fs.readFileSync(log, 'utf8'), /optdep|otheros|\bdep@/);
+  const notes = JSON.stringify(out.repositories.youcoded.provisioned);
+  assert.match(notes, /fetched 2 package\(s\) the shared install lacks \(newdep@2\.0\.0, @scope\/scoped@3\.0\.0\)/);
+  assert.match(notes, /could not fetch broken@1\.0\.0/);
+});
+
 test('a held startup lock refuses the call and is not deleted', t => {
   const f = fixture(t);
   const lock = path.join(f.root, '.git', 'youcoded-sessions', 'alpha.lock');
