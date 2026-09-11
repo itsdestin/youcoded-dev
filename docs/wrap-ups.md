@@ -367,6 +367,15 @@ recurred — the repetition is the data.
 - The plan warned `roadmap-check --fix` rewrites untouched items; it did not in six runs today → dropped: the perf-cycle-4 entry above already recorded the same non-reproduction
 - deleted/merged: memory `env-android-sdk-exists` (wrong, and duplicating CLAUDE.md); the "terminal has NO speed measurement" item narrowed to its unmeasured half; the test-rule glob I added was reverted rather than left red
 
+## 2026-09-11 — Resume browser click lag, plus two things Destin found in the dev window (session/resume-browser-lag, youcoded + workspace)
+- A fresh `--profile` has none of the API keys or ChatGPT sign-in (they live in userData), so a native conversation's model menu said "You have not set up any model providers" and Destin read it as the Claude Code sign-in bug returning; `local-dev.md` "What is shared" listed what IS shared, never what is not → applied: a "Not shared" paragraph in `docs/local-dev.md`  [~10 calls to rule out a regression]
+- `ss -ltnp` named a dev window's debugger port under a `git send-pack` child that inherited the socket, so the kill-by-port recipe in memory would have pointed at the wrong process → applied: memory `feedback-kill-pid-from-port-same-command.md` now checks `/proc/<pid>/cmdline` in the same command
+- The first end-of-file reader passed its "reads less than half the file" test and was still SLOWER on a real 31.8 MB conversation with 29 messages, because growing windows re-read overlapping bytes; only timing real files caught it → fixed on the branch (chunks end where the last began) → dropped as a new test: the loop now reads each byte once by construction, and pinning it means a new app branch after the merge
+- Two benchmark runs printed nothing: console output from a passing vitest test never reached the terminal → dropped: cause not checked; writing results to a file worked
+- A benchmark reading `os.homedir()` found an empty folder → dropped: already in `test-suite-hygiene.md` ("The HOME sandbox is per-run")
+- The preview panel's model pre-fill only ever worked for the first conversation, on master since 2026-09-10, with every Resume test green → applied: a test that goes red with the fix removed (`resume-browser-native-picker.test.tsx`)
+- deleted/merged: `SessionPreviewPane`'s `holdWhileLoading` prop, `sliceMessages`, and the whole-file parse cache
+
 ## 2026-09-11 — rebased the promo film and youcoded.ai demo clips on the 2026-09-10 app (session/promo-ui-refresh)
 - RECURRENCE of the promo README's "scenes rot against the app" (prose since 2026-09-04): the hover-hint change moved every hinted control's words from title= to data-hint= and killed 8 of 15 promo scenes plus most landing loops at once → applied: `scripts/ui-review/cdp-helpers.mjs` `selExpr` retries a `[title…]` selector as `[data-hint…]`, so the recorder absorbs that rename  [2 extra film runs ≈12 min, ~15 calls]
 - `site-assets.sh` recorded four loops under names `index.html` stopped playing on 2026-09-03 (landing-* rename), so a release run would leave four cards stale → applied: page-file→scene map in `site-assets.sh`
