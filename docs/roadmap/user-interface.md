@@ -2,6 +2,14 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] Three things a context-free tester tripped on during the first-run guide's review that
+      predate it (2026-09-10): the Cloud providers card at phone width wraps "Signed in as…"
+      one word per line and the Claude Code title runs under its buttons; the welcome
+      screen's new-session form and the session strip's form look and behave differently
+      (no (i) on one, Launch in New Window only on the other); and the welcome form's
+      Create Session button wraps onto two lines beside a one-line Cancel
+      `all` `needs-verify` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-first-run-guide-ux-review-1.md
+
 - [ ] The files filter panel (Project View and the Files drawer) draws its own 12 px filter chip
       instead of the shared 14 px filter pill, the size the design guide already rejected as the
       smallest text in the app (noticed while building the Resume browser's phone filter panel, 2026-09-10)

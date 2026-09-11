@@ -75,23 +75,11 @@ has passed ~8 items — graduate it to its own file.
 
 ## onboarding
 
-- [ ] First launch explains nothing and nobody meets the buddy. Wanted: the mascot animatedly
-      walking a new user through the neutral provider choice (OpenRouter, Claude Code sign-in, local
-      models), each setup flow, then a tour of session switching, the resume browser, tags, games,
-      files and Project View — short, dense and whimsical, skippable, and navigable back and forth
-      rather than a forced sequence. This is the fuller vision the first-run screen item above should
-      grow toward, not a parallel build
-      `onboarding` `all` `parked` `checked 2026-09-02`
-
 - [ ] A proper first-run screen (name, comfort level, output style, install the curated defaults)
       replacing the conversational setup wizard. The backend helpers exist; the screen does not. Must
-      have a skip button
-      `onboarding` `all` `parked` `checked 2026-09-01`
-
-- [ ] Nothing on first run tells a new user the assistant can change and delete files and that
-      backups are theirs; the Terms disclaim it, but the first thing a court asks is what the user
-      was told. One sentence; wording is Destin's call
-      `onboarding` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      have a skip button. The 2026-09-10 guide keeps the wizard and changes only its sign-in step
+      and final card; this remains the later replacement
+      `onboarding` `all` `parked` `checked 2026-09-10`
 
 ## misc
 
