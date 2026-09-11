@@ -29,6 +29,10 @@ Pick the work up with:
   (3) one Report/Diagnose building block · (4) "couldn't load" rendered as "none" ·
   (5) silent action failures · (6) look and lower-impact wording · (7) guards per pattern, plus
   the unaudited `App.tsx` and Worker messages.
+- **Batch 1 merged 2026-09-11** (youcoded `72bd4093`); its leftovers are listed in the inventory
+  README. **Batch 2 is next.** Rules from his batch 1 decks: every error state offers an action
+  (`docs/error-message-standards.md`); Retry sits last; the workbench's `?fail=` and
+  `?update=available` switches photograph failures for the deck.
 - Calls made in the proposal he did not overrule: a failed load gets Retry only (Report where the
   cause is unknown); a save with no "last changed" token asks before writing rather than writing
   blind.
@@ -213,7 +217,7 @@ two runs exist, both against round 1.
 ## Verification, every time
 
 ```bash
-cd /home/destin/youcoded-dev/worktrees/sessions/error-states-development
+cd <the workspace path workspace-start returned>   # the unit A worktree is gone
 bash scripts/verify.sh ./youcoded     # desktop only: types, tests, knip, lint, ast-grep
 node scripts/audit-anchors.mjs        # docs, rules, MAP, budgets
 ```

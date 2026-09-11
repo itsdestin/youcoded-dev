@@ -92,6 +92,9 @@ state offers an action.**
 - The phone's `tags:list` still answers `[]` on purpose (tagging UI deferred on Android), so the tag manager can still say "No tags yet" on a phone — batch 2 (Android).
 - Nothing listens for remote-shim's `OUTCOME_UNKNOWN_EVENT`, so "couldn't confirm" is never followed up with "it went through after all" — batch 2.
 - The rarer permission rows (full-auto stop, always-allow confirm) got the same note but no test of their own.
+- Over remote access, `remote-server.ts` answers `skills:uninstall` with `{ ok: true }` whether or not the uninstall worked, so a remote browser can still report a failed uninstall as done — batch 2 (from the batch 1 code review, `docs/archive/reviews/2026-09-11-error-states-batch-1-code-review.md`).
+
+**Batch 1 was never run for real:** every picture came from the UI Workbench with made-up failures. Not yet seen in a real dev window or on a phone (the Android unit tests pass, 256), and the drawer's conversation-preview tags-and-note sheet (the unreadable-note fix) was never photographed.
 
 ## The seven repeated mistakes
 
