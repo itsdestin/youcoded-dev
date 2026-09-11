@@ -13,6 +13,18 @@ the git history since v1.2.4, the Android native shell, and the browser client. 
 surprising claim below was re-checked by hand; where a sweep was sampled rather than read
 whole, that is said. Android's own unit suite passed on this checkout (753 tests, 0 failures).
 
+## Status (updated 2026-09-10, after the decisions and the first merges)
+
+The findings below are the audit as written that morning. Since then:
+
+- **Decided** (§8): built-in assistant first, Google Play prioritized, full Project View on
+  the phone, restore wizard removed, harness before phone basics.
+- **Fixed and merged the same day** (youcoded#468): §6 items 1, 2, 3, 4, 5, 6 and 7, plus the
+  §3 "Junk" replies (they now refuse honestly; transcript paging and sync status are refused
+  quietly). Appendix items 4 (restore half), 7 and 30 are done.
+- **Still open**: everything else, and the whole of §7. Next is §7a, the harness runtime on
+  the phone. Start at `docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md`.
+
 ## 1. The short version
 
 - **The phone can only run Claude Code sessions.** The built-in assistant, ChatGPT sign-in,
@@ -30,7 +42,8 @@ whole, that is said. Android's own unit suite passed on this checkout (753 tests
   the Android keystore, and already speaks the same message protocol. Running the same
   program on the phone is a port, not a rewrite. Estimate: 3 to 5 weeks to a working
   ChatGPT/OpenRouter session, 6 to 10 weeks to premium.
-- **The phone has real defects nobody has seen because nobody uses it.** Notifications are
+- **The phone has real defects nobody has seen because nobody uses it** (all four below fixed
+  the same day, youcoded#468). Notifications are
   never permitted on Android 13+, so approval prompts never arrive. Scrolling back through a
   long chat returns garbage. The shipped beta APK is stamped 1.2.4, so a phone cannot tell a
   beta is newer. A four-month-old prebuilt web bundle is checked into the assets with the old
@@ -68,7 +81,8 @@ it), **Junk** (no answer at all; the interface receives a nonsense object and ma
 
 ### Chat and sessions
 - Create, switch, type, resize, browse history, answer permission prompts: **Works**.
-- Scroll back through a long conversation (`transcript:page`): **Junk**. The shim's own
+- Scroll back through a long conversation (`transcript:page`): **Junk** (since 2026-09-10 a
+  quiet refusal, youcoded#468; paging itself still needs the rebuild). The shim's own
   comment calls this "the phone's only way back through a long conversation". Android has no
   handler, so the reply is `{error: "Unknown: transcript:page"}` handed straight to the chat
   reducer. Recorded as a deliberate omission on 2026-08-27, but the junk-reply consequence
@@ -117,9 +131,10 @@ it), **Junk** (no answer at all; the interface receives a nonsense object and ma
 
 ### Sync
 - Android is on the **old design desktop demolished in July**: rclone, Google Drive backup,
-  GitHub backup, and a full restore wizard that now exists only on the phone. Every current
-  Sync Spaces channel either **Refuses** (rename, stop, leases, device list) or is **Junk**
-  (status, enable, sync-now, create-project, import-project have no handler at all).
+  GitHub backup, and (until 2026-09-10, youcoded#468) a full restore wizard that existed only
+  on the phone. Every current Sync Spaces channel **Refuses** (since 2026-09-10; before that
+  status, enable, sync-now, create-project and import-project had no handler at all and
+  answered junk).
 - Connect GitHub modal: **Refuses**; the phone has its own gh-auth path that works.
 
 ### Marketplace, skills, themes
@@ -128,7 +143,8 @@ it), **Junk** (no answer at all; the interface receives a nonsense object and ma
 - Integrations: list works; install, connect, configure, uninstall return a hardcoded "not
   installed". You can see them and never turn one on.
 - Themes (list, read, write, marketplace browse, install, update, publish): **Works**.
-  Preview generation returns nothing; two publish-state channels are **Junk**.
+  Preview generation returns nothing; two publish-state channels are **Junk** (honest
+  refusals since 2026-09-10).
 - Themes you built yourself do not show in the phone's Library until published.
 - Mascot rig, faces, companions, sleep poses: desktop only. The phone gets the flat PNG.
 
@@ -232,23 +248,23 @@ manifest or service worker, so no add-to-home-screen and nothing offline.
    `{error: "Unknown: …"}` with no `ok:false` and no `unsupported:true`, so the shim resolves
    it as a normal value. Eighteen channels the interface calls hit this, including transcript
    paging, five Sync Spaces calls, two theme-publish calls and the sound picker. The browser
-   got the `unsupported` fix; Android never did. One-line Kotlin change, plus a test.
+   got the `unsupported` fix; Android never did. One-line Kotlin change, plus a test. → **Fixed 2026-09-10, youcoded#468.**
 2. **Notifications never permitted.** `POST_NOTIFICATIONS` is declared and never requested.
-   On Android 13+ the approval-prompt notification is dropped for every install.
+   On Android 13+ the approval-prompt notification is dropped for every install. → **Fixed 2026-09-10, youcoded#468.**
 3. **Stale prebuilt bundle tracked in git.** `app/src/main/assets/web/index.html` and
    `remote-shim.js` date from 2026-04-29, reference hashed chunks that no longer exist, and
    carry `interactive-widget=overlays-content`, which the live source documents as the bug
    that pinned the input bar under the keyboard. A real Gradle build overwrites them, but
-   any path that skips the task ships a black screen. The gitignore exception should go.
+   any path that skips the task ships a black screen. The gitignore exception should go. → **Fixed 2026-09-10, youcoded#468.**
 4. **Beta APK stamped 1.2.4** (see Updates above). The release spec expects a shared version
-   bump that is not happening for betas.
+   bump that is not happening for betas. → **Fixed 2026-09-10, youcoded#468: CI stamps every build.**
 5. **APK declares all four ABIs** via native libraries, so it installs on 32-bit and x86
    devices and then fails at bootstrap. Bootstrap only ships an aarch64 zip. One
-   `abiFilters` line makes it honest.
+   `abiFilters` line makes it honest. → **Fixed 2026-09-10, youcoded#468.**
 6. **`sync:restore:*` exists only on Android** (seven handlers, two adapters) with no desktop
-   counterpart; the shared restore wizard is Android-only by accident.
+   counterpart; the shared restore wizard is Android-only by accident. → **Deleted 2026-09-10 (deck Q-5), youcoded#468.**
 7. **Dead `layoutInsets` flow** still emitted on every layout report with no collector
-   (already decided: delete).
+   (already decided: delete). → **Deleted 2026-09-10, youcoded#468.**
 8. **Bridge token cannot refresh**: a recreated service mints a new token while the page keeps
    the old one; five failed retries and a permanent dead UI with no recovery path.
 9. **Bootstrap crash window**: 18 handlers dereference `bootstrap!!` before startup finishes.
@@ -373,7 +389,7 @@ Ordered by user impact:
 4. **Remove the phone-only restore wizard**; the phone gets the current sync when the
    built-in assistant's runtime arrives.
 5. **Harness before phone basics.** Small honesty fixes (versions, notification permission,
-   clean refusals) shipped first regardless, on `session/android-rebuild-1`.
+   clean refusals) shipped first regardless, merged 2026-09-10 (youcoded#468).
 
 ## Appendix: the roadmap items folded into this report (2026-09-10)
 
@@ -399,7 +415,7 @@ dev-workspace).
    docs/active/investigations/2026-09-01-android-resume-unreachable.md
 4. Android still carries the Drive/GitHub backup-and-restore backend desktop demolished in July.
    `settings/sync` `needs-verify` `checked 2026-09-01` `v1.3.1`
-   Restore half deleted 2026-09-10 (deck Q-5, `session/android-rebuild-1`); the backup/push
+   Restore half deleted 2026-09-10 (deck Q-5, youcoded#468); the backup/push
    half stays until the Sync Spaces port rides the harness runtime (§7a).
 5. Possible crash if a screen asks for preferences, defaults, theme or sync status before
    startup finishes (18 spots).
@@ -409,7 +425,8 @@ dev-workspace).
    (desktop fixed in PR #257).
    `chat` `confirmed` `checked 2026-09-01` `needs-repro` →
    docs/active/investigations/2026-09-01-android-event-bridge-session-map-ungated.md
-7. Dead "layout insets" reading of the chat chrome; decided 2026-09-02: delete.
+7. Dead "layout insets" reading of the chat chrome; decided 2026-09-02: delete. **Done
+   2026-09-10 (youcoded#468); investigation archived.**
    `chat` `confirmed` `checked 2026-09-02` →
    docs/active/investigations/2026-09-01-android-layout-insets-flow-uncollected.md
 8. The 2026-07-20 soft-keyboard fix was only checked in Chrome over remote, never in the
@@ -503,16 +520,17 @@ dev-workspace).
 
 30. Android beta builds all claim to be version 1.2.4; the Android build never got the version
     stamping the desktop test build has (§6 above: confirmed inside the 1.3.0-beta.76 APK).
+    **Fixed 2026-09-10 (youcoded#468).**
     `confirmed` `checked 2026-09-03`
 
 ### Claims this report anchors
 
-The bridge's catch-all reply carries only an error string, so the shim resolves it as a value.
-<!-- claim: {"path": "youcoded/app/src/main/kotlin/com/youcoded/app/bridge/MessageRouter.kt", "contains": "fun buildErrorResponse"} -->
+The bridge's catch-all reply now refuses as unsupported (it used to carry only an error string, which the shim resolved as a value).
+<!-- claim: {"path": "youcoded/app/src/main/kotlin/com/youcoded/app/bridge/MessageRouter.kt", "contains": "fun buildUnsupportedResponse"} -->
 Notification permission is declared in the manifest and never requested at runtime.
 <!-- claim: {"path": "youcoded/app/src/main/AndroidManifest.xml", "contains": "POST_NOTIFICATIONS"} -->
-The prebuilt web bundle's index is exempted from gitignore and tracked.
-<!-- claim: {"path": "youcoded/.gitignore", "contains": "!app/src/main/assets/web/index.html"} -->
+The generated web bundle folder is ignored whole; nothing under it is tracked (since 2026-09-10).
+<!-- claim: {"path": "youcoded/.gitignore", "contains": "Nothing here is tracked"} -->
 
 ## Sources
 

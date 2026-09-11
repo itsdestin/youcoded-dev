@@ -1,0 +1,126 @@
+{
+  "_why": "Current renderer audit, not historical design rounds. All failures are synthetic workbench-only method overrides; no real provider, file, report, installation or session is touched. Fresh page per shot resets overrides. Expectations require visible failure text, not merely an open dialog. Report rejection shots deliberately remain MISSED if the renderer has no visible error handling; do not weaken their expectations to pass. Paused is currently labelled Download interrupted by the renderer.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {"eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); /* WHY: mock namespaces use get-only catch-all proxies, so assigning methods directly is ignored. Wrap each namespace with a local override map instead. */ for(const ns of ['chatgpt','providers','models','permissions','dev']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(target,key)=>Object.hasOwn(overrides,key)?overrides[key]:Reflect.get(target,key),set:(_target,key,value)=>{overrides[key]=value;return true;}});} window.auditVisible=(text)=>[...document.querySelectorAll('[role=dialog] *')].some(e=>e.textContent.trim()===text&&e.checkVisibility({checkOpacity:true,checkVisibilityCSS:true})&&(()=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&r.top>=0&&r.bottom<=innerHeight})()); window.auditScroll=(text)=>{const e=[...document.querySelectorAll('[role=dialog] *')].find(e=>e.textContent.trim()===text);if(!e)throw new Error('Missing audit target: '+text);e.scrollIntoView({block:'center'});};"},
+    {"click": "[title=Settings]", "settle": 500}
+  ],
+  "shots": [
+    {
+      "name": "mock-cloud-chatgpt-status-failure",
+      "actions": [
+        {"eval": "window.claude.chatgpt.status=async()=>{throw new Error('Mock audit: ChatGPT status request failed.');}"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Cloud providers')", "settle": 800}
+      ],
+      "expect": "js:window.auditVisible('Mock audit: ChatGPT status request failed.')"
+    },
+    {
+      "name": "mock-cloud-openrouter-test-failure",
+      "actions": [
+        {"eval": "const original=window.claude.providers.list;window.claude.providers.list=async()=> [{id:'openrouter',type:'openrouter',name:'OpenRouter',hasKey:true,ready:true},...(await original()).filter(p=>p.id!=='openrouter'&&p.type!=='openrouter')];window.claude.providers.test=async()=>({ok:false,message:'Mock audit: provider key verification failed.'});"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Cloud providers')", "settle": 800},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Test')", "settle": 500},
+        {"eval": "window.auditScroll('Mock audit: provider key verification failed.')", "settle": 300}
+      ],
+      "expect": "js:window.auditVisible('Mock audit: provider key verification failed.')"
+    },
+    {
+      "name": "mock-local-damaged",
+      "actions": [
+        {"eval": "const original=window.claude.models.installed;window.claude.models.installed=async()=> (await original()).filter(m=>m.status==='untraceable');"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Local models')", "settle": 800},
+        {"eval": "window.auditScroll('Damaged')", "settle": 300}
+      ],
+      "expect": "js:window.auditVisible('Damaged') && !!document.querySelector('[aria-label=\"Why this download is damaged\"]')"
+    },
+    {
+      "name": "mock-local-interrupted",
+      "actions": [
+        {"eval": "const original=window.claude.models.installed;window.claude.models.installed=async()=> (await original()).filter(m=>m.status==='unfinished');"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Local models')", "settle": 800},
+        {"eval": "window.auditScroll('Download interrupted')", "settle": 300}
+      ],
+      "expect": "js:window.auditVisible('Download interrupted') && window.auditVisible('Resume')"
+    },
+    {
+      "name": "mock-local-paused-after-resume",
+      "_why": "Uses only the existing fake download stream: Resume then Pause. The current UI calls a paused download interrupted; verify that label and the return of Resume rather than inventing a Paused banner.",
+      "actions": [
+        {"eval": "const original=window.claude.models.installed;window.claude.models.installed=async()=> (await original()).filter(m=>m.status==='unfinished');"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Local models')", "settle": 800},
+        {"eval": "window.auditScroll('Resume')", "settle": 300},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Resume')", "settle": 600},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Pause')", "settle": 600}
+      ],
+      "expect": "js:window.auditVisible('Download interrupted') && window.auditVisible('Resume') && !window.auditVisible('Pause')"
+    },
+    {
+      "name": "mock-local-resume-failure",
+      "actions": [
+        {"eval": "const original=window.claude.models.installed;window.claude.models.installed=async()=> (await original()).filter(m=>m.status==='unfinished');window.claude.models.resume=async()=>{throw new Error('Mock audit: download could not resume.');};"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Local models')", "settle": 800},
+        {"eval": "window.auditScroll('Resume')", "settle": 300},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Resume')", "settle": 500}
+      ],
+      "expect": "js:window.auditVisible('Mock audit: download could not resume.')"
+    },
+    {
+      "name": "mock-permissions-load-failure",
+      "actions": [
+        {"eval": "window.claude.permissions.list=async()=>{throw new Error('Mock audit: permissions list failed.');};"},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 500},
+        {"click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='Permissions')", "settle": 800}
+      ],
+      "expect": "js:window.auditVisible(\"Unable to show what you've approved.\") && window.auditVisible('Report bug')"
+    },
+    {
+      "name": "mock-report-summary-rejection",
+      "_why": "Known source-level gap: onContinue has finally but no catch. A miss honestly records the absence of a rendered failure, not a successful review of this surface.",
+      "actions": [
+        {"eval": "window.claude.dev.diagnostics=async()=>'';window.claude.dev.logTail=async()=> 'Mock audit logs';window.claude.dev.summarizeIssue=async()=>{throw new Error('Mock audit: report summary failed.');};"},
+        {"click": "js:document.querySelector('[title=Development]').closest('button')", "settle": 500},
+        {"click": "[title^='Report a Bug']", "settle": 500},
+        {"click": "[aria-label='Describe the bug or feature']"},
+        {"type": "Mock audit: testing report failures, not a real report."},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Continue')", "settle": 700}
+      ],
+      "expect": "js:window.auditVisible('Mock audit: report summary failed.')"
+    },
+    {
+      "name": "mock-report-submit-rejection",
+      "_why": "Known source-level gap: onSubmit has finally but no catch. Require the injected failure to be visible, not the unchanged review form.",
+      "actions": [
+        {"eval": "window.claude.dev.diagnostics=async()=>'';window.claude.dev.logTail=async()=> 'Mock audit logs';window.claude.dev.summarizeIssue=async()=>({title:'Mock audit',summary:'Synthetic report for failure-state capture only.',flagged_strings:[]});window.claude.dev.submitIssue=async()=>{throw new Error('Mock audit: report submission failed.');};"},
+        {"click": "js:document.querySelector('[title=Development]').closest('button')", "settle": 500},
+        {"click": "[title^='Report a Bug']", "settle": 500},
+        {"click": "[aria-label='Describe the bug or feature']"},
+        {"type": "Mock audit: testing report failures, not a real report."},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Continue')", "settle": 600},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Submit as GitHub Issue')", "settle": 700}
+      ],
+      "expect": "js:window.auditVisible('Mock audit: report submission failed.')"
+    },
+    {
+      "name": "mock-report-diagnose-setup-failure",
+      "_why": "The method called installWorkspace is replaced with a returned error BEFORE any click; setup.sh is never run.",
+      "actions": [
+        {"eval": "window.claude.dev.diagnostics=async()=>'';window.claude.dev.logTail=async()=> 'Mock audit logs';window.claude.dev.summarizeIssue=async()=>({title:'Mock audit',summary:'Synthetic report for failure-state capture only.',flagged_strings:[]});window.claude.dev.installWorkspace=async()=>({error:'Mock audit: diagnostic workspace setup failed.'});window.claude.dev.openSessionIn=async()=>{throw new Error('Mock audit forbids opening sessions');};"},
+        {"click": "js:document.querySelector('[title=Development]').closest('button')", "settle": 500},
+        {"click": "[title^='Report a Bug']", "settle": 500},
+        {"click": "[aria-label='Describe the bug or feature']"},
+        {"type": "Mock audit: testing report failures, not a real report."},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Continue')", "settle": 600},
+        {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Let Claude Try to Fix It')", "settle": 700}
+      ],
+      "expect": "js:window.auditVisible('Mock audit: diagnostic workspace setup failed.')"
+    }
+  ]
+}

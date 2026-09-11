@@ -1,0 +1,183 @@
+{
+  "title": "Development and reports \u2014 UI design only",
+  "key": "error-states-development-review",
+  "out": "error-states.review.html",
+  "images": "images/error-states.review",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-review-deck-runs/before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-review-deck-runs/after"
+  },
+  "labels": {
+    "before": "Before \u00b7 existing interface",
+    "after": "After \u00b7 UI-only preview"
+  },
+  "themes": [
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "1": [
+      "design",
+      "1",
+      "440x510+500+195"
+    ],
+    "2": [
+      "design",
+      "2",
+      "440x620+500+140"
+    ],
+    "3": [
+      "design",
+      "3",
+      "620x840+410+30"
+    ],
+    "4": [
+      "design",
+      "4",
+      "620x840+410+30"
+    ],
+    "5": [
+      "design",
+      "5",
+      "620x840+410+30"
+    ],
+    "6": [
+      "design",
+      "6",
+      "620x840+410+30"
+    ],
+    "7": [
+      "design",
+      "7",
+      "620x840+410+30"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Development",
+      "path": "Settings \u2192 Development",
+      "crop": "1",
+      "headline": "1. Find reporting, contributing and the roadmap in one place.",
+      "changed": "A friendlier introduction explains why to contribute; the roadmap opens the canonical file rather than a duplicated list.",
+      "notice": "Existing product names stay unchanged. The pinned GitHub issue is not created by this design.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Contribution walkthrough",
+      "path": "Development \u2192 How contributing works",
+      "crop": "2",
+      "headline": "2. Learn how an idea becomes a public proposal.",
+      "changed": "The information button explains conversation, design, isolated preview, checks and your explicit approval.",
+      "notice": "Private backup is not publishing, and your installed app stays untouched. The picture shows the scrolled walkthrough.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    },
+    {
+      "id": "S-3",
+      "surface": "Report a bug",
+      "path": "Development \u2192 Report a Bug or Request a Feature",
+      "crop": "3",
+      "headline": "3. Write and review your report without waiting for AI.",
+      "changed": "An editable title and description come first, with a public-sharing notice and optional error details.",
+      "notice": "This is a filled UI preview. No diagnostics or version information is collected yet.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    },
+    {
+      "id": "S-4",
+      "surface": "Report evidence and AI",
+      "path": "Report \u2192 Include recent logs \u2192 Review report",
+      "crop": "4",
+      "headline": "4. Review optional logs before choosing AI help.",
+      "changed": "Logs start off, with a plain explanation of what they contain. Optional AI help appears only after review.",
+      "notice": "Sample text is editable, but logs are not read and AI is disabled. The scrolled picture shows the disclosure; selection remains above it.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    },
+    {
+      "id": "S-5",
+      "surface": "Attachments",
+      "path": "Report \u2192 Add screenshots or files in GitHub",
+      "crop": "5",
+      "headline": "5. Know when attaching a file makes it leave your device.",
+      "changed": "The warning explains that GitHub uploads on attachment, before final submission.",
+      "notice": "You would review and attach approved files yourself in the browser. Export, upload and browser handoff are unbuilt.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    },
+    {
+      "id": "S-6",
+      "surface": "Contribution setup",
+      "path": "Development \u2192 Contribute to YouCoded",
+      "crop": "6",
+      "headline": "6. Set up a separate project without disturbing existing folders.",
+      "changed": "An example and the first setup action lead the screen. Project files, setup and private backup remain distinct.",
+      "notice": "Local-only work is offered if backup is unavailable. All setup and backup buttons are disabled UI proposals.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    },
+    {
+      "id": "S-7",
+      "surface": "Draft and failure",
+      "path": "Report \u2192 Review report \u2192 Preview a submission error",
+      "crop": "7",
+      "headline": "7. Keep your draft while recovering from a report error.",
+      "changed": "A clearly labelled example error offers Retry without clearing the title, description or selected sample logs.",
+      "notice": "This is a local mock error, not a service request. Back and close retain this mounted draft; reloading still clears it.",
+      "risk": "Design review only: external actions are disabled, not working backend functionality.",
+      "highlight": {
+        "box": [
+          4,
+          7,
+          92,
+          87
+        ]
+      }
+    }
+  ]
+}

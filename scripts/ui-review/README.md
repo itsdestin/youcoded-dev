@@ -334,11 +334,14 @@ signed-in on Plus), `?claudeCode=signed-in|signed-out|apikey|not-installed|unkno
 a fake friend).
 
 The rest: `?arcade=<game>` (open a game the scenario cannot reach),
-`?remote=setup|connected` (Remote Access popup state), `?lease=held:<device>` (a resume
+`?remote=setup|connected` (Remote Access popup state),
+`?remotePreview=setup|consent|checking|checked|ready|conflict|error|disabled|not-installed|sign-in-required|checked-failed|checked-silent`
+(the mock-only setup-flow stages the remote-access decks were shot from; `checked-*` are the
+end-of-setup check's three answers), `?lease=held:<device>` (a resume
 raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
 `?student=1` (the student persona's files, project and history),
 `?voice=<phrase>` (dictation without a microphone), `?reply=<name>` (which fixture the
-"model" speaks), `?seed=none`, `?title=`, `?model=`, `?platform=android`,
+"model" speaks), `?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
 `?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls).
 
 Fidelity gaps the workbench has: no PTY (Terminal is blank — review it on Electron),

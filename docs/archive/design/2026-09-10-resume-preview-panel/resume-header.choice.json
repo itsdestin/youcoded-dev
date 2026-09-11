@@ -1,0 +1,111 @@
+{
+  "title": "Round four — the sheet, the action card, and four headers",
+  "key": "resume-browser-header",
+  "out": "resume-header.choice.html",
+  "images": "images/resume-header.choice",
+  "runs": {
+    "today": "runs/round4"
+  },
+  "labels": {
+    "today": "Draft"
+  },
+  "themes": ["midnight"],
+  "crops": {
+    "r4-icons": ["main", "r4-icons", "1020x690+210+105"],
+    "r4-chips": ["main", "r4-chips", "1020x690+210+105"],
+    "r4-toolbar": ["main", "r4-toolbar", "1020x690+210+105"],
+    "r4-menu": ["main", "r4-menu", "1020x690+210+105"],
+    "r4-card-open": ["main", "r4-card-open", "1020x690+210+105"]
+  },
+  "steps": [
+    {
+      "id": "R4-1",
+      "surface": "Resume Session",
+      "path": "The sessions arrow at the top of the window, then Resume",
+      "headline": "Which header should the conversation get?",
+      "notice": "The two things you asked for are built and are the same in all four: the sheet, and the action card at the foot of it — model, folder and Resume sitting where the message box sits in a real conversation. Resume has left the header entirely, which is what makes room for the actions below.",
+      "risk": "All four offer the same three actions — rename, tags and note, mark complete — reaching them is the only difference. Tags and note open a panel under the header in every one of them.",
+      "variants": [
+        {
+          "id": "icons",
+          "label": "Two glyphs",
+          "crop": "r4-icons",
+          "summary": "The same tag and complete marks the card in the list already carries, at the size of a header. The name itself is the rename control — dotted underline and a pencil, exactly as on the card.",
+          "risk": "Two outlines and no words. Whoever has not learned what the tag shape means has to press it to find out."
+        },
+        {
+          "id": "chips",
+          "label": "Everything is a pill",
+          "crop": "r4-chips",
+          "summary": "The tags it already has and the things you can do sit on one wrapping row: the applied tags, then Tag, Complete and Rename. Same pill shape as the filters on the other side of the window.",
+          "risk": "A conversation with five tags pushes the actions onto a second line, so the row's height moves around."
+        },
+        {
+          "id": "toolbar",
+          "label": "A strip of words",
+          "crop": "r4-toolbar",
+          "summary": "Name and facts, then a strip beneath them spelling the actions out: Rename · Tags & note · Mark complete. Nothing to decode.",
+          "risk": "It costs a whole extra strip of height, on every conversation, whether or not you ever use it."
+        },
+        {
+          "id": "menu",
+          "label": "One ⋯ button",
+          "crop": "r4-menu",
+          "summary": "The header stays purely the conversation — name, folder, date, size, tags — and a single ⋯ at the right holds all three actions.",
+          "risk": "Everything is one press further away, and ⋯ tells you nothing about what is inside until you open it."
+        }
+      ]
+    },
+    {
+      "id": "R4-2",
+      "surface": "Resume Session",
+      "path": "The card at the foot of the conversation",
+      "crop": "r4-card-open",
+      "headline": "Where should Skip Permissions and Launch in New Window live on the action card?",
+      "notice": "The picture shows the ▾ opened. Model and folder are always on the card face; these two switches are what the ▾ hides.",
+      "risk": "The card grows upward when it opens and covers the last message. That is a rough edge in the draft, not a decision — it gets fixed whichever option wins.",
+      "highlight": {
+        "box": [2, 74, 96, 24]
+      },
+      "options": [
+        {
+          "id": "behind",
+          "label": "Both behind the ▾",
+          "pros": [
+            "The card stays one line, so the conversation keeps almost all the height.",
+            "The switches are still one press away when you want them."
+          ],
+          "cons": [
+            "Skip Permissions is a switch that removes a safety check, and it is out of sight until you go looking."
+          ],
+          "summary": "What the draft does today.",
+          "cost": "Nothing to build."
+        },
+        {
+          "id": "face",
+          "label": "Skip Permissions on the card face",
+          "pros": [
+            "A switch that turns off a safety check is never hidden.",
+            "You can see the state of it before you press Resume, not after."
+          ],
+          "cons": [
+            "The card becomes two lines tall on every Claude conversation, forever, for a switch most people leave alone."
+          ],
+          "cost": "A second row on the card.",
+          "recommended": true
+        },
+        {
+          "id": "drop",
+          "label": "Not here at all",
+          "pros": [
+            "The simplest card of the three: model, folder, Resume, done."
+          ],
+          "cons": [
+            "The only way to resume with permissions skipped would be to change the app-wide default first."
+          ],
+          "cost": "Removes a per-conversation choice that exists today."
+        }
+      ]
+    }
+  ]
+}

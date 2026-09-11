@@ -10,6 +10,16 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       Create Session button wraps onto two lines beside a one-line Cancel
       `all` `needs-verify` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-first-run-guide-ux-review-1.md
 
+- [ ] The files filter panel (Project View and the Files drawer) draws its own 12 px filter chip
+      instead of the shared 14 px filter pill, the size the design guide already rejected as the
+      smallest text in the app (noticed while building the Resume browser's phone filter panel, 2026-09-10)
+      `files-panel` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] A lit filter chip is 2 px shorter than an idle one (the shared recipe drops the border when
+      lit), so a picked chip sits visibly smaller than its neighbours in the same row — a design-guide
+      question (G-14), not one screen's bug
+      `all` `decision` `checked 2026-09-10`
+
 - [ ] The before/after file comparison — the one shown on every tool card that edits a file —
       is hard to read for anyone who is not a developer. In the light theme the small + and −
       marks fail the app's own readability minimum (measured 2.31 and 3.5 against 4.5), and
@@ -157,9 +167,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       real phone before scoping
       `all` `needs-verify` `checked 2026-08-07` `performance`
 
-- [ ] On the touchscreen Z13, the desktop app's on-screen keyboard interactions misbehave (Destin,
-      2026-09-02; details to be gathered). Investigate together with the Android keyboard item
-      `input-bar` `desktop` `needs-verify` `checked 2026-09-02` `needs-repro`
+- [ ] On the touchscreen Z13, the app's touch accommodations — bigger tap targets, buttons that
+      otherwise only appear on hover — probably never switch on, because the app judges the machine
+      mouse-driven (found fixing the on-screen keyboard, 2026-09-10)
+      `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] Tapping a quick chip when the typing box already has text should offer a small menu —
       Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
@@ -193,3 +204,15 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       defend), what a local model shows for cost (nothing? "free"?), and whether three tags fit
       a row that already carries a name, a source and a favourite star.
       `model-picker` `all` `confirmed` `checked 2026-09-06`
+
+- [ ] Closing a dialog opened from the Development menu closes the menu behind it too, and
+      "Known issues" closes everything with nothing on screen acknowledging it. Found by a
+      context-free UX tester on 2026-09-10 (`docs/archive/reviews/2026-09-10-error-states-unit-a-ux-review-2.md`
+      U9). It is shared dialog behaviour, not one screen's — changing it alters every menu in
+      the app, so it was filed rather than special-cased inside a feature
+      `settings/development` `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] The (i) help bubbles cover the rows and buttons they describe, so reading one hides the
+      thing it is about. Same review, U10. `AnchorTip` placement is shared by every settings
+      page; the fix belongs to the primitive
+      `settings` `desktop` `confirmed` `checked 2026-09-10`

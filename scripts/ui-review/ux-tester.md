@@ -7,7 +7,9 @@ design doc is not one any more. Feature-flow design §8e.
 
 **Before dispatching:** boot the surface yourself and confirm the address answers —
 `bash scripts/run-workbench.sh <worktree>` for mockups (address
-`http://localhost:5233/?mode=workbench`), or, for the built copy, `run-dev.sh` plus the
+`http://localhost:5233/?mode=workbench&child=1&view=app&scenario=default&latency=150` — the
+`child=1&view=app` part matters: the bare `?mode=workbench` page hosts the app in a frame the
+kit's tool cannot see into, and two testers on 2026-09-10 each lost their first shots to it), or, for the built copy, `run-dev.sh` plus the
 CDP recipe in `docs/local-dev.md` (Electron launched with `--remote-debugging-port=<port>`) —
 then put the address in the briefing, and for the built copy ALSO the debugging port: the
 kit's tool only drives a running app through `ATTACH_PORT=<port>`. Give the

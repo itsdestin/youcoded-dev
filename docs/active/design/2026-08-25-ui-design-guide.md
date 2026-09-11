@@ -157,7 +157,7 @@ rule — the validator does not check it (P-16, decided 2026-08-25: no new pack 
 | `Radio`/`RadioGroup` | 2–5 exclusive options with descriptions (Sound, permission mode) | SegmentedTabs when options need a second line |
 | `SegmentedTabs` | 2–5 exclusive *short* options or view switches (Haiku/Sonnet/Opus; Chat/Terminal; Plugins/Themes) | for filter categories (those are pills); for anything that wraps |
 | `TextInput`/`Textarea`/`Select`/`InputGroup` | every field; `InputGroup` when a button lives *inside* the field (search + clear, key + save) | icon buttons floating over a bare input (Skills drawer today) |
-| `SearchFilterPill` | every search-with-filter control (Projects, Session Files, Marketplace, Skills drawer, Resume) | four bespoke search boxes |
+| `SearchFilterPill` | every search-with-filter control (Projects, Session Files, Marketplace, Skills drawer; Resume at phone width only — Destin kept its desktop box over the pill, 2026-09-10 resume-filter-chips S-2, do not re-propose) | four bespoke search boxes |
 | `SettingRow` | any row that navigates or holds one control; **also every expand-in-place section** (`expanded` turns its right-hand chevron down) | hand-rolled `flex` rows with a chevron; **a bare leading “›” text toggle** (Destin, 2026-09-05: “I HATE the bare dropdowns with a chevron”) |
 | `Dialog` (`prompt` 340 / `panel` 420 / `document` 600) | all modals. `prompt` = one question + buttons; `panel` = a settings screen; `document` = long prose | choosing `prompt` for a list (Keyboard Shortcuts); headerless dialogs (Donate/Development) |
 | `Callout` | inline explainer or warning inside a panel | coloured borders on ad-hoc divs |
@@ -332,8 +332,17 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   gets a *Clear filters* action; the message never appears twice on one screen.
 - Loading: `LoadingState` naming the thing ("Loading projects…"); quiet skeletons only
   where the spec protects them (Providers). Spinners are `fg-muted`.
-- Error: `ErrorState` `recoverable` (specific message + Retry) or `general` (two-action
-  card). Never a red sentence.
+- Error: `ErrorState` — a specific accurate message, or a general title + explainer. Retry,
+  Report bug and Diagnose with Claude are independent: a fault can need a retry AND a report,
+  so the old either/or split is gone (2026-09-10). An error with no action, or no text, is
+  refused by the type. Never a red sentence.
+- **G-28 Where a button sits**: an action is either **full width** of its container or on the
+  **right**. A single filled button at the bottom LEFT of a card or dialog is prohibited — it
+  reads as stray rather than as the thing to press. An action that belongs to one line of text
+  stays inline with that text, on its right. Destin, 2026-09-10, on the ticket-failure card:
+  *"put these retry buttons at the bottom right, not the bottom left… buttons should either be
+  full modal width or on the righthand side."* Guard: `tests/error-state.test.tsx`
+  ("puts its actions on the right").
 - Disabled: 50% opacity **plus** a reason within reach (tooltip or subtitle) — "Max" in the
   effort picker must say why.
 
@@ -401,4 +410,4 @@ G-9 button vocabulary (§3) · G-10 dialog header · G-11 dialog body/scroll · 
 field · G-13 welcome screen · G-14 chips · G-15 status bar · G-16 full-screen header ·
 G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header · G-21 menus · G-22 find-bar
 lane · G-23 attachment card · G-24 terminal backing floor · G-25 session row · G-26 session
-status pill · G-27 tags in a list row.
+status pill · G-27 tags in a list row · G-28 button placement (full width or right).

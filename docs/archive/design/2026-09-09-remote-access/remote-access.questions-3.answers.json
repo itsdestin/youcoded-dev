@@ -1,0 +1,19 @@
+{
+ "deck": "remote-access-questions-3",
+ "started": "2026-09-09T22:52:53.575Z",
+ "submitted": "2026-09-09T22:53:54Z",
+ "cur": 0,
+ "answers": {
+  "Q-6": {
+   "v": "pick",
+   "pick": "tailscale-only",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-7": {
+   "v": "yes",
+   "seconds": 30,
+   "theme": "midnight"
+  }
+ }
+}

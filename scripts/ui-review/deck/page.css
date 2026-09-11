@@ -207,6 +207,14 @@ body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:fl
    may break mid-word let auto layout starve it to 63px and shred every source id into five
    slivers (measured on the ChatGPT acceptance deck the same day). A source id is one token he
    reads; let it ask for its width. */
+/* A FLOOR on the statement, not a share. The two reverted attempts above set fixed shares,
+   which starved whichever column they guessed wrong about. A min-width only says "never
+   thinner than this" and lets auto layout hand out the rest as before. The statement is the
+   thing being decided on and was the narrowest column on the remote-access acceptance deck:
+   105px of a 1512px window, one word per line. Measured after: 173px from shortening the
+   evidence, 253px with this — and the whole table still fits without scrolling sideways at
+   1024px, which a 30ch floor did not. */
+.card.contract th:nth-child(2),.card.contract td:nth-child(2){min-width:24ch}
 .words .cards:has(.contract){grid-template-columns:1fr}
 /* A question on a screen of its OWN (a mixed deck, not a question page): the three
    explanations are one full-width row, exactly as they are on a question page. Before this
@@ -345,7 +353,16 @@ figcaption .key{color:var(--mark);font-weight:700}
 /* Fix (2026-08-27): a DECIDE step's buttons carry the option's own words, which are far longer
    than "Yes, build it" — at three options they overran each other and the labels collided. The
    label truncates and the letter never does, so `a` `b` `c` stay readable and match the cards. */
-.ans{flex:1 1 140px;max-width:280px;min-width:0;justify-content:center;height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);overflow:hidden}
+/* Fix (2026-09-10): `min-width:0` let the button shrink under its own label, and because
+   the label is a bare text node the ellipsis rule below never matched it — so it was hard
+   clipped at BOTH ends by `justify-content:center`, reading ", something is missin".
+   Destin saw it on the remote-access contract deck and it was worked around per-spec.
+   `min-width:max-content` is the floor. NOT `min(max-content,280px)`: `min()` takes lengths
+   only, so an intrinsic keyword inside it makes the whole declaration invalid and it is
+   dropped silently — which is exactly what happened on the first attempt, and the buttons
+   went on truncating while the CSS looked right. `.controls` already wraps, so a window too
+   narrow for the row stacks it instead of clipping. */
+.ans{flex:1 1 140px;max-width:280px;min-width:max-content;justify-content:center;height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);overflow:hidden}
 .ans>span:not(.dot):not(.key){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* A pick button sizes to its own words instead of taking an equal share: yes/no are two fixed
    labels that look right stretched, but three option names at an equal share all truncate. */

@@ -132,9 +132,34 @@ sweep found seven across four repos:
 
 ```bash
 for r in . youcoded youcoded-core youcoded-admin wecoded-themes wecoded-marketplace; do
+  [ -e "$r/.git" ] || continue
   git -C "$r" fetch -q origin
-  git -C "$r" for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads
-done          # anything with no upstream, or [ahead N], needs pushing
+  git -C "$r" for-each-ref --format='%(refname:short)' refs/heads | while read -r b; do
+    git -C "$r" for-each-ref --contains "$(git -C "$r" rev-parse "$b")" \
+        --format=x refs/remotes | grep -q x || echo "UNPUSHED  $r  $b"
+  done
+done          # any line printed is work that exists on this disk only
+```
+
+**Ask whether the COMMITS are on the server, never whether the branch has an upstream.**
+The obvious test — `%(upstream:track)` empty means unpushed — is wrong, and it was in this
+file until 2026-09-10. `git push origin <branch>` without `-u` pushes the work and sets no
+tracking link, so a perfectly backed-up branch reports as unpushed forever. Measured that
+day: **77 branches across three repos flagged, and every single one was already on the
+server, byte-identical.** A cry-wolf sweep is worse than no sweep — a genuinely unpushed
+branch is invisible in 77 false alarms, which is the exact failure the sweep exists to
+prevent. `--contains` asks the only question that matters: can the server reach this commit?
+
+**Committed is not the same as saved.** That same sweep found zero branches with unpushed
+commits and ~100 **uncommitted** files across eight worktrees. No push rule reaches those;
+only committing does. Check them too, and report rather than commit another session's
+in-flight work under your authorship:
+
+```bash
+git worktree list --porcelain | sed -n 's/^worktree //p' | while read -r w; do
+  n=$(git -C "$w" status --porcelain 2>/dev/null | wc -l)
+  [ "$n" -gt 0 ] && echo "$n uncommitted  $w"
+done
 ```
 
 **Secrets-scan any branch before its first push to a PUBLIC repo — including swept ones you

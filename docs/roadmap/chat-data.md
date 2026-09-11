@@ -8,6 +8,59 @@ produced and the panel that shows them (files).
       still closes it (seen in the workbench while filming the promo, 2026-09-03)
       `resume-browser` `desktop` `needs-verify` `checked 2026-09-03`
 
+- [ ] The Resume browser dialog re-centres itself whenever a filter or search shrinks the list, so
+      the chips slide about 120 px down the screen under your hand (a beta tester's most confusing
+      moment, 2026-09-10); one steady height is asked as Q-3 on the resume-filter-chips deck
+      `resume-browser` `all` `decision` `checked 2026-09-10`
+
+- [ ] The Resume browser says "session" everywhere the chat says "conversation", and its title and
+      reopen button both read "Resume Session"; renaming this screen's copy is asked as Q-2 on the
+      resume-filter-chips deck, with "Show Complete", the "Organize" icon name, the card meta line
+      (Skip Permissions, 4KB, raw model ids) and the British "Unfavourite" in the row's model picker
+      to follow the same decision
+      `resume-browser` `all` `decision` `checked 2026-09-10`
+
+- [ ] Priority shows as a tag on every card and in the per-card tag picker, but the Tags filter
+      cannot narrow to it; the note marker looks like a tag too and cannot be filtered
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] Nothing in the top bar says "past conversations" or "history": the only entrance is the
+      sessions chevron whose panel is headed "Sessions in this window" with a Resume button at the
+      bottom, or typing /resume (beta tester, 2026-09-10)
+      `session-drawer` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] The Resume browser has no close button; only Escape or clicking the dark area closes it
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] Resume browser cards show only a date, so conversations from the same day cannot be told
+      apart and the Most recent / Oldest first flip looks like it did nothing
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] In the Resume browser a second press of Escape can fall through to the chat instead of
+      closing the browser: the layered Escape handling removes its entry after the first press and
+      nothing puts it back (code review, 2026-09-10)
+      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
+
+- [ ] In the Resume browser's expanded row, a conversation whose original model is not set up here
+      shows a greyed Resume Session button and a "Choose a model…" field with no word about why
+      (beta tester, 2026-09-10)
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] Nothing on a Resume browser row says how to open it: the name opens Rename, the rest of the
+      row expands a panel with the Resume Session button; a beta tester expected the name to open it
+      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+
+- [ ] Resuming a conversation that is already open in a tab made a second tab with the same name
+      instead of switching to it (seen in the workbench, 2026-09-10)
+      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
+
+- [ ] At phone width the Resume browser's expanded row shows a Skip Permissions switch the desktop
+      row does not, and the row details truncate to unreadable stubs ("wecoded-m…", "qwen3-coder-30…")
+      `resume-browser` `remote` `confirmed` `checked 2026-09-10`
+
+- [ ] Idea: Enter in the Resume browser's search box could open the top result
+      `resume-browser` `all` `parked` `checked 2026-09-10`
+
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
@@ -42,6 +95,11 @@ produced and the panel that shows them (files).
       so a very long session could re-count. Flagged unconfirmed by the 2026-09-09 code
       review (F-not-covered); worst case is an early extra AI review, not a wrong name
       `desktop` `needs-verify` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-naming-code-review.md
+
+- [ ] Opening a long conversation in the Resume Browser's preview pauses noticeably before it
+      appears — reading the last 40 messages parses the whole transcript file. Nothing flickers
+      and the row highlights immediately, so it reads as slow rather than broken (2026-09-10)
+      `resume-browser` `desktop` `confirmed` `checked 2026-09-10` `performance`
 
 - [ ] The Resume Browser search box only matches names, project paths, notes and tags — a phrase you
       remember from inside a chat finds nothing, even though the full-text index exists and the

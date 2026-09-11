@@ -1,0 +1,43 @@
+id: no-workbench-gate-in-shipped-ui
+language: tsx
+severity: error
+message: >-
+  A component must not branch on `?mode=workbench`. A screen that renders one
+  thing in the workbench and another in the app is TWO screens, and the one
+  users get is the one nobody reviews or tests.
+note: |
+  Invariant source: 2026-09-10, the error-states build. Three screens were
+  gated this way while their backend was built — the reasonable reason the
+  pattern exists. Then the grader measured the cost: THIRTEEN of twenty-three
+  signed contract rows unmet, because `main.ts` never puts a mode on a packaged
+  window, so no user could reach the approved screens. Every test in the suite
+  was green, on screens nobody could open. The Development menu had the same
+  split and shipped an approved Roadmap row that no user ever saw.
+
+  Guard: this rule + youcoded/desktop/src/renderer/components/development/
+         DevelopmentDesign.test.tsx → "shows the approved ticket screen to a
+         user with no workbench flag"
+
+  WHY a rule and not a habit: the gate is invisible in review — each half looks
+  correct on its own, the suite passes, and the defect is only findable by
+  asking "which one does a real user get?". Nothing else asks that question.
+
+  HOW to build UI ahead of its backend instead: put the unbuilt CHANNEL in
+  `dev/workbench/mock-only.ts` and let the real component call it. The
+  workbench serves a fake, the app serves the real one, and there is only ever
+  one screen. That registry is also the backend to-do list.
+
+  SCOPING: `src/renderer/dev/workbench/**` is the workbench's own code and is
+  exempt. So is `workbench-mode.ts`, the single helper that answers the
+  question, and the boot files (`index.tsx`, `App.tsx`) which choose a whole
+  application mode rather than a variant of one screen.
+files:
+  - "**/src/renderer/components/**/*.tsx"
+  # The violation fixture lives outside components/, so it needs naming here or
+  # the rule can never fire on it — which is how a rule guarding nothing passes
+  # the fixture check.
+  - "**/fixtures/workbench-gate.tsx"
+rule:
+  any:
+    - pattern: $$$.get('mode') === 'workbench'
+    - pattern: $$$.get("mode") === "workbench"

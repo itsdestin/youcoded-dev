@@ -1,0 +1,22 @@
+{
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=0&rbpreview=whole",
+  "theme": "midnight",
+  "width": 1440,
+  "height": 900,
+  "zoom": 1,
+  "fps": 30,
+  "boot": 2500,
+  "why": "MOCKUP ONLY (2026-09-10). Jumping between conversations in the Resume browser, so the arrival can be judged in motion rather than described. Opens the sessions menu, presses Resume, then steps down the list: row 1, row 3, row 2. Each hold is 1.1s -- the arrival is 380ms (--dur-switch), so a hold that short still shows the whole curve plus a beat of stillness to read the new conversation's name.",
+  "actions": [
+    { "click": "[title='All Sessions']", "settle": 400 },
+    { "settle": 400, "click": "js:(()=>{const nb=[...document.querySelectorAll('button')].find(b=>/New Session/.test(b.textContent));return [...nb.parentElement.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume')})()" },
+    { "waitFor": "[placeholder='Search sessions...']", "settle": 900 },
+    { "hold": 700 },
+    { "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>!b.hasAttribute('aria-haspopup'))[0]", "settle": 300, "mark": "one" },
+    { "hold": 1100 },
+    { "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>!b.hasAttribute('aria-haspopup'))[2]", "settle": 300, "mark": "three" },
+    { "hold": 1100 },
+    { "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>!b.hasAttribute('aria-haspopup'))[1]", "settle": 300, "mark": "two" },
+    { "hold": 1300 }
+  ]
+}

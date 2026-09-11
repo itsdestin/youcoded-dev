@@ -1,0 +1,14 @@
+{
+  "base": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default",
+  "shots": [
+    {"name": "setup", "url": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default&remote=setup&remotePreview=not-installed",
+     "actions": [{"click": "[title=Settings]", "settle": 700}, {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900}],
+     "expect": "js:document.body.textContent.includes('Not set up yet.')"},
+    {"name": "connected", "url": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default&remote=connected&remotePreview=ready",
+     "actions": [{"click": "[title=Settings]", "settle": 700}, {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900}],
+     "expect": "js:document.body.textContent.includes('Add Device')"},
+    {"name": "consent", "url": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default&remote=setup&remotePreview=consent",
+     "actions": [{"click": "[title=Settings]", "settle": 700}, {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900}],
+     "expect": "js:document.body.textContent.includes('Approve and continue')"}
+  ]
+}

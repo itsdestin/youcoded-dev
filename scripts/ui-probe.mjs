@@ -17,6 +17,13 @@
 // Usage:
 //   node scripts/ui-probe.mjs <url> [options]
 //
+//   THE WORKBENCH FRAMES THE APP. `?mode=workbench` is a toolbar page with the app
+//   in an <iframe>, so `document.querySelector('.status-bar')` finds nothing and a
+//   select-all selects the toolbar. Reach in with
+//   `document.querySelector('iframe').contentDocument` (2026-09-10: two probes
+//   wasted, same trap a UX tester hit the same day). Headless focus also never
+//   reaches `:focus` inside that frame, so a focus-dependent style reads unfocused.
+//
 //   --size WxH          viewport; repeatable, and the whole probe runs once per size
 //   --wait <js>         poll this expression until truthy before measuring (30s cap)
 //   --settle <ms>       extra pause after --wait (default 400)
@@ -50,6 +57,14 @@
 //
 //   node scripts/ui-probe.mjs "file://$PWD/page.html" --size 1574x820 --size 400x760 \
 //     --eval "document.querySelectorAll('.card').length" --shot /tmp/p-{size}.png
+//
+// NO THEME SWITCH. `?theme=` is honoured only on the workbench's `view=live`
+// route (index.tsx), and setting `data-theme` from an --eval is undone: the
+// theme engine writes its tokens as INLINE custom properties on <html>, which
+// beat any stylesheet, and re-applies them on the next render. The theme has to
+// be in localStorage before the document loads, which is what shot.mjs does
+// (`Page.addScriptToEvaluateOnNewDocument`) — reach for that when a shot is
+// about colour. Cost of learning this the other way: 3 probe runs, 2026-09-10.
 //
 // Needs a Chrome/Chromium binary. It launches its own headless instance on a
 // scratch profile and a FREE debugging port (never a hardcoded one — two probes

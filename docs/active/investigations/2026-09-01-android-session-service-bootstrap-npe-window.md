@@ -5,6 +5,10 @@ type: investigation
 topic: Android SessionService dereferences bootstrap!! in 18 bridge handlers, and the bridge listens before bootstrap is set
 ---
 
+> **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 5 in the
+> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
+
 # Android `SessionService.kt` dereferences `bootstrap!!` in 18 handlers
 
 **Symptom.** Hypothesised, not observed: an Android crash (Kotlin NPE) if the WebView sends

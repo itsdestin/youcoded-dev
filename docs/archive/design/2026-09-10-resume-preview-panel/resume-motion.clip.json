@@ -1,0 +1,70 @@
+{
+  "title": "Round five — the layout you described, and how it moves",
+  "key": "resume-browser-motion",
+  "out": "resume-motion.clip.html",
+  "images": "images/resume-motion.clip",
+  "runs": {
+    "before": "runs/round5",
+    "after": "runs/round5"
+  },
+  "labels": {
+    "before": "Only the card moves",
+    "after": "The whole sheet arrives"
+  },
+  "themes": ["midnight"],
+  "crops": {
+    "r5-layout": ["main", "r5-layout", "1020x690+210+105"]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Resume Session",
+      "path": "The sessions arrow at the top of the window, then Resume",
+      "clip": "resume-jump",
+      "headline": "When you jump to another conversation, the whole sheet arrives — not just the card.",
+      "changed": "Both recordings step down the same three conversations. LEFT is the quieter option: only the header card rises and the conversation under it fades. RIGHT is the change: the card, the conversation and the action card rise together as one. Yes keeps the right-hand one; No leaves the quieter left-hand one.",
+      "notice": "The rise itself is not a new invention — it is the arrival you already chose on 2026-09-02 for this exact event, changing which conversation you are looking at. The chat view uses it too, so the two surfaces move alike.",
+      "risk": "One clip plays once. The move takes about a third of a second, so watch the moment right after each click."
+    },
+    {
+      "id": "D-1",
+      "surface": "Resume Session",
+      "path": "The card at the foot of the conversation",
+      "crop": "r5-layout",
+      "headline": "The stacked action card takes about a fifth of the sheet. Should it always be open?",
+      "notice": "Stacked and matching the other resume surfaces is what you asked for; this is only about whether it stays open while you are reading.",
+      "highlight": {
+        "box": [2, 68, 96, 30]
+      },
+      "options": [
+        {
+          "id": "always",
+          "label": "Always open",
+          "pros": [
+            "Everything about relaunching is in front of you the whole time.",
+            "Resume is always one press, from anywhere in the conversation."
+          ],
+          "cons": [
+            "It takes a fifth of the sheet away from the conversation you came here to read."
+          ],
+          "summary": "What the draft does today.",
+          "cost": "Nothing to build."
+        },
+        {
+          "id": "collapsed",
+          "label": "A Resume bar that opens it",
+          "pros": [
+            "The conversation gets the room back until the moment you decide to go in.",
+            "Resume is still one press; the model and the switches are the second."
+          ],
+          "cons": [
+            "Which model it will relaunch on is out of sight until you open it.",
+            "The sheet changes height under you when it opens."
+          ],
+          "cost": "A collapsed state, and somewhere to remember it.",
+          "recommended": true
+        }
+      ]
+    }
+  ]
+}

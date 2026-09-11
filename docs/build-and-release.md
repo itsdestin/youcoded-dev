@@ -7,17 +7,15 @@ Release builds happen through GitHub Actions CI in the relevant sub-repo. Day-to
 ### React UI bundle is auto-rebuilt by Gradle
 Located at `youcoded/scripts/build-web-ui.sh`. Runs `npm ci && npm run build` in `desktop/`, then copies `desktop/dist/renderer/` into `app/src/main/assets/web/`. The `bundleWebUi` task in `app/build.gradle.kts` invokes this script before `preBuild` whenever any input changes (`desktop/src/`, `package-lock.json`, `vite.config.ts`, etc.). Kotlin-only iterations are skipped as UP-TO-DATE.
 
-If skipped (manual `-x bundleWebUi`, build break in `npm run build`, etc.), the Android app launches with a blank WebView — `index.html` references JS/CSS bundles that aren't in `assets/web/assets/`.
+If skipped (manual `-x bundleWebUi`, build break in `npm run build`, etc.), the Android app launches with a blank WebView — nothing under `assets/web/` is tracked (the April placeholder `index.html` was removed 2026-09-10), so the folder is simply empty.
 
 The Android release workflow (`android-release.yml`) still invokes the script as an explicit pre-step. With the Gradle task in place that's redundant on cold-cache CI runs (Gradle re-runs the work) but harmless, and acts as a safety net if anyone disables the Gradle task.
 
 ### Desktop version comes from git tag, not package.json
 CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml:40-46`). Local `package.json` version is not the source of truth.
 
-### Android version requires manual bump
-Both `versionCode` (integer, monotonically increasing for Play Store) and `versionName` (string) must be bumped in `app/build.gradle.kts` **before** tagging. CI does not derive Android versions from the tag — Play Store requires `versionCode` to always increase, so it cannot be derived.
-
-Current: `versionCode = 17`, `versionName = "1.2.1"` (app/build.gradle.kts:23-24).
+### Android version is stamped in CI
+Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
 ### One tag, all platforms
 A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `desktop-release.yml`. Both upload artifacts (APK/AAB + Win/Mac/Linux installers) to the same GitHub Release.
@@ -134,8 +132,8 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
 `.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
-Its APK still reports `versionName` 1.2.4 — nothing stamps a version on the Android side the
-way `desktop-test-build.yml` does (filed: `docs/roadmap/dev-workspace.md`).
+Give it the `base` input (default `1.3.0-beta`) and it stamps `<base>.<run_number>` into the APK,
+the way `desktop-test-build.yml` does; the outputs are named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
 
 **It replaces the installed app in place.** `electron-builder.yml` pins `appId: com.youcoded.desktop`

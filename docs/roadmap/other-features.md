@@ -92,6 +92,12 @@ has passed ~8 items — graduate it to its own file.
       popup says we are exploring this (2026-09-10)
       `n/a` `decision` `checked 2026-09-10`
 
+- [ ] Nothing in the app or on youcoded.ai points to r/youcoded, the community Destin opened on
+      2026-09-10 for bug reports, feature ideas, themes and things people make with the app.
+      Proposed, not yet answered: a "Community" link in Settings and in the site footer, added
+      once the subreddit has a few posts so visitors don't land on an empty page
+      `all` `decision` `checked 2026-09-10`
+
 - [ ] Idea: automation results delivered to Telegram, Discord or email, each channel a plugin. Only
       meaningful once the Agents & Automations view exists
       `all` `parked` `checked 2026-09-01`
