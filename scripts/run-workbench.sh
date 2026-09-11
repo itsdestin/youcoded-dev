@@ -12,6 +12,12 @@
 #   <worktree>   Name of a worktree under worktrees/, or a path containing
 #                desktop/. Defaults to the main youcoded checkout.
 #
+# Run it with output redirected to a file and the process detached
+# (`> log 2>&1 &`) rather than piped through `head`/`tail`: the pipe closes as
+# soon as the consumer exits, and `npm run dev:renderer` then gets SIGPIPE and
+# dies — a workbench that vanishes mid-review. `bash scripts/run-workbench.sh
+# <worktree> > /tmp/wb.log 2>&1 &` keeps vite alive for the whole session.
+#
 # Spec: docs/active/specs/2026-07-29-ui-workbench-design.md
 set -euo pipefail
 

@@ -433,14 +433,6 @@ seen-on is always n/a here.
       the shared copy — so the drift is never created rather than healed afterwards.
       `n/a` `confirmed` `checked 2026-09-04`
 
-- [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
-      nothing anywhere saying the app had stopped responding, so a tester's force-quit on
-      2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03
-      (`youcoded feat/crash-diagnostics`): crashes, dead helper processes and freezes now all write
-      a line into the log the Report-a-bug flow already sends, and crash files stay on the user's
-      machine. Open until that branch merges
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
 - [ ] The app's log is in a folder nobody would guess — Claude Code's, not the app's — so anyone
       poking around for it concludes there is no log at all, as a tester with full access to the
       machine did on 2026-09-03. Less bad than it first looked: Report a bug already attaches the
