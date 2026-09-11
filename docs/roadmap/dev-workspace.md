@@ -78,7 +78,10 @@ seen-on is always n/a here.
       imported by nothing in this suite; 3 of 3 isolated re-runs green and the very next
       full run green at 10,280 passed. Three of eight tests, three unrelated branches, never
       once outside a full run: treat the file's shared timer setup as the suspect, not the
-      assertions. It costs a re-run on every branch that trips it
+      assertions. It costs a re-run on every branch that trips it.
+      FOURTH occurrence 2026-09-10, inside `verify.sh` on session/remote-first-connect (remote
+      access batch 2, which touches no step-guard file); 5 of 5 isolated runs green and the
+      re-run green
       `desktop` `confirmed` `checked 2026-09-10` `regression`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the

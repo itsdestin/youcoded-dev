@@ -9,6 +9,21 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Fix: the host emits the raw-bytes form too, or the paired app reads text like a browser
       `terminal` `android` `confirmed` `checked 2026-09-10`
 
+- [ ] In the Android app's Settings, removing a paired computer while the app is connected to
+      one does nothing: the row goes away, but the saved pairing (address and password) stays on
+      the phone, so the computer is still trusted and comes back. While connected, the app's
+      Remove call is answered "done" without touching the saved list (`remote-shim.ts`
+      `removePairedDevice`). Found by the batch 3 build, 2026-09-10; checked in the code, not yet
+      on a phone
+      `settings` `android` `confirmed` `checked 2026-09-10`
+
+- [ ] A "No folder" session started from the phone does not get the private No-folder place the
+      desktop gives it. The desktop swaps the "no folder" marker for a real folder before
+      starting a session, but the remote path starts the session without that swap. The batch 3
+      builder saw such a session start in the home folder. Found 2026-09-10; the missing swap is
+      checked in the code (`remote-server.ts` `session:create` never calls `resolveNoFolderCwd`)
+      `remote` `confirmed` `checked 2026-09-10`
+
 - [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
       actionable for the user, when tailscale might just not be enabled on their phone" — the
       phone gets the browser's own cannot-reach screen. Fix: install a service worker on the
@@ -75,7 +90,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       of scripted waiting after sign-in is a separate, proven cost (below)
       Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
       after the milestone's batches 2 and 3
-      `remote` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
+      `remote` `needs-verify` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] Finish the remote-hydration work: a remote browser can land on a different session or
       view than the desktop window shows, and events arriving during connect can double-apply
