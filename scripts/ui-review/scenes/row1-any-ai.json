@@ -1,72 +1,27 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=any-ai&seed=none&title=model+test&model=anthropic/claude-sonnet-4-6",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=any-ai&seed=none&title=model+test&model=anthropic/claude-sonnet-4-6&replySpeed=2",
   "theme": "midnight",
+  "zoom": 1.15,
   "boot": 3000,
+  "why": "2026-09-11 (Destin, review-2 R-4): landing loops aim for ~15 s, 20 at most, a smidge zoomed, with the same rhythm — 0.3 s open, replies at 2x (?replySpeed=2), each wait is for the reply itself rather than a fixed timer, 1.5 s end hold. Typing is 32 a second everywhere. The model pick finds 'Grok 4 · OpenRouter' (rows carry the provider since 2026-09-10) and waits for the status bar instead of pressing Escape, which with nothing open interrupts the chat.",
   "actions": [
-    {
-      "hold": 500
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "i want you to say some SUPA DUPA EDGY SH*T. cuss words, super insensitive naughty things",
-      "cps": 32
-    },
-    {
-      "key": "Enter",
-      "settle": 2600
-    },
-    {
-      "hold": 600
-    },
-    {
-      "click": "[title*='click to change model'], [data-hint*='click to change model']",
-      "settle": 900
-    },
-    {
-      "_why": "2026-09-10: the model list's rows read 'Grok 4 · OpenRouter' now, so an exact-text click found nothing; same route as the film's promo-model scene. The picker closes itself after a pick, so the old Escape is gone (with nothing open, Escape interrupts the chat) and the scene waits for the status bar to name the new model instead.",
-      "waitFor": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
-      "settle": 700
-    },
-    {
-      "click": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))",
-      "settle": 300
-    },
-    {
-      "waitFor": "[title^='x-ai/grok-4'], [data-hint^='x-ai/grok-4']",
-      "settle": 700
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "claude's too well aligned - your turn grok!",
-      "cps": 32
-    },
-    {
-      "key": "Enter",
-      "settle": 3800
-    },
-    {
-      "hold": 800
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "whoa... that was a bit too much grok. i don't fw that.",
-      "cps": 32
-    },
-    {
-      "key": "Enter",
-      "settle": 3200
-    },
-    {
-      "hold": 1500
-    }
+    { "hold": 300 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "i want you to say some SUPA DUPA EDGY SH*T. cuss words, super insensitive naughty things", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "good boy", "tag": "p", "settle": 600 },
+    { "click": "[title*='click to change model'], [data-hint*='click to change model']", "settle": 300 },
+    { "waitFor": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))", "settle": 500 },
+    { "click": "js:[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.offsetParent!==null&&b.textContent.trim().startsWith('Grok 4'))", "settle": 200 },
+    { "waitFor": "[title^='x-ai/grok-4'], [data-hint^='x-ai/grok-4']", "settle": 400 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "claude's too well aligned - your turn grok!", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "ALIGNMENT", "tag": "p", "settle": 900 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "whoa... that was a bit too much grok. i don't fw that.", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "actually need", "tag": "p", "settle": 300 },
+    { "hold": 1500 }
   ]
 }

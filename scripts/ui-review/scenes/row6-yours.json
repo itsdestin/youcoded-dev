@@ -1,57 +1,22 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=theme-builder&seed=none&title=new+theme",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=theme-builder&seed=none&title=new+theme&replySpeed=2",
   "theme": "midnight",
+  "zoom": 1.15,
   "boot": 3000,
+  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, typing 32 a second, 1.5 s end hold). The fixed 6.5 s wait for the reply is now a wait for its last sentence.",
   "actions": [
-    {
-      "hold": 500
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "build me a theme with the vibe of outdoor anime art",
-      "cps": 32
-    },
-    {
-      "key": "Enter",
-      "settle": 6500
-    },
-    {
-      "hold": 800
-    },
-    {
-      "click": "[title='Browse skills'], [data-hint='Browse skills']",
-      "settle": 800
-    },
-    {
-      "click": "[title='Open marketplace'], [data-hint='Open marketplace']",
-      "settle": 1500
-    },
-    {
-      "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))",
-      "settle": 1200
-    },
-    {
-      "click": "[data-marketplace-card='theme:golden-sunbreak']",
-      "settle": 1500
-    },
-    {
-      "clickText": "Apply theme",
-      "tag": "button",
-      "settle": 1800
-    },
-    {
-      "key": "Escape",
-      "settle": 700
-    },
-    {
-      "click": "[aria-label='Exit marketplace']",
-      "settle": 1200
-    },
-    {
-      "hold": 1800
-    }
+    { "hold": 300 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "build me a theme with the vibe of outdoor anime art", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "Building it", "tag": "p", "timeout": 15000, "settle": 900 },
+    { "click": "[title='Browse skills'], [data-hint='Browse skills']", "settle": 500 },
+    { "click": "[title='Open marketplace'], [data-hint='Open marketplace']", "settle": 900 },
+    { "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))", "settle": 700 },
+    { "click": "[data-marketplace-card='theme:golden-sunbreak']", "settle": 900 },
+    { "clickText": "Apply theme", "tag": "button", "settle": 1100 },
+    { "key": "Escape", "settle": 400 },
+    { "click": "[aria-label='Exit marketplace']", "settle": 700 },
+    { "hold": 1500 }
   ]
 }

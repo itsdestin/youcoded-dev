@@ -1,88 +1,27 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=chart&seed=none&title=Q3+sales&model=qwen3-coder-30b-a3b-instruct",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=chart&seed=none&title=Q3+sales&model=qwen3-coder-30b-a3b-instruct&replySpeed=2",
   "theme": "meadow-mist",
+  "zoom": 1.15,
   "boot": 3000,
+  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, 1.5 s end hold, typing 32 a second). The drawer is 760 wide, not 860: at 1.15 zoom the window is 1252 CSS px, and 860 left the chat a 390 px sliver.",
   "actions": [
-    {
-      "hold": 500
-    },
-    {
-      "eval": "dispatchEvent(new CustomEvent('buddy:attach-file',{detail:{filePath:'/home/you/Documents/Q3-sales.xlsx'}}))",
-      "settle": 900
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "chart this for me so i can actually read it",
-      "cps": 32
-    },
-    {
-      "key": "Enter",
-      "settle": 600
-    },
-    {
-      "waitForText": "you can edit it right here",
-      "timeout": 25000
-    },
-    {
-      "hold": 900
-    },
-    {
-      "click": "button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']",
-      "settle": 900
-    },
-    {
-      "hold": 500
-    },
-    {
-      "hold": 600
-    },
-    {
-      "clickText": "Q3-sales.html",
-      "settle": 1800
-    },
-    {
-      "hold": 2000
-    },
-    {
-      "click": "button[title='Hide list'], button[data-hint='Hide list']",
-      "settle": 1100
-    },
-    {
-      "hold": 1400
-    },
-    {
-      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Edit')",
-      "settle": 1300
-    },
-    {
-      "hold": 800
-    },
-    {
-      "eval": "(function(){var cm=document.querySelector('.cm-content');var w=document.createTreeWalker(cm,NodeFilter.SHOW_TEXT);var n,hit=null,idx=-1;while((n=w.nextNode())){var i=n.nodeValue.indexOf('6E56CF');if(i>=0){hit=n;idx=i;break}}if(!hit)throw new Error('hex not found');var r=document.createRange();r.setStart(hit,idx);r.setEnd(hit,idx+6);cm.focus();var s=getSelection();s.removeAllRanges();s.addRange(r);})()",
-      "settle": 800
-    },
-    {
-      "hold": 500
-    },
-    {
-      "typeSlow": "3FA98A",
-      "cps": 32
-    },
-    {
-      "hold": 800
-    },
-    {
-      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Save')",
-      "settle": 1600
-    },
-    {
-      "hold": 2600
-    }
+    { "hold": 300 },
+    { "eval": "dispatchEvent(new CustomEvent('buddy:attach-file',{detail:{filePath:'/home/you/Documents/Q3-sales.xlsx'}}))", "settle": 500 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "chart this for me so i can actually read it", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "you can edit it right here", "timeout": 25000, "settle": 500 },
+    { "click": "button[title='Session Files'], button[aria-label='Session Files'], button[data-hint='Session Files']", "settle": 600 },
+    { "clickText": "Q3-sales.html", "settle": 1100 },
+    { "click": "button[title='Hide list'], button[data-hint='Hide list']", "settle": 600 },
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Edit')", "settle": 700 },
+    { "eval": "(function(){var cm=document.querySelector('.cm-content');var w=document.createTreeWalker(cm,NodeFilter.SHOW_TEXT);var n,hit=null,idx=-1;while((n=w.nextNode())){var i=n.nodeValue.indexOf('6E56CF');if(i>=0){hit=n;idx=i;break}}if(!hit)throw new Error('hex not found');var r=document.createRange();r.setStart(hit,idx);r.setEnd(hit,idx+6);cm.focus();var s=getSelection();s.removeAllRanges();s.addRange(r);})()", "settle": 400 },
+    { "typeSlow": "3FA98A", "cps": 32 },
+    { "hold": 400 },
+    { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Save')", "settle": 900 },
+    { "hold": 1500 }
   ],
   "storage": {
-    "youcoded-drawer-width": 860
+    "youcoded-drawer-width": 760
   }
 }
