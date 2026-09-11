@@ -3,20 +3,15 @@
   "theme": "midnight",
   "zoom": 1.15,
   "boot": 3000,
-  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, typing 32 a second, 1.5 s end hold). The fixed 6.5 s wait for the reply is now a wait for its last sentence.",
+  "why": "2026-09-11 (Destin, review-3 S-8): 'skip the process of navigating the marketplace to switch themes and just fake swap it automatically after the assistant reply'. The reply plays (text, then its two tool steps), and the moment it finishes the theme swaps through the workbench's appearance hook — the same call the film's promo-theme scene uses — so the card goes straight from asking for a look to wearing it. The shared rhythm: 0.3 s open, typing 32 a second, replies at 2x, zoom 1.15, a long enough hold to take in the new theme.",
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },
     { "typeSlow": "build me a theme with the vibe of outdoor anime art", "cps": 32 },
     { "key": "Enter", "settle": 300 },
-    { "waitForText": "Building it", "tag": "p", "timeout": 15000, "settle": 900 },
-    { "click": "[title='Browse skills'], [data-hint='Browse skills']", "settle": 500 },
-    { "click": "[title='Open marketplace'], [data-hint='Open marketplace']", "settle": 900 },
-    { "click": "js:[...document.querySelectorAll('button,[role=tab]')].find(b=>/^Themes/.test(b.textContent.trim()))", "settle": 700 },
-    { "click": "[data-marketplace-card='theme:golden-sunbreak']", "settle": 900 },
-    { "clickText": "Apply theme", "tag": "button", "settle": 1100 },
-    { "key": "Escape", "settle": 400 },
-    { "click": "[aria-label='Exit marketplace']", "settle": 700 },
-    { "hold": 1500 }
+    { "waitForText": "Building it", "tag": "p", "timeout": 15000, "settle": 0 },
+    { "waitForText": "Created 2 files", "timeout": 15000, "settle": 500 },
+    { "eval": "window.__workbenchAppearanceSync({theme:'golden-sunbreak'})", "settle": 900, "mark": "swap" },
+    { "hold": 2200 }
   ]
 }

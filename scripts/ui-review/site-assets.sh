@@ -64,7 +64,8 @@ i=0
 for pair in landing-row1-any-ai:row1-any-ai landing-row2-artifact-edit:row2-artifact-edit \
             row2-does-things:row2-does-things row3-projects:row3-projects row4-organized:row4-organized \
             landing-row5-follow:row5-follow-mirror landing-row5-phone:row5-phone-mirror \
-            row6-yours:row6-yours landing-row7-play:row7-play row8-builders:row8-builders; do
+            row6-yours:row6-yours landing-row7-play:row7-play; do
+  # (row8-builders left the map on 2026-09-11: the "For builders" slide was removed from the page, youcoded c11db7f0)
   name="${pair%%:*}"; scene="${pair##*:}"
   CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$name"; i=$((i+1))
 done

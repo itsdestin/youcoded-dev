@@ -1,12 +1,11 @@
 { "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=default&latency=150",
-  "theme": "midnight", "zoom": 1.15, "boot": 3000,
-  "why": "Settings opens Assistant settings (it replaced Model Providers on 2026-09-07). 2026-09-11 (Destin, review-2 R-4): zoomed 1.15 with the shared rhythm (0.3 s open, 1.5 s end hold).",
+  "theme": "midnight", "boot": 3000,
   "actions": [
-    {"hold": 300},
-    {"clickText": "fix chat scroll stick", "tag": "button", "settle": 700}, {"hold": 900},
-    {"clickText": "theme contrast pass", "tag": "button", "settle": 700}, {"hold": 700},
-    {"click": "[title=Settings], [data-hint=Settings]", "settle": 600},
-    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Assistant settings\"))", "settle": 800},
-    {"eval": "(() => { const root = document.querySelector('[role=dialog]') || document.body; const s = [...root.querySelectorAll('*')].filter(e => e.scrollHeight > e.clientHeight + 40 && /auto|scroll/.test(getComputedStyle(e).overflowY)).sort((a,b) => b.scrollHeight - a.scrollHeight)[0]; if (!s) return false; s.scrollTop = s.scrollHeight; return true; })()", "settle": 700},
-    {"hold": 1500}
+    {"hold": 600},
+    {"clickText": "fix chat scroll stick", "tag": "button", "settle": 900}, {"hold": 1500},
+    {"clickText": "theme contrast pass", "tag": "button", "settle": 900}, {"hold": 1200},
+    {"click": "[title=Settings]", "settle": 700},
+    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))", "settle": 1000},
+    {"eval": "(() => { const root = document.querySelector('[role=dialog]') || document.body; const s = [...root.querySelectorAll('*')].filter(e => e.scrollHeight > e.clientHeight + 40 && /auto|scroll/.test(getComputedStyle(e).overflowY)).sort((a,b) => b.scrollHeight - a.scrollHeight)[0]; if (!s) return false; s.scrollTop = s.scrollHeight; return true; })()", "settle": 900},
+    {"hold": 2200}
   ] }

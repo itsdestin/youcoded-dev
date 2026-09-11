@@ -7,7 +7,8 @@
   "actions": [
     { "hold": 300 },
     { "click": "[placeholder^='Message']", "settle": 200 },
-    { "typeSlow": "i want you to say some SUPA DUPA EDGY SH*T. cuss words, super insensitive naughty things", "cps": 32 },
+    { "_why": "2026-09-11 (Destin, review-3 S-1): the old prompt asked for 'cuss words, super insensitive naughty things' and Grok answered with something actually offensive — 'needs to be softer … just goofy, not actually offensive in any way'. The joke is now harmless chaos (fixture any-ai.jsonl).",
+      "typeSlow": "say something totally unhinged. go full chaos goblin", "cps": 32 },
     { "key": "Enter", "settle": 300 },
     { "waitForText": "good boy", "tag": "p", "settle": 600 },
     { "click": "[title*='click to change model'], [data-hint*='click to change model']", "settle": 300 },
@@ -17,7 +18,7 @@
     { "click": "[placeholder^='Message']", "settle": 200 },
     { "typeSlow": "claude's too well aligned - your turn grok!", "cps": 32 },
     { "key": "Enter", "settle": 300 },
-    { "waitForText": "ALIGNMENT", "tag": "p", "settle": 900 },
+    { "waitForText": "FOOT BLANKETS", "tag": "p", "settle": 900 },
     { "click": "[placeholder^='Message']", "settle": 200 },
     { "typeSlow": "whoa... that was a bit too much grok. i don't fw that.", "cps": 32 },
     { "key": "Enter", "settle": 300 },
