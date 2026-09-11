@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: The per-project artifacts sidecar's version history grows without bound — nothing prunes, coalesces or rotates it
 ---

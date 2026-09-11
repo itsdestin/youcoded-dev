@@ -1,11 +1,30 @@
 ---
-status: active
+status: shipped
 created: 2026-09-03
 supersedes: docs/archive/handoffs/2026-08-28-perf-cycle-3-handoff.md
 baseline: perf-reports/2026-09-03-2023-f39c742-ab-folding-rootfix.json
 ---
 
 # Perf — what's next after cycle 3
+
+> **CLOSED 2026-09-10. Everything in §2 and §3 shipped; nothing here is still a plan.**
+> §2 → youcoded #435 (remote replay buffer), #436 (buddy reflow), #437 (file version
+> history, 30-day retention). §3 → youcoded-dev #53 (all three rig instruments), merged
+> 2026-09-06. What those instruments actually said the first time is recorded in §3 below
+> and in `scripts/perf-lab/README.md`.
+>
+> **§4's four items were never roadmap entries** — they lived only here, and one pair lived
+> only inside a line of `shipped.md`. They were filed on 2026-09-10 before this document was
+> archived, so archiving it drops nothing: terminal/PTY perf coverage and real-GPU fidelity
+> in `docs/roadmap/dev-workspace.md` → rigs, Android on-device paging in
+> `docs/roadmap/android-only.md`, and cycle 2's four smaller readers in
+> `docs/roadmap/chat-data.md`.
+>
+> **§6's two open questions are still open** and are deliberately not filed here: whether
+> real use feels better over hours is a lived symptom, not a measured one.
+>
+> One correction to §3.1 below, which the work itself produced: the "blind to GPU" claim
+> appears in **three** scenarios' `blindTo` lists, not five.
 
 Cycle 3 shipped (youcoded PR #398, merge `b246a57a`). This is everything that did
 NOT ship, why it is worth doing, and what it will cost. Nothing here is started.

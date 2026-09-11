@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: The buddy window's chat forces one layout reflow per streamed token — twin of the ChatView defect fixed in perf cycle 1
 ---

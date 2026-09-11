@@ -242,6 +242,22 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] The terminal is the largest part of the app with NO speed measurement at all, and it is
+      where output volume is highest — so the one surface most likely to feel slow is the one
+      surface no number covers. Needs a scenario built from scratch: drive a command that
+      prints a great deal, measure what it costs to draw and what it costs the main process.
+      Carried over from the cycle-3 handoff (2026-09-03) when that document was archived; it
+      had never been filed as an item of its own
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] Every perf number is taken software-rendered, and that is now MEASURED rather than
+      assumed — `report.machine.renderer` says llvmpipe with GPU compositing off (2026-09-06).
+      Measuring what Destin actually sees would need a real display with a compositor, which
+      means putting windows on his screen while he works. Deliberately not attempted; filed so
+      the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
+      GPU" should cite this
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
@@ -424,7 +440,7 @@ seen-on is always n/a here.
       (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
       metrics, a per-pane count proving the mechanism engaged, and a settle window before every
       reading — the last two exist because three different bugs all presented as the same 6%.
-      What remains, ranked: docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md
+      What remains, ranked: docs/archive/handoffs/2026-09-03-perf-next-steps-handoff.md
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
@@ -727,29 +743,6 @@ seen-on is always n/a here.
       CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
       the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
-
-- [ ] Perf rig records nothing about which RENDERER it got, so "the rig is blind to GPU" — repeated
-      in five scenarios' `blindTo` lists and used to dismiss whole classes of finding — has never
-      been verified. The app already resolves it (`main.ts` `app.getGPUInfo('complete')` →
-      `auxAttributes.glRenderer`) and the rig throws it away; `/dev/dri/renderD128` is
-      world-readable on this machine, so the runs may already have hardware acceleration. Record
-      it in `report.machine` and the claim becomes checkable instead of assumed
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
-
-- [ ] Perf rig cannot see per-TOKEN streaming cost, so perf cycle 1 can never be re-gated and the
-      known buddy-window twin has no detector. Measuring TIME needs a native stream and is hostage
-      to local-model speed; measuring WORK does not — cycle 1's defect was one forced layout per
-      token, and the CDP `Performance` domain the rig already calls exposes layout and
-      style-recalc counters. Count layouts per streamed delta and the defect class becomes an
-      exact integer, not a noisy duration (confirm the counter names on first use)
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
-
-- [ ] Perf rig cannot see CONTENT ARRIVING LATE, which is the class that hid perf cycle 3's
-      pop-in through three clean measurement runs until Destin scrolled slowly and saw it
-      (2026-09-03). It is countable rather than visual: while scrolling, count entries that are
-      inside the viewport but still rendering as a spacer — that number must always be zero.
-      Generalises past folding to any lazy render: is anything late to the screen?
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
       merge commit's message was written by hand instead of left as git's default, because it looks

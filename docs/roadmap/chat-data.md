@@ -133,3 +133,13 @@ produced and the panel that shows them (files).
       to say what was searched when `history.hasMore` — e.g. "searching recent messages, scroll
       up to search older ones"
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
+
+- [ ] Four smaller reads left over from cycle 2 still do more work than they need to: listing
+      past conversations re-reads about 25 MB every time the list opens and runs without a
+      concurrency cap, two more reads take whole files where the tail would do, the catalog
+      fetches the same thing several times at once instead of once, and per-session file
+      tracking is never cleaned up. Individually small, all on paths the user waits on.
+      Deferred at the time by scope decision; carried over from the cycle-3 handoff when that
+      document was archived 2026-09-10, where they existed only inside a shipped entry
+      `desktop` `confirmed` `checked 2026-09-10` `performance`
+
