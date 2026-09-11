@@ -80,7 +80,7 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **All binary viewers go through the `BinaryContent` shell**; `ViewerErrorBoundary` wraps the render. xlsx = **ExcelJS, not SheetJS**.
 
 ## UI invariants
-- **Filepath pills ALWAYS open the artifact viewer, NEVER Project View** — session list → `artifacts:resolve-path` (one host lookup; the old list walk only where that channel is missing) → else artifactify (desktop only); an absolute click matches only that exact path.
+- **Filepath pills ALWAYS open the artifact viewer, NEVER Project View** — session→`artifacts:resolve-path`→artifactify (desktop); exact paths only.
 - **Project View re-homes to the FOCUSED conversation's project on every open** — `matchProjectByPath(projects, activeSessionCwd)` → else `projects[0]`. It deliberately does NOT restore the last selection (the component never unmounts, so retention went sticky all run); cwd rides a REF, never a dep.
 - **Drawer state is per-session keyed by `sessionId`**, labels SESSION-scoped; layout-level, not an overlay. Status glyphs (`●◐○`) BANNED. `.youcoded/` auto-gitignored.
 - **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — deliberate** (a tombstone, not a recovery path). Cross-device-SYNCED — don't delete the "unused" flag.
