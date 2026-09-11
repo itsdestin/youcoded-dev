@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import re
 import sys
@@ -93,7 +94,8 @@ class SaveTests(unittest.TestCase):
             'key': 'site-copy-editor', 'submitted': '2026-09-10T12:00:00Z', 'blockCount': 2,
             'edits': {'b0': {'original': 'Old <b>hero</b>', 'current': 'New hero'}},
         }
-        jpath, mpath = sce.write_edits(d, state)
+        jpath, mpath, wrote = sce.write_edits(d, state)
+        self.assertTrue(wrote)
         self.assertTrue(os.path.exists(jpath))
         body = open(mpath, encoding='utf-8').read()
         self.assertIn('- was: Old hero', body)
@@ -102,8 +104,42 @@ class SaveTests(unittest.TestCase):
     def test_no_edits_is_recorded_plainly(self):
         import tempfile
         d = tempfile.mkdtemp()
-        _, mpath = sce.write_edits(d, {'key': 'k', 'edits': {}})
+        _, mpath, _ = sce.write_edits(d, {'key': 'k', 'edits': {}})
         self.assertIn('_No edits._', open(mpath, encoding='utf-8').read())
+
+    def test_an_empty_state_CANNOT_overwrite_a_real_submission(self):
+        # WHY: an autosave from a stale tab (a page left open across a server
+        # restart) posts its own empty state. On 2026-09-10 that wiped a finished
+        # set of Destin's site edits. It must be refused.
+        import tempfile
+        d = tempfile.mkdtemp()
+        real = {'key': 'k', 'submitted': '2026-09-10T12:00:00Z',
+                'edits': {'b0': {'original': 'old', 'current': 'new'}}}
+        sce.write_edits(d, real)
+        _, _, wrote = sce.write_edits(d, {'key': 'k', 'submitted': None, 'edits': {}})
+        self.assertFalse(wrote)
+        kept = json.load(open(os.path.join(d, 'edits.json')))
+        self.assertEqual(kept['edits']['b0']['current'], 'new')
+
+    def test_a_REAL_new_submission_still_overwrites(self):
+        # The guard is only against the empty case; a person re-submitting is fine.
+        import tempfile
+        d = tempfile.mkdtemp()
+        sce.write_edits(d, {'key': 'k', 'submitted': 'A',
+                            'edits': {'b0': {'original': 'old', 'current': 'one'}}})
+        _, _, wrote = sce.write_edits(d, {'key': 'k', 'submitted': 'B',
+                                          'edits': {'b0': {'original': 'old', 'current': 'two'}}})
+        self.assertTrue(wrote)
+        kept = json.load(open(os.path.join(d, 'edits.json')))
+        self.assertEqual(kept['edits']['b0']['current'], 'two')
+
+    def test_an_explicit_clear_of_a_NEVER_submitted_state_is_allowed(self):
+        # Before anyone submits, a page posting empty is just the starting state.
+        import tempfile
+        d = tempfile.mkdtemp()
+        sce.write_edits(d, {'key': 'k', 'submitted': None, 'edits': {}})
+        _, _, wrote = sce.write_edits(d, {'key': 'k', 'submitted': None, 'edits': {}})
+        self.assertTrue(wrote)
 
 
 if __name__ == '__main__':

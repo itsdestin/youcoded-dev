@@ -347,8 +347,35 @@ def build(site_html, out_dir):
     return out_path, count, mirrored
 
 
+def submitted_state(out_dir):
+    """The real submission already on disk, or None. Read before every write so a
+    stale page cannot erase one."""
+    jpath = os.path.join(out_dir, 'edits.json')
+    if not os.path.exists(jpath):
+        return None
+    try:
+        with open(jpath, encoding='utf-8') as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
+
+
 def write_edits(out_dir, data):
+    """Write the edit state. REFUSES to overwrite a real submission with an empty
+    one.
+
+    WHY: an autosave fires 800ms after every keystroke, from every open page. A tab
+    left open across a server restart posts its own empty state over a submission
+    that was already made — exactly what happened on 2026-09-10, wiping a finished
+    set of site edits. A genuine "I cleared my edits" is not a thing a person needs.
+    """
     edits = data.get('edits') or {}
+    prev = submitted_state(out_dir)
+    if not edits and prev and (prev.get('submitted') or (prev.get('edits') or {})):
+        print('[site-copy-editor] REFUSED to overwrite the saved edits with an empty '
+              'state (a stale page autosaved). The submission is intact.')
+        return os.path.join(out_dir, 'edits.json'), os.path.join(out_dir, 'edits.md'), False
+
     jpath = os.path.join(out_dir, 'edits.json')
     with open(jpath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2)
@@ -367,7 +394,7 @@ def write_edits(out_dir, data):
     mpath = os.path.join(out_dir, 'edits.md')
     with open(mpath, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines) + '\n')
-    return jpath, mpath
+    return jpath, mpath, True
 
 
 def main():
@@ -377,7 +404,12 @@ def main():
     for name in ('serve', 'build'):
         s = sub.add_parser(name)
         s.add_argument('site', help='Path to the site index.html')
-        s.add_argument('--out-dir', default='/tmp/site-copy-edit', help='Output directory')
+        # WHY not /tmp: the answer files live here, and a /tmp path is easy to
+        # `rm -rf` when restarting the server — which destroyed a finished set of
+        # Destin's edits on 2026-09-10. scratch/ is git-ignored and outlives a
+        # session; pass an explicit --out-dir if you want a fresh one.
+        s.add_argument('--out-dir', default='scratch/site-copy-edit',
+                       help='Where the built page and the edits.* files go (default: scratch/site-copy-edit)')
         if name == 'serve':
             s.add_argument('--port', type=int, default=0)
             s.add_argument('--timeout', type=int, default=10080)
@@ -408,11 +440,12 @@ def main():
                 data = json.loads(self.rfile.read(length) or b'{}')
             except ValueError:
                 data = {}
-            jpath, mpath = write_edits(a.out_dir, data)
+            jpath, mpath, wrote = write_edits(a.out_dir, data)
             self.send_response(200)
             self.send_header('content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({'ok': True, 'json': jpath, 'md': mpath}).encode())
+            self.wfile.write(json.dumps({'ok': True, 'wrote': wrote,
+                                         'json': jpath, 'md': mpath}).encode())
 
         def log_message(self, fmt, *args):
             pass  # suppress request logs

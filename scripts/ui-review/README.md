@@ -260,8 +260,10 @@ live embed iframe — with every text block editable in place. It writes the edi
 session can apply them.
 
 ```bash
-# background it and put the printed URL in chat as the last line of the turn
-python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html --out-dir /tmp/site-copy-edit
+# background it and put the printed URL in chat as the last line of the turn.
+# --out-dir defaults to scratch/site-copy-edit (git-ignored) — the answers live
+# there, so use a path you will NOT delete when restarting the server.
+python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html
 ```
 
 | | |
@@ -291,10 +293,26 @@ python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html --o
   clickable; the editor-only force-open is undone before text comparison so it is never recorded
   as an edit.
 - Whitespace-only container blocks are **dropped on the page**, so no bare gap is clickable.
+- **An empty autosave can never overwrite a real submission.** Every open page posts its state ~800ms
+  after a keystroke; a tab left open across a server restart posts its own empty state. On 2026-09-10
+  that erased a finished set of Destin's edits, and the tool now refuses it
+  (`write_edits` → the "REFUSED to overwrite" line). Keep `--out-dir` out of `/tmp` for the same
+  reason: deleting it is how the restart lost the work in the first place.
 
 Guarded by `tests/test_site_copy_editor.py` (marking, the exact-`a` rule, nesting, script
-skipping, the save output). **Not** the review deck and **not** `copy-preview.py` below: this is
-the whole real page for free-form copy editing, not a per-step approve/deny review.
+skipping, the save output, and the empty-autosave refusal). **Not** the review deck and **not**
+`copy-preview.py` below: this is the whole real page for free-form copy editing, not a per-step
+approve/deny review.
+
+**Applying a submission (the session's half).** Read `<out-dir>/edits.md`, then map each block to the
+file and assert every `was` string lands **exactly once** before writing — the same character can
+appear in two places, and three edits need markup-aware matching: a block whose text carries inline
+markup keeps it (`<strong>NOTE:</strong>`, `<strong>someone who has never written code</strong>`), the
+origin-story paragraph is stored with `&ldquo;`/`<em>`/`&hellip;` while the editor captured rendered
+characters, and a block whose `now` reads like an instruction ("delete this demo slide") is not copy.
+Removing a **demo slide** is structural: delete the `.step` block AND its `#stage` `<video>` together,
+because the deck aligns `steps` with `#stage` children by index (the `.deck-phone` overlay is excluded
+by class), so removing one alone shifts every later card's clip.
 
 ### Copy-preview and copy-review (earlier tools)
 
@@ -447,7 +465,7 @@ The six binary-free suites, which is what CI runs:
 cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract test_site_copy_editor
 ```
 
-Everything (241 tests, ~15s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
+Everything (244 tests, ~15s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
 
 <!-- runnable: local -->
 ```bash
