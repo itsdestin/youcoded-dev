@@ -17,6 +17,13 @@
 // Usage:
 //   node scripts/ui-probe.mjs <url> [options]
 //
+//   THE WORKBENCH FRAMES THE APP. `?mode=workbench` is a toolbar page with the app
+//   in an <iframe>, so `document.querySelector('.status-bar')` finds nothing and a
+//   select-all selects the toolbar. Reach in with
+//   `document.querySelector('iframe').contentDocument` (2026-09-10: two probes
+//   wasted, same trap a UX tester hit the same day). Headless focus also never
+//   reaches `:focus` inside that frame, so a focus-dependent style reads unfocused.
+//
 //   --size WxH          viewport; repeatable, and the whole probe runs once per size
 //   --wait <js>         poll this expression until truthy before measuring (30s cap)
 //   --settle <ms>       extra pause after --wait (default 400)

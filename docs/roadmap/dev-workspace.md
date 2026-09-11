@@ -296,7 +296,12 @@ seen-on is always n/a here.
       and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
       synthetic dispatch "proved" disabled controls receive pointer events when it proved
       nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
-      `--move-to x,y` on ui-probe would execute where a switch only asks
+      `--move-to x,y` on ui-probe would execute where a switch only asks.
+      **Recurred the same day (unselectable-chrome):** proving a text box still drag-selects
+      took TWO more throwaway CDP scripts (a mouse drag, then a rerun with
+      `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
+      the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
+      and focus emulation on by default, beside `--hover`
       `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a

@@ -69,7 +69,7 @@ blank chats once loops started empty.
 per turn, the Nth message plays the Nth turn (wraps); `user_message` lines put a bubble on
 the timeline only for turns nobody typed here (phone half of the sync row + `?autoplay=`).
 Conversation fixtures end with `turn_complete` or they render frozen mid-turn.
-Switches: `?seed=none` (empty chat), `?title=`, `?model=`, `?platform=android`,
+Switches: `?seed=none&scenario=site` (empty chat — site scenario only), `?title=`, `?model=`, `?platform=android`,
 `?signedIn=1` (fake friend for Connect Four), `?latency=` (0 for the live embed).
 **Guard:** `workbench-reply-script.test.ts` (`splitTurns`, `isControl`),
 `workbench-fixture-actions.test.ts`, `workbench-mock-contract.test.ts` (HAND_WRITTEN).
