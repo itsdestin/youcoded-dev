@@ -280,5 +280,10 @@ spawnSync('magick', [join(framesDir, `f${String(frames.at(-1).n).padStart(5, '0'
 const CAPTURE_LAG_MS = 100;
 const marks = marksFile({ fps: scene.fps ?? 24, width: W, height: H, duration, firstFrameAt, stamps, captureLagMs: CAPTURE_LAG_MS });
 writeFileSync(`${outBase}.marks.json`, JSON.stringify(marks, null, 1));
-console.log(`frames=${frames.length} duration=${duration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
+// WHY the file's own length, not `duration`: the frame-stamp count runs up to 1.6 s off the
+// encoded clip (2026-09-11 — a review card said 18.0 s beside a player showing 17.6), and a
+// quoted length is only useful if it matches what a viewer sees. `duration` still drives marks.
+const probe = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', `${outBase}.webm`]);
+const fileDuration = Number(probe.stdout?.toString().trim()) || duration;
+console.log(`frames=${frames.length} duration=${fileDuration.toFixed(1)}s out=${outBase}.webm marks=${outBase}.marks.json`);
 process.exit(0);

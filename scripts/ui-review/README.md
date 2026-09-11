@@ -145,6 +145,16 @@ a signed-in account with a scripted friend for the games. The workbench serves w
 `VITE_NO_WATCH=1`, so **restart it after editing a fixture or the mock shim** — the
 recorder otherwise films the previous code and every frame still "verifies".
 
+**The landing loops' standard (Destin, 2026-09-11 — keep it when re-recording).** About 15 s,
+never more than 20, with nothing real cut. Desktop takes `"zoom": 1.15` (the phone take stays at
+1, or it reflows). Replies at `&replySpeed=2` (the inbox loop 2.5, its reply is three times
+longer), and every wait is for the reply itself (`waitForText` its last words), never a fixed
+settle. The same rhythm everywhere: a 0.3 s opening hold, typing at 32 a second, short settles
+after clicks, a 1.5 s closing hold. A theme loop swaps through `window.__workbenchAppearanceSync(
+{theme})` the moment the reply finishes — no marketplace trip. Demo jokes are goofy, never
+actually offensive. Quote a loop's length from the file (`ffprobe`), which is what the player
+shows.
+
 ### The theme a deck opens on
 
 `build` and `serve` open the deck on the theme **Destin's app is on right now** — the app
