@@ -232,6 +232,11 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] The speed-test comparison can call a change KEEP even though the Projects or long-scrollback
+      boots logged errors: `scripts/perf-lab/compare.mjs`'s `errorTotal` counts error lines from
+      the workload and terminal boots but ignores `projectsBoot` and `scrollbackBoot`. Found while
+      reviewing the new terminal scenario, 2026-09-10
+      `desktop` `confirmed` `checked 2026-09-10`
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
