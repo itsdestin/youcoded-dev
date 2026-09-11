@@ -248,6 +248,16 @@ seen-on is always n/a here.
       reviewing the new terminal scenario, 2026-09-10
       `desktop` `confirmed` `checked 2026-09-10`
 
+- [ ] A stale review-deck page can overwrite the answers file. `scripts/ui-review/deck/serve.py`
+      writes `<stem>.answers.json` on every `/answers` POST with no guard, so a deck page left
+      open across a server restart rewrites the file from its own state. That is the bug fixed in
+      `site-copy-editor.py` on 2026-09-10, where it erased a finished set of Destin's site edits —
+      and the deck is the surface he answers EVERY UI review on, so the same accident there loses
+      review answers, not copy. `serve.py` already rotates a *submitted* file aside on re-serve
+      (`rotate_submitted`); this is the in-flight case it does not cover. Fix as that tool now
+      does: refuse a write that would drop answered steps instead of overwriting.
+      `n/a` `confirmed` `checked 2026-09-10`
+
 - [ ] The speed-test comparison judges two runs taken at very different machine load as if
       they were alike. On 2026-09-10 two freeze-fix branches both read 16–20% slower than master
       on long-conversation switches; it took a second master run and a second run of each branch

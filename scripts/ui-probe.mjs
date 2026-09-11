@@ -51,6 +51,21 @@
 // content, structure, text and geometry; check colour and highlight state in a
 // dev instance (`bash scripts/run-dev.sh`), not here.
 //
+// TWO PAGE SHAPES THAT MAKE A PROBE LOOK WRONG, both measured 2026-09-10 on
+// youcoded/docs/index.html:
+//   * `window.scrollTo` / `scrollIntoView` move NOTHING when the page scrolls a
+//     body with `overflow: hidden auto` — `window.scrollY` stays 0 and the
+//     element's rect never changes, so the screenshot shows the wrong place. Check
+//     `getComputedStyle(document.body).overflow` before trusting a scroll.
+//   * Sections revealed by an intro animation sit at `opacity: 0` (the site's
+//     `body.intro-mode > section`) and the reveal runs on IntersectionObserver. A
+//     probe that does not let that observer fire photographs a blank page while the
+//     DOM reports the element present and in view. Force `opacity: 1` in the probe
+//     (a stylesheet), or isolate the section; an all-dark shot is the ANIMATION not
+//     having run, not a broken page.
+//   * The gallery and the media loops are lazy — they load on scroll, so they read
+//     `naturalWidth 0` / `readyState 0` in a probe that never scrolls.
+//
 // Examples:
 //   node scripts/ui-probe.mjs http://127.0.0.1:8791/deck.html \
 //     --wait 'window.__deckReady' --eval 'document.body.dataset.layout' --shot /tmp/deck.png
