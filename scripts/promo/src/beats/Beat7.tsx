@@ -14,8 +14,11 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // and filter your previous conversations.' scene"):
 //   1. All Sessions → the switcher drops down with each session's status, and holds 3.8 s (the
 //      scene holds it open that long); the status line is said only while it is up (bars 0–1.75).
-//   2. Resume → the browser with "econ" narrowing it → Organize → the tag → the note, one take at
-//      1.55× under the one line (bars 1.75–4). The drag along the strip is CUT (Destin: "drop this").
+//   2. Resume → the browser with "econ" narrowing it → the found conversation opened in the preview →
+//      Organize → the tag → the start of the note, one take at 1.55× under the one line (bars 1.75–4).
+//      The drag along the strip is CUT (Destin: "drop this"). The preview click is Destin's pick on the
+//      2026-09-11 review (F-4): the redesigned Resume screen left its right half empty without it, and he
+//      accepted losing most of the note typing to keep four bars.
 const T_SEARCH = B('b7', 1.75), END = LEN('b7');
 const MENU_AT = 6;                                                                   // local frame the switcher is open
 const S1_FROM = markFrame('promo-conversations', 'menu', 'end') - MENU_AT;

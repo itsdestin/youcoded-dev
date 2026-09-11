@@ -121,7 +121,7 @@ scripts/ui-review/scenes/row2-does-things.json
 | action | does |
 |---|---|
 | `click` / `clickText` (+`tag`) | move the cursor there (interpolated, visible) and click; `js:` selectors work as in shots |
-| `typeSlow` (+`cps`) | per-key typing at N chars/second |
+| `typeSlow` (+`cps`) | per-key typing at N chars/second, kept to the CLOCK: each letter has a due time, so a busy page (a theme's moving background) no longer drags a loop to a third of its setting (2026-09-11). The landing page's ten loops all type at 32 |
 | `key` (+`modifiers`) | one key — `Enter`, `Escape`, … |
 | `waitFor` / `waitForText` (+`tag`, `timeout`) | poll until the element is on screen (contains-match for text; default 20 s). **Use this before clicking anything a scripted reply produces** — a fixed `settle` is a race |
 | `hold` | keep recording for N ms; `settle` on any action is the pause after it |
