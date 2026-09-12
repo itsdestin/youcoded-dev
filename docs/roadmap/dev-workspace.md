@@ -591,6 +591,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+
+- [ ] `.claude/rules/react-renderer.md` is over the 600-word rule budget on master itself
+      (`audit-anchors.mjs` reports 612), so every session that touches renderer code pays for the
+      overflow and the mechanical audit reads red for a reason no branch introduced. The rules
+      README says overflow migrates to the lazy doc it points to (`youcoded/docs/renderer-chrome.md`)
+      or becomes a pinning test. Found 2026-09-11 while merging remote batches 2/3
+      `n/a` `confirmed` `checked 2026-09-11`
 - [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
       `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
       byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped
