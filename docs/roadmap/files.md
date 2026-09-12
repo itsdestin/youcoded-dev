@@ -128,6 +128,49 @@ searched or resumed (chat-data).
       product's fight). On record only; revisit if the "open, personal Cowork" positioning is dropped
       `files-panel` `all` `parked` `checked 2026-07-20`
 
+- [ ] The number on the Files button and the number in the panel's own title disagree whenever a
+      search, a type filter or "Show missing" is on — one counts what is listed, the other counts
+      every file that is still there. Which of the two the user should see is undecided
+      `files-panel` `all` `confirmed` `checked 2026-09-11`
+
+- [ ] Videos, zip files and audio are filtered under "Code & configs" — everything that is not a
+      document, image or spreadsheet is lumped in with code, so filtering to code shows an .mp4
+      `files-panel` `all` `confirmed` `checked 2026-09-11`
+
+- [ ] An image, PDF or spreadsheet open in the Files panel keeps showing the old version after the
+      assistant regenerates it; only text files refresh in place. Picking another file and coming
+      back shows the new one
+      `files-panel` `all` `confirmed` `checked 2026-09-11`
+
+- [ ] Edits to notebook files (.ipynb) never appear in a chat's file list — the notebook tool is not
+      one of the tools the app records, and its file goes by a different field name
+      `files-panel` `all` `confirmed` `checked 2026-09-11`
+
+- [ ] Esc can appear to do nothing in the Files panel: when the file that was open is no longer in
+      the list, the first Esc clears that invisible selection instead of closing the panel
+      `files-panel` `all` `confirmed` `checked 2026-09-11`
+
+- [ ] Renaming a file that fails (the file is open in another program, say) while you click another
+      file in the list can move the half-finished rename onto the file you just clicked, so the next
+      Enter renames the wrong one
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-11`
+
+- [ ] Clicking "Load the whole file" on a very large file and then switching to another file can put
+      the big file's text on screen under the other file's name, because the slow read lands last
+      `files-panel` `all` `needs-verify` `checked 2026-09-11`
+
+- [ ] An old chat can lose files from its list: the per-file history is trimmed after 30 days (with
+      the last ten kept), and a chat whose entries were all trimmed away no longer matches any file
+      `files-panel` `all` `confirmed` `checked 2026-09-11`
+
+- [ ] A damaged file-record file makes a chat's Files panel say "Nothing here yet" instead of
+      reporting that it could not be read, so a fixable problem looks like an empty chat
+      `files-panel` `desktop` `confirmed` `checked 2026-09-11`
+
+- [ ] A file outside the project folder that is deleted while the Files panel is open still looks
+      present — only files inside the project are watched, so nothing tells the panel to re-check
+      `files-panel` `desktop` `confirmed` `checked 2026-09-11`
+
 - [ ] The app holds roughly a quarter of a million file watches on its own; a second instance runs the
       machine out of watches and file watching fails with a "no space left" error that has nothing to
       do with disk. Which watcher is the greedy one is unconfirmed (project watcher is the recursive

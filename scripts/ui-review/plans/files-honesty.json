@@ -1,22 +1,22 @@
 {
-  "_why": "Files drawer honesty, before/after deck (2026-09-11). Every state is a workbench-only override of window.claude.artifacts.*; nothing real is touched. The same plan runs on master and on the branch — master simply renders the old wording — so both sweeps verify and the deck compares the pictures.",
+  "_why": "Files drawer honesty, before/after deck (2026-09-11). Every state is a workbench-only override of window.claude.artifacts.*; nothing real is touched. The same plan runs on master and on the branch — master renders the old wording — so both sweeps verify and the deck compares the pictures. Evals are synchronous by contract here (the driver runs them as plain expressions), and file rows are opened by their visible name, the way plans/artifact-zoom.json does.",
   "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
   "width": 1440,
   "height": 900,
   "pre": [
     {
-      "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); /* Mock namespaces are get-only catch-all proxies, so assigning one method is dropped — wrap each with a local override map (pattern from plans/error-batch1.json). */ for(const ns of ['artifacts','session']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.seen=(...parts)=>parts.some(p=>document.body.innerText.includes(p));"
+      "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); /* Mock namespaces are get-only catch-all proxies, so assigning one method is dropped — wrap each with a local override map (pattern from plans/error-batch1.json). */ for(const ns of ['artifacts']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.seen=(...parts)=>parts.some(p=>document.body.innerText.includes(p));"
     }
   ],
   "shots": [
     {
       "name": "files-one-missing",
-      "_why": "One file is not at its saved location. Before: the row reads 'deleted' and the filter chip says 'Show deleted'. After: 'not found', chip 'Show missing'.",
+      "_why": "One file is not at its saved location, with the missing rows shown. Before: the row reads 'deleted' and the filter chip says 'Show deleted'. After: 'not found', chip 'Show missing'.",
       "actions": [
-        { "eval": "const list=await window.claude.artifacts.listSession('wb-1','/home/destin/youcoded-dev/youcoded'); const gone=list.artifacts[1].id; window.claude.artifacts.checkExistence=async()=>({ok:true,missingIds:[gone]});" },
+        { "eval": "window.claude.artifacts.checkExistence=(_root,ids)=>Promise.resolve({ok:true,missingIds:ids.slice(1,2)});" },
         { "click": "[title='Session Files']", "settle": 1200 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/filter/i.test(b.getAttribute('aria-label')||''))", "settle": 500 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Show (deleted|missing)$/.test(b.textContent.trim()))", "settle": 900 }
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/filter/i.test(b.getAttribute('aria-label')||''))", "settle": 600 },
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Show (deleted|missing)$/.test(b.textContent.trim()))", "settle": 1000 }
       ],
       "expect": "js:window.seen('not found','deleted')"
     },
@@ -24,31 +24,30 @@
       "name": "files-all-missing",
       "_why": "Every file in the chat is missing and the toggle is off. Before: 'Nothing here yet' — untrue. After: how many are not where they were saved, with a way to show them.",
       "actions": [
-        { "eval": "const list=await window.claude.artifacts.listSession('wb-1','/home/destin/youcoded-dev/youcoded'); const all=list.artifacts.map(a=>a.id); window.claude.artifacts.checkExistence=async()=>({ok:true,missingIds:all});" },
-        { "click": "[title='Session Files']", "settle": 1400 }
+        { "eval": "window.claude.artifacts.checkExistence=(_root,ids)=>Promise.resolve({ok:true,missingIds:ids});" },
+        { "click": "[title='Session Files']", "settle": 1600 }
       ],
       "expect": "js:window.seen('Nothing here yet','where they were saved')"
     },
     {
       "name": "file-older-format",
-      "_why": "A text file in an older encoding. After: the pane says why editing is off. Before: no note, and the Edit button is offered.",
+      "_why": "A text file in an older encoding. After: the pane says why editing is off. Before: no note at all.",
       "actions": [
-        { "eval": "const o=window.claude.artifacts.get; window.claude.artifacts.get=async(...a)=>({...(await o(...a)),content:'Caf\\uFFFD du March\\uFFFD\\n\\nNotes from the 2019 trip.\\n',binary:false,truncated:false,notUtf8:true,sizeBytes:64});" },
+        { "eval": "const o=window.claude.artifacts.get; window.claude.artifacts.get=(...a)=>o(...a).then(r=>({...r,content:'Caf\\uFFFD du March\\uFFFD\\n\\nNotes from the 2019 trip, typed on an older machine.\\n',binary:false,truncated:false,notUtf8:true,sizeBytes:64}));" },
         { "click": "[title='Session Files']", "settle": 1000 },
-        { "click": "js:[...document.querySelectorAll('button')].find(b=>/\\.md$/.test(b.textContent.trim().split('\\n')[0]||''))", "settle": 1600 }
+        { "clickText": "scroll-stick-notes.md", "settle": 2000 }
       ],
-      "expect": "js:window.seen('older text format','Edit')"
+      "expect": "js:window.seen('older text format','Notes from the 2019 trip')"
     },
     {
       "name": "file-save-failed",
-      "_why": "A save the computer refuses. Before: the button does nothing at all. After: a red banner naming the cause, with the draft kept.",
+      "_why": "A save the computer refuses. Before: the button does nothing at all. After: a banner naming the cause, with the draft kept.",
       "actions": [
-        { "eval": "window.claude.artifacts.save=async()=>({ok:false,error:'write-failed',code:'EACCES'});" },
+        { "eval": "window.claude.artifacts.save=()=>Promise.resolve({ok:false,error:'write-failed',code:'EACCES'});" },
         { "click": "[title='Session Files']", "settle": 1000 },
-        { "click": "js:[...document.querySelectorAll('button')].find(b=>/\\.md$/.test(b.textContent.trim().split('\\n')[0]||''))", "settle": 1600 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Edit$/i.test(b.textContent.trim())||/edit/i.test(b.getAttribute('aria-label')||''))", "settle": 900 },
-        { "typeSlow": " a line the user typed", "settle": 300 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Save$/i.test(b.textContent.trim())||/save/i.test(b.getAttribute('aria-label')||''))", "settle": 1200 }
+        { "clickText": "scroll-stick-notes.md", "settle": 2000 },
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Edit$/i.test(b.textContent.trim())||/edit/i.test(b.getAttribute('aria-label')||''))", "settle": 1200 },
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Save$/i.test(b.textContent.trim())||/save/i.test(b.getAttribute('aria-label')||''))", "settle": 1400 }
       ],
       "expect": "js:window.seen('permission','Save')"
     }

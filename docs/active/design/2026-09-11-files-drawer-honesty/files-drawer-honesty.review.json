@@ -1,0 +1,62 @@
+{
+  "_why": "Before/after of the four things this batch changed on screen. Before = master, after = session/files-drawer-honesty. Every state is staged by a workbench-only override (plans/files-honesty.json); nothing real was touched.",
+  "title": "Files: what the app says when a file isn't where it was saved",
+  "key": "files-drawer-honesty-review",
+  "out": "files-drawer-honesty.review.html",
+  "images": "images/files-drawer-honesty.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "files-list": ["files-honesty", "files-one-missing", "500x430+930+55"],
+    "files-empty": ["files-honesty", "files-all-missing", "500x330+930+55"],
+    "file-note": ["files-honesty", "file-older-format", "500x300+930+110"],
+    "save-banner": ["files-honesty", "file-save-failed", "500x260+930+110"]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "Files",
+      "path": "The Files panel on the right of a chat",
+      "crop": "files-list",
+      "headline": "A file the app can't find now says \"not found\" instead of \"deleted\".",
+      "changed": "The app only knows the file isn't at the place it was saved — it cannot tell whether it was deleted, renamed or moved. The row says that, and the filter switch reads \"Show missing\" rather than \"Show deleted\".",
+      "notice": "Files the assistant edited in a temporary copy of the project stop claiming they were deleted. Most of them now open again, because the app looks for the file elsewhere in the project first.",
+      "measured": "4,358 of your 10,141 tracked files said \"deleted\" while still existing; 3,157 are found again",
+      "risk": "A file the app finds again opens as it is today, which may differ from what that chat left behind."
+    },
+    {
+      "id": "F-2",
+      "surface": "Files",
+      "path": "The Files panel, when every file in the chat is missing",
+      "crop": "files-empty",
+      "headline": "An empty list now says how many files aren't where they were saved.",
+      "changed": "Missing files are hidden by default, so the list used to read \"Nothing here yet\" for a chat that plainly made files. It now counts them and offers a way to show them.",
+      "notice": "Opening an older chat tells you what happened to its files instead of pretending it never made any.",
+      "risk": "One more line of text in an otherwise empty panel."
+    },
+    {
+      "id": "F-3",
+      "surface": "Files",
+      "path": "A file in an older text format, open in the Files panel",
+      "crop": "file-note",
+      "headline": "Files in an older text format say why they can't be edited.",
+      "changed": "These files use a pre-Unicode format, so the app can show them but cannot save them back without destroying accented characters. Editing is turned off, and the panel says so instead of silently hiding the Edit button.",
+      "notice": "You can still read the file. Saving can no longer quietly replace every accent with a question mark.",
+      "risk": "You cannot edit such a file in YouCoded at all — it has to be converted elsewhere first."
+    },
+    {
+      "id": "F-4",
+      "surface": "Files",
+      "path": "Editing a file the computer refuses to write",
+      "crop": "save-banner",
+      "headline": "A save that fails now says so, and keeps your changes.",
+      "changed": "A save blocked by permissions, a read-only disk or a full disk used to do nothing at all — no message anywhere. The panel now shows the reason when it is unambiguous, and a plain \"couldn't save\" when it isn't.",
+      "notice": "The Save button stops looking broken. Your typing stays in the editor either way.",
+      "risk": "None known: the message only appears where the save genuinely failed."
+    }
+  ]
+}
