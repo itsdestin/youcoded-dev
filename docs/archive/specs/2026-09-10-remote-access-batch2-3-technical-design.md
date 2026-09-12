@@ -6,7 +6,7 @@ branch: session/remote-first-connect
 # Remote access, batches 2 and 3 — conversation restoration and file reading
 
 Revision 4, final. Three review rounds found 16, 19 and 8 problems; all 43 were accepted
-(`docs/active/reviews/2026-09-10-remote-batch-2-3-design-review-{1,2,3}.md`). Round 1
+(`docs/archive/reviews/2026-09-10-remote-batch-2-3-design-review-{1,2,3}.md`). Round 1
 reshaped the restore half (per-session apply, queue everything, a terminal backlog);
 round 2 closed a symlink hole in file authorization, made the Android download reach the
 download manager, made resume actually resumable, and placed the queue's cut line; round 3
@@ -17,7 +17,7 @@ backpressure pause opened a gap the replay had to close. Round 3 is the cap set 
 
 Covers batches 2 and 3 of `2026-09-09-remote-access-first-milestone.md`. Every "today"
 claim was read against app HEAD `cbe8b4e8` on this branch. The user-facing promises are
-the 21 rows of `docs/active/design/2026-09-10-remote-batch-2-3/remote-batch-2-3.contract.json`,
+the 21 rows of `docs/archive/design/2026-09-10-remote-batch-2-3/remote-batch-2-3.contract.json`,
 signed 2026-09-10; where a row and this design disagree, the row wins.
 
 Approved UI (review deck 2026-09-10, 9/9 yes; questions deck 12/12): a strip above the chat

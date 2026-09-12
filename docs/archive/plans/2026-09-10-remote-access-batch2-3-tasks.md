@@ -5,7 +5,7 @@ branch: session/remote-first-connect
 
 # Remote access batches 2 and 3 — task breakdown
 
-From `docs/active/specs/2026-09-10-remote-access-batch2-3-technical-design.md` revision 4,
+From `docs/archive/specs/2026-09-10-remote-access-batch2-3-technical-design.md` revision 4,
 final, after three review rounds (16, 19 and 8 findings, all 43 accepted). Contract signed
 2026-09-10 (21 rows). The design's section numbers below are revision 4's.
 

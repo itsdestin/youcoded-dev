@@ -1,6 +1,6 @@
 ---
 status: active
-reviews: docs/active/specs/2026-09-10-remote-access-batch2-3-technical-design.md
+reviews: docs/archive/specs/2026-09-10-remote-access-batch2-3-technical-design.md
 branch: session/remote-first-connect
 ---
 

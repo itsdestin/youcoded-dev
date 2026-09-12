@@ -168,25 +168,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Destin chose to defer the refactor on 2026-08-06
       `projects` `remote` `needs-verify` `checked 2026-08-06`
 
-- [ ] Milestone batch 2 — conversation restoration. After a reconnect the phone must show the
-      conversation as it truly is: readiness, snapshot and event ordering instead of fixed waits,
-      the phone keeping its own selected conversation (questions deck Q-3, 2026-09-09), and which
-      desktop window a phone follows when several are open (undecided — needs its own questions
-      deck). Folds in the hydration, morphing-reply and first-connect items above once a phone pass
-      has confirmed which still bite, and the "did that action happen?" indicator below. Batch 1
-      (secure transport, device records, recovery) shipped 2026-09-10 — see shipped.md
-      Scope and acceptance: docs/active/specs/2026-09-09-remote-access-first-milestone.md
-      `remote` `confirmed` `checked 2026-09-10`
-
-- [ ] Milestone batch 3 — file reading over remote access: session and project file lists,
-      previews, downloads, and a list that refreshes after a reconnect rather than going stale
-      without saying so (which is why it follows batch 2). Large transfers must not block chat;
-      file content must open from an address separate from the app's own, so a file cannot act as
-      the app. Uploads and editing are a later, separately approved batch. Needs a questions deck:
-      what a phone shows for a big file, download versus preview, size limits
-      Scope and acceptance: docs/active/specs/2026-09-09-remote-access-first-milestone.md
-      `remote` `confirmed` `checked 2026-09-10`
-
 - [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers
       only allow a microphone on a secure (https) page, and remote access is plain http, so the
       voice-prompting mic (2026-09-05 deck, Q-7: Destin picked "desktop and Android first") stays
@@ -282,7 +263,7 @@ Filing test: reaching the app from another device — the protocol, the browser 
       questions still waiting — and the screens then make about fifteen requests, with skills and
       the / commands asked twice (the shim's re-ask list AND each screen's own reconnect listener).
       Cheapest first step: replay only open asks and drop the duplicate pair. Found 2026-09-11 in
-      the speed/sync review (`docs/active/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
+      the speed/sync review (`docs/archive/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
       Destin: "it currently feels unresponsive and lags behind desktop sometimes."
       `remote` `confirmed` `checked 2026-09-11` `performance`
 

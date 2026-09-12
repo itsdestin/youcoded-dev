@@ -13,7 +13,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       inert with no hint why; "3 context files · active <date>"; the hover-only Remove control
       on file rows, unreachable on a phone; "224 B" for a file size. Each has a proposed shorter
       wording in the review file
-      `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-batch-2-3-ux-review-1.md
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-batch-2-3-ux-review-1.md
 
 - [ ] Three things a context-free tester tripped on during the first-run guide's review that
       predate it (2026-09-10): the Cloud providers card at phone width wraps "Signed in as…"
