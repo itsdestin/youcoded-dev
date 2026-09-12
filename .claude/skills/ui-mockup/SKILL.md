@@ -10,6 +10,14 @@ approved changes — see `docs/archive/specs/2026-07-16-ui-consistency-design-sp
 output format it produced). That process still holds. What changed on 2026-07-29 is **where the
 rendering happens**.
 
+## Small work: ask about the short route first
+
+For a small change, small feature or bug fix with clear direction, ask Destin (one line in
+chat) whether to skip the questions deck, the UX tester and the contract/acceptance rounds. On
+yes, build it in the workbench and make a UI review deck the first thing he sees (a Live step
+for motion). Everything below is the full route. Rule: `.claude/rules/feature-flow.md` →
+Short route for small work.
+
 ## Before drawing anything: the questions deck
 
 Step 2 of the feature flow (`docs/active/specs/2026-09-01-feature-flow-design.md` §5) is a
@@ -88,10 +96,24 @@ approved.
   the container, then the thumb crossing the rounded corners — none of which any 1440x900
   screenshot could have shown. Shrink the height until it overflows, and scroll to both ends. This is the workbench's one real gap: appearance is
   guaranteed identical, behaviour under real data is not.
-- **Explicit fidelity notes — never let an approximation pass silently.** Community themes
-  render in full, artwork included (two ship by default: Halftone Dimension and Meadow Mist).
-  If you hit something the workbench genuinely cannot reproduce, say so in the review rather
-  than letting Destin wonder whether it is the design or the harness.
+- **Explicit fidelity notes — never let an approximation pass silently, and never paint one
+  onto the screen.** Community themes render in full, artwork included (two ship by default:
+  Halftone Dimension and Meadow Mist). If you hit something the workbench genuinely cannot
+  reproduce, say so **in the deck** — the step's `risk` card — rather than letting Destin
+  wonder whether it is the design or the harness.
+  **The note goes in the deck, never in the mockup.** A mockup that captions itself
+  ("Setup is not connected in this preview", "Prototype · AI unavailable") or greys out its
+  own primary action is no longer a picture of the app, so the review measures the wrong
+  thing. Destin, 2026-09-09, rejecting three of four steps for exactly this: *"the workbench
+  shouldn't have code that makes it look different from the real app, that defeats the whole
+  point."* Unbuilt actions render **enabled and in the app's own style**; what they don't do
+  yet is the `risk` line. Keep any guard that stops a mock reaching real machinery as a test,
+  not as a `disabled` attribute.
+- **Use the primitive's own size guidance before styling a control.** `Button.tsx` documents
+  `sm` as "inline row actions (EngineCard, provider rows, chips)" and `md` as "forms, popup
+  footers, most actions"; the app's dialogs stack full-width `className="w-full py-2.5"`
+  actions, primary over secondary (`ContributePopup.tsx`, `BugReportPopup.tsx`). A mockup
+  that picks its own sizes reads as a different app even when every token is right.
 - **On ambiguous feedback ("make them more consistent"), prefer the smallest literal reading and
   ask.** Over-extrapolating cost a full rework in the original session.
 - When he picks among options (A/B/C), keep the rejected ones described in the ledger marked

@@ -6,14 +6,14 @@
   "zoom": 1.35,
   "fps": 30,
   "boot": 3000,
-  "why": "The first action freezes the theme's dust particles through the app's own window-hidden pause (ThemeEffects.tsx onVisibility), then puts visibilityState back so nothing else in the app thinks the window is hidden. Measured 2026-09-03: with the particle canvas repainting every 33 ms, every pointer step of the recorder waits ~90 ms for a frame (15 ms with the canvas still), so a click took 1.2-1.8 s and the drag's 19-step approach alone ate 2 s -- the pill never moved inside the 2 s shot. The dust stays on screen for the whole clip, it just does not drift. The pointer is parked on the All Sessions button before the opening hold: the screencast never draws a cursor, and a 19-step approach across the chat costs ~2 s of hover re-renders on this page, which pushed the menu past the bar the edit gives it. The opening hold is 2.6 s, not 0.9: for the first ~2.5 s after the screencast starts every pointer step costs ~90 ms whatever the page is doing, then ~1 ms (measured on this page, dust frozen); the menu click used to land inside that window and take 1.7 s. Nothing before the `menu` mark is in the edit. 2026-09-09: the sessions menu holds open 3.8 s before Resume is clicked, because the film's status line is shown only while the switcher is visible and needs 1.2 s + \u00bc s a word to be read.",
+  "why": "2026-09-11 (Destin picked this take on the review deck, F-4): after \"econ\" narrows the list, the found conversation is clicked so the new preview sheet opens beside the list; everything else is the filmed scene. The first action freezes the theme's dust particles through the app's own window-hidden pause (ThemeEffects.tsx onVisibility), then puts visibilityState back so nothing else in the app thinks the window is hidden. Measured 2026-09-03: with the particle canvas repainting every 33 ms, every pointer step of the recorder waits ~90 ms for a frame (15 ms with the canvas still), so a click took 1.2-1.8 s and the drag's 19-step approach alone ate 2 s -- the pill never moved inside the 2 s shot. The dust stays on screen for the whole clip, it just does not drift. The pointer is parked on the All Sessions button before the opening hold: the screencast never draws a cursor, and a 19-step approach across the chat costs ~2 s of hover re-renders on this page, which pushed the menu past the bar the edit gives it. The opening hold is 2.6 s, not 0.9: for the first ~2.5 s after the screencast starts every pointer step costs ~90 ms whatever the page is doing, then ~1 ms (measured on this page, dust frozen); the menu click used to land inside that window and take 1.7 s. Nothing before the `menu` mark is in the edit. 2026-09-09: the sessions menu holds open 3.8 s before Resume is clicked, because the film's status line is shown only while the switcher is visible and needs 1.2 s + ¼ s a word to be read.",
   "actions": [
     {
       "eval": "(()=>{Object.defineProperty(document,'visibilityState',{get:()=>'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'));delete document.visibilityState;document.documentElement.setAttribute('data-doc-hidden','0');return document.visibilityState})()",
       "settle": 0
     },
     {
-      "moveTo": "[title='All Sessions']",
+      "moveTo": "[title='All Sessions'], [data-hint='All Sessions']",
       "ms": 16,
       "settle": 0
     },
@@ -21,7 +21,7 @@
       "hold": 2600
     },
     {
-      "click": "[title='All Sessions']",
+      "click": "[title='All Sessions'], [data-hint='All Sessions']",
       "settle": 500,
       "mark": "menu"
     },
@@ -35,7 +35,7 @@
     },
     {
       "waitFor": "[placeholder='Search sessions...']",
-      "settle": 1200
+      "settle": 800
     },
     {
       "click": "[placeholder='Search sessions...']",
@@ -43,12 +43,20 @@
     },
     {
       "typeSlow": "econ",
-      "cps": 12,
+      "cps": 24,
       "settle": 0,
       "mark": "search"
     },
     {
-      "hold": 1200
+      "hold": 700
+    },
+    {
+      "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>b.offsetParent!==null&&!b.hasAttribute('aria-haspopup'))[0]",
+      "settle": 300,
+      "mark": "preview"
+    },
+    {
+      "hold": 1300
     },
     {
       "click": "[aria-label^='Organize ']",
@@ -61,7 +69,7 @@
       "mark": "tag"
     },
     {
-      "click": "textarea[aria-label='Add a note\u2026']",
+      "click": "textarea[aria-label^='A note for later']",
       "settle": 200
     },
     {

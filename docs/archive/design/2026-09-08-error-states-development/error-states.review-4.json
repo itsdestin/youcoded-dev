@@ -1,0 +1,60 @@
+{
+  "title": "Buttons and captions — matched to the app",
+  "key": "error-states-development-review-4",
+  "out": "error-states.review-4.html",
+  "images": "images/error-states.review-4",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-r5-deck/before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-r5-deck/after"
+  },
+  "labels": {"before": "Before · last round", "after": "After · restyled"},
+  "themes": ["midnight"],
+  "crops": {
+    "20": ["revision", "contribute", "420x338+430+281"],
+    "21": ["revision", "walkthrough", "420x588+430+156"],
+    "22": ["revision", "report", "600x632+340+134"],
+    "23": ["revision", "logs", "600x761+340+70"]
+  },
+  "steps": [
+    {
+      "id": "R4-20",
+      "surface": "Contribute",
+      "path": "Settings → Development → Contribute to YouCoded",
+      "headline": "20. The action is a real button, and the caption is gone.",
+      "crop": "20",
+      "changed": "Full width, primary, the size the app uses in a dialog — the same treatment as Install Workspace on the current screen. The greyed-out look and the preview caption are deleted.",
+      "notice": "It reads as a button you press, not a disabled one with an apology under it.",
+      "risk": "It still does nothing when pressed."
+    },
+    {
+      "id": "R4-21",
+      "surface": "Contribute · How contributing works",
+      "path": "Settings → Development → Contribute → How contributing works",
+      "headline": "21. Same button, under the five steps.",
+      "crop": "21",
+      "changed": "The same restyle, seen with the walkthrough open. Nothing about the five steps changed.",
+      "notice": "The action now spans the dialog instead of hiding in the corner.",
+      "risk": "None — this is the same change as 20."
+    },
+    {
+      "id": "R4-22",
+      "surface": "Submit a ticket · writing it",
+      "path": "Settings → Development → Report a Bug",
+      "headline": "22. You approved this screen; only its button changed.",
+      "crop": "22",
+      "changed": "Review ticket becomes a full-width primary button. It still stays inactive until you have typed a title and a description — that is real behaviour, not a mockup.",
+      "notice": "The rows and headings you approved are untouched.",
+      "risk": "Reopening an approved screen. Say no and it goes back."
+    },
+    {
+      "id": "R4-23",
+      "surface": "Submit a ticket · reviewing it",
+      "path": "Submit a ticket → Review ticket",
+      "headline": "23. No captions anywhere, and two stacked buttons.",
+      "crop": "23",
+      "changed": "Every preview and prototype caption is deleted. Error details now shows a real version line instead of saying nothing was collected. Submit is primary, Back to draft is the outlined one under it.",
+      "notice": "Nothing on the screen tells you it is a mockup.",
+      "risk": "Submit and the AI button do nothing yet."
+    }
+  ]
+}

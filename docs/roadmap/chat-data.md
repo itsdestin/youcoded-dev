@@ -96,6 +96,11 @@ produced and the panel that shows them (files).
       review (F-not-covered); worst case is an early extra AI review, not a wrong name
       `desktop` `needs-verify` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-naming-code-review.md
 
+- [ ] Opening a long conversation in the Resume Browser's preview pauses noticeably before it
+      appears — reading the last 40 messages parses the whole transcript file. Nothing flickers
+      and the row highlights immediately, so it reads as slow rather than broken (2026-09-10)
+      `resume-browser` `desktop` `confirmed` `checked 2026-09-10` `performance`
+
 - [ ] The Resume Browser search box only matches names, project paths, notes and tags — a phrase you
       remember from inside a chat finds nothing, even though the full-text index exists and the
       assistant can search it for you (2026-08-31)
@@ -128,3 +133,13 @@ produced and the panel that shows them (files).
       to say what was searched when `history.hasMore` — e.g. "searching recent messages, scroll
       up to search older ones"
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
+
+- [ ] Four smaller reads left over from cycle 2 still do more work than they need to: listing
+      past conversations re-reads about 25 MB every time the list opens and runs without a
+      concurrency cap, two more reads take whole files where the tail would do, the catalog
+      fetches the same thing several times at once instead of once, and per-session file
+      tracking is never cleaned up. Individually small, all on paths the user waits on.
+      Deferred at the time by scope decision; carried over from the cycle-3 handoff when that
+      document was archived 2026-09-10, where they existed only inside a shipped entry
+      `desktop` `confirmed` `checked 2026-09-10` `performance`
+

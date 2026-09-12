@@ -65,6 +65,15 @@ test('CLI rejects component-like roots and linked worktrees before sync', () => 
   const component = join(p.root, 'component');
   mkdirSync(component);
   git(component, 'init', '-b', 'master');
+  // Set the identity on THIS repo too, exactly as makePair() does for the other two.
+  // Without it the commit below inherits the machine's global identity — which exists
+  // on Destin's machine and does NOT exist on a CI runner, so this test passed here
+  // and failed there with "Author identity unknown". Workspace CI was red on master
+  // for at least four consecutive runs on 2026-09-10/11 because of this one line, and
+  // a permanently red build hides the next real failure exactly as a silent one does.
+  // Reproduce the CI condition locally with:
+  //   GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null node --test <this file>
+  git(component, 'config', 'user.email', 't@t'); git(component, 'config', 'user.name', 'T');
   writeFileSync(join(component, 'a.txt'), 'component\n');
   git(component, 'add', 'a.txt'); git(component, 'commit', '-qm', 'component');
   const rejected = runSync(component);

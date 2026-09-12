@@ -267,6 +267,11 @@
   const answerButtons = st => {
     const picks = pickList(st);
     if (st.answer === 'words') return writeBox(st);
+    // Fix (2026-09-10): every answer label goes in a <span>. `.ans` hides its overflow and
+    // centres its content, and the ellipsis rule beside it (page.css) targets `.ans>span` —
+    // so a label written as bare text was clipped at BOTH ends with no ellipsis, reading as
+    // one button overlapping the next. A contract deck hit it every time: its default "No,
+    // something is missing" is the longest label the builder has.
     return st.kind === 'question'
       ? `<button class="btn ans" data-v="yes"><span>${esc(yesLabel(st))}</span></button><button class="btn ans" data-v="no"><span>${esc(noLabel(st))}</span></button><button class="btn ans" data-v="other" data-dk="1"><span>Don't know</span></button>`
       : picks || st.kind === 'decide'

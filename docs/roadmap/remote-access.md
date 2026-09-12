@@ -152,10 +152,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       adaptations off, soft keyboard and scrolling wrong (found 2026-07-20 on Chrome/Android)
       `terminal` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-shim-overwrites-device-platform.md
 
-- [ ] The desktop pays a CPU cost on every line of terminal output for a remote replay buffer,
-      even when no phone or browser is connected
-      `desktop` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-remote-pty-replay-buffer-copy-per-chunk.md
-
 - [ ] Settings read over remote access can disagree with what the desktop shows for the same
       file — defaults, folders, permission overrides (from the 2026-07-10 review)
       `settings` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-pref-handlers-drift.md
@@ -319,3 +315,13 @@ Filing test: reaching the app from another device — the protocol, the browser 
       handler. Messages then fail as `not-live`. Belongs with the native-sessions-on-a-phone batch;
       found 2026-09-11 while fixing the create flow.
       `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] Verify the merged remote-access security fixes on a real phone, and finish the Android
+      device-token reuse. Two things wait for a real device: (1) confirm the WebSocket origin
+      allow-list accepts the actual Android WebView — it sends an opaque `null` origin, now
+      allowed, but that path was only reasoned about, never seen on a phone; and (2) make the
+      phone reuse its saved pairing credential instead of re-sending the password on every
+      reconnect (today it re-pairs and grows a new device row each time — a UX wart, not a
+      security hole; design ready in the private security record). Destin 2026-09-11: do this
+      in the Android rebuild's testing phase — a lot of device testing happens there anyway.
+      `remote` `parked` `checked 2026-09-11` `security`

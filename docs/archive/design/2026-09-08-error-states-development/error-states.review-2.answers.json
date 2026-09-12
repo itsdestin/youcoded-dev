@@ -1,0 +1,61 @@
+{
+ "deck": "error-states-development-review-2",
+ "started": "2026-09-09T09:10:06.256Z",
+ "submitted": "2026-09-09T09:13:53Z",
+ "cur": 7,
+ "answers": {
+  "R2-8": {
+   "v": "yes",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-9": {
+   "note": "just delete the wierd warning in the gray box. what is \"workspace details\"? \"set up separate workspace\"? why not jsut \"set up development workspace\"?",
+   "v": "other",
+   "seconds": 47,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-10": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-11": {
+   "note": "this still looks really cluttered and just poorly designed. bad visual heirarchy",
+   "v": "other",
+   "seconds": 34,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-12": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-13": {
+   "note": "better. still confused as to why not just \"set up development workspace\"",
+   "v": "yes",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-14": {
+   "note": "confused?",
+   "v": "other",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-15": {
+   "v": "no",
+   "note": "the link should never be unavailable, this is a waste of time",
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

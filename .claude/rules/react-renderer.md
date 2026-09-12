@@ -55,6 +55,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Control primitives (`components/ui/`)
 - **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
 - **Padding groups are per-axis** (`px-`/`py-` independent; `p-N` in ALL groups) — an `px-`-only override must NOT drop `py-` · guard: `Button.test.tsx` if you touch `CONFLICT_GROUPS`.
+- **Chrome is unselectable:** `<button>`s + `select-none` areas; content buttons opt in with `select-text` · guard: `unselectable-chrome.test.ts`.
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.

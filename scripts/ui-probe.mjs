@@ -17,6 +17,13 @@
 // Usage:
 //   node scripts/ui-probe.mjs <url> [options]
 //
+//   THE WORKBENCH FRAMES THE APP. `?mode=workbench` is a toolbar page with the app
+//   in an <iframe>, so `document.querySelector('.status-bar')` finds nothing and a
+//   select-all selects the toolbar. Reach in with
+//   `document.querySelector('iframe').contentDocument` (2026-09-10: two probes
+//   wasted, same trap a UX tester hit the same day). Headless focus also never
+//   reaches `:focus` inside that frame, so a focus-dependent style reads unfocused.
+//
 //   --size WxH          viewport; repeatable, and the whole probe runs once per size
 //   --wait <js>         poll this expression until truthy before measuring (30s cap)
 //   --settle <ms>       extra pause after --wait (default 400)
@@ -44,12 +51,41 @@
 // content, structure, text and geometry; check colour and highlight state in a
 // dev instance (`bash scripts/run-dev.sh`), not here.
 //
+// TWO PAGE SHAPES THAT MAKE A PROBE LOOK WRONG, both measured 2026-09-10 on
+// youcoded/docs/index.html:
+//   * `window.scrollTo` / `scrollIntoView` move NOTHING when the page scrolls a
+//     body with `overflow: hidden auto` — `window.scrollY` stays 0 and the
+//     element's rect never changes, so the screenshot shows the wrong place. Check
+//     `getComputedStyle(document.body).overflow` before trusting a scroll.
+//   * Sections revealed by an intro animation sit at `opacity: 0` (the site's
+//     `body.intro-mode > section`) and the reveal runs on IntersectionObserver. A
+//     probe that does not let that observer fire photographs a blank page while the
+//     DOM reports the element present and in view. Force `opacity: 1` in the probe
+//     (a stylesheet), or isolate the section; an all-dark shot is the ANIMATION not
+//     having run, not a broken page.
+//   * The gallery and the media loops are lazy — they load on scroll, so they read
+//     `naturalWidth 0` / `readyState 0` in a probe that never scrolls.
+//   * Web fonts can land AFTER `readyState === 'complete'` and the intro's end,
+//     most often when several probes run at once. The fallback font wraps text
+//     differently, so a pixel comparison of two shots reads as a layout change
+//     (measured 2026-09-11: 21k-73k "different" pixels between identical pages,
+//     0-297 once both waited). Add `document.fonts.status === 'loaded'` to --wait
+//     before comparing shots.
+//
 // Examples:
 //   node scripts/ui-probe.mjs http://127.0.0.1:8791/deck.html \
 //     --wait 'window.__deckReady' --eval 'document.body.dataset.layout' --shot /tmp/deck.png
 //
 //   node scripts/ui-probe.mjs "file://$PWD/page.html" --size 1574x820 --size 400x760 \
 //     --eval "document.querySelectorAll('.card').length" --shot /tmp/p-{size}.png
+//
+// NO THEME SWITCH. `?theme=` is honoured only on the workbench's `view=live`
+// route (index.tsx), and setting `data-theme` from an --eval is undone: the
+// theme engine writes its tokens as INLINE custom properties on <html>, which
+// beat any stylesheet, and re-applies them on the next render. The theme has to
+// be in localStorage before the document loads, which is what shot.mjs does
+// (`Page.addScriptToEvaluateOnNewDocument`) — reach for that when a shot is
+// about colour. Cost of learning this the other way: 3 probe runs, 2026-09-10.
 //
 // Needs a Chrome/Chromium binary. It launches its own headless instance on a
 // scratch profile and a FREE debugging port (never a hardcoded one — two probes

@@ -1,0 +1,73 @@
+{
+  "title": "Promo film and website clips — the four things you asked to change",
+  "key": "promo-ui-refresh-review-2",
+  "out": "promo-ui-refresh.review-2.html",
+  "images": "images/promo-ui-refresh.review-2",
+  "stage": "review",
+  "runs": {
+    "before": "runs2/before",
+    "after": "runs2/after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "crops": {
+    "site-hero-mascots": ["site", "hero-mascots", "1200x288+0+0"],
+    "film-conv": ["film", "conv", "1920x1080+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Website",
+      "path": "youcoded.ai — the four mascot buttons beside the headline",
+      "crop": "site-hero-mascots",
+      "themes": ["cotton-candy-sky"],
+      "highlight": { "box": [2, 5, 23, 90] },
+      "headline": "The purple mascot button no longer holds a wand; all four buttons keep their animations.",
+      "changed": "The wand is gone from the button only; the app's mascot keeps it. Motion, poses and faces are unchanged.",
+      "notice": "A cleaner purple button.",
+      "risk": "The film's opening still shows the wand."
+    },
+    {
+      "id": "R-2",
+      "surface": "Promo film",
+      "path": "Every conversation, findable — the second line; the new frame is two seconds in, once the conversation is open",
+      "crop": "film-conv",
+      "themes": ["midnight"],
+      "highlight": { "box": [46, 22, 35, 55] },
+      "headline": "The conversations scene now opens \"econ midterm brief\" in the preview, and the mascot moved up so it covers nothing.",
+      "changed": "The film uses the opened-preview take you picked, with a study conversation. The mascot now speaks from the title bar, because its old spot sat on top of the opened preview.",
+      "notice": "The right half shows the conversation instead of empty space.",
+      "risk": "Most of the note typing is cut to keep the scene four bars long, as you accepted."
+    },
+    {
+      "id": "R-3",
+      "surface": "Website",
+      "path": "youcoded.ai — card 5, \"Tags, notes, and shortcuts.\"",
+      "themes": ["dark"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review-2/clips/row4-organized--before.webm",
+        "after": "images/promo-ui-refresh.review-2/clips/row4-organized--after.webm"
+      },
+      "headline": "The tags card now opens the found conversation in the preview.",
+      "changed": "After searching \"scroll\", the clip clicks the result so its conversation fills the right half for a moment before moving on.",
+      "notice": "The card shows what the new Resume screen is for, not an empty half."
+    },
+    {
+      "id": "R-4",
+      "surface": "Website",
+      "path": "youcoded.ai — every card that types; shown here on card 8, \"Four games, beside the conversation.\"",
+      "themes": ["halftone-dimension"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review-2/clips/landing-row7-play--before.webm",
+        "after": "images/promo-ui-refresh.review-2/clips/landing-row7-play--after.webm"
+      },
+      "headline": "Typing is the same quick speed in every website clip.",
+      "changed": "Every clip types at one speed now, and the recorder keeps to it even on themes with a moving background, which used to slow typing to a crawl.",
+      "measured": "29–33 letters a second in nine clips; 24 in this one, up from 6",
+      "notice": "No clip crawls anymore; this one typed at 6 letters a second last round.",
+      "risk": "Clips are a few seconds shorter, so each card's loop comes round sooner."
+    }
+  ]
+}

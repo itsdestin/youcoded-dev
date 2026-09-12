@@ -13,12 +13,48 @@ seen-on is always n/a here.
       five times in isolation right after; the run's changes touched nothing it imports.
       Load-sensitive, like the step-guard entry below
       `n/a` `needs-verify` `checked 2026-09-11`
+
+- [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
+      never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
+      pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
+      hour. Nothing about the code changed between the green and red runs, so it is the runner's
+      Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
+      is recognised, but the fix is a longer or retried launch in the perf-lab harness
+      `n/a` `needs-verify` `checked 2026-09-10`
+- [ ] Desktop CI's Windows leg is red on master (seen 2026-09-10 on three runs in a row) on two
+      native-harness tests — "an unchanged attachment restores its bytes; a changed one
+      invalidates the whole checkpoint" and "publishes references to exact transcript content
+      and restores private metadata without duplicating transcript text" — while macOS and
+      Linux pass. Every merging session has to open the log to learn it is not theirs; two did
+      so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
+      broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
+      installer (a failed test step skips packaging) — the installer-icon session needed a
+      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch.
+      **Much bigger than two tests, and two root causes are now known (2026-09-11, run
+      34658554351 at master `f774891d`): 12 test files / 17 tests fail on Windows** while Linux
+      is fully green (10,871 local) and macOS failed only one unrelated flake
+      (`shell-registry.test.ts`, "expected '' to be 'hello\n'"). (1) `remote-password-always-required.test.ts`
+      builds its scan root as `new URL('..', import.meta.url).pathname`, which on Windows is
+      `/D:/a/…`; joining that yields `D:\D:\a\…` and ENOENT. `fileURLToPath` is the fix, and
+      `remote-phone-findings.test.ts` carries the same pattern. (2) the rest are Windows-only test
+      assumptions, not product bugs on their face: `installer-artifact-names.test.ts` reads
+      `electron-builder.yml` and gets `null` for every value, `managed-workspace-setup.test.ts`
+      compares `C:\Users\runneradmin\…` against the 8.3 short form `C:\Users\RUNNER~1\…`, and
+      `remote-paths.test.ts` expects POSIX separators. A 13th failure that run was
+      `release-manifest-roundtrip.test.ts`, caused by `generate-release-manifest.mjs` comparing
+      `file://` + `process.argv[1]`; fixed in `e82d38a1`. **The important part: no published beta's
+      Windows installer has been tested.** beta.78's Windows log reads `Run tests: skipped`, and
+      beta.80 (2026-09-11) was dispatched the same way to get an installer at all
+      `n/a` `confirmed` `checked 2026-09-11` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access
       work that was running beside it. Likely a fixed sleep or an unawaited signal; see
       `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
-      `n/a` `needs-verify` `checked 2026-09-09`
+      Fourth sighting 2026-09-10: failed in one `verify.sh` run on a branch touching only Android
+      Kotlin and the remote shim, passed twice alone and once alone on master, green on the
+      next full run (`expected [[50],[50]] to equal [[20],[20]]`, the Retry-persists test)
+      `n/a` `needs-verify` `checked 2026-09-10`
 - [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
       has been red on master for it for weeks: `native-specialists.md` (764 words) and
       `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every
@@ -93,6 +129,14 @@ seen-on is always n/a here.
       access batch 2, which touches no step-guard file); 5 of 5 isolated runs green and the
       re-run green
       `desktop` `confirmed` `checked 2026-09-10` `regression`
+- [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
+      still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
+      one-second `setInterval` and a previous session already lifted the timeout 3s -> 8s with a
+      comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
+      in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
+      a signal the card emits, so the test waits on the transition rather than on the clock. Not
+      done here because it is another feature's test and a bad rewrite is worse than a slow one
+      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
 
 - [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
       drift-guard test commits into a temporary "component" repo that never had a git identity set,
@@ -113,6 +157,23 @@ seen-on is always n/a here.
       remove the test-hygiene rule prescribes. macOS and Windows remain red on the two
       backendOptions cases, which are the part still needing AMD hardware
       `n/a` `confirmed` `checked 2026-09-07`
+
+- [ ] The macOS CI leg fails a DIFFERENT process-timing test on roughly half the runs, and each
+      failure withholds the entire beta: a red test step skips packaging, and the `sign` job
+      needs every build leg, so there is no macOS installer AND no signed manifest for any
+      platform. Cutting 1.3.0-beta.80 on 2026-09-11 took three re-runs and still had not
+      produced a Mac build. Each failure was a different case, all of them assertions about
+      output from a spawned process: `shell-registry.test.ts` "start: mints an sh- id, logs
+      from the first byte…" (`expected '' to be 'hello\n'`), then
+      `lease-client.test.ts` "lapsed renew whose re-acquire is rejected…" (`expected true to be
+      false`), then `shell-registry.test.ts` "an adopted run's seeded head is ANSI-stripped…"
+      (`expected 'BOLD head\n' to be 'BOLD head\ntail-part\n'`). **It is the machine, not the
+      code:** the full local suite is green (10,871 tests), both files pass locally in isolation
+      (39 tests), `desktop-ci.yml` passed macOS on the SAME commits (`e82d38a1`, `36858f72`), and
+      it failed macOS on `09b284d6`, which predates the merges under test. Fix shape is the one
+      `.claude/rules/test-suite-hygiene.md` prescribes — wait for the signal rather than a
+      deadline — applied to the spawned-process assertions in these two files
+      `n/a` `confirmed` `checked 2026-09-11` `regression`
 
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
@@ -232,6 +293,97 @@ seen-on is always n/a here.
       `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
       `desktop` `confirmed` `checked 2026-09-11`
 
+- [ ] A new worktree's libraries can be older than the ones CI installs, so a green local check may
+      not be the check CI runs. On 2026-09-11 a worktree held fourteen packages at a different
+      version than the lockfile — the React hooks lint plugin a whole major version behind, plus
+      knip, typescript-eslint, zod and the AI SDK. Filling in missing packages at startup does not
+      touch packages that are present but outdated. Found while fixing a missing one, 2026-09-11
+      `n/a` `needs-verify` `checked 2026-09-11`
+
+- [ ] The speed-test comparison can call a change KEEP even though the Projects or long-scrollback
+      boots logged errors: `scripts/perf-lab/compare.mjs`'s `errorTotal` counts error lines from
+      the workload and terminal boots but ignores `projectsBoot` and `scrollbackBoot`. Found while
+      reviewing the new terminal scenario, 2026-09-10
+      `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] A stale review-deck page can overwrite the answers file. `scripts/ui-review/deck/serve.py`
+      writes `<stem>.answers.json` on every `/answers` POST with no guard, so a deck page left
+      open across a server restart rewrites the file from its own state. That is the bug fixed in
+      `site-copy-editor.py` on 2026-09-10, where it erased a finished set of Destin's site edits —
+      and the deck is the surface he answers EVERY UI review on, so the same accident there loses
+      review answers, not copy. `serve.py` already rotates a *submitted* file aside on re-serve
+      (`rotate_submitted`); this is the in-flight case it does not cover. Fix as that tool now
+      does: refuse a write that would drop answered steps instead of overwriting.
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] The speed-test comparison judges two runs taken at very different machine load as if
+      they were alike. On 2026-09-10 two freeze-fix branches both read 16–20% slower than master
+      on long-conversation switches; it took a second master run and a second run of each branch
+      (~25 min of rig time) to show the gap tracked load — busy repeats at 750–900% CPU against
+      quiet ones at 300–400% — not code. Every report already records `cpuDuringPct`/load, so
+      `compare.mjs` could mark a pair "not comparable" when the runs' load differs by more than
+      a set factor, instead of printing REJECT
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] The Bash tool's zsh does not word-split an unquoted variable, and it has now bitten three
+      sessions despite `~/system/tools/claude-code-bash-shell.md`: `kill $PIDS` signalled nothing
+      while a check loop reported the rig stopped (and an agent was told so), `set -- $r` produced
+      an empty review diff a reviewer was pointed at (both 2026-09-10), `$V boot` in the installer
+      session. `.claude/hooks/glob-guard.py` already stops the zsh glob trap the same way; teach
+      it (with `glob-guard.test.mjs` cases) to refuse `kill $VAR`, `set -- $VAR` and
+      `for x in $VAR` unless wrapped in `bash -c` or written `${=VAR}`.
+      RECURRED 2026-09-11 (site-scroll-motion): `set -- $spot` left a pixel comparison with no
+      arguments, every screenshot failed identically, and the loop printed "0 differing px" for
+      all six spots — a false proof of "identical" that was nearly reported to Destin
+      `n/a` `confirmed` `checked 2026-09-11`
+
+- [ ] Implementation plans keep prescribing tests that cannot fail, because the rule that forbids
+      them never loads while a plan is being written. The 2026-09-10 freeze-fixes plan shipped five
+      such tests (a "hung write" test, a liveness smoke, two burst tests and a no-custom-CSS case)
+      with "Expected: FAIL" lines that were never true; review and mutation proofs caught all
+      five, at the cost of an extra fix wave. `test-suite-hygiene.md` → "A guard you did not break
+      is a guard you did not test" already says it, but its `paths:` cover test files only. Adding
+      `"**/docs/*/plans/**"` is blocked by the checker, not by the idea: `audit-anchors.mjs`'s
+      `globToRegex` turns a leading `**/` into `.*/`, which needs at least one folder in front, so
+      no `**/docs/...` glob can match the workspace's own top-level `docs/` and the audit reports
+      it as "matching nothing". Fix the matcher (`**/` = zero or more folders, with a test that
+      `worktreeBlindGlobs` still flags blind globs), then add the plans glob
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] **The blank-content instrument measures partly with its own weight, which is the exact
+      shape the perf-lab README now forbids.** `late-content.mjs`'s per-frame `sample()` runs
+      `querySelectorAll('.timeline-entry')` over the whole list and a `getBoundingClientRect()`
+      on every spacer — on the huge fixture that is ~7,000 rect reads a frame, ~2.4 M across a
+      pass — on the main thread, inside the same frame as the scroll it is judging. The README
+      (added 2026-09-10, after this shipped) states the general rule it breaks: anything a poll
+      touches must not force style, layout or text serialisation, and `getBoundingClientRect` is
+      named in it. The bias runs toward FALSE POSITIVES: the probe slows the renderer it is
+      asking to keep up. It did not manufacture one in the single clean run we have, but that is
+      luck, not design, and this instrument already had three artefacts corrected before it
+      shipped. Fix shape: an `IntersectionObserver` rooted on the pane maintains the in-view set
+      with no synchronous geometry, and the spacer test itself (`childElementCount`,
+      `textContent`) already forces nothing. RECURRENCE — `docs/wrap-ups.md` calls
+      "a check that reports for the wrong reason" its most-repeated lesson, and 2026-09-10
+      found the same class in the rig's artifact-open timing
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] The terminal's DRAWING of a large burst of output has no speed measurement, and it is
+      where output volume is highest. Half-covered since 2026-09-10: perf-lab's `terminal`
+      scenario (`scripts/perf-lab/scenario-terminal.mjs`) measures session switches in terminal
+      view — painted time, long tasks, atlas clears per switch — but it fills each terminal
+      before measuring, so the cost of printing a great deal while you watch, and what that
+      costs the main process, is still unmeasured. Carried over from the cycle-3 handoff
+      (2026-09-03) when that document was archived
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
+- [ ] Every perf number is taken software-rendered, and that is now MEASURED rather than
+      assumed — `report.machine.renderer` says llvmpipe with GPU compositing off (2026-09-06).
+      Measuring what Destin actually sees would need a real display with a compositor, which
+      means putting windows on his screen while he works. Deliberately not attempted; filed so
+      the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
+      GPU" should cite this
+      `n/a` `confirmed` `checked 2026-09-10` `performance`
+
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
@@ -296,7 +448,12 @@ seen-on is always n/a here.
       and answers it wrongly) or a throwaway CDP script. Both happened in one session: a
       synthetic dispatch "proved" disabled controls receive pointer events when it proved
       nothing, and settling it properly took a ~50-line one-off. A `--hover <selector>` /
-      `--move-to x,y` on ui-probe would execute where a switch only asks
+      `--move-to x,y` on ui-probe would execute where a switch only asks.
+      **Recurred the same day (unselectable-chrome):** proving a text box still drag-selects
+      took TWO more throwaway CDP scripts (a mouse drag, then a rerun with
+      `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
+      the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
+      and focus emulation on by default, beside `--hover`
       `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
@@ -333,14 +490,6 @@ seen-on is always n/a here.
       command that takes the paths, does the copy/stage/commit/push in a worktree, and cleans
       the shared copy — so the drift is never created rather than healed afterwards.
       `n/a` `confirmed` `checked 2026-09-04`
-
-- [ ] When the app dies or freezes it leaves nothing behind — no crash record on any platform, and
-      nothing anywhere saying the app had stopped responding, so a tester's force-quit on
-      2026-09-03 could not be explained at all. FIXED on a branch 2026-09-03
-      (`youcoded feat/crash-diagnostics`): crashes, dead helper processes and freezes now all write
-      a line into the log the Report-a-bug flow already sends, and crash files stay on the user's
-      machine. Open until that branch merges
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] The app's log is in a folder nobody would guess — Claude Code's, not the app's — so anyone
       poking around for it concludes there is no log at all, as a tester with full access to the
@@ -409,7 +558,7 @@ seen-on is always n/a here.
       (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
       metrics, a per-pane count proving the mechanism engaged, and a settle window before every
       reading — the last two exist because three different bugs all presented as the same 6%.
-      What remains, ranked: docs/active/handoffs/2026-09-03-perf-next-steps-handoff.md
+      What remains, ranked: docs/archive/handoffs/2026-09-03-perf-next-steps-handoff.md
       `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
@@ -437,15 +586,19 @@ seen-on is always n/a here.
       has not seen it in his own app — check whether a maximized-at-launch window avoids it)
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
-- [ ] The landing redesign's five clips exist only in the mockup folder; the site-assets script that
-      regenerates every loop does not know their names, so the next regeneration drops them
-      `n/a` `confirmed` `checked 2026-09-03`
-
 - [ ] The landing mockup's generator still carries the two phrases removed from the live page on
       2026-09-03 ("self-improving", "does real work"); the next rebuild-and-port reintroduces them
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+- [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
+      `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
+      byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped
+      as youcoded#449). Three wrap-ups in a row reported it and left it, because deleting another
+      session's records is not a branch's call — so every session now reads a red audit and learns
+      to skim past it. Needs Destin's one-word OK to delete the two `docs/active/` copies
+      `n/a` `decision` `checked 2026-09-10`
+
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
       ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.
@@ -556,6 +709,15 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from
+      brand-new accounts, copies Reddit bug reports and ideas into real roadmap entries, and
+      flips posts to Fixed or Planned himself. Set up automation for the repetitive parts, such as
+      turning new Bug Report and Feature Idea posts into roadmap entries, and marking a post Fixed
+      when its fix ships. Reddit stopped giving out new API access in November 2025, so the route
+      is Reddit's own Mod Tools Automations or a Community App, not a script with an API key.
+      Current setup is recorded in ~/Documents/youcoded-subreddit-setup.md
+      `n/a` `decision` `checked 2026-09-10`
+
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
       from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
@@ -570,12 +732,6 @@ seen-on is always n/a here.
       confirms the "Open Anyway" button is back on a build cut after the merge — test build run
       33921417200 was dispatched for that on 2026-09-04
       `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
-- [ ] No download we publish can be checked for corruption or tampering — the release carries the
-      installers and nothing else, no checksum file of any kind, so neither a user nor the app's
-      own updater can tell a good download from a bad one. Verified against the 1.3.0-beta.72
-      release listing
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
       INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
@@ -695,29 +851,6 @@ seen-on is always n/a here.
       CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
       the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
-
-- [ ] Perf rig records nothing about which RENDERER it got, so "the rig is blind to GPU" — repeated
-      in five scenarios' `blindTo` lists and used to dismiss whole classes of finding — has never
-      been verified. The app already resolves it (`main.ts` `app.getGPUInfo('complete')` →
-      `auxAttributes.glRenderer`) and the rig throws it away; `/dev/dri/renderD128` is
-      world-readable on this machine, so the runs may already have hardware acceleration. Record
-      it in `report.machine` and the claim becomes checkable instead of assumed
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
-
-- [ ] Perf rig cannot see per-TOKEN streaming cost, so perf cycle 1 can never be re-gated and the
-      known buddy-window twin has no detector. Measuring TIME needs a native stream and is hostage
-      to local-model speed; measuring WORK does not — cycle 1's defect was one forced layout per
-      token, and the CDP `Performance` domain the rig already calls exposes layout and
-      style-recalc counters. Count layouts per streamed delta and the defect class becomes an
-      exact integer, not a noisy duration (confirm the counter names on first use)
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
-
-- [ ] Perf rig cannot see CONTENT ARRIVING LATE, which is the class that hid perf cycle 3's
-      pop-in through three clean measurement runs until Destin scrolled slowly and saw it
-      (2026-09-03). It is countable rather than visual: while scrolling, count entries that are
-      inside the viewport but still rendering as a spacer — that number must always be zero.
-      Generalises past folding to any lazy render: is anything late to the screen?
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
       merge commit's message was written by hand instead of left as git's default, because it looks

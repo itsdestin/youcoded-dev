@@ -1,0 +1,15 @@
+{
+  "_comment": "youcoded.ai as it is today, scrolled from the last demo card to the bottom. The three siblings are the same scene with ?motion= set; scroll-tour.js keeps all four at one pace. `ready` also jumps to the start point, so no frame of the hero is filmed.",
+  "base": "http://127.0.0.1:8817/index.html",
+  "width": 1600,
+  "height": 960,
+  "fps": 30,
+  "ready": "document.readyState === 'complete' && !document.body.classList.contains('intro-mode') && (document.documentElement.style.scrollBehavior = 'auto', window.__at || (window.__at = scrollTo(0, document.getElementById('integrations').offsetTop - 1000) || 1), true)",
+  "boot": 1800,
+  "actions": [
+    { "eval": "document.documentElement.style.pointerEvents = 'none'", "settle": 0 },
+    { "hold": 700 },
+    { "evalFile": "scroll-tour.js", "settle": 0 },
+    { "hold": 1600 }
+  ]
+}

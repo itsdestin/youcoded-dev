@@ -14,6 +14,8 @@ Read only the section needed for the task. `CLAUDE.md` is the operating core; th
 
 **Never link a worktree's `node_modules` to the main checkout — `workspace-start` already copies it with `cp -al` (hardlinks) when it creates the worktree.** You normally don't run this step yourself; the startup output lists it as `deps: …`. The rules below govern what you may then DO with that hardlinked copy. On Windows, `git worktree remove` AND `npm ci` both follow `node_modules` junctions and will wipe the **main checkout's** deps; delete the junction first (`cmd //c "rmdir <path>"`, never `rm -rf`). **A POSIX symlink is no safer** (verified 2026-08-13): Gradle's `bundleWebUi` transitively runs `npm ci`, which followed the symlink and emptied the shared copy across six worktrees at once — so don't run Gradle or `build-web-ui.sh` in a linked worktree either (`-x bundleWebUi` if you must). A symlink ALSO makes `verify.sh` lie: Vite resolves the real path, sees it outside the worktree root, and fails suites at load with `Denied ID …?inline` — 2 suites silently never ran while the summary said "1 check failed". `cp -al` is near-instant, costs almost no disk, and has none of these failure modes — but it is not hazard-free: hardlinks SHARE THE INODE, so a tool that writes IN PLACE inside a worktree's `node_modules` edits every tree linked to it (one file was found on 7 links in 2026-08-27). Before running anything that patches a dependency, confirm it renames rather than writes in place. Full note: `docs/PITFALLS.md` → Cross-repo invariants.
 
+**A dependency added to master after the shared checkout's last install is absent from a worktree's hardlinked `node_modules`** (three sessions on 2026-09-11: `Failed to resolve import "dompurify"`). `workspace-start` now fetches required missing packages itself when it creates the worktree (listed after `deps:`). After merging master into an EXISTING worktree, run `node scripts/fill-missing-deps.mjs <worktree>/youcoded/desktop`. Never `npm install` for this — it writes `node_modules/.package-lock.json` in place through the shared inode (`docs/PITFALLS.md` → Worktrees); both paths `npm pack` + `tar` into a fresh directory instead.
+
 **"Merge" means merge AND push.** Don't stop at a local merge.
 
 **Clean up worktrees and branches after merging to master.** Once a feature branch is fully merged and pushed, remove its worktree and delete the branch **both remotely and locally**:
@@ -28,6 +30,8 @@ branch out locally, which fails because the main checkout already holds it (3/3 
 Confirm with `git log --oneline origin/master -1`, then do the cleanup above by hand; do not re-run
 the merge.
 Verify the commit landed on the remote default first: `git merge-base --is-ancestor <sha> origin/master` must exit 0 (a stale local `master` is not the authority). Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
+
+**A red check on the PR: run `bash scripts/ci-red-vs-master.sh <pr> [<repo-dir>]` before opening a log.** It pulls the failing test names from the PR's failed jobs and from master's latest run of the same workflow and says which failures are already red on master (exit 0) and which are new (exit 1); build/install breaks with no test names are yours to read. Two known-red legs on 2026-09-10 — the workspace git-identity test and the desktop Windows harness checkpoint tests — cost four manual comparisons in one session before this existed.
 
 **Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
 
@@ -84,7 +88,7 @@ When designing new features or making changes to user-facing app interfaces, the
 
 ### Demo clips and the landing page
 
-The public site (`youcoded/docs/index.html`) is built from **recordings of the running renderer**, not drawings: `scripts/ui-review/record.mjs` films one JSON scene (`scripts/ui-review/scenes/`) into a WebM loop + poster, and `bash scripts/ui-review/site-assets.sh <worktree>` regenerates every loop, gallery still and the live embed in one go (a desktop release-checklist step). What the demo "model" says is a reply fixture. Any "make a clip of feature X" / "update the website" request starts at `scripts/ui-review/README.md` → "Recording a loop"; the rule `.claude/rules/landing-page.md` auto-loads on the page and the rig. **Landing copy lives in** `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`. Do not write “real app / real files / actually reads / does real work / self-improving.” The fact sheet is inventory, not copy.
+The public site (`youcoded/docs/index.html`) is built from **recordings of the running renderer**, not drawings: `scripts/ui-review/record.mjs` films one JSON scene (`scripts/ui-review/scenes/`) into a WebM loop + poster, and `bash scripts/ui-review/site-assets.sh <worktree>` regenerates every loop, gallery still and the live embed in one go (a desktop release-checklist step). What the demo "model" says is a reply fixture. Any "make a clip of feature X" / "update the website" request starts at `scripts/ui-review/README.md` → "Recording a loop"; the rule `.claude/rules/landing-page.md` auto-loads on the page and the rig. **Destin editing the copy himself** ("let me edit the website") is `python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html` — the real page, editable in place, Submit writes `edits.md`; background it and put its URL in chat. **Landing copy lives in** `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`. Do not write “real app / real files / actually reads / does real work / self-improving.” The fact sheet is inventory, not copy.
 
 ### Asking a page a question, and A/B-ing the answer
 
@@ -118,19 +122,27 @@ cd youcoded/desktop && npm ci && npm run build
 # Android (requires Desktop React UI built first)
 cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
 
-# Both Android commands above DO run here (741 tests green, 2026-09-09) — Gradle
-# just needs ANDROID_HOME named, because the SDK is installed but not exported:
-#   JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
-#     ./gradlew test -x bundleWebUi
+# CHECK FIRST — whether the SDK is here has flipped twice in six days, and every
+# version of this comment has been true when written and wrong days later:
+#   ls $HOME/.android-sdk/platform-tools /usr/lib/jvm
+# absent 2026-09-04 -> present 2026-09-09 (741 tests green) -> absent 2026-09-10,
+# the last confirmed by an exhaustive `find / -name platform-tools`. Do not rewrite
+# this into an assertion either way; that flip-flop is what cost a session and a
+# subagent a false "unverifiable" each, and then cost the next session a false
+# "it works".
+#
+# WHEN PRESENT: ANDROID_HOME is still unset, so name it. Any JDK 21 works;
+# /opt/android-studio/jbr has outlived every /usr/lib/jvm one on this machine.
 # `-x bundleWebUi` skips the web-UI bundle, which would run npm against the
 # worktree's HARDLINKED node_modules and write through to the shared checkout.
-#
 # Read the result out of app/build/test-results/**/*.xml, not off the console:
 # a second run prints BUILD SUCCESSFUL with "103 tasks up-to-date" and executes
-# no tests at all. This block asserted for five days that Android could not be
-# built here — true when written, and by 2026-09-09 it had cost a session and a
-# subagent a false "unverifiable" each. Re-verify before trusting either claim.
-cd <worktree>/youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk \
+# no tests at all.
+#
+# WHEN ABSENT: Gradle stops at `SDK location not found` during CONFIGURATION,
+# before compiling. Report the Android half as unverified. Kotlin can still be
+# compiled file-by-file with the kotlinc inside /opt/android-studio.
+cd <worktree>/youcoded && JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME=$HOME/.android-sdk \
   ./gradlew test -x bundleWebUi
 ```
 

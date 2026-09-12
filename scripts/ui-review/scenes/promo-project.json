@@ -16,7 +16,7 @@
       "hold": 900
     },
     {
-      "click": "[title='Projects']",
+      "click": "[title='Projects'], [data-hint='Projects']",
       "settle": 0
     },
     {

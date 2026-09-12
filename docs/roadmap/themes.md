@@ -14,9 +14,22 @@ here: installing or browsing themes (marketplace).
       `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
 
 - [ ] A community theme's custom CSS can run a never-ending animation on the always-visible
-      chrome, costing every user a chunk of a CPU core with no setting — not even Reduced
-      Effects — that turns it off; no shipped theme does this yet, noted 2026-08-07
-      `all` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
+      chrome, costing a chunk of a CPU core for anyone who has NOT turned on Reduced Effects
+      (Reduced Effects now stops it — see shipped.md 2026-09-10). Open decision: whether to
+      cap always-on theme animation for users who never touch the setting, which would change
+      what theme authors shipped; options in the investigation's "Fix shape". Known gaps in
+      the Reduced Effects half (review, 2026-09-10): an animation written as nested CSS
+      (`.x { &:hover { animation: … } }`) or inside `@layer` with `!important` is not
+      cancelled; cancelling a one-shot fade-in that ends visible (`animation-fill-mode:
+      forwards` from `opacity: 0`) would leave that element invisible; and a theme that
+      animates a broad selector (`svg`, `*`) would also freeze the app's own spinners. No
+      shipped theme does any of this yet, noted 2026-08-07
+      `all` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
+
+- [ ] Destin's ask (2026-09-10): the app's taskbar and Dock icon should change to match the
+      theme, drawn from the new robot icon. Until then, every theme shows the same lavender robot
+      icon, because the old theme matching redrew the retired "YC" square
+      `window-chrome` `desktop` `parked` `checked 2026-09-10`
 
 - [ ] A theme's icon overrides are accepted, and the Library shows a "custom icons" badge for
       them, but no icon anywhere in the app ever changes; build the feature or remove the

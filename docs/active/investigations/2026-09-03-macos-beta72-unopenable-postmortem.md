@@ -129,8 +129,9 @@ already reads the log's tail through `readLogTail()`, redacts it, and folds it i
 Report-a-bug issue body (`buildIssueBody`). So the log is not lost — it reaches us whenever
 a user reports a problem through the app. What was missing was not a channel but *content*:
 the log recorded only what our own code chose to log, and nothing was logging crashes,
-helper-process deaths, or a hung window. That is what `feat/crash-diagnostics` fixes, and it
-is why the fix writes into this log rather than building a new surface.
+helper-process deaths, or a hung window. That is what `crash-diagnostics.ts` added (youcoded
+`be0ee90c`, merged 2026-09-11), and it is why the fix writes into this log rather than building
+a new surface.
 
 Caveat on how much is left: `rotateLog()` (called once at startup, `main.ts:1326`) trims
 the file to its last 500 lines whenever it exceeds 1000, so a busy session can roll the

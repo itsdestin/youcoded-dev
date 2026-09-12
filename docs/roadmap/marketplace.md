@@ -75,6 +75,27 @@ them. Not here: the theme renders wrong (themes).
       Destin's call — candidate "No leaked secrets found"
       `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
+- [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
+      to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to
+      deleting the account), NOT the user's GitHub account, computer or files. Pre-launch review rated
+      it MEDIUM, and the exploitable pool is smallest at launch (the attack needs an existing account),
+      so it is deferred — but fix before the accounts/social features get real traction. Fix designed
+      (device-flow → loopback proof); needs a real phone and a staged Worker rollout. Exploit detail is
+      kept out of this public repo — full record in the private security folder
+      (~/system/youcoded-security-2026-09-10/, "#5").
+      `all` `parked` `checked 2026-09-10` `security`
+
+- [ ] Retire the old `wecoded-marketplace-api.destinj101.workers.dev` API address. It is kept alive
+      by `workers_dev = true` in worker/wrangler.toml only because shipped builds hardcode it —
+      stable v1.2.4 and every beta up to 1.3.0-beta.71 do. Attaching the api.youcoded.ai custom
+      domain on 2026-09-03 silently switched it off and took the games lobby, Backup & Sync and the
+      whole account API down for those users; a hand deploy brought it back on 2026-09-06, a later
+      deploy from master turned it off again, and the line finally landed on master 2026-09-11
+      (wecoded-marketplace#90 — the address answered 200 again the same day). Retire only once no
+      supported build names it: that needs a released build everyone is on, and ideally the address
+      read from config rather than compiled in, so the next move cannot repeat this
+      `all` `confirmed` `checked 2026-09-11`
+
 ## install
 
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows

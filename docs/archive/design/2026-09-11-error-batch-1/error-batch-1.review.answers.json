@@ -1,0 +1,100 @@
+{
+ "deck": "error-batch-1-review",
+ "started": "2026-09-11T10:40:42.150Z",
+ "submitted": "2026-09-11T10:44:17Z",
+ "cur": 14,
+ "answers": {
+  "E-1": {
+   "note": "that's an unhelpful error message",
+   "v": "other",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-2": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-3": {
+   "v": "yes",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-4": {
+   "v": "other",
+   "note": "unclear what \"select text and copy it yourself\" means. that's what they just did. maybe just \"please try again\"?",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-5": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-6": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-7": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-8": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-9": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-10": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-11": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-12": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-13": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-14": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-15": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

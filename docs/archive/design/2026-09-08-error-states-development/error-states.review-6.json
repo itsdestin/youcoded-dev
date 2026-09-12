@@ -1,0 +1,166 @@
+{
+ "title": "The screens that were missing — sending, sent, failed, setting up",
+ "key": "error-states-development-review-6",
+ "out": "error-states.review-6.html",
+ "images": "images/error-states.review-6",
+ "runs": {
+  "after": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-r6-deck/after"
+ },
+ "labels": {
+  "after": "New"
+ },
+ "themes": [
+  "midnight"
+ ],
+ "crops": {
+  "R6-24": [
+   "after",
+   "setting-up",
+   "436x307+422+297"
+  ],
+  "R6-25": [
+   "after",
+   "ready",
+   "436x317+422+292"
+  ],
+  "R6-26": [
+   "after",
+   "setup-failed",
+   "436x275+422+312"
+  ],
+  "R6-27": [
+   "after",
+   "sending",
+   "616x219+332+341"
+  ],
+  "R6-28": [
+   "after",
+   "sent",
+   "616x263+332+319"
+  ],
+  "R6-29": [
+   "after",
+   "ticket-failed",
+   "616x688+332+106"
+  ],
+  "R6-30": [
+   "after",
+   "opened",
+   "616x255+332+323"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R6-24",
+   "surface": "Contribute",
+   "path": "Settings → Development → Contribute to YouCoded",
+   "crop": "R6-24",
+   "runs": [
+    "after"
+   ],
+   "headline": "24. Setting up says which step it is on.",
+   "changed": "The screen names the step running now — downloading the project, then its five parts, then installing what they need — instead of one unchanging line.",
+   "notice": "A setup that takes minutes looks like it is working rather than stuck.",
+   "risk": "The steps are the real ones, but nothing is downloaded yet.",
+   "highlight": {
+    "selector": "[role=dialog] .py-8"
+   }
+  },
+  {
+   "id": "R6-25",
+   "surface": "Contribute",
+   "path": "Settings → Development → Contribute to YouCoded",
+   "crop": "R6-25",
+   "runs": [
+    "after"
+   ],
+   "headline": "25. When it finishes, it says where your project is and offers to open it.",
+   "changed": "A finished setup names the folder it created and gives you one action to open it, with Not now beside it.",
+   "notice": "You are told where it went, and that nothing else on your computer changed.",
+   "risk": "The folder is an example; nothing is created yet.",
+   "highlight": {
+    "text": "Your development workspace is ready."
+   }
+  },
+  {
+   "id": "R6-26",
+   "surface": "Contribute",
+   "path": "Settings → Development → Contribute to YouCoded",
+   "crop": "R6-26",
+   "runs": [
+    "after"
+   ],
+   "headline": "26. If setup fails, it says why and offers to carry on.",
+   "changed": "The reason comes from the step that failed. Retry resumes, Report bug files it. The old screen's only button here was Done.",
+   "notice": "You keep what already downloaded, and you are not sent back to the start.",
+   "risk": "The reason shown is an example failure.",
+   "highlight": {
+    "selector": "[role=alert]"
+   }
+  },
+  {
+   "id": "R6-27",
+   "surface": "Submit a ticket",
+   "path": "Settings → Development → Report a Bug or Request a Feature",
+   "crop": "R6-27",
+   "runs": [
+    "after"
+   ],
+   "headline": "27. Sending a ticket says it is sending.",
+   "changed": "A short step between pressing Submit and being told the outcome. There was nothing here before — the button simply did nothing.",
+   "notice": "You can tell the press registered, so you do not press it twice.",
+   "risk": "Nothing is sent to GitHub yet.",
+   "highlight": {
+    "selector": "[role=dialog] .py-8"
+   }
+  },
+  {
+   "id": "R6-28",
+   "surface": "Submit a ticket",
+   "path": "Settings → Development → Report a Bug or Request a Feature",
+   "crop": "R6-28",
+   "runs": [
+    "after"
+   ],
+   "headline": "28. A submitted ticket gives you its link.",
+   "changed": "The screen confirms it is submitted, repeats that anyone can read it, and shows the address so you can follow it.",
+   "notice": "You leave with a link rather than wondering whether it worked.",
+   "risk": "The link is an example.",
+   "highlight": {
+    "text": "Your ticket is submitted."
+   }
+  },
+  {
+   "id": "R6-29",
+   "surface": "Submit a ticket",
+   "path": "Settings → Development → Report a Bug or Request a Feature",
+   "crop": "R6-29",
+   "runs": [
+    "after"
+   ],
+   "headline": "29. A ticket that could not be sent keeps every word you typed.",
+   "changed": "The failure sits above your draft, which is untouched, with one Retry. The Submit button is hidden while it shows, so there is one way to try again, not two.",
+   "notice": "Nothing you wrote is lost, and you can edit before trying again.",
+   "risk": "The reason shown is an example failure.",
+   "highlight": {
+    "selector": "[role=alert]"
+   }
+  },
+  {
+   "id": "R6-30",
+   "surface": "Submit a ticket",
+   "path": "Settings → Development → Report a Bug or Request a Feature",
+   "crop": "R6-30",
+   "runs": [
+    "after"
+   ],
+   "headline": "30. Attaching files hands you over to GitHub, and says so.",
+   "changed": "When you choose to attach screenshots or files, the ticket is not submitted here — it opens in your browser with everything you wrote, for you to attach and submit there.",
+   "notice": "You know the ticket is not filed yet and that finishing it is your next step.",
+   "risk": "Nothing opens a browser yet.",
+   "highlight": {
+    "text": "Finish your ticket in GitHub."
+   }
+  }
+ ]
+}

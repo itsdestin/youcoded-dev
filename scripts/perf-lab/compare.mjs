@@ -98,6 +98,27 @@ export const PRIMARY = [
   // same run; a fix for the thrash that made the first open slower (a bigger
   // warm-up, a pre-walk) would be a bad trade and only this path shows it.
   'projects.median.open.openMs',
+
+  // ── Terminal view (terminal phase, added 2026-09-10) ───────────────────────
+  // Every session switch in terminal view clears the glyph atlas SHARED by every
+  // open terminal (TerminalView's hide->show heal), so all of them re-rasterise.
+  // switchPaintedMedianMs is the A/B target for throttling that heal: click ->
+  // the other terminal on screen. longtaskMaxMs is the worst renderer freeze
+  // across the 40 switches — the other number the throttle decision reads.
+  // NOT gated, each for a stated reason:
+  //  - terminal.median.ipc.totalStallMs (main-process stall summed over the 40
+  //    one-second switch slots). It was gated until 2026-09-11, when the first real
+  //    baseline measured exactly 0 ms (max round trip 22 ms over 732 pings;
+  //    perf-reports/2026-09-11-0358-a6544d7-atlas-baseline.json). Against a 0
+  //    baseline, ZERO_BASELINE_FLOOR (1) turns any candidate's first millisecond of
+  //    stall into a REJECT, so on this rig the path could only produce false
+  //    rejections. It stays in the report (row + NUMERIC_PATHS); read it by eye.
+  //  - atlasClearsPerSwitch: a mechanism count that proves the heal engaged,
+  //    validated by run.mjs rather than gated.
+  //  - switchPaintedP95Ms: the throttle decision (Task 5B's gate) reads the median
+  //    and the worst long task, not the p95, so it is reported beside the median.
+  'terminal.median.switchPaintedMedianMs',
+  'terminal.median.longtaskMaxMs',
 ];
 
 // Dotted-path getter used everywhere below — keeps report shape out of the decision logic.
@@ -243,7 +264,10 @@ const errorTotal = (r) =>
   + (r.errors?.stallBoot ?? 0)
   + (r.errors?.artifactsBoot ?? 0)
   // Each workload repeat is its own boot since 2026-08-27 (see run.mjs).
-  + (r.errors?.workloadBoots ?? []).reduce((a, b) => a + b, 0);
+  + (r.errors?.workloadBoots ?? []).reduce((a, b) => a + b, 0)
+  // Each terminal repeat is its own boot too (2026-09-10). Without this, a change that
+  // starts logging errors while switching in terminal view would still read as KEEP.
+  + (r.errors?.terminalBoots ?? []).reduce((a, b) => a + b, 0);
 
 /**
  * Decide KEEP or REJECT for one experiment.

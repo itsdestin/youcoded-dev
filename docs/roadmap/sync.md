@@ -1,20 +1,6 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
-- [ ] The whole app froze solid for 6+ minutes (no CPU use, no crash, every log line — not just
-      lease's own — went silent at once) right after a `[lease] acquire` log line. Leading
-      hypothesis, source-verified but not caught live: `acquire()` in
-      `conversations/lease-client.ts` calls `writeLeaseFile()`, which uses blocking
-      `fs.mkdirSync`/`fs.writeFileSync` instead of the async style the rest of the module uses to
-      "never block" — a disk stall there would freeze the whole process exactly like this. Ruled
-      out: the machine's known SMU power-wedge, the 2026-08-25 kwallet CPU-spin bug (checked live,
-      daemon answered instantly). A few other main-process files write synchronously on hot paths
-      the same way and are worth the same async conversion if this pans out:
-      `conversations/transcript-mirror.ts`, `sync-spaces/git-transport.ts`,
-      `conversations/conversation-store.ts`, `project-registry.ts`, `device-registry.ts`. Destin,
-      2026-09-08.
-      `desktop` `needs-verify` `checked 2026-09-08` → docs/active/investigations/2026-09-08-lease-acquire-blocking-write-freeze.md
-
 - [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
       unrelated event refreshes it (other phones update fine). Found 2026-08-22.
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
@@ -47,6 +33,15 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       whose isolated userData may mean it never connects to the hub at all, so confirm in the
       installed app first
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-03` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
+
+- [ ] Open a conversation and close it again within a second or so, and the app can keep claiming
+      it "in use" — renewing its hold every 30 s until you restart — so your other device is told
+      it is busy. Found by code review of the freeze fixes, 2026-09-10, not seen live: `release()`
+      runs while `acquire()` in `conversations/lease-client.ts` is still waiting for the sync
+      hub's reply, and when the reply lands `acquire()` starts the renew heartbeat for a session
+      that was already released. Existed before the freeze fixes; the lease-client test for this
+      sequence checks only the lease file, never `isHeld()`
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] Star a model as a favourite on one device and the model picker on your other device opens empty, with no hint
       why, until you type. Favourites never leave the device they were set on. From youcoded#279, 2026-07-31.

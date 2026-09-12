@@ -28,21 +28,23 @@ Design: `docs/active/specs/2026-09-01-feature-flow-design.md`. Order: questions 
 UX tester 1 → review deck(s) → contract → design + capped review → build → code reviewer +
 UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 
+## Short route for small work
+**Invariant:** small changes, features or bug fixes with clear direction may skip every step
+but the UI review deck, his first sight of the work. Ask Destin before skipping. **Why:** "just
+show them to me. this is a simple feature" (2026-09-10). **Guard:** none — candidate.
+
 ## Questions before drawing
 **Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
-before any UI is drawn: each question carries `today`, `problem`, `proposal` and 1–3 `options`
-with `pros`, `cons`, at most one `recommended`. **Why:** a chat answer is not a source; a row
-must resolve to an answered step. **Guard:** `test_words.py`; how to write one:
-`.claude/rules/review-deck.md`.
+before any UI is drawn, with the fields `.claude/rules/review-deck.md` requires. **Why:** a chat
+answer is not a source; a row must resolve to an answered step. **Guard:** `test_words.py`.
 
-## The UX tester runs before Destin sees a deck, and once more at the end
+## The UX tester runs before the first deck and after the build
 **Invariant:** a fresh subagent given ONLY `scripts/ui-review/ux-tester.md`'s briefing and
 `scripts/ui-review/tester-kit.md` — no CLAUDE.md, rules, spec or plan — drives the mockups before
-the first review deck, and the built branch after the code review. It reports errors,
-expected-vs-actual, over-long copy (with shorter wording) and visual inconsistencies; each
-finding line is triaged `accepted` / `rejected` / `already handled`.
+the first review deck, and the built branch after the code review; each finding line is triaged
+`accepted` / `rejected` / `already handled`.
 **Why:** a tester who read the design doc is not a beta tester (decided 2026-09-04).
-**Guard:** none — candidate (design §8e: measure after three features).
+**Guard:** none — candidate.
 
 ## Sources are answered steps or accepted findings
 **Invariant:** `<feature>.contract.json` is a one-step `rows` deck. A row's `source` is
@@ -59,8 +61,8 @@ ignored.
 **Guard:** none — candidate.
 
 ## Reopen only through a deck
-**Invariant:** when implementation contradicts approved UI, serve a one-step QUESTION deck (see
-`review-deck.md`) and wait; the answer amends the row's `source`.
+**Invariant:** when implementation contradicts approved UI, serve a one-step QUESTION deck and
+wait; the answer amends the row's `source`.
 **Why:** a chat answer is not a source.
 **Guard:** none — candidate.
 
@@ -74,15 +76,14 @@ was signed (`.contract.answers.json`, step `yes`); the acceptance deck was submi
 
 ## The build stage is reviewed, capped, recorded
 **Invariant:** technical design → reviewer rounds writing
-`docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings `R<n>-<k>` marked
-accepted / rejected / already handled, reversals `reverses:`; stop on a round accepting nothing,
-cap three) → task breakdown → subagent build, a reviewer per task.
+`docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings marked accepted /
+rejected / already handled; stop on a round accepting nothing, cap three) → task breakdown → subagent build, a reviewer per task.
 **Why:** whether rounds improve or churn a design is unmeasured.
 **Guard:** none — candidate.
 
 ## Two reviewers, a stranger grades, then the deck
-**Invariant:** after the build, a code reviewer (`scripts/ui-review/code-reviewer.md`: branch,
-contract rows, file rules — nothing else) and the UX tester's second run report in parallel to
+**Invariant:** after the build, a code reviewer (`scripts/ui-review/code-reviewer.md`) and the
+UX tester's second run report in parallel to
 `docs/active/reviews/<date>-<feature>-code-review.md` / `-ux-review-<run>.md`, each under a budget. The implementing
 session triages; accepted findings become `review:` rows. A fresh grader
 (`scripts/ui-review/grader.md`) writes `<feature>.contract.verdicts.json`, failing a `mechanical`

@@ -68,7 +68,7 @@ one cue list. `npm run render:draft` → `out/draft.mp4` (half size, ~6 min). `b
 | a move or gesture | `src/host/engine.ts` — `A.aim/point/tada/cheer/clap/nod/startle/wave/walk/hop/twirl/vanish+appear/quickChange/shutdown/sitTuck/wake/peekIn/stepIn`; the presenter rule is `present()` in `src/beats/beat.ts` | a study, or the draft |
 | the open | `src/intro/Intro.tsx` (`introActions`; `IMPACT` must equal `PRELUDE`). The peek is the APP's docked side-peek (mittens on the edge, the body leaning 75° between them) — do not reinvent it | `npm run study -- Intro out/intro-study.mp4` |
 | the close | `src/beats/Beat10.tsx`: the window grows to fill the frame, a scrim, the modal, `Y_SPOT`, the cheer → ta-da; `POWER_DOWN` and `studies/EndPoseStudy.tsx` hold sixteen end-pose candidates he has not picked from | `npm run study -- CloseStudy …` |
-| a face | `src/host/faces.ts` `WARM` (welcome, curious, shocked, happy, smug, dizzy, shutdown, asleep, dozy) | `node faces-sheet.mjs <out.png> warm` |
+| a face | the RIG's own faces first: every theme rig and the app's default rig carry idle, welcome, curious, shocked, dizzy, happy and shutdown. `src/host/faces.ts` `withFilmFaces` adds only what a rig lacks (smug, asleep, dozy, drawn from `WARM`) in that rig's ink. The default rig is a copy of the app's (`src/rig.ts`) painted by `themes.ts` `mascotPaint` — re-copy both when the app's change | a still (`npx remotion still …`) |
 | the headline | `src/Label.tsx` (glow, no underline — his pick); strings in `src/captions.ts` (pinned to the spec's storyboard table) | `npm test` |
 | a bubble's look | `src/Bubble.tsx` — pinned to the head, side locked per cue, wraps to the room on its side, width measured word by word | the draft |
 | the music | `music/song.py` `promo_track()`; bars and sections must match `src/timeline.ts` `BEATS` and both tests | re-render the track, `npm test` |
@@ -82,7 +82,9 @@ one cue list. `npm run render:draft` → `out/draft.mp4` (half size, ~6 min). `b
 - **Scenes rot against the app.** Every re-film after a few days of app work broke a scene or three:
   a reworded tool line (`waitForText`), a picker that lost its field, a title that became a Rename
   control. `record.mjs` now keeps the frame it died on as `<scene>.fail.png` — read it before
-  guessing; the app's source names the new selector.
+  guessing; the app's source names the new selector. 2026-09-10: eight of fifteen scenes broke at
+  once because the app's hover hints replaced `title=` — a hinted control carries its words as
+  `data-hint=` now, so address it `[title='X'], [data-hint='X']`.
 - The bubble's tail is drawn ON the corner arc when the bubble is short (`attach()` in Bubble.tsx):
   a straight edge that no longer exists at that height cannot be attached to — three decks of
   "there's still a gap" before that was understood.
@@ -91,7 +93,9 @@ one cue list. `npm run render:draft` → `out/draft.mp4` (half size, ~6 min). `b
 - The Bash tool's `cd` persists between calls — lead every command with an absolute path.
 - Loading screens are on camera unless you cut them; a theme's wallpaper lands ~10 frames after
   its paint mark; a shot's first frame at 1.6× reaches the next event sooner than you think.
-- A theme's own rig has only the contract's five faces; Host falls back for the rest.
+- A face a rig lacks draws NOTHING (a blank head), so Host falls back to one it has. Never
+  replace a rig's own faces with the film's: the rigs took the warm set on 2026-09-05, and the
+  film's copies are the older drawings.
 - The bubble's side is decided once per cue; a long line wraps to the room on its side.
 - A first line with a stand cannot hop before the arrival lands (frame 46): start it earlier and
   the arrival lands there directly. The move after the Flappy dive must be the poof (the only

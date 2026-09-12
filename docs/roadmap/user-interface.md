@@ -15,6 +15,14 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       wording in the review file
       `remote` `confirmed` `checked 2026-09-10` → docs/active/reviews/2026-09-10-remote-batch-2-3-ux-review-1.md
 
+- [ ] Three things a context-free tester tripped on during the first-run guide's review that
+      predate it (2026-09-10): the Cloud providers card at phone width wraps "Signed in as…"
+      one word per line and the Claude Code title runs under its buttons; the welcome
+      screen's new-session form and the session strip's form look and behave differently
+      (no (i) on one, Launch in New Window only on the other); and the welcome form's
+      Create Session button wraps onto two lines beside a one-line Cancel
+      `all` `needs-verify` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-first-run-guide-ux-review-1.md
+
 - [ ] The files filter panel (Project View and the Files drawer) draws its own 12 px filter chip
       instead of the shared 14 px filter pill, the size the design guide already rejected as the
       smallest text in the app (noticed while building the Resume browser's phone filter panel, 2026-09-10)
@@ -67,14 +75,27 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       view, which Destin deferred until those files are touched anyway
       `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
-- [ ] Error messages still guess at causes in many places — the app-wide audit of every error
-      string (desktop, Android, Worker), choosing a specific message or the two-button
-      Report/Diagnose card at each site, has not been done
-      `all` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-misleading-error-audit.md
+- [ ] Error messages still guess at causes in many places — the app-wide re-audit is done and
+      batch 1 of 7 (the seventeen messages that stated something false) shipped 2026-09-11;
+      left: Android + crash plumbing, one Report/Diagnose block, "couldn't load" shown as
+      "none", silent action failures, look and wording, guards. Destin's rule: every error
+      state offers an action
+      `all` `confirmed` `checked 2026-09-11` `v1.3.1` → docs/active/investigations/2026-09-10-error-inventory/README.md
 
 - [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
       sessions showed no "Start a conversation" text; Destin said ignore for now
       `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
+
+- [ ] Switching sessions in terminal view redraws the letters of EVERY open terminal each time
+      (the black-glyph safety net in `TerminalView.tsx`). Measured 2026-09-10 with the new perf-lab
+      terminal scenario: no change warranted on software rendering — a terminal-view switch settles
+      in ~137 ms against ~124 ms in chat view, inside the run-to-run spread (103–158 ms), with one
+      redraw per switch (perf-reports/2026-09-11-0358-a6544d7-atlas-baseline.md). NOT measured: the
+      graphics-card cost on real hardware, which the rig cannot see. Open check: in a dev instance
+      with six busy terminals, switch rapidly in terminal view and say whether it feels slower than
+      chat view; if it does, the throttle is written up as Task 5B of the 2026-09-10 main-thread
+      freeze-fixes plan
+      `chat` `desktop` `needs-verify` `checked 2026-09-10` `performance`
 
 - [ ] File and model sizes disagree with websites — the Local Models row says 74.2 GB for a
       download Hugging Face lists as 79.7 GB (same bytes; the app counts 1024-based, the site
@@ -172,9 +193,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       real phone before scoping
       `all` `needs-verify` `checked 2026-08-07` `performance`
 
-- [ ] On the touchscreen Z13, the desktop app's on-screen keyboard interactions misbehave (Destin,
-      2026-09-02; details to be gathered). Investigate together with the Android keyboard item
-      `input-bar` `desktop` `needs-verify` `checked 2026-09-02` `needs-repro`
+- [ ] On the touchscreen Z13, the app's touch accommodations — bigger tap targets, buttons that
+      otherwise only appear on hover — probably never switch on, because the app judges the machine
+      mouse-driven (found fixing the on-screen keyboard, 2026-09-10)
+      `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] Tapping a quick chip when the typing box already has text should offer a small menu —
       Replace or Append — and skip the menu when the box is empty (Destin, 2026-09-02; same rule
@@ -208,3 +230,15 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       defend), what a local model shows for cost (nothing? "free"?), and whether three tags fit
       a row that already carries a name, a source and a favourite star.
       `model-picker` `all` `confirmed` `checked 2026-09-06`
+
+- [ ] Closing a dialog opened from the Development menu closes the menu behind it too, and
+      "Known issues" closes everything with nothing on screen acknowledging it. Found by a
+      context-free UX tester on 2026-09-10 (`docs/archive/reviews/2026-09-10-error-states-unit-a-ux-review-2.md`
+      U9). It is shared dialog behaviour, not one screen's — changing it alters every menu in
+      the app, so it was filed rather than special-cased inside a feature
+      `settings/development` `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] The (i) help bubbles cover the rows and buttons they describe, so reading one hides the
+      thing it is about. Same review, U10. `AnchorTip` placement is shared by every settings
+      page; the fix belongs to the primitive
+      `settings` `desktop` `confirmed` `checked 2026-09-10`

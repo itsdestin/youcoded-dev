@@ -144,13 +144,30 @@ export function strandedWorktrees(root, { now = Date.now(), idleHours = 24 } = {
 
 export function subRepoRoot(root) {
   if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
+  // COUNT the repos, never "does it have any".
+  //
+  // The all-or-nothing test was wrong for the commonest worktree shape there is: the
+  // perf rig needs `youcoded` present, and .gitignore explicitly contemplates linking
+  // it in. One symlink made `some(...)` true, the fallback never fired, and the other
+  // FOUR repos' anchors were reported as confirmed drift — measured 2026-09-10 in a
+  // real rig worktree at 429/446 anchors and 551/585 MAP paths, 51 false failures.
+  // A check that cries wolf is worse than no check: the audit's own banner says every
+  // failure above is confirmed drift, so a reader either believes 51 lies or learns to
+  // skim the whole report.
+  //
+  // Resolving to whichever checkout holds MORE of them is right in every direction: a
+  // main checkout with all five keeps itself, a bare worktree falls back, and a
+  // partially-linked worktree falls back to the fuller copy — which is where its own
+  // symlink already pointed.
+  const have = (dir) => REPOS.filter(r => fs.existsSync(path.join(dir, r, '.git'))).length;
+  const mine = have(root);
   let resolved = root;
-  if (!REPOS.some(r => fs.existsSync(path.join(root, r, '.git')))) {
+  if (mine < REPOS.length) {
     try {
       const common = execFileSync('git', ['-C', root, 'rev-parse', '--git-common-dir'],
         { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
       const main = path.resolve(root, common, '..');
-      if (main !== root && REPOS.some(r => fs.existsSync(path.join(main, r, '.git')))) resolved = main;
+      if (main !== root && have(main) > mine) resolved = main;
     } catch { /* not a git checkout — keep root; the globs will visibly match nothing */ }
   }
   subRepoRootCache.set(root, resolved);
