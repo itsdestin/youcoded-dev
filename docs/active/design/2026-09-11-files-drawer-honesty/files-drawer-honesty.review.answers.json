@@ -1,0 +1,32 @@
+{
+ "deck": "files-drawer-honesty-review",
+ "started": "2026-09-12T01:08:41.725Z",
+ "submitted": "2026-09-12T01:09:36Z",
+ "cur": 3,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-2": {
+   "v": "yes",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-4": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
