@@ -34,7 +34,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
 - **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
 - **Perf:** prefer `content-visibility: auto` over virtualization; memoize every Context value; the reducer preserves `toolCalls`/`toolGroups` Map refs — don't clone them.
-- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (sole sanctioned caller: `RemoteSnapshotExporter`); **never `store.getState()` during render** (tears).
+- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (no production caller remains: since 2026-09-10 `RemoteSnapshotExporter` calls `flushTranscriptActions()` then reads the store, off the render path); **never `store.getState()` during render** (tears).
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
 - **ONE backdrop-filter, ever** — the frame chrome is a single `<div class="chrome-glass">` clipped via `clip-path: polygon()`; per-element backdrop-filters seam at non-100% zoom.

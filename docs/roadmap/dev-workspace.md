@@ -3,6 +3,17 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
+      timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
+      builds ran beside it; it passed three times alone right after and in the full verify before.
+      Load-sensitive, like the entries below
+      `n/a` `needs-verify` `checked 2026-09-11`
+- [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
+      new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
+      five times in isolation right after; the run's changes touched nothing it imports.
+      Load-sensitive, like the step-guard entry below
+      `n/a` `needs-verify` `checked 2026-09-11`
+
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
       pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
@@ -113,7 +124,10 @@ seen-on is always n/a here.
       imported by nothing in this suite; 3 of 3 isolated re-runs green and the very next
       full run green at 10,280 passed. Three of eight tests, three unrelated branches, never
       once outside a full run: treat the file's shared timer setup as the suspect, not the
-      assertions. It costs a re-run on every branch that trips it
+      assertions. It costs a re-run on every branch that trips it.
+      FOURTH occurrence 2026-09-10, inside `verify.sh` on session/remote-first-connect (remote
+      access batch 2, which touches no step-guard file); 5 of 5 isolated runs green and the
+      re-run green
       `desktop` `confirmed` `checked 2026-09-10` `regression`
 - [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
       still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
@@ -273,6 +287,11 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+
+- [ ] A dev instance shares the live app's saved theme choice: picking a theme in the dev window,
+      or on a phone connected to it, changes the theme the live app opens with next time.
+      `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
+      `desktop` `confirmed` `checked 2026-09-11`
 
 - [ ] A new worktree's libraries can be older than the ones CI installs, so a green local check may
       not be the check CI runs. On 2026-09-11 a worktree held fourteen packages at a different
@@ -572,6 +591,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## knowledge
+
+- [ ] `.claude/rules/react-renderer.md` is over the 600-word rule budget on master itself
+      (`audit-anchors.mjs` reports 612), so every session that touches renderer code pays for the
+      overflow and the mechanical audit reads red for a reason no branch introduced. The rules
+      README says overflow migrates to the lazy doc it points to (`youcoded/docs/renderer-chrome.md`)
+      or becomes a pinning test. Found 2026-09-11 while merging remote batches 2/3
+      `n/a` `confirmed` `checked 2026-09-11`
 - [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
       `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
       byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped

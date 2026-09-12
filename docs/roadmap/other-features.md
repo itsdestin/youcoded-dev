@@ -79,6 +79,13 @@ has passed ~8 items — graduate it to its own file.
 
 ## misc
 
+- [ ] The dev log shows React's "Cannot update a component while rendering a different
+      component" warning when sessions arrive (seen during the 2026-09-11 phone pass, when a
+      phone's catch-up delivers every session at once). Nothing visibly wrong yet; the handler
+      that adds a session changes other state in the middle of an update, which React may run
+      twice. Found 2026-09-11
+      `all` `confirmed` `checked 2026-09-11`
+
 - [ ] Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari
       pointed at another device that runs it. Options to weigh: a native app around the shared
       interface (the Android shape, minus the on-device runtime, which App Store rules on
