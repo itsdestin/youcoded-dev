@@ -144,6 +144,23 @@ seen-on is always n/a here.
       backendOptions cases, which are the part still needing AMD hardware
       `n/a` `confirmed` `checked 2026-09-07`
 
+- [ ] The macOS CI leg fails a DIFFERENT process-timing test on roughly half the runs, and each
+      failure withholds the entire beta: a red test step skips packaging, and the `sign` job
+      needs every build leg, so there is no macOS installer AND no signed manifest for any
+      platform. Cutting 1.3.0-beta.80 on 2026-09-11 took three re-runs and still had not
+      produced a Mac build. Each failure was a different case, all of them assertions about
+      output from a spawned process: `shell-registry.test.ts` "start: mints an sh- id, logs
+      from the first byte…" (`expected '' to be 'hello\n'`), then
+      `lease-client.test.ts` "lapsed renew whose re-acquire is rejected…" (`expected true to be
+      false`), then `shell-registry.test.ts` "an adopted run's seeded head is ANSI-stripped…"
+      (`expected 'BOLD head\n' to be 'BOLD head\ntail-part\n'`). **It is the machine, not the
+      code:** the full local suite is green (10,871 tests), both files pass locally in isolation
+      (39 tests), `desktop-ci.yml` passed macOS on the SAME commits (`e82d38a1`, `36858f72`), and
+      it failed macOS on `09b284d6`, which predates the merges under test. Fix shape is the one
+      `.claude/rules/test-suite-hygiene.md` prescribes — wait for the signal rather than a
+      deadline — applied to the spawned-process assertions in these two files
+      `n/a` `confirmed` `checked 2026-09-11` `regression`
+
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
       an Android manifest or a workspace file yields "tests: none", and the guard that
