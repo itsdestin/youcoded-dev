@@ -7,10 +7,20 @@ paths:
   - "**/desktop/src/renderer/state/artifact-tracker.ts"
   - "**/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
   - "**/desktop/src/renderer/state/ArtifactContext.tsx"
+  - "**/desktop/src/renderer/hooks/useMissingArtifacts.ts"
   - "**/desktop/src/shared/artifacts/**"
-last_verified: 2026-09-01
+last_verified: 2026-09-11
 verify:
   - test: youcoded/desktop/tests/artifacts/artifact-tool-use-tracker.test.ts
+  - test: youcoded/desktop/tests/artifacts/relocate-missing.test.ts
+  - test: youcoded/desktop/tests/artifacts/external-record-identity.test.ts
+  - test: youcoded/desktop/tests/session-drawer-missing-labels.test.tsx
+  - test: youcoded/desktop/tests/artifact-draft-survives-disk-change.test.tsx
+  - test: youcoded/desktop/tests/artifacts-encoding.test.ts
+  - test: youcoded/desktop/tests/artifacts-save-write-failure.test.ts
+  - test: youcoded/desktop/tests/artifacts-read-binary-symlink.test.ts
+  - path: youcoded/desktop/src/main/artifacts/relocate-missing.ts
+    contains: "MIN_AGREEING_SEGMENTS"
   - path: youcoded/desktop/src/main/artifacts/artifact-store.ts
     contains: "appendVersionsDirect"
   - path: youcoded/desktop/src/main/artifacts/read-binary-access.ts
@@ -51,38 +61,38 @@ verify:
 ---
 # Artifact Viewer (Session Drawer + Project View)
 
-Per-project sidecars + a central index track every file Claude touches; I/O is main-process via `window.claude.artifacts.*`. **Depth: `youcoded/docs/artifacts.md`; guards = frontmatter `verify:` tests.**
+Per-project sidecars + a central index track every file Claude touches; I/O is main-process via `window.claude.artifacts.*`. **Depth: `youcoded/docs/artifacts.md`.**
 
 ## Concept split
-- **ONE Files tab, ONE section** (2026-07-23). In-folder artifacts are UNDIFFERENTIATED — never badge or re-split. An `External Artifacts` section was REMOVED (~95% noise); **never re-add it**.
-- **`LIST_ALL_FILES` is NOT pure discovery** — `projectAllFiles()` UNIONS tracked internal artifacts discovery missed. Keep the union; no allowlist.
-- **`trackedArtifacts()` is the SOLE tracked-visibility decider.** Order: INCLUDED → EXCLUDED hidden → internal with ≥1 non-`read` version; externals hidden unless pinned. Include/exclude paths are canonical ABSOLUTE — canonicalize BOTH sides.
-- **`+ Add file` IMPORTS (Move/Copy), it does not pin.** It reuses `authorizeArtifactWrite` **without** `confirmed`; `.youcoded-import-*.part` temps are filtered from discovery AND sync `DEFAULT_IGNORES`.
-- **Discovery stops at nested git repos**, is bounded (caps + 1.5s, 10s cache), and never persists `discovered:true` — skip those in `checkExistence`.
+- **ONE Files tab, ONE section** (2026-07-23): in-folder artifacts are UNDIFFERENTIATED — never badge, re-split, or re-add the removed `External Artifacts` section.
+- **`LIST_ALL_FILES` is NOT pure discovery** — `projectAllFiles()` UNIONS tracked internals; keep the union, no allowlist.
+- **`trackedArtifacts()` is the SOLE tracked-visibility decider:** INCLUDED → EXCLUDED hidden → internal with ≥1 non-`read` version; externals hidden unless pinned. Include/exclude paths are canonical ABSOLUTE — canonicalize BOTH sides.
+- **`+ Add file` IMPORTS (Move/Copy), it does not pin** — `authorizeArtifactWrite` without `confirmed`; `.youcoded-import-*.part` temps are filtered from discovery and sync.
+- **Discovery stops at nested git repos**, is bounded, never persists `discovered:true` — skip those in `checkExistence`.
 
-## Recorded paths
-- **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3; `..` stays external). `absolutePath` is contractually ABSOLUTE — `isAbsoluteRecorded` guards **five** sites: `get`, `save`, `check-existence`, `countArtifacts`, `renameArtifact`.
-- **`runSidecarMigration` repairs legacy records on open**, gated on `reclassified === 0`, never `$schema`; it must never throw into a read handler.
+## Records & recorded paths
+- **A tracked call is recorded on its RESULT, never the call** — the transcript writes the call before the tool runs, so new files read "deleted" and denied edits counted as changes.
+- **Identity is WHERE the file is:** internals by `path`, externals by canonical `absolutePath` (TS + Kotlin).
+- **A missing INTERNAL record is relocated once** (`relocate-missing.ts`, in `LIST_SESSION`): name + 2 folders agree, exactly one candidate, else nothing. Never externals or deletes.
+- **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3; `..` stays external). `absolutePath` is contractually ABSOLUTE — `isAbsoluteRecorded` guards five sites: `get`, `save`, `check-existence`, `countArtifacts`, `renameArtifact`.
+- **`runSidecarMigration` repairs legacy records on open**, gated on `reclassified === 0`, never `$schema`; never throws into a read handler.
 - **`canonicalize()` is the sole source of truth for path equality** (TS + Kotlin, one fixture).
+- **Project list = saved folders, NOT the index; `countArtifacts` (drops orphans) and `countAllFiles` (discovery) are the only counters** — never recompute inline.
 
-## Paths & counts
-- **Project list = saved folders (`youcoded-folders.json`), NOT the central index.** `buildSavedFolderProjects` reuses an index entry by canonical path, else synths one whose `id` IS the path (traversal-guarded).
-- **Two single-source count helpers:** `countArtifacts` vs `countAllFiles` — never recompute inline. `countArtifacts` drops orphans (`fs.access`); `countAllFiles` is raw discovery (`artifacts/projects-index.ts`).
+## Concurrency — each cost an OOM or a lost record; incidents in the depth doc
+- **`casWrite` locks with mkdir** (bare CAS = data loss); index writers use `mutateFileUnderLock`; `appendVersion` retries CAS 5× — never add a second loop.
+- **Appends are queued per project** and deduped on `(sessionId, toolUseId)`; never call `appendVersionsDirect` from a handler.
+- **Every read goes through `readSidecarShared`** — ONE parsed copy per project, **READ-ONLY**; only mutate-and-write paths call `readSidecar`.
 
-## Concurrency
-- **`casWrite` uses a mkdir-based lock** (bare CAS = TOCTOU data loss); central-index writers use `mutateFileUnderLock`. `appendVersion` retries CAS 5× — never add a second loop.
-- **Append path is burst-safe** (a replay = ~1,000 tool events; 2026-08-15 OOM): per-project queue, `*Coalesced` helpers, one tracker refresh, dedupe on `(sessionId, toolUseId)`. Never call `appendVersionsDirect` from a handler.
-- **Every read goes through `readSidecarShared`; only mutate-and-write paths call `readSidecar`** — 477 parsed copies of one 6.4 MB sidecar OOM'd the app (2026-08-27, PR #335). ONE parsed copy per project, **READ-ONLY**; `casWrite` head-probes 4 KB.
-
-## Binary viewers & security
-- **`artifacts:read-binary` is GUARDED on BOTH platforms** (`read-binary-access.ts`, Kotlin `EditablePathPolicy.kt`): project roots + tracked externals only; secret dirs refused even inside roots; 50MB gate. Viewers use it, never `fetch('file://…')`.
-- **`artifacts:get`/`save` enforce the D5 write boundary in MAIN and Kotlin** (ONE fixture, SYMLINK-RESOLVED): `.git`/`.youcoded`/credentials never writable; `.claude` + `.env*` need `confirmed`; the renderer only MIRRORS it. Save carries `baseMtimeMs`.
-- **All binary viewers go through the `BinaryContent` shell**; `ViewerErrorBoundary` wraps the render. xlsx = **ExcelJS, not SheetJS**.
+## Reading & writing files
+- **`read-binary` is GUARDED on BOTH platforms and SYMLINK-RESOLVED before the verdict** (target, roots, tracked paths): project roots + tracked externals only, secret dirs refused inside roots, 50MB gate.
+- **`get`/`save` enforce the D5 boundary in MAIN and Kotlin** (ONE fixture, symlink-resolved): `.git`/`.youcoded`/credentials never writable, `.claude` + `.env*` need `confirmed`, the renderer only MIRRORS it. Save carries `baseMtimeMs`.
+- **A failed write ANSWERS `{ok:false, error:'write-failed', code}`, never throws**; name a cause only for an unambiguous code. **Non-UTF-8 text is SHOW-ONLY**: `get` flags `notUtf8`, `save` refuses `not-utf8`.
+- **All binary viewers go through `BinaryContent`**; `ViewerErrorBoundary` wraps the render. xlsx = **ExcelJS, not SheetJS**.
 
 ## UI invariants
 - **Filepath pills ALWAYS open the artifact viewer, NEVER Project View** — session→project→else artifactify; `findBestMatch` prefers EXACT.
-- **Project View re-homes to the FOCUSED conversation's project on every open** — `matchProjectByPath(projects, activeSessionCwd)` → else `projects[0]`. It deliberately does NOT restore the last selection (the component never unmounts, so retention went sticky all run); cwd rides a REF, never a dep.
-- **Drawer state is per-session keyed by `sessionId`**, labels SESSION-scoped; layout-level, not an overlay. Status glyphs (`●◐○`) BANNED. `.youcoded/` auto-gitignored.
-- **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — deliberate** (a tombstone, not a recovery path). Cross-device-SYNCED — don't delete the "unused" flag.
-- **`EXCLUDE` has NO renderer caller** (legacy round-trip only); in-folder files can't be excluded.
-- **Android `get`/`save`/`read-binary` are REAL (SessionService.kt), NOT stubs — mirror any new desktop guard in Kotlin.** List/project/import-file/search-content/watch-project return `not-implemented-on-mobile`; `check-existence` stubs "nothing missing"; `project:*` is desktop-only.
+- **Drawer state is per-session keyed by `sessionId`**, labels SESSION-scoped; layout-level, not an overlay. Status glyphs BANNED.
+- **"deleted" is ONLY a record whose last event is a delete; anything the check cannot find is "not found"**, and the empty list names its reason. The verdict re-checks on `artifacts:changed`; an older answer never overwrites a newer one.
+- **`showDeletedArtifacts` is SESSION-DRAWER-ONLY and cross-device-SYNCED** — don't delete the "unused" flag; its chip reads "Show missing".
+- **Android `get`/`save`/`read-binary` are REAL, NOT stubs — mirror every new desktop guard in Kotlin.** List/project/import/search/watch are `not-implemented-on-mobile`; `check-existence` stubs "nothing missing".
