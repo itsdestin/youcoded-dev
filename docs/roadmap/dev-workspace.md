@@ -714,12 +714,6 @@ seen-on is always n/a here.
       33921417200 was dispatched for that on 2026-09-04
       `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
-- [ ] No download we publish can be checked for corruption or tampering — the release carries the
-      installers and nothing else, no checksum file of any kind, so neither a user nor the app's
-      own updater can tell a good download from a bad one. Verified against the 1.3.0-beta.72
-      release listing
-      `n/a` `confirmed` `checked 2026-09-03` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
 - [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
       INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
       Deliberate and temporary (Destin, 2026-09-03). On 1.3.0: put the buttons back on
