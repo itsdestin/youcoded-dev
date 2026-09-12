@@ -1,0 +1,6 @@
+ok   midnight/files-one-missing (6 contrast fails)
+ok   midnight/files-all-missing (6 contrast fails)
+ok   midnight/file-older-format (8 contrast fails)
+ok   midnight/file-save-failed (8 contrast fails)
+
+4/4 shots verified. Manifest: docs/active/design/2026-09-11-files-drawer-honesty/runs/after/shots-files-honesty/manifest-files-honesty-midnight-s0of1-1789173926378.json

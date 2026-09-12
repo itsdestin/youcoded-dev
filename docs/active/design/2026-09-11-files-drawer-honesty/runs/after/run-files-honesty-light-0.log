@@ -1,0 +1,6 @@
+ok   light/files-one-missing (9 contrast fails)
+ok   light/files-all-missing (9 contrast fails)
+ok   light/file-older-format (11 contrast fails)
+ok   light/file-save-failed (11 contrast fails)
+
+4/4 shots verified. Manifest: docs/active/design/2026-09-11-files-drawer-honesty/runs/after/shots-files-honesty/manifest-files-honesty-light-s0of1-1789173926376.json

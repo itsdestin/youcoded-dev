@@ -1,0 +1,2 @@
+/home/destin/youcoded-dev/worktrees/sessions/files-drawer-honesty/scripts/ui-review/plans/files-honesty.json files-honesty midnight 0/1 41541
+/home/destin/youcoded-dev/worktrees/sessions/files-drawer-honesty/scripts/ui-review/plans/files-honesty.json files-honesty light 0/1 41542

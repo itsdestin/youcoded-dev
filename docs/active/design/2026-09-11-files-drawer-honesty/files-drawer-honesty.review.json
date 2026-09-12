@@ -11,10 +11,10 @@
   },
   "themes": ["midnight", "light"],
   "crops": {
-    "files-list": ["files-honesty", "files-one-missing", "500x430+930+55"],
-    "files-empty": ["files-honesty", "files-all-missing", "500x330+930+55"],
-    "file-note": ["files-honesty", "file-older-format", "500x300+930+110"],
-    "save-banner": ["files-honesty", "file-save-failed", "500x260+930+110"]
+    "files-list": ["files-honesty", "files-one-missing", "500x380+940+40"],
+    "files-empty": ["files-honesty", "files-all-missing", "500x240+940+40"],
+    "file-note": ["files-honesty", "file-older-format", "290x230+1150+80"],
+    "save-banner": ["files-honesty", "file-save-failed", "500x110+940+80"]
   },
   "steps": [
     {
@@ -46,7 +46,8 @@
       "headline": "Files in an older text format say why they can't be edited.",
       "changed": "These files use a pre-Unicode format, so the app can show them but cannot save them back without destroying accented characters. Editing is turned off, and the panel says so instead of silently hiding the Edit button.",
       "notice": "You can still read the file. Saving can no longer quietly replace every accent with a question mark.",
-      "risk": "You cannot edit such a file in YouCoded at all — it has to be converted elsewhere first."
+      "risk": "You cannot edit such a file in YouCoded at all — it has to be converted elsewhere first.",
+      "highlight": { "box": [0, 0, 100, 48] }
     },
     {
       "id": "F-4",
@@ -54,9 +55,9 @@
       "path": "Editing a file the computer refuses to write",
       "crop": "save-banner",
       "headline": "A save that fails now says so, and keeps your changes.",
-      "changed": "A save blocked by permissions, a read-only disk or a full disk used to do nothing at all — no message anywhere. The panel now shows the reason when it is unambiguous, and a plain \"couldn't save\" when it isn't.",
+      "changed": "When the computer refused the write — no permission, a read-only disk, a full disk — the failure never reached the panel at all: no message, nothing in the file, the button simply did nothing. It now says what happened, naming the cause where that is unambiguous.",
       "notice": "The Save button stops looking broken. Your typing stays in the editor either way.",
-      "risk": "None known: the message only appears where the save genuinely failed."
+      "highlight": { "box": [0, 2, 100, 45] }
     }
   ]
 }
