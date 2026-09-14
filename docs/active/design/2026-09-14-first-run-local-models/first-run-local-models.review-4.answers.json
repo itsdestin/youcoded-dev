@@ -1,0 +1,87 @@
+{
+ "deck": "first-run-local-models-review",
+ "started": "2026-09-14T23:45:21.236Z",
+ "submitted": "2026-09-14T23:48:40Z",
+ "cur": 12,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-3": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-4": {
+   "note": "remove the extra warning above the card.",
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-12": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-13": {
+   "v": "yes",
+   "seconds": 72,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-5": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-6": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-7": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-8": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-9": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-10": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-11": {
+   "v": "yes",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
