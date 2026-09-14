@@ -1,0 +1,12 @@
+{
+  "_comment": "The landing page's first load, filmed from navigation: the intro, the demo still, and the swap to the live demo. boot 0 + ready true start the screencast as the page begins loading. record-pair.sh swaps the origin for the before/after servers.",
+  "base": "http://127.0.0.1:8763/index.html",
+  "theme": "cotton-candy-sky",
+  "width": 1440,
+  "height": 900,
+  "boot": 0,
+  "ready": "true",
+  "actions": [
+    { "hold": 9000 }
+  ]
+}

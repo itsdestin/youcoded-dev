@@ -1,0 +1,15 @@
+{
+ "fps": 24,
+ "width": 1440,
+ "height": 900,
+ "duration": 9.413,
+ "actions": [
+  {
+   "i": 0,
+   "kind": "hold",
+   "mark": null,
+   "start": -0.285,
+   "end": 8.715
+  }
+ ]
+}
