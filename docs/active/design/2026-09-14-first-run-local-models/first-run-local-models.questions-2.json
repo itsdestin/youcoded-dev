@@ -1,0 +1,245 @@
+{
+  "title": "Follow-ups: API keys, and installing Claude Code only when it is needed",
+  "key": "first-run-local-models-questions-2",
+  "out": "first-run-local-models.questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "API keys on the sign-in screen",
+      "intro": "You asked whether other API keys work. They do, in Settings, but the sign-in screen only takes an Anthropic one. These decide what it should take."
+    },
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The small \"Use an API key\" link under the sign-in buttons",
+      "headline": "Should the sign-in screen's API key box accept any kind of key the app supports?",
+      "today": "Settings, Assistant settings, Cloud providers, \"Your own API keys\" accepts Anthropic, OpenAI, Google and OpenRouter keys. The sign-in screen's box accepts only an Anthropic key.",
+      "problem": "Someone who pays for an OpenAI or Google key cannot use it to get through setup, even though the app would run on it once they reached Settings.",
+      "proposal": "Choose how the box handles the different kinds of key.",
+      "options": [
+        {
+          "id": "recognise-key",
+          "label": "Recognise it",
+          "summary": "One box: paste any key and the app works out whose it is from how it starts, asking \"Which service is this key for?\" only when it cannot tell.",
+          "pros": [
+            "Nothing to choose first; paste and continue.",
+            "Anthropic, OpenAI, Google and OpenRouter keys each start in a recognisable way."
+          ],
+          "cons": [
+            "An unusual key gets one extra question after pasting."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "pick-service-first",
+          "label": "Pick the service first",
+          "summary": "A row of four choices (Anthropic, OpenAI, Google, OpenRouter) above the box.",
+          "pros": [
+            "Always clear which service the key is for."
+          ],
+          "cons": [
+            "One more step, and a small link opens into a bigger panel."
+          ]
+        },
+        {
+          "id": "anthropic-only",
+          "label": "Anthropic only",
+          "summary": "Leave the box as it is; other keys are added in Settings after setup.",
+          "pros": [
+            "No change to this part of the screen."
+          ],
+          "cons": [
+            "Anyone with only an OpenAI or Google key still cannot get through setup."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-2",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "Pasting an Anthropic API key into the sign-in screen's box",
+      "headline": "Should an Anthropic key run on Claude Code, or on YouCoded's own assistant?",
+      "today": "An Anthropic key pasted at setup is handed to Claude Code. A key added in Settings instead runs on YouCoded's own assistant, which does not need Claude Code installed.",
+      "problem": "Under your answer that Claude Code installs only when someone chooses Claude, an Anthropic key would force that install just to use the key.",
+      "proposal": "Choose which assistant a key pasted at setup runs on.",
+      "options": [
+        {
+          "id": "own-assistant",
+          "label": "YouCoded's own assistant",
+          "summary": "Every key, Anthropic included, runs on YouCoded's own assistant; nothing extra installs.",
+          "pros": [
+            "All four kinds of key behave the same way.",
+            "Fastest way through setup for anyone with a key."
+          ],
+          "cons": [
+            "Someone who wanted Claude Code specifically has to sign in with Claude instead, or add it later."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "claude-code",
+          "label": "Claude Code",
+          "summary": "An Anthropic key installs Claude Code first, then runs on it, as today.",
+          "pros": [
+            "Matches what the key does today."
+          ],
+          "cons": [
+            "The one kind of key that makes setup wait for an install.",
+            "Anthropic keys behave differently at setup than in Settings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-3",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The Log in with OpenRouter button",
+      "headline": "Should Log in with OpenRouter take an OpenRouter key, now that keys work?",
+      "today": "Pressing Log in with OpenRouter only shows \"OpenRouter sign-in is coming in a later update.\" An OpenRouter key already works in Settings.",
+      "problem": "A button that does nothing is the first thing some new users press, while the thing they came for already works elsewhere.",
+      "proposal": "Choose what the button does until a real OpenRouter sign-in exists.",
+      "options": [
+        {
+          "id": "open-key-box",
+          "label": "Open the key box",
+          "summary": "The button opens the API key box with a line on where to get an OpenRouter key.",
+          "pros": [
+            "The button works today.",
+            "Uses the box from the question above, so nothing extra is built."
+          ],
+          "cons": [
+            "\"Log in\" slightly overpromises: it is a key, not a sign-in page."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "remove-button",
+          "label": "Remove the button",
+          "summary": "Only Claude, ChatGPT and local models remain as buttons; OpenRouter keys go through the key link.",
+          "pros": [
+            "Shorter card, and no button that overpromises."
+          ],
+          "cons": [
+            "OpenRouter is harder to spot for people looking for it."
+          ]
+        },
+        {
+          "id": "leave-as-is",
+          "label": "Leave it",
+          "summary": "Keep the \"coming in a later update\" line until a real sign-in is built.",
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "Still a button that does nothing useful."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Installing Claude Code only when someone chooses Claude",
+      "intro": "You asked that Claude Code install only when someone actually signs in with it. These settle what that means around it."
+    },
+    {
+      "id": "F-4",
+      "words": true,
+      "surface": "First-run setup",
+      "path": "The install checklist a new install runs before the sign-in screen",
+      "headline": "Should Node and Git still install for everyone, with only Claude Code waiting until someone chooses Claude?",
+      "today": "Setup installs Node, Git and Claude Code, in that order, before the sign-in screen. YouCoded's own assistant needs none of them to chat.",
+      "problem": "Node also runs the Terminal view and Claude's sign-in, and Git installs the plugins that come with the app, syncing and the Git panel. Skipping them loses those for everyone who skips.",
+      "proposal": "Choose which of the three wait until someone chooses Claude.",
+      "options": [
+        {
+          "id": "only-claude-waits",
+          "label": "Only Claude Code waits",
+          "summary": "Node and Git still install up front; Claude Code installs when someone presses Log in with Claude.",
+          "pros": [
+            "Terminal view, built-in plugins, syncing and the Git panel work for every user.",
+            "Signing in with Claude later only needs the one install."
+          ],
+          "cons": [
+            "Local and ChatGPT users still wait for Node and Git at setup."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "node-waits-too",
+          "label": "Node waits too",
+          "summary": "Only Git installs up front; Node and Claude Code install together when someone chooses Claude.",
+          "pros": [
+            "A shorter setup for local and ChatGPT users."
+          ],
+          "cons": [
+            "Terminal view does not work for them until Node is installed."
+          ]
+        },
+        {
+          "id": "all-wait",
+          "label": "All three wait",
+          "summary": "Setup installs nothing for local and ChatGPT users.",
+          "pros": [
+            "The fastest possible setup for them."
+          ],
+          "cons": [
+            "No Terminal view, no built-in plugins, no syncing and no Git panel until they install them somehow."
+          ]
+        }
+      ],
+      "risk": "Git failing to install today stops setup entirely; it would still do so for everyone under every option here."
+    },
+    {
+      "id": "F-5",
+      "words": true,
+      "surface": "Settings, Cloud providers",
+      "path": "Choosing a Claude model later, when Claude Code was never installed",
+      "headline": "When someone without Claude Code chooses Claude later in the app, what should they see?",
+      "today": "Claude models appear greyed out with \"Claude Code not installed\", and the Claude card in Settings says \"Restart YouCoded to run setup again\".",
+      "problem": "Under this change a restart would not run setup again, so that advice would send people in a circle, and nothing offers to install it.",
+      "proposal": "Choose where the install is offered.",
+      "options": [
+        {
+          "id": "install-button-in-place",
+          "label": "An Install button there",
+          "summary": "The Claude card and the greyed model rows get an \"Install Claude Code\" button that installs it and then starts the Claude sign-in.",
+          "pros": [
+            "Fixed where they notice it, in one press.",
+            "Replaces advice that would no longer be true."
+          ],
+          "cons": [
+            "A second place that shows install progress, besides setup."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "back-to-sign-in",
+          "label": "Back to the sign-in screen",
+          "summary": "The button reopens the setup sign-in screen, which installs it when they press Log in with Claude.",
+          "pros": [
+            "Only one screen ever installs Claude Code."
+          ],
+          "cons": [
+            "Leaves the app and returns to a setup screen, which feels like starting over."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "Pressing Log in with Claude",
+      "headline": "Log in with Claude now installs Claude Code first, on the same card, then opens the browser to sign in.",
+      "changed": "Stated, not asked: the install that used to run before the sign-in screen now runs after pressing Log in with Claude, with its progress shown on the card.",
+      "notice": "Claude users wait the same total time as today, just after the click instead of before the screen. If the install fails, the card says why and offers Try again.",
+      "risk": "Not yet confirmed: a freshly installed Claude Code may not be found until the app restarts. If so, the card will say that plainly rather than fail silently.",
+      "yes": "Sounds right",
+      "no": "Not like that"
+    }
+  ]
+}
