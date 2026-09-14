@@ -32,10 +32,10 @@ them. Not here: the theme renders wrong (themes).
 
 ## backend
 
-- [ ] Destin's Android phone (both the regular app and the ReleaseTest app) and his other computer
-      are still counted as users in admin analytics — only this Linux PC is left out so far. Each
-      needs its device hash added to the admin-device list; the phone ones need the phone connected
-      to a computer with Android tools, since the two apps get different IDs
+- [ ] Destin's Android phone (both the regular app and the ReleaseTest app) is still counted as a
+      user in admin analytics — both of his Linux computers are left out as of 2026-09-13. Android
+      gives each app its own private ID that a USB connection can't read for these builds, so the
+      likely fix is a "Copy analytics ID" control in the app's About screen, then adding both IDs
       `n/a` `confirmed` `checked 2026-09-13`
 
 - [ ] There is no way to pay a pack author anything. Wanted: a tip that splits between YouCoded and
