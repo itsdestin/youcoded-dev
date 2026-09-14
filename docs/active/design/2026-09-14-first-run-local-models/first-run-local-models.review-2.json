@@ -1,0 +1,161 @@
+{
+  "title": "A local model button on the first-run sign-in screen — the mockups, round 2",
+  "key": "first-run-local-models-review",
+  "out": "first-run-local-models.review-2.html",
+  "stage": "review",
+  "images": "images/first-run-local-models.review-2",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after-2"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "crops": {
+    "signin": ["firstrun", "1-signin", "480x760+480+100"],
+    "local": ["firstrun", "2-local", "480x700+480+130"],
+    "local-tight": ["firstrun", "3-local-tight", "480x740+480+110"],
+    "claude-install": ["firstrun", "4-claude-install", "480x420+480+280"],
+    "downloading": ["firstrun", "5-downloading", "1440x170+0+730"],
+    "stopped": ["firstrun", "6-stopped", "1440x170+0+730"],
+    "key-recognised": ["firstrun", "7-key-recognised", "480x860+480+40"],
+    "key-unrecognised": ["firstrun", "8-key-unrecognised", "480x860+480+40"],
+    "model-list": ["firstrun", "9-model-list", "480x760+480+100"],
+    "claude-card": ["firstrun", "10-claude-card", "660x100+480+220"],
+    "picker": ["firstrun", "11-picker", "400x140+520+370"]
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "First-run sign-in screen",
+      "path": "The screen a new install shows before the app opens",
+      "themes": ["midnight"],
+      "crop": "signin",
+      "headline": "Every way in is now the same outlined button, including Use a local model and Use an API key.",
+      "changed": "Log in with Claude is no longer filled, Use an API key became a button, and Use a local model was added (your round 1 note, Q-1).",
+      "notice": "All five buttons look alike and light up on hover. The card is two buttons taller than today.",
+      "highlight": {"box": [12, 54, 76, 40]}
+    },
+    {
+      "id": "B-2",
+      "surface": "First-run sign-in screen",
+      "path": "After pressing Use a local model",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "local",
+      "headline": "The card turns into local setup: one model suggested for this computer, then three matching buttons.",
+      "changed": "Setup happens on this card (Q-2) with one suggestion that fits the computer (Q-3). Download, Choose a different model and Back are all buttons.",
+      "notice": "Download starts setup and opens the app; Back returns to the five sign-in buttons.",
+      "risk": "Model names, sizes and the fit line are sample data in this preview.",
+      "highlight": {"box": [12, 47, 76, 20]}
+    },
+    {
+      "id": "B-3",
+      "surface": "First-run sign-in screen",
+      "path": "Local setup, after pressing Choose a different model",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "model-list",
+      "headline": "Choose a different model swaps the suggestion for a list, each model saying how it will run here.",
+      "changed": "The full recommended list, one row per model, with its download size and whether it fits this computer.",
+      "notice": "The Download button follows whichever model is picked.",
+      "highlight": {"box": [12, 43, 76, 35]}
+    },
+    {
+      "id": "B-4",
+      "surface": "First-run sign-in screen",
+      "path": "Local setup, on a computer with little memory",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "local-tight",
+      "headline": "On a small computer, local setup warns that answers will be slow and suggests signing in instead.",
+      "changed": "An amber note above the suggestion (Q-6); the option is never hidden.",
+      "notice": "The suggestion drops to the smallest model and says it will be slow here.",
+      "highlight": {"box": [12, 43, 76, 11]}
+    },
+    {
+      "id": "B-5",
+      "surface": "Chat",
+      "path": "The band above the message box, right after setup",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "downloading",
+      "headline": "While the model downloads, a band above the message box shows its progress and time left.",
+      "changed": "The app opens straight away (Q-4) and this band stays until the download finishes.",
+      "notice": "It says plainly that the assistant can answer once the download is done.",
+      "risk": "The preview shows the band in every chat; built, it appears only in chats using that model.",
+      "highlight": {"box": [1, 19, 98, 31]}
+    },
+    {
+      "id": "B-6",
+      "surface": "Chat",
+      "path": "The band above the message box, after quitting mid-download",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "stopped",
+      "headline": "If setup closed before the download finished, the band says so and offers Resume download.",
+      "changed": "The app opens normally with this notice (Q-7), instead of reopening setup.",
+      "notice": "One button picks the download back up where it stopped.",
+      "highlight": {"box": [1, 19, 98, 31]}
+    },
+    {
+      "id": "A-7",
+      "surface": "First-run sign-in screen",
+      "path": "After pressing Use an API key and pasting a key",
+      "themes": ["midnight"],
+      "crop": "key-recognised",
+      "headline": "The key box takes any supported key, names whose it is, and Verify & Continue matches the other buttons.",
+      "changed": "Anthropic, OpenAI, Google and OpenRouter keys are recognised from how they start (F-1); the Claude Code sentence is gone (F-2).",
+      "notice": "Pasting an OpenAI key shows \"OpenAI key\" before you press Verify & Continue.",
+      "highlight": {"box": [12, 77, 76, 22]}
+    },
+    {
+      "id": "B-8",
+      "surface": "First-run sign-in screen",
+      "path": "Pasting a key the app cannot place",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "key-unrecognised",
+      "headline": "A key the app cannot place asks \"Which service is this key for?\" with a dropdown.",
+      "changed": "Only an unusual key gets the extra question (F-1).",
+      "notice": "Verify & Continue stays off until the key is recognised or a service is picked.",
+      "highlight": {"box": [12, 78, 76, 9]}
+    },
+    {
+      "id": "B-9",
+      "surface": "First-run sign-in screen",
+      "path": "After pressing Log in with Claude",
+      "themes": ["midnight"],
+      "runs": ["after"],
+      "crop": "claude-install",
+      "headline": "Log in with Claude installs Claude Code first, on the card, then the browser opens to sign in.",
+      "changed": "The Claude Code install moved from before this screen to after this click (Q-5, S-1).",
+      "notice": "Nothing else to press: the sign-in follows on its own once the install finishes.",
+      "risk": "The install checklist above the card also shows the install, so it is said twice.",
+      "highlight": {"box": [12, 70, 76, 13]}
+    },
+    {
+      "id": "A-10",
+      "surface": "Settings, Cloud providers",
+      "path": "Settings, Assistant settings, Cloud providers, the Claude Code card",
+      "themes": ["midnight"],
+      "crop": "claude-card",
+      "headline": "Without Claude Code, its card offers Install Claude Code instead of telling you to restart.",
+      "changed": "\"Restart YouCoded to run setup again\" is replaced by an Install button (F-5), since a restart would no longer install it.",
+      "notice": "One press installs it right here; the card then shows it signed out, ready for the Claude sign-in.",
+      "highlight": {"box": [70, 15, 26, 34]}
+    },
+    {
+      "id": "A-11",
+      "surface": "Model picker",
+      "path": "The model chip in the bottom strip, a greyed Claude model",
+      "themes": ["midnight"],
+      "crop": "picker",
+      "headline": "Greyed Claude models say \"Install Claude Code\" and open the card that installs it.",
+      "changed": "The greyed row's reason becomes a link to the Claude Code card (F-5).",
+      "notice": "Picking a Claude model without Claude Code is one click away from fixing it.",
+      "highlight": "auto"
+    }
+  ]
+}
