@@ -53,13 +53,13 @@ Target: `v1.3`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 111 | 33 | 4 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 111 | 32 | 4 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 11 | 4 | 23 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 7 | 1 | 4 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 37 | 16 | 1 | 6 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 27 | 11 | 4 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 8 | 0 | 9 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 10 | 1 | 5 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 11 | 1 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 5 | 2 | 6 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |

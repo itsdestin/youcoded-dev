@@ -32,6 +32,17 @@ them. Not here: the theme renders wrong (themes).
 
 ## backend
 
+- [ ] The Regions list in admin analytics is empty — "Region data isn't coming through yet." Every
+      device in the last 30 days arrives with a blank region, while countries come through fine.
+      Seen on Destin's analytics dashboard 2026-09-13; cause not looked into
+      `n/a` `needs-verify` `checked 2026-09-13`
+
+- [ ] Destin's Android phone (both the regular app and the ReleaseTest app) is still counted as a
+      user in admin analytics — both of his Linux computers are left out as of 2026-09-13. Android
+      gives each app its own private ID that a USB connection can't read for these builds, so the
+      likely fix is a "Copy analytics ID" control in the app's About screen, then adding both IDs
+      `n/a` `confirmed` `checked 2026-09-13`
+
 - [ ] There is no way to pay a pack author anything. Wanted: a tip that splits between YouCoded and
       the authors whose packs the user actually uses — Destin's ranking is the current theme's author
       first, then skill and other authors by a usage signal (invocations or installs, unresolved).
