@@ -592,6 +592,17 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] `roadmap-check.mjs --fix` run from a worktree edits the SHARED checkout, not the worktree.
+      It takes a `--root` flag documented for exactly this and defaults elsewhere without it, so the
+      write lands silently in another checkout — twice in one session on 2026-09-13, each time
+      downgrading an unrelated item's confidence token in `native-harness.md` and rewriting the
+      ROADMAP index, where it would have been committed under the wrong session's authorship if the
+      merge had not refused to start on a dirty tree. CLAUDE.md's own instruction ("run
+      `node scripts/roadmap-check.mjs --fix` before committing") is what both runs were following,
+      and it does not mention `--root`. Fix is a default — resolve the root from the cwd's git
+      top-level — plus a test, or the flag has to be in the instruction that tells you to run it
+      `n/a` `confirmed` `checked 2026-09-13`
+
 - [ ] A Worker setting the code reads can exist only as a test value with nothing loading it into
       the live Worker, and every check stays green: the admin-device filter sat that way until
       2026-09-13 even though the 2026-09-01 audit named it, so every admin analytics number counted
