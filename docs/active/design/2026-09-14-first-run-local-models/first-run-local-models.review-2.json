@@ -45,9 +45,8 @@
       "runs": ["after"],
       "crop": "local",
       "headline": "The card turns into local setup: one model suggested for this computer, then three matching buttons.",
-      "changed": "Setup happens on this card (Q-2) with one suggestion that fits the computer (Q-3). Download, Choose a different model and Back are all buttons.",
+      "changed": "Setup happens on this card (Q-2) with one suggestion that fits the computer (Q-3); the names and sizes shown are sample data.",
       "notice": "Download starts setup and opens the app; Back returns to the five sign-in buttons.",
-      "risk": "Model names, sizes and the fit line are sample data in this preview.",
       "highlight": {"box": [12, 47, 76, 20]}
     },
     {
@@ -131,8 +130,8 @@
       "crop": "claude-install",
       "headline": "Log in with Claude installs Claude Code first, on the card, then the browser opens to sign in.",
       "changed": "The Claude Code install moved from before this screen to after this click (Q-5, S-1).",
-      "notice": "Nothing else to press: the sign-in follows on its own once the install finishes.",
-      "risk": "The install checklist above the card also shows the install, so it is said twice.",
+      "notice": "The sign-in follows on its own once the install finishes.",
+      "risk": "The checklist above says it too.",
       "highlight": {"box": [12, 70, 76, 13]}
     },
     {
