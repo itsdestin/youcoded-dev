@@ -48,7 +48,7 @@
       "risk": "On a narrow window the branch name gets shorter to make room.",
       "_comment_risk": "risk: the Risk card. What could go wrong or annoy him.",
       "highlight": {
-        "_comment": "highlight: REQUIRED on a one-run deck — with one picture there is nothing to diff, so you must say what to box. \"text\" boxes words on screen; a hand-placed \"box\": [x, y, w, h] is the last resort.",
+        "_comment": "highlight: REQUIRED on a one-run deck — with one picture there is nothing to diff, so you must say what to box. \"text\" boxes words on screen; a hand-placed \"box\": [left, top, width, height] in PERCENT of the crop (0-100), not pixels is the last resort.",
         "text": "master"
       }
     },

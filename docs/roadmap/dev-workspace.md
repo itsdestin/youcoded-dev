@@ -592,6 +592,24 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] We can see how many people open the app and nothing else. The daily ping carries a device, a
+      version, a platform and a country, so there is no way to answer which features get used, where
+      someone gives up during setup, or what people did before they stopped coming back. Destin was
+      shown this gap on 2026-09-13, alongside the beta-channel work, and parked it as its own
+      conversation rather than folding it in
+      `n/a` `confirmed` `checked 2026-09-13`
+
+- [ ] A fresh worktree came up missing a package its own lockfile names (`dompurify`), so the first
+      full verify failed 41 test files at import. `workspace-start` already has the fix for this —
+      `fillMissingPackages` — and it printed no note; run by hand against the same worktree straight
+      after, it fetched the package correctly first time. So the routine works and something about
+      the creation path skipped it; the cause is NOT established. Evidence: the worktree was created
+      at fresh `origin/master` (whose lock names dompurify) while its `node_modules` was hardlinked
+      from the shared checkout (whose lock does not), and the only `deps:` line printed was
+      `hardlinked`. This is the FIFTH time this package has cost a session — four on 2026-09-11, all
+      closed as "the recipe works" or "fixed on master"
+      `n/a` `needs-verify` `checked 2026-09-13` `regression`
+
 - [ ] `.claude/rules/react-renderer.md` is over the 600-word rule budget on master itself
       (`audit-anchors.mjs` reports 612), so every session that touches renderer code pays for the
       overflow and the mechanical audit reads red for a reason no branch introduced. The rules

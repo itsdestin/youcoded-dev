@@ -111,6 +111,29 @@ test('per-repo state still reports branch and recent commits', () => {
   fs.rmSync(ws, { recursive: true, force: true });
 });
 
+// --- upstream freshness (2026-09-13) -----------------------------------------
+// `behind` is counted against the CACHED remote ref, so a checkout whose ref is
+// itself ancient reports 0 and prints no warning — which reads as "current".
+// Measured 2026-09-13: youcoded sat 162 commits behind origin/master, this hook
+// said nothing, and the session answered a question about the app from that
+// checkout, telling Destin a bug was live that had been fixed two days earlier.
+// The AGE must print even when (especially when) the count is zero.
+
+test('a repo whose upstream ref is cached prints how old that ref is', () => {
+  const { ws, repo } = makeWorkspace();
+  // A remote whose ref is a real commit: `behind` will be 0, which is exactly
+  // the case that used to print nothing at all.
+  const remote = path.join(ws, 'origin.git');
+  git(repo, 'clone', '--bare', repo, remote);
+  git(repo, 'remote', 'add', 'origin', remote);
+  git(repo, 'fetch', '-q', 'origin');
+  git(repo, 'branch', '--set-upstream-to=origin/master', 'master');
+  const out = runHook(ws);
+  assert.doesNotMatch(out, /commits behind its upstream/, 'precondition: nothing to be behind by');
+  assert.match(out, /upstream last seen: .*ago/, 'the age of the cached ref must print anyway');
+  fs.rmSync(ws, { recursive: true, force: true });
+});
+
 // --- worktree annotations (2026-08-28) ---------------------------------------
 // 22 of 55 sessions in the 2026-08-26→28 audit re-derived dirty/ahead per worktree
 // with their own git calls. The branch name alone never answered the question they

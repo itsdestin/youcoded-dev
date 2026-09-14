@@ -401,6 +401,17 @@ on a phone stayed where they were (sync's stale tag on desktop, the browser's wh
 connect and desktop-shaped terminal, the Play listing's business prerequisites in
 dev-workspace).
 
+### Found after the consolidation
+
+- **Dogfood APKs count as a separate person in our own numbers** (2026-09-13). Android's device
+  id is scoped to the app-signing key, and `android-test-build.yml` signs with a throwaway debug
+  key — so a dogfood build installed beside the real app on one phone reports a DIFFERENT device
+  hash, adding a second device to daily actives and a second "new install". `KNOWN_DEV_DEVICES`
+  only excludes the hashes it was given, so the dogfood hash has to be added separately or the
+  numbers stay inflated. Read from the code (`AnalyticsService.kt` + `app/build.gradle.kts` build
+  types), not measured on a handset — the SDK was absent that day.
+  `n/a` `needs-verify` `checked 2026-09-13`
+
 ### From android-only.md (19)
 
 1. Android keeps enforcing the old "approve protected requests" overrides after the desktop

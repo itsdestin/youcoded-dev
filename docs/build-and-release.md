@@ -158,6 +158,21 @@ Give it the `base` input (default `1.3.0-beta`) and it stamps `<base>.<run_numbe
 the way `desktop-test-build.yml` does; the outputs are named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
 
+**`android-test-build.yml` stamps too, since 2026-09-13 — it was the last build path that did
+not.** Its APKs used to inherit the hand-set `versionName` in `app/build.gradle.kts` (`1.2.4`, the
+May release), so every dogfood build reported itself to analytics as a 1.2.4 build — a 1.3 beta
+landing in your own version breakdown as last spring's release. It now takes the same `base` input
+and stamps `<base>.<run_number>`; the build type adds `-dev` / `-releasetest` on top, so the APKs
+read `1.3.0-beta.12-dev`. **`versionCode` is deliberately left alone**: these install as separate
+apps, so Play never sees the number, and raising it would block installing a LOCAL build (still the
+hand-set `20`) over a CI one, because Android refuses a lower `versionCode`.
+<!-- verify: {"path": "youcoded/.github/workflows/android-test-build.yml", "contains": "Stamp dogfood version"} -->
+
+Those APKs are still debug-signed, and Android's device id is scoped per signing key — so a dogfood
+install fingerprints as a **different device** than the production app on the same phone. It counts
+as an extra device in DAU/MAU and an extra "new install", and `KNOWN_DEV_DEVICES` only filters it if
+that second hash is added separately.
+
 **It replaces the installed app in place.** `electron-builder.yml` pins `appId: com.youcoded.desktop`
 and `productName: YouCoded`, so NSIS upgrades over the existing install rather than sitting beside
 it. `AppData/Roaming/youcoded` (window bounds, localStorage) carries over, and `~/.claude/` +
@@ -193,11 +208,35 @@ button predates the allow-listed download host, fails, and offers "Open in brows
 <!-- verify: {"test": "youcoded/desktop/tests/update-release-status.test.ts"} -->
 <!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "readReleaseStatus"} -->
 
-**The `base` prefix is still load-bearing — read this before changing it.** The in-app check only
-ever looks at the newest *stable* release, so a beta must sort above it. `1.3.0-beta` does;
-`1.2.4-beta.N` sorts *below* a released `1.2.4`, so it would show "update available" and offer to
-downgrade itself to the release it is meant to be ahead of. **Bump the minor and suffix**, never
-patch-suffix the current version.
+**Which releases the check can SEE is a separate question from how it orders them (2026-09-13).**
+GitHub's `/releases/latest` returns the newest *stable* release and omits pre-releases entirely, so
+ordering alone never got a beta tester another beta — `1.3.0-beta.78` sorted above `.77` correctly
+and was never fetched. The check now picks its endpoint from the install's channel: off the beta
+channel it reads `/releases/latest` exactly as before, on it reads the `/releases` listing and
+`selectRelease` (`update-release-status.ts`) takes the highest **version** carrying this computer's
+installer, skipping drafts. Highest-version rather than newest-published means re-publishing an old
+tag cannot walk anyone backwards, and — because `compareVersions` already sorts `1.3.0` above every
+`1.3.0-beta.N` — the full release ends a beta run with no special case.
+<!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "selectRelease"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/update-beta-channel.test.ts"} -->
+
+**The channel is opt-in, and "never chosen" is not the same as "off"** (`update-settings.ts`,
+`~/.youcoded/config.json` → `updates.betaChannel`). An install that has never been asked inherits
+the answer its own build implies: a `1.3.0-beta.77` build checks the beta channel, a `1.3.0` build
+does not. That default is the whole point — a flat `false` would strand exactly the people already
+running betas, who are the ones the channel exists for. An explicit choice wins in both directions,
+and turning it off while on a beta is safe: the next stable release still sorts above every beta of
+its line. Settings → Development → **Get beta builds** (the fifth card in that list, no heading of its own), and the same switch under the release
+notes in the version pill's update popup (Destin moved it out of About on 2026-09-13: the rows it now
+sits with are the ones for people helping with the app rather than only using it). Desktop only,
+because Android has no in-app updater. Changing it re-checks immediately rather than leaving the 30-minute cache showing an
+answer computed against the other channel.
+<!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->
+
+**The `base` prefix is still load-bearing — read this before changing it.** A beta must sort above
+the release it is ahead of. `1.3.0-beta` does; `1.2.4-beta.N` sorts *below* a released `1.2.4`, so it
+would show "update available" and offer to downgrade itself to the release it is meant to be ahead
+of. **Bump the minor and suffix**, never patch-suffix the current version.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
 
 **Why the version step exists at all:** only `desktop-release.yml` patches `package.json` (from the

@@ -43,10 +43,25 @@ collect_repo_state() {
     # commits behind for two days on 2026-08-27 and nothing said so; a checkout
     # can look current while its source and guidance are stale.
     behind=$(git -C "$repo_dir" rev-list --count 'HEAD..@{u}' 2>/dev/null || echo "0")
+    # How old the answer above is. WHY (2026-09-13): `behind` is measured against
+    # the CACHED remote ref, and when that ref is itself stale the count comes back
+    # 0 — so a badly out-of-date checkout prints nothing at all, which reads as
+    # "current". Measured that day: youcoded was 162 commits behind origin/master
+    # and this block printed no warning, and a session then answered a question
+    # about the app from that checkout and told Destin a bug was live that had been
+    # fixed two days earlier. Silence is the dangerous state, so the age always
+    # prints. Still no network here — a hook must not block on one.
+    # `|| echo ""` for the same reason the line above carries one: a branch with no
+    # upstream makes this exit non-zero, and the script runs under `set -e`.
+    local fetched_at
+    fetched_at=$(git -C "$repo_dir" log -1 --format=%cr '@{u}' 2>/dev/null || echo "")
 
     echo "### $repo_name (on \`$branch\`)"
     if [[ "$behind" =~ ^[0-9]+$ && "$behind" -gt 0 ]]; then
         echo "⚠ ${behind} commits behind its upstream as of the last fetch — use workspace-start for new work; updating an existing branch is a separate decision, not an automatic pull"
+    fi
+    if [[ -n "$fetched_at" ]]; then
+        echo "_upstream last seen: ${fetched_at} — this is a CACHED ref; \`behind\` is only as fresh as it. Fetch before treating this checkout's code as current, and never answer a question about the app from it without one._"
     fi
     echo "Recent commits:"
     echo '```'

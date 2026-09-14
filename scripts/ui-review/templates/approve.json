@@ -52,7 +52,7 @@
       "notice": "The window stops shifting up and down while a session runs.",
       "risk": "A very long branch name reads as its start and its end with a gap in the middle.",
       "highlight": {
-        "_comment": "highlight: what the box goes around. Omit it on a two-run deck and the rig boxes whatever pixels changed. Use \"text\" for words on screen, or a hand-placed \"box\": [x, y, w, h] as a last resort.",
+        "_comment": "highlight: what the box goes around. Omit it on a two-run deck and the rig boxes whatever pixels changed. Use \"text\" for words on screen, or a hand-placed \"box\": [left, top, width, height] in PERCENT of the crop (0-100), not pixels as a last resort.",
         "text": "master"
       },
       "themes": ["midnight"],

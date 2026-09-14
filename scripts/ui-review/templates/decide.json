@@ -35,7 +35,7 @@
       "risk": "Every option remembers nothing between sessions; a drawer that remembers is a separate question.",
       "_comment_risk": "risk (optional): what is true whichever option wins.",
       "highlight": {
-        "_comment": "highlight: REQUIRED — one picture means nothing to diff, so you must say what to box. \"text\" boxes words on screen; a hand-placed \"box\": [x, y, w, h] is the last resort.",
+        "_comment": "highlight: REQUIRED — one picture means nothing to diff, so you must say what to box. \"text\" boxes words on screen; a hand-placed \"box\": [left, top, width, height] in PERCENT of the crop (0-100), not pixels is the last resort.",
         "text": "Appearance"
       },
       "options": [
