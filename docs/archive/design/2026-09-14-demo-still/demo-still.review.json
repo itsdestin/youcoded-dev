@@ -1,0 +1,50 @@
+{
+  "title": "The website's demo window: no more grey picture before it loads",
+  "key": "demo-still-review",
+  "out": "demo-still.review.html",
+  "images": "images/demo-still.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": { "before": "Today (youcoded.ai)", "after": "This branch" },
+  "themes": ["cotton-candy-sky"],
+  "theme": "fixed",
+  "crops": {
+    "site-desktop": ["site", "desktop", "1440x610+0+290"],
+    "site-phone": ["site", "phone", "704x700+0+0"]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Website",
+      "path": "youcoded.ai, the demo window under the headline, on first load",
+      "clip": "first-load",
+      "headline": "Watch the demo window as the page opens: it now starts as the themed app, and the live demo takes over without a flash.",
+      "changed": "The picture shown while the demo loads is now the app in the page's own theme and window shape, and the switch to the live demo waits until the app has finished drawing.",
+      "measured": "At the old switch the app had drawn 0 characters; the new one waits about 0.4 s, until 1,728 characters and the wallpaper are in",
+      "notice": "No grey window after the intro, and no white flash when the real demo takes over (at 3.5 seconds in the Today recording).",
+      "risk": "Each desktop picture is 70 to 180 KB instead of 22 KB; a visitor downloads one of them."
+    },
+    {
+      "id": "S-1",
+      "surface": "Website",
+      "path": "youcoded.ai on a computer, just after the intro, before the demo has loaded",
+      "crop": "site-desktop",
+      "headline": "Right after the intro, the demo window shows the app in Cotton Candy Sky instead of a grey Midnight picture.",
+      "changed": "Four desktop pictures, one per mascot theme, shot at the demo window's exact shape. The page shows whichever theme it is wearing.",
+      "notice": "Picking a different mascot before the demo loads swaps the picture to that theme as well.",
+      "risk": "The pictures show today's app, so they need re-shooting when its look changes; the website rebuild script now does that."
+    },
+    {
+      "id": "S-2",
+      "surface": "Website",
+      "path": "youcoded.ai on a phone, the demo window before you tap Start the demo",
+      "crop": "site-phone",
+      "headline": "The phone pictures were re-shot from today's app, at the phone demo window's exact size.",
+      "changed": "They were already in the right theme, but hand-made at a slightly different size. Now the same script makes them, so text wraps exactly as it does in the live demo.",
+      "notice": "After tapping Start the demo, the messages stay where they were instead of shifting."
+    }
+  ]
+}
