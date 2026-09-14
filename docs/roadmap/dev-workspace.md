@@ -592,6 +592,20 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] A Worker setting the code reads can exist only as a test value with nothing loading it into
+      the live Worker, and every check stays green: the admin-device filter sat that way until
+      2026-09-13 even though the 2026-09-01 audit named it, so every admin analytics number counted
+      Destin's own devices. Wanted: an `audit-anchors.mjs` check that each optional field of the
+      Worker's `Env` type is a `[vars]` entry or a `secret put` line in `worker-deploy.yml`
+      `n/a` `confirmed` `checked 2026-09-13`
+
+- [ ] `workspace-start` will not resume a session after the documented post-merge cleanup removed
+      one of its component worktrees ("Missing recorded worktree … will not be recreated"), so
+      doing more work in that repo the same session needs a hand `git worktree add`. Hit twice on
+      2026-09-13 (wecoded-marketplace, after PRs #91 and #92); either the cleanup recipe or the
+      script should give way
+      `n/a` `confirmed` `checked 2026-09-13`
+
 - [ ] `.claude/rules/react-renderer.md` is over the 600-word rule budget on master itself
       (`audit-anchors.mjs` reports 612), so every session that touches renderer code pays for the
       overflow and the mechanical audit reads red for a reason no branch introduced. The rules

@@ -460,3 +460,12 @@ recurred — the repetition is the data.
 - **`.claude/rules/react-renderer.md` is over the 600-word rule budget on master itself** (audit reports 612), so the mechanical audit reads red for something no branch introduced → roadmap: `dev-workspace.md` → knowledge (not edited here: it is a rule another session may be holding uncommitted)
 - deleted/merged: none found — looked at the phone-pass review doc, the remote roadmap entries and `docs/local-dev.md`; each is load-bearing and none overlapped. Said plainly rather than inventing one.
 
+
+## 2026-09-13 — analytics dashboard in the app's live theme, the admin-device filter, version/weekly/retention analytics (session/analytics-dashboard, youcoded-admin + wecoded-marketplace + youcoded + workspace)
+- The first dashboard copied the four built-in themes; Destin runs a community wallpaper theme and said it "doesn't quite match". `desktop/CLAUDE.md` said theme state lives in localStorage; the truth is `~/.claude/youcoded-appearance.json` → applied: `youcoded/desktop/CLAUDE.md` Theming → Persistence  [1 full page rebuild + a ~97k-token research agent]
+- "My devices" changed nothing: `KNOWN_DEV_DEVICES` was a test var never pushed to production. RECURRENCE of a 2026-09-01 audit finding that stayed prose for 12 days → applied: `worker-deploy.yml` pushes it (wecoded-marketplace#91); roadmap: `dev-workspace.md` → an audit check that every optional Worker `Env` field is a `[vars]` entry or a pushed secret
+- Analytics Engine's `toStartOfWeek` returns Sundays although its docs say Monday, so the weekly chart read all zeros until live data showed it → applied: page WHY comment, `.claude/rules/worker-backend.md`, marketplace `docs/worker-backend.md` + `analytics.ts` comment  [1 chart broken on first real data]
+- `workspace-start` refuses to resume a session after the documented post-merge cleanup removed one of its component worktrees → roadmap: `dev-workspace.md`  [1 failed call, 2 hand `git worktree add`s]
+- Destin-visible bug filed nowhere: the Regions list is empty for every device → roadmap: `marketplace.md`
+- Re-asked Destin to confirm a merge after "good" → dropped: the merge rule needs an explicit instruction; he used the extra round to ask about side effects, which caught the dau extra-day change before it shipped
+- deleted/merged: the stale localStorage persistence claims in `desktop/CLAUDE.md` replaced rather than added beside; the sample-data preview server and mock Worker removed
