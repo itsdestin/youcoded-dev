@@ -628,7 +628,9 @@ seen-on is always n/a here.
       (`audit-anchors.mjs` reports 612), so every session that touches renderer code pays for the
       overflow and the mechanical audit reads red for a reason no branch introduced. The rules
       README says overflow migrates to the lazy doc it points to (`youcoded/docs/renderer-chrome.md`)
-      or becomes a pinning test. Found 2026-09-11 while merging remote batches 2/3
+      or becomes a pinning test. Found 2026-09-11 while merging remote batches 2/3.
+      `.claude/rules/worker-backend.md` joined it at 621 on 2026-09-13 (the analytics-dashboard
+      merge), so the mechanical audit now reads red for two rules no branch introduced
       `n/a` `confirmed` `checked 2026-09-11`
 - [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
       `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
