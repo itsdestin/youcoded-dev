@@ -84,6 +84,8 @@ const ATTACH = process.env.ATTACH_PORT ? Number(process.env.ATTACH_PORT) : 0;
 const PORT = ATTACH || CDP_PORT;
 const W = plan.width ?? 1440, H = plan.height ?? 900;
 const SAME_THRESHOLD = plan.sameThreshold ?? 0.006; // RMSE (0..1) below which two shots count as identical
+// Class collector (see where it runs, below): page-side source for a Set of class names, or null.
+const COLLECT = process.env.UI_REVIEW_COLLECT ? `new Set(${JSON.stringify(JSON.parse(readFileSync(process.env.UI_REVIEW_COLLECT, 'utf8')))})` : null;
 mkdirSync(outDir, { recursive: true });
 
 const profile = mkdtempSync(join(tmpdir(), 'ui-review-'));
@@ -242,6 +244,34 @@ for (const theme of THEMES) {
           entry.measures[key] = await sess.evaluate(`(() => { const el = ${expr}; if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) }; })()`).catch(() => null);
           if (!entry.measures[key]) entry.reasons.push(`measure missing: ${key}`);
         }
+      }
+      // Optional class collector: UI_REVIEW_COLLECT=<json file with a list of class names>
+      // records where every VISIBLE element carrying each class sits in this shot.
+      // WHY: the design check (`npm run lint:design`) reports class names by file and line;
+      // this is how a review deck finds which screens actually show a flagged element, and
+      // where to box it, without hand-writing a `measure` line per warning. Never fails a shot.
+      if (COLLECT) {
+        entry.collected = await sess.evaluate(`(() => {
+          const want = ${COLLECT}; const out = {}; const els = [];
+          const vw = innerWidth, vh = innerHeight;
+          for (const el of document.querySelectorAll('[class]')) {
+            const cl = el.classList; if (!cl || !cl.length) continue;
+            let r = null;
+            for (const c of cl) {
+              if (!want.has(c)) continue;
+              if (!r) {
+                const b = el.getBoundingClientRect(); const cs = getComputedStyle(el);
+                if (b.width < 1 || b.height < 1 || b.bottom <= 0 || b.right <= 0 || b.top >= vh || b.left >= vw || cs.visibility === 'hidden' || +cs.opacity === 0) { r = false; break; }
+                r = { x: Math.round(b.left), y: Math.round(b.top), w: Math.round(b.width), h: Math.round(b.height) };
+                // The element's WHOLE class list too: a single class like px-2 is everywhere,
+                // so matching one warning to one element needs the full combination.
+                if (els.length < 2000) els.push({ c: el.getAttribute('class'), r });
+              }
+              (out[c] ??= []).length < 12 && out[c].push(r);
+            }
+          }
+          return { byClass: out, elements: els };
+        })()`).then((v) => { if (v) entry.collectedEls = v.elements; return v?.byClass ?? null; }).catch(() => null);
       }
       // --- verification ---
       entry.reasons.push(...realFails);
