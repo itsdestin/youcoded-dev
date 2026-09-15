@@ -1,0 +1,128 @@
+{
+  "title": "Website analytics — contract",
+  "key": "site-analytics-contract",
+  "stage": "contract",
+  "out": "site-analytics.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/site-marketing-analytics",
+  "sources": {
+    "site-analytics-questions": "site-analytics.questions.json",
+    "site-analytics-review": "site-analytics.review.json",
+    "site-analytics-privacy-amendment": "site-analytics.privacy-amendment.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Website analytics",
+      "path": "Analytics → Website and App",
+      "headline": "This is what done means for website analytics.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "One page visit connects page loads, install-instructions opens and final download clicks using a temporary random label kept only in the open page.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "Reloading or opening another tab starts a new visit, without analytics cookies, a saved visitor ID or a fingerprint.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-1"
+        },
+        {
+          "id": "R3",
+          "statement": "Website activity stays separate from app device records, without identifying unique people or tracking them across days.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-1"
+        },
+        {
+          "id": "R4",
+          "statement": "The website privacy notice discloses website measurement without a visitor opt-out.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-privacy-amendment#A-1"
+        },
+        {
+          "id": "R5",
+          "statement": "Create labeled links lets you enter a source and campaign name, then copy a labeled youcoded.ai link for each marketing post.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-2"
+        },
+        {
+          "id": "R6",
+          "statement": "Website measurement records only approved campaign labels and the referring site's domain, never full referring URLs.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-2"
+        },
+        {
+          "id": "R7",
+          "statement": "Campaign measurement starts with future visits, cannot recover old traffic, and keeps a shared link's original campaign label when shared elsewhere.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-2"
+        },
+        {
+          "id": "R8",
+          "statement": "Website history lasts three months, with earlier campaigns disappearing as the window moves.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-3"
+        },
+        {
+          "id": "R9",
+          "statement": "Website analytics reuses the existing Cloudflare service instead of adding a paid analytics subscription, with account allowance and storage cost checked before activation.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-3"
+        },
+        {
+          "id": "R10",
+          "statement": "Website and App are separate dashboard sections, with website date, source, campaign and download-platform controls.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-4"
+        },
+        {
+          "id": "R11",
+          "statement": "Website trends, traffic sources, campaign results and installer-platform download clicks show interest, not completed installs, while existing app statistics and privacy restrictions stay unchanged.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-questions#Q-4"
+        },
+        {
+          "id": "R12",
+          "statement": "Website has its own overview, totals and filters, while App stays accessible in a separate tab.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "site-analytics-review#S-1"
+        },
+        {
+          "id": "R13",
+          "statement": "Totals show visits, instructions opened, download clicks and visits’ click rate; repeated clicks increase clicks, but each visit counts once in the rate.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-review#S-4"
+        },
+        {
+          "id": "R14",
+          "statement": "Campaigns show visits, clicks and once-per-visit click rates alongside platform click shares; the platform filter changes only the breakdown.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-review#S-2"
+        },
+        {
+          "id": "R15",
+          "statement": "Source and campaign hints explain shared links; the finished link updates as you type, and Copy link prepares it to share.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "site-analytics-review#S-3"
+        }
+      ]
+    }
+  ]
+}

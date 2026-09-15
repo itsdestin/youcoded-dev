@@ -1,0 +1,50 @@
+{
+  "title": "Website analytics — dashboard preview",
+  "key": "site-analytics-review",
+  "stage": "review",
+  "out": "site-analytics.review.html",
+  "images": "images/site-analytics.review",
+  "runs": {"before": "runs/before", "after": "runs/after"},
+  "labels": {"before": "Before · App dashboard", "after": "After · Website preview"},
+  "themes": ["meadow-mist", "light"],
+  "crops": {
+    "overview": ["analytics", "overview", "1440x190+0+30"],
+    "totals": ["analytics", "overview", "1168x120+136+230"],
+    "comparison": ["analytics", "bottom", "1168x333+136+239"],
+    "builder": ["analytics", "bottom", "1168x241+136+583"]
+  },
+  "steps": [
+    {
+      "id": "S-1", "surface": "Website overview & tabs", "path": "Analytics → Website",
+      "headline": "1. Website gets its own overview; App stays accessible.",
+      "crop": "overview", "highlight": {"box": [90, 1, 9, 12]},
+      "changed": "App-only counts become Website and App tabs, with separate totals and filters.",
+      "notice": "Website visits and clicks are not people or completed installs.",
+      "risk": "Fake data; collection and backend are unbuilt."
+    },
+    {
+      "id": "S-4", "surface": "Website totals", "path": "Analytics → Website → Totals",
+      "headline": "4. See visits, instructions opened, download clicks and the share of visits that clicked.",
+      "crop": "totals", "runs": ["after"], "highlight": {"box": [75, 0, 24, 90]},
+      "changed": "New website totals distinguish total clicks from visits with at least one click.",
+      "notice": "A repeated click increases clicks, but each page visit counts once in the rate.",
+      "risk": "Sample data only. These measurements do not identify people or confirm installs."
+    },
+    {
+      "id": "S-2", "surface": "Campaign comparison and click-platform breakdown", "path": "Analytics → Website → Campaigns & sources",
+      "headline": "2. Compare campaign interest and see which platforms receive download clicks.",
+      "crop": "comparison", "runs": ["after"], "highlight": {"box": [32, 20, 16, 73]},
+      "changed": "New website view, with no prior website counterpart: campaign visits, clicks and visits that clicked, beside platform click shares.",
+      "notice": "Each visit counts once in the rate. The platform filter changes only the breakdown.",
+      "risk": "These are fake examples, not evidence of campaign performance."
+    },
+    {
+      "id": "S-3", "surface": "Link builder", "path": "Analytics → Website → Campaign link builder",
+      "headline": "3. Give shared links a source and campaign name, then copy the finished link.",
+      "crop": "builder", "runs": ["after"], "highlight": {"box": [1, 26, 89, 35]},
+      "changed": "New builder, with no previous website view. Short hints explain where the link is shared and how to group it.",
+      "notice": "The finished link updates as you type; Copy link prepares it to share.",
+      "risk": "Preview themes omit external fonts and custom styling; the published appearance may differ."
+    }
+  ]
+}
