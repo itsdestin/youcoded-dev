@@ -1,0 +1,6 @@
+# Search-tool ignores (ripgrep and the Grep tool read this; git does not).
+# WHY: youcoded/docs/site/assets/ is the landing page's BUILT bundle — 171 tracked
+# minified files, 15 MB. A plain text search for UI copy matched it first and
+# returned 253 KB of one-line JS (2026-09-14). Search the source instead; pass
+# --no-ignore when the built output is genuinely the question.
+youcoded/docs/site/assets/

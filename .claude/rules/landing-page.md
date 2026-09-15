@@ -15,6 +15,8 @@ verify:
   - path: scripts/ui-review/README.md
     contains: "Recording a loop"
   - path: scripts/ui-review/copy-preview.py
+  - path: scripts/ui-review/embed-posters.mjs
+    contains: "POSTER_THEMES"
   - path: youcoded/docs/index.html
     contains: "Appearance"
   - path: youcoded/docs/tools/gen-hero-mascots.py
@@ -84,9 +86,10 @@ Switches: `?seed=none&scenario=site` (empty chat — site scenario only), `?titl
 **Invariant:** the page's floating theme button clicks the app's own gear + Appearance row
 inside the iframe (the swatch bar and its `__workbenchAppearanceSync` hook went in `8d077dcd`;
 the hook survives only for the workbench deck); never a reload; the iframe ignores the
-pointer until the visitor clicks once.
-**Why:** a reload flashed the poster; an interactive iframe under the wheel trapped page
-scroll ("janky").
+pointer until the visitor clicks once. Its stills (one per `POSTER_THEMES`) come from
+`embed-posters.mjs`; the swap waits for `whenEmbedPainted()`, not `load`.
+**Why:** a reload flashed the poster; a wheel-trapping iframe was "janky"; a grey still
+swapped on `load` read as "broken" (2026-09-14).
 
 ## Copy and review
 **Invariant:** "let me edit the website" → `site-copy-editor.py serve youcoded/docs/index.html`

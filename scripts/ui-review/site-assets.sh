@@ -3,6 +3,7 @@
 #   docs/site/           the live embed (npm run build:site)
 #   docs/media/          one WebM loop + WebP poster per showcase row (record.mjs)
 #   docs/gallery/        gallery stills as WebP (shot.mjs + magick)
+#   docs/media/embed-*   the demo window's per-theme stills, shot from the built embed (embed-posters.mjs)
 # Run before every release so the site can never drift from the app again.
 # Usage: bash scripts/ui-review/site-assets.sh <worktree-or-path>
 set -euo pipefail
@@ -92,4 +93,9 @@ du -sh "$OUT/media" "$OUT/gallery"
 
 # 4. embed — vite build is independent of the dev server; empties docs/site (see step 2)
 (cd "$TDIR/desktop" && npm run build:site >/dev/null)
+
+# 5. demo stills — AFTER step 4 on purpose: they are shot out of the embed just built, so the
+# picture in the demo window is the very app that replaces it (2026-09-14: a stale grey still
+# made the live demo "pop in" over it). Exits non-zero, writing nothing, if any theme failed to paint.
+CDP_PORT=10390 node "$HERE/embed-posters.mjs" "$OUT"
 echo "site assets regenerated under $OUT — review docs/gallery and docs/media, then commit them"
