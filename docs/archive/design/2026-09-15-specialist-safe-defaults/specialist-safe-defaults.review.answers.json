@@ -1,0 +1,28 @@
+{
+ "deck": "specialist-safe-defaults-review",
+ "started": "2026-09-15T07:52:21.277Z",
+ "submitted": "2026-09-15T07:53:46Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "this shouldn't be a separate line under the selector, but should replace \"Choose a model...\" within the selector when nothing is chosen.",
+   "v": "yes",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "other",
+   "note": "actually, this should just auto-resume once the user has selected a model on the specialists settings page.",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

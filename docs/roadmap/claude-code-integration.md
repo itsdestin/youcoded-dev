@@ -4,6 +4,12 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
+- [ ] Non-ASCII messages can cross Claude Code’s 64-byte paste threshold while YouCoded still
+      treats them as a short atomic send, because desktop and Android count UTF-16 characters
+      instead of encoded bytes. Desktop’s echo check can also miss a valid message when an ANSI
+      escape sequence is split across PTY output chunks, then suppress Enter after 12 seconds
+      `all` `confirmed` `checked 2026-09-15`
+
 - [ ] Clicking a plan-approval button other than the first ("No, refine plan", "Tell Claude what to
       change") may still approve the plan as option 1 on Claude Code 2.1.220+ (found 2026-07-30
       during the permission-timeout review; not yet tried in a dev instance)

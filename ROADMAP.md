@@ -54,7 +54,7 @@ Target: `v1.3`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 114 | 33 | 4 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 64 | 11 | 4 | 23 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 66 | 12 | 4 | 23 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 7 | 1 | 4 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 37 | 16 | 1 | 6 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 27 | 11 | 4 | 2 |
@@ -63,7 +63,7 @@ Target: `v1.3`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 5 | 2 | 6 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 6 | 0 | 4 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
