@@ -1,0 +1,65 @@
+{
+  "title": "Website analytics — what we should measure",
+  "key": "site-analytics-questions",
+  "out": "site-analytics.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Website analytics",
+      "path": "youcoded.ai → your analytics dashboard",
+      "headline": "Should we count separate actions, or connect the steps within one page visit?",
+      "today": "The website has no visit or download-click tracking. App statistics count devices separately, after they open YouCoded.",
+      "problem": "A download click does not prove a download finished or the app was installed. Repeated clicks can also make interest look larger than it is.",
+      "proposal": "Measure page loads, install-instructions opens, and final download clicks. Keep website activity separate from app device records. Neither option identifies unique people or tracks them across days. Update the website privacy notice and provide a website opt-out.",
+      "options": [
+        {"id": "page-journey", "label": "One page visit", "recommended": true, "pros": ["Shows the share of measured page visits that reached instructions and a download click.", "A temporary random label exists only in the open page; no analytics cookies, saved visitor ID, or fingerprint."], "cons": ["Reloading or opening another tab starts a new visit.", "Temporarily links those few actions together; blockers and bots still affect totals."]},
+        {"id": "event-totals", "label": "Separate totals", "pros": ["Collects less: no label linking actions together.", "Still shows trends in page loads and button clicks."], "cons": ["Cannot tell how many visits progressed through the steps.", "Repeated clicks count again; click-to-page-load ratios are not a visitor conversion rate."]}
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Campaign tracking",
+      "path": "Your analytics dashboard → website traffic sources",
+      "headline": "Should the dashboard help you create a separate link for each marketing post?",
+      "today": "Your Reddit posts send people to the website. We have not been recording which post brought a visit.",
+      "problem": "A referring site may only say Reddit, or may be missing entirely. That cannot reliably distinguish a Qwen post from a Claude Code post.",
+      "proposal": "Add a small link builder: enter a source and a campaign name, then copy a labeled youcoded.ai link. Record only approved campaign labels and the referring site's domain, never full referring URLs. This starts with future visits; it cannot recover old traffic.",
+      "options": [
+        {"id": "builder", "label": "Create labeled links", "recommended": true, "pros": ["Compare visits and download interest for individual posts or creator collaborations.", "Copy links without manually editing web addresses."], "cons": ["You must use a different labeled link for each campaign.", "If someone shares that link elsewhere, its original campaign label travels with it."]},
+        {"id": "referrers", "label": "Referring sites only", "pros": ["No link preparation; keep sharing the normal website address."], "cons": ["Usually cannot distinguish posts on the same site.", "Missing referral information appears as direct or unknown."]}
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Analytics history",
+      "path": "Your analytics dashboard → website date range",
+      "headline": "How much website history should we keep?",
+      "today": "Our existing analytics service keeps event data for three months. Website measurement has not started yet.",
+      "problem": "Using that same limit alone would eventually erase the evidence from earlier campaigns.",
+      "proposal": "Reuse our existing Cloudflare backend instead of adding a paid analytics subscription. Choose whether to keep just its three-month window or also retain daily totals for a year. Longer history would contain aggregates, not individual visit trails. Account allowance and storage cost still need checking before activation.",
+      "options": [
+        {"id": "year", "label": "One year", "recommended": true, "pros": ["Compare future campaigns with earlier launches.", "Keep only daily summaries beyond the short-term event window."], "cons": ["Adds summary storage and maintenance.", "Older summaries support only the breakdowns we choose now, not arbitrary new questions."]},
+        {"id": "quarter", "label": "Three months", "pros": ["Simpler first version with less storage.", "Enough to compare near-term marketing experiments."], "cons": ["Earlier campaigns disappear as the window moves."]}
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Analytics dashboard",
+      "path": "Your existing themed analytics dashboard",
+      "headline": "Where should website numbers appear alongside the existing app statistics?",
+      "today": "Your dashboard shows active devices, new devices, retention, versions, and geographic summaries.",
+      "problem": "Website visits and app devices are different measurements. Mixing them can imply that we know which visitor installed the app when we do not.",
+      "proposal": "Add website trends, traffic sources, campaign results if selected, and download clicks by installer platform. Clearly label clicks as interest, not completed installs. Keep existing app statistics and their privacy restrictions unchanged.",
+      "options": [
+        {"id": "tabs", "label": "Website and App", "recommended": true, "pros": ["Two sections in the same dashboard keep each set of numbers and filters clear.", "Website can show its own date, source, campaign, and download-platform controls."], "cons": ["Switch sections to compare website interest with app activity."]},
+        {"id": "single-page", "label": "One scrolling page", "pros": ["Website and app trends are visible on the same page."], "cons": ["Makes the existing dashboard longer.", "Different filters and counting rules need more explanation beside each section."]}
+      ]
+    }
+  ]
+}

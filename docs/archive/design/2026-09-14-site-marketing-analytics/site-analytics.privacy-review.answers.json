@@ -1,0 +1,15 @@
+{
+ "deck": "site-analytics-privacy-review",
+ "started": "2026-09-15T07:37:49.693Z",
+ "submitted": "2026-09-15T07:39:02Z",
+ "cur": 0,
+ "answers": {
+  "P-1": {
+   "v": "no",
+   "note": "we should drop the opt out, this is very basic/standard analytics data with no real privacy risk",
+   "seconds": 72,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  }
+ }
+}
