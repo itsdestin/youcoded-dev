@@ -1,0 +1,37 @@
+{
+  "title": "Context defaults in Assistant settings",
+  "key": "cloud-context-review",
+  "out": "cloud-context.review.html",
+  "images": "images/cloud-context.review",
+  "stage": "review",
+  "runs": {"before": "runs/before", "after": "runs/after"},
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "context-general": ["cloud-context", "general", "820x520+310+100"],
+    "context-info": ["cloud-context", "info", "710x455+420+350"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Assistant settings",
+      "path": "Settings → Assistant settings → General",
+      "crop": "context-general",
+      "headline": "A Context card gives OpenRouter and ChatGPT separate 250k / 1M defaults.",
+      "changed": "The new card sits below Default project folder. Both providers start on 250k; each can be switched independently to 1M.",
+      "notice": "One compact choice per provider, using the same controls as the rest of Settings. Local models are unchanged.",
+      "risk": "UI preview only: choices are interactive but are not saved or used by conversations yet."
+    },
+    {
+      "id": "C-2",
+      "surface": "Context explanation",
+      "path": "General → Context → ⓘ",
+      "crop": "context-info",
+      "runs": ["after"],
+      "headline": "The information button explains model limits and the cost of longer conversations.",
+      "changed": "The explanation covers approximate sizes, models with smaller limits, fewer summaries, and possible extra API cost or subscription usage.",
+      "notice": "The details stay behind a click rather than crowding the card. G-1 and G-7: shared controls and the existing information bubble.",
+      "risk": "This reviews the wording and layout; exact provider limits still need to be wired and tested.",
+      "highlight": {"selector": "[role='dialog'][style*='left']"}
+    }
+  ]
+}
