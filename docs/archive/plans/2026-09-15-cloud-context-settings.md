@@ -34,7 +34,9 @@ The verification record below was written before merge, when implementation was 
 - Android build not run: `$HOME/.android-sdk/platform-tools` absent. Native refusal and desktop/remote parity are tested; no claim of Android runtime verification.
 - No paid API requests or changes to the running app. Isolated workbench stopped after captures. At that pre-merge checkpoint, no commits, pushes or merge had occurred.
 
-The checklist below is the executed plan. The Android command remains conditional and was explicitly skipped as recorded above.
+Post-merge verification: `verify.sh --base 1e839c70` passed on the exact merged app tree. GitHub Android CI [34954907010](https://github.com/itsdestin/youcoded/actions/runs/34954907010) passed. Desktop CI [34954906962](https://github.com/itsdestin/youcoded/actions/runs/34954906962) failed, but every failing test name was also present in the immediately preceding master run [34938031354](https://github.com/itsdestin/youcoded/actions/runs/34938031354); no new failing test names were found. This is not an all-green Desktop CI claim.
+
+The checklist below is the executed plan. The local Android command remains conditional and was explicitly skipped as recorded above; GitHub's Android CI subsequently passed.
 
 ## Task 1 — Shared preferences and storage
 
