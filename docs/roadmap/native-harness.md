@@ -247,6 +247,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
+- [ ] An explicitly authorized git push / branch-deletion cleanup was blocked with "user has not
+      responded yet — the request is still pending on their screen" even though no approval prompt
+      existed (paste-attachments merge close-out, 2026-09-15). This stops close-out and falsely tells
+      the user to approve something absent; only claim a pending approval when a real request exists,
+      and let authorized push and deletion commands proceed
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-15`
+
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
