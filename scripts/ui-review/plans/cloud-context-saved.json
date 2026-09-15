@@ -1,0 +1,27 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {"click": "[aria-label='Settings']", "settle": 500},
+    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900}
+  ],
+  "shots": [
+    {
+      "name": "general",
+      "actions": [],
+      "expect": "section[aria-label='Context']",
+      "measure": ["section[aria-label='Context']"]
+    },
+    {
+      "name": "save-reopen",
+      "actions": [
+        {"click": "[role='tablist'][aria-label='ChatGPT context'] [role='tab']:last-child", "settle": 600},
+        {"click": "[aria-label='Close Assistant settings']", "settle": 300},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900}
+      ],
+      "expect": "js:(async()=>{const saved=await window.claude.native.getContextPreferences();const chosen=(p)=>document.querySelector(`[role=tablist][aria-label='${p} context'] [aria-selected=true]`)?.textContent;return saved.chatgpt==='long'&&saved.openrouter==='standard'&&chosen('ChatGPT')==='1M'&&chosen('OpenRouter')==='250k'})()",
+      "measure": ["section[aria-label='Context']"]
+    }
+  ]
+}
