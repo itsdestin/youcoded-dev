@@ -1,0 +1,133 @@
+[
+  {
+    "theme": "midnight",
+    "name": "general",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "measure missing: section[aria-label='Context']",
+      "MISSING \"[aria-label='Settings']\"",
+      "MISSING \"js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))\"",
+      "ERR {\"eval\":\"document.querySelector('section[aria-label=\\\"Context\\\"]').scrollIntoVie: eval: TypeError: Cannot read properties of null (reading 'scrollIntoView')\n    at <anonymous>:1:56",
+      "expect failed: js:(()=>{const r=document.querySelector('section[aria-label=\"Context\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "section[aria-label='Context']": null
+    },
+    "rmseVsBaseline": 0.00522649,
+    "dump": [],
+    "file": "docs/archive/design/2026-09-15-cloud-context/runs/after/shots-cloud-context-narrow/midnight/_unverified/general.png"
+  },
+  {
+    "theme": "midnight",
+    "name": "info",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "measure missing: [role='dialog'][style*='left']",
+      "MISSING \"[aria-label='Settings']\"",
+      "MISSING \"js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))\"",
+      "ERR {\"eval\":\"document.querySelector('section[aria-label=\\\"Context\\\"]').scrollIntoVie: eval: TypeError: Cannot read properties of null (reading 'scrollIntoView')\n    at <anonymous>:1:56",
+      "MISSING \"section[aria-label='Context'] button[aria-expanded]\"",
+      "expect failed: js:(()=>{const r=document.querySelector('[role=\"dialog\"][style*=\"left\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()",
+      "identical to baseline (rmse 0.00483199)"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "[role='dialog'][style*='left']": null
+    },
+    "rmseVsBaseline": 0.00483199,
+    "dump": [],
+    "file": "docs/archive/design/2026-09-15-cloud-context/runs/after/shots-cloud-context-narrow/midnight/_unverified/info.png"
+  },
+  {
+    "theme": "light",
+    "name": "general",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "measure missing: section[aria-label='Context']",
+      "MISSING \"[aria-label='Settings']\"",
+      "MISSING \"js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))\"",
+      "ERR {\"eval\":\"document.querySelector('section[aria-label=\\\"Context\\\"]').scrollIntoVie: eval: TypeError: Cannot read properties of null (reading 'scrollIntoView')\n    at <anonymous>:1:56",
+      "expect failed: js:(()=>{const r=document.querySelector('section[aria-label=\"Context\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "section[aria-label='Context']": null
+    },
+    "rmseVsBaseline": 0.00647166,
+    "dump": [],
+    "file": "docs/archive/design/2026-09-15-cloud-context/runs/after/shots-cloud-context-narrow/light/_unverified/general.png"
+  },
+  {
+    "theme": "light",
+    "name": "info",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "measure missing: [role='dialog'][style*='left']",
+      "MISSING \"[aria-label='Settings']\"",
+      "MISSING \"js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))\"",
+      "ERR {\"eval\":\"document.querySelector('section[aria-label=\\\"Context\\\"]').scrollIntoVie: eval: TypeError: Cannot read properties of null (reading 'scrollIntoView')\n    at <anonymous>:1:56",
+      "MISSING \"section[aria-label='Context'] button[aria-expanded]\"",
+      "expect failed: js:(()=>{const r=document.querySelector('[role=\"dialog\"][style*=\"left\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "[role='dialog'][style*='left']": null
+    },
+    "rmseVsBaseline": 0.00649749,
+    "dump": [],
+    "file": "docs/archive/design/2026-09-15-cloud-context/runs/after/shots-cloud-context-narrow/light/_unverified/info.png"
+  },
+  {
+    "theme": "halftone-dimension",
+    "name": "general",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "measure missing: section[aria-label='Context']",
+      "MISSING \"[aria-label='Settings']\"",
+      "MISSING \"js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))\"",
+      "ERR {\"eval\":\"document.querySelector('section[aria-label=\\\"Context\\\"]').scrollIntoVie: eval: TypeError: Cannot read properties of null (reading 'scrollIntoView')\n    at <anonymous>:1:56",
+      "expect failed: js:(()=>{const r=document.querySelector('section[aria-label=\"Context\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "section[aria-label='Context']": null
+    },
+    "rmseVsBaseline": 0.00589093,
+    "dump": [],
+    "file": "docs/archive/design/2026-09-15-cloud-context/runs/after/shots-cloud-context-narrow/halftone-dimension/_unverified/general.png"
+  },
+  {
+    "theme": "halftone-dimension",
+    "name": "info",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "measure missing: [role='dialog'][style*='left']",
+      "MISSING \"[aria-label='Settings']\"",
+      "MISSING \"js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))\"",
+      "ERR {\"eval\":\"document.querySelector('section[aria-label=\\\"Context\\\"]').scrollIntoVie: eval: TypeError: Cannot read properties of null (reading 'scrollIntoView')\n    at <anonymous>:1:56",
+      "MISSING \"section[aria-label='Context'] button[aria-expanded]\"",
+      "expect failed: js:(()=>{const r=document.querySelector('[role=\"dialog\"][style*=\"left\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()",
+      "identical to baseline (rmse 0.00501117)"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "[role='dialog'][style*='left']": null
+    },
+    "rmseVsBaseline": 0.00501117,
+    "dump": [],
+    "file": "docs/archive/design/2026-09-15-cloud-context/runs/after/shots-cloud-context-narrow/halftone-dimension/_unverified/info.png"
+  }
+]

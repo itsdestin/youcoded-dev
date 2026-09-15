@@ -1,0 +1,21 @@
+{
+  "title": "Website analytics — remove the visitor opt-out",
+  "key": "site-analytics-privacy-amendment",
+  "stage": "ask",
+  "out": "site-analytics.privacy-amendment.html",
+  "themes": ["midnight", "light"],
+  "steps": [{
+    "id": "A-1",
+    "words": true,
+    "surface": "Website analytics privacy",
+    "path": "youcoded.ai → Privacy",
+    "headline": "Remove the visitor opt-out and keep a plain privacy disclosure?",
+    "today": "The earlier approved checklist requires a visitor opt-out. You rejected its preview and asked to remove it because the measurements are basic.",
+    "problem": "The checklist and implementation must reflect your revised choice. Limited analytics still involves page-level records and hosting-provider processing; it is not risk-free.",
+    "proposal": "Remove the analytics toggle, its dialog, and browser preference storage. Keep the existing Privacy link and an accurate disclosure of visits, setup-instruction opens, download clicks, campaign attribution, temporary page grouping and 90-day history. No analytics cookies, fingerprinting, returning-visitor identity or links to app-device records. Collection remains off until cost, security and applicable privacy requirements are checked; this decision does not certify legal compliance or authorize activation.",
+    "options": [
+      {"id": "remove", "label": "Remove the opt-out", "recommended": true, "pros": ["Matches your requested simpler website.", "Removes the visitor toggle and its stored preference."], "cons": ["Visitors cannot disable measurement through the website itself.", "Disclosure and applicable privacy requirements still need checking before activation."]},
+      {"id": "keep", "label": "Keep an opt-out", "pros": ["Visitors retain an explicit website control."], "cons": ["Keeps a control you said is unnecessary; its design would need another pass."]}
+    ]
+  }]
+}

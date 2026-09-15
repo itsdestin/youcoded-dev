@@ -32,6 +32,19 @@ them. Not here: the theme renders wrong (themes).
 
 ## backend
 
+- [ ] Website analytics is live, but its account allowance, spending alerts and applicable backup
+      window are not fully verified: Free Website was confirmed, the Workers subscription lookup
+      returned 403, and provider docs alone say Free 7 days / Paid 30 days. Verify the account's
+      billing and alert coverage without assuming a free zone caps Worker costs; no plan upgrade
+      was made. Follow-up monitoring, not a new activation approval gate
+      `n/a` `needs-verify` `checked 2026-09-15`
+
+- [ ] Website analytics reports cleanup health as unknown after activation, with no last sweep yet.
+      Observe the first daily prune, then verify cleanup/recovery monitoring and provider backup
+      expiry separately from the active database's 90-day history; live ingestion success does not
+      prove retention operations. Follow-up monitoring, not a new activation approval gate
+      `n/a` `needs-verify` `checked 2026-09-15`
+
 - [ ] The Regions list in admin analytics is empty — "Region data isn't coming through yet." Every
       device in the last 30 days arrives with a blank region, while countries come through fine.
       Seen on Destin's analytics dashboard 2026-09-13; cause not looked into
