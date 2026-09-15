@@ -247,6 +247,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
+- [ ] An explicitly authorized git push / branch-deletion cleanup was blocked with "user has not
+      responded yet — the request is still pending on their screen" even though no approval prompt
+      existed (paste-attachments merge close-out, 2026-09-15). This stops close-out and falsely tells
+      the user to approve something absent; only claim a pending approval when a real request exists,
+      and let authorized push and deletion commands proceed
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-15`
+
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
@@ -318,11 +325,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       maintained recommendation system so those choices do not go stale as model generations change
       `settings/defaults` `all` `confirmed` `checked 2026-09-15`
 
-- [ ] Specialist limits should be adjustable in Settings: how many helpers may run at once, how
-      many launches a conversation gets, and how often the assistant may send a running helper a
-      note. Today each is a fixed number in the app; the 2026-09-09 transcript audit showed the
-      assistant nagging one helper 14 times and hitting the launch cap by surprise
-      `settings` `desktop` `decision` `checked 2026-09-09`
+- [ ] Specialist operating limits should be adjustable in Settings: how many helpers may run at
+      once and how often the assistant may send a running helper a note. Today both are fixed
+      numbers; the 2026-09-09 transcript audit showed the assistant nagging one helper 14 times
+      `settings` `desktop` `decision` `checked 2026-09-15`
+
+- [ ] After the assistant uses 30 specialists in one session, let the user approve just the next
+      helper or waive the limit for that session instead of refusing every additional helper
+      `tool-cards` `desktop` `in-flight` `checked 2026-09-15` → docs/active/specs/2026-09-15-specialist-budget-permission-design.md
 
 - [ ] A finished helper's report should be able to arrive quietly — read with your next message
       instead of starting a reply on its own — unless the assistant asked to be woken for that

@@ -1,0 +1,34 @@
+import { env, SELF } from 'cloudflare:test';
+import { expect, it, vi } from 'vitest';
+import { createTestAccount, issueTestSession } from './helpers';
+// @ts-expect-error the actual dependency-free website is JavaScript, shared here without a duplicate test client.
+import { createAnalytics } from '../../../youcoded/docs/site-analytics.mjs';
+
+it('actual website client records a registered campaign through Worker and private aggregate report', async () => {
+  const account = await createTestAccount({ githubId: '424242' });
+  const headers = { Authorization: `Bearer ${await issueTestSession(account)}`, 'Content-Type': 'application/json' };
+  const registered = await SELF.fetch('https://api.youcoded.ai/admin/analytics/website-campaigns', { method: 'POST', headers, body: JSON.stringify({ source: 'reddit', campaign: 'integration' }) });
+  expect(registered.status).toBe(200);
+  let sent = 0;
+  const client = createAnalytics({ crypto, href: 'https://youcoded.ai/?utm_source=reddit&utm_campaign=integration&private=not-collected', referrer: 'https://www.reddit.com/r/test?secret=discard',
+    fetch: (url: string, options: RequestInit & { credentials: string; referrerPolicy: string }) => {
+      sent++;
+      expect(options.credentials).toBe('omit');
+      expect(options.referrerPolicy).toBe('no-referrer');
+      expect(options.body).not.toContain('not-collected');
+      expect(options.body).not.toContain('secret=discard');
+      return SELF.fetch(url, { ...options, headers: { ...options.headers, Origin: 'https://youcoded.ai' } });
+    } });
+  try {
+    client.instructions(); client.download('Windows'); client.download('Windows');
+    await vi.waitFor(async () => expect(await env.DB.prepare('SELECT windows FROM site_daily').first('windows')).toBe(2), { timeout: 3000, interval: 25 });
+    const report = await (await SELF.fetch('https://api.youcoded.ai/admin/analytics/website', { headers })).json() as { rows: Record<string, unknown>[] };
+    expect(report.rows).toHaveLength(1);
+    expect(report.rows[0]).toMatchObject({ source: 'reddit', campaign: 'integration', referrerDomain: 'www.reddit.com', visits: 1, instructions: 1, clickedVisits: 1, downloads: { Windows: 2, macOS: 0, Linux: 0, Android: 0 } });
+    client.stop();
+    const count = sent;
+    client.download('Linux'); client.flush();
+    await new Promise(resolve => setTimeout(resolve, 300));
+    expect(sent).toBe(count);
+  } finally { client.stop(); }
+});
