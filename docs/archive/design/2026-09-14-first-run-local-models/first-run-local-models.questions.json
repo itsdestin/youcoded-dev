@@ -1,0 +1,346 @@
+{
+  "title": "A local model button on the first-run sign-in screen",
+  "key": "first-run-local-models-questions",
+  "out": "first-run-local-models.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The screen a brand-new install shows after it finishes installing, before the app opens",
+      "headline": "How should the local model option appear on the sign-in screen?",
+      "today": "The sign-in card has a filled Log in with Claude button, outlined Log in with ChatGPT and Log in with OpenRouter buttons, and a small underlined link reading \"Use an API key or local model\".",
+      "problem": "That link only opens a box for an Anthropic API key. Someone who wants to run a model on their own computer has no way through setup at all.",
+      "proposal": "Give local models their own way in. Pick how prominent it should be.",
+      "options": [
+        {
+          "id": "fourth-button",
+          "label": "A fourth button",
+          "summary": "An outlined \"Use a local model\" button under the three sign-in buttons, the same size as them.",
+          "pros": [
+            "Reads as an equal choice, not a hidden extra.",
+            "Log in with Claude stays the one filled button, so the screen still has one main action."
+          ],
+          "cons": [
+            "The card grows by one more button's height."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "own-link",
+          "label": "Its own small link",
+          "summary": "A second underlined link beside the API key one, reading \"Use a local model\".",
+          "pros": [
+            "The card stays the size it is today."
+          ],
+          "cons": [
+            "Easy to miss, and makes running on your own computer look like an afterthought."
+          ]
+        },
+        {
+          "id": "divider-section",
+          "label": "A separate section",
+          "summary": "A thin divider under the sign-in buttons with \"Or run it on this computer\" and a button below it.",
+          "pros": [
+            "Makes clear this is a different kind of choice: no account, nothing leaves your computer."
+          ],
+          "cons": [
+            "The tallest of the three; on a small laptop screen the card may need scrolling."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "After pressing the new local model option",
+      "headline": "After pressing it, where does setting up the local model happen?",
+      "today": "Local models are set up in Settings, on the Local Models page: install the model runner first, then pick a model and download it.",
+      "problem": "A new user has never seen Settings. Sending them there means they arrive in an app with nothing to chat with until they find that page and finish two downloads.",
+      "proposal": "Choose whether setup walks them through it or hands them to the page that already exists.",
+      "options": [
+        {
+          "id": "inside-setup",
+          "label": "Inside setup",
+          "summary": "The sign-in card turns into a short local model setup: install the runner, choose a model, download it, then the app opens.",
+          "pros": [
+            "They leave setup with an assistant that can answer straight away.",
+            "Same flow as signing in: finish on this screen, then the app opens."
+          ],
+          "cons": [
+            "A new screen to design, on top of the Local Models page that already does this."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "open-settings-page",
+          "label": "Open the Local Models page",
+          "summary": "Setup finishes immediately and the app opens straight onto Settings, Local Models.",
+          "pros": [
+            "Uses the page that already exists, so it ships sooner.",
+            "They learn where local models live for later."
+          ],
+          "cons": [
+            "That page is built for people who already know what an engine and a quant are.",
+            "Nothing stops them closing it and landing in a chat that cannot answer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The local model setup, at the step where a model is chosen",
+      "headline": "How should a new user choose which model to download?",
+      "today": "The app ships 11 recommended models in three groups by computer memory: small (about 8 GB), everyday (16 to 32 GB) and large (32 GB or more). It can already tell whether a model fits this computer.",
+      "problem": "A new user has no way to judge which of 11 names is right for their computer, and a model that does not fit either will not load or runs very slowly.",
+      "proposal": "Choose how much of that choice setup makes for them.",
+      "options": [
+        {
+          "id": "one-suggested",
+          "label": "One suggestion",
+          "summary": "Setup suggests the best model that fits this computer, with a \"Choose a different model\" link that opens the full list.",
+          "pros": [
+            "One button to press; the right answer for most people.",
+            "Anyone who knows what they want can still pick."
+          ],
+          "cons": [
+            "The suggestion is the app's judgement, and a slow computer gets a less capable model."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "full-list",
+          "label": "The full list",
+          "summary": "All 11 models, each marked Fits, Tight or Too large for this computer.",
+          "pros": [
+            "Nothing is hidden or chosen for them."
+          ],
+          "cons": [
+            "11 unfamiliar model names at the moment they know least about them."
+          ]
+        },
+        {
+          "id": "always-smallest",
+          "label": "Always the smallest",
+          "summary": "Setup always downloads the same small model; bigger ones can be added later in Settings.",
+          "pros": [
+            "Fastest download, and it runs on nearly any computer."
+          ],
+          "cons": [
+            "A powerful computer gets a weaker assistant than it could run, and first impressions suffer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The local model setup, while the model downloads",
+      "headline": "While the model downloads, should the app wait or open?",
+      "today": "Downloading a model on the Local Models page shows a progress bar there. A model is usually a few gigabytes, so the download can take many minutes.",
+      "problem": "Waiting on a setup screen for ten minutes feels broken, but opening an app that cannot answer yet is confusing too.",
+      "proposal": "Choose what they see during the download.",
+      "options": [
+        {
+          "id": "wait-on-setup",
+          "label": "Wait on setup",
+          "summary": "The setup card shows the download's progress and time left, with a Back button to choose a sign-in instead; the app opens when it finishes.",
+          "pros": [
+            "When the app opens, it works.",
+            "Back is always there if the download is too slow."
+          ],
+          "cons": [
+            "Nothing to do but watch a progress bar for the length of the download."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "open-while-downloading",
+          "label": "Open while downloading",
+          "summary": "The app opens right away; the message box says the model is still downloading and shows its progress until it is ready.",
+          "pros": [
+            "They can look around the app while they wait."
+          ],
+          "cons": [
+            "Their first experience is a message box they cannot use yet.",
+            "More places in the app have to handle \"not ready yet\"."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "What setup installs, and what happens when things go wrong",
+      "intro": "The first page decided how the option looks and flows. These decide what setup does around it."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "First-run setup",
+      "path": "The install checklist a new install runs before the sign-in screen",
+      "headline": "Should setup still install Claude Code for someone who only wants a local model?",
+      "today": "Every new install downloads Node, Git and Claude Code before the sign-in screen appears, whichever sign-in the person then picks.",
+      "problem": "Someone choosing a local model does not use Claude Code, so they wait for a download they may never need.",
+      "proposal": "Choose whether that install is kept or skipped for them.",
+      "options": [
+        {
+          "id": "keep-installing",
+          "label": "Keep installing it",
+          "summary": "Setup stays in the order it runs today; the local model option simply appears on the sign-in screen.",
+          "pros": [
+            "Signing in to Claude later needs nothing more to install.",
+            "Setup's order is untouched, so nothing else can break."
+          ],
+          "cons": [
+            "A local-only user waits for an install they do not use."
+          ]
+        },
+        {
+          "id": "ask-first",
+          "label": "Ask first, then install",
+          "summary": "The sign-in choice moves to the start of setup, and Claude Code is only installed for people who pick Claude.",
+          "pros": [
+            "Local-only users get through setup sooner."
+          ],
+          "cons": [
+            "Reorders every new user's setup, including the Claude path that works today.",
+            "Signing in to Claude later would first have to install it."
+          ]
+        }
+      ],
+      "risk": "Moving the question to the start changes the first minutes of every new install, not just local ones."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The local model option, on a computer with little memory",
+      "headline": "What should happen on a computer too small to run a model well?",
+      "today": "The app can tell how much memory a computer has and whether each model fits, but nothing on the sign-in screen uses that.",
+      "problem": "On an 8 GB laptop even the smallest model is slow, and someone who picks local there may think the whole app is slow.",
+      "proposal": "Choose whether and how setup warns them.",
+      "options": [
+        {
+          "id": "show-and-warn",
+          "label": "Show it, with a warning",
+          "summary": "The option is always there; on a small computer setup says the model will be slow and suggests signing in instead.",
+          "pros": [
+            "Nobody is locked out of the choice.",
+            "They pick knowing what to expect."
+          ],
+          "cons": [
+            "One more sentence on an already busy screen, for those computers."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hide-when-small",
+          "label": "Hide it",
+          "summary": "Computers below a memory limit do not see the option at all.",
+          "pros": [
+            "Nobody has a bad first experience from it."
+          ],
+          "cons": [
+            "Someone who wants privacy over speed cannot choose it."
+          ]
+        },
+        {
+          "id": "no-warning",
+          "label": "No warning",
+          "summary": "Every computer sees the same option, with no mention of speed.",
+          "pros": [
+            "Simplest screen."
+          ],
+          "cons": [
+            "The slow experience arrives with no explanation."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "First-run setup",
+      "path": "Reopening the app after quitting partway through local model setup",
+      "headline": "If someone quits before the model finishes downloading, where should the app reopen?",
+      "today": "The app reopens on the sign-in screen when nothing usable is set up. But once the model runner alone is installed, it counts as set up, even with no model downloaded.",
+      "problem": "Quitting mid-download would reopen straight into an app that cannot answer, with no hint why.",
+      "proposal": "Choose where they land when they come back.",
+      "options": [
+        {
+          "id": "back-to-setup",
+          "label": "Back to setup",
+          "summary": "Until a model is downloaded, the app reopens on the setup screen, which offers to resume the download.",
+          "pros": [
+            "They pick up exactly where they left off.",
+            "Closes the gap where an app with no model counts as set up."
+          ],
+          "cons": [
+            "Someone who meant to set up the model later in Settings is sent back to setup until they do."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "open-app-with-notice",
+          "label": "Open the app",
+          "summary": "The app opens normally, with a notice that no model is downloaded yet and a button to finish.",
+          "pros": [
+            "Never blocks them from the app."
+          ],
+          "cons": [
+            "They can still start a conversation that cannot answer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "First-run sign-in screen",
+      "path": "The small underlined link under the sign-in buttons",
+      "headline": "What should happen to the \"Use an API key or local model\" link?",
+      "today": "The link opens a box for an Anthropic API key, which is passed to Claude Code.",
+      "problem": "Once local models have their own option, the words \"or local model\" point at something the link does not do.",
+      "proposal": "Choose the link's new wording.",
+      "options": [
+        {
+          "id": "rename-anthropic-key",
+          "label": "\"Use an Anthropic API key\"",
+          "pros": [
+            "Says exactly what it does."
+          ],
+          "cons": [
+            "Names a company some users will not recognise."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "rename-api-key",
+          "label": "\"Use an API key\"",
+          "pros": [
+            "Shorter, and matches the wording it has today."
+          ],
+          "cons": [
+            "Someone with an OpenAI or OpenRouter key may try theirs and see it fail."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Android setup",
+      "path": "The phone app's own setup screens",
+      "headline": "This change is desktop only: the phone app has no local models and its own separate setup screens.",
+      "changed": "Stated, not asked: the Android app cannot run local models at all today, and it never shows this sign-in screen.",
+      "notice": "Phones keep their current setup exactly as it is. Local models on Android would be a separate project.",
+      "yes": "Understood",
+      "no": "Phones need it too"
+    }
+  ]
+}

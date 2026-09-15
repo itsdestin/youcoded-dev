@@ -1,0 +1,43 @@
+{
+ "deck": "first-run-local-models-questions-2",
+ "started": "2026-09-14T22:53:24.932Z",
+ "submitted": "2026-09-14T22:54:34Z",
+ "cur": 1,
+ "answers": {
+  "F-1": {
+   "v": "pick",
+   "pick": "recognise-key",
+   "seconds": 10,
+   "theme": "meadow-mist"
+  },
+  "F-2": {
+   "v": "pick",
+   "pick": "own-assistant",
+   "seconds": 10,
+   "theme": "meadow-mist"
+  },
+  "F-3": {
+   "v": "pick",
+   "pick": "leave-as-is",
+   "seconds": 10,
+   "theme": "meadow-mist"
+  },
+  "F-4": {
+   "v": "pick",
+   "pick": "only-claude-waits",
+   "seconds": 13,
+   "theme": "meadow-mist"
+  },
+  "F-5": {
+   "v": "pick",
+   "pick": "install-button-in-place",
+   "seconds": 13,
+   "theme": "meadow-mist"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "meadow-mist"
+  }
+ }
+}
