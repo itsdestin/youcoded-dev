@@ -250,7 +250,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto
@@ -314,6 +314,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Audit every place YouCoded recommends or automatically chooses a model, then build one
+      maintained recommendation system so those choices do not go stale as model generations change
+      `settings/defaults` `all` `confirmed` `checked 2026-09-15`
+
 - [ ] Specialist limits should be adjustable in Settings: how many helpers may run at once, how
       many launches a conversation gets, and how often the assistant may send a running helper a
       note. Today each is a fixed number in the app; the 2026-09-09 transcript audit showed the

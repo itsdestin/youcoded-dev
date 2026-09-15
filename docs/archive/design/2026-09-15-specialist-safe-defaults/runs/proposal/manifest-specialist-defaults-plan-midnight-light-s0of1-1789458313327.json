@@ -1,0 +1,203 @@
+[
+  {
+    "theme": "midnight",
+    "name": "safe-default-warning",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "text:A safe automatic model wasn’t available.": {
+        "x": 91,
+        "y": 262,
+        "w": 743,
+        "h": 16
+      },
+      "text:Choose specialist models": {
+        "x": 846,
+        "y": 274,
+        "w": 178,
+        "h": 24
+      }
+    },
+    "rmseVsBaseline": 0.300771,
+    "dump": [],
+    "file": "scratch/specialist-defaults-shots-4/midnight/safe-default-warning.png"
+  },
+  {
+    "theme": "midnight",
+    "name": "safe-default-ready-to-retry",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "text:Try again": {
+        "x": 883,
+        "y": 281,
+        "w": 79,
+        "h": 24
+      }
+    },
+    "rmseVsBaseline": 0.30016,
+    "dump": [],
+    "file": "scratch/specialist-defaults-shots-4/midnight/safe-default-ready-to-retry.png"
+  },
+  {
+    "theme": "midnight",
+    "name": "specialist-settings-automatic",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "1",
+        "ratio": 4.11,
+        "need": 4.5,
+        "size": 9,
+        "fg": "rgb(221, 68, 68)",
+        "bg": "rgb(22,27,34)",
+        "path": "div.scroll-fade.flex-1.min-h-0 > div.flex-1.px-4.py-4 > button.w-full.flex.items-center > span.px-1.5.py-0.5.rounded-full",
+        "x": 246,
+        "y": 378,
+        "w": 17,
+        "h": 18
+      }
+    ],
+    "measures": {
+      "text:No Selection – Model will be chosen automatically": {
+        "x": 435,
+        "y": 376,
+        "w": 586,
+        "h": 15
+      }
+    },
+    "rmseVsBaseline": 0.209218,
+    "dump": [],
+    "file": "scratch/specialist-defaults-shots-4/midnight/specialist-settings-automatic.png"
+  },
+  {
+    "theme": "light",
+    "name": "safe-default-warning",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "2 need you",
+        "ratio": 1.4,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(251, 191, 36)",
+        "bg": "rgb(243,234,211)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 310,
+        "y": 878,
+        "w": 60,
+        "h": 15
+      }
+    ],
+    "measures": {
+      "text:A safe automatic model wasn’t available.": {
+        "x": 91,
+        "y": 262,
+        "w": 743,
+        "h": 16
+      },
+      "text:Choose specialist models": {
+        "x": 846,
+        "y": 274,
+        "w": 178,
+        "h": 24
+      }
+    },
+    "rmseVsBaseline": 0.382115,
+    "dump": [],
+    "file": "scratch/specialist-defaults-shots-4/light/safe-default-warning.png"
+  },
+  {
+    "theme": "light",
+    "name": "safe-default-ready-to-retry",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "2 need you",
+        "ratio": 1.4,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(251, 191, 36)",
+        "bg": "rgb(243,234,211)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 310,
+        "y": 878,
+        "w": 60,
+        "h": 15
+      }
+    ],
+    "measures": {
+      "text:Try again": {
+        "x": 883,
+        "y": 281,
+        "w": 79,
+        "h": 24
+      }
+    },
+    "rmseVsBaseline": 0.381137,
+    "dump": [],
+    "file": "scratch/specialist-defaults-shots-4/light/safe-default-ready-to-retry.png"
+  },
+  {
+    "theme": "light",
+    "name": "specialist-settings-automatic",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "2 need you",
+        "ratio": 1.4,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(251, 191, 36)",
+        "bg": "rgb(243,234,211)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 310,
+        "y": 878,
+        "w": 60,
+        "h": 15
+      },
+      {
+        "text": "1",
+        "ratio": 3.5,
+        "need": 4.5,
+        "size": 9,
+        "fg": "rgb(221, 68, 68)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.scroll-fade.flex-1.min-h-0 > div.flex-1.px-4.py-4 > button.w-full.flex.items-center > span.px-1.5.py-0.5.rounded-full",
+        "x": 246,
+        "y": 378,
+        "w": 17,
+        "h": 18
+      }
+    ],
+    "measures": {
+      "text:No Selection – Model will be chosen automatically": {
+        "x": 435,
+        "y": 376,
+        "w": 586,
+        "h": 15
+      }
+    },
+    "rmseVsBaseline": 0.367877,
+    "dump": [],
+    "file": "scratch/specialist-defaults-shots-4/light/specialist-settings-automatic.png"
+  }
+]

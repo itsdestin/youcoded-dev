@@ -486,3 +486,10 @@ recurred — the repetition is the data.
 - ChatView's own Arrow Up/Down scroll listener also runs in hidden chats → dropped: at worst it scrolls a chat nobody is looking at; no consent or data effect, not verified further
 - Merged before the retrospective at Destin's "lets merge/close", so the retrospective edits ride a follow-up commit on each repo rather than the fix branch
 - deleted/merged: none found — looked at the permission-confirm test (still distinct: it pins the confirm's contents, the new file pins who may reach it)
+
+## 2026-09-15 — safe automatic specialist models (session/specialist-defaults, youcoded + workspace)
+- I implemented provisional model names before the decision recorded in the continuation brief was resolved; Destin corrected all six defaults → applied: provider-mapping tests pin Terra/Sol, DeepSeek V4 Flash 0731/Kimi K3 and Claude Sonnet, while the broader recommendation-refresh problem is filed in `docs/roadmap/native-harness.md`  [1 correction round]
+- Three review passes found the same unsafe assumption hiding in separate paths: background launches dropped the resolved binding, file definitions manufactured `parent`, and uncertain retry acknowledgements offered a duplicate → applied at the top of the ladder: regression tests for every path plus WHY comments at each fix  [3 review rounds]
+- The custom capture plan used for the review deck was not kept beside the deck, so the two requested revisions could not be re-captured without reconstructing it → dropped: the answered deck itself preserved the decisions, the requested UI changes were narrow, and no repeat justified a new workspace rule  [3 search/read calls]
+- Review found pre-existing multibyte-length and split-ANSI bugs in Claude Code PTY submission outside this feature → roadmap: `docs/roadmap/claude-code-integration.md`; dependency registry corrected in `youcoded/docs/cc-dependencies.md`
+- deleted/merged: stale “unset falls back to the conversation model” explanations were replaced in place across code comments, Settings copy and the native-runtime reference; no parallel compatibility doc was added
