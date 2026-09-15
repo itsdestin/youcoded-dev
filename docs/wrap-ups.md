@@ -486,3 +486,10 @@ recurred — the repetition is the data.
 - ChatView's own Arrow Up/Down scroll listener also runs in hidden chats → dropped: at worst it scrolls a chat nobody is looking at; no consent or data effect, not verified further
 - Merged before the retrospective at Destin's "lets merge/close", so the retrospective edits ride a follow-up commit on each repo rather than the fix branch
 - deleted/merged: none found — looked at the permission-confirm test (still distinct: it pins the confirm's contents, the new file pins who may reach it)
+
+## 2026-09-15 — designed the specialist-cap permission override (session/specialist-cap-permission, workspace)
+- The specialist name pool held 14 names while one session could launch 30 helpers, guaranteeing numbered fallback titles in normal allowed use → applied: approved design expands and mechanically ties the pool to the allowance; roadmap: `native-harness.md`
+- A fresh reviewer found five design omissions before implementation: run replay was still truncated at 30, parallel calls could cross the boundary, teardown did not clear every map, both reducer resolution paths needed the synthetic gate, and regular permission cards have no dismiss control → applied: all five are explicit requirements and tests in the design spec
+- `workspace-start`'s `[repo…]` wording led me to pass `youcoded-dev`, which the script rejects because the workspace is implicit → applied: `docs/workspace-start.md` now says `[component-repo…]` and names the rejected spelling  [1 failed startup call]
+- Destin chose three native permission outcomes: one extra helper, waive the cap for this live session, or continue inline; a No does not suppress a later user-directed attempt → roadmap: `native-harness.md` points to the approved design
+- deleted/merged: narrowed the existing adjustable-specialist-limits roadmap item to concurrency and note limits instead of duplicating its launch-cap concern; the approved launch override is one separate in-flight item

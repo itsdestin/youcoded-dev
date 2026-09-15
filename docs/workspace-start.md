@@ -1,8 +1,9 @@
 # Isolated development sessions
 
-Use `node scripts/workspace-start.mjs --session <stable-key> [repo…]` instead of running
-setup/pull in the shared checkout before every task. This is developer tooling, not a
-requirement for ordinary chats or non-Git document work.
+Use `node scripts/workspace-start.mjs --session <stable-key> [component-repo…]` instead of
+running setup/pull in the shared checkout before every task. The workspace worktree is always
+created implicitly; pass names such as `youcoded`, never `youcoded-dev`. This is developer
+tooling, not a requirement for ordinary chats or non-Git document work.
 
 ```bash
 node scripts/workspace-start.mjs --session 2026-09-05-example youcoded
