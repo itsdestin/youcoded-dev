@@ -321,11 +321,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
-- [ ] Specialist limits should be adjustable in Settings: how many helpers may run at once, how
-      many launches a conversation gets, and how often the assistant may send a running helper a
-      note. Today each is a fixed number in the app; the 2026-09-09 transcript audit showed the
-      assistant nagging one helper 14 times and hitting the launch cap by surprise
-      `settings` `desktop` `decision` `checked 2026-09-09`
+- [ ] Specialist operating limits should be adjustable in Settings: how many helpers may run at
+      once and how often the assistant may send a running helper a note. Today both are fixed
+      numbers; the 2026-09-09 transcript audit showed the assistant nagging one helper 14 times
+      `settings` `desktop` `decision` `checked 2026-09-15`
+
+- [ ] After the assistant uses 30 specialists in one session, let the user approve just the next
+      helper or waive the limit for that session instead of refusing every additional helper
+      `tool-cards` `desktop` `in-flight` `checked 2026-09-15` → docs/active/specs/2026-09-15-specialist-budget-permission-design.md
 
 - [ ] A finished helper's report should be able to arrive quietly — read with your next message
       instead of starting a reply on its own — unless the assistant asked to be woken for that
