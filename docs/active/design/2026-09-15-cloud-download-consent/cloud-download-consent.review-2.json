@@ -1,0 +1,24 @@
+{
+ "title":"Cloud files — what you will see and when",
+ "key":"cloud-download-consent-specific-download-review-2",
+ "out":"cloud-download-consent.review-2.html",
+ "images":"images/cloud-download-consent.review-2",
+ "stage":"design",
+ "themes":["light","midnight"],
+ "runs":{"before":"../../../../scratch/cloud-simple-before","after":"../../../../scratch/cloud-simple"},
+ "labels":{"before":"Earlier folder-permission proposal","after":"Specific download — revised proposal"},
+ "crops":{
+  "browse":["cloud","browsing","1100x450+170+400"],
+  "file":["cloud","file-prompt","1100x310+170+400"],
+  "wait":["cloud","file-waiting","1100x250+170+400"],
+  "instructions":["cloud","chat-prompt","1440x300+0+0"],
+  "instructions-wait":["cloud","chat-waiting","1440x280+0+0"]
+ },
+ "steps":[
+  {"id":"UI-6","surface":"Projects · Files","path":"Browse a project's files","crop":"browse","highlight":{"box":[1,8,98,50]},"headline":"UI-6 · Browse without downloading or answering a prompt.","changed":"When you open Projects, online-only files show a small cloud icon. Local files keep normal previews.","notice":"No folder permission. Browsing never downloads content just for previews, descriptions or counts.","risk":"Fake file availability; no backend protection yet. Windows behavior is unverified."},
+  {"id":"UI-7","surface":"Projects · Open a file","path":"Click an online-only file","crop":"file","highlight":{"box":[1,12,98,62]},"headline":"UI-7 · Download only the file you chose to open.","changed":"Replaces old UI-1: clicking a file explains its source and asks Download and open / Not now.","notice":"OneDrive is named only when known. No saved grant; Not now returns to browsing.","risk":"Simulated operation; no real download protection or provider detection yet."},
+  {"id":"UI-8","surface":"Projects · Waiting","path":"Approve Download and open","crop":"wait","highlight":{"box":[1,12,98,63]},"headline":"UI-8 · A compact notice keeps the selected file in context.","changed":"Refines old UI-3: after approval, two lines name the file and explain that it will open here when ready.","notice":"Keep working elsewhere. Continuation belongs to the original action and must not steal focus from newer work.","risk":"Simulated wait only. Completion, focus preservation and concurrent operations remain unimplemented."},
+  {"id":"UI-9","surface":"New conversation · Required instructions","path":"Start a conversation needing online-only instructions","crop":"instructions","runs":["after"],"highlight":{"box":[2,17,96,62]},"headline":"UI-9 · Ask inside the affected conversation, not Projects.","changed":"Replaces rejected UI-4. If startup needs instructions, one card lists the exact files and offers Download and continue / Not now.","notice":"This example needs CLAUDE.md and project-guidelines.md for one action. It does not approve a folder or silently omit required instructions.","risk":"An empty workbench conversation substitutes for real startup. The listed requirements are invented fixture facts; optional discovery is not a required-instructions contract."},
+  {"id":"UI-10","surface":"New conversation · Waiting","path":"Approve Download and continue","crop":"instructions-wait","runs":["after"],"highlight":{"box":[2,18,96,62]},"headline":"UI-10 · Continue that conversation when its instructions are ready.","changed":"After approval, the card stays in the conversation and names the required files while waiting for OneDrive.","notice":"No percentage or stop-download promise. Other conversations remain usable; external programs get no new restrictions.","risk":"Waiting is simulated and never finishes. Real startup, deduplication, completion and Windows hydration remain unverified; no cancellation behavior was added."}
+ ]
+}

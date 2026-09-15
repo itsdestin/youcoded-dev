@@ -1,0 +1,99 @@
+{
+  "title": "Cloud files — permission and waiting",
+  "key": "cloud-download-consent-review",
+  "out": "cloud-download-consent.review.html",
+  "images": "images/cloud-download-consent.review",
+  "stage": "design",
+  "runs": {
+    "before": "../../../../scratch/cloud-consent-before",
+    "after": "../../../../scratch/cloud-polish"
+  },
+  "labels": {"before": "Before — current Files view", "after": "After — proposed interface, simulated files"},
+  "themes": ["light", "midnight", "halftone-dimension"],
+  "crops": {
+    "cloud-prompt": ["cloud", "projects", "1100x300+170+400"],
+    "cloud-denied": ["cloud", "denied", "1100x450+170+340"],
+    "cloud-waiting": ["cloud", "waiting", "1100x450+170+340"],
+    "cloud-instructions": ["cloud", "instructions", "1100x450+170+340"]
+  },
+  "steps": [
+    {
+      "id": "UI-1", "surface": "Projects · Files", "path": "Projects → Files",
+      "crop": "cloud-prompt", "highlight": {"box": [1, 13, 98, 51]}, "headline": "1. Ask before YouCoded downloads files from this folder.",
+      "changed": "An inline folder question offers Allow downloads and Not now.",
+      "notice": "Local previews remain usable. Permission does not download the whole folder.",
+      "risk": "Fake backend: no protection yet; Windows unverified; duration needs your answer."
+    },
+    {
+      "id": "UI-2", "surface": "Projects · Files", "path": "Projects → Files → Not now",
+      "crop": "cloud-denied", "runs": ["after"], "highlight": {"box": [1, 21, 98, 35]},
+      "headline": "2. Declining leaves local files usable and makes changing your choice explicit.",
+      "changed": "Local files only explains what remains usable, with Change download permission to reopen the question.",
+      "notice": "Files with unknown availability stay distinct from files known to be online-only; neither previews automatically.",
+      "risk": "Availability and provider names are simulated facts here; no production reads are protected yet."
+    },
+    {
+      "id": "UI-3", "surface": "Projects · Files", "path": "Allow downloads → select an online-only file",
+      "crop": "cloud-waiting", "runs": ["after"], "highlight": {"box": [1, 21, 98, 34]},
+      "headline": "3. Explain which file is waiting without blocking the rest of YouCoded.",
+      "changed": "A quiet waiting notice names OneDrive only when the provider is known; otherwise it says Waiting for the file.",
+      "notice": "No made-up percentage or cancellation promise. The proposed next step is to open the selected file here when ready.",
+      "risk": "Waiting and continuation are simulated: nothing finishes downloading or opens automatically in this prototype; the continuation question below needs an explicit answer."
+    },
+    {
+      "id": "UI-4", "surface": "Projects · New Conversation", "path": "New Conversation → allow downloading required instructions",
+      "crop": "cloud-instructions", "runs": ["after"], "highlight": {"box": [1, 21, 98, 34]},
+      "headline": "4. Explain why a new conversation is waiting for its project instructions.",
+      "changed": "The notice says project instructions file instead of native assistant startup, and explains that other work can continue.",
+      "notice": "The proposed next step is to start the conversation once YouCoded can read its instructions, not silently omit them.",
+      "risk": "The New Conversation button only simulates this native-chat case; no real startup or continuation is implemented, and external programs remain unrestricted."
+    },
+    {
+      "id": "Q-duration", "words": true, "surface": "Folder permission", "path": "The folder download question",
+      "headline": "Should folder permission last until you close YouCoded?",
+      "today": "You chose folder permission for the current session, but Projects can be open without a conversation.",
+      "problem": "Session could mean one conversation or the whole time YouCoded is open; the app should not guess silently.",
+      "proposal": "The pictures propose one folder grant shared across conversations until YouCoded closes. Choose that lifetime or ask for a conversation-only design.",
+      "options": [
+        {"id":"app-run","label":"Until YouCoded closes","pros":["No repeat prompt when changing conversations in this folder."],"cons":["Permission remains available to YouCoded throughout this app run."]},
+        {"id":"conversation","label":"One conversation only","pros":["Permission ends with that conversation."],"cons":["Projects browsing without a conversation needs a separate rule and design."]}
+      ],
+      "risk": "The app-run duration is proposed, not an interpretation already approved by your earlier session answer."
+    },
+    {
+      "id": "Q-continuation", "words": true, "surface": "Waiting for files", "path": "After granting folder downloads",
+      "headline": "Should the selected action continue automatically when its file becomes ready?",
+      "today": "The prototype now explains a next step, but its waiting state never completes an actual operation.",
+      "problem": "Without a next-step rule, you cannot tell whether to wait or click the file or New Conversation again.",
+      "proposal": "Continue only the action you selected: open that file in Projects, or start that native conversation when its instructions are ready.",
+      "options": [
+        {"id":"automatic","label":"Continue automatically","pros":["You do not need to repeat the action."],"cons":["It may become ready after you have moved on to other work."]},
+        {"id":"ready-action","label":"Ask when ready","pros":["You choose when to open the file or start the conversation."],"cons":["Requires another click after the wait."]}
+      ],
+      "risk": "Automatic continuation is only proposed copy in these pictures; answering this question establishes whether it should be built."
+    },
+    {
+      "id": "Q-scope", "words": true, "surface": "YouCoded file access", "path": "Projects, previews and conversation context",
+      "headline": "Confirm: protect YouCoded’s own reads, without restricting external programs?",
+      "today": "You corrected the earlier external-tools question: you want YouCoded itself to stop downloading and freezing without explanation.",
+      "problem": "That earlier submitted question recorded confusion, not approval for restrictions on Claude Code, shell commands, Git or MCP tools.",
+      "proposal": "Keep your correction: consent and responsive waiting for YouCoded-owned reads, including its context display for Claude Code conversations; no external-tool gates or wrappers.",
+      "options": [
+        {"id":"app-owned-only","label":"YouCoded reads only","pros":["Addresses the app’s own previews, instructions and file operations."],"cons":["Independent external programs may still download files on their own."]}
+      ],
+      "risk": "This confirmation records your corrected scope; it does not reinterpret the original confused answer as consent."
+    },
+    {
+      "id": "Q-abandon", "words": true, "surface": "Waiting for files", "path": "A selected file or conversation is still waiting",
+      "headline": "Should you be able to abandon the pending action?",
+      "today": "You can leave Projects and keep working while a selected action waits; there is no abandon-request button in this proposal.",
+      "problem": "You may change your mind before the file is ready, especially if automatic continuation is chosen.",
+      "proposal": "Consider a separate Stop waiting action that abandons YouCoded’s pending open or startup, without claiming to stop OneDrive’s download.",
+      "options": [
+        {"id":"design-abandon","label":"Design stop waiting","pros":["Prevents an unwanted pending action from continuing."],"cons":["Needs separate behavior design; a provider download may continue anyway."]},
+        {"id":"defer","label":"Defer this control","pros":["Keeps this first design focused on permission and explanation."],"cons":["No explicit way to abandon the pending action yet."]}
+      ],
+      "risk": "No abandon or cancellation behavior has been implemented; neither option promises that OneDrive will stop downloading."
+    }
+  ]
+}

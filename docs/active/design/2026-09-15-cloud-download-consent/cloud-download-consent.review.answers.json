@@ -1,0 +1,63 @@
+{
+ "deck": "cloud-download-consent-review",
+ "started": "2026-09-15T08:11:00.550Z",
+ "submitted": "2026-09-15T08:15:03Z",
+ "cur": 7,
+ "answers": {
+  "UI-1": {
+   "note": "a user may not even know that the files aren't local or need downloading, so we should include a brief explanation of the source. \"Some files in this folder are stored only on OneDrive, and need to be downloaded before they can be previewed here. Proceed? the permission should also persist after a restart per-folder i think.",
+   "v": "yes",
+   "seconds": 95,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-2": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-3": {
+   "v": "yes",
+   "note": "too many lines for a wide card like that. lots of empty space. i dont like.",
+   "seconds": 42,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-4": {
+   "v": "no",
+   "note": "the projects view is a wierd place for this conversation specific message. this should appear as a message/card in the new conversation itself that's waiting.",
+   "seconds": 43,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-duration": {
+   "v": "other",
+   "note": "persists indefiniitely after restart",
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-continuation": {
+   "v": "pick",
+   "pick": "automatic",
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-scope": {
+   "v": "pick",
+   "pick": "app-owned-only",
+   "seconds": 9,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-abandon": {
+   "v": "pick",
+   "pick": "defer",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

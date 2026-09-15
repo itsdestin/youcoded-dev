@@ -1,0 +1,42 @@
+{
+ "deck": "cloud-download-consent-specific-download-review-2",
+ "started": "2026-09-15T08:55:30.292Z",
+ "submitted": "2026-09-15T08:58:32Z",
+ "cur": 4,
+ "answers": {
+  "UI-6": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-7": {
+   "note": "i think this should be a popup modal now centered in the page instead of a banner/card at the top.",
+   "v": "other",
+   "seconds": 48,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-8": {
+   "note": "same as previous",
+   "v": "other",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-9": {
+   "v": "yes",
+   "note": "we can simplify this to be like 2 lines. bottom can just say \"This conversation requires project instructions stored only in your OneDrive.",
+   "seconds": 104,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-10": {
+   "v": "yes",
+   "note": "but also simplifly like previous kinda. 2 lines",
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

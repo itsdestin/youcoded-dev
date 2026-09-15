@@ -1,0 +1,33 @@
+{
+ "deck": "cloud-download-consent-review-3",
+ "started": "2026-09-15T09:21:36.695Z",
+ "submitted": "2026-09-15T09:24:59Z",
+ "cur": 3,
+ "answers": {
+  "UI-7": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-8": {
+   "v": "yes",
+   "note": "remove \"keep working\". change copt to \"Downloading file. You may wait or leave this page.\" it shouldn't automatically open if the user has clicked the x on this popup. should only open if the user is waiting on the popup or leaves and clicks the file again.",
+   "seconds": 193,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-9": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "UI-10": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

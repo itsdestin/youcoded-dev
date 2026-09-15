@@ -1,0 +1,16 @@
+{
+ "title":"Cloud files — centered prompts and shorter conversation cards",
+ "key":"cloud-download-consent-review-3",
+ "out":"cloud-download-consent.review-3.html",
+ "images":"images/cloud-download-consent.review-3",
+ "stage":"review","themes":["light","midnight"],
+ "runs":{"before":"../../../../scratch/cloud-simple","after":"../../../../scratch/cloud-r3"},
+ "labels":{"before":"Previous proposal","after":"Revised proposal"},
+ "crops":{"file":["cloud","file-prompt","1440x600+0+150"],"wait":["cloud","file-waiting","1440x600+0+150"],"instructions":["cloud","chat-prompt","1440x300+0+0"],"instructions-wait":["cloud","chat-waiting","1440x280+0+0"]},
+ "steps":[
+  {"id":"UI-7","surface":"Projects · Open file","path":"Click an online-only file","crop":"file","headline":"UI-7 · The selected-file question now opens in a centered popup.","changed":"When you click an online-only file, a centered popup names it and explains the download.","notice":"Download and open continues that action. Not now, Escape or closing the popup declines it and returns focus.","risk":"Fake backend: no actual file access or Windows protection is implemented."},
+  {"id":"UI-8","surface":"Projects · Waiting","path":"Choose Download and open","crop":"wait","headline":"UI-8 · A waiting popup you can leave.","changed":"After approval, the centered popup names the selected file and says what happens next.","notice":"Keep working or close hides the notice, not the pending operation. It does not cancel OneDrive or abandon your request.","risk":"Mock state only. Real completion and Windows behavior are unverified."},
+  {"id":"UI-9","surface":"New conversation","path":"Required instructions need downloading","crop":"instructions","headline":"UI-9 · Two compact lines inside the affected conversation.","changed":"The first line names the exact required files; the second explains their OneDrive source. The same two choices remain.","notice":"Only known OneDrive files use your wording. Unknown availability gets neutral wording; no folder permission is granted.","risk":"The requirement list is fixture data. Real startup and provider detection are not implemented."},
+  {"id":"UI-10","surface":"New conversation","path":"Choose Download and continue","crop":"instructions-wait","headline":"UI-10 · Short waiting text, still in the conversation.","changed":"The first line names the provider and files. The second says the conversation starts when its instructions are ready.","notice":"Other conversations remain usable. This is a conversation card, not a popup, and it makes no cancellation promise.","risk":"The fixture never completes a download or starts a real conversation. No external-tool restriction is added."}
+ ]
+}

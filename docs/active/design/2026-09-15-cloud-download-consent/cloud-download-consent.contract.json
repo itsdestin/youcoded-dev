@@ -1,0 +1,80 @@
+{
+  "title": "Cloud download consent — definition of done",
+  "key": "cloud-download-consent-contract",
+  "out": "cloud-download-consent.contract.html",
+  "themes": ["light"],
+  "branch": "session/onedrive-no-auto-download",
+  "sources": {
+    "cloud-download-consent-questions": "cloud-download-consent.questions.json",
+    "cloud-download-consent-review": "cloud-download-consent.review.json",
+    "cloud-download-consent-specific-download-review-2": "cloud-download-consent.review-2.json",
+    "cloud-download-consent-review-3": "cloud-download-consent.review-3.json"
+  },
+  "steps": [{
+    "id": "C",
+    "surface": "Files and conversations",
+    "path": "Browse files, open an online-only file, or start a conversation needing online-only instructions",
+    "headline": "What the completed change must do",
+    "rows": [
+      {
+        "id": "R1",
+        "statement": "Browsing downloads no content and asks no folder permission; online-only files show cloud icons, while local files keep normal previews.",
+        "checkedBy": "live-app",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-specific-download-review-2#UI-6"
+      },
+      {
+        "id": "R2",
+        "statement": "The selected file’s centered download popup offers Download and open; Not now, Escape, or closing declines and restores focus.",
+        "checkedBy": "live-app",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-review-3#UI-7"
+      },
+      {
+        "id": "R3",
+        "statement": "The centered file-waiting popup says ‘Downloading file. You may wait or leave this page.’ without a Keep working button.",
+        "checkedBy": "deck",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-review-3#UI-8",
+        "note": "remove \"keep working\". change copt to \"Downloading file. You may wait or leave this page.\" it shouldn't automatically open if the user has clicked the x on this popup. should only open if the user is waiting on the popup or leaves and clicks the file again."
+      },
+      {
+        "id": "R4",
+        "statement": "Closing file waiting prevents automatic opening; the file opens only while its popup remains active or after another explicit file click.",
+        "checkedBy": "live-app",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-review-3#UI-8",
+        "note": "remove \"keep working\". change copt to \"Downloading file. You may wait or leave this page.\" it shouldn't automatically open if the user has clicked the x on this popup. should only open if the user is waiting on the popup or leaves and clicks the file again."
+      },
+      {
+        "id": "R5",
+        "statement": "Two compact conversation lines name required files and explain their source, using neutral wording when unknown, without granting folder permission.",
+        "checkedBy": "deck",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-review-3#UI-9"
+      },
+      {
+        "id": "R6",
+        "statement": "Short waiting text stays inside the affected conversation, which starts when its instructions are ready while other conversations remain usable.",
+        "checkedBy": "live-app",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-review-3#UI-10"
+      },
+      {
+        "id": "R7",
+        "statement": "A conversation needing online-only project instructions pauses for approval, never downloading or skipping those instructions silently.",
+        "checkedBy": "live-app",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-questions#Q-2",
+        "note": ""
+      },
+      {
+        "id": "R8",
+        "statement": "Download consent protects YouCoded’s own file reads, including its context display for Claude Code conversations, without adding restrictions to external programs.",
+        "checkedBy": "human",
+        "threshold": "pass/fail",
+        "source": "cloud-download-consent-review#Q-scope"
+      }
+    ]
+  }]
+}

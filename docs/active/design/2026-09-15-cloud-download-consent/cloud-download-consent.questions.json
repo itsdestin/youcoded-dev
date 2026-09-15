@@ -1,0 +1,118 @@
+{
+  "title": "Cloud-backed projects — permission before downloads",
+  "key": "cloud-download-consent-questions",
+  "out": "cloud-download-consent.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Choose the permission policy",
+      "intro": "Requirements, not implemented yet: opening a project must not authorize downloads, and slow file access must not block the app. We propose treating uncertain file availability as protected too. These questions settle permission choices; actual OneDrive behavior still needs Windows testing."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Protected projects",
+      "path": "Project, Files, search, or an assistant asking to read cloud-backed files",
+      "headline": "How much should one download approval allow?",
+      "today": "Opening Project or Files can lead to previews, scans, or supporting files being read. On a cloud-backed folder, those reads may start downloads without a separate choice.",
+      "problem": "A broad approval may let searches, scans, and assistants download several files when you expected only the file or instruction currently needed.",
+      "proposal": "By default, opening or selecting a project reads no protected file contents. Approval never downloads the whole folder unless you asked for that; it only permits the requested work to read what it needs.",
+      "options": [
+        {
+          "id": "each-operation",
+          "label": "Each operation",
+          "pros": [
+            "You approve the specific file or required instructions before each requested operation downloads them.",
+            "The choice stays close to what you intended to do."
+          ],
+          "cons": [
+            "Work that needs several protected files may ask more than once."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "folder-session",
+          "label": "Folder for session",
+          "pros": [
+            "One explicit choice lets requested work continue across that folder for the current session."
+          ],
+          "cons": [
+            "Scans, searches, and assistants may download multiple files while doing requested work.",
+            "The permission is broader than the file that prompted it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Starting a project chat",
+      "path": "A new chat in a protected project whose instructions are not available locally",
+      "headline": "What should happen when required project instructions need a download?",
+      "today": "A project may contain instructions the assistant is expected to follow, but those instructions may be stored online-only when a chat starts.",
+      "problem": "Starting automatically could either download those instructions without consent or silently omit rules that may change how the assistant should work.",
+      "proposal": "Keep the rest of the app usable while the project chat waits for a clear choice. Missing instructions are never downloaded or omitted automatically.",
+      "options": [
+        {
+          "id": "pause-and-ask",
+          "label": "Pause and ask",
+          "pros": [
+            "The assistant starts only after you approve the needed instruction download or choose another folder.",
+            "Project rules are neither fetched nor skipped silently."
+          ],
+          "cons": [
+            "That project chat cannot begin until you choose."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "offer-without-rules",
+          "label": "Offer without rules",
+          "pros": [
+            "You may explicitly start sooner without downloading the instructions."
+          ],
+          "cons": [
+            "The assistant may miss important project rules, so the warning must be clear.",
+            "This creates a risky choice that may be hard to judge."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "External project tools",
+      "path": "Claude Code, shell commands, MCP tools, Git, or sync working in a protected folder",
+      "headline": "When should tools that may read many protected files be available?",
+      "today": "External tools and their child processes can read, list, or sync files outside YouCoded's direct control. Launching them may download more than the file you selected.",
+      "problem": "We have not established a way to stop these programs from downloading individual files after launch. The consent requirement must cover them too, including Claude Code.",
+      "proposal": "Choose a conservative policy for Windows validation. This is a policy proposal, not a guarantee that the protection mechanism already exists.",
+      "options": [
+        {
+          "id": "permission-gate",
+          "label": "Permission gate",
+          "pros": [
+            "Keep these tools unavailable for the protected folder until you explicitly grant folder access for the current session.",
+            "The warning can state that launching a tool may download multiple files."
+          ],
+          "cons": [
+            "Using a tool requires accepting broader access than one-file approval."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "local-copy-only",
+          "label": "Local copy only",
+          "pros": [
+            "External tools work only in a separate, fully local folder, with no broad cloud-folder permission offered."
+          ],
+          "cons": [
+            "You must create and maintain another working folder.",
+            "Changes can drift between the protected folder and the local copy."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,11 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
+- [ ] YouCoded silently downloads OneDrive files and freezes. Work paused 2026-09-15:
+      the draft fix is incomplete and removed Windows content search and automatic folder
+      updates without approval; preserve existing functionality before resuming acceptance.
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-15` → docs/active/handoffs/2026-09-15-onedrive-paused.md
+
 - [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
       but still a visible pause. What is left is the sheer number of elements syntax
       highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576
