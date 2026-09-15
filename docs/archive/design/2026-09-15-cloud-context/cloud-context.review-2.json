@@ -1,0 +1,22 @@
+{
+  "title": "Context — a tighter card",
+  "key": "cloud-context-review-2",
+  "out": "cloud-context.review-2.html",
+  "images": "images/cloud-context.review-2",
+  "stage": "review",
+  "runs": {"before": "runs/after", "after": "runs/compact"},
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {"context-general": ["cloud-context", "general", "820x520+310+100"]},
+  "steps": [
+    {
+      "id": "C-3",
+      "surface": "Assistant settings",
+      "path": "Settings → Assistant settings → General → Context",
+      "crop": "context-general",
+      "headline": "Both provider choices now fit on one compact row.",
+      "changed": "OpenRouter and ChatGPT sit side by side on desktop, with less vertical padding. On phones they remain stacked in tighter rows.",
+      "notice": "Less empty space between each provider and its choice. Your approved explanation is unchanged.",
+      "risk": "UI preview only; saving and conversation limits still need to be connected after approval."
+    }
+  ]
+}

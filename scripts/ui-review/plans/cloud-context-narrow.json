@@ -1,0 +1,26 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=stress",
+  "width": 390,
+  "height": 740,
+  "pre": [
+    {"click": "[aria-label='Open menu']", "settle": 500},
+    {"click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>b.textContent.trim().startsWith('Settings'))", "settle": 500},
+    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 700},
+    {"click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('General'))", "settle": 700},
+    {"eval": "document.querySelector('section[aria-label=\"Context\"]').scrollIntoView({block:'center'})", "settle": 300}
+  ],
+  "shots": [
+    {
+      "name": "general",
+      "actions": [],
+      "expect": "js:(()=>{const r=document.querySelector('section[aria-label=\"Context\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()",
+      "measure": ["section[aria-label='Context']"]
+    },
+    {
+      "name": "info",
+      "actions": [{"click": "section[aria-label='Context'] button[aria-expanded]", "settle": 500}],
+      "expect": "js:(()=>{const r=document.querySelector('[role=\"dialog\"][style*=\"left\"]').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight})()",
+      "measure": ["[role='dialog'][style*='left']"]
+    }
+  ]
+}
