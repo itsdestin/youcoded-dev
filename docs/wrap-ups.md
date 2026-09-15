@@ -486,3 +486,11 @@ recurred — the repetition is the data.
 - ChatView's own Arrow Up/Down scroll listener also runs in hidden chats → dropped: at worst it scrolls a chat nobody is looking at; no consent or data effect, not verified further
 - Merged before the retrospective at Destin's "lets merge/close", so the retrospective edits ride a follow-up commit on each repo rather than the fix branch
 - deleted/merged: none found — looked at the permission-confirm test (still distinct: it pins the confirm's contents, the new file pins who may reach it)
+
+## 2026-09-15 — KWallet late-unlock recovery (session/kwallet-late-unlock, app merged as de2c1b5d)
+- Linux keychain failure caching is below the app: repeated Electron checks cannot reset Chromium's consumed crypto config → applied: narrow source notes in `docs/archive/plans/2026-09-15-kwallet-late-unlock.md` and `youcoded/docs/native-runtime.md`; restartable helper and bootstrap/identity/backend tests pin the implementation instead of adding an always-loaded rule.
+- Async wallet access widens cancellation races; null-on-decrypt-failure falsely says signed out → applied: same-instance credential recovery and wallet-wait cancellation regressions in `chatgpt-auth.test.ts` / `secrets-store.test.ts`, shown red before green.
+- Eager adapter resolution broke partial Electron mocks across nine suites → applied: lazy resolution only for reads/writes; presence checks and deletes remain crypto-independent. The existing full-suite checks caught it; no new workspace policy needed.
+- Invalid Grep type names (`tsx`, `text`) wasted calls despite the tool describing built-in types → dropped: caller mistake, not missing guidance. No tool change or extra rule.
+- RECURRENCE: the remote-download stream-removal test failed on the last full verify and in isolation; the same assertion failed on untouched `origin/master` in a disposable worktree → existing `dev-workspace.md` tests entry updated with baseline evidence; left unrelated remote code unchanged.
+- deleted/merged: the duplicated ChatGPT/store keychain-unavailable sentence now has one source in `secret-storage-errors.ts`. Destin then authorized merge/close; app merge passed full desktop verification and secret scanning. No live-wallet tests performed.
