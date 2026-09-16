@@ -1,0 +1,307 @@
+{
+  "_comment": [
+    "The design-check decisions (deck 2026-09-14) as built on youcoded session/agent-lint-tooling 60c77042. before = master 510fe0f5; after = the branch. Crops and boxes come from matching each warning's class string to its element in the before sweep (element collector in shot.mjs)."
+  ],
+  "title": "Design check fixes — keep or revert",
+  "key": "design-check-fixes",
+  "out": "design-check-fixes.review.html",
+  "images": "images/design-check-fixes.review",
+  "runs": {
+    "before": "../../../../scratch/design/runs/before",
+    "after": "../../../../scratch/design/runs/after"
+  },
+  "themes": [
+    "meadow-mist",
+    "light"
+  ],
+  "crops": {
+    "dcf-sync-lights": [
+      "main",
+      "settings-backup-sync",
+      "600x260+420+375"
+    ],
+    "dcf-context-banner": [
+      "overlays",
+      "native-session-stalled-and-permission",
+      "600x260+0+0"
+    ],
+    "dcf-project-switcher": [
+      "overlays",
+      "projects-switcher",
+      "600x319+105+182"
+    ],
+    "dcf-how-context": [
+      "overlays",
+      "projects-how-context-works",
+      "788x463+421+123"
+    ],
+    "dcf-context-tab": [
+      "main",
+      "projects-context",
+      "600x348+108+455"
+    ],
+    "dcf-files-tab": [
+      "main",
+      "projects-file-filter",
+      "660x300+170+380"
+    ],
+    "dcf-fast-mode": [
+      "main",
+      "model-picker",
+      "600x260+250+473"
+    ],
+    "dcf-signin": [
+      "overlays",
+      "first-run-authenticate",
+      "670x394+385+431"
+    ],
+    "dcf-attachment": [
+      "overlays",
+      "composer-attachments",
+      "600x260+0+600"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings → Backup & Sync",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-sync-lights",
+      "highlight": {
+        "box": [
+          19.33,
+          38.08,
+          61.33,
+          23.85
+        ]
+      },
+      "headline": "Backup & Sync’s green “connected” lights now use the app’s own status green.",
+      "changed": "The light, and the faint green tint behind a connected backup, used a stock green. They now use the same green as the app’s other status lights.",
+      "measured": "4 color settings on 2 lines of code",
+      "notice": "The green is a little softer."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "A session on a model with a small context window → the banner above the chat",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-context-banner",
+      "highlight": {
+        "box": [
+          5.83,
+          23.85,
+          2.33,
+          5.38
+        ]
+      },
+      "headline": "The amber “some rules were left out” banner now uses the app’s own warning amber.",
+      "changed": "The dot, border and tint used a stock amber. They now use the amber the app already uses for warnings.",
+      "measured": "4 color settings on 2 lines of code",
+      "notice": "Almost no difference — the two ambers are a shade apart."
+    },
+    {
+      "id": "S-3",
+      "surface": "Project View",
+      "path": "Projects → the project switcher",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-project-switcher",
+      "highlight": {
+        "box": [
+          18.17,
+          13.79,
+          63.5,
+          72.41
+        ]
+      },
+      "headline": "Project names in the switcher are one size larger, and the sync dots use the app’s shared green and red.",
+      "changed": "Names went from 13.5px to 14px, as you picked. The synced and sync-error dots were typed-in color codes; they now use the shared status colors.",
+      "measured": "13.5px → 14px",
+      "notice": "Names read a little larger. The green dot is a touch lighter; the red one is identical.",
+      "risk": "Long project names get cut off slightly sooner.",
+      "themes": [
+        "meadow-mist"
+      ]
+    },
+    {
+      "id": "S-4",
+      "surface": "Project View",
+      "path": "Projects → Context tab → How context works",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-how-context",
+      "highlight": "auto",
+      "headline": "“How context works” snaps its in-between text sizes to the scale, and its hand-typed width and indent became scale values.",
+      "changed": "Text at 12.5px and 11.5px is now 12px. The 210px column width and 30px arrow indent are now written from the app’s spacing scale at exactly the same sizes.",
+      "measured": "2 sizes snapped; 210px and 30px kept exactly",
+      "notice": "The small text is marginally different in size. The column width and arrow indent should look exactly the same.",
+      "risk": "Timing notes that were near the width limit may wrap a little differently.",
+      "themes": [
+        "meadow-mist"
+      ]
+    },
+    {
+      "id": "S-5",
+      "surface": "Project View",
+      "path": "Projects → Context tab",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-context-tab",
+      "highlight": {
+        "box": [
+          22.5,
+          12.64,
+          55,
+          74.71
+        ]
+      },
+      "headline": "On the Context tab, file names are one size larger and the smaller text snaps to 12px.",
+      "changed": "File names went from 13.5px to 14px; descriptions from 11.5px to 12px; the “About context” paragraph from 12.5px to 12px, as you picked.",
+      "measured": "3 sizes snapped",
+      "notice": "Names read a little bigger; the explanation paragraph a hair smaller.",
+      "risk": "Long file names get cut off slightly sooner."
+    },
+    {
+      "id": "S-6",
+      "surface": "Project View",
+      "path": "Projects → Files tab",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-files-tab",
+      "highlight": {
+        "box": [
+          1.97,
+          68.33,
+          97.27,
+          11.33
+        ]
+      },
+      "headline": "The small folder labels under each file card are one size smaller.",
+      "changed": "The labels went from 10.5px to 10px, as you picked. The filter popup’s title also snapped from 12.5px to 12px.",
+      "measured": "10.5px → 10px",
+      "notice": "The labels read slightly smaller and quieter.",
+      "risk": "10px is at the edge of comfortable reading."
+    },
+    {
+      "id": "S-7",
+      "surface": "Model picker",
+      "path": "The model name in the status bar → Fast mode row",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-fast-mode",
+      "highlight": {
+        "box": [
+          48.17,
+          45.77,
+          3.67,
+          8.46
+        ]
+      },
+      "headline": "The Fast mode lightning icon is now the app’s warning amber instead of yellow.",
+      "changed": "The icon used a stock yellow that no theme controls; it now uses the app’s amber, the closest match the checker found.",
+      "measured": "1 icon",
+      "notice": "The bolt looks orange rather than yellow.",
+      "risk": "Amber means “warning” elsewhere in the app, so the bolt may read as one."
+    },
+    {
+      "id": "S-8",
+      "surface": "First run",
+      "path": "First launch → the sign-in step",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-signin",
+      "highlight": {
+        "box": [
+          22.09,
+          11.17,
+          55.82,
+          77.66
+        ]
+      },
+      "headline": "The five sign-in buttons now use one shared extra-large button size. They should look exactly the same.",
+      "changed": "Each button set its own padding, pill shape, boldness and text size by hand. One shared size now does it for all five, and any future big button can reuse it.",
+      "measured": "25 hand-set settings removed across 5 buttons",
+      "notice": "Nothing should look different. Anything that moved would be a mistake."
+    },
+    {
+      "id": "S-9",
+      "surface": "Chat",
+      "path": "Attach a file in the message box → the × on the attachment",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "With the fixes"
+      },
+      "crop": "dcf-attachment",
+      "highlight": {
+        "box": [
+          19.17,
+          45.38,
+          26.67,
+          9.23
+        ]
+      },
+      "headline": "The × on an attached file now uses a shared small round button style.",
+      "changed": "It was a plain button restyled by hand, and its old code named two text colors at once. A shared round style with an outline now does the same job, with one text color.",
+      "measured": "16px circle, unchanged in size",
+      "notice": "Same size and place. The × itself may be a shade darker or lighter. On touch screens its tap area stays enlarged.",
+      "themes": [
+        "meadow-mist"
+      ]
+    }
+  ]
+}

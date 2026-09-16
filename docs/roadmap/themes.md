@@ -2,12 +2,6 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
-- [ ] The app carries a copy of Golden Sunbreak that nothing can load (2026-09-06): a whole
-      theme folder sits in the app with no code path to it — installs come from the registry
-      instead. Harmless to users, but it is the copy a future session would read and believe.
-      Cleanup candidate, not a bug
-      `themes-screen` `desktop` `confirmed` `checked 2026-09-06`
-
 - [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
       Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and
       friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31

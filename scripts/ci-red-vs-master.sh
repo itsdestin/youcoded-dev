@@ -21,8 +21,8 @@ cd "$repo" || exit 2
 
 # failing test names in a run's failed-job logs: vitest's "×" rows and node:test's "not ok".
 # gh prints colour codes as the literal two characters ^[ not an ESC byte, so both are stripped.
-failing_tests() { # $1 = run id
-  gh run view "$1" --log-failed 2>/dev/null \
+failing_tests() { # $1 = run id, $2 = job id (optional: one job's log instead of the whole run's)
+  gh run view "$1" ${2:+--job "$2"} --log-failed 2>/dev/null \
     | sed -E 's/(\x1b|\^\[)\[[0-9;]*m//g' \
     | grep -E '(×|not ok [0-9]+ -) ' \
     | sed -E 's/.*(×|not ok [0-9]+ -) *//; s/ +[0-9]+ms$//' \
@@ -33,12 +33,16 @@ new=0; compared=0
 while IFS=$'\t' read -r name state _ url; do
   [ "$state" = "fail" ] || continue
   run="${url##*/actions/runs/}"; run="${run%%/*}"
+  # The JOB's log, not the run's: a run holds every OS leg, and reading the whole run
+  # credited Windows' failures to the ubuntu check too (2026-09-16, youcoded#483 — a
+  # Windows-only test was reported "NEW" on both legs).
+  job="${url##*/job/}"; [ "$job" = "$url" ] && job=""
   wf=$(gh run view "$run" --json workflowName -q .workflowName)
   # the last FIVE completed master runs, not one: an intermittent failure (Chrome not opening
   # its debugging port on the runner, 2026-09-10) hits one master run in three, so a single
   # comparison calls it "new" two times out of three. In-progress runs have no failed log yet.
   masters=$(gh run list --branch master --workflow "$wf" --status completed --limit 5 --json databaseId -q '.[].databaseId')
-  prfail=$(failing_tests "$run"); mfail=""
+  prfail=$(failing_tests "$run" "$job"); mfail=""
   for m in $masters; do mfail+=$(failing_tests "$m" | sed "s/$/\t(master run $m)/")$'\n'; done
   echo "== $name  (workflow: $wf; compared with master runs: $(echo $masters | tr '\n' ' '))"
   if [ -z "$prfail" ]; then

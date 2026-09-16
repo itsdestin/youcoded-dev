@@ -41,6 +41,22 @@ def write_atomic(path, obj):
     os.replace(tmp, path)
 
 
+def dropped_answers(apath, incoming):
+    """Step ids whose saved answer the incoming state would erase — the reason a write is refused.
+    A step counts as answered when its entry is non-empty; an empty file, a missing file, or a
+    file for a different deck never blocks anything."""
+    try:
+        with open(apath) as f:
+            saved = json.load(f)
+    except (OSError, ValueError):
+        return []
+    if not isinstance(saved, dict) or saved.get('deck') != (incoming or {}).get('deck'):
+        return []
+    have = {k for k, v in (saved.get('answers') or {}).items() if v}
+    keep = {k for k, v in ((incoming or {}).get('answers') or {}).items() if v}
+    return sorted(have - keep)
+
+
 def summary(spec, state):
     """One line per step, ledger id first, in spec order (spec §4.5)."""
     counts = {'yes': 0, 'no': 0, 'other': 0, 'pick': 0, 'picks': 0, 'wrote': 0, 'skip': 0}
@@ -147,6 +163,17 @@ def make_server(spec, port, on_submit):
                 # WHY: a non-JSON body must get a reply, not a dropped connection —
                 # json.loads raising unhandled here leaves the client hanging.
                 return self._json(400, {'error': 'body is not JSON'})
+            if self.path in ('/answers', '/submit'):
+                # WHY refuse rather than overwrite (2026-09-16, dev-workspace.md → rigs): a deck
+                # page left open across a server restart posts ITS state, which can be older
+                # than the file — the exact accident that erased a finished set of Destin's site
+                # edits in site-copy-editor.py on 2026-09-10. The deck is the surface he answers
+                # every UI review on, so a stale page here loses review answers. A write may add
+                # or change answers; it may never make a saved answer disappear.
+                dropped = dropped_answers(apath, state)
+                if dropped:
+                    return self._json(409, {'error': 'refused: this page would drop the saved answers for '
+                                            + ', '.join(dropped) + ' — reload the page to pick up what is on disk'})
             if self.path == '/answers':
                 write_atomic(apath, state)
                 return self._json(200, {'ok': True})

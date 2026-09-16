@@ -84,6 +84,8 @@ const ATTACH = process.env.ATTACH_PORT ? Number(process.env.ATTACH_PORT) : 0;
 const PORT = ATTACH || CDP_PORT;
 const W = plan.width ?? 1440, H = plan.height ?? 900;
 const SAME_THRESHOLD = plan.sameThreshold ?? 0.006; // RMSE (0..1) below which two shots count as identical
+// Class collector (see where it runs, below): page-side source for a Set of class names, or null.
+const COLLECT = process.env.UI_REVIEW_COLLECT ? `new Set(${JSON.stringify(JSON.parse(readFileSync(process.env.UI_REVIEW_COLLECT, 'utf8')))})` : null;
 mkdirSync(outDir, { recursive: true });
 
 const profile = mkdtempSync(join(tmpdir(), 'ui-review-'));
@@ -242,6 +244,27 @@ for (const theme of THEMES) {
           entry.measures[key] = await sess.evaluate(`(() => { const el = ${expr}; if (!el) return null; const r = el.getBoundingClientRect(); return { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) }; })()`).catch(() => null);
           if (!entry.measures[key]) entry.reasons.push(`measure missing: ${key}`);
         }
+      }
+      // Optional class collector: UI_REVIEW_COLLECT=<json file with a list of class names>
+      // records every VISIBLE element carrying one of those classes: its full class list
+      // and where it sits in this shot.
+      // WHY: the design check (`npm run lint:design`) reports one class on one source line.
+      // A single class like px-2 is everywhere, so a review deck matches a warning to its
+      // element by the whole class combination on that line, then boxes that element —
+      // no hand-written `measure` line per warning. Never fails a shot.
+      if (COLLECT) {
+        entry.collectedEls = await sess.evaluate(`(() => {
+          const want = ${COLLECT}; const els = [];
+          const vw = innerWidth, vh = innerHeight;
+          for (const el of document.querySelectorAll('[class]')) {
+            const cl = el.classList; if (!cl || !cl.length || els.length >= 2000) continue;
+            if (![...cl].some((c) => want.has(c))) continue;
+            const b = el.getBoundingClientRect(); const cs = getComputedStyle(el);
+            if (b.width < 1 || b.height < 1 || b.bottom <= 0 || b.right <= 0 || b.top >= vh || b.left >= vw || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+            els.push({ c: el.getAttribute('class'), r: { x: Math.round(b.left), y: Math.round(b.top), w: Math.round(b.width), h: Math.round(b.height) } });
+          }
+          return els;
+        })()`).catch(() => null);
       }
       // --- verification ---
       entry.reasons.push(...realFails);

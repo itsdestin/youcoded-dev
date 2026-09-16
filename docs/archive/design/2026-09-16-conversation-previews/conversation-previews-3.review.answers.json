@@ -1,0 +1,20 @@
+{
+ "deck": "conversation-previews-review-3",
+ "started": "2026-09-16T10:16:10.087Z",
+ "submitted": "2026-09-16T10:17:23Z",
+ "cur": 1,
+ "answers": {
+  "R3-1": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3-2": {
+   "v": "yes",
+   "seconds": 49,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

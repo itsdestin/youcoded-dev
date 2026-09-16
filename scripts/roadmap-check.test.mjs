@@ -521,18 +521,59 @@ test('run: broken claim is listed with the sha it was checked against, exit 0, n
   assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `confirmed`/);
 });
 
-test('run: --fix flips the broken claim, rewrites the index, and says what it did', () => {
+// 2026-09-16: --fix rewrites the INDEX only. Flipping a broken-claim item used to ride the
+// same flag, and since every session runs --fix before committing, a session filing one item
+// shipped another session's silent downgrade (dev-workspace.md, three times in one week).
+test('run: --fix rewrites the index but leaves a broken-claim item alone, and says how to flip it', () => {
   const root = withFixture(r => {
     edit(r, 'youcoded/desktop/src/main/sync-service.ts', "['auth', 'status']", "['auth', 'login']");
     edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 3 | 0 | 0 | 1 |');
   });
   const r = run({ root, fix: true, today: '2026-09-01' });
   assert.equal(r.exitCode, 0);
+  assert.doesNotMatch(r.text, /flipped to needs-verify/);
+  assert.match(r.text, /--fix-claims/);
+  assert.match(r.text, /index rewritten/);
+  assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `confirmed` `checked 2026-08-20`/);   // untouched
+  assert.match(read(root, 'ROADMAP.md'), /\| 3 \| 1 \| 0 \| 1 \|/);   // counts match the files as they ARE
+  assert.deepEqual(diffIndex(loadRoadmap(root)), []);
+});
+
+test('run: --fix-claims flips the broken claim, rewrites the index, and says what it did', () => {
+  const root = withFixture(r => {
+    edit(r, 'youcoded/desktop/src/main/sync-service.ts', "['auth', 'status']", "['auth', 'login']");
+    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 3 | 0 | 0 | 1 |');
+  });
+  const r = run({ root, fix: true, fixClaims: true, today: '2026-09-01' });
+  assert.equal(r.exitCode, 0);
   assert.match(r.text, /flipped to needs-verify: sync:4/);
   assert.match(r.text, /index rewritten/);
   assert.match(read(root, 'docs/roadmap/sync.md'), /`desktop` `needs-verify` `checked 2026-08-20`/);
   assert.match(read(root, 'ROADMAP.md'), /\| 3 \| 2 \| 0 \| 1 \|/);   // needs-verify went 1 → 2 after the flip
   assert.deepEqual(diffIndex(loadRoadmap(root)), []);
+});
+
+import { defaultRoot } from './roadmap-check.mjs';
+test('defaultRoot: the git checkout you are standing in, when it holds a ROADMAP.md', () => {
+  // A worktree-shaped fixture: its own .git, its own ROADMAP.md, cwd four folders deep.
+  const root = withFixture(r => {
+    execFileSync('git', ['init', '-q', r]);
+    fs.mkdirSync(path.join(r, 'youcoded', 'desktop', 'src', 'main'), { recursive: true });
+  });
+  assert.equal(fs.realpathSync(defaultRoot(path.join(root, 'youcoded', 'desktop', 'src', 'main'))), fs.realpathSync(root));
+  // Outside any checkout the script's own workspace still answers.
+  assert.ok(fs.existsSync(path.join(defaultRoot(os.tmpdir()), 'ROADMAP.md')));
+});
+
+test('cli: --fix from inside a worktree writes THAT checkout and says so', () => {
+  const root = withFixture(r => {
+    execFileSync('git', ['init', '-q', r]);
+    edit(r, 'ROADMAP.md', '| 3 | 1 | 0 | 1 |', '| 4 | 1 | 0 | 1 |');
+  });
+  const r = spawnSync(process.execPath, [SCRIPT, '--fix', '--today', '2026-09-01'], { cwd: root, encoding: 'utf8' });
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, new RegExp(`writing under ${fs.realpathSync(root).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+  assert.match(read(root, 'ROADMAP.md'), /\| 3 \| 1 \| 0 \| 1 \|/);
 });
 
 test('run: index drift without --fix is a warning, exit 0', () => {

@@ -1,0 +1,34 @@
+{
+ "deck": "conversation-previews-review-2",
+ "started": "2026-09-16T09:57:56.141Z",
+ "submitted": "2026-09-16T09:59:22Z",
+ "cur": 3,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-3": {
+   "note": "can we also make the session artifact pane preview match this styling a bit more?",
+   "v": "yes",
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-4": {
+   "note": "just remove that line. we don't show it in the resume browser.",
+   "v": "other",
+   "seconds": 31,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
