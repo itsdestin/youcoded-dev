@@ -278,12 +278,13 @@ Filing test: reaching the app from another device — the protocol, the browser 
       from the computer's record instead of asked about. Big — file behind the cheaper items above.
       `remote` `confirmed` `checked 2026-09-11` `performance`
 
-- [ ] A YouCoded-runtime ("native") session started from a phone never starts, and a "No folder" one
-      opens in the home folder: the host's `session:create` calls `sessionManager.createSession`
-      only — no `nativeHost.create`/`resume`, no `resolveNoFolderCwd`, unlike the desktop's own
-      handler. Messages then fail as `not-live`. Belongs with the native-sessions-on-a-phone batch;
-      found 2026-09-11 while fixing the create flow.
-      `remote` `confirmed` `checked 2026-09-11`
+- [ ] A YouCoded-runtime ("native") session started from a phone never starts: the host's
+      `session:create` calls `sessionManager.createSession` only — no `nativeHost.create`/`resume`,
+      unlike the desktop's own handler — so messages then fail as `not-live`. Belongs with the
+      native-sessions-on-a-phone batch; found 2026-09-11 while fixing the create flow. (The
+      "No folder opens in the home folder" half was fixed 2026-09-16: the phone's create now
+      runs the desktop's No-folder rewrite)
+      `remote` `confirmed` `checked 2026-09-16`
 
 - [ ] Verify the merged remote-access security fixes on a real phone, and finish the Android
       device-token reuse. Two things wait for a real device: (1) confirm the WebSocket origin

@@ -71,6 +71,25 @@ from deck.serve import already_served, record, serve, wait_for_submit   # noqa: 
 from deck.spec import SpecError, apply_live_theme, load_spec, validate    # noqa: E402
 
 
+def shared_key_specs(spec):
+    """Other deck specs in this spec's folder that carry the same `key` (see main's WHY)."""
+    twins = []
+    try:
+        for name in sorted(os.listdir(spec['_base'])):
+            if not name.endswith('.json') or name == spec['_stem'] + '.json' or '.answers' in name:
+                continue
+            try:
+                with open(os.path.join(spec['_base'], name)) as f:
+                    other = json.load(f)
+            except (OSError, ValueError):
+                continue
+            if isinstance(other, dict) and 'steps' in other and other.get('key') == spec.get('key'):
+                twins.append(os.path.join(spec['_base'], name))
+    except OSError:
+        pass
+    return twins
+
+
 def build(spec):
     """Crop + resolve boxes + write the page. Returns 0, or 1 with the reasons on stderr and NO page written."""
     errors, warnings = validate(spec)
@@ -141,6 +160,14 @@ def main(argv):
             return 1
     try:
         spec = load_spec(a.spec)
+        # WHY warn here (2026-09-16, dev-workspace.md): two specs in one feature folder with the
+        # same `key` — rounds 2 and 3 of resume-filter-chips reused round 1's — only came to
+        # light hours later, when the contract check refused the later rounds' sources. The
+        # key names the answers file's `deck`, so a shared key means one round's answers can be
+        # read as another's. A warning at build time is the moment it is cheap to fix.
+        for twin in shared_key_specs(spec):
+            print(f'[deck] WARNING: {os.path.basename(twin)} in the same folder also has key "{spec["key"]}" — '
+                  'give each round its own key, or their answers will be read as each other\'s', file=sys.stderr)
         # WHY here and not in load_spec(): only the two commands that PAINT a page follow the
         # app's theme. contract-check and acceptance read the same spec and must see the order
         # its author wrote, or a row's meaning would depend on which theme Destin is using.

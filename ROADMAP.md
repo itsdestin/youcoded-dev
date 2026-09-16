@@ -59,15 +59,15 @@ Target: `v1.3`
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 37 | 8 | 1 | 4 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 36 | 15 | 1 | 5 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 23 | 8 | 2 | 2 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 23 | 6 | 0 | 9 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 22 | 6 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 12 | 1 | 4 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 21 | 7 | 3 | 6 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 18 | 6 | 3 | 6 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 4 | 2 | 6 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 13 | 6 | 0 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 13 | 1 | 3 | 2 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
-| [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 6 | 0 | 4 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
+| [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,

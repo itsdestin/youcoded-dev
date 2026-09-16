@@ -25,20 +25,12 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       (that case is now blocked at upload); other effects of the race are unverified.
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
 
-- [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
-      unrelated event refreshes it (other phones update fine). Found 2026-08-22.
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
-
 - [ ] "Last synced" on the Backup & Sync self row is the NEWEST time across all your spaces, so
       one healthy space and two that cannot reach GitHub still read "just synced". Left as it
       was when the offline-ticking half shipped 2026-09-16; needs a call on newest vs oldest
       (or per-space rows). The rule itself lives in one helper (`self-sync-status.ts`) called
       from two places in main; the panel only picks which source to read
       `settings/sync` `desktop` `decision` `checked 2026-09-16`
-
-- [ ] A crash-damaged sync repo on a device that is also offline (or signed out) shows an auth/network error every
-      cycle and never repairs itself until it reconnects, though the repair needs no network. 2026-07-30.
-      `settings/sync` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-corrupt-offline-sync-repo-never-heals.md
 
 - [ ] With the SyncHub down, force-taking-over a session from a second install leaves the original holder running as
       if nothing happened — no interrupt, no "moved" pill, and the two installs keep rewriting each other's lease file.
@@ -60,15 +52,6 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       whose isolated userData may mean it never connects to the hub at all, so confirm in the
       installed app first
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-03` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
-
-- [ ] Open a conversation and close it again within a second or so, and the app can keep claiming
-      it "in use" — renewing its hold every 30 s until you restart — so your other device is told
-      it is busy. Found by code review of the freeze fixes, 2026-09-10, not seen live: `release()`
-      runs while `acquire()` in `conversations/lease-client.ts` is still waiting for the sync
-      hub's reply, and when the reply lands `acquire()` starts the renew heartbeat for a session
-      that was already released. Existed before the freeze fixes; the lease-client test for this
-      sequence checks only the lease file, never `isHeld()`
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] Star a model as a favourite on one device and the model picker on your other device opens empty, with no hint
       why, until you type. Favourites never leave the device they were set on. From youcoded#279, 2026-07-31.

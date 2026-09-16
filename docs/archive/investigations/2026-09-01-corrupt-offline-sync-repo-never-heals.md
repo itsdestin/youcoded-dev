@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: A corrupt sync repo that is also offline never self-heals, though the offline-capable repair tier exists
 ---

@@ -33,10 +33,6 @@ searched or resumed (chat-data).
       Fix the two together — the footer needs to learn a file's id can change under it
       `desktop` `confirmed` `checked 2026-09-10`
 
-- [ ] Git review: after amending or rebasing while "Show more" pages are open, the next "Show
-      more" can silently skip commits until the review is reopened
-      `files-panel` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-review-show-more-after-rewrite.md
-
 - [ ] Chat file chips: a path with no extension — `Dockerfile`, `Makefile`, `LICENSE` — still
       renders as dead grey text, because the detector requires a `.ext` even though every
       extension is now accepted (the 2026-09-05 fix that made `.log` `.sh` `.toml` clickable
