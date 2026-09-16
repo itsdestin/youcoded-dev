@@ -287,14 +287,26 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       argues against OS sandboxing as a cross-platform promise
       `desktop` `parked` `checked 2026-08-26` `security` → docs/active/investigations/2026-08-09-native-skip-permissions.md
 
+- [ ] The context chip keeps the OLD model's window after a model swap or a resume — swap a
+      1M model for a small local one and the chip can read "97% remaining" on a window the very
+      next message overflows; it only corrects once a turn finishes. The session-context panel's
+      "Context window" row and its small-window warning have the same lag
+      `status-bar` `desktop` `confirmed` `checked 2026-09-16`
+
+- [ ] Reopening a compacted conversation the next day can silently restore the whole
+      pre-compaction history — the saved checkpoint is rejected because the system prompt carries
+      today's date and a live git snapshot, so the conversation is rebuilt from the raw record
+      while the chip still shows the post-compaction figure
+      `desktop` `confirmed` `checked 2026-09-16`
+
 ## cost
 - [ ] The cost self-check stays silent on a mis-priced cheap model whenever the same session
       also ran a correctly-priced model for most of its turns — the warning never fires
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-cost-self-check-dilutes-across-model-swap.md
 
-- [ ] The session-cost chip reads low once a long session starts compacting — a step down at
-      every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
-      `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
+- [ ] A specialist that is stopped or hits an error reports zero spend — press Stop while a
+      helper is working, or let one fail after several turns, and its whole bill goes uncounted
+      `status-bar` `desktop` `confirmed` `checked 2026-09-16`
 
 - [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
       reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
