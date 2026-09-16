@@ -1,0 +1,49 @@
+{
+  "title": "Helper requests show up where you look",
+  "key": "helper-asks-review",
+  "out": "helper-asks.review.html",
+  "images": "images/helper-asks.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after-a"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "chat-bottom": [
+      "helper-asks",
+      "bottom",
+      "1280x200+0+590"
+    ],
+    "phone-bottom": [
+      "helper-asks-narrow",
+      "bottom",
+      "390x480+0+215"
+    ]
+  },
+  "steps": [
+    {
+      "id": "H-1",
+      "surface": "Chat",
+      "path": "A conversation where a helper is waiting for your OK \u2014 the bottom of the chat",
+      "crop": "chat-bottom",
+      "headline": "A helper's request now appears at the bottom of the chat, like the main assistant's.",
+      "changed": "A \"Wren the Whistling Worker wants to: \u2026\" card joins the main assistant's requests at the bottom, and the session's dot turns red for it.",
+      "notice": "No hunting for the helper's box further up. That box stays put; either place works.",
+      "risk": "Several helpers asking at once stack several cards."
+    },
+    {
+      "id": "H-2",
+      "surface": "Chat on a phone",
+      "path": "The same conversation on a phone connected to this computer",
+      "crop": "phone-bottom",
+      "headline": "The phone shows the same helper request card at the bottom.",
+      "changed": "The same card, at phone width.",
+      "notice": "You can answer a helper from your phone without opening its box.",
+      "risk": "A long helper name wraps onto two lines on a narrow screen."
+    }
+  ]
+}
