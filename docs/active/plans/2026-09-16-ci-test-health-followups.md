@@ -1,6 +1,8 @@
 ---
-status: active
+status: superseded
 ---
+> **Superseded 2026-09-16** by three executable plans in this folder: `2026-09-16-ci-followups-A-protect-and-races.md`, `…-B-source-grep-sweep.md`, `…-C-test-consolidation.md`, with their data in `2026-09-16-test-inventory.md` (regenerate with `node scripts/test-inventory.mjs`) and `2026-09-16-source-grep-classification.md`. Do them in that order. This outline stays only as the record of what Destin approved.
+
 # CI/test health — the work Destin approved on 2026-09-16, and how to do it
 
 Source: the answered deck `docs/active/design/2026-09-16-ci-test-health/` (answers file
