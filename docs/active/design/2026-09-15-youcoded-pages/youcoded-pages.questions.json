@@ -1,0 +1,142 @@
+{
+  "title": "YouCoded Pages — scope and behavior",
+  "key": "youcoded-pages-questions",
+  "stage": "ask",
+  "out": "youcoded-pages.questions.html",
+  "steps": [
+    {
+      "id": "P-start",
+      "page": "A home for your own mini-apps",
+      "intro": "Already requested: a permanent Pages icon between Settings and Projects; optional pinned page icons; pages that follow YouCoded's theme and UI rules; a built-in creator; live data, command buttons and custom assistant interfaces. These questions decide the boundaries, not whether those features belong."
+    },
+    {
+      "id": "Q-home",
+      "words": true,
+      "surface": "YouCoded Pages",
+      "path": "Top left → Pages",
+      "headline": "Should pages belong to you, to a project, or both?",
+      "today": "Your examples include personal calendars and assignments, plus dashboards built from a particular spreadsheet or project.",
+      "problem": "A personal calendar should not disappear when you change projects, but a project dashboard should not accidentally read a different project's files.",
+      "proposal": "Give every page a clear home. I suggest personal pages plus optional project pages, with their data connections staying attached to the original sources.",
+      "options": [
+        {"id": "both", "label": "Personal and project pages", "pros": ["Calendars remain available everywhere; project-specific pages stay with their work.", "A single Pages library can show both, with the project named."], "cons": ["Creating or moving a page needs a clear ownership choice."], "recommended": true},
+        {"id": "personal", "label": "All pages are personal", "pros": ["One library and no ownership choice when creating a page."], "cons": ["Project pages need separate organization and explicit source connections."]},
+        {"id": "project", "label": "All pages belong to projects", "pros": ["A page travels with the project it serves."], "cons": ["Personal calendars and task lists need a project of their own."]}
+      ]
+    },
+    {
+      "id": "Q-chat",
+      "words": true,
+      "surface": "Page creation and editing",
+      "path": "Pages → Create, or an existing page → Edit with assistant",
+      "headline": "Where should you talk to the assistant while creating or changing a page?",
+      "today": "You want to describe a page naturally, like asking for a spreadsheet visualization, and have a built-in creator produce it.",
+      "problem": "You need to see the result while giving feedback without losing the conversation or changing a working page prematurely.",
+      "proposal": "Use an ordinary saved conversation alongside the page preview. Changes stay in a draft until you choose to apply them; the previous working version stays recoverable.",
+      "options": [
+        {"id": "alongside", "label": "Conversation beside preview", "pros": ["Discuss and inspect the result together.", "Reuses a saved conversation rather than inventing a separate assistant history."], "cons": ["On a phone, the conversation and preview must take turns filling the screen."], "recommended": true},
+        {"id": "chat", "label": "Create in ordinary chat", "pros": ["Any existing conversation can create or revise a page.", "Less new editing UI to learn."], "cons": ["You switch between chat and the page to inspect changes."]},
+        {"id": "dedicated", "label": "Dedicated page builder", "pros": ["A focused place for layout, data connections and preview."], "cons": ["Another interface to learn, with history separate from regular conversations."]}
+      ]
+    },
+    {
+      "id": "Q-projects",
+      "words": true,
+      "surface": "Built-in and custom pages",
+      "path": "Pages library and the Projects icon",
+      "headline": "How customizable should the built-in Projects page become?",
+      "today": "You described Projects as a page in its own right, alongside pages users create and pin.",
+      "problem": "Treating Projects as a destination in the Pages library is different from letting an assistant rewrite the app's built-in project management screen.",
+      "proposal": "List Projects as a built-in page and keep its existing screen protected. Later, users could create alternative project dashboards using approved access to project information.",
+      "options": [
+        {"id": "protected", "label": "Keep built-in Projects protected", "pros": ["Projects fits the Pages navigation without risking the original screen.", "Custom project dashboards can coexist with the dependable built-in view."], "cons": ["Editing the built-in Projects layout itself is not part of the initial release."], "recommended": true},
+        {"id": "copy", "label": "Offer a customizable copy", "pros": ["Users can start from familiar project information and make their own version."], "cons": ["We need a supported set of project controls before the copy can match the built-in screen."]},
+        {"id": "replace", "label": "Allow replacing Projects", "pros": ["Users can make their preferred project page the default destination."], "cons": ["Needs a reliable restore-original path and more safeguards against broken navigation."]}
+      ]
+    },
+    {
+      "id": "P-running",
+      "page": "What a page can do while you use it",
+      "intro": "The proposed foundation is a native-looking page isolated from the app's private internals. YouCoded supplies shared controls and handles approved file, command, connection and assistant actions. Pages do not receive unrestricted access merely because they look native."
+    },
+    {
+      "id": "Q-background",
+      "words": true,
+      "surface": "Live data and page tasks",
+      "path": "A page → Refresh and background activity settings",
+      "headline": "When should a page keep updating after you leave it?",
+      "today": "You want dashboards and calendars that can update automatically using scripts, backends or connected services.",
+      "problem": "A hidden page could keep using your computer, sending data or spending model credits. A stopped page could instead show outdated information.",
+      "proposal": "Refresh when a page opens. Let the user separately enable background updates on that page, with visible activity, a stop control and limits for paid assistant tasks. Closing YouCoded ends local work in the initial version.",
+      "options": [
+        {"id": "opt-in", "label": "Optional background updates", "pros": ["Useful dashboards can stay fresh without giving every page permission to keep running.", "You can see and stop background work."], "cons": ["Local updates pause while the computer sleeps or YouCoded is closed."], "recommended": true},
+        {"id": "open-only", "label": "Only while viewing", "pros": ["Predictable resource use and simpler first release."], "cons": ["Calendars and task pages do not update while you are elsewhere."]},
+        {"id": "closed-too", "label": "Support closed-app updates too", "pros": ["Scheduled work can happen without opening YouCoded."], "cons": ["Requires a separate background service or hosted runner, plus its own setup and controls."]}
+      ]
+    },
+    {
+      "id": "Q-actions",
+      "words": true,
+      "surface": "Page actions and permissions",
+      "path": "A page → A command, data connection or assistant button",
+      "headline": "How should repeated page actions get permission?",
+      "today": "Your pages may read spreadsheets, run custom commands, contact calendar services or ask a specific model to perform a task.",
+      "problem": "Approving every refresh is tedious, but approving a whole page without limits could allow unexpected file changes, external messages or spending.",
+      "proposal": "Approve specific access and actions, not a blanket trust switch. A page can remember narrowly scoped permissions; broader access or changed actions ask again. Credentials stay outside page code.",
+      "options": [
+        {"id": "scoped", "label": "Remember specific permissions", "pros": ["Routine refreshes and known actions can run without repeated prompts.", "New access and broader actions still need approval."], "cons": ["Users need a readable permissions summary and a way to revoke access."], "recommended": true},
+        {"id": "each", "label": "Confirm each action", "pros": ["The user sees each action before it runs."], "cons": ["Frequent refreshes become intrusive; unattended updates cannot proceed without waiting."]}
+      ]
+    },
+    {
+      "id": "Q-device",
+      "words": true,
+      "surface": "Pages on desktop and phone",
+      "path": "Pages on another device",
+      "headline": "What should a phone be able to do in the first release?",
+      "today": "YouCoded serves desktop and Android users, and some proposed pages depend on a particular computer's files or scripts.",
+      "problem": "A page can fit a phone screen while still depending on work that only its desktop computer can perform.",
+      "proposal": "Design pages to fit every screen, but make the execution location explicit. My suggested first milestone runs on desktop and supports the paired remote view; independent Android execution gets its own milestone.",
+      "options": [
+        {"id": "desktop-remote", "label": "Desktop and paired remote", "pros": ["A phone can use the same page and desktop-backed actions while connected.", "Keeps the first build focused without ignoring small screens."], "cons": ["Independent Android use must wait; remote actions need the host computer online."], "recommended": true},
+        {"id": "all", "label": "Independent Android too", "pros": ["Phone users get pages without needing a desktop."], "cons": ["The first release must handle unavailable desktop scripts, different file access and mobile background limits."]},
+        {"id": "desktop", "label": "Desktop first only", "pros": ["Smallest initial platform scope."], "cons": ["No supported phone experience until a later milestone."]}
+      ]
+    },
+    {
+      "id": "P-release",
+      "page": "What proves the foundation is useful",
+      "intro": "The complete idea spans a Pages library, a creator, a shared UI kit, data and action services, assistant tasks, background work and distribution. We should design their boundaries together, then implement them in testable pieces."
+    },
+    {
+      "id": "Q-sharing",
+      "words": true,
+      "surface": "Installing and sharing pages",
+      "path": "Pages → Add a page",
+      "headline": "How should people share pages in the first release?",
+      "today": "The existing roadmap item includes downloading pages from the marketplace. Your current brief focuses on creating and using personal pages.",
+      "problem": "Sharing must separate a reusable page from its creator's private spreadsheet data, service credentials and permissions.",
+      "proposal": "Start with personal creation plus deliberate export and import of a reusable page package. Recipients connect their own data and grant their own permissions. Add public discovery and updates afterward.",
+      "options": [
+        {"id": "package", "label": "Export and import first", "pros": ["People can share useful pages without publishing them publicly.", "Exercises portable pages and clean separation from private data early."], "cons": ["No searchable marketplace or automatic page updates initially."], "recommended": true},
+        {"id": "marketplace", "label": "Marketplace at launch", "pros": ["People can discover and install pages without making one themselves."], "cons": ["Adds publishing, review, updates and malicious-page handling to the first release."]},
+        {"id": "personal", "label": "Personal creation only", "pros": ["Focuses the first release on building and using your own pages."], "cons": ["Sharing and portable installation are postponed."]}
+      ]
+    },
+    {
+      "id": "Q-proof",
+      "words": true,
+      "surface": "First end-to-end Pages examples",
+      "path": "Pages → Create and use a page",
+      "headline": "Which examples should the first build prove end to end?",
+      "today": "You named the analytics dashboard as something you intend to use through Pages, plus spreadsheet visualizations and model-specific assistant interfaces.",
+      "problem": "A good-looking static dashboard alone would not prove that pages can refresh data, run actions and embed assistant workflows.",
+      "proposal": "Use your analytics dashboard as the real-data example, and add a small spreadsheet-to-report page with a selected-model task. Calendar integrations can follow once the connection system works.",
+      "options": [
+        {"id": "dashboard-agent", "label": "Analytics and assistant report", "pros": ["Tests both live data and a model-specific task with results inside the page.", "Includes the analytics dashboard you want to use."], "cons": ["Calendar account linking and event editing remain later work."], "recommended": true},
+        {"id": "dashboard-calendar", "label": "Analytics and calendar", "pros": ["Tests a dashboard plus an everyday connected-service page."], "cons": ["Calendar account setup adds scope, while a separate example is still needed to prove embedded assistant tasks."]},
+        {"id": "all", "label": "All three examples", "pros": ["Tests dashboards, assistant tasks and calendar connections before launch."], "cons": ["Largest first milestone, especially if both Google and Apple calendars are required."]}
+      ]
+    }
+  ]
+}
