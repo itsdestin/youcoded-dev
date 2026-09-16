@@ -11,6 +11,13 @@ seen-on is always n/a here.
       All three re-ran green in one isolated run right after. Same family as the entries below —
       wall-clock waits under load; not re-checked on pristine master
       `n/a` `needs-verify` `checked 2026-09-16`
+- [ ] `tests/shell-registry.test.ts` fails on this machine in ISOLATION, not only under load —
+      one of its two "still-running marks" cases goes red on every run, alternating between
+      them (4 runs, 2026-09-16). Both assert on wall-clock milliseconds (60 ms / 140 ms marks),
+      which `test-suite-hygiene.md` forbids for exactly this reason; they shipped 2026-09-16
+      in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
+      bigger budget
+      `n/a` `confirmed` `checked 2026-09-16`
 - [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
       timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
       builds ran beside it; it passed three times alone right after and in the full verify before.

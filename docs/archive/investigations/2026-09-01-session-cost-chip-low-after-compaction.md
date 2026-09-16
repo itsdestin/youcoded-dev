@@ -1,11 +1,24 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: native-harness cost — the summarize (compaction) call's tokens are never counted, so the session-cost chip reads low once compaction starts, and the self-check cannot see it
 ---
 
 # The session-cost chip is systematically LOW once a session starts compacting
+
+> **Closed 2026-09-16.** Both halves shipped. The harness half had already landed by
+> 2026-09-10 — `generateSummary` now awaits `result.usage` raced against the same stop
+> promise the text consumption uses, so the "Mechanism" section below is stale from its
+> second paragraph on. What was still missing was the RENDERER half: the summarize call's
+> usage rode the `compact-summary` event and App.tsx read only the summary text, so the
+> tokens still reached no total. The event now also carries a priced `usage`, a
+> `NATIVE_HISTORY_REWRITTEN` action folds it into session totals (deduped on the event
+> uuid), and `pageEventToAction` replays it so a reopened conversation counts it too.
+> A specialist's own compactions were a second, separate leak — `runSpecialist` summed only
+> `turn-complete` — and now roll into its `subagent-usage` report.
+> Guards: `context-gauge-after-rewrite.test.ts`, `subagent-usage-event.test.ts` → "folds the
+> CHILD's own compaction spend".
 
 **History:** added 2026-08-27 (old ROADMAP.md L160). Re-verified against `origin/master` 2026-09-01.
 
