@@ -555,6 +555,16 @@ seen-on is always n/a here.
       conversation rather than folding it in
       `n/a` `confirmed` `checked 2026-09-13`
 
+- [ ] `fillMissingPackages` fetches a missing tool package but not what makes it runnable, so
+      `verify.sh` reports `types` and `lint` as FAIL on a correct change. On 2026-09-16 it fetched
+      `@typescript/native-preview` and `oxlint` into a new worktree; both then failed with
+      `tsgo: command not found` / `oxlint: command not found` (no `node_modules/.bin` links are
+      made), and calling their bin scripts directly died with `MODULE_NOT_FOUND` — the loop skips
+      every `optional` lock entry, which is where their per-platform native binaries live. The
+      same two FAILs showed on four verify runs in that session; the only workaround was
+      installing both into a scratch folder and running them from there (both passed)
+      `n/a` `confirmed` `checked 2026-09-16`
+
 - [ ] A fresh worktree came up missing a package its own lockfile names (`dompurify`), so the first
       full verify failed 41 test files at import. `workspace-start` already has the fix for this —
       `fillMissingPackages` — and it printed no note; run by hand against the same worktree straight
