@@ -1,0 +1,29 @@
+{
+  "title": "Settings \u2014 Assistant settings row wording, round 2",
+  "key": "settings-assistant-row-text-r2-review",
+  "out": "assistant-row-text-r2.review.html",
+  "images": "images/assistant-row-text-r2.review",
+  "runs": {
+    "before": "runs/round3",
+    "after": "runs/after"
+  },
+  "crops": {
+    "assistantrow": [
+      "settings-rows",
+      "settings-rows",
+      "320x62+0+120"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings \u2192 Assistant settings row",
+      "crop": "assistantrow",
+      "headline": "The Assistant settings row now reads \"Models, permissions, defaults\".",
+      "changed": "\"and more\" is gone, as you asked. Before, the line showed your default model, like \"Claude Code \u00b7 Sonnet\".",
+      "notice": "In Meadow Mist the whole line fits. The model picker on the panel's General page still shows which model new chats use.",
+      "risk": "In Light, Dark, Midnight and Cr\u00e8me, whose font is wider, the line is still cut to \"Models, permissions, defaul\u2026\", two letters short."
+    }
+  ]
+}
