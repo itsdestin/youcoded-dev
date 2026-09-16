@@ -11,6 +11,13 @@ seen-on is always n/a here.
       All three re-ran green in one isolated run right after. Same family as the entries below —
       wall-clock waits under load; not re-checked on pristine master
       `n/a` `needs-verify` `checked 2026-09-16`
+- [ ] `tests/shell-registry.test.ts` fails on this machine in ISOLATION, not only under load —
+      one of its two "still-running marks" cases goes red on every run, alternating between
+      them (4 runs, 2026-09-16). Both assert on wall-clock milliseconds (60 ms / 140 ms marks),
+      which `test-suite-hygiene.md` forbids for exactly this reason; they shipped 2026-09-16
+      in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
+      bigger budget
+      `n/a` `confirmed` `checked 2026-09-16`
 - [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
       timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
       builds ran beside it; it passed three times alone right after and in the full verify before.
@@ -77,9 +84,11 @@ seen-on is always n/a here.
       Kotlin and the remote shim, passed twice alone and once alone on master, green on the
       next full run (`expected [[50],[50]] to equal [[20],[20]]`, the Retry-persists test)
       `n/a` `needs-verify` `checked 2026-09-10`
-- [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
-      has been red on master for it for weeks: `native-specialists.md` (764 words) and
-      `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every
+- [ ] Three always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
+      has been red on master for it for weeks. The two originally named here
+      (`native-specialists.md`, `ipc-bridge.md`) have since come down; as of 2026-09-16 the
+      over-budget set is `react-renderer.md` (612), `worker-backend.md` (621) and
+      `status-bar-relevance.md` (622, down from 626 while gaining three invariants). Words in `.claude/rules/` are not free — they load into every
       session, so this is a standing tax on every conversation, and the red audit also
       hides any NEW drift behind noise a session learns to skim past. The ledger records
       native-specialists going over four separate times, each noticed and left because it
