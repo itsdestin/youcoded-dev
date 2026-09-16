@@ -267,7 +267,12 @@ const errorTotal = (r) =>
   + (r.errors?.workloadBoots ?? []).reduce((a, b) => a + b, 0)
   // Each terminal repeat is its own boot too (2026-09-10). Without this, a change that
   // starts logging errors while switching in terminal view would still read as KEEP.
-  + (r.errors?.terminalBoots ?? []).reduce((a, b) => a + b, 0);
+  + (r.errors?.terminalBoots ?? []).reduce((a, b) => a + b, 0)
+  // The projects and long-scrollback phases boot on their own as well (run.mjs writes
+  // both counters); they were the two left out, so a Projects-view or scrollback error
+  // storm could still read as KEEP (dev-workspace.md, found 2026-09-10; fixed 2026-09-16).
+  + (r.errors?.projectsBoot ?? 0)
+  + (r.errors?.scrollbackBoot ?? 0);
 
 /**
  * Decide KEEP or REJECT for one experiment.

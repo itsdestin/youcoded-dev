@@ -8,7 +8,11 @@ paths:
   - "**/desktop/tests/**/*.test.tsx"
   - "**/desktop/src/**/*.test.ts"
   - "**/desktop/src/**/*.test.tsx"
-last_verified: 2026-09-01
+  # Plans prescribe tests before any test file exists, and the 2026-09-10 freeze-fixes
+  # plan shipped five that could not fail ("A guard you did not break…", below). Loading
+  # this rule while a plan is WRITTEN is the only moment it can prevent that (2026-09-16).
+  - "**/docs/*/plans/**"
+last_verified: 2026-09-16
 verify:
   - path: youcoded/desktop/vitest.config.ts
     contains: "youcoded-vitest-home-"

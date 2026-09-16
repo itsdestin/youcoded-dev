@@ -176,7 +176,16 @@ export function subRepoRoot(root) {
 // The directory a workspace-relative path resolves against: sub-repo paths against the
 // clone location, everything else (docs/, .claude/, ROADMAP.md) against the checkout itself.
 export function baseFor(root, rel) {
-  return REPOS.includes(rel.split('/')[0]) ? subRepoRoot(root) : root;
+  const repo = rel.split('/')[0];
+  if (!REPOS.includes(repo)) return root;
+  // WHY per repo (2026-09-16): a session worktree carries the ONE repo it works on, at
+  // the commit its branch is about, while the shared checkout holding all five can be
+  // hundreds of commits stale. Resolving every repo path from the fuller copy reported
+  // 49 "missing" MAP paths and 10 broken anchors that all exist on master — noise in the
+  // one check whose banner says every failure is confirmed drift. A repo the worktree
+  // has is audited where it is; only the repos it lacks fall back.
+  if (fs.existsSync(path.join(root, repo, '.git'))) return root;
+  return subRepoRoot(root);
 }
 // Dirs swept for <!-- verify: --> doc anchors. docs/archive is excluded (dead docs
 // carry no live claims); node_modules is skipped by the walker.
@@ -308,13 +317,20 @@ export function harvestMapPaths(text) {
 }
 
 // Just enough glob for the rules' paths: frontmatter: ** crosses slashes, * doesn't.
+// WHY `**/` is "zero or more folders" (2026-09-16): it used to compile to `.*/`, which
+// needs at least one folder in front — so `**/docs/*/plans/**` could never match the
+// workspace's own top-level `docs/`, and the audit called any such glob "matching
+// nothing". That is how gitignore and Claude Code read `**/`, and it is what lets a
+// rule cover the workspace root and a worktree with one glob.
 export function globToRegex(glob) {
   let re = '';
   for (let i = 0; i < glob.length; i++) {
     const c = glob[i];
     if (c === '*') {
-      if (glob[i + 1] === '*') { re += '.*'; i++; }
-      else re += '[^/]*';
+      if (glob[i + 1] === '*') {
+        if (glob[i + 2] === '/') { re += '(?:.*/)?'; i += 2; }
+        else { re += '.*'; i++; }
+      } else re += '[^/]*';
     } else if ('.+?^${}()|[]\\'.includes(c)) re += '\\' + c;
     else re += c;
   }
@@ -805,6 +821,17 @@ function main() {
     const mapPaths = harvestMapPaths(fs.readFileSync(mapFile, 'utf8'));
     result.mapPaths.total = mapPaths.length;
     for (const p of mapPaths) {
+      // WHY skip a repo that is not on disk (2026-09-16): the claim checker already
+      // does (`repo X not on disk`), but MAP paths did not, so the first MAP row
+      // naming a file in youcoded-admin — the one PRIVATE repo, which workspace CI
+      // never clones — turned every CI run red with five "missing" files that exist
+      // upstream. A path in an absent repo is unverifiable, not drift; it is listed
+      // under `skipped` so the gap stays visible without failing the run.
+      const repo = p.split('/')[0];
+      if (REPOS.includes(repo) && !fs.existsSync(path.join(subRepoRoot(root), repo, '.git'))) {
+        (result.mapPaths.skipped ??= []).push(`${p} (repo ${repo} not on disk)`);
+        continue;
+      }
       if (!fs.existsSync(path.join(baseFor(root, p), p))) result.mapPaths.missing.push(p);
     }
   } else {
@@ -922,6 +949,7 @@ function printHuman(r, root = process.cwd()) {
   };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
+  warn('MAP paths in a repo that is not on disk (unverifiable here, not drift)', r.mapPaths.skipped || []);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
   // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.

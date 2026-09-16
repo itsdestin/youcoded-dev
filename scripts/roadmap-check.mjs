@@ -9,12 +9,20 @@
 //
 // Usage:
 //   node scripts/roadmap-check.mjs                     all four jobs; exit 1 only on structure errors
-//   node scripts/roadmap-check.mjs --fix               also flip broken-claim items and rewrite the index
+//   node scripts/roadmap-check.mjs --fix               also rewrite the index (ROADMAP.md) to match the area files
+//   node scripts/roadmap-check.mjs --fix-claims        also flip confirmed items whose claim anchor broke to needs-verify
 //   node scripts/roadmap-check.mjs --structure         job 1 only (the edit hook)
 //   node scripts/roadmap-check.mjs --vocab             print every closed token list, then exit
 //   node scripts/roadmap-check.mjs --quiet             print only structure errors (CI)
-//   node scripts/roadmap-check.mjs --root <dir>        workspace root (worktrees, tests)
+//   node scripts/roadmap-check.mjs --root <dir>        workspace root; defaults to the git checkout you are IN
 //   node scripts/roadmap-check.mjs --today YYYY-MM-DD  "today" for the 60-day rule (tests)
+//
+// WHY --fix no longer flips claims (2026-09-16): every session is told to run --fix before
+// committing, and the flip touched EVERY area file — so a session filing one item shipped
+// another session's silent downgrade (three times in a week), and reverting took three
+// steps because re-running --fix re-applied it. Flipping is now its own deliberate flag.
+// WHY the root follows the working directory: the old default was the script's own
+// location, so run from a worktree it silently rewrote the SHARED checkout's files.
 //
 // Dormant when docs/roadmap/ does not exist: prints one line, exits 0. That is what let the
 // tool merge to master before the migration branch created the folder.
@@ -24,6 +32,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import { checkAnchor, currentShas, harvestDocAnchors, REPOS } from './audit-anchors.mjs';
 
 export const ROADMAP_DIR = 'docs/roadmap';
@@ -458,7 +467,7 @@ export function rewriteIndex(rm) {
 const where = e => `${e.area}:${e.line}`;
 const cut = (s, n = 90) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 
-export function run({ root, fix = false, quiet = false, structureOnly = false, today }) {
+export function run({ root, fix = false, fixClaims = false, quiet = false, structureOnly = false, today }) {
   let rm = loadRoadmap(root);
   if (!rm) return { exitCode: 0, text: `roadmap-check: ${ROADMAP_DIR}/ not found under ${root} — nothing to check (pre-migration)\n` };
   const out = [];
@@ -479,7 +488,7 @@ export function run({ root, fix = false, quiet = false, structureOnly = false, t
   // 2. claims
   const claims = checkClaims(rm);
   let flipped = [];
-  if (fix) {
+  if (fixClaims) {
     flipped = applyClaimFixes(rm, claims);
     if (flipped.length) rm = loadRoadmap(root);   // counts below must see the flips
   }
@@ -489,6 +498,7 @@ export function run({ root, fix = false, quiet = false, structureOnly = false, t
   say(`checked against: ${Object.entries(claims.shas).map(([k, v]) => `${k}=${v.slice(0, 8)}`).join(' ') || '(no git)'}`);
   for (const r of broken) say(`- ${where({ area: r.area, line: r.entry.line })} ${cut(r.entry.firstLine)} — ${r.reason} (${r.entry.link})`);
   if (flipped.length) say(`- flipped to needs-verify: ${flipped.map(where).join(', ')}`);
+  else if (broken.some(r => r.entry.status === 'confirmed')) say('- a confirmed item with a broken claim is only listed; `--fix-claims` flips it to needs-verify');
   for (const r of claims.results.filter(r => r.skipped)) say(`- skipped ${where({ area: r.area, line: r.entry.line })}: ${r.skipped}`);
   for (const w of claims.warnings) say(`- warning ${where(w)}: ${w.message}`);
 
@@ -534,12 +544,26 @@ function main() {
     return args[i + 1];
   };
   const rootArg = value('--root');
-  const root = rootArg ? path.resolve(rootArg) : path.resolve(fileURLToPath(new URL('..', import.meta.url)));
+  const root = rootArg ? path.resolve(rootArg) : defaultRoot();
   const today = value('--today') ?? new Date().toISOString().slice(0, 10);
   if (!isRealDate(today)) { console.error(`roadmap-check: --today must be YYYY-MM-DD, got "${today}"`); process.exit(1); }
-  const r = run({ root, fix: flag('--fix'), quiet: flag('--quiet'), structureOnly: flag('--structure'), today });
+  const fix = flag('--fix');
+  const fixClaims = flag('--fix-claims');
+  // A write names the checkout it lands in, so a run from the wrong directory is visible.
+  if (fix || fixClaims) process.stdout.write(`roadmap-check: writing under ${root}\n`);
+  const r = run({ root, fix, fixClaims, quiet: flag('--quiet'), structureOnly: flag('--structure'), today });
   process.stdout.write(r.text);
   process.exit(r.exitCode);
+}
+
+/** The checkout the caller is standing in — its git top-level when that holds a
+ *  ROADMAP.md — else the script's own workspace. See the header for why. */
+export function defaultRoot(cwd = process.cwd()) {
+  try {
+    const top = execFileSync('git', ['-C', cwd, 'rev-parse', '--show-toplevel'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    if (top && fs.existsSync(path.join(top, INDEX_FILE))) return top;
+  } catch { /* not in a git checkout — fall through */ }
+  return path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: native-harness cost — the session-level cost self-check sums across models, so a per-model pricing error is diluted below its threshold
 ---

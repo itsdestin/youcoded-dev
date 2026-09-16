@@ -192,6 +192,14 @@ test('error lines in a per-repeat terminal boot reject too (each terminal repeat
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.terminalBoots = [0, 0, 1];
   assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
 });
+test('error lines in the projects boot reject (was ignored until 2026-09-16)', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.errors.projectsBoot = 2;
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
+});
+test('error lines in the scrollback boot reject (was ignored until 2026-09-16)', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800; c.errors.scrollbackBoot = 1;
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
+});
 test('keeps a real win with no regressions', () => {
   const c = clone(); c.startup.median.sessionsListed = 850;
   const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: { welcome: { pass: true } } });

@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Phone-originated set-tag / set-note never refreshes the open desktop window
 ---

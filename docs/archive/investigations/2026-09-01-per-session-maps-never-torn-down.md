@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Six small per-session structures in the desktop main process are never torn down on session exit
 ---

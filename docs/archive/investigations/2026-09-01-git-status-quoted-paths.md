@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Git surface — a file whose name git C-quotes (quotes, backslashes, non-ASCII) reads as clean; `--numstat` misreads a literal " => " as a rename
 ---

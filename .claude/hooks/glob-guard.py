@@ -195,6 +195,52 @@ RG_CLUSTERED_R = re.compile(
 
 
 # ---------------------------------------------------------------------------
+# Guard 7: an unquoted `$VAR` where the shell was expected to word-split it.
+#
+# Claude Code's Bash tool runs zsh, and zsh does NOT split an unquoted parameter
+# expansion into words (no SH_WORD_SPLIT). `kill $PIDS` therefore sends one
+# argument — "123 456" — which kill rejects, `set -- $r` gives $1 the whole string,
+# and `for x in $LIST` loops exactly once. Every one of those reads like it
+# worked: the check loop reported the rig stopped, a reviewer was pointed at an
+# empty diff, and a pixel comparison printed "0 differing px" for six spots — all
+# 2026-09-10/11, three sessions, despite the note in ~/system/tools. Blocked
+# here because each failure is SILENT; the fix is one character.
+#
+# Left alone on purpose: `${=VAR}` and `$=VAR` (zsh's explicit split), `"$VAR"`
+# (quoting is a choice), `$(...)` (zsh DOES split command substitution), `$!`,
+# `$$`, `$1` (never lists), and anything inside `bash -c '…'` / `sh -c '…'`
+# (that body is run by a splitting shell).
+_VAR = r"(?<![\"'=])\$(?:\{(?!=)([A-Za-z_]\w*)\}|(?!=)([A-Za-z_]\w*))(?![\w\[])"
+VAR_KILL = re.compile(r"(?:^|[|&;(]\s*|\s)kill\s+(?:-\S+\s+)*" + _VAR)
+VAR_SET = re.compile(r"(?:^|[|&;(]\s*|\s)set\s+--\s+" + _VAR)
+VAR_FOR = re.compile(r"\bfor\s+\w+\s+in\s+" + _VAR + r"\s*(?:;|\n|$|\bdo\b)")
+_SPLITTING_SHELL = re.compile(r"(?:^|[|&;(]\s*|\s)(?:bash|sh|dash)\s+(?:-\S+\s+)*-l?c\s")
+
+
+def unsplit_var_offender(command: str):
+    """The offending text when a kill / set -- / for-in leans on zsh splitting an unquoted $VAR."""
+    body = strip_heredocs(command)
+    if _SPLITTING_SHELL.search(body):
+        return None   # `bash -c '…'`: the quoted body runs in a shell that splits
+    for pat in (VAR_KILL, VAR_SET, VAR_FOR):
+        m = pat.search(body)
+        if m:
+            return m.group(0).strip()
+    return None
+
+
+UNSPLIT_VAR_MESSAGE = (
+    "Blocked before it ran: this Bash tool runs zsh, and zsh does NOT split an unquoted "
+    "$VAR into words. `{frag}` hands the WHOLE value as one argument — `kill $PIDS` signals "
+    "nothing and reports success, `set -- $r` puts everything in $1, `for x in $L` loops "
+    "once — and every one of those looks like it worked (three sessions, 2026-09-10/11).\n"
+    "Write the split explicitly:  kill ${{=PIDS}}   set -- ${{=r}}   for x in ${{=L}}\n"
+    "or let a substitution do it (zsh splits those):  kill $(pgrep -f <name> | rg -v pgrep)\n"
+    "or run the line under a splitting shell:  bash -c 'kill $PIDS'"
+)
+
+
+# ---------------------------------------------------------------------------
 # Guard 6: `curl -s <url>/health && <go>` — succeeds on HTTP 503.
 #
 # curl's EXIT CODE says whether the REQUEST completed, not whether the server
@@ -437,6 +483,14 @@ def main() -> int:
     try:
         if curl_readiness_offender(command):
             print(CURL_READY_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
+
+    try:
+        frag = unsplit_var_offender(command)
+        if frag:
+            print(UNSPLIT_VAR_MESSAGE.format(frag=frag), file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook

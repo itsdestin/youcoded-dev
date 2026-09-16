@@ -31,9 +31,8 @@ verify:
 
 ## A chip with no value renders nothing — never `--`, never a fabricated `0`
 **Invariant:** a native zero collapses to `null` upstream (nothing measured yet → hide); a
-Claude Code statusline zero RENDERS (a cold cache genuinely reads 0). Deliberate, with WHY
-comments at all three gates. · why: `--` and `$0.00` are claims; shipped twice as a defect,
-once fabricating zeros and once hiding real ones · guard:
+Claude Code statusline zero RENDERS (a cold cache genuinely reads 0). · why: `--` and
+`$0.00` are claims; shipped twice as a defect · guard:
 `statusbar-session-relevance.test.tsx`.
 
 ## The menu gate is the CHIP'S OWN render condition
@@ -76,7 +75,7 @@ reads the last COMPLETED turn · guard: `native-context-occupancy.test.ts`,
 ## turn-complete is NOT the only thing that spends tokens
 **Invariant:** the summarize call, an abandoned turn (whole steps only), a specialist's own
 compactions, and `subagent-usage` on page replay all reach `addTurnUsage` — each deduped on
-its event uuid, since it is not idempotent and all of them re-deliver. · why: four silent
+its event uuid (all of them re-deliver). · why: four silent
 undercounts · guard: `abandoned-turn-usage.test.ts`, `context-gauge-after-rewrite.test.ts`,
 `subagent-usage-event.test.ts`.
 
@@ -84,7 +83,7 @@ undercounts · guard: `abandoned-turn-usage.test.ts`, `context-gauge-after-rewri
 **Invariant:** `inputTokens` is the SDK's `inputTokens.total` (noCache + cacheRead +
 cacheWrite), so `costForUsage` subtracts both priced portions; an unpublished rate leaves
 that portion at the input rate. · why: reads alone were subtracted, billing a written token
-at the input rate AND the write premium — 2.25x, not 1.25x · guard:
+at the input rate AND the write premium · guard:
 `harness-pricing.test.ts`.
 
 ## Cost is checked against the provider, never asserted at the user

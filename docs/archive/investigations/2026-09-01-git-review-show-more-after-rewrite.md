@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Git surface — after an amend/rebase while "Show more" pages are open, the next page skips commits
 ---

@@ -165,7 +165,9 @@ const MUST_ALLOW = [
   // Command substitution and parameter expansion — not globs the shell resolves here.
   'echo $(ls)',
   'col=${pair%%:*}; echo $col',
-  'for f in ${files}; do echo $f; done',
+  // `for f in ${files}` used to sit here as "not a glob" — true, but guard 7 (2026-09-16)
+  // blocks it for a different reason: zsh will not split it. The explicit form stays allowed.
+  'for f in ${=files}; do echo $f; done',
   // Malformed input must fail open, never block.
   `grep -rn "unbalanced src`,
 ];
@@ -400,3 +402,53 @@ test('ALLOWS a health request whose result is not feeding a decision', () => {
 test('ALLOWS a chained curl to an endpoint that is not a readiness check', () => {
   assert.equal(run('curl -s http://127.0.0.1:5000/models && echo listed').blocked, false);
 });
+
+// ---------------------------------------------------------------------------
+// Guard 7 — an unquoted $VAR that only works if the shell word-splits it (zsh does not).
+// Observed 2026-09-10/11 across three sessions: `kill $PIDS` signalled nothing while a
+// check loop reported the rig stopped; `set -- $r` left a reviewer an empty diff;
+// `set -- $spot` printed "0 differing px" for six screenshot spots that were never compared.
+// ---------------------------------------------------------------------------
+
+for (const cmd of [
+  'kill $PIDS',
+  'kill -9 $PIDS',
+  'PIDS=$(pgrep node); kill $PIDS; echo stopped',
+  'kill ${PIDS}',
+  'set -- $r',
+  'r="1 2 3"; set -- $r; echo $1',
+  'for x in $LIST; do echo $x; done',
+  'for spot in $SPOTS\ndo\n  echo $spot\ndone',
+]) {
+  test(`blocks: ${cmd.replace(/\n/g, '⏎')}`, () => {
+    const { blocked, message } = run(cmd);
+    assert.equal(blocked, true, `should have blocked: ${cmd}`);
+    assert.match(message, /zsh does NOT split/);
+    assert.match(message, /\$\{=/, 'must name the explicit split');
+  });
+}
+
+for (const cmd of [
+  'kill ${=PIDS}',
+  'kill $=PIDS',
+  'set -- ${=r}',
+  'for x in ${=LIST}; do echo $x; done',
+  'kill "$PID"',
+  'kill $(pgrep -f vite | rg -v pgrep)',
+  'kill $!',
+  'kill $$',
+  'kill $1',
+  'kill 1234',
+  'kill -9 4321 5678',
+  'for f in *.ts; do echo $f; done',
+  'for i in $(seq 1 5); do echo $i; done',
+  "bash -c 'kill $PIDS'",
+  "bash -lc 'for x in $LIST; do echo $x; done'",
+  'echo $PIDS',
+  'set -e; set -- "$@"',
+  "cat <<'EOF'\nkill $PIDS is the trap\nEOF",
+]) {
+  test(`allows: ${cmd.replace(/\n/g, '⏎')}`, () => {
+    assert.equal(run(cmd).blocked, false, `should have allowed: ${cmd}`);
+  });
+}
