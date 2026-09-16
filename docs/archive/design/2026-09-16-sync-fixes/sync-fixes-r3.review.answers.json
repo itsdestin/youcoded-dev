@@ -1,0 +1,21 @@
+{
+ "deck": "sync-fixes-r3-review",
+ "started": "2026-09-16T09:54:52.724Z",
+ "submitted": "2026-09-16T09:55:30Z",
+ "cur": 1,
+ "answers": {
+  "R3-1": {
+   "v": "other",
+   "note": "move chevron to right side, style like session switcher dropdown chevron",
+   "seconds": 33,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
