@@ -94,8 +94,14 @@ seen-on is always n/a here.
       on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
       prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
       3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
-      but it fails whole runs, which is how a real failure next to it gets ignored
-      `n/a` `confirmed` `checked 2026-09-03`
+      but it fails whole runs, which is how a real failure next to it gets ignored.
+      2026-09-16: now THREE files, same `ENOTEMPTY … /.youcoded/sessions` on teardown —
+      `specialist-run.test.ts` on master's own Ubuntu leg (run 35158812538), `task-tool.test.ts`
+      on macOS and `native-session-host.test.ts` on Ubuntu (run 35160811595). With master
+      protected on the Linux check (Plan A) this can block a good PR. Same shape as the two
+      write-after-teardown races Plan A fixed (engine stopAll, lease destroy): find what still
+      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
