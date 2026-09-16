@@ -3,6 +3,14 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Three more files fail only under full-suite load and pass alone (2026-09-16, `verify.sh --full`,
+      11,550 tests, on a branch touching none of them): `tests/chatgpt-request-diagnostics.test.ts`
+      "evicts inactive fingerprints within 8 MiB…" (30 s timeout), `tests/local-engine-fields-rendered.test.tsx`
+      "§C2: the waiting line CLEARS once the change lands", and `tests/resume-browser-native-picker.test.tsx`
+      "pre-fills each previewed conversation with ITS last model" (a `waitFor` on a button role).
+      All three re-ran green in one isolated run right after. Same family as the entries below —
+      wall-clock waits under load; not re-checked on pristine master
+      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
       timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
       builds ran beside it; it passed three times alone right after and in the full verify before.
@@ -449,8 +457,16 @@ seen-on is always n/a here.
       backend now "rocm") while the live app was still running its Vulkan build — it would have
       come up on ROCm at its next restart, with nothing on screen tracing that back to a test
       session. This is the isolation run-dev.sh exists to provide. The file was left alone: what
-      his app runs on is his call, not a session's
-      `desktop` `confirmed` `checked 2026-09-06`
+      his app runs on is his call, not a session's.
+      Sized 2026-09-16 and NOT picked up, because it needs a decision first: `~/.youcoded/` is one
+      folder (`native-home.ts` is its single writer, plus hardcoded readers in `session-browser.ts`,
+      `prerequisite-installer.ts`, `chatsearch-index/`, `slug-repair*.ts`, `specialists/catalog.ts`),
+      and it holds the engine config AND the provider keys, native transcripts, MCP registry and
+      specialists. Pointing a dev instance at its own copy fixes the overwrite but also means a dev
+      window starts with no provider signed in and no past native chats, which every dev-window
+      test so far has relied on; the theme choice was not found in that folder at all (where it
+      lives is still unlocated). Destin decides which files a dev instance shares before any build
+      `desktop` `decision` `checked 2026-09-16`
 
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
