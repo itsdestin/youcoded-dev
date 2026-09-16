@@ -74,10 +74,10 @@ reads the last COMPLETED turn · guard: `native-context-occupancy.test.ts`,
 
 ## turn-complete is NOT the only thing that spends tokens
 **Invariant:** the summarize call, an abandoned turn (whole steps only), a specialist's own
-compactions, and `subagent-usage` on page replay all reach `addTurnUsage` — each deduped on
-its event uuid (all of them re-deliver). · why: four silent
-undercounts · guard: `abandoned-turn-usage.test.ts`, `context-gauge-after-rewrite.test.ts`,
-`subagent-usage-event.test.ts`.
+compactions, a STOPPED or failed specialist, and `subagent-usage` on page replay all reach
+`addTurnUsage` — each deduped on its event uuid (all re-deliver). · why: five
+silent undercounts · guard: `abandoned-turn-usage.test.ts`,
+`context-gauge-after-rewrite.test.ts`, `subagent-usage-event.test.ts`.
 
 ## Cached reads AND writes leave the prompt before their own rate applies
 **Invariant:** `inputTokens` is the SDK's `inputTokens.total` (noCache + cacheRead +
