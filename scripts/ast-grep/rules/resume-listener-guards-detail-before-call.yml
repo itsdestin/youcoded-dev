@@ -1,0 +1,51 @@
+id: resume-listener-guards-detail-before-call
+language: tsx
+severity: error
+message: >-
+  App.tsx's youcoded:resume-session listener must add/remove the event
+  listener, guard the CustomEvent detail for all three required fields BEFORE
+  calling handleResumeSession, pass that call's positional args exactly (arg 6,
+  launchInNewWindow, explicitly `undefined` — spec 2026-08-26-conversation-
+  preview-header-design.md A2, Destin: "not new 'window' just new tab in
+  session"), and register the listener AFTER handleResumeSession's own
+  declaration (TDZ: the listener closes over that `const`).
+note: |
+  Invariant source: tests/app-resume-session-listener.test.ts (retired by Plan B,
+  2026-09-16). Each `any:` branch negates one required piece; ast-grep reports
+  matches, so a "must exist / must be ordered this way" check is written as its
+  negation over the whole file (`kind: program`) — fires if ANY piece is wrong
+  or missing. `follows` (with `stopBy: end`) expresses the two ordering
+  constraints: the guard-clause-before-call branch matches the enclosing
+  `expression_statement`/call node against the specific if-guard sibling, and
+  the TDZ branch matches the enclosing `useEffect(...)` expression_statement
+  against the `const handleResumeSession = useCallback(...)` declaration.
+  LIMITATION carried from the original test: this is a source-shape guard, not
+  a live-mount test — it proves the listener is wired correctly, not that
+  clicking Resume in a running app ends in a new tab. App.tsx cannot be mounted
+  in a unit test (full renderer boot sequence); the CustomEvent's own payload is
+  proven separately by tests/session-drawer-preview-header.test.tsx.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/app-resume-session-listener.tsx"
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "window.addEventListener('youcoded:resume-session', $F)" } }
+    - not: { has: { stopBy: end, pattern: "window.removeEventListener('youcoded:resume-session', $F)" } }
+    - not:
+        has:
+          stopBy: end
+          pattern: "void handleResumeSession(d.claudeSessionId, d.projectSlug, d.projectPath, d.model, d.dangerous, undefined, d.provider, d.binding);"
+          follows:
+            pattern: "if (!d?.claudeSessionId || !d.projectSlug || !d.projectPath) return;"
+            stopBy: end
+    - not:
+        has:
+          stopBy: end
+          kind: expression_statement
+          has:
+            stopBy: end
+            pattern: "window.addEventListener('youcoded:resume-session', $F)"
+          follows:
+            pattern: "const handleResumeSession = useCallback($$$)"
+            stopBy: end
