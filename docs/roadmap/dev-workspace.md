@@ -24,21 +24,6 @@ seen-on is always n/a here.
       in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
-- [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
-      timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
-      builds ran beside it; it passed three times alone right after and in the full verify before.
-      Recurred 2026-09-15 during KWallet recovery verification: after earlier full-suite passes,
-      `ended` remained false at line 804 in the full suite and in isolation. The same isolated
-      command failed on untouched `origin/master` (`1e839c70`) in a separate worktree with its
-      own hardlinked dependencies. Failure predates the KWallet change; cause remains unverified,
-      so do not assume this occurrence is load-only.
-      2026-09-16: a DIFFERENT test in the same file is also red on master's Linux CI leg
-      (run 34964572047 at `e1f20a4b`, PR youcoded#479, and run 35082258110 at #480): "a file
-      replaced between mint and GET (different inode) answers 404" — `expected 200 to be 404` —
-      alongside the streaming-download timeout above and `shell-registry.test.ts` "a run still
-      going at each mark emits long-running once per mark". Linux and Windows are red on every
-      master run; macOS was green on 2026-09-16. Each merge has to prove its reds are not its own
-      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
       new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
       five times in isolation right after; the run's changes touched nothing it imports.
@@ -60,40 +45,6 @@ seen-on is always n/a here.
       Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
       is recognised, but the fix is a longer or retried launch in the perf-lab harness
       `n/a` `needs-verify` `checked 2026-09-10`
-- [ ] Desktop CI's Windows leg is red on master (seen 2026-09-10 on three runs in a row) on two
-      native-harness tests — "an unchanged attachment restores its bytes; a changed one
-      invalidates the whole checkpoint" and "publishes references to exact transcript content
-      and restores private metadata without duplicating transcript text" — while macOS and
-      Linux pass. Every merging session has to open the log to learn it is not theirs; two did
-      so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
-      broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
-      installer (a failed test step skips packaging) — the installer-icon session needed a
-      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch.
-      **Much bigger than two tests, and two root causes are now known (2026-09-11, run
-      34658554351 at master `f774891d`): 12 test files / 17 tests fail on Windows** while Linux
-      is fully green (10,871 local) and macOS failed only one unrelated flake
-      (`shell-registry.test.ts`, "expected '' to be 'hello\n'"). (1) `remote-password-always-required.test.ts`
-      builds its scan root as `new URL('..', import.meta.url).pathname`, which on Windows is
-      `/D:/a/…`; joining that yields `D:\D:\a\…` and ENOENT. `fileURLToPath` is the fix, and
-      `remote-phone-findings.test.ts` carries the same pattern. (2) the rest are Windows-only test
-      assumptions, not product bugs on their face: `installer-artifact-names.test.ts` reads
-      `electron-builder.yml` and gets `null` for every value, `managed-workspace-setup.test.ts`
-      compares `C:\Users\runneradmin\…` against the 8.3 short form `C:\Users\RUNNER~1\…`, and
-      `remote-paths.test.ts` expects POSIX separators. A 13th failure that run was
-      `release-manifest-roundtrip.test.ts`, caused by `generate-release-manifest.mjs` comparing
-      `file://` + `process.argv[1]`; fixed in `e82d38a1`. **The important part: no published beta's
-      Windows installer has been tested.** beta.78's Windows log reads `Run tests: skipped`, and
-      beta.80 (2026-09-11) was dispatched the same way to get an installer at all.
-      2026-09-16 (master run 35082258110 at youcoded#480): 16 tests in 11 files — `app-icons`
-      (five electron-builder.yml icon checks), `installer-artifact-names` (3), `remote-download`
-      (2), `accepted-history-store`, `chatsearch-transcript-reader` "containedTranscriptPath",
-      `create-session-feedback` (whole file), `folders-service` "add dedupes by resolved path",
-      `managed-workspace-setup`, `native-session-host-continuation`, `remote-phone-findings`
-      (whole file), `remote-password-always-required`. `remote-paths.test.ts` no longer fails;
-      macOS was fully green that day. The `import.meta.url` → `fileURLToPath` fix is still the
-      cheapest real win. `scripts/ci-red-vs-master.sh` reported the Windows names as "NEW" only
-      because it compared against week-old master Windows runs — read the log, not just the verdict
-      `n/a` `confirmed` `checked 2026-09-16` `regression`
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a
@@ -132,43 +83,6 @@ seen-on is always n/a here.
       was filed separately until 2026-09-16; the Retry-persists worry itself was closed on
       2026-09-16 as the test, not the product (shipped.md)
       `desktop` `confirmed` `checked 2026-09-16` `regression`
-- [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
-      still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
-      one-second `setInterval` and a previous session already lifted the timeout 3s -> 8s with a
-      comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
-      in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
-      a signal the card emits, so the test waits on the transition rather than on the clock. Not
-      done here because it is another feature's test and a bad rewrite is worse than a slow one
-      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
-
-- [ ] `engine-manager.test.ts` failed on the macOS and Windows CI legs from at least 2026-09-06
-      to 2026-09-07 — two `backendOptions` cases, "status() answers immediately without
-      backendOptions, then pushes them" and "an older install with no device list gets both
-      pushes, and ends up complete" — while Ubuntu and the local suite were green (confirmed
-      pre-existing at `ccbf4211`, run 34049785765; unchanged by youcoded#441). On 2026-09-16
-      macOS was green and the file is absent from the Windows failure list, so it may have
-      resolved itself or moved; needs a fresh CI read before it is closed or acted on
-      `n/a` `needs-verify` `checked 2026-09-16`
-
-- [ ] The macOS CI leg fails a DIFFERENT process-timing test on roughly half the runs, and each
-      failure withholds the entire beta: a red test step skips packaging, and the `sign` job
-      needs every build leg, so there is no macOS installer AND no signed manifest for any
-      platform. Cutting 1.3.0-beta.80 on 2026-09-11 took three re-runs and still had not
-      produced a Mac build. Each failure was a different case, all of them assertions about
-      output from a spawned process: `shell-registry.test.ts` "start: mints an sh- id, logs
-      from the first byte…" (`expected '' to be 'hello\n'`), then
-      `lease-client.test.ts` "lapsed renew whose re-acquire is rejected…" (`expected true to be
-      false`), then `shell-registry.test.ts` "an adopted run's seeded head is ANSI-stripped…"
-      (`expected 'BOLD head\n' to be 'BOLD head\ntail-part\n'`). The full local suite is green
-      (10,871 tests), both files pass locally in isolation (39 tests), `desktop-ci.yml` passed
-      macOS on the SAME commits (`e82d38a1`, `36858f72`), and it failed macOS on `09b284d6`,
-      which predates the merges under test — so timing, not logic. It is not only the Mac
-      either: on 2026-09-16 `shell-registry.test.ts` failed a fourth case on UBUNTU ("a run
-      still going at each mark emits long-running once per mark") while macOS was green. Fix
-      shape is the one `.claude/rules/test-suite-hygiene.md` prescribes — wait for the signal
-      rather than a deadline — applied to the spawned-process assertions in these two files
-      `n/a` `confirmed` `checked 2026-09-16` `regression`
-
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
       an Android manifest or a workspace file yields "tests: none", and the guard that
@@ -285,6 +199,13 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
+- [ ] Resuming a session with `workspace-start --session <key> youcoded` does not top up the
+      worktree's hardlinked `node_modules` when master has since added packages: after merging
+      origin/master on 2026-09-16 (which adopted `oxlint` and `tsgo`) `verify.sh` failed types,
+      knip and lint with "oxlint: command not found" and an old tsc, while the tests passed.
+      Creation fetches missing packages ("deps: … fetched 4 package(s)"); resume should too, or
+      say plainly that the deps are behind master's package.json
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
@@ -476,13 +397,6 @@ seen-on is always n/a here.
       failed to start"; the boot check cannot see it and the review sweep counts the error state
       as covered
       `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
-
-- [ ] `chatgpt-auth.test.ts` ("after the callback the poll starts…") failed on the Windows CI
-      runner and passed on a re-run of the same commit, with no code change — seen 2026-09-05 on
-      youcoded PR #430, not seen since (absent from the 2026-09-16 Windows failure list). A suite
-      that fails for reasons that are not yours trains sessions to wave real failures away, which
-      is the exact thing the 2026-08-28 flake sweep set out to end
-      `n/a` `needs-verify` `checked 2026-09-16`
 
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
