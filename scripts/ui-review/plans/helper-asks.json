@@ -1,0 +1,39 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+ "width": 1280,
+ "height": 900,
+ "shots": [
+  {
+   "name": "bottom",
+   "boot": 4500,
+   "sameAsBaseline": true,
+   "actions": [
+    {
+     "eval": "document.querySelector('[data-session-id=wb-11]').click()",
+     "settle": 1500
+    },
+    {
+     "eval": "(()=>{const s=[...document.querySelectorAll('*')].find(e=>e.scrollHeight>e.clientHeight+200&&e.clientHeight>300); if(s) s.scrollTop=s.scrollHeight;})()",
+     "settle": 900
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[data-tool-use-id=task-6]')].some(e=>e.getBoundingClientRect().height>0&&e.offsetParent)"
+  },
+  {
+   "name": "group",
+   "boot": 4500,
+   "sameAsBaseline": true,
+   "actions": [
+    {
+     "eval": "document.querySelector('[data-session-id=wb-11]').click()",
+     "settle": 1500
+    },
+    {
+     "eval": "[...document.querySelectorAll('[data-entry-key]')].find(x=>x.innerText.includes('Three specialists are working')).scrollIntoView({block:'center'})",
+     "settle": 900
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[data-entry-key]')].some(x=>x.innerText.includes('Three specialists are working')&&x.getBoundingClientRect().top>0&&x.getBoundingClientRect().top<900)"
+  }
+ ]
+}

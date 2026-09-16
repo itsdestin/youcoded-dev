@@ -16,7 +16,7 @@ verify:
   - path: youcoded/desktop/src/main/harness/specialists/delegation-ledger.ts
     contains: "A CLAIM IS A LEASE"
   - path: youcoded/desktop/src/main/harness/specialists/child-ask-router.ts
-    contains: "ASK_REDIRECT_MESSAGE"
+    contains: "No timeout options"
   - path: youcoded/desktop/src/main/harness/specialists/delegation-ledger.ts
     contains: "private async mutate"
   - path: youcoded/desktop/src/main/harness/specialists/catalog.ts
@@ -53,12 +53,12 @@ Sibling rule: `native-permissions.md` (the permission-store quad/v2 half of 1b).
 - **CC `.claude/agents/*.md` mapping (spec §3.2) lives in `definition-files.ts`'s `loadClaudeCodeDefinition`** — Task/Agent stripped, omitted `tools:` → read-only, unmappable → warning, never silent.
 - **Hire subject = grant width (D1/D2)**: built-in `${charter}:${workDir}`; `user` `${charter}:file:${id}@${fp}`; `project` `${charter}:${workDir}:file:${id}@${fp}` (`fp` = file sha256; edits re-ask). Auto-edit appends `{Task,'*:file:*',ask}`; a `task_id` resume is gated by the ledger's spawn-time `definitionFingerprint`. Guards: `task-tool`/`permission-engine`/`native-session-host`/`describe-rule` tests.
 - **One emitter feeds the run card** — a private `mutate()` wrapper around `home.mutateJson` in `delegation-ledger.ts`; no other call site touches `mutateJson`. Notes live only on `run.notes`; the card appends by index-id, never rebuilds.
-- **`PermissionHeld` fires on the hold flip and replays on reconnect via `pendingEventsFor`, paired with a `PermissionResolved` purge** — a reconnecting phone never sees live buttons on an answered ask.
+- **Open asks replay on reconnect via `pendingEventsFor`, paired with a `PermissionResolved` purge** — a reconnecting phone never sees live buttons on an answered ask.
 - **The Specialists popup is a management surface** — every button routes through `PermissionButtons` → `respondToPermission`, like a top-level ask.
 
 ## Specialists (plan 1b) — background, durability, steering — guards: `specialist-delegation-ledger`/`specialist-child-ask-router`/`native-session-host` (quiesce-cascade) tests
 - **Specialists have no per-child step cap.** `SPECIALIST_SPAWN_BUDGET_PER_SESSION = 30` remains the per-parent lifetime runaway-delegation backstop; concurrency/single-writer limits, doom-loop, permissions and lifecycle controls remain.
-- **A child's ask now DOES reach a real user — routed to the PARENT's card, held, then redirected.** 1a's synchronous `childAskPolicy()` refusal is GONE (deleted). `childAskRouter` re-registers the ask on the broker under the parent's sessionId — the existing card renders it like the parent's own — and waits up to `SPECIALIST_ASK_HOLD_MS` (5 min). Only if nobody answers does it resolve with `ASK_REDIRECT_MESSAGE` (a scripted "keep working on anything that doesn't depend on this" deny); the entry stays answerable, not canceled. A late answer steers the still-live child, or once it ended queues a delivery naming its `task_id`.
+- **A child's ask DOES reach a real user — routed to the PARENT's card, and it waits with NO timeout**, exactly like the parent's own asks (2026-09-16: the 5-minute hold, redirect, `PermissionHeld` and late-answer route were removed — never reintroduce them). `childAskRouter` re-registers the ask on the broker under the parent's sessionId (`raisedBy` = child) and calls `broker.ask()` with no options; it settles only on an answer or a cancel (parent or child teardown). Guard: `specialist-child-ask-router.test.ts` ("stays pending long past the old 5-minute mark").
 - **A per-parent delegation ledger is the durable record of every spawn** (one sidecar per parent, `sessions/<slug>/<parentId>.delegations.json`). A claim is a LEASE, not a delivery: `claimUndelivered` stamps owner/timestamp but leaves `delivered: false`; only `confirmDelivered`, called AFTER the injected turn ran, flips it. A lease held by a dead process (`isOwnerAlive` false) is reclaimable, so a crash between claim and injection re-delivers exactly once instead of losing it.
 - **Background completions, the per-turn status block and steers are history-only — never a new transcript event** (`runNotice`, `<specialists-status>`, `postSteer`'s `<steer>`); the frozen `TranscriptEventType` surface did not grow.
 - **Permission-store rule identity is a quad, and the store is versioned** (depth: `native-permissions.md`) — `specialist?: string` joined `(tool, pattern, action)` at every comparison site.
