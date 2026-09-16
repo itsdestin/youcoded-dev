@@ -1,6 +1,30 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
+- [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
+      them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
+      conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
+      `settings/sync` `all` `decision` `checked 2026-09-16`
+
+- [ ] The Personal sync history only grows: 1.7 GB on GitHub and 2.5 GB on the Z13 on 2026-09-16, with a
+      save every few seconds while a conversation is running. GitHub asks repositories to stay under about 1 GB
+      and warns hard near 5 GB, and nothing trims the history yet.
+      `settings/sync` `all` `decision` `checked 2026-09-16`
+
+- [ ] A device that falls far behind may never catch up on a slow connection: each upload step is cut off
+      after 5 minutes and retried from the start. Not seen yet — the 2026-09-16 repair sent 280 MB in 44 s.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
+- [ ] If a conversation is over the sync size limit on this device AND another device changes its older
+      copy, sync here may fail every cycle with "Sync merge could not complete". Reasoned in the 2026-09-16
+      code review, not reproduced.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
+- [ ] A dev copy of the app syncs the same Personal folder as the real app at the same time, so the two
+      race each other's sync steps. It let six over-limit files into the unpublished history on 2026-09-07
+      (that case is now blocked at upload); other effects of the race are unverified.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
 - [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
       unrelated event refreshes it (other phones update fine). Found 2026-08-22.
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md

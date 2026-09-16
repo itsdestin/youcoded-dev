@@ -1,0 +1,62 @@
+{
+ "deck": "design-check-fixes",
+ "started": "2026-09-16T10:45:32.623Z",
+ "submitted": "2026-09-16T10:46:24Z",
+ "cur": 8,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-5": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-6": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-8": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-9": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

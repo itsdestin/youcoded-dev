@@ -1,0 +1,37 @@
+{
+  "title": "Sync fixes, round 3 — the too-big warning, collapsed",
+  "key": "sync-fixes-r3-review",
+  "out": "sync-fixes-r3.review.html",
+  "images": "images/sync-fixes-r3.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["light", "midnight"],
+  "crops": {
+    "oversize-closed": ["sync-oversize-fix", "sync-oversize", "420x275+510+220"],
+    "oversize-open": ["sync-oversize-fix", "sync-oversize-open", "420x200+510+390"]
+  },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when a conversation is too big to sync",
+      "crop": "oversize-closed",
+      "headline": "The too-big warning is now one line: 2 conversations too big to sync.",
+      "changed": "The orange warning card starts closed, showing only a one-line header that says how many conversations are affected.",
+      "notice": "The sync box stays short; click the line to see more.",
+      "risk": "The reason and the names are hidden until you click."
+    },
+    {
+      "id": "R3-2",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → click the orange line",
+      "crop": "oversize-open",
+      "headline": "Opened, the card explains the 50 MB limit and lists the conversations by name.",
+      "changed": "Clicking the header opens the same card to the explanation and the conversation names.",
+      "notice": "Everything about the problem is in one place, inside the warning."
+    }
+  ]
+}

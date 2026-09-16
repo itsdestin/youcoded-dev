@@ -1,0 +1,14 @@
+{
+ "deck": "sync-fixes-r4-review",
+ "started": "2026-09-16T10:00:29.557Z",
+ "submitted": "2026-09-16T10:00:43Z",
+ "cur": 0,
+ "answers": {
+  "R4-1": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

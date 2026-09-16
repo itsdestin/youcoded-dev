@@ -1,0 +1,500 @@
+{
+  "_comment": [
+    "RECORD, recreated 2026-09-16. This deck was built and answered on the desktop PC (DestinsLinuxPC) on 2026-09-14/15; that work was never pushed and the session continued on the Z13. The spec and answers below are copied verbatim from the session transcript. The cropped pictures and built page stayed on the desktop, and the run folders it names no longer exist, so this spec does not rebuild.",
+    "Captures then: before = the lint branch at youcoded e14feca9; after = mechanical fixes with in-between sizes rounded down; today = rounded up. Crops and boxes were computed by matching each warning's class string to its element in the screenshot."
+  ],
+  "title": "Design check — the flagged spots on real screens",
+  "key": "design-check-in-context",
+  "out": "design-check.review.html",
+  "images": "images/design-check.review",
+  "runs": {
+    "before": "../../../../scratch/design-runs/before2",
+    "after": "../../../../scratch/design-runs/down",
+    "today": "../../../../scratch/design-runs/up"
+  },
+  "themes": [
+    "meadow-mist",
+    "light"
+  ],
+  "crops": {
+    "dc-sync-lights": [
+      "main",
+      "settings-backup-sync",
+      "600x260+420+375"
+    ],
+    "dc-context-banner": [
+      "overlays",
+      "native-session-stalled-and-permission",
+      "600x260+0+0"
+    ],
+    "dc-project-dots": [
+      "overlays",
+      "projects-switcher",
+      "600x260+676+164"
+    ],
+    "dc-fast-mode": [
+      "main",
+      "model-picker",
+      "600x260+250+473"
+    ],
+    "dc-project-rows": [
+      "overlays",
+      "projects-how-context-works",
+      "600x348+108+455"
+    ],
+    "dc-file-filter": [
+      "main",
+      "projects-file-filter",
+      "660x300+170+380"
+    ],
+    "dc-context-intro": [
+      "main",
+      "projects-context",
+      "1082x260+183+319"
+    ],
+    "dc-signin-buttons": [
+      "overlays",
+      "first-run-authenticate",
+      "600x268+420+478"
+    ],
+    "dc-attachment-remove": [
+      "overlays",
+      "composer-attachments",
+      "600x260+0+600"
+    ],
+    "dc-context-layers": [
+      "overlays",
+      "projects-how-context-works",
+      "684x398+473+236"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Settings",
+      "path": "Settings → Backup & Sync",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "Theme color"
+      },
+      "themes": [
+        "light"
+      ],
+      "crop": "dc-sync-lights",
+      "highlight": {
+        "box": [
+          19.33,
+          38.08,
+          61.33,
+          23.85
+        ]
+      },
+      "headline": "The green “connected” lights in Backup & Sync switch to the app’s own status green.",
+      "changed": "The status light, and the faint green tint behind a connected backup, used a stock green. They now use the same green as every other status light in the app.",
+      "measured": "5 color settings on 3 lines of code",
+      "notice": "The green is a little softer and matches the session and project sync dots.",
+      "risk": "Status colors stay the same in every theme, so nothing changes between themes."
+    },
+    {
+      "id": "C-2",
+      "surface": "Chat",
+      "path": "A session on a model with a small context window → the banner above the chat",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "Theme color"
+      },
+      "crop": "dc-context-banner",
+      "highlight": {
+        "box": [
+          5.83,
+          23.85,
+          2.33,
+          5.38
+        ]
+      },
+      "headline": "The amber “some rules were left out” banner switches to the app’s own warning amber.",
+      "changed": "The dot, border and tint used a stock amber. They now use the amber the app already uses for warnings.",
+      "measured": "4 color settings on 2 lines of code",
+      "notice": "Almost nothing — the two ambers are within a shade of each other."
+    },
+    {
+      "id": "C-3",
+      "surface": "Project View",
+      "path": "Projects → the project switcher",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "Theme color"
+      },
+      "crop": "dc-project-dots",
+      "highlight": {
+        "box": [
+          46.17,
+          32.69,
+          7.5,
+          34.23
+        ]
+      },
+      "headline": "The project sync dots use the app’s shared green and red instead of typed-in color codes.",
+      "changed": "The green “synced” and red “sync error” dots were written as raw color codes. They now use the app’s shared status green and red.",
+      "measured": "6 dots in 3 places; the red is identical, the green one shade lighter",
+      "notice": "The green dot is a touch lighter; the red one looks exactly the same."
+    },
+    {
+      "id": "C-4",
+      "surface": "Model picker",
+      "path": "The model name in the status bar → Fast mode row",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "labels": {
+        "before": "Today",
+        "after": "Theme color"
+      },
+      "crop": "dc-fast-mode",
+      "highlight": {
+        "box": [
+          48.17,
+          45.77,
+          3.67,
+          8.46
+        ]
+      },
+      "headline": "The Fast mode lightning icon turns from yellow to the app’s warning amber.",
+      "changed": "The icon used a stock yellow that no theme controls. The checker’s nearest match in the app’s colors is the warning amber.",
+      "measured": "1 icon",
+      "notice": "The bolt looks orange rather than yellow.",
+      "risk": "Amber means “warning” elsewhere in the app, so the bolt may read as a warning."
+    },
+    {
+      "id": "F-1",
+      "surface": "Project View",
+      "path": "Projects → the project list, context files and conversations",
+      "runs": [
+        "before",
+        "after",
+        "today"
+      ],
+      "labels": {
+        "before": "Today · 13.5px",
+        "after": "One size smaller · 13px",
+        "today": "One size larger · 14px"
+      },
+      "crop": "dc-project-rows",
+      "highlight": {
+        "box": [
+          22.5,
+          12.64,
+          55,
+          74.71
+        ]
+      },
+      "headline": "Project names, file names and conversation titles sit between two text sizes. Which size should they snap to?",
+      "measured": "13.5px today, in 4 places; their descriptions are 11.5px",
+      "options": [
+        {
+          "id": "smaller",
+          "label": "One size smaller",
+          "pros": [
+            "Lands on the 13px size Project View was signed off at",
+            "Long names fit a little better"
+          ],
+          "cons": [
+            "Names read very slightly smaller"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "larger",
+          "label": "One size larger",
+          "pros": [
+            "A little easier to read at a glance"
+          ],
+          "cons": [
+            "Long names get cut off a bit sooner",
+            "Moves away from the signed-off 13px"
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing moves"
+          ],
+          "cons": [
+            "Stays off the app’s size scale, so it keeps getting flagged"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-2",
+      "surface": "Project View",
+      "path": "Projects → Files tab",
+      "runs": [
+        "before",
+        "after",
+        "today"
+      ],
+      "labels": {
+        "before": "Today · 10.5px",
+        "after": "One size smaller · 10px",
+        "today": "One size larger · 11px"
+      },
+      "crop": "dc-file-filter",
+      "highlight": {
+        "box": [
+          1.97,
+          68.33,
+          97.27,
+          11.33
+        ]
+      },
+      "headline": "The small folder labels under each file card sit between two text sizes. Which way should they snap?",
+      "measured": "10.5px today, under every file card",
+      "options": [
+        {
+          "id": "smaller",
+          "label": "One size smaller",
+          "pros": [
+            "Keeps the labels quiet under the file names"
+          ],
+          "cons": [
+            "10px is at the edge of comfortable reading"
+          ]
+        },
+        {
+          "id": "larger",
+          "label": "One size larger",
+          "pros": [
+            "Labels become easier to read",
+            "Matches the 11px used for small labels elsewhere"
+          ],
+          "cons": [
+            "Labels gain a little visual weight"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing moves"
+          ],
+          "cons": [
+            "Stays off the app’s size scale"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-3",
+      "surface": "Project View",
+      "path": "Projects → Context tab → the “About context” banner",
+      "runs": [
+        "before",
+        "after",
+        "today"
+      ],
+      "labels": {
+        "before": "Today · 12.5px",
+        "after": "One size smaller · 12px",
+        "today": "One size larger · 13px"
+      },
+      "crop": "dc-context-intro",
+      "highlight": {
+        "box": [
+          4.07,
+          40.38,
+          91.87,
+          18.85
+        ]
+      },
+      "headline": "The “About context” explanation is 12.5px, halfway between two sizes. Which should it be?",
+      "measured": "1 paragraph, 12.5px today",
+      "options": [
+        {
+          "id": "smaller",
+          "label": "One size smaller",
+          "pros": [
+            "Banner takes a little less height"
+          ],
+          "cons": [
+            "A paragraph of explanation gets harder to read"
+          ]
+        },
+        {
+          "id": "larger",
+          "label": "One size larger",
+          "pros": [
+            "Matches the 13px of the rest of Project View",
+            "Easier to read a full paragraph"
+          ],
+          "cons": [
+            "The banner may wrap onto one more line"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing moves"
+          ],
+          "cons": [
+            "Stays off the app’s size scale"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-1",
+      "surface": "First run",
+      "path": "First launch → the sign-in step",
+      "runs": [
+        "before"
+      ],
+      "labels": {
+        "before": "Today"
+      },
+      "crop": "dc-signin-buttons",
+      "highlight": {
+        "box": [
+          18.83,
+          16.42,
+          62.33,
+          67.16
+        ]
+      },
+      "headline": "The three sign-in buttons are sized by hand instead of using one of the shared button sizes. Worth fixing?",
+      "measured": "15 hand-set overrides across 3 buttons",
+      "options": [
+        {
+          "id": "add-size",
+          "label": "Add a large size",
+          "pros": [
+            "These three look exactly the same afterwards",
+            "Any other big button can reuse the size"
+          ],
+          "cons": [
+            "One small decision: how big “large” is"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No change at all"
+          ],
+          "cons": [
+            "The next big button gets sized by hand again, slightly differently"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat",
+      "path": "Attach a file in the message box → the × on the attachment",
+      "runs": [
+        "before"
+      ],
+      "labels": {
+        "before": "Today"
+      },
+      "crop": "dc-attachment-remove",
+      "highlight": {
+        "box": [
+          19.17,
+          45.38,
+          26.67,
+          9.23
+        ]
+      },
+      "headline": "The × that removes an attachment is squeezed into a tiny circle by overriding the shared button. Worth fixing?",
+      "measured": "16px wide; touch guidance is about 44px",
+      "options": [
+        {
+          "id": "small-round",
+          "label": "Add a small round button",
+          "pros": [
+            "Can fix the too-small tap target on phones at the same time",
+            "Reusable for other tiny × buttons"
+          ],
+          "cons": [
+            "A bigger tap area may need a little more space around the chip"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Looks the same as today"
+          ],
+          "cons": [
+            "Still hard to tap on a phone"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "O-1",
+      "surface": "Project View",
+      "path": "Projects → Context tab → How context works",
+      "runs": [
+        "before"
+      ],
+      "labels": {
+        "before": "Today"
+      },
+      "crop": "dc-context-layers",
+      "highlight": {
+        "box": [
+          59.94,
+          11.06,
+          31.73,
+          77.89
+        ]
+      },
+      "headline": "In “How context works”, the timing notes on the right have a hand-typed width, and the arrows a hand-typed indent. Worth fixing?",
+      "measured": "210px width and 30px indent, typed in by hand",
+      "options": [
+        {
+          "id": "use-scale",
+          "label": "Use the spacing scale",
+          "pros": [
+            "Lines up with spacing used across the app"
+          ],
+          "cons": [
+            "Needs a quick look that the arrows still sit under the icons"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "No change"
+          ],
+          "cons": [
+            "Keeps getting flagged; drifts if the rows change"
+          ]
+        }
+      ]
+    }
+  ]
+}

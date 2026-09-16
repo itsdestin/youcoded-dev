@@ -1,0 +1,46 @@
+{
+  "title": "Sync fixes, round 4 — arrow on the right",
+  "key": "sync-fixes-r4-review",
+  "out": "sync-fixes-r4.review.html",
+  "images": "images/sync-fixes-r4.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "oversize-closed": [
+      "sync-oversize-fix",
+      "sync-oversize",
+      "420x120+510+390"
+    ],
+    "oversize-open": [
+      "sync-oversize-fix",
+      "sync-oversize-open",
+      "420x200+510+390"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R4-1",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when a conversation is too big to sync",
+      "crop": "oversize-closed",
+      "headline": "The warning’s arrow now sits on the right, shaped like the session switcher’s.",
+      "changed": "The small triangle on the left is gone; a thin down-arrow on the right edge opens the card.",
+      "notice": "The header reads cleanly from the left, and the arrow flips up when the card is open.",
+      "highlight": {
+        "box": [
+          5,
+          20,
+          90,
+          35
+        ]
+      }
+    }
+  ]
+}
