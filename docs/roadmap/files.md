@@ -33,19 +33,15 @@ searched or resumed (chat-data).
       Fix the two together — the footer needs to learn a file's id can change under it
       `desktop` `confirmed` `checked 2026-09-10`
 
-- [ ] Git view: a file whose name has a quote, a backslash or an accent (an accented filename
-      is the common case) shows no status at all, whatever was changed; a filename containing
-      a literal " => " displays as a rename
-      `files-panel` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-status-quoted-paths.md
-
 - [ ] Git review: after amending or rebasing while "Show more" pages are open, the next "Show
       more" can silently skip commits until the review is reopened
       `files-panel` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-git-review-show-more-after-rewrite.md
 
-- [ ] Chat file chips: paste `/tmp/x.log` and `/tmp/x.txt` — only the second becomes a chip;
-      `.log` `.sh` `.env` `.sql` `.toml` `Dockerfile` etc. render as dead grey text although the
-      files pane opens them fine (Destin saw 3 of 8 test files miss, 2026-08-25)
-      `chat` `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chat-file-chip-allowlist.md
+- [ ] Chat file chips: a path with no extension — `Dockerfile`, `Makefile`, `LICENSE` — still
+      renders as dead grey text, because the detector requires a `.ext` even though every
+      extension is now accepted (the 2026-09-05 fix that made `.log` `.sh` `.toml` clickable
+      left this shape out)
+      `chat` `all` `confirmed` `checked 2026-09-16`
 
 - [ ] A file chip in chat for a file that exists but lives outside the project folder (Claude
       named a document in Destin's notes repo) fails with "Couldn't open README.md — the file
@@ -120,19 +116,21 @@ searched or resumed (chat-data).
       one-file-at-a-time today; the most-missed thing after syntax highlighting
       `files-panel` `all` `parked` `checked 2026-07-20`
 
-- [ ] A real file tree in the files pane — what exists is a one-level-at-a-time folder browser; a
-      tree also needs a directory-listing channel that does not exist yet
-      `files-panel` `all` `parked` `checked 2026-07-20`
+- [ ] A real file tree in the files pane — what exists is a one-level-at-a-time folder browser.
+      The data is already there (the whole-folder listing the Project View's file list reads,
+      recursive with relative paths); what is missing is the tree itself
+      `files-panel` `all` `parked` `checked 2026-09-16`
 
 - [ ] Debugger / breakpoints — considered and declined (IDE table stakes, enormous effort, not this
       product's fight). On record only; revisit if the "open, personal Cowork" positioning is dropped
       `files-panel` `all` `parked` `checked 2026-07-20`
 
-- [ ] The app holds roughly a quarter of a million file watches on its own; a second instance runs the
-      machine out of watches and file watching fails with a "no space left" error that has nothing to
-      do with disk. Which watcher is the greedy one is unconfirmed (project watcher is the recursive
-      one). Worked around on Destin's machine only
-      `desktop` `needs-verify` `checked 2026-08-26` `performance`
+- [ ] The app held roughly a quarter of a million file watches on its own (measured 2026-08-26); a
+      second instance ran the machine out of watches and file watching failed with a "no space
+      left" error that has nothing to do with disk. The project watcher stopped walking nested
+      repos and worktrees on 2026-09-10 (9,583 directories under this workspace alone), so the
+      count needs re-measuring before anything else is done. Worked around on Destin's machine only
+      `desktop` `needs-verify` `checked 2026-09-16` `performance`
 
 - [ ] Spreadsheets in the files pane are look-only: an `.xlsx` or `.csv` opens as a grid you can
       click around, but no cell can be typed into, and "Edit" on a `.csv` drops you into the raw

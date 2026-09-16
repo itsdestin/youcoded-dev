@@ -59,16 +59,14 @@ chat-data).
       (`CLAUDE_CODE_FORK_SUBAGENT`)
       `settings/development` `desktop` `parked` `checked 2026-04-21`
 
-- [ ] Chat view hangs on "Initializing session..." forever when Claude Code is waiting on its
+- [ ] Chat view hangs on "Initializing session..." when Claude Code is waiting on its
       trust-folder prompt — terminal view shows the prompt and answers fine, chat view never
-      surfaces it and never times out (Destin, 2026-09-03, screenshot on file: "Accessing
-      workspace: /home/destin ... Yes, I trust this folder"). The parser markers DO match that
-      wording (`ink-select-parser.ts` — `quick safety check`, `execute files here`, `yes, i
-      trust this folder`), so this is not a missing string: either `TrustGate` is not rendering
-      it into chat view, or the session-initialized gate ("first hook = initialized",
-      `App.tsx`) can never clear because CC has not started, which is a deadlock either way.
-      Note the confounder in this repro — `~/.claude/settings.json` also had 12 dangling hook
-      paths at the time, so hooks could not fire; re-verify with healthy hooks before
-      concluding. An unclearable overlay was already noted as a UX bug in the 2026-08-07
-      shipped entry and never tracked
-      `desktop` `needs-verify` `checked 2026-09-03` `needs-repro`
+      surfaces it (Destin, 2026-09-03, screenshot on file: "Accessing workspace: /home/destin
+      ... Yes, I trust this folder"). Since 2026-09-14 the screen at least says "Something may
+      be wrong" after 6 s with a Check terminal view button, so it no longer hangs silently. The
+      parser markers DO match that wording (`ink-select-parser.ts`), and the init gate is
+      already released the moment a trust prompt is detected — so the remaining suspect is the
+      trust-gate detection itself never seeing the prompt in chat state. Note the confounder in
+      this repro — `~/.claude/settings.json` also had 12 dangling hook paths at the time, so
+      hooks could not fire; re-verify with healthy hooks before concluding
+      `desktop` `needs-verify` `checked 2026-09-16` `needs-repro`

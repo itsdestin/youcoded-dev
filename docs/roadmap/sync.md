@@ -8,7 +8,8 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
 - [ ] "Last synced" on the Backup & Sync self row is the NEWEST time across all your spaces, so
       one healthy space and two that cannot reach GitHub still read "just synced". Left as it
       was when the offline-ticking half shipped 2026-09-16; needs a call on newest vs oldest
-      (or per-space rows), and the self-recency rule is written twice (main and the panel)
+      (or per-space rows). The rule itself lives in one helper (`self-sync-status.ts`) called
+      from two places in main; the panel only picks which source to read
       `settings/sync` `desktop` `decision` `checked 2026-09-16`
 
 - [ ] A crash-damaged sync repo on a device that is also offline (or signed out) shows an auth/network error every
@@ -99,6 +100,3 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       with an optional Settings → System View dashboard. 2026-07-14.
       `all` `parked` `checked 2026-07-14`
 
-- [ ] In the sync setup wizard the repo-name text box sits inside the radio button's label, so
-      clicking into the box also flips the radio. Bug 1 of the 2026-07-19 input-migration family
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-01`

@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: chat-data — a metadata-only conversation save (the shape sent after a model swap) never lands the new last-used model, so the record keeps the model from before the swap
 ---

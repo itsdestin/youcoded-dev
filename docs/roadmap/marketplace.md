@@ -25,11 +25,6 @@ them. Not here: the theme renders wrong (themes).
       Destin 2026-09-02: still failing — and previews in general are unreliable (not always created or shown correctly); fix the class
       `marketplace-screen` `desktop` `confirmed` `checked 2026-09-02`
 
-- [ ] The stylesheet claims the marketplace grid pre-blurs one backdrop element, but no rule doing that
-      could be found — so either the comment is wrong or every card carries its own live blur layer
-      under a wallpaper theme. The comment currently justifies a "don't worry about it" decision
-      `marketplace-screen` `all` `needs-verify` `checked 2026-08-07` `performance`
-
 ## backend
 
 - [ ] Website analytics is live, but its account allowance, spending alerts and applicable backup
@@ -55,13 +50,6 @@ them. Not here: the theme renders wrong (themes).
       gives each app its own private ID that a USB connection can't read for these builds, so the
       likely fix is a "Copy analytics ID" control in the app's About screen, then adding both IDs
       `n/a` `confirmed` `checked 2026-09-13`
-
-- [ ] There is no way to pay a pack author anything. Wanted: a tip that splits between YouCoded and
-      the authors whose packs the user actually uses — Destin's ranking is the current theme's author
-      first, then skill and other authors by a usage signal (invocations or installs, unresolved).
-      Undesigned, and blocked on three missing pieces: an author claim-and-verify flow, a payout
-      integration, and usage numbers the marketplace does not collect yet
-      `marketplace-screen` `all` `parked` `checked 2026-09-02`
 
 - [ ] A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
       listings (three `netsuite-*`, one `42crunch`) were stamped "Likely safe" having read nothing;
@@ -148,11 +136,12 @@ them. Not here: the theme renders wrong (themes).
       platform field — so the platform filter silently does nothing for both plugins
       `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`
 
-- [ ] A tip jar that splits a user's donation between YouCoded and the marketplace authors whose
-      packs they actually use. Destin's proposed ranking for who appears in the split: the author
-      of the theme currently in use first, then skill and other pack authors ranked by some usage
-      signal (invocation count, install count — unresolved which). Undesigned, and every piece is
-      missing: authors have no way to claim an account or connect a payout method (Buy Me a Coffee
-      or similar), there is no split math or UI, and the usage-ranking signal does not exist in
-      marketplace analytics yet
-      `marketplace-screen` `all` `parked` `checked 2026-09-03`
+- [ ] There is no way to pay a pack author anything. Wanted: a tip jar that splits a user's
+      donation between YouCoded and the marketplace authors whose packs they actually use.
+      Destin's proposed ranking for who appears in the split: the author of the theme currently
+      in use first, then skill and other pack authors ranked by some usage signal (invocation
+      count, install count — unresolved which). Undesigned, and every piece is missing: authors
+      have no way to claim an account or connect a payout method (Buy Me a Coffee or similar),
+      there is no split math or UI, and the usage-ranking signal does not exist in marketplace
+      analytics yet (was two items, 2026-09-02 and 2026-09-03; merged 2026-09-16)
+      `marketplace-screen` `all` `parked` `checked 2026-09-16`

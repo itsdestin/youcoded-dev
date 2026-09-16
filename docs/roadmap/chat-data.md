@@ -5,20 +5,11 @@ produced and the panel that shows them (files).
 
 - [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
       browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
-      still closes it (seen in the workbench while filming the promo, 2026-09-03)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-03`
-
-- [ ] The Resume browser dialog re-centres itself whenever a filter or search shrinks the list, so
-      the chips slide about 120 px down the screen under your hand (a beta tester's most confusing
-      moment, 2026-09-10); one steady height is asked as Q-3 on the resume-filter-chips deck
-      `resume-browser` `all` `decision` `checked 2026-09-10`
-
-- [ ] The Resume browser says "session" everywhere the chat says "conversation", and its title and
-      reopen button both read "Resume Session"; renaming this screen's copy is asked as Q-2 on the
-      resume-filter-chips deck, with "Show Complete", the "Organize" icon name, the card meta line
-      (Skip Permissions, 4KB, raw model ids) and the British "Unfavourite" in the row's model picker
-      to follow the same decision
-      `resume-browser` `all` `decision` `checked 2026-09-10`
+      still closes it (seen in the workbench while filming the promo, 2026-09-03). Same cause as
+      the 2026-09-10 code-review finding that a SECOND Escape can fall through to the chat: the
+      layered Escape handling pops the browser's entry after the first press and nothing puts it
+      back (`use-esc-close.tsx` re-pushes only when `open` or the store changes)
+      `resume-browser` `desktop` `needs-verify` `checked 2026-09-16`
 
 - [ ] Priority shows as a tag on every card and in the per-card tag picker, but the Tags filter
       cannot narrow to it; the note marker looks like a tag too and cannot be filtered
@@ -32,14 +23,10 @@ produced and the panel that shows them (files).
 - [ ] The Resume browser has no close button; only Escape or clicking the dark area closes it
       `resume-browser` `all` `confirmed` `checked 2026-09-10`
 
-- [ ] Resume browser cards show only a date, so conversations from the same day cannot be told
-      apart and the Most recent / Oldest first flip looks like it did nothing
-      `resume-browser` `all` `confirmed` `checked 2026-09-10`
-
-- [ ] In the Resume browser a second press of Escape can fall through to the chat instead of
-      closing the browser: the layered Escape handling removes its entry after the first press and
-      nothing puts it back (code review, 2026-09-10)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
+- [ ] Resume browser cards older than a week show only a date ("just now / 3h ago / 2d ago" covers
+      the first seven days), so older conversations from the same day cannot be told apart and the
+      Most recent / Oldest first flip looks like it did nothing among them
+      `resume-browser` `all` `confirmed` `checked 2026-09-16`
 
 - [ ] In the Resume browser's expanded row, a conversation whose original model is not set up here
       shows a greyed Resume Session button and a "Choose a model…" field with no word about why
@@ -47,16 +34,19 @@ produced and the panel that shows them (files).
       `resume-browser` `all` `confirmed` `checked 2026-09-10`
 
 - [ ] Nothing on a Resume browser row says how to open it: the name opens Rename, the rest of the
-      row expands a panel with the Resume Session button; a beta tester expected the name to open it
-      `resume-browser` `all` `confirmed` `checked 2026-09-10`
+      row previews the conversation (desktop) or expands a panel (phone width) and the Resume
+      Session button sits in the preview's foot; a beta tester expected the name to open it
+      `resume-browser` `all` `confirmed` `checked 2026-09-16`
 
 - [ ] Resuming a conversation that is already open in a tab made a second tab with the same name
       instead of switching to it (seen in the workbench, 2026-09-10)
       `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
 
-- [ ] At phone width the Resume browser's expanded row shows a Skip Permissions switch the desktop
-      row does not, and the row details truncate to unreadable stubs ("wecoded-m…", "qwen3-coder-30…")
-      `resume-browser` `remote` `confirmed` `checked 2026-09-10`
+- [ ] At phone width the Resume browser's expanded row details truncate to unreadable stubs
+      ("wecoded-m…", "qwen3-coder-30…"). (The Skip Permissions switch it also showed is not a
+      phone-only difference: desktop's preview foot renders the same options, gated only on the
+      conversation not being native — re-checked 2026-09-16)
+      `resume-browser` `remote` `confirmed` `checked 2026-09-16`
 
 - [ ] Idea: Enter in the Resume browser's search box could open the top result
       `resume-browser` `all` `parked` `checked 2026-09-10`
@@ -67,20 +57,16 @@ produced and the panel that shows them (files).
       unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is)
       `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
 
-- [ ] After switching models in a chat, the saved conversation record still shows the model from
-      before the swap (desktop, 2026-08-27); a red test for it sits on branch test/last-used-model-pin
-      `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-metadata-only-save-keeps-old-last-used-model.md
-
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —
       needs a fresh sighting before anything is touched
       `resume-browser` `desktop` `needs-verify` `checked 2026-08-12` `needs-repro`
 
 - [ ] "Welcome back" on cold start — after a window close, crash or OS kill, list the chats that were
-      still open in the strip with checkboxes, Resume-all and Start-fresh; waiting on Destin to decide
-      device scoping (chats left open on one machine must not pop up on another) and the milestone
-      Destin 2026-09-02: this device only; discard any old branch and build it fresh
-      `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
+      still open in the strip with checkboxes, Resume-all and Start-fresh. Scoping is decided
+      (Destin 2026-09-02: this device only — chats left open on one machine must not pop up on
+      another; discard any old branch and build it fresh); nothing is built and no milestone is set
+      `desktop` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
 
 - [ ] A conversation you renamed by hand cannot be handed back to automatic naming. Review 3
       removed the reset action from the dialog ("get rid of that button. it's dumb"), so the
@@ -95,11 +81,6 @@ produced and the panel that shows them (files).
       so a very long session could re-count. Flagged unconfirmed by the 2026-09-09 code
       review (F-not-covered); worst case is an early extra AI review, not a wrong name
       `desktop` `needs-verify` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-naming-code-review.md
-
-- [ ] Opening a long conversation in the Resume Browser's preview pauses noticeably before it
-      appears — reading the last 40 messages parses the whole transcript file. Nothing flickers
-      and the row highlights immediately, so it reads as slow rather than broken (2026-09-10)
-      `resume-browser` `desktop` `confirmed` `checked 2026-09-10` `performance`
 
 - [ ] The Resume Browser search box only matches names, project paths, notes and tags — a phrase you
       remember from inside a chat finds nothing, even though the full-text index exists and the

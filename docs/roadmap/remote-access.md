@@ -28,13 +28,13 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Wasted traffic on every reconnect. Found 2026-09-11
       `remote` `confirmed` `checked 2026-09-11`
 
-- [ ] The Android app's terminal is blank when the app is paired to a desktop. That surface
-      reads only raw terminal bytes (the phone's own runtime sends them); a desktop host
-      sends terminal text, never raw bytes, so a paired phone app gets nothing in the
-      terminal view while a phone browser gets everything. Found by the batch 2/3 design
-      review (R2-18, 2026-09-10); not a contract row of that batch, so it stays open here.
-      Fix: the host emits the raw-bytes form too, or the paired app reads text like a browser
-      `terminal` `android` `confirmed` `checked 2026-09-10`
+- [ ] The Android app's terminal was reported blank when the app is paired to a desktop (batch
+      2/3 design review, R2-18, 2026-09-10). The mechanism that review gave does not hold on
+      master: the host broadcasts the raw terminal stream to every client, the Android app has
+      had no terminal of its own since 2026-04-26, and its paired path feeds that stream to the
+      same terminal view a phone browser uses. Needs a look on a real phone before anything is
+      changed
+      `terminal` `android` `needs-verify` `checked 2026-09-16` `needs-repro`
 
 - [ ] In the Android app's Settings, removing a paired computer while the app is connected to
       one does nothing: the row goes away, but the saved pairing (address and password) stays on
@@ -43,13 +43,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       `removePairedDevice`). Found by the batch 3 build, 2026-09-10; checked in the code, not yet
       on a phone
       `settings` `android` `confirmed` `checked 2026-09-10`
-
-- [ ] A "No folder" session started from the phone does not get the private No-folder place the
-      desktop gives it. The desktop swaps the "no folder" marker for a real folder before
-      starting a session, but the remote path starts the session without that swap. The batch 3
-      builder saw such a session start in the home folder. Found 2026-09-10; the missing swap is
-      checked in the code (`remote-server.ts` `session:create` never calls `resolveNoFolderCwd`)
-      `remote` `confirmed` `checked 2026-09-10`
 
 - [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
       actionable for the user, when tailscale might just not be enabled on their phone" — the
@@ -74,10 +67,11 @@ Filing test: reaching the app from another device — the protocol, the browser 
       to a device is distinct from choosing where an automation runs. Hosting/privacy design open.
       `remote` `parked` `checked 2026-09-08` `v1.4`
 
-- [ ] Saving a permission setting over remote access replaces the whole stored block instead
-      of merging into it, and does not refresh what the app is enforcing until something local
-      reads the settings again — harmless today because nothing writes those values any more
-      `settings/permissions` `remote` `confirmed` `checked 2026-09-07`
+- [ ] Saving a permission setting over remote access does not refresh what the app is enforcing
+      until something local reads the settings again — harmless today because nothing writes
+      those values any more. (The other half, replacing the whole stored block instead of
+      merging into it, was fixed in youcoded `7b206b3a`)
+      `settings/permissions` `remote` `needs-verify` `checked 2026-09-16`
 
 - [ ] Over remote access the assistant-settings model picker offers models the browser cannot
       actually run, so choosing one saves a default that quietly does nothing there
@@ -110,15 +104,14 @@ Filing test: reaching the app from another device — the protocol, the browser 
             Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
 `chat` `remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
 
-- [ ] Over remote access whole features are simply missing: the files panel cannot open any
-      file (not even a small note), Project View tabs are thin, the game lobby signs in but
-      stays empty, several buttons throw. Which namespaces are safe to expose over a
-      password-only, unencrypted channel is a decision for Destin before any bridging
-      Destin 2026-09-02: none of them until the remote channel is encrypted — blocked on that item below
-      2026-09-10: the channel now exists only on the Tailscale address (batch 1), which is what the
-      milestone counts as secure. Files are batch 3; projects, games and the rest wait for their
-      own batches — nothing is bridged automatically
-      `remote` `confirmed` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
+- [ ] Over remote access some features are still missing: the game lobby signs in but stays
+      empty (only the incognito switch is bridged), files cannot be uploaded or edited from a
+      phone, and several buttons throw. Which namespaces are safe to expose was Destin's call:
+      2026-09-02, none until the channel is encrypted; 2026-09-10, the channel exists only on the
+      Tailscale address (batch 1), which the milestone counts as secure. Reading files and
+      Project View shipped in batch 3 (2026-09-11); games and the rest wait for their own
+      batches — nothing is bridged automatically
+      `remote` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
 
 - [ ] Remote: "+ Add file" in the files panel uploads the file to the desktop, then the
       import fails — the upload has already landed on the host (found 2026-07-23)
@@ -162,12 +155,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       roadmap step 9; sequence with the Android runtime work)
       `all` `parked` `checked 2026-08-26`
 
-- [ ] From a remote browser, renaming a saved folder or editing its description writes the folder list
-      the unsafe way — a crash mid-write can truncate every saved folder — because the remote path
-      re-implements the store inline (three copies of the same logic) and has zero test coverage.
-      Destin chose to defer the refactor on 2026-08-06
-      `projects` `remote` `needs-verify` `checked 2026-08-06`
-
 - [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers
       only allow a microphone on a secure (https) page, and remote access is plain http, so the
       voice-prompting mic (2026-09-05 deck, Q-7: Destin picked "desktop and Android first") stays
@@ -199,23 +186,24 @@ Filing test: reaching the app from another device — the protocol, the browser 
       2026-09-09 secure-connection batch; the indicator on the affected card did not
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-code-review.md
 
-- [ ] The remote access password has no rules and no confirmation. "abc" is accepted, there is
-      no minimum length, no second box to type it again, and no way to reveal what you typed —
-      the only feedback is a tick while the field empties itself, so you cannot check what you
-      just set. It is the one secret standing between a paired device and the whole assistant.
-      Found by a beta tester setting remote access up from scratch, 2026-09-10
-      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+- [ ] The remote access password has no confirmation: no second box to type it again, and no
+      way to reveal what you typed — the only feedback is a tick while the field empties itself,
+      so you cannot check what you just set. It is the one secret standing between a paired
+      device and the whole assistant. (The "no rules" half is fixed: eight characters minimum,
+      a too-short state, a Generate button, and a note on legacy short passwords.) Found by a
+      beta tester setting remote access up from scratch, 2026-09-10
+      `remote` `confirmed` `checked 2026-09-16` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
 
 - [ ] Removing a device has no "removed" message and no undo. The row simply disappears; the
       removal is correct and immediate, but nothing confirms it happened and there is no way
       back if the wrong row was tapped — the device has to be paired again from scratch
       `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
 
-- [ ] "Keep awake" never says what it does. No hint next to it, nothing about what happens when
-      the time runs out, and 4h is pre-selected without saying why — a person setting up remote
-      access has to guess whether this is the setting that keeps their phone able to reach the
-      computer. It is
-      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+- [ ] "Keep awake" never says what it does. No hint next to it and nothing about what happens
+      when the time runs out (it defaults to Off; the only explanation is a bullet in the Help
+      panel) — a person setting up remote access has to guess whether this is the setting that
+      keeps their phone able to reach the computer. It is
+      `remote` `confirmed` `checked 2026-09-16` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
 
 - [ ] Setup asks for three things one at a time with no sense of how many are left. "Install
       Tailscale", then "Sign in", then "Set up" — each appears in the same spot after the last

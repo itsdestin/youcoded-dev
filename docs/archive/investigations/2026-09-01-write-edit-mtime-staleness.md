@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Write and Edit detect outside changes by mtime, which both false-positives (touch/checkout) and false-negatives (same-second edits)
 ---

@@ -23,14 +23,15 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       and credentials, privacy and safe handoff need design; do not assume offline-only files
       are available to the cloud or treat device/cloud retries as permission to run work twice.
       `all` `parked` `checked 2026-09-08` `v1.4`
-- [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
-      mid-sentence and the assistant is told to "ask for the rest" without being told which file
-      that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules
-      are handled well (every heading survives, the file is named); skills, triggered rules and the
-      model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
-      are written up with options and how other tools handle each one — deck ready to serve, nothing
-      answered. Parked 2026-09-09 to finish the session-context panel first
-      `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+- [ ] Rework how things are cut down to fit a small model. Project rules are handled well (every
+      heading survives, the file is named); skills and triggered rules are still tail-cut. Since
+      2026-09-10 (youcoded `aa6091f1`) a cut skill at least names the file that holds the rest and
+      is cut on a line boundary, and the model's own skill tool is now window-aware — the two
+      correctness fixes; the redesign (how skills and rules should be shortened rather than
+      tail-cut) is what remains. Seven decisions are written up with options and how other tools
+      handle each one — deck ready to serve, nothing answered. Parked 2026-09-09 to finish the
+      session-context panel first
+      `desktop` `parked` `checked 2026-09-16` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
 
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
@@ -43,11 +44,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] The assistant should know which tools, instructions and automatic checks are actually
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
-
-- [ ] Memory the desktop app holds for each session is never let go when the session ends —
-      six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
-      chasing the sidecar crash; not the crash cause, a few hundred bytes each)
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-per-session-maps-never-torn-down.md
 
 - [ ] Settings says OpenRouter is "Connected" and its Test button comes back green, while every
       turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
@@ -109,9 +105,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       context popup into a real surface (per-item token cost, "this rule loaded because…", session
       mutes); one-tap "remember this?" correction capture; work state as a first-class object;
       shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing.
-      Destin, 2026-09-05: also explain which instructions loaded, why, and what was skipped or
-      shortened, including after reopening a chat or changing its working folder
-      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+      Destin's 2026-09-05 ask — explain which instructions loaded, why, and what was skipped or
+      shortened — shipped 2026-09-10 as the "What the assistant was given" panel; the five ideas
+      above are what this item still holds
+      `desktop` `parked` `checked 2026-09-16` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate
@@ -132,19 +129,15 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 - [ ] The exact request sent to the model each step (system prompt, tool schemas) is never kept, so a
-      resumed session cannot reproduce what produced a turn, and nothing is flushed to disk at turn
-      boundaries
-      `desktop` `needs-verify` `checked 2026-08-26`
+      resumed session cannot reproduce what produced a turn. Since youcoded#461 (2026-09-09) a
+      checkpoint IS written at every turn boundary, but it carries only a fingerprint of the
+      system text and tool names, never the prompt or schemas themselves
+      `desktop` `needs-verify` `checked 2026-09-16`
 
 - [ ] The native agent has no memory of past chats — chat search as a tool it can call, plus a small
       index it maintains and a flush before compaction. Sequenced after the eval CI gate and the
       request log above
       `desktop` `parked` `checked 2026-08-26`
-
-- [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
-      send function only accepts the literal provider names. No live caller today; fix when the retry
-      affordance lands
-      `desktop` `parked` `checked 2026-07-23`
 
 - [ ] When a reply fails, the red error card says to send the message again but offers no
       Try again button — the button exists but is only ever connected on the "may have stalled"
@@ -199,10 +192,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       precondition is a context under ~8,500 tokens — which is exactly the small vision models this
       feature makes easy to install.
       `desktop` `confirmed` `checked 2026-09-05` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
-
-- [ ] Write and Edit refuse a file "modified since you read it" after a plain touch or git checkout
-      that changed nothing, and can miss a real outside edit made in the same second
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-write-edit-mtime-staleness.md
 
 - [ ] After the shell has cd'd elsewhere, Read and Bash can silently open two different files for the
       same relative name — Destin to decide: reject relative paths outright, or keep the hints and live with it
@@ -288,10 +277,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-08-26` `security` → docs/active/investigations/2026-08-09-native-skip-permissions.md
 
 ## cost
-- [ ] The cost self-check stays silent on a mis-priced cheap model whenever the same session
-      also ran a correctly-priced model for most of its turns — the warning never fires
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-cost-self-check-dilutes-across-model-swap.md
-
 - [ ] The session-cost chip reads low once a long session starts compacting — a step down at
       every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
       `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
