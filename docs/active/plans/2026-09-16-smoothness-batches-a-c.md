@@ -488,7 +488,24 @@ or tsgolint, so `verify.sh`'s types and lint checks fail on every new worktree u
 packages are unpacked by hand from tarballs (done here for both worktrees, outside the shared
 farm).
 
-**Rig:** see the numbers section below once the runs complete; Batch C is expected flat.
+**Rig (workload phase, 3 repeats each, all boots error-free, taken on a quiet machine
+after other sessions' test runs kept it busy for an hour):**
+
+| run | report | long tasks (total / max) | frame gaps > 40 ms | switch painted p95 | PSS after |
+|---|---|---|---|---|---|
+| master `128cf334` | `perf-reports/2026-09-16-2335-128cf33-master-0916-baseline` | 1,441 ms / 192 ms | 47 | 144.7 ms | 1,676 MB |
+| Batch A `736ac08e` | `perf-reports/2026-09-16-2347-736ac08-shell-redraw-0916` | 1,120 ms / 199 ms | 42 | 98.1 ms | 1,633 MB |
+| Batch C `2a63c54e` | `perf-reports/2026-09-16-2352-2a63c54-click-paths-0916` | 1,404 ms / 189 ms | 44 | 106.3 ms | 1,676 MB |
+
+`compare.mjs --target workload.median.probe.longtaskTotalMs`: **A −22.3 %, C −2.6 %.** Both
+verdicts read REJECT, for two different reasons that are the honest reading: A's 22 % sits
+inside the baseline's own run-to-run spread on that metric (445 % across three repeats — the
+rig's noise floor, filed under `dev-workspace.md` → "judges two runs at very different load
+as alike"), so three repeats cannot call it real, and A's mechanism is accepted on its
+render-count tests as the file-pane branch was; C is flat because no rig phase opens the
+paths it fixes (the same coverage gap the 2026-09-10 plan recorded), and nothing it touches
+got worse. Neither branch regressed a PRIMARY metric beyond noise (A: CPU-seconds +3.5 %,
+C: switch p95 +7 %, both inside the spread of a three-repeat run).
 
 ## Close-out per branch
 
