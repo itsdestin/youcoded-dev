@@ -15,6 +15,11 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       after 5 minutes and retried from the start. Not seen yet — the 2026-09-16 repair sent 280 MB in 44 s.
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
 
+- [ ] If a conversation is over the sync size limit on this device AND another device changes its older
+      copy, sync here may fail every cycle with "Sync merge could not complete". Reasoned in the 2026-09-16
+      code review, not reproduced.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
 - [ ] A dev copy of the app syncs the same Personal folder as the real app at the same time, so the two
       race each other's sync steps. It let six over-limit files into the unpublished history on 2026-09-07
       (that case is now blocked at upload); other effects of the race are unverified.
