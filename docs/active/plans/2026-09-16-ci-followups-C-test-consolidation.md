@@ -14,7 +14,7 @@ status: active
 ## Global Constraints
 
 - **Start with** `node scripts/workspace-start.mjs --session ci-followups-c youcoded` from `/home/destin/youcoded-dev`. Workspace repo = the worktree root; app repo = `<worktree>/youcoded`.
-- **Prerequisite:** Plan B merged in both repos (`git -C <worktree> log --oneline origin/master | grep -c 'sweep ledger'` prints `1`). Plan B removed or converted most source-grep files; consolidating before it would move files that are about to be deleted.
+- **Prerequisite (not parallelisable with B):** Plan B merged in both repos (`git -C <worktree> log --oneline origin/master | grep -c 'sweep ledger'` prints `1`). Plan B removed or converted most source-grep files; consolidating before it would move files that are about to be deleted.
 - **Regenerate the inventory first** (`node scripts/test-inventory.mjs <worktree>/youcoded/desktop > docs/active/plans/2026-09-16-test-inventory.md`) and work from THAT; the committed one is a snapshot from before Plan B.
 - **Moves change no assertion.** A consolidation commit contains only: whole `describe`/`it` blocks moved, imports merged, duplicated `beforeEach`/helper setup collapsed into one, and comment lines deleted. If a test needs a behaviour change to survive the move, that is a separate commit with its own message, before or after the move.
 - **The count is the contract.** Before each cluster: `npx vitest run <the cluster's files> 2>&1 | grep 'Tests  '`. After: the same command on the target file(s). The passed count must be equal. Write both numbers into the commit message.
