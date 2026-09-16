@@ -3,6 +3,12 @@ Filing test: everything kept about a chat — transcript, title, tags, notes, se
 resume state. Not here: the model is running right now (native-harness); the files a chat
 produced and the panel that shows them (files).
 
+- [ ] The Projects page's conversation list shows only Claude Code conversations and carries no
+      tags, note or last-used model, so its cards look sparser than the same conversations in the
+      Resume browser, and assistant conversations in that folder never appear there (seen while
+      matching the two cards, 2026-09-16)
+      `projects` `desktop` `confirmed` `checked 2026-09-16`
+
 - [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
       browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
       still closes it (seen in the workbench while filming the promo, 2026-09-03)
