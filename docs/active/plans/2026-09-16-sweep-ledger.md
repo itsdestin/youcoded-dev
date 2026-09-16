@@ -8,3 +8,4 @@ Packaging (Destin, 2026-09-16): one PR per repo for the whole sweep, one "ready 
 
 | file | cases before | cases after | deleted case titles | rule / tool added |
 |---|---|---|---|---|
+| Group 5 (20 files — the table under `## Group 5` lists 20 rows though its heading says "19 files"; all 20 processed) + guard-scope-reader.test.ts | 279 | 280 | none | readSource (tests/helpers/guard-scope.ts) |
