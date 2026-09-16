@@ -310,6 +310,13 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
+      remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
+      failing file — the known remote-download inode test, also red on master's Linux run. It
+      seems to take names from the whole workflow run rather than the one job, so its verdict
+      said "read it before merging" for a PR that added no failure (2026-09-16)
+      `n/a` `confirmed` `checked 2026-09-16`
+
 - [ ] A dev instance shares the live app's saved theme choice: picking a theme in the dev window,
       or on a phone connected to it, changes the theme the live app opens with next time.
       `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11

@@ -1,0 +1,82 @@
+{
+  "title": "Conversation previews \u2014 round 2",
+  "key": "conversation-previews-review-2",
+  "out": "conversation-previews-2.review.html",
+  "images": "images/conversation-previews-2.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after2"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "resume-sheet": [
+      "conversation-previews",
+      "resume-preview-selected",
+      "1000x700+235+110"
+    ],
+    "whole-drawer": [
+      "conversation-previews",
+      "drawer-preview-panel",
+      "1440x900+0+0"
+    ],
+    "project-preview": [
+      "conversation-previews",
+      "projects-conversation-preview",
+      "1440x900+0+0"
+    ],
+    "project-cards": [
+      "conversation-previews",
+      "projects-conversations-list",
+      "1100x560+170+60"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Resume browser",
+      "path": "Type /resume, then click a conversation in the list",
+      "crop": "resume-sheet",
+      "headline": "The whole right side is now one lightly tinted surface, including around the model and Resume card.",
+      "changed": "The preview area and the space around the bottom card share one background: your theme's normal background with a small amount of its accent color. No wallpaper image.",
+      "measured": "Tint is 5% accent mixed into the normal background.",
+      "notice": "No plain white strip around the model/Resume card, and the preview reads slightly tinted rather than pure white in Light.",
+      "risk": "On wallpaper themes the preview no longer shows the wallpaper; it is a flat tinted surface."
+    },
+    {
+      "id": "R2-2",
+      "surface": "Side panel",
+      "path": "Click Preview on a conversation the assistant found for you",
+      "crop": "whole-drawer",
+      "headline": "The side-panel preview uses the same light tint instead of the wallpaper.",
+      "changed": "You approved this surface last round; the only change is the background, which follows your note to drop the wallpaper everywhere.",
+      "notice": "Meadow Mist now shows a pale green surface here instead of the mountain picture.",
+      "risk": ""
+    },
+    {
+      "id": "R2-3",
+      "surface": "Projects page",
+      "path": "Projects, Conversations tab, click a conversation",
+      "crop": "project-preview",
+      "headline": "The Projects preview now works like the Resume browser: rename, tags, complete, model choice and Resume.",
+      "changed": "The name at the top is clickable to rename (dotted underline and pencil). Beside the close button are the tag button (tags and a note) and the Complete check. The bottom card holds the tags, the details line with the date, the model picker, Skip Permissions, Launch in New Window and a Resume Session button. \"Resume in Claude\" and the date strip under the title are gone.",
+      "notice": "The model picker starts on the model this conversation last used, same as /resume. Resume closes Projects and opens the conversation with your choices.",
+      "risk": "The button now reads \"Resume Session\" (the Resume browser's wording) rather than just \"Resume\". Say if you want both changed to \"Resume\"."
+    },
+    {
+      "id": "R2-4",
+      "surface": "Projects page",
+      "path": "Projects, Conversations tab",
+      "crop": "project-cards",
+      "headline": "The line under each card's title is the conversation's first message; the test app now shows a real-looking one.",
+      "changed": "\"Session in youcoded\" was made-up text from the test app, not something your real app shows. On your app this line is the first thing you typed in that conversation.",
+      "notice": "Nothing changes on your real app from this step \u2014 only the test pictures.",
+      "risk": ""
+    }
+  ]
+}

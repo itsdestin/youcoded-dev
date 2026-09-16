@@ -533,3 +533,21 @@ recurred — the repetition is the data.
 - Two of my first mutation checks left the code broken because the restore step skipped an empty replacement; caught by re-reading the diff, not by any check → dropped: a caller mistake in a throwaway script; the rule "paste the red run, then re-read the diff" already covers it
 - Another session's `youcoded` branch `feat/specialists-plans-ui` has commits on this disk only → reported, not pushed: not this session's work
 - deleted/merged: two investigation reports left `docs/active/` for the archive with their items closed; the stale step-guard item and the buddy 1.3 blocker (Destin tested it) are gone from the area files
+
+## 2026-09-16 — conversation previews render like the real chat (session/conversation-previews, youcoded + workspace)
+- `run-review.sh --help` took "--help" as the worktree and started a workbench for it (once by hand, once hung for 60 s in the new test) → applied: target guard in `scripts/ui-review/run-review.sh`, red-first `scripts/ui-review/tests/run-review-args.test.sh`, wired into `workspace-ci.yml`  [2 wasted launches]
+- The previous session could not re-capture a deck because its plan was not kept; this session committed `scripts/ui-review/plans/conversation-previews.json` and re-captured three rounds from it → applied (practice, no new rule: the plan lives where run-review looks)
+- `App.tsx` still said Project View sits at z-[8000] above every overlay; ProjectView.tsx says z-40 → applied: comment corrected in App.tsx (it nearly sent me hunting for dialog-under-screen bugs)  [3 search calls]
+- First guard-proof break (`'user' as never`) changed nothing at runtime and "passed" → dropped: `test-suite-hygiene.md` already says confirm the break landed; I caught it on the next run
+- A new pane test raced its own observer effect under the parallel suite → dropped: fixed with `waitFor` per the existing hygiene rule; no new guidance
+- Destin: previews get a lightly themed solid surface, not the wallpaper; Projects and side-panel previews carry the Resume browser's controls; Projects cards drop the first-message line → applied in code WHY comments + answered decks under `docs/archive/design/2026-09-16-conversation-previews/`
+- The Projects list has no tags/model and no assistant conversations → roadmap: `docs/roadmap/chat-data.md`
+- The roadmap-five session's reported local-only `youcoded` branch `feat/specialists-plans-ui` → applied: secrets-scanned and pushed as a backup (no content touched); CI Linux/Windows reds on youcoded#482 were the same tests red on master (`ci-red-vs-master.sh` mislabeled the Linux ones "new"; the job's own count showed 1 failing file, the known remote-download test) → roadmap: `dev-workspace.md` → rigs
+- deleted/merged: `ConversationTranscript`, `ResumeOptionsPopover`, the `project:conversation-history` channel (desktop, shim, Android), the per-transcript head read behind the Projects list, and the Resume browser's inline resume block (now `ResumeOptions.tsx`, shared by three surfaces)
+
+## 2026-09-16 — docked buddy keeps its tuck under attention (session/buddy-dock-notify, youcoded b25f6ee1)
+- The 2026-09-11 fix resolved a two-poses overlap by picking a winner without asking which one Destin wanted, and its pinning test locked in the wrong winner; he had to come back to reverse it → applied: the test now pins "tucked in wins" with Destin's words, shown red with the old ordering. Dropped as a rule: "ask which side wins a visual conflict" is already the small-fix route in CLAUDE.md (confirm direction first)  [1 extra session]
+- MAP's buddy rows led straight to `BuddyMascot.tsx` and `buddy-window-manager.ts`; `git log --grep` found the prior fix in one call → nothing to change  [0 wasted searches]
+- One `--include=*.ts` grep was blocked by the glob guard hook before running → dropped: the hook did its job, one call
+- An older test (`buddy-animation-continuity`) encoded "a tucked-in buddy bounces for attention"; verify.sh caught it → applied: moved to an out-of-edge buddy, WHY comment added
+- deleted/merged: removed the hover guard and the "attention releases the sink" branch from `BuddyMascot.tsx`; no docs to delete

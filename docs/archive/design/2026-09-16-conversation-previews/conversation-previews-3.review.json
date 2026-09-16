@@ -1,0 +1,61 @@
+{
+  "title": "Conversation previews \u2014 round 3",
+  "key": "conversation-previews-review-3",
+  "out": "conversation-previews-3.review.html",
+  "images": "images/conversation-previews-3.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after3"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "resume-sheet": [
+      "conversation-previews",
+      "resume-preview-selected",
+      "1000x700+235+110"
+    ],
+    "whole-drawer": [
+      "conversation-previews",
+      "drawer-preview-panel",
+      "1440x900+0+0"
+    ],
+    "project-preview": [
+      "conversation-previews",
+      "projects-conversation-preview",
+      "1440x900+0+0"
+    ],
+    "project-cards": [
+      "conversation-previews",
+      "projects-conversations-list",
+      "1100x560+170+60"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Side panel",
+      "path": "Click Preview on a conversation the assistant found for you",
+      "crop": "whole-drawer",
+      "headline": "The side-panel preview now matches the Projects preview: resume card at the bottom, Complete beside the tag button.",
+      "changed": "The Resume button left the top bar. At the foot of the preview is the same card as the Projects preview: tags, the project and date, the model picker, Skip Permissions and Resume Session. The top bar now reads tag \u00b7 complete \u00b7 expand \u00b7 close, and the tag sheet offers Priority.",
+      "notice": "You pick the model right in the panel instead of opening a small popup first. When a conversation cannot be resumed here, the card says why in words instead of a greyed-out button.",
+      "risk": "No Launch in New Window switch here: a resume from this panel always opens a tab, as you chose for chat-search resumes. There is no file size in the details line, because the search index does not record it. The card takes about a third of the panel's height, so less conversation shows at once."
+    },
+    {
+      "id": "R3-2",
+      "surface": "Projects page",
+      "path": "Projects, Conversations tab",
+      "crop": "project-cards",
+      "headline": "The first-message line is gone from the Projects conversation cards, as in the Resume browser.",
+      "changed": "Cards now show only the title, tags, and the model \u00b7 size \u2026 date line. The app also stopped reading each conversation's file to find that line.",
+      "notice": "Shorter cards, and the Conversations tab has a little less work to do when it opens.",
+      "risk": ""
+    }
+  ]
+}
