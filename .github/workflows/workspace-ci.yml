@@ -54,9 +54,8 @@ jobs:
       # PRIVATE repo, which would need a PAT) and then tries to `git pull` this
       # repo over itself, which is wrong inside a CI checkout. docs/MAP.md DOES
       # name youcoded-admin files (the analytics dashboard, since 2026-09-15);
-      # audit-anchors reports those as `repo youcoded-admin not found on disk —
-      # N MAP path(s) unchecked` instead of failing (classifyMapPaths), so they
-      # are only checked on a machine that has the private repo.
+      # audit-anchors lists those under `skipped` (repo not on disk) instead of
+      # failing, so they are only checked on a machine that has the private repo.
       #
       # --depth 1: the checks are file-existence, regex-contains, and
       # `git ls-files`. None of them read history.

@@ -122,6 +122,20 @@ test('globToRegex: ** crosses slashes, * does not', () => {
   assert.ok(!globToRegex('a/b.ts').test('a/bXts'));
 });
 
+test('globToRegex: a leading **/ means zero OR more folders (2026-09-16)', () => {
+  // The workspace's own top-level docs/ — the case that used to read "matching nothing".
+  assert.ok(globToRegex('**/docs/*/plans/**').test('docs/active/plans/x.md'));
+  // ...and the same glob still reaches a worktree copy.
+  assert.ok(globToRegex('**/docs/*/plans/**').test('worktrees/s/docs/active/plans/x.md'));
+  assert.ok(!globToRegex('**/docs/*/plans/**').test('docs/active/specs/x.md'));
+  // `**` mid-path still crosses slashes; a bare `**` still needs no folder.
+  assert.ok(globToRegex('**/desktop/src/**').test('youcoded/desktop/src/a/b.ts'));
+  assert.ok(globToRegex('**/desktop/src/**').test('desktop/src/a.ts'));
+  // worktreeBlindGlobs relies on a repo-prefixed glob NOT matching the worktree spelling;
+  // that property is untouched (the prefix is literal, not `**/`).
+  assert.ok(!globToRegex('youcoded/desktop/src/**').test('worktrees/s/youcoded/desktop/src/a.ts'));
+});
+
 test('countBodyWords: strips frontmatter before counting', () => {
   assert.equal(countBodyWords('---\npaths:\n  - "a"\n---\none two three'), 3);
   assert.equal(countBodyWords('one two'), 2);
@@ -571,6 +585,9 @@ test('subRepoRoot: ONE sub-repo linked into a worktree must not defeat the fallb
   assert.equal(subRepoRoot(wt), main,
     'a worktree holding SOME of the repos must still resolve from the checkout holding all of them');
   assert.equal(baseFor(wt, 'wecoded-themes/x.json'), main, 'the four unlinked repos must resolve too');
+  // 2026-09-16: but the repo the worktree DOES hold is audited where it is — a session
+  // worktree's own youcoded is the branch's code; the shared copy can be 300 commits stale.
+  assert.equal(baseFor(wt, 'youcoded/desktop/x.ts'), wt, 'a repo present in the worktree resolves to the worktree');
 });
 
 // --- uncommittedPaths -------------------------------------------------------
@@ -779,15 +796,4 @@ test('undocumentedWorkbenchSwitches: a checkout without the rig README reports n
     readme: null,
   });
   assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
-});
-
-import { classifyMapPaths } from './audit-anchors.mjs';
-
-test('classifyMapPaths: a sub-repo absent from disk is unchecked, a missing file in a present one fails', () => {
-  const root = makeFixture();
-  fs.mkdirSync(path.join(root, 'youcoded'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'youcoded', 'here.ts'), '');
-  const r = classifyMapPaths(root, ['src/a.ts', 'src/gone.ts', 'youcoded/here.ts', 'youcoded/gone.ts', 'youcoded-admin/x.mjs', 'youcoded-admin/y.mjs']);
-  assert.deepEqual(r.missing, ['src/gone.ts', 'youcoded/gone.ts']);
-  assert.deepEqual(r.unchecked, { 'youcoded-admin': 2 });
 });

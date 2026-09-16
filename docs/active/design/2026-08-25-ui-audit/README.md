@@ -81,8 +81,9 @@ The real-app plans need the dev instance described in `scripts/ui-review/README.
 The capture driver was rebuilt to verify itself (`scripts/ui-review/shot.mjs`); every
 surface listed below as "not captured" was then captured and verified in all six themes —
 the `overlays-*` sheets — and a live session on the real app produced the `live-*` sheets.
-`coverage-second-pass.md` is the machine-generated record (39 covered, 2 real-app shots
-that had nothing to open). The section below is kept as history.
+The machine-generated record of that pass (39 covered, 2 real-app shots that had nothing
+to open) was `coverage-second-pass.md`, since deleted; `coverage.md` beside this file is the
+record that survives. The section below is kept as history.
 
 ## Not captured by the FIRST rig (pulled from the gallery 2026-08-25)
 

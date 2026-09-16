@@ -118,6 +118,6 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       settings panel. Today a model auto-sleeps after 15 minutes idle (`sleep-idle-seconds`,
       engine-wide default 900) and the whole engine stops after 25 minutes idle (`idleMs`),
       both hard-coded in `engine-supervisor.ts`. Surfaces: the per-model auto-sleep and the
-      whole-engine shutdown. Only when the settings panel exists — the two values ride that
-      feature's plumbing
-      `settings/local-models` `desktop` `needs-verify` `checked 2026-09-07`
+      whole-engine shutdown. The Assistant settings panel it was waiting on exists now
+      (2026-09-07); the two values still ride nothing
+      `settings/local-models` `desktop` `confirmed` `checked 2026-09-16`

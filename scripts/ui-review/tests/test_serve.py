@@ -106,6 +106,26 @@ class ServeTests(unittest.TestCase):
 
     def test_write_atomic(self):
         p = os.path.join(self.tmp, 'a.json'); write_atomic(p, {'x': 1}); self.assertEqual(json.load(open(p)), {'x': 1})
+    def test_a_stale_page_cannot_drop_saved_answers(self):
+        # A deck page left open across a server restart posts ITS state; if that is older than the
+        # file it must be refused, never written — the accident that erased site edits on 2026-09-10.
+        srv, url = make_server(self.spec, 0, lambda state: None)
+        t = threading.Thread(target=srv.serve_forever, daemon=True); t.start()
+        try:
+            base = url.rsplit('/', 1)[0]
+            post(base + '/answers', {'deck': 'fixture', 'answers': {'S-1': {'v': 'yes'}, 'S-2': {'v': 'no'}}})
+            with self.assertRaises(urllib.error.HTTPError) as cm:
+                post(base + '/answers', {'deck': 'fixture', 'answers': {'S-1': {'v': 'yes'}}})   # a page that never saw S-2
+            self.assertEqual(cm.exception.code, 409); self.assertIn(b'S-2', cm.exception.read())
+            self.assertEqual(json.load(open(answers_path(self.spec)))['answers']['S-2']['v'], 'no')   # untouched
+            with self.assertRaises(urllib.error.HTTPError) as cm:                                    # submit is held to the same rule
+                post(base + '/submit', {'deck': 'fixture', 'answers': {'S-1': {'v': 'yes'}}})
+            self.assertEqual(cm.exception.code, 409); self.assertNotIn('submitted', json.load(open(answers_path(self.spec))))
+            # Changing an answer, adding one, or clearing one to an EMPTY entry are all still writes.
+            post(base + '/answers', {'deck': 'fixture', 'answers': {'S-1': {'v': 'other'}, 'S-2': {'v': 'no'}, 'S-3': {'v': 'x'}}})
+            self.assertEqual(json.load(open(answers_path(self.spec)))['answers']['S-1']['v'], 'other')
+        finally:
+            srv.shutdown(); srv.server_close()
     def test_a_submitted_answers_file_is_kept_aside_and_the_review_starts_fresh(self):
         # Re-serving a deck after its submit must not load the old file: the page would see `submitted` and lock every control.
         self.assertIsNone(rotate_submitted(self.spec, log=lambda *a: None))                                   # no file: nothing to do

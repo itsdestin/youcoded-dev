@@ -26,4 +26,4 @@ Sketch: set the flag on first turn, clear it on explicit X-close, leave it alone
 
 ## The decision that blocks it — device scoping
 
-Conversation records SYNC, so a naive boolean flag means the sessions left open on the Z13 pop up as a "Welcome back" screen on the Mac. The flag needs to key on the per-INSTALL `getDeviceIdentity(userData)` id — NOT the per-machine one (`youcoded/docs/conversations.md` → leases, and the "Do NOT swap the lease id" invariant). Same family as the v1.3.1 cross-device native resume deferral. Destin decides the scoping (and the milestone) before anyone builds.
+Conversation records SYNC, so a naive boolean flag means the sessions left open on the Z13 pop up as a "Welcome back" screen on the Mac. The flag needs to key on the per-INSTALL `getDeviceIdentity(userData)` id — NOT the per-machine one (`youcoded/docs/conversations.md` → leases, and the "Do NOT swap the lease id" invariant). Same family as the v1.3.1 cross-device native resume deferral. **Decided 2026-09-02 (Destin): this device only** — discard any old branch and build it fresh. The milestone is still unset.
