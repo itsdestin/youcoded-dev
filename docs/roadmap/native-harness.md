@@ -331,6 +331,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       and the session pin is asserted only against a stubbed network
       `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
+- [ ] Conversations on Claude (direct or through OpenRouter) show a cost that is too high: the part
+      of each request Claude saves for reuse is charged twice, once at the normal rate and once at
+      the save rate, because the provider's input count already includes it. Found 2026-09-16 while
+      building plans, which price it correctly; fixing it for everyone changes the status-bar cost
+      every user sees, so it needs its own decision
+      `status-bar` `desktop` `confirmed` `checked 2026-09-16`
+
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
       balance on every message) should become a user-facing setting instead of a hardcoded
