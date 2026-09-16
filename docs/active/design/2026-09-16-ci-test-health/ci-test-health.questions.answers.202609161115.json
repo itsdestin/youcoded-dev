@@ -1,0 +1,43 @@
+{
+ "deck": "ci-test-health-questions",
+ "started": "2026-09-16T11:12:19.571Z",
+ "submitted": "2026-09-16T11:15:57Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "protect",
+   "seconds": 36,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "master-nightly",
+   "seconds": 36,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "web-only",
+   "seconds": 36,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "sweep",
+   "seconds": 37,
+   "theme": "meadow-mist"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "rule-sprint",
+   "seconds": 37,
+   "theme": "meadow-mist"
+  },
+  "Q-6": {
+   "v": "yes",
+   "seconds": 37,
+   "theme": "meadow-mist"
+  }
+ }
+}
