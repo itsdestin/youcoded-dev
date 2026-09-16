@@ -1,0 +1,4 @@
+/home/destin/youcoded-dev/worktrees/sessions/helper-approval-wait/scripts/ui-review/plans/helper-asks.json helper-asks midnight 0/1 50701
+/home/destin/youcoded-dev/worktrees/sessions/helper-approval-wait/scripts/ui-review/plans/helper-asks.json helper-asks light 0/1 50702
+/home/destin/youcoded-dev/worktrees/sessions/helper-approval-wait/scripts/ui-review/plans/helper-asks-narrow.json helper-asks-narrow midnight 0/1 50703
+/home/destin/youcoded-dev/worktrees/sessions/helper-approval-wait/scripts/ui-review/plans/helper-asks-narrow.json helper-asks-narrow light 0/1 50704

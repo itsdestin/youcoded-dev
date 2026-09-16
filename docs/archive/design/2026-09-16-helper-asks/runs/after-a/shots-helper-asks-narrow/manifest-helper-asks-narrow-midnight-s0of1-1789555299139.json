@@ -1,0 +1,28 @@
+[
+  {
+    "theme": "midnight",
+    "name": "bottom",
+    "run": "1789555188110",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "UNKNOWN",
+        "ratio": 4.11,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(221, 68, 68)",
+        "bg": "rgb(22,27,34)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm > span.sm:hidden",
+        "x": 144,
+        "y": 797,
+        "w": 42,
+        "h": 14
+      }
+    ],
+    "rmseVsBaseline": 0.352288,
+    "dump": [],
+    "file": "docs/active/design/2026-09-16-helper-asks/runs/after-a/shots-helper-asks-narrow/midnight/bottom.png"
+  }
+]

@@ -1,0 +1,93 @@
+[
+  {
+    "theme": "light",
+    "name": "bottom",
+    "run": "1789554909623",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "PERMISSION UNKNOWN",
+        "ratio": 3.5,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(221, 68, 68)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm > span.hidden.sm:inline",
+        "x": 148,
+        "y": 878,
+        "w": 108,
+        "h": 14
+      },
+      {
+        "text": "1 needs you",
+        "ratio": 1.4,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(251, 191, 36)",
+        "bg": "rgb(243,234,211)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 364,
+        "y": 878,
+        "w": 66,
+        "h": 15
+      }
+    ],
+    "rmseVsBaseline": 0.381365,
+    "dump": [],
+    "file": "docs/active/design/2026-09-16-helper-asks/runs/before/shots-helper-asks/light/bottom.png"
+  },
+  {
+    "theme": "light",
+    "name": "group",
+    "run": "1789554909623",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "|",
+        "ratio": 2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(152, 152, 152)",
+        "bg": "rgb(215,215,215)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 221,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "PERMISSION UNKNOWN",
+        "ratio": 3.5,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(221, 68, 68)",
+        "bg": "rgb(234,234,234)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm > span.hidden.sm:inline",
+        "x": 148,
+        "y": 878,
+        "w": 108,
+        "h": 14
+      },
+      {
+        "text": "1 needs you",
+        "ratio": 1.4,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(251, 191, 36)",
+        "bg": "rgb(243,234,211)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.flex.items-center.gap-1 > span",
+        "x": 364,
+        "y": 878,
+        "w": 66,
+        "h": 15
+      }
+    ],
+    "rmseVsBaseline": 0.271054,
+    "dump": [],
+    "file": "docs/active/design/2026-09-16-helper-asks/runs/before/shots-helper-asks/light/group.png"
+  }
+]
