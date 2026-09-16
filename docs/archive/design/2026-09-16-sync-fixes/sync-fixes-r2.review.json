@@ -1,0 +1,48 @@
+{
+  "title": "Sync fixes, round 2 — the two changes you asked for",
+  "key": "sync-fixes-r2-review",
+  "out": "sync-fixes-r2.review.html",
+  "images": "images/sync-fixes-r2.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["light", "midnight"],
+  "crops": {
+    "sync-error-box": ["sync-oversize-fix", "sync-error", "420x190+510+220"],
+    "sync-auth-box": ["sync-oversize-fix", "sync-auth-error", "420x190+510+220"],
+    "sync-oversize-box": ["sync-oversize-fix", "sync-oversize", "420x330+510+220"]
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when sync failed for a reason other than GitHub sign-in",
+      "crop": "sync-error-box",
+      "headline": "Try again sits at the right on the Show details line, and Connect GitHub is gone here.",
+      "changed": "Show details and Try again now share one line. Connect GitHub no longer appears, because this failure has nothing to do with signing in.",
+      "notice": "One clear button for this kind of failure. Opening Show details drops the text below without moving the button.",
+      "risk": "If you really are signed out but the error doesn't say so, you'd reconnect from the GitHub row instead."
+    },
+    {
+      "id": "R2-2",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when your GitHub sign-in has expired",
+      "crop": "sync-auth-box",
+      "headline": "When sign-in is the problem, Connect GitHub sits just left of Try again, on the same line.",
+      "changed": "Connect GitHub (outlined) now sits left of Try again (dark), both on the Show details line.",
+      "notice": "The message itself says to reconnect, and the button for it is right there."
+    },
+    {
+      "id": "R2-3",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when a conversation is too big to sync",
+      "crop": "sync-oversize-box",
+      "headline": "Too-big conversations now show in the app's standard orange warning card, names always visible.",
+      "changed": "The bare orange dropdown became the same warning card used elsewhere in the app, titled Too big to sync, with the conversation names listed inside.",
+      "notice": "No click needed to see which conversations are affected.",
+      "risk": "The card makes the sync box taller while any conversation is over the limit."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+ "deck": "sync-fixes-r2-review",
+ "started": "2026-09-16T09:43:59.389Z",
+ "submitted": "2026-09-16T09:44:37Z",
+ "cur": 2,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-3": {
+   "note": "this should be collapsible into a single line with an informative/helpful header.",
+   "v": "yes",
+   "seconds": 24,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
