@@ -27,8 +27,14 @@ seen-on is always n/a here.
 - [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
       new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
       five times in isolation right after; the run's changes touched nothing it imports.
-      Load-sensitive, like the step-guard entry below
-      `n/a` `needs-verify` `checked 2026-09-11`
+      Load-sensitive, like the step-guard entry below.
+      2026-09-16 (session/ci-test-health, runs 35088148602 macOS and 35089626563 Ubuntu): the test
+      now awaits EVERY `fs.promises.rm` its spy observed before reading the disk, and the lease file
+      is STILL present afterwards while `isHeld` is false and the rm was called with the right path.
+      A resolved rm followed by an existing file means something writes it back after the delete —
+      no path in `lease-client.ts` was found that does, so the next step is to log the file-op
+      queue order under load, not to widen the test again
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
