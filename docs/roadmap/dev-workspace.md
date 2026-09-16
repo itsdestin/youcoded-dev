@@ -3,6 +3,14 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] Three more files fail only under full-suite load and pass alone (2026-09-16, `verify.sh --full`,
+      11,550 tests, on a branch touching none of them): `tests/chatgpt-request-diagnostics.test.ts`
+      "evicts inactive fingerprints within 8 MiB…" (30 s timeout), `tests/local-engine-fields-rendered.test.tsx`
+      "§C2: the waiting line CLEARS once the change lands", and `tests/resume-browser-native-picker.test.tsx`
+      "pre-fills each previewed conversation with ITS last model" (a `waitFor` on a button role).
+      All three re-ran green in one isolated run right after. Same family as the entries below —
+      wall-clock waits under load; not re-checked on pristine master
+      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
       timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
       builds ran beside it; it passed three times alone right after and in the full verify before.
@@ -11,7 +19,11 @@ seen-on is always n/a here.
       command failed on untouched `origin/master` (`1e839c70`) in a separate worktree with its
       own hardlinked dependencies. Failure predates the KWallet change; cause remains unverified,
       so do not assume this occurrence is load-only.
-      `n/a` `needs-verify` `checked 2026-09-15`
+      2026-09-16: a DIFFERENT test in the same file is now the only red on master's Linux CI leg
+      (run 34964572047 at `e1f20a4b`, and PR youcoded#479): "a file replaced between mint and GET
+      (different inode) answers 404" — `expected 200 to be 404`. Every Desktop CI run on master
+      is now red on all three legs, so each merge has to prove its reds are not its own
+      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
       new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
       five times in isolation right after; the run's changes touched nothing it imports.
@@ -48,8 +60,14 @@ seen-on is always n/a here.
       `release-manifest-roundtrip.test.ts`, caused by `generate-release-manifest.mjs` comparing
       `file://` + `process.argv[1]`; fixed in `e82d38a1`. **The important part: no published beta's
       Windows installer has been tested.** beta.78's Windows log reads `Run tests: skipped`, and
-      beta.80 (2026-09-11) was dispatched the same way to get an installer at all
-      `n/a` `confirmed` `checked 2026-09-11` `regression`
+      beta.80 (2026-09-11) was dispatched the same way to get an installer at all.
+      2026-09-16 (PR youcoded#479, run 35078079286): the Windows list has grown — also
+      `create-session-feedback.test.ts` and `remote-phone-findings.test.ts` (whole files),
+      `folders-service.test.ts` "add dedupes by resolved path", `chatsearch-transcript-reader.test.ts`
+      "containedTranscriptPath", and `app-icons.test.ts` (five electron-builder.yml icon checks).
+      `scripts/ci-red-vs-master.sh` reported the Windows names as "NEW" only because it compared
+      against week-old master Windows runs — read the log, not just the verdict
+      `n/a` `confirmed` `checked 2026-09-16` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access
@@ -439,8 +457,16 @@ seen-on is always n/a here.
       backend now "rocm") while the live app was still running its Vulkan build — it would have
       come up on ROCm at its next restart, with nothing on screen tracing that back to a test
       session. This is the isolation run-dev.sh exists to provide. The file was left alone: what
-      his app runs on is his call, not a session's
-      `desktop` `confirmed` `checked 2026-09-06`
+      his app runs on is his call, not a session's.
+      Sized 2026-09-16 and NOT picked up, because it needs a decision first: `~/.youcoded/` is one
+      folder (`native-home.ts` is its single writer, plus hardcoded readers in `session-browser.ts`,
+      `prerequisite-installer.ts`, `chatsearch-index/`, `slug-repair*.ts`, `specialists/catalog.ts`),
+      and it holds the engine config AND the provider keys, native transcripts, MCP registry and
+      specialists. Pointing a dev instance at its own copy fixes the overwrite but also means a dev
+      window starts with no provider signed in and no past native chats, which every dev-window
+      test so far has relied on; the theme choice was not found in that folder at all (where it
+      lives is still unlocated). Destin decides which files a dev instance shares before any build
+      `desktop` `decision` `checked 2026-09-16`
 
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a

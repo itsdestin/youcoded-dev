@@ -5,9 +5,11 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       unrelated event refreshes it (other phones update fine). Found 2026-08-22.
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
 
-- [ ] "Last synced just now" on the Backup & Sync self row and the Settings row while the device has been offline for
-      days — recency ticks every poll whether or not GitHub was reached. From the PR #276 review, 2026-07-30.
-      `settings/sync` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-sync-recency-counts-cycles-not-contact.md
+- [ ] "Last synced" on the Backup & Sync self row is the NEWEST time across all your spaces, so
+      one healthy space and two that cannot reach GitHub still read "just synced". Left as it
+      was when the offline-ticking half shipped 2026-09-16; needs a call on newest vs oldest
+      (or per-space rows), and the self-recency rule is written twice (main and the panel)
+      `settings/sync` `desktop` `decision` `checked 2026-09-16`
 
 - [ ] A crash-damaged sync repo on a device that is also offline (or signed out) shows an auth/network error every
       cycle and never repairs itself until it reconnects, though the repair needs no network. 2026-07-30.

@@ -1,8 +1,9 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: "Last synced" counts sync-loop iterations, not contact with GitHub
+shipped: 2026-09-16 youcoded#480 `510fe0f5` — see docs/roadmap/shipped.md
 ---
 
 # "Last synced" counts loop iterations, not contact with the remote
