@@ -3,6 +3,14 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/specialist-run.test.ts` "a background completion is injected as a user-role turn when
+      the parent goes idle" timed out once on the Windows CI leg (run 35156247052, 2026-09-16, the
+      merged-commit dispatch of session/ci-test-health): the child's ledger status was still
+      `running` after the 15 s `vi.waitFor` budget — a whole specialist session has to spawn and
+      stream inside that budget on the slowest runner. Green on the seven earlier Windows
+      dispatches; not touched by that branch. One observation, filed as a Windows load timeout;
+      if it recurs, measure the child's real duration on the runner before widening anything
+      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] `tests/model-manager.test.ts` "a stored dismissal missing EITHER half is no dismissal" hit the
       30 s test timeout once on the Windows CI leg (run 35093103929, 2026-09-16, the fifth proof run
       of session/ci-test-health) after passing the run before with no change to anything it imports.
