@@ -157,6 +157,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 ## tools
+- [ ] A Bash tool call can lose the last lines of its output: the shell registry settles a run on
+      the child's `exit` event, which fires before its stdout pipe has drained, so a final chunk
+      arriving after exit is dropped (`shell-registry.ts`, `spec.child.on('exit', …)`). Surfaced as
+      the flaky "a redrawing progress bar cannot grow the partial line" test on macOS CI (expected
+      three lines, got two). Fix is to settle on `close` with a short grace so a grandchild holding
+      the pipe open cannot hang the call; found by the 2026-09-16 CI/test health review
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-16`
 - [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where
       are the model settings" it guesses. Wanted (Destin, 2026-09-10 guide deck): a line in the
       system prompt or an info-desk tool it reaches for whenever a user asks how YouCoded or its
