@@ -544,3 +544,10 @@ recurred — the repetition is the data.
 - The Projects list has no tags/model and no assistant conversations → roadmap: `docs/roadmap/chat-data.md`
 - The roadmap-five session's reported local-only `youcoded` branch `feat/specialists-plans-ui` → applied: secrets-scanned and pushed as a backup (no content touched); CI Linux/Windows reds on youcoded#482 were the same tests red on master (`ci-red-vs-master.sh` mislabeled the Linux ones "new"; the job's own count showed 1 failing file, the known remote-download test) → roadmap: `dev-workspace.md` → rigs
 - deleted/merged: `ConversationTranscript`, `ResumeOptionsPopover`, the `project:conversation-history` channel (desktop, shim, Android), the per-transcript head read behind the Projects list, and the Resume browser's inline resume block (now `ResumeOptions.tsx`, shared by three surfaces)
+
+## 2026-09-16 — docked buddy keeps its tuck under attention (session/buddy-dock-notify, youcoded b25f6ee1)
+- The 2026-09-11 fix resolved a two-poses overlap by picking a winner without asking which one Destin wanted, and its pinning test locked in the wrong winner; he had to come back to reverse it → applied: the test now pins "tucked in wins" with Destin's words, shown red with the old ordering. Dropped as a rule: "ask which side wins a visual conflict" is already the small-fix route in CLAUDE.md (confirm direction first)  [1 extra session]
+- MAP's buddy rows led straight to `BuddyMascot.tsx` and `buddy-window-manager.ts`; `git log --grep` found the prior fix in one call → nothing to change  [0 wasted searches]
+- One `--include=*.ts` grep was blocked by the glob guard hook before running → dropped: the hook did its job, one call
+- An older test (`buddy-animation-continuity`) encoded "a tucked-in buddy bounces for attention"; verify.sh caught it → applied: moved to an out-of-edge buddy, WHY comment added
+- deleted/merged: removed the hover guard and the "attention releases the sink" branch from `BuddyMascot.tsx`; no docs to delete
