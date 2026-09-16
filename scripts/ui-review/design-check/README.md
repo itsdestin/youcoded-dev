@@ -1,8 +1,8 @@
 # design-check decks — design warnings shown on real screens
 
 Turns `npm run lint:design` warnings into a review deck that boxes the exact element each
-warning is about. Used for `docs/active/design/2026-09-14-design-check-in-context` and
-`…/2026-09-16-design-check-fixes`. The scripts were rebuilt once after living only in a
+warning is about. Used for `docs/archive/design/2026-09-14-design-check-in-context` and
+`docs/archive/design/2026-09-16-design-check-fixes`. The scripts were rebuilt once after living only in a
 scratch folder that a reboot wiped — keep them here.
 
 1. `cd <app worktree>/youcoded/desktop && npx oxlint -c .oxlintrc.design.json -f json > design.json`
