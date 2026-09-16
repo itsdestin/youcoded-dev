@@ -12,41 +12,96 @@
     {
       "name": "sync-error",
       "actions": [
-        { "eval": "window.failPersonal();" },
-        { "click": "[data-hint='Settings']", "settle": 700 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 }
+        {
+          "eval": "window.failPersonal();"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1400
+        }
       ],
       "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.trim()==='Try again')",
-      "measure": [{ "text": "Try again" }]
+      "measure": [
+        {
+          "text": "Try again"
+        }
+      ]
+    },
+    {
+      "name": "sync-auth-error",
+      "actions": [
+        {
+          "eval": "const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:[...s.recentEvents.filter(e=>e.type!=='error'),{type:'error',spaceId:'personal',at:Date.now()-30000,errorCode:'github-auth',message:'GitHub sign-in expired — reconnect your GitHub account in the Sync settings'}]};};"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1400
+        }
+      ],
+      "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.includes('Connect GitHub'))"
     },
     {
       "name": "sync-retrying",
       "actions": [
-        { "eval": "window.failPersonal(); window.claude.syncSpaces.syncNow=()=>new Promise(()=>{});" },
-        { "click": "[data-hint='Settings']", "settle": 700 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 },
-        { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Try again')", "settle": 600 }
+        {
+          "eval": "window.failPersonal(); window.claude.syncSpaces.syncNow=()=>new Promise(()=>{});"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1400
+        },
+        {
+          "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Try again')",
+          "settle": 600
+        }
       ],
       "expect": "js:window.seen('Syncing…', \"Couldn't sync\")"
     },
     {
       "name": "sync-oversize",
       "actions": [
-        { "eval": "const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:s.recentEvents.filter(e=>e.type!=='error'), oversize:[{spaceId:'personal',files:['Conversations/claude/transcripts/youcoded-dev/84ee31a9-297c-4e25-982e-b8546a54b12e.jsonl','Conversations/claude/transcripts/youcoded-dev/b4c2255f-4691-41ef-af84-d30d63b7afaa.jsonl']}], oversizeLimitMb:50};}; const b=window.claude.session.browse; window.claude.session.browse=async()=>{const l=await b(); const base=Array.isArray(l)?l:[]; return [...base,{sessionId:'84ee31a9-297c-4e25-982e-b8546a54b12e',name:'Sync spaces overhaul',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:112178346},{sessionId:'b4c2255f-4691-41ef-af84-d30d63b7afaa',name:'Landing page redesign',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:98579022}];};" },
-        { "click": "[data-hint='Settings']", "settle": 700 },
-        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 },
-        { "click": "js:[...document.querySelectorAll('[role=dialog] summary')].find(s=>s.textContent.includes('sync size limit'))||document.querySelector('[role=dialog]')", "settle": 500 }
+        {
+          "eval": "const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:s.recentEvents.filter(e=>e.type!=='error'), oversize:[{spaceId:'personal',files:['Conversations/claude/transcripts/youcoded-dev/84ee31a9-297c-4e25-982e-b8546a54b12e.jsonl','Conversations/claude/transcripts/youcoded-dev/b4c2255f-4691-41ef-af84-d30d63b7afaa.jsonl']}], oversizeLimitMb:50};}; const b=window.claude.session.browse; window.claude.session.browse=async()=>{const l=await b(); const base=Array.isArray(l)?l:[]; return [...base,{sessionId:'84ee31a9-297c-4e25-982e-b8546a54b12e',name:'Sync spaces overhaul',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:112178346},{sessionId:'b4c2255f-4691-41ef-af84-d30d63b7afaa',name:'Landing page redesign',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:98579022}];};"
+        },
+        {
+          "click": "[data-hint='Settings']",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+          "settle": 1400
+        },
+        {
+          "click": "js:[...document.querySelectorAll('[role=dialog] summary')].find(s=>s.textContent.includes('sync size limit'))||document.querySelector('[role=dialog]')",
+          "settle": 500
+        }
       ],
       "expect": "js:!!document.querySelector('[role=dialog]')"
     },
     {
       "name": "gear-dot",
       "actions": [
-        { "wait": 1500 }
+        {
+          "wait": 1500
+        }
       ],
       "sameAsBaseline": true,
       "expect": "[data-hint='Settings']",
-      "measure": ["[data-hint='Settings']"]
+      "measure": [
+        "[data-hint='Settings']"
+      ]
     }
   ]
 }
