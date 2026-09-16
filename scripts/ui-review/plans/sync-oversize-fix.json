@@ -1,0 +1,52 @@
+{
+  "_why": "Sync fixes before/after deck (2026-09-16): the error box's Try again (position + Syncing while it runs), the new over-limit files line, and the red Settings gear. Every state is a workbench-only override; nothing real is touched. Expectations accept the old OR the new screen so both runs verify; the deck compares the pictures.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {
+      "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); /* WHY: mock namespaces may be get-only proxies, so assigning one method can be dropped. Wrap each namespace with a local override map. */ for(const ns of ['syncSpaces','session']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.seen=(...parts)=>parts.some(p=>document.body.innerText.includes(p)); window.failPersonal=()=>{const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:[...s.recentEvents.filter(e=>e.type!=='error'),{type:'error',spaceId:'personal',at:Date.now()-30000,message:'Sync push failed for personal: error: RPC failed; curl 28 Operation too slow. Less than 2000 bytes/sec transferred the last 20 seconds\\nsend-pack: unexpected disconnect while reading sideband packet\\nfatal: the remote end hung up unexpectedly'}]};};};"
+    }
+  ],
+  "shots": [
+    {
+      "name": "sync-error",
+      "actions": [
+        { "eval": "window.failPersonal();" },
+        { "click": "[data-hint='Settings']", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 }
+      ],
+      "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.trim()==='Try again')",
+      "measure": [{ "text": "Try again" }]
+    },
+    {
+      "name": "sync-retrying",
+      "actions": [
+        { "eval": "window.failPersonal(); window.claude.syncSpaces.syncNow=()=>new Promise(()=>{});" },
+        { "click": "[data-hint='Settings']", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 },
+        { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Try again')", "settle": 600 }
+      ],
+      "expect": "js:window.seen('Syncing…', \"Couldn't sync\")"
+    },
+    {
+      "name": "sync-oversize",
+      "actions": [
+        { "eval": "const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:s.recentEvents.filter(e=>e.type!=='error'), oversize:[{spaceId:'personal',files:['Conversations/claude/transcripts/youcoded-dev/84ee31a9-297c-4e25-982e-b8546a54b12e.jsonl','Conversations/claude/transcripts/youcoded-dev/b4c2255f-4691-41ef-af84-d30d63b7afaa.jsonl']}], oversizeLimitMb:50};}; const b=window.claude.session.browse; window.claude.session.browse=async()=>{const l=await b(); const base=Array.isArray(l)?l:[]; return [...base,{sessionId:'84ee31a9-297c-4e25-982e-b8546a54b12e',name:'Sync spaces overhaul',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:112178346},{sessionId:'b4c2255f-4691-41ef-af84-d30d63b7afaa',name:'Landing page redesign',projectSlug:'youcoded-dev',projectPath:'~/youcoded-dev',lastModified:Date.now(),size:98579022}];};" },
+        { "click": "[data-hint='Settings']", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 },
+        { "click": "js:[...document.querySelectorAll('[role=dialog] summary')].find(s=>s.textContent.includes('sync size limit'))||document.querySelector('[role=dialog]')", "settle": 500 }
+      ],
+      "expect": "js:!!document.querySelector('[role=dialog]')"
+    },
+    {
+      "name": "gear-dot",
+      "actions": [
+        { "wait": 1500 }
+      ],
+      "sameAsBaseline": true,
+      "expect": "[data-hint='Settings']",
+      "measure": ["[data-hint='Settings']"]
+    }
+  ]
+}

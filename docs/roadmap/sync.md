@@ -1,6 +1,16 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
+- [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
+      them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
+      conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
+      `settings/sync` `all` `decision` `checked 2026-09-16`
+
+- [ ] A dev copy of the app syncs the same Personal folder as the real app at the same time, so the two
+      race each other's sync steps. It let six over-limit files into the unpublished history on 2026-09-07
+      (that case is now blocked at upload); other effects of the race are unverified.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
 - [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
       unrelated event refreshes it (other phones update fine). Found 2026-08-22.
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
