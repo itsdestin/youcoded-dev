@@ -199,14 +199,6 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
-- [ ] Resuming a session with `workspace-start --session <key> youcoded` does not top up the
-      worktree's hardlinked `node_modules` when master has since added packages: after merging
-      origin/master on 2026-09-16 (which adopted `oxlint` and `tsgo`) `verify.sh` failed types,
-      knip and lint with "oxlint: command not found" and an old tsc, while the tests passed.
-      Creation fetches missing packages ("deps: … fetched 4 package(s)"); resume should too, or
-      say plainly that the deps are behind master's package.json
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
       this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
@@ -491,8 +483,11 @@ seen-on is always n/a here.
       at fresh `origin/master` (whose lock names dompurify) while its `node_modules` was hardlinked
       from the shared checkout (whose lock does not), and the only `deps:` line printed was
       `hardlinked`. This is the FIFTH time this package has cost a session — four on 2026-09-11, all
-      closed as "the recipe works" or "fixed on master"
-      `n/a` `needs-verify` `checked 2026-09-13` `regression`
+      closed as "the recipe works" or "fixed on master".
+      2026-09-16: cause still unknown, but no longer a dead end — `workspace-start` now tops up on
+      RESUME too, so re-running it with the same key fetches what creation missed. Creation printed
+      its `fetched` note correctly on two fresh worktrees that day
+      `n/a` `needs-verify` `checked 2026-09-16` `regression`
 
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
