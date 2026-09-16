@@ -32,6 +32,15 @@ if [[ "${1:-}" == "--reports-only" ]]; then
   REPORTS_ONLY=1
 else
   TARGET="${1:?worktree or path}"
+  # WHY: an unknown flag or a mistyped path used to be taken as the worktree
+  # and a workbench was started for it (2026-09-16, `run-review.sh --help`).
+  # Guard: tests/run-review-args.test.sh.
+  if [[ "$TARGET" == -* || ! -d "$TARGET" ]]; then
+    echo "usage: run-review.sh [--dry-run] <worktree> [outDir] [themes]" >&2
+    echo "       run-review.sh --reports-only <outDir> [themes]" >&2
+    [[ "$TARGET" == "--help" || "$TARGET" == "-h" ]] || echo "run-review: not a folder: $TARGET" >&2
+    exit 2
+  fi
   OUT="${2:-$ROOT/scratch/ui-review-$(date +%F)}"
   THEMES="${3:-midnight,light,halftone-dimension,meadow-mist,creme,dark}"
   REPORTS_ONLY=0
