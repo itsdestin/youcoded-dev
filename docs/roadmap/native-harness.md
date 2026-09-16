@@ -276,10 +276,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `confirmed` `checked 2026-09-16`
 
 ## cost
-- [ ] A specialist that is stopped or hits an error reports zero spend — press Stop while a
-      helper is working, or let one fail after several turns, and its whole bill goes uncounted
-      `status-bar` `desktop` `confirmed` `checked 2026-09-16`
-
 - [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
       reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
       and ChatGPT-plan sessions can resend a changed opening prompt after restart instead of keeping
