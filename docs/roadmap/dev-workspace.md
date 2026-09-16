@@ -32,20 +32,6 @@ seen-on is always n/a here.
       in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
-- [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
-      new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
-      five times in isolation right after; the run's changes touched nothing it imports.
-      Load-sensitive, like the step-guard entry below.
-      2026-09-16 (session/ci-test-health, runs 35088148602 macOS and 35089626563 Ubuntu): the test
-      now awaits EVERY `fs.promises.rm` its spy observed before reading the disk, and the lease file
-      is STILL present afterwards while `isHeld` is false and the rm was called with the right path.
-      A resolved rm followed by an existing file means something writes it back after the delete —
-      no path in `lease-client.ts` was found that does, so the next step is to log the file-op
-      queue order under load, not to widen the test again. The on-disk assertion is REMOVED from
-      the test on session/ci-test-health (the in-memory contract stays pinned) so master can be
-      green; this entry is the only record that the file-gone claim is unproven
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
       pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
@@ -108,8 +94,14 @@ seen-on is always n/a here.
       on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
       prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
       3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
-      but it fails whole runs, which is how a real failure next to it gets ignored
-      `n/a` `confirmed` `checked 2026-09-03`
+      but it fails whole runs, which is how a real failure next to it gets ignored.
+      2026-09-16: now THREE files, same `ENOTEMPTY … /.youcoded/sessions` on teardown —
+      `specialist-run.test.ts` on master's own Ubuntu leg (run 35158812538), `task-tool.test.ts`
+      on macOS and `native-session-host.test.ts` on Ubuntu (run 35160811595). With master
+      protected on the Linux check (Plan A) this can block a good PR. Same shape as the two
+      write-after-teardown races Plan A fixed (engine stopAll, lease destroy): find what still
+      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
