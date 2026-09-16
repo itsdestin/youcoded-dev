@@ -1,0 +1,120 @@
+{
+  "title": "Pages — the shell, round 2: the pin, the welcome words, two fuller sample pages",
+  "key": "youcoded-pages-shell-r2",
+  "out": "youcoded-pages-shell-r2.review.html",
+  "images": "images/youcoded-pages-shell-r2.review",
+  "runs": {
+    "before": "runs/round1",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "stage": "design",
+  "crops": {
+    "pages-library": [
+      "pages",
+      "library",
+      "1100x400+170+0"
+    ],
+    "pages-library-empty": [
+      "pages",
+      "library-empty",
+      "1100x420+170+0"
+    ],
+    "pages-page-planner": [
+      "pages",
+      "page-planner",
+      "1440x600+0+0"
+    ],
+    "pages-page-paint": [
+      "pages",
+      "page-paint",
+      "1440x620+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-9",
+      "surface": "Pages",
+      "path": "Top bar → Pages, the top-right corner of each card",
+      "crop": "pages-library",
+      "headline": "The pin on each card is now an upright push-pin, filled in when the page is pinned.",
+      "changed": "The tilted pin from round 1 (\"looks a little odd\") is replaced by the familiar upright pin, drawn a little larger.",
+      "measured": "16 px glyph, up from 14",
+      "notice": "Pinned pages show a solid pin; unpinned pages show an outline. Hover still says Pin or Unpin.",
+      "risk": ""
+    },
+    {
+      "id": "S-10",
+      "surface": "Pages",
+      "path": "Top bar → Pages, before you have any",
+      "crop": "pages-library-empty",
+      "headline": "The welcome card now names pages worth wanting: a calendar, a news feed, an email browser, a team timesheet.",
+      "changed": "The two example sentences were rewritten from your round-1 note. Everything else on the card is unchanged.",
+      "notice": "The first thing a new person reads suggests something bigger than a timer.",
+      "risk": "Those examples need connections, which arrive in Phase 2; the words promise the destination, not the first release."
+    },
+    {
+      "id": "S-11",
+      "surface": "A page",
+      "path": "Pages → Week planner",
+      "crop": "pages-page-planner",
+      "runs": [
+        "after"
+      ],
+      "headline": "Week planner replaces the notes board: seven day columns, events by kind, done or to do, and a quick add.",
+      "changed": "A fuller sample page. Today's column is marked, events carry a colour by kind, clicking one marks it done, Add event opens a small form, and the bar underneath counts the week.",
+      "notice": "This is the kind of page the creator should aim for, built only from the page style kit.",
+      "risk": "It is a sample with made-up events; the real calendar page comes with Phase 2's connections.",
+      "highlight": {
+        "box": [
+          80,
+          11,
+          8,
+          6
+        ]
+      }
+    },
+    {
+      "id": "S-12",
+      "surface": "A page",
+      "path": "Top bar → the Paint studio pinned button",
+      "crop": "pages-page-paint",
+      "runs": [
+        "after"
+      ],
+      "headline": "Paint studio replaces the bare canvas: tools on the left, a palette and brush settings on the right, undo and redo.",
+      "changed": "Brush, eraser, line, rectangle and ellipse; twelve colours plus a custom one; size and opacity with a live preview; undo, redo, clear; keyboard shortcuts. The paper stays white in every theme.",
+      "notice": "The studio's frame follows the theme; the painting does not. That is the rule for pictures and art.",
+      "risk": "Save as picture only shows Saved for now; a page cannot write a file until Phase 3.",
+      "highlight": {
+        "box": [
+          90,
+          9,
+          9.5,
+          5
+        ]
+      }
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "A page",
+      "path": "The thin header above an open page",
+      "headline": "You may want to revisit the page header. What would you change?",
+      "today": "An open page shows a thin header: its name and where it lives on the left; Pin, Edit in chat and Esc · Back on the right.",
+      "problem": "In round 1 you said you may want to come back to this layout, without saying what felt off.",
+      "proposal": "Tell me what to change, or leave it as it is for now and revisit once real pages exist.",
+      "answer": "words",
+      "prompt": "For example: hide the header while a page is open, move Edit in chat, show the page's icon larger…"
+    }
+  ]
+}

@@ -63,6 +63,13 @@ board. Destin's analytics dashboard is Phase 2's proving page, not Phase 1's.
 Design record: `docs/active/design/2026-09-15-youcoded-pages/` (the questions deck and its
 answers, then the shell's review decks).
 
+Shell deck, round 1 (2026-09-16, `youcoded-pages-shell.review.answers.json`): the top-bar
+button and pinned buttons, the empty library and both phone layouts are approved; the pin cap
+is four. Asked for: a better pin glyph on the cards, more intriguing examples on the welcome
+card (a calendar, a news feed, an email browser, a team timesheet), and richer sample pages
+("too basic for what i had envisioned"). Open: the page header layout ("may want to come back
+to this layout"), carried into round 2 as a question.
+
 ## Phase 2 — connections and refresh (open)
 
 **A person can:** make a page that shows information from a service and keeps it current

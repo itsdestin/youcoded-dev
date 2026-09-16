@@ -11,7 +11,7 @@
     "[aria-label='Open Pages']",
     "[aria-label='Open Projects']",
     "[aria-label='Open Focus timer']",
-    "[aria-label='Open Paint']"
+    "[aria-label='Open Paint studio']"
    ]
   },
   {
@@ -26,7 +26,7 @@
    "measure": [
     "[aria-label='Exit pages']",
     "[aria-label='Unpin Focus timer']",
-    "[aria-label='Pin Notes board']"
+    "[aria-label='Pin Week planner']"
    ]
   },
   {
@@ -73,18 +73,18 @@
    "expect": "iframe[title='Focus timer']"
   },
   {
-   "name": "page-notes",
+   "name": "page-planner",
    "actions": [
     {
      "click": "[aria-label='Open Pages']",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Notes board'))",
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
      "settle": 1400
     }
    ],
-   "expect": "iframe[title='Notes board']",
+   "expect": "iframe[title='Week planner']",
    "measure": [
     {
      "text": "Edit in chat"
@@ -95,11 +95,11 @@
    "name": "page-paint",
    "actions": [
     {
-     "click": "[aria-label='Open Paint']",
+     "click": "[aria-label='Open Paint studio']",
      "settle": 1400
     }
    ],
-   "expect": "iframe[title='Paint']",
+   "expect": "iframe[title='Paint studio']",
    "measure": [
     {
      "text": "Pinned"
