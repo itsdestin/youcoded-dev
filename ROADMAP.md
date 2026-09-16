@@ -57,7 +57,7 @@ Target: `v1.3`
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 66 | 12 | 4 | 23 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 7 | 1 | 4 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 37 | 16 | 1 | 6 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 27 | 11 | 4 | 2 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 28 | 11 | 4 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 8 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 24 | 13 | 1 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 5 | 2 | 6 |
