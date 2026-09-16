@@ -343,6 +343,16 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   *"put these retry buttons at the bottom right, not the bottom left… buttons should either be
   full modal width or on the righthand side."* Guard: `tests/error-state.test.tsx`
   ("puts its actions on the right").
+- **G-29 Filled buttons and pairs**: a filled (dark) button — `primary`, `danger` — is either
+  **centred and the full width** of its card or dialog, or **right-aligned**. It is never
+  left-aligned. When a filled button sits next to a light or hollow one (`secondary`, `ghost`,
+  `danger-outline`), the light one goes on the **left** and the filled one is the rightmost
+  (Comment · Approve, Cancel · Send, Stop · Continue). Destin, 2026-09-16, on the plan card
+  (review 6, R6-4): *"when using FILLED/DARK buttons, these should always be either centered
+  and the full width of the card/modal they are attached to or on the righthand side. they
+  should never be left-aligned. when a dark and hollow/light button are placed together, the
+  light button always goes on the left."* Guard: `tests/plan-card-review-r7.test.tsx` (the
+  plan card's pairs); none app-wide yet — candidate.
 - Disabled: 50% opacity **plus** a reason within reach (tooltip or subtitle) — "Max" in the
   effort picker must say why.
 
@@ -410,4 +420,5 @@ G-9 button vocabulary (§3) · G-10 dialog header · G-11 dialog body/scroll · 
 field · G-13 welcome screen · G-14 chips · G-15 status bar · G-16 full-screen header ·
 G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header · G-21 menus · G-22 find-bar
 lane · G-23 attachment card · G-24 terminal backing floor · G-25 session row · G-26 session
-status pill · G-27 tags in a list row · G-28 button placement (full width or right).
+status pill · G-27 tags in a list row · G-28 button placement (full width or right) · G-29 filled buttons and pairs (light left,
+filled right).
