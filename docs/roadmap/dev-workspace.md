@@ -32,20 +32,6 @@ seen-on is always n/a here.
       in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
-- [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
-      new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
-      five times in isolation right after; the run's changes touched nothing it imports.
-      Load-sensitive, like the step-guard entry below.
-      2026-09-16 (session/ci-test-health, runs 35088148602 macOS and 35089626563 Ubuntu): the test
-      now awaits EVERY `fs.promises.rm` its spy observed before reading the disk, and the lease file
-      is STILL present afterwards while `isHeld` is false and the rm was called with the right path.
-      A resolved rm followed by an existing file means something writes it back after the delete —
-      no path in `lease-client.ts` was found that does, so the next step is to log the file-op
-      queue order under load, not to widen the test again. The on-disk assertion is REMOVED from
-      the test on session/ci-test-health (the in-memory contract stays pinned) so master can be
-      green; this entry is the only record that the file-gone claim is unproven
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
       pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
@@ -212,7 +198,12 @@ seen-on is always n/a here.
       origin/master on 2026-09-16 (which adopted `oxlint` and `tsgo`) `verify.sh` failed types,
       knip and lint with "oxlint: command not found" and an old tsc, while the tests passed.
       Creation fetches missing packages ("deps: … fetched 4 package(s)"); resume should too, or
-      say plainly that the deps are behind master's package.json
+      say plainly that the deps are behind master's package.json.
+      2026-09-16 (session/ci-followups-a): a FRESHLY CREATED worktree has the same gap — the
+      fetched `oxlint` and `@typescript/native-preview` got no `node_modules/.bin` links and no
+      platform binary (`@typescript/native-preview-linux-x64` missing), and `typescript` stays at
+      the shared install's 5.9.3 while package.json wants ^6 (`tsc` fails TS5095). Worked around by
+      installing the pinned versions into a scratch folder and running them from there
       `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
