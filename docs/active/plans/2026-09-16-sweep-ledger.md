@@ -9,3 +9,6 @@ Packaging (Destin, 2026-09-16): one PR per repo for the whole sweep, one "ready 
 | file | cases before | cases after | deleted case titles | rule / tool added |
 |---|---|---|---|---|
 | Group 5 (20 files — the table under `## Group 5` lists 20 rows though its heading says "19 files"; all 20 processed) + guard-scope-reader.test.ts | 279 | 280 | none | readSource (tests/helpers/guard-scope.ts) |
+| `tests/installer-artifact-names.test.ts` | 4 | 4 | none | yaml parse |
+| `tests/app-icons.test.ts` | 12 | 11 | `every theme without its own appIcon falls back to the bundled icon, not a synthesized one` | yaml parse |
+| `tests/android-manifest-voice.test.ts` | 2 | 2 | none | DOMParser |
