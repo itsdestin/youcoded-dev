@@ -1,0 +1,112 @@
+{
+ "deck": "specialists-plans-review6",
+ "started": "2026-09-16T21:36:37.692Z",
+ "submitted": "2026-09-16T21:47:29Z",
+ "cur": 14,
+ "answers": {
+  "R6-1": {
+   "v": "no",
+   "note": "no need for the extra warning. just add a tilde thing in front of each of the \"up to\" token numbers",
+   "seconds": 45,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-2": {
+   "v": "yes",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-3": {
+   "note": "a bit confused. why would it not be known if it finished? we should try to handle the obvious error cases automatically where safe/possible, and only surface to users when genuinely needed",
+   "v": "other",
+   "seconds": 48,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-4": {
+   "note": "okay. the approve button should be on the rightmost side, with comment to the left of it. again, our design/style guidelines should note something to the effect of \"when using FILLED/DARK buttons, these should always be either centered and the full width of the card/modal they are attached to or on the righthand side. they should never be left-aligned. when a dark and hollow/light button are placed together, the light button always goes on the left.",
+   "v": "other",
+   "seconds": 110,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-5": {
+   "note": "i think this shouldn't show \"stop\" but should raise to the main assistant by default and allow the main assistant to make a recommendation to the user for how to proceed. our user may not understand why the steps failed, or whether it actually makes sense to continue. the assistant would be better suited to this task.",
+   "v": "other",
+   "seconds": 102,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-6": {
+   "note": "i think, like the repeat issue, we should maybe raise these failures/whatever to the assistant first and allow the assistant to make a recommendation to the user for how to proceed?",
+   "v": "other",
+   "seconds": 89,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-7": {
+   "v": "other",
+   "note": "under what conditions might this actually be hit? seeems like an odd error to encounter.",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-8": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-9": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R6-10": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q6-1": {
+   "v": "pick",
+   "pick": "dot-and-sound",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q6-2": {
+   "v": "pick",
+   "note": "but we need to associate each one with it's plan. maybe we group them with plan card within the specialists chip? idk...",
+   "pick": "chip-too",
+   "seconds": 99,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q6-3": {
+   "v": "pick",
+   "pick": "continue",
+   "note": "but auto recover where that makes the most sense and we dont actually need user input",
+   "seconds": 24,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q6-4": {
+   "v": "pick",
+   "pick": "keep-yet",
+   "note": "this will be planned. eventually, everything supported on desktop should work on mobile.",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q6-5": {
+   "v": "pick",
+   "pick": "plain",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

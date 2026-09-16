@@ -1,0 +1,388 @@
+{
+  "title": "Plans — round 6: the card changes from the build, and five questions",
+  "key": "specialists-plans-review6",
+  "out": "specialists-plans.review6.html",
+  "images": "images/specialists-plans.review6",
+  "stage": "review",
+  "runs": {
+    "before": "runs/5b-before",
+    "after": "runs/5b-after"
+  },
+  "crops": {
+    "p6-approx": [
+      "plans-card-5b",
+      "approximate",
+      "1080x300+16+40"
+    ],
+    "p6-failed": [
+      "plans-card-5b",
+      "failed-detail",
+      "1080x380+16+40"
+    ],
+    "p6-unknown": [
+      "plans-card-5b",
+      "paused-unknown",
+      "1080x380+16+40"
+    ],
+    "p6-comment": [
+      "plans-card-5b",
+      "comment-followup",
+      "1420x660+10+40"
+    ],
+    "p6-cap": [
+      "plans-card-5b",
+      "paused-cap",
+      "1080x360+16+40"
+    ],
+    "p6-minimum": [
+      "plans-card-5b",
+      "add-budget-below-minimum",
+      "1080x380+16+40"
+    ],
+    "p6-error": [
+      "plans-card-5b",
+      "error-slot",
+      "1080x340+16+40"
+    ],
+    "p6-unstarted": [
+      "plans-card-5b",
+      "stopped-unstarted",
+      "1080x360+16+40"
+    ],
+    "p6-asking-chip": [
+      "plans-card-5b",
+      "asking",
+      "720x50+0+850"
+    ],
+    "p6-chip-popup": [
+      "plans-card-5b-new",
+      "asking-chip-popup",
+      "620x360+360+240"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R6-1",
+      "surface": "Chat · plan card",
+      "path": "A plan whose specialists run on a ChatGPT sign-in",
+      "crop": "p6-approx",
+      "headline": "A ChatGPT plan says its limit is approximate, and why.",
+      "changed": "The limit reads \"Up to about 42,000 tokens\", and a new line under it says one reply on ChatGPT can run past it before the plan pauses. Plans on other providers are unchanged.",
+      "notice": "You know before approving that a ChatGPT plan can go a little over.",
+      "risk": "The line names ChatGPT; if another provider ever works the same way, the sentence will need to change.",
+      "highlight": {
+        "box": [
+          2,
+          62,
+          70,
+          10
+        ]
+      }
+    },
+    {
+      "id": "R6-2",
+      "surface": "Chat · plan card",
+      "path": "A plan whose saved progress could not be read",
+      "crop": "p6-failed",
+      "headline": "A failed plan now says what went wrong, with Report bug and Diagnose buttons.",
+      "changed": "Instead of the bare word \"failed\", the card shows the real reason in one line, plus the same Report bug and Diagnose with the assistant buttons the app's other errors use.",
+      "notice": "A broken plan tells you something and gives you a next step.",
+      "risk": "The reason is the app's own technical sentence about the file, so it can read a little dry."
+    },
+    {
+      "id": "R6-3",
+      "surface": "Chat · plan card",
+      "path": "A plan that paused while a specialist was mid-action",
+      "crop": "p6-unknown",
+      "headline": "When the app can't tell whether an action finished, the card warns that Continue may repeat it.",
+      "changed": "The pause names what the specialist was doing in plain words (\"running a command\") and adds: \"Continue may run it again. Check first whether it already happened.\"",
+      "notice": "You get a chance to check before a command or file change runs twice.",
+      "risk": "The warning shows even when the action was harmless to repeat.",
+      "highlight": {
+        "box": [
+          3,
+          78,
+          94,
+          17
+        ]
+      }
+    },
+    {
+      "id": "R6-4",
+      "surface": "Chat",
+      "path": "After pressing Comment on a plan and sending a note",
+      "crop": "p6-comment",
+      "headline": "Your comment now goes into the chat with a short, plain note asking for a revised plan.",
+      "changed": "The line after your comment reads \"(Feedback on your plan: please revise it and propose it again.)\" instead of a longer sentence naming an internal tool.",
+      "notice": "The chat shows your note in everyday words.",
+      "risk": "None visible; the assistant is still told separately, out of sight, to answer with a new plan card."
+    },
+    {
+      "id": "R6-5",
+      "surface": "Chat · plan card",
+      "path": "A plan whose repeating steps used up all their rounds",
+      "crop": "p6-cap",
+      "headline": "A plan that repeated as many times as allowed offers only Stop, and says to ask for a revised plan.",
+      "changed": "The pause explains the steps ran their maximum number of rounds without meeting their goal, and suggests asking the assistant for a revised plan. Add budget and Continue are gone here because neither could help.",
+      "notice": "No buttons that do nothing.",
+      "risk": "To keep going you have to type a message; there is no one-click way on.",
+      "highlight": {
+        "box": [
+          3,
+          70,
+          94,
+          18
+        ]
+      }
+    },
+    {
+      "id": "R6-6",
+      "surface": "Chat · plan card",
+      "path": "Paused at a limit, after pressing Add budget and typing too small an amount",
+      "crop": "p6-minimum",
+      "headline": "Add budget starts at the smallest amount that lets the plan continue, and refuses less.",
+      "changed": "The amount starts at the minimum, a line says \"Add at least 12,500 tokens to continue.\", and a smaller number turns that line red and disables Continue. Continue now also restarts the plan after adding budget, which it did not do before.",
+      "notice": "Adding budget can't leave the plan stuck.",
+      "risk": "The minimum can be larger than you expected, because it covers the specialist's restart as well as the rest of its work."
+    },
+    {
+      "id": "R6-7",
+      "surface": "Chat · plan card",
+      "path": "A plan button that the app refused",
+      "crop": "p6-error",
+      "headline": "A refused plan button now shows the app's standard error, with Retry.",
+      "changed": "The red sentence became the app's usual error block: the reason with Retry, plus Report bug when the reason is unknown. \"Plans aren't available here.\" is now a quiet grey note instead of an error.",
+      "notice": "Errors on the plan card look and work like errors everywhere else.",
+      "risk": "None visible."
+    },
+    {
+      "id": "R6-8",
+      "surface": "Chat · plan card",
+      "path": "A stopped plan, with a step opened",
+      "crop": "p6-unstarted",
+      "headline": "A specialist that never got going reads \"Not started\" instead of \"Stopped after 1s\".",
+      "changed": "When Stop cancels a specialist before it did anything, its row is muted and reads \"Not started\", with the empty circle unstarted steps use.",
+      "notice": "The card no longer implies work happened that didn't.",
+      "risk": "None visible."
+    },
+    {
+      "id": "R6-9",
+      "surface": "Status bar",
+      "path": "The Specialists chip at the bottom, while a plan specialist asks a question",
+      "crop": "p6-asking-chip",
+      "headline": "When a plan's specialist asks you something, the bottom bar shows \"1 needs you\".",
+      "changed": "Plan specialists that are waiting on you now light the same Specialists chip ordinary specialists do. Plan specialists that are just working are not listed.",
+      "notice": "A question from a plan gets noticed even when the card is scrolled away.",
+      "risk": "The chip appears only while a question is open, so it comes and goes during a plan.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R6-10",
+      "surface": "Status bar",
+      "path": "Clicking the \"needs you\" chip",
+      "crop": "p6-chip-popup",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "headline": "Clicking the chip opens the waiting specialist with its question and Yes / No.",
+      "changed": "The popup lists the plan's specialist under Needs you, with its question and the usual Yes and No, plus Note and Stop.",
+      "notice": "You can answer without finding the plan card.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          12,
+          83,
+          86,
+          13
+        ]
+      }
+    },
+    {
+      "id": "Q6-1",
+      "words": true,
+      "surface": "Conversation list",
+      "path": "The coloured dot beside each conversation",
+      "headline": "Should a specialist waiting on your answer light the conversation's red dot?",
+      "today": "When the assistant itself asks permission, its conversation gets a red dot and the app plays its alert sound. When a specialist (ordinary or in a plan) asks, the dot stays grey; only the Specialists chip changes.",
+      "problem": "If you are in another conversation, a waiting specialist is easy to miss, and after 5 minutes it is told no and carries on without the permission.",
+      "proposal": "Light the dot for specialist questions too, with or without the sound.",
+      "options": [
+        {
+          "id": "dot-and-sound",
+          "label": "Dot and sound",
+          "pros": [
+            "You notice from anywhere, the same way as the assistant's own questions."
+          ],
+          "cons": [
+            "More interruptions during busy plans with several specialists."
+          ]
+        },
+        {
+          "id": "dot-only",
+          "label": "Dot, no sound",
+          "pros": [
+            "Visible from other conversations.",
+            "No extra noise."
+          ],
+          "cons": [
+            "Easy to miss if the window is in the background."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "leave",
+          "label": "Leave as is",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Specialist questions keep going unnoticed and get auto-refused."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q6-2",
+      "words": true,
+      "surface": "Status bar",
+      "path": "The Specialists chip",
+      "headline": "Should the Specialists chip also list a plan's specialists while they are simply working?",
+      "today": "The chip lists ordinary specialists at all times, but a plan's specialists only while one is asking you something. A plan's progress lives on its card.",
+      "problem": "While a plan runs, the chip can look empty even though four specialists are busy.",
+      "proposal": "Either keep the card as the one place for plan progress, or list plan specialists in the chip too.",
+      "options": [
+        {
+          "id": "card-only",
+          "label": "Card only",
+          "pros": [
+            "One place to watch a plan, as you approved.",
+            "The chip stays short."
+          ],
+          "cons": [
+            "The chip doesn't show a running plan."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "chip-too",
+          "label": "Chip too",
+          "pros": [
+            "You see all busy specialists from the bottom bar."
+          ],
+          "cons": [
+            "Every plan fills the chip with up to four rows."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q6-3",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "A plan paused for a reason other than its limit",
+      "headline": "When a plan pauses for a reason other than money, should the button be Continue instead of Add budget?",
+      "today": "Every pause offers Stop and Add budget, the design you signed for limit pauses. Plans also pause when a specialist hits an error or the app was closed mid-step.",
+      "problem": "For those pauses, adding budget isn't what's needed; you just want to try again.",
+      "proposal": "Offer Stop and Continue for non-limit pauses; keep Add budget for limit pauses.",
+      "options": [
+        {
+          "id": "continue",
+          "label": "Continue for those",
+          "pros": [
+            "The button matches what will actually help.",
+            "No need to add money you don't need."
+          ],
+          "cons": [
+            "Two kinds of paused card to learn."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "add-budget",
+          "label": "Always Add budget",
+          "pros": [
+            "One kind of paused card."
+          ],
+          "cons": [
+            "You add budget just to press Continue, even when budget wasn't the problem."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q6-4",
+      "words": true,
+      "surface": "Phone app",
+      "path": "A plan card viewed on the phone",
+      "headline": "What should a plan card say on the phone, where plans can't run?",
+      "today": "Plans run only on the desktop app. On the phone a plan card's buttons are disabled with the note \"Plans aren't available on the phone yet.\" Elsewhere the phone says \"Specialists run on the desktop app.\"",
+      "problem": "\"Yet\" promises something that isn't planned, and the wording differs from the specialists note.",
+      "proposal": "Pick the wording.",
+      "options": [
+        {
+          "id": "desktop-app",
+          "label": "\"Plans run on the desktop app.\"",
+          "pros": [
+            "Matches the specialists note.",
+            "Promises nothing."
+          ],
+          "cons": [
+            "Doesn't say you can still read the plan."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-yet",
+          "label": "Keep \"…on the phone yet.\"",
+          "pros": [
+            "Hints it may come."
+          ],
+          "cons": [
+            "An unplanned promise."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q6-5",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "Pressing a plan button while the desktop app is still starting",
+      "headline": "Replace \"The assistant runtime isn't connected.\" with plainer words?",
+      "today": "If a plan button is pressed in the moment before the desktop app has finished starting, the card shows \"The assistant runtime isn't connected.\"",
+      "problem": "\"Runtime\" is jargon, and the moment is rare, so the words should be simple.",
+      "proposal": "Show \"The assistant isn't available right now.\" with Retry.",
+      "options": [
+        {
+          "id": "plain",
+          "label": "\"…isn't available right now.\"",
+          "pros": [
+            "Plain and doesn't guess a cause.",
+            "Retry fixes it once startup finishes."
+          ],
+          "cons": [
+            "Says less about why."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-runtime",
+          "label": "Keep the current words",
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "Jargon in front of everyday users."
+          ]
+        }
+      ]
+    }
+  ],
+  "themes": [
+    "midnight",
+    "light"
+  ]
+}
