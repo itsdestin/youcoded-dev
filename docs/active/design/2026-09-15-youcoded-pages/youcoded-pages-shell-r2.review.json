@@ -50,7 +50,15 @@
       "changed": "The tilted pin from round 1 (\"looks a little odd\") is replaced by the familiar upright pin, drawn a little larger.",
       "measured": "16 px glyph, up from 14",
       "notice": "Pinned pages show a solid pin; unpinned pages show an outline. Hover still says Pin or Unpin.",
-      "risk": ""
+      "risk": "",
+      "highlight": {
+        "box": [
+          29,
+          26,
+          3.5,
+          8
+        ]
+      }
     },
     {
       "id": "S-10",
