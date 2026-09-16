@@ -1,0 +1,35 @@
+{
+ "deck": "conversation-previews-review",
+ "started": "2026-09-16T09:38:42.619Z",
+ "submitted": "2026-09-16T09:42:23Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "other",
+   "note": "i don't like that hte background cuts off at the top of the model/resume card, i can still see the bare white area around the sides/bottom of that card. we should fix.",
+   "seconds": 64,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 59,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "other",
+   "note": "resume in claude should just say resume, and should allow the user to pick the model. the date banner should be at the bottom. we should have some of the same tag/complete/rename/other options shown in resume browser, in similar styling.",
+   "seconds": 70,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-4": {
+   "note": "what is the weird \"session in youcoded\" line?",
+   "v": "other",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
