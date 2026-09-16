@@ -11,7 +11,11 @@ seen-on is always n/a here.
       command failed on untouched `origin/master` (`1e839c70`) in a separate worktree with its
       own hardlinked dependencies. Failure predates the KWallet change; cause remains unverified,
       so do not assume this occurrence is load-only.
-      `n/a` `needs-verify` `checked 2026-09-15`
+      2026-09-16: a DIFFERENT test in the same file is now the only red on master's Linux CI leg
+      (run 34964572047 at `e1f20a4b`, and PR youcoded#479): "a file replaced between mint and GET
+      (different inode) answers 404" — `expected 200 to be 404`. Every Desktop CI run on master
+      is now red on all three legs, so each merge has to prove its reds are not its own
+      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
       new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
       five times in isolation right after; the run's changes touched nothing it imports.
@@ -48,8 +52,14 @@ seen-on is always n/a here.
       `release-manifest-roundtrip.test.ts`, caused by `generate-release-manifest.mjs` comparing
       `file://` + `process.argv[1]`; fixed in `e82d38a1`. **The important part: no published beta's
       Windows installer has been tested.** beta.78's Windows log reads `Run tests: skipped`, and
-      beta.80 (2026-09-11) was dispatched the same way to get an installer at all
-      `n/a` `confirmed` `checked 2026-09-11` `regression`
+      beta.80 (2026-09-11) was dispatched the same way to get an installer at all.
+      2026-09-16 (PR youcoded#479, run 35078079286): the Windows list has grown — also
+      `create-session-feedback.test.ts` and `remote-phone-findings.test.ts` (whole files),
+      `folders-service.test.ts` "add dedupes by resolved path", `chatsearch-transcript-reader.test.ts`
+      "containedTranscriptPath", and `app-icons.test.ts` (five electron-builder.yml icon checks).
+      `scripts/ci-red-vs-master.sh` reported the Windows names as "NEW" only because it compared
+      against week-old master Windows runs — read the log, not just the verdict
+      `n/a` `confirmed` `checked 2026-09-16` `regression`
 - [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
       intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
       in isolation immediately after — load-sensitive, not a regression from the remote-access
