@@ -51,7 +51,8 @@ fi
 # 2026-09-10: +1 for no-workbench-gate-in-shipped-ui.
 # 2026-09-16: +1 for test-file-url-to-path (the tests tree is scanned too, see TESTS_DIR).
 # 2026-09-16: +1 for iframe-sandbox-no-allow-same-origin (Plan B).
-EXPECTED_VIOLATIONS=12
+# 2026-09-16: +1 for main-registers-all-quit-routes (Plan B).
+EXPECTED_VIOLATIONS=13
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
