@@ -146,6 +146,17 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       affordance lands
       `desktop` `parked` `checked 2026-07-23`
 
+- [ ] When a reply fails, the red error card says to send the message again but offers no
+      Try again button — the button exists but is only ever connected on the "may have stalled"
+      card — and the Stop button is gone too. Needs a decision: here "try again" would mean
+      re-sending the message, not re-running a paused step
+      `chat` `desktop` `confirmed` `checked 2026-09-16`
+
+- [ ] While the assistant is quiet, the amber "Still waiting" card and the "Retrying in 15s…"
+      countdown may flicker back and forth, because an unrelated update resets the chat to
+      "fine" without clearing the stall warning. Reported by a code read, never seen live
+      `chat` `desktop` `needs-verify` `checked 2026-09-16`
+
 - [ ] Every cloud model gets frontier-strength treatment (full tool presentation, parallel calls),
       so a small hosted model chokes the same way a small local one does; and an unknown local
       model is sized by its context window, a poor stand-in for capability. Capability and context
