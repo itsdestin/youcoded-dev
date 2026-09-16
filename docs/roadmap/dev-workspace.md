@@ -33,7 +33,9 @@ seen-on is always n/a here.
       is STILL present afterwards while `isHeld` is false and the rm was called with the right path.
       A resolved rm followed by an existing file means something writes it back after the delete —
       no path in `lease-client.ts` was found that does, so the next step is to log the file-op
-      queue order under load, not to widen the test again
+      queue order under load, not to widen the test again. The on-disk assertion is REMOVED from
+      the test on session/ci-test-health (the in-memory contract stays pinned) so master can be
+      green; this entry is the only record that the file-gone claim is unproven
       `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
