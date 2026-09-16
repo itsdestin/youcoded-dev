@@ -70,6 +70,18 @@ card (a calendar, a news feed, an email browser, a team timesheet), and richer s
 ("too basic for what i had envisioned"). Open: the page header layout ("may want to come back
 to this layout"), carried into round 2 as a question.
 
+Round 2 (`youcoded-pages-shell-r2.review.answers.json`): the upright pin, the new welcome
+copy, the week planner and the paint studio are all approved. On the page header: "i don't
+think i want a header in that style… hide the pinned/edit tags… maybe a side panel… give me
+a few different options (framed, frameless, side panel)".
+
+Round 3 (`youcoded-pages-shell-r3.review.answers.json`): side panel chosen, with a frame of its
+own: "keep exit/maximize/minimize, put back to chat where the games/files panels would be, a
+page name where the session browser would be, and the new side panel instead of the
+settings/project panel options"; the panel lists all pages with the pin beside each, a centred
+Manage pages button opens the library, the panel collapses from a top-left button, Esc · Back
+to chat stays top-right. The ⋯ menu from round 3 was dropped in favour of that.
+
 ## Phase 2 — connections and refresh (open)
 
 **A person can:** make a page that shows information from a service and keeps it current
