@@ -1,0 +1,25 @@
+id: no-hand-rolled-segmented-control
+language: tsx
+severity: error
+message: >-
+  Pick-one-of-N goes through <SegmentedTabs>, never a hand-rolled button pair.
+  Seven hand-rolled groups shipped alongside SegmentedTabs — 4 corner radii,
+  4 text sizes, 3 inactive treatments, for one function. <=4 short options:
+  segmented. Needs a description: radio list. >5: Select.
+note: |
+  Invariant source: tests/choice-group-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 2 — "no hand-rolled segmented control ships"). Matches
+  one of the four retired class fragments verbatim (the full fragment, not
+  just `bg-accent text-on-accent`, which would also flag legitimate non-choice
+  uses like badges and the InputBar send button). Case 2, "SegmentedTabs has
+  at least one consumer", is a cross-file existence count ast-grep cannot
+  express (no single file's rule can assert "somewhere among N other files") —
+  kept in the test file, weakened from >=4 to the non-vacuity floor >=1, and
+  routed through readSource per global.md's non-vacuity rule.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/choice-group-authority.tsx"
+rule:
+  kind: string_fragment
+  regex: "(flex-1 px-1\\.5 py-1 rounded-sm|flex-1 px-1\\.5 py-1\\.5 rounded-sm|flex-1 py-1\\.5 px-3 text-sm rounded|px-2 py-1 rounded text-3xs)"
