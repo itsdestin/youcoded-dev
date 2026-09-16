@@ -32,14 +32,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       answered. Parked 2026-09-09 to finish the session-context panel first
       `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
 
-- [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
-      you picked — its own test says so and has been failing on master since the feature shipped
-      2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists
-      the same intent": both saves carry 20 after 50 was chosen). Found 2026-09-09 by a
-      `verify.sh` run on an unrelated branch; nobody has checked yet whether it reproduces in
-      the running app or is only true on the failure path the test exercises
-      `settings` `desktop` `needs-verify` `checked 2026-09-09`
-
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
       `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
@@ -215,16 +207,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       should switch off in full-auto — decide both with the harness evaluator, not by argument
       `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
 
-- [ ] Warn the model when a background Bash command has been running 5 and 15 minutes
-      ("The (call) has been running for 5 minutes — if this is within expectations, you may
-      ignore this message"), so a model can act on a genuinely stuck call instead of polling.
-      Destin 2026-09-07: hit live — a model ran BashOutput in a 150-call polling loop on a
-      hung background command. Design note: ride the existing shell finished-notice lane
-      (ShellRegistry per-run timers → queueHostNotice → drainDeliveries), which delivers at
-      the next idle boundary, never mid-turn. Anti-poll wording shipped 2026-09-07; this is
-      the remaining proactive half
-      `desktop` `confirmed` `checked 2026-09-07`
-
 - [ ] WebFetch's "page was too thin to extract" thresholds were reasoned defaults, never measured
       against real pages the way the JS-render floor next to them was
       `desktop` `parked` `checked 2026-09-01`
@@ -285,10 +267,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] The session-cost chip reads low once a long session starts compacting — a step down at
       every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
       `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
-
-- [ ] Changing models while an answer is still streaming bills that whole turn at the new
-      model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
-      `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-mid-turn-model-swap-reprices-whole-turn.md
 
 - [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
       reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
