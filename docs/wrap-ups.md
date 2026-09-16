@@ -551,3 +551,12 @@ recurred — the repetition is the data.
 - One `--include=*.ts` grep was blocked by the glob guard hook before running → dropped: the hook did its job, one call
 - An older test (`buddy-animation-continuity`) encoded "a tucked-in buddy bounces for attention"; verify.sh caught it → applied: moved to an out-of-edge buddy, WHY comment added
 - deleted/merged: removed the hover guard and the "attention releases the sink" branch from `BuddyMascot.tsx`; no docs to delete
+
+## 2026-09-16 — agent-first lint tooling + design-check fixes (session/agent-lint-tooling, youcoded + workspace)
+- RECURRED, costliest this session: all work (3 commits, a deck and Destin's answers) was committed on the desktop PC but never pushed, and the session resumed on the Z13 where none of it existed → roadmap: recurrence noted on the existing `dev-workspace.md` "one disk only" item (the stranded-worktree check cannot see another machine); Destin's global rule now pushes every branch at its first commit, which this session followed from then on  [the whole tooling change, deck pipeline and deck record rebuilt from the transcript]
+- The deck-matching scripts lived in the scratch folder and a reboot wiped them → applied: `scripts/ui-review/design-check/` (gen-data, match-elements, crop-for + README); the element collector itself is in `shot.mjs`  [~6 calls to rewrite them]
+- `run-review.sh` refused to start because another session's workbench held port 5473 → roadmap: `dev-workspace.md` → rigs (pick a free port automatically)  [1 failed sweep, offset guessed by hand]
+- Mass class renames broke 7 tests keyed on class names and hid a real finding (Fast mode's hand-built warning box, invisible to the callout guard behind a raw #FF9800) → applied: guards now match the status colors; the finding filed in `claude-code-integration.md`. `verify.sh` caught all of it — no new check needed
+- Destin's "optimize tf out of our workspace": Fallow and React Doctor scans were offered and not chosen → roadmap: `dev-workspace.md` → rigs, in his words
+- deleted/merged: `eslint.config.mjs` and three ESLint packages removed — Oxlint runs the same 23 rules; `verify.sh` and CI each lost a slow step
+- RECURRED (6th session in this ledger): zsh did not word-split `$F` holding three paths, so `git checkout --theirs -- $F` failed as one bogus pathspec mid-merge; two parallel Bash calls also shared a cwd, so the second ran in the wrong repo. No damage (both chains stopped); already filed in `dev-workspace.md` → dropped as a new entry  [2 failed calls]

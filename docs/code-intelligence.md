@@ -44,8 +44,8 @@ not a count of resolved references; distinguish comments, definitions, and real 
 ## Verification reads the branch
 
 Run `bash scripts/verify.sh <app-worktree>` from the workspace worktree for desktop
-verification: TypeScript, related tests plus source-scanning guards, knip, ESLint, and
-ast-grep. For a specific question, run the corresponding verdict tool directly from
+verification: TypeScript (tsgo), related tests plus source-scanning guards, knip, oxlint,
+and ast-grep. For a specific question, run the corresponding verdict tool directly from
 `youcoded/desktop/`. Read its findings as well as the exit code; knip's configured
 warning categories are not all release gates.
 
