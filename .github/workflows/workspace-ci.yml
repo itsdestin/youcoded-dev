@@ -52,11 +52,10 @@ jobs:
       #
       # NOT `bash setup.sh`: that also clones itsdestin/youcoded-admin (the one
       # PRIVATE repo, which would need a PAT) and then tries to `git pull` this
-      # repo over itself, which is wrong inside a CI checkout. Verified that no
-      # rule `paths:` glob and no docs/MAP.md path references youcoded-admin, so
-      # omitting it costs no coverage. If that ever changes, audit-anchors
-      # reports it as `repo youcoded-admin not found on disk` rather than
-      # silently passing.
+      # repo over itself, which is wrong inside a CI checkout. docs/MAP.md DOES
+      # name youcoded-admin files (the analytics dashboard, since 2026-09-15);
+      # audit-anchors lists those under `skipped` (repo not on disk) instead of
+      # failing, so they are only checked on a machine that has the private repo.
       #
       # --depth 1: the checks are file-existence, regex-contains, and
       # `git ls-files`. None of them read history.
