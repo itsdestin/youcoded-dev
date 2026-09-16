@@ -6,6 +6,15 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
       `settings/sync` `all` `decision` `checked 2026-09-16`
 
+- [ ] The Personal sync history only grows: 1.7 GB on GitHub and 2.5 GB on the Z13 on 2026-09-16, with a
+      save every few seconds while a conversation is running. GitHub asks repositories to stay under about 1 GB
+      and warns hard near 5 GB, and nothing trims the history yet.
+      `settings/sync` `all` `decision` `checked 2026-09-16`
+
+- [ ] A device that falls far behind may never catch up on a slow connection: each upload step is cut off
+      after 5 minutes and retried from the start. Not seen yet — the 2026-09-16 repair sent 280 MB in 44 s.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
 - [ ] A dev copy of the app syncs the same Personal folder as the real app at the same time, so the two
       race each other's sync steps. It let six over-limit files into the unpublished history on 2026-09-07
       (that case is now blocked at upload); other effects of the race are unverified.
