@@ -16,6 +16,7 @@
 #   bash scripts/run-dev.sh --list              # show worktrees + branches, then exit
 #   bash scripts/run-dev.sh device-identity --offset 100 --profile dev2   # run a SECOND instance
 #   bash scripts/run-dev.sh <wt> --dry-run      # print what would launch, don't launch
+#   bash scripts/run-dev.sh --stop [--offset N]  # stop the instance on that offset's ports (Electron AND its Vite)
 #
 # OPTIONS
 #   --path <dir>      Launch an explicit checkout dir (contains desktop/). Overrides <worktree>.
@@ -53,8 +54,83 @@ DEVTOOLS=1
 PROFILE="${YOUCODED_PROFILE:-dev}"
 LABEL=""            # window-title descriptor; defaults to the branch name below
 DRY_RUN=0
+STOP=0
 
 die() { echo "run-dev: $*" >&2; exit 1; }
+
+# The three ports one instance owns, for a given offset. Vite and the remote server
+# are the two everybody hits; the debugger only exists when devtools are on.
+ports_for_offset() { echo "$((5173 + $1)) $((9900 + $1)) $((9222 + $1))"; }
+
+# pid(s) LISTENING on a TCP port — derived from the port at the moment of use, never
+# remembered from an earlier listing (a stale pid once killed Destin's live app engine).
+pids_on_port() {
+  # `|| true`: under `set -o pipefail` a port with no listener makes grep exit 1, which
+  # would abort the whole script through `set -e` — silently, since nothing prints.
+  ss -ltnpH "sport = :$1" 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2 | sort -u || true
+}
+
+# WHY a preflight (2026-09-16, dev-workspace.md): with four-plus session worktrees on this
+# machine an offset collision is the normal case, and Vite only reported it AFTER the whole
+# launch sequence had run, as a bare "Port 5233 is already in use" that named neither the
+# worktree holding it nor a free offset. Check first, name the holder, suggest the next gap.
+# A listener on a port, whoever owns it. `ss -p` only reveals pids for this user's
+# sockets, so "no pid found" must never read as "port free" — a root-owned service on
+# the same number would still make the launch fail.
+port_busy() { [[ -n "$(ss -ltnH "sport = :$1" 2>/dev/null)" ]]; }
+
+preflight_ports() {
+  local busy=0 p pids pid cwd
+  for p in $(ports_for_offset "$OFFSET"); do
+    port_busy "$p" || continue
+    busy=1
+    pids="$(pids_on_port "$p")"
+    if [[ -z "$pids" ]]; then
+      echo "run-dev: port $p is already taken (by a process this user cannot see)" >&2
+      continue
+    fi
+    for pid in $pids; do
+      cwd="$(readlink "/proc/$pid/cwd" 2>/dev/null || true)"
+      echo "run-dev: port $p is already taken by pid $pid${cwd:+ (running in $cwd)}" >&2
+    done
+  done
+  if [[ "$busy" == "1" ]]; then
+    local try
+    for try in $(seq $((OFFSET + 10)) 10 $((OFFSET + 200))); do
+      local free=1 q
+      for q in $(ports_for_offset "$try"); do port_busy "$q" && { free=0; break; }; done
+      if [[ "$free" == "1" ]]; then
+        echo "run-dev: that is another dev instance on offset $OFFSET — launch this one with --offset $try --profile <its-own-name>, or stop the other with: bash scripts/run-dev.sh --stop --offset $OFFSET" >&2
+        exit 1
+      fi
+    done
+    die "every offset from $OFFSET to $((OFFSET + 200)) is in use — stop something first (bash scripts/run-dev.sh --stop --offset <n>)"
+  fi
+}
+
+# WHY --stop (2026-09-16, dev-workspace.md): killing the Electron process by hand orphaned
+# its Vite server, which kept the port and made the NEXT launch fail with an error that
+# named Vite rather than the leftover. The launcher knows every port it started, so it can
+# end the pair. Signals go to pids derived from the ports in this same command.
+stop_instance() {
+  local any=0 p pids pid
+  for p in $(ports_for_offset "$OFFSET"); do
+    pids="$(pids_on_port "$p")"
+    [[ -n "$pids" ]] || continue
+    for pid in $pids; do
+      any=1
+      echo "run-dev: stopping pid $pid on port $p ($(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | cut -c1-80))"
+      kill "$pid" 2>/dev/null || true
+    done
+  done
+  if [[ "$any" == "0" ]]; then echo "run-dev: nothing is listening on offset $OFFSET's ports ($(ports_for_offset "$OFFSET"))"; return 0; fi
+  # A graceful TERM first; anything still holding a port two seconds later gets KILL.
+  sleep 2
+  for p in $(ports_for_offset "$OFFSET"); do
+    for pid in $(pids_on_port "$p"); do echo "run-dev: pid $pid ignored SIGTERM — killing"; kill -9 "$pid" 2>/dev/null || true; done
+  done
+  echo "run-dev: offset $OFFSET's ports are free"
+}
 
 list_worktrees() {
   echo "Registered youcoded worktrees (branch → path):"
@@ -73,6 +149,7 @@ while [[ $# -gt 0 ]]; do
     -h|--help)  sed -n '2,39p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     --list)     list_worktrees; exit 0 ;;
     --dry-run)  DRY_RUN=1; shift ;;
+    --stop)     STOP=1; shift ;;
     --phone-build) PHONE_BUILD=1; shift ;;
     --path)     EXPLICIT_PATH="${2:-}"; [[ -n "$EXPLICIT_PATH" ]] || die "--path needs a directory"; shift 2 ;;
     --offset)   OFFSET="${2:-}"; [[ -n "$OFFSET" ]] || die "--offset needs a number"; shift 2 ;;
@@ -83,6 +160,9 @@ while [[ $# -gt 0 ]]; do
     *)          [[ -z "$WORKTREE" ]] || die "unexpected extra argument: $1"; WORKTREE="$1"; shift ;;
   esac
 done
+
+# --stop needs only the offset; it never resolves a checkout or launches anything.
+if [[ "$STOP" == "1" ]]; then stop_instance; exit 0; fi
 
 # --- resolve which checkout to run ---
 resolve_checkout() {
@@ -211,6 +291,8 @@ if [[ "$DRY_RUN" == "1" ]]; then
   echo "(--dry-run: not launching)"
   exit 0
 fi
+
+preflight_ports
 
 cd "$DESKTOP"
 if [[ "$PHONE_BUILD" == "1" ]]; then

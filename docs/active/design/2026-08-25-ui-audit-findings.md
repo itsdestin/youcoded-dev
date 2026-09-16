@@ -447,7 +447,8 @@ as a third stress theme.
 
 After Destin pointed out the mislabelled sheets, the capture driver was rebuilt to verify
 every shot (target must exist, an `expect` selector must hold, pixels must differ from the
-baseline; misses are quarantined and listed in `coverage-second-pass.md`). With that rig
+baseline; misses are quarantined and listed in the run's coverage file — then
+`coverage-second-pass.md`, since deleted; `2026-08-25-ui-audit/coverage.md` is what remains). With that rig
 **every surface previously listed as "unreviewed" was captured and verified in all six
 themes** (29 surfaces × 6 = 174 sheets, 0 missed — `overlays-*` in the gallery), plus a
 **live session on the real app** (`live-*`: 12 of 14 verified; the two misses are a context

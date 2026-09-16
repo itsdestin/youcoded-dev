@@ -38,7 +38,11 @@ ROWS = [
     ('row1', 'Seamless integration', 'Tools and conversations work across any model.',
      'Select from hundreds of models via OpenRouter, use Claude Code with your subscription plan, or pick an offline, private model to run on your own computer. Switch models mid-conversation without interruption.',
      'LOOP · Midnight — your skit: the edgy request, Claude\'s "No can do, I\'m a good boy!", the picker switches to Grok 4, Grok\'s rant, "whoa... that was a bit too much grok", Grok dials it back. Same conversation throughout; the model chip changes.', '', '', ''),
-    ('row2', 'Genuinely useful', 'Give it a task and it does real work, with boundaries you can trust.',
+    # WHY this wording (2026-09-16): this row's subtitle and the hero sentence below used to
+    # carry the two phrases removed from the live page on 2026-09-03 — the ones the promo
+    # captions' BANNED list names — so every rebuild-and-port reintroduced them. Both now
+    # mirror youcoded/docs/index.html.
+    ('row2', 'Genuinely useful', 'Give it a task and it gets done, with boundaries you can trust and shape.',
      'It reads your files, writes new ones, develops repeatable skills and workflows, searches the web, and helps you manage your computer and your life more efficiently. Permission modes let you restrict the model to match your level of comfort.',
      'LOOP · Crème — "go through this morning\'s email and handle what you can": Gmail search (MCP), the Quarterly Report skill loads, reads the numbers, asks before writing the draft (you click Yes), two calendar events (one asked), "want me to tell Dr. Patel?", "yes, send it", asks before sending, Sent. Email and calendar are MCP integrations the user connects first — not built in.',
      'Integrations · WeCoded', 'Connect your services.', 'With skills from the WeCoded marketplace, YouCoded can link with all of the following services: [18 clickable tags: Google Drive … Canva]'),
@@ -145,7 +149,7 @@ def body():
       '<ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#demo">Features</a></li><li><a href="#get-started">Download</a></li><li><a href="#faq">FAQ</a></li></ul></div></nav>')
     a('<header class="hero" id="top"><div class="container"><h1>Make AI <span class="word-cycler-static" style="color:var(--title-highlight);font-style:italic">Yours.</span></h1>'
       '<p class="rv-caption">animates: <b>Useful.</b> → <b>Fun.</b> → <b>Yours.</b> (was: Make Claude Useful. → Fun. → Cute. → Yours.)</p>'
-      + ed('p', 'hero.sub', 'A self-improving, customizable AI agent. Use any AI model from any provider to build or accomplish anything you want.', '(no sentence under the headline today)', 'hero-sub')
+      + ed('p', 'hero.sub', 'An AI agent you own and shape. Use any AI model from any provider to work and build your way.', '(no sentence under the headline today)', 'hero-sub')
       + '</div></header>')
     a('<div class="container"><div class="divider"></div></div>')
     a('<section id="about"><div class="container">' + ed('p', 'about.label', 'What is this?', 'What is this?', 'section-label') + ed('h2', 'about.title', 'More than a chatbot.', 'More than a chatbot.', 'section-title')

@@ -1,0 +1,91 @@
+{
+  "title": "Sync fixes — four screen changes to keep or revert",
+  "key": "sync-fixes-review",
+  "out": "sync-fixes.review.html",
+  "images": "images/sync-fixes.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "sync-error-box": [
+      "sync-oversize-fix",
+      "sync-error",
+      "420x190+510+220"
+    ],
+    "sync-retry-box": [
+      "sync-oversize-fix",
+      "sync-retrying",
+      "420x190+510+220"
+    ],
+    "sync-oversize-box": [
+      "sync-oversize-fix",
+      "sync-oversize",
+      "420x300+510+240"
+    ],
+    "gear": [
+      "sync-oversize-fix",
+      "gear-dot",
+      "240x44+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when sync has failed",
+      "crop": "sync-error-box",
+      "headline": "The Try again button now sits on the right side of the sync box.",
+      "changed": "The Try again and Connect GitHub buttons moved from under the message on the left to the right edge, under the on/off switch.",
+      "notice": "The buttons line up with the switch above them instead of with the red message text.",
+      "risk": "A long message and the buttons are now farther apart, so your eye travels across the box."
+    },
+    {
+      "id": "S-2",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → Try again",
+      "crop": "sync-retry-box",
+      "headline": "Pressing Try again now shows Syncing… until the attempt really finishes.",
+      "changed": "Before, the box kept saying Couldn't sync while the retry ran, so the button looked broken. Now it switches to Syncing… and stays there until the sync ends.",
+      "notice": "You see the retry happen. If it fails again, the box turns red again with the new error; if it works, it turns green.",
+      "risk": "On a slow connection or a big upload, Syncing… can stay up for several minutes.",
+      "highlight": {
+        "box": [
+          4,
+          8,
+          45,
+          25
+        ]
+      }
+    },
+    {
+      "id": "S-3",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync, when a conversation is too big to sync",
+      "crop": "sync-oversize-box",
+      "headline": "A new orange line tells you which conversations are too big to sync.",
+      "changed": "Conversations over 50 MB used to be skipped with no message anywhere. Now the box names them and says they stay on this device.",
+      "notice": "Click the orange line to see the conversation names. The line goes away if a file is deleted or shrinks back under the limit.",
+      "measured": "limit 50 MB",
+      "risk": "Your other devices still won't get new messages in those conversations; this only makes that visible."
+    },
+    {
+      "id": "S-4",
+      "surface": "Main window",
+      "path": "The Settings gear, top left",
+      "crop": "gear",
+      "headline": "The Settings gear turns red when GitHub sync is failing.",
+      "changed": "The red dot used to appear only for the older Google Drive and iCloud backups. It now also appears when your main GitHub sync fails.",
+      "notice": "You find out sync is broken without opening Settings. The dot clears once a sync succeeds.",
+      "risk": "A one-off sync error keeps the dot on until the next successful sync, usually within 2 minutes.",
+      "highlight": {
+        "selector": "[data-hint='Settings']"
+      }
+    }
+  ]
+}

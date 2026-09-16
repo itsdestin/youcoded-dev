@@ -205,8 +205,8 @@ echo ""
 # is how the changed-file detection above gets exercised without paying for a run.
 if [[ $DRY -eq 1 ]]; then
   echo "would run:"
-  echo "  npx tsc --noEmit -p tsconfig.json"
-  echo "  npx tsc --noEmit -p tsconfig.tests.json"
+  echo "  npx tsgo --noEmit -p tsconfig.json"
+  echo "  npx tsgo --noEmit -p tsconfig.tests.json"
   echo "  npm run knip"
   echo "  npm run lint"
   if [[ $RUN_FULL -eq 1 ]]; then
@@ -218,21 +218,28 @@ if [[ $DRY -eq 1 ]]; then
   exit 0
 fi
 
-start types "types (tsc --noEmit)" npx tsc --noEmit -p tsconfig.json
+# WHY tsgo (TypeScript 7's native compiler) instead of tsc: measured 2026-09-14,
+# the two trees take ~1.3s + ~1.9s under tsgo against ~11s + ~16s under tsc,
+# with identical verdicts. The BUILD still compiles with tsc (TypeScript 6), and
+# CI runs that build, so an emit-only divergence between the compilers is still
+# caught before release. Checkouts that predate tsgo fall back to tsc.
+TSC=tsc
+[[ -x "$DESKTOP/node_modules/.bin/tsgo" ]] && TSC=tsgo
+start types "types ($TSC --noEmit)" npx "$TSC" --noEmit -p tsconfig.json
 # The test tree is its own TS project (different module resolution, allowJs for
 # the .mjs orchestrator). Separate check so a failure names which tree broke.
 # Older checkouts have no tsconfig.tests.json; skip rather than fail on them.
 if [[ -f "$DESKTOP/tsconfig.tests.json" ]]; then
   TESTS_EXCLUDED=$(grep -cE '^ *"tests/.*\.tsx?"' "$DESKTOP/tsconfig.tests.json" || true)
-  start testtypes "types in tests/ (tsc --noEmit, ${TESTS_EXCLUDED} file(s) still excluded)" \
-    npx tsc --noEmit -p tsconfig.tests.json
+  start testtypes "types in tests/ ($TSC --noEmit, ${TESTS_EXCLUDED} file(s) still excluded)" \
+    npx "$TSC" --noEmit -p tsconfig.tests.json
 fi
 start knip  "dead code (knip)"     npm run knip --silent
-# eslint is the bug gate, not a style gate — it catches the classes tsc/knip
+# oxlint is the bug gate, not a style gate — it catches the classes tsc/knip
 # structurally cannot (conditional React hooks, floating promises in main,
 # runtime imports of undeclared packages). Rule set + the measured cost of every
-# deferred rule: desktop/eslint.config.mjs.
-start lint  "lint (eslint)"        npm run lint --silent
+# deferred rule: desktop/.oxlintrc.json (it replaced eslint.config.mjs 2026-09-14).
+start lint  "lint (oxlint)"        npm run lint --silent
 
 if [[ $RUN_FULL -eq 1 ]]; then
   start tests "tests (full suite)" npx vitest run

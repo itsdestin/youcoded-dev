@@ -52,11 +52,10 @@ jobs:
       #
       # NOT `bash setup.sh`: that also clones itsdestin/youcoded-admin (the one
       # PRIVATE repo, which would need a PAT) and then tries to `git pull` this
-      # repo over itself, which is wrong inside a CI checkout. Verified that no
-      # rule `paths:` glob and no docs/MAP.md path references youcoded-admin, so
-      # omitting it costs no coverage. If that ever changes, audit-anchors
-      # reports it as `repo youcoded-admin not found on disk` rather than
-      # silently passing.
+      # repo over itself, which is wrong inside a CI checkout. docs/MAP.md DOES
+      # name youcoded-admin files (the analytics dashboard, since 2026-09-15);
+      # audit-anchors lists those under `skipped` (repo not on disk) instead of
+      # failing, so they are only checked on a machine that has the private repo.
       #
       # --depth 1: the checks are file-existence, regex-contains, and
       # `git ls-files`. None of them read history.
@@ -173,6 +172,11 @@ jobs:
       - name: a launcher resolves a session worktree by its own name
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/resolve-checkout.test.sh
+
+      # run-review.sh took `--help` as a worktree and started a workbench for it (2026-09-16).
+      - name: run-review.sh refuses a target that is not a folder
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/run-review-args.test.sh
 
       # The pre-merge report must say whether the branch still merges cleanly — two branches
       # passed every check on 2026-09-04 and conflicted on the generated roadmap table at merge.
