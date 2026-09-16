@@ -97,11 +97,13 @@ run. 28 red runs for that.
 
 ## What this branch fixes (all mechanical, verified locally, then proven on CI)
 
-Five CI runs of this branch, in order: Windows 16 → 1 → 2 → 3 → 0 → 1 failures (each round
-exposed tests a file-level crash had hidden; the last one is a single 30 s timeout on a test that
-passed the run before, filed as a Windows load flake), macOS 1 → 0 → 0 → 0 → 0, Linux 0 → 3 → 1
-→ 1 → 0. Every red that remained after round two was one of the filed product races or a
-one-off load timeout, not a test-side assumption. The one test that
+Seven CI runs of this branch, in order: Windows 16 → 1 → 2 → 3 → 0 → 1 → 0 → 0 failures (each
+early round exposed tests a file-level crash had hidden), macOS 1 → 0 → 0 → 0 → 0 → 0 → 0, Linux
+0 → 3 → 1 → 1 → 0 → 1 → 0. **Run 35095810401 is green on all three legs — the first such run
+since 2026-09-10.** Every red after round two was a filed product race or a single load flake
+fixed the same way (wait on the result, not the tick). The new Desktop CI workflow (Linux on PRs,
+all three on master and nightly, docs-only changes report a skipped check) ran on the last two;
+Android CI with the web-only bundle passed in 5.6 minutes instead of 13. The one test that
 asserted the lease file's deletion now pins only the in-memory contract; its on-disk claim is
 filed with evidence rather than reddening every merge.
 
