@@ -31,7 +31,11 @@ Confirm with `git log --oneline origin/master -1`, then do the cleanup above by 
 the merge.
 Verify the commit landed on the remote default first: `git merge-base --is-ancestor <sha> origin/master` must exit 0 (a stale local `master` is not the authority). Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
-**A red check on the PR: run `bash scripts/ci-red-vs-master.sh <pr> [<repo-dir>]` before opening a log.** It pulls the failing test names from the PR's failed jobs and from master's latest run of the same workflow and says which failures are already red on master (exit 0) and which are new (exit 1); build/install breaks with no test names are yours to read. Two known-red legs on 2026-09-10 — the workspace git-identity test and the desktop Windows harness checkpoint tests — cost four manual comparisons in one session before this existed.
+**A red check on the PR is yours until proven otherwise.** Master is protected on
+`build (ubuntu-latest)` (2026-09-16), so a red Linux check stops the merge: open the failed
+job's log (`gh run view <id> --log-failed`), find the `FAIL` lines, and fix them on the branch.
+Windows and macOS run on master and nightly, not on PRs; a red there after your merge is
+still yours the same day. Never re-run a red job hoping it goes green without reading it.
 
 **Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
 
