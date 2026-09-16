@@ -204,12 +204,7 @@ seen-on is always n/a here.
       origin/master on 2026-09-16 (which adopted `oxlint` and `tsgo`) `verify.sh` failed types,
       knip and lint with "oxlint: command not found" and an old tsc, while the tests passed.
       Creation fetches missing packages ("deps: … fetched 4 package(s)"); resume should too, or
-      say plainly that the deps are behind master's package.json.
-      2026-09-16 (session/ci-followups-a): a FRESHLY CREATED worktree has the same gap — the
-      fetched `oxlint` and `@typescript/native-preview` got no `node_modules/.bin` links and no
-      platform binary (`@typescript/native-preview-linux-x64` missing), and `typescript` stays at
-      the shared install's 5.9.3 while package.json wants ^6 (`tsc` fails TS5095). Worked around by
-      installing the pinned versions into a scratch folder and running them from there
+      say plainly that the deps are behind master's package.json
       `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
