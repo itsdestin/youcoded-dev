@@ -50,7 +50,8 @@ fi
 # element that is never released makes any later removal free nothing).
 # 2026-09-10: +1 for no-workbench-gate-in-shipped-ui.
 # 2026-09-16: +1 for test-file-url-to-path (the tests tree is scanned too, see TESTS_DIR).
-EXPECTED_VIOLATIONS=11
+# 2026-09-16: +1 for iframe-sandbox-no-allow-same-origin (Plan B).
+EXPECTED_VIOLATIONS=12
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
