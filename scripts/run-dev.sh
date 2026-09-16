@@ -64,18 +64,31 @@ ports_for_offset() { echo "$((5173 + $1)) $((9900 + $1)) $((9222 + $1))"; }
 
 # pid(s) LISTENING on a TCP port — derived from the port at the moment of use, never
 # remembered from an earlier listing (a stale pid once killed Destin's live app engine).
-pids_on_port() { ss -ltnpH "sport = :$1" 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2 | sort -u; }
+pids_on_port() {
+  # `|| true`: under `set -o pipefail` a port with no listener makes grep exit 1, which
+  # would abort the whole script through `set -e` — silently, since nothing prints.
+  ss -ltnpH "sport = :$1" 2>/dev/null | grep -o 'pid=[0-9]*' | cut -d= -f2 | sort -u || true
+}
 
 # WHY a preflight (2026-09-16, dev-workspace.md): with four-plus session worktrees on this
 # machine an offset collision is the normal case, and Vite only reported it AFTER the whole
 # launch sequence had run, as a bare "Port 5233 is already in use" that named neither the
 # worktree holding it nor a free offset. Check first, name the holder, suggest the next gap.
+# A listener on a port, whoever owns it. `ss -p` only reveals pids for this user's
+# sockets, so "no pid found" must never read as "port free" — a root-owned service on
+# the same number would still make the launch fail.
+port_busy() { [[ -n "$(ss -ltnH "sport = :$1" 2>/dev/null)" ]]; }
+
 preflight_ports() {
   local busy=0 p pids pid cwd
   for p in $(ports_for_offset "$OFFSET"); do
-    pids="$(pids_on_port "$p")"
-    [[ -n "$pids" ]] || continue
+    port_busy "$p" || continue
     busy=1
+    pids="$(pids_on_port "$p")"
+    if [[ -z "$pids" ]]; then
+      echo "run-dev: port $p is already taken (by a process this user cannot see)" >&2
+      continue
+    fi
     for pid in $pids; do
       cwd="$(readlink "/proc/$pid/cwd" 2>/dev/null || true)"
       echo "run-dev: port $p is already taken by pid $pid${cwd:+ (running in $cwd)}" >&2
@@ -85,7 +98,7 @@ preflight_ports() {
     local try
     for try in $(seq $((OFFSET + 10)) 10 $((OFFSET + 200))); do
       local free=1 q
-      for q in $(ports_for_offset "$try"); do [[ -z "$(pids_on_port "$q")" ]] || { free=0; break; }; done
+      for q in $(ports_for_offset "$try"); do port_busy "$q" && { free=0; break; }; done
       if [[ "$free" == "1" ]]; then
         echo "run-dev: that is another dev instance on offset $OFFSET — launch this one with --offset $try --profile <its-own-name>, or stop the other with: bash scripts/run-dev.sh --stop --offset $OFFSET" >&2
         exit 1
