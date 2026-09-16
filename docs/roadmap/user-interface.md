@@ -2,6 +2,11 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] The design check still lists about 530 places where a screen overrides a shared button’s
+      look, types a size in by hand, or uses a color outside the theme. Only the mechanical
+      fixes were made on 2026-09-16; each remaining group needs its own design call.
+      `all` `confirmed` `checked 2026-09-16`
+
 - [ ] Two "Show details" style dropdowns in Backup & Sync still use the browser's bare triangle, the look Destin said he
       hates (2026-09-05). A test now blocks new ones and lists these two as known; restyling them is his call.
       `settings/sync` `desktop` `decision` `checked 2026-09-16`

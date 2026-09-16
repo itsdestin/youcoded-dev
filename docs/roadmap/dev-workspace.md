@@ -310,6 +310,18 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
+      port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
+      this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
+      the way its Chrome port blocks already do
+      `n/a` `confirmed` `checked 2026-09-16`
+
+- [ ] Destin asked to “optimize tf out of our workspace” (2026-09-14). Oxlint, TypeScript 7 and the
+      design check shipped; still untried: one-off scans with Fallow (dead code, copy-paste,
+      tangled imports — could replace knip) and React Doctor (bad React patterns), reported
+      before anything is added to the checks. React Doctor sends usage data unless turned off
+      `n/a` `needs-verify` `checked 2026-09-16`
+
 - [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
       remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
       failing file — the known remote-download inode test, also red on master's Linux run. It
@@ -764,7 +776,12 @@ seen-on is always n/a here.
       finds": committing another session's in-flight WIP under this session's authorship is the
       more dangerous failure. Wanted instead: an exit condition in plan templates, so a plan that
       forbids committing during implementation says when that constraint ENDS
-      `n/a` `confirmed` `checked 2026-09-09`
+      RECURRED 2026-09-16, across machines: a session committed its work on the desktop PC
+      but never pushed (pushing still needed Destin’s OK), then continued on the Z13, where
+      none of it existed; everything was rebuilt from the transcript. The stranded-worktree
+      check only sees the local disk, so it cannot catch this. Destin’s global rule now says
+      push every branch as soon as it has a commit.
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] Two guardrails from the 2026-07-28 retrospective are still unshipped: spec counts are
       neither anchored nor dated (no "specs are snapshots" convention exists), and `run-dev.sh

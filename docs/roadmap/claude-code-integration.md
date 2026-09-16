@@ -4,6 +4,11 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
+- [ ] In the model picker, Fast mode’s “⚠ Billed Per Token” warning is a one-off hand-built box
+      rather than the app’s shared warning box, so it will not follow changes to how warnings
+      look. Found by the design check on 2026-09-16; moving it changes its look slightly.
+      `model-picker` `desktop` `confirmed` `checked 2026-09-16`
+
 - [ ] Non-ASCII messages can cross Claude Code’s 64-byte paste threshold while YouCoded still
       treats them as a short atomic send, because desktop and Android count UTF-16 characters
       instead of encoded bytes. Desktop’s echo check can also miss a valid message when an ANSI
