@@ -124,8 +124,13 @@ searched or resumed (chat-data).
 - [ ] The app held roughly a quarter of a million file watches on its own (measured 2026-08-26); a
       second instance ran the machine out of watches and file watching failed with a "no space
       left" error that has nothing to do with disk. The project watcher stopped walking nested
-      repos and worktrees on 2026-09-10 (9,583 directories under this workspace alone), so the
-      count needs re-measuring before anything else is done. Worked around on Destin's machine only
+      repos and worktrees on 2026-09-10 (9,583 directories under this workspace alone). CAUSE
+      FOUND 2026-09-16 (smoothness sweep C9): the "Home" project a fresh install seeds when no
+      folder is saved watched the whole home folder six levels deep with no directory cap —
+      Documents, Downloads, Pictures, every non-repo tree. PENDING MERGE OF
+      `perf/main-thread-click-paths`: the home folder itself is watched two levels deep
+      (`watchDepthFor`); deeper files still list and open, they just do not live-refresh while
+      Home is the project. Re-measure the count after it merges, then close
       `desktop` `needs-verify` `checked 2026-09-16` `performance`
 
 - [ ] Spreadsheets in the files pane are look-only: an `.xlsx` or `.csv` opens as a grid you can

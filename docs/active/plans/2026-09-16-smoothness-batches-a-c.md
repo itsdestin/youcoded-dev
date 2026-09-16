@@ -423,6 +423,52 @@ The three callers become `void buildStatusDataShared().then((data) => { send(IPC
 - [ ] Fresh-eyes review; fix findings.
 - [ ] Roadmap (workspace worktree): close `files.md` "quarter of a million file watches" with the cause and C9; update `chat-data.md` "four smaller reads" to say the native half shipped (C6) and the conversation-store half is still deferred behind `session/sync-safety-audit-20260908`; file C7 (chatsearch re-index on star/rename) and C10 (reconcile + sub-agent watcher timers) as new `performance` items; `node scripts/roadmap-check.mjs --fix --root <workspace worktree>` and diff before committing.
 
+## State — 2026-09-16
+
+**Batch A `perf/shell-redraw-per-token` — built, verified, reviewed. Awaiting Destin's merge
+call.** Six commits: A1 (three root subscriptions → cached selectors), A2 (strip layout
+effects keyed on `themeApplied`), A3 (seen-uuid dedup appends in place), A4 (`dispatchMany`
+notifies once per frame; the retry tracker skips untouched sessions), A6 (tool card body
+reads `toolCalls` only), plus the review's fixes. `bash scripts/verify.sh` green, all six
+checks. A fresh reviewer found one real gap — the strip's theme-keyed effects ran one commit
+BEFORE the theme reached the DOM — fixed with the provider's `themeApplied` counter; and had
+`dispatchMany` commit per action under try/catch so a throwing action loses only itself.
+Pinned: 40 streamed words → 0 re-renders of a component using all three root hooks and 0
+commits of an expanded tool card; the seen-uuid Set keeps its identity per word; a frame of
+ten actions notifies each subscriber once; the trust gate flips through the real store.
+
+**Decision recorded:** A3's `getOrCreateTurn` change was DROPPED. Every caller mutates the
+returned Map, so the copy is required for purity and happens once per delta either way; the
+per-word cost that grew with the chat was the seen-uuid set, which is fixed. **A5** (the
+streaming bubble re-parses and re-highlights per frame) remains deferred: it changes what the
+eye sees while text appears and needs a before/after clip and Destin's call.
+
+**Batch C `perf/main-thread-click-paths` — built, verified, reviewed (review findings applied
+below if any). Awaiting Destin's merge call.** Eight commits: C1 (incremental transcript
+reader for the per-turn publish), C2 (`isLive`, async history pages), C3 (git snapshot
+precomputed async at all four build sites), C4 (Glob/Read/Edit/Write async + per-path lock),
+C5 (status push, topic poll and transcript safety poll async; topic poll upgrades to a
+watcher), C6 (native Resume listing async), C8+C9 (watcher sink sends to subscribed windows;
+own-write markers expire; Home watched two levels deep), plus two test-found fixes. The guard
+`main-hot-path-no-sync-fs.test.ts` now covers every converted path.
+
+**Not built, filed:** C7 (conversation-store heal readdir; chatsearch re-index on star/rename)
+behind `session/sync-safety-audit-20260908`; C10 (30-minute reconcile; sub-agent watcher
+timers) — `docs/roadmap/chat-data.md` and `claude-code-integration.md`.
+
+**No dev-window check was run** (the C5 status-chip and topic-name check in Task C5 step 4):
+launching a window on Destin's desktop unannounced is against the standing rule, and he was
+not present. Every C5 path is covered by the source guard and the related suites; the live
+check is the first thing to do when he is.
+
+**Workspace tooling gap found, filed in `dev-workspace.md`:** a fresh worktree's hardlinked
+`node_modules` carries the shared checkout's TypeScript 5.9 and no native binding for oxlint
+or tsgolint, so `verify.sh`'s types and lint checks fail on every new worktree until the
+packages are unpacked by hand from tarballs (done here for both worktrees, outside the shared
+farm).
+
+**Rig:** see the numbers section below once the runs complete; Batch C is expected flat.
+
 ## Close-out per branch
 
 Commit by explicit path, push, `bash scripts/close-out.sh <branch> youcoded`, address findings within scope, then stop and ask "ready to merge?". Never merge unasked.
