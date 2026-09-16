@@ -1,0 +1,25 @@
+{
+  "title": "Hover hints, round four — the whole main screen",
+  "key": "app-themed-tooltips-live-4",
+  "out": "app-themed-tooltips.live-4.html",
+  "live": {
+    "worktree": "sessions/app-themed-tooltips/youcoded",
+    "offset": 180
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "The whole main screen",
+      "path": "Anywhere you hover — the bars, the chips, the conversation, the files drawer",
+      "headline": "Hunt for a grey box anywhere on this screen — is there one left?",
+      "changed": "I stopped guessing which parts count as always on screen and followed the app's own structure out from the four bars. That found 28 more, including the tags and note chip you named, the open-tasks and helpers chips, and the folder button — plus the things beside them: the model list, the find bar, the git review, tool cards and file links.",
+      "notice": "Every hover hint on this screen is now the app's own. What is left is settings, the marketplace and project view — the part you chose to leave until we are in those files anyway.",
+      "risk": "Three times a hint was put on something whose wording was a heading, not a hint. Each was caught and put back, and there is now a check that refuses it — but a heading in the wrong place is the thing to watch for.",
+      "yes": "Yes, none left",
+      "no": "No, found one",
+      "live": {
+        "app": "default"
+      }
+    }
+  ]
+}

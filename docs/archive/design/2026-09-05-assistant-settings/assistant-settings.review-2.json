@@ -1,0 +1,131 @@
+{
+  "title": "Assistant settings — round 2: your notes drawn",
+  "key": "assistant-settings-review-2",
+  "out": "assistant-settings.review-2.html",
+  "images": "images/assistant-settings.review-2",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r2/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r2/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "general": [
+      "assistant-settings-r2",
+      "assistant-general",
+      "840x720+300+90"
+    ],
+    "cloud": [
+      "assistant-settings-r2",
+      "assistant-cloud",
+      "840x720+300+90"
+    ],
+    "permissions-on": [
+      "assistant-settings-r2",
+      "assistant-permissions-skip-on",
+      "840x720+300+90"
+    ],
+    "phone-list": [
+      "assistant-settings-narrow",
+      "narrow-list",
+      "390x800+0+0"
+    ],
+    "phone-page": [
+      "assistant-settings-narrow",
+      "narrow-permissions",
+      "390x800+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Settings → Assistant settings",
+      "path": "Settings → Assistant settings → the page list",
+      "crop": "general",
+      "headline": "Five pages in one flat list: General, Cloud providers, Local models, Permissions, Specialists.",
+      "changed": "Your P-5 note. The Providers and Assistant labels are gone, and Claude Code, ChatGPT and OpenRouter are one page called Cloud providers. Web search is no longer a page (P-10) — it lives at the bottom of General. Eight pages became five.",
+      "notice": "The list is short enough that every page is visible with room to spare, on every theme.",
+      "risk": "Cloud providers is the only name in the list that is a category rather than a thing; it is the word the old popup used for the same group.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R2-2",
+      "surface": "Settings → Assistant settings → General",
+      "path": "Settings → Assistant settings → General",
+      "crop": "general",
+      "headline": "General: Default model with your line under it, and Web search at the bottom.",
+      "changed": "The row is called Default model, and the line under it is yours: This model will be pre-filled in the model picker, but you may still switch models at any time. Under Project folder and Close-session prompt sits Web search — the same heading, (i), sentence and Tavily / Exa rows the popup had.",
+      "notice": "The New conversations eyebrow above the default model is gone; the row's own title does that job now.",
+      "risk": "General is now the second-longest page; on a short window Web search sits below the fold and the page scrolls to it.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R2-3",
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers",
+      "crop": "cloud",
+      "headline": "Cloud providers: the Claude Code, ChatGPT and OpenRouter cards stacked, then Your own API keys.",
+      "changed": "Your P-5 note: the three sign-in and usage cards together on one page, in the order and shape the Model Providers popup had them, with the OpenRouter card's own-keys list under it. The Claude Code card lost its permissions block — that moved to Permissions.",
+      "notice": "A red dot on this page's name in the list, and beside its title, when a ChatGPT plan is blocked — the dot you picked in P-11.",
+      "risk": "Signed in to all three with plan bars showing, the page is tall enough to scroll; the list on the left stays put.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R2-4",
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Settings → Assistant settings → Permissions",
+      "crop": "permissions-on",
+      "headline": "Permissions: Claude Code's switch first, in plain words, then the other providers' modes and Always-allowed list.",
+      "changed": "Two blocks. Under a Claude Code heading: Skip Permissions — the name you kept in P-13 — with the hint New Claude Code conversations won't ask before changing files or running commands, and when it is on, the red line Claude will change files and run commands without asking you. The Advanced list and its dangerous confirmation are gone (P-4, P-14). Then, under ChatGPT, OpenRouter and local models: the three modes and the Always-allowed list, unchanged.",
+      "notice": "The Advanced row with the chevron you disliked is gone with the list it opened; the switch stands alone.",
+      "risk": "Someone who turned on one of the old protection overrides keeps it on with nothing left to show it — the next step is about that.",
+      "highlight": {
+        "box": [
+          23.8,
+          33.3,
+          73.6,
+          63.9
+        ]
+      }
+    },
+    {
+      "id": "R2-5",
+      "words": true,
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "What happens to a protection override someone already switched on",
+      "headline": "The old Advanced switches are gone from the screen. Should the build also turn off any that were on?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Turn them all off when this ships (recommended)",
+          "summary": "When the app first starts with the new panel it resets every stored protection override to off. From then on Claude Code protects config files, .git and the compound commands exactly as it does for a fresh install. Pro: nothing dangerous stays silently on with no switch to see it — which is the whole reason you dropped the idea. Con: a user who had deliberately turned one on gets asked again for those things, with no notice that anything changed.",
+          "cost": "One reset on first launch, and a note in the release notes."
+        },
+        {
+          "id": "b",
+          "label": "Leave stored values alone",
+          "summary": "The screen loses the switches but whatever was saved keeps applying. Pro: nothing changes for anyone under the hood. Con: a switch that cannot be seen or turned off is exactly the state we are trying not to ship.",
+          "cost": "Nothing."
+        }
+      ]
+    },
+    {
+      "id": "R2-6",
+      "surface": "Settings → Assistant settings, phone width",
+      "path": "Settings → Assistant settings on a phone → Permissions",
+      "crop": "phone-page",
+      "headline": "On a phone the five pages are the first screen; Permissions opens with the back arrow.",
+      "changed": "The same fold you approved in P-12, with the shorter list. The Round 1 picture is the Claude Code page reached from the eight-page list; Round 2 is the Permissions page from the five-page list, Claude Code's switch at the top.",
+      "notice": "Five rows fit on one phone screen with no scrolling.",
+      "risk": "None new; the phone layout is as approved.",
+      "highlight": "auto"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+ "deck": "app-icon-design",
+ "started": "2026-09-10T23:59:09.577Z",
+ "submitted": "2026-09-11T00:00:03Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "v": "pick",
+   "pick": "white",
+   "seconds": 27,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "pick",
+   "pick": "deep",
+   "seconds": 25,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

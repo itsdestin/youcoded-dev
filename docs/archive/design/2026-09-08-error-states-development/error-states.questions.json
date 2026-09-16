@@ -1,0 +1,116 @@
+{
+  "title": "Errors, bug reports, and contributing to YouCoded",
+  "key": "error-states-development-questions",
+  "out": "error-states.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-scope",
+      "words": true,
+      "surface": "Errors throughout YouCoded",
+      "path": "Chats, screens, settings, menus, setup, and disconnected or crashed sessions",
+      "headline": "Every error needs an honest explanation and a useful next step.",
+      "changed": "Keep the full app-wide audit in scope, including desktop, Android, and remote access. Offer Retry when repeating the action is safe, a relevant fix such as signing in when needed, and Report bug for problems YouCoded needs to resolve. One failure can need both Retry and Report bug.",
+      "notice": "Reports go to the YouCoded GitHub repository with the originating error attached for review. A bad field stays beside its input. Retrying must not silently resend a message, repeat a payment, or duplicate a report. Unchecked surfaces remain explicitly listed rather than counted as reviewed.",
+      "yes": "That's the scope",
+      "no": "Change the scope"
+    },
+    {
+      "id": "Q-report-evidence",
+      "words": true,
+      "surface": "Bug reports",
+      "path": "Report bug from an error, or Settings → Development",
+      "headline": "What should a bug report include before the user reviews it?",
+      "today": "Bug reports collect a diagnostics snapshot and recent logs. Users can edit the logs, but there is no screenshot attachment control in the current report form.",
+      "problem": "Useful evidence helps us fix a bug, but logs and screenshots can contain personal information. GitHub issues in this repository are public.",
+      "proposal": "Always show an editable preview and a clear public-sharing notice before submission. Never capture a screenshot without the user asking. Choose the starting selection for diagnostic details.",
+      "options": [
+        {"id": "minimal", "label": "Error first; logs optional", "pros": ["Starts with the error and app version, not unrelated activity.", "Users explicitly choose logs and screenshots, then inspect them."], "cons": ["Some reports arrive without enough detail to diagnose."], "recommended": true},
+        {"id": "logs-selected", "label": "Logs selected for review", "pros": ["More reports contain useful diagnostic evidence.", "Users can edit or remove the selected logs before sending."], "cons": ["People may overlook sensitive content despite automatic secret removal and the preview."]}
+      ]
+    },
+    {
+      "id": "Q-attachments",
+      "words": true,
+      "surface": "Screenshot and log attachments",
+      "path": "Review a bug report → send to GitHub",
+      "headline": "Is finishing attachment-based reports in GitHub acceptable?",
+      "today": "YouCoded can submit text reports directly. GitHub supports ordinary users attaching screenshots and logs in its browser editor; its documented command-line media upload requires repository push access.",
+      "problem": "An attachment upload cannot simply be added to the existing text-report request. A completely in-app upload flow would need a separately designed and secured service.",
+      "proposal": "Prepare and review the report inside YouCoded. For attachments, export only the files the user approves and open GitHub to finish attaching and submitting. Explain that GitHub uploads files as soon as they are attached, before the final Submit.",
+      "options": [
+        {"id": "browser-attachments", "label": "GitHub finishes attachments", "pros": ["Uses GitHub's supported upload flow for ordinary contributors.", "Text-only reports can still submit inside YouCoded."], "cons": ["Reports with images require a browser step and attaching the approved files."], "recommended": true},
+        {"id": "in-app-service", "label": "Design fully in-app uploads", "pros": ["Users could finish reports without switching to GitHub."], "cons": ["Adds a public upload service needing abuse prevention, storage limits, and deletion rules.", "Requires a separate service and privacy design before implementation."]}
+      ]
+    },
+    {
+      "id": "Q-ai-help",
+      "words": true,
+      "surface": "Bug reports and feature requests",
+      "path": "Describe → review → submit",
+      "headline": "Should AI help be optional rather than part of every report?",
+      "today": "Continue runs a Claude summary before showing the report preview. The review screen also offers to install the workspace and let Claude investigate or build the change.",
+      "problem": "Reporting an AI-provider failure should not depend on that provider working. Sending diagnostic details to an AI service also deserves an explicit choice.",
+      "proposal": "Make an editable report usable without any AI call. Keep investigating a bug separate from submitting it, so reporting never installs a development workspace unexpectedly.",
+      "options": [
+        {"id": "optional-ai", "label": "Optional AI assistance", "pros": ["Reports work without an AI account or a working provider.", "Users can ask an available assistant to improve the wording or investigate, after reviewing the context."], "cons": ["AI assistance adds a separate action rather than happening automatically."], "recommended": true},
+        {"id": "manual-only", "label": "No AI in reporting", "pros": ["The reporting flow stays simple and predictable.", "No report content is sent to an AI service by this form."], "cons": ["Users must start a separate conversation if they want help explaining the problem."]}
+      ]
+    },
+    {"id": "P-workspace", "page": "A contribution workspace anyone can use", "intro": "The contribution button will set up an app-managed project. These choices distinguish private backup, project updates, and publicly proposing a change."},
+    {
+      "id": "Q-workspace-sync",
+      "words": true,
+      "surface": "Contribute to YouCoded",
+      "path": "Settings → Development → Contribute to YouCoded",
+      "headline": "Should contribution setup require sync, or let someone begin locally while they connect it?",
+      "today": "The installer uses a fixed youcoded-dev folder in the user's home directory, runs workspace setup, and offers a new session. This is separate from managed-project sync.",
+      "problem": "A managed project can be available locally before private backup is ready. Calling it synced too early would hide a setup failure.",
+      "proposal": "Install new workspaces as managed projects. Use private project backup rather than publishing changes to YouCoded automatically. Make the setup's actual backup state visible.",
+      "options": [
+        {"id": "local-then-sync", "label": "Start locally; finish sync", "pros": ["Users can begin even if GitHub sign-in or sync is temporarily unavailable.", "Setup clearly says when the project is only on this device and offers to finish connecting."], "cons": ["Work is not backed up until sync finishes."], "recommended": true},
+        {"id": "sync-required", "label": "Require sync to finish", "pros": ["A completed contribution setup always includes private backup."], "cons": ["A GitHub or sync problem blocks the contribution flow even when the workspace files are usable."]}
+      ]
+    },
+    {
+      "id": "Q-existing-workspace",
+      "words": true,
+      "surface": "Existing contribution workspaces",
+      "path": "Contribute to YouCoded when a workspace already exists",
+      "headline": "How should setup treat an existing workspace that may contain unfinished work?",
+      "today": "Setup recognizes an existing workspace by its repository address, pulls updates, and runs setup again. The managed-project import operation moves an existing folder.",
+      "problem": "Moving a workspace that another app or session is using can break paths. Reusing it without checking can mix contribution setup with unfinished work.",
+      "proposal": "Never move or update an in-use workspace automatically. Choose the default offered when an older, unmanaged workspace is found.",
+      "options": [
+        {"id": "fresh-managed", "label": "Offer a separate managed copy", "pros": ["Leaves the existing workspace and its unfinished work untouched.", "New contributors get the same predictable setup."], "cons": ["Uses extra disk space and creates two workspaces to distinguish."], "recommended": true},
+        {"id": "guided-import", "label": "Offer a guided move", "pros": ["Keeps one workspace and preserves its existing files."], "cons": ["Requires closing sessions using that folder and checking the move before proceeding."]}
+      ]
+    },
+    {
+      "id": "S-explainer",
+      "words": true,
+      "surface": "Contribution explainer",
+      "path": "The information button beside Contribute to YouCoded",
+      "headline": "Explain contributing as a conversation, not a developer prerequisite.",
+      "changed": "The information button opens a short walkthrough: describe an idea or bug; let the assistant inspect the project; review the proposed design; try an isolated preview; run checks; and choose whether to propose the change on GitHub.",
+      "notice": "Explain the roadmap, shared project guidance, separate working copies, and private backup in plain language. Make clear that changes do not alter the installed app or become public merely because they sync. Include examples such as fixing confusing wording or improving a screen.",
+      "yes": "Use this approach",
+      "no": "Change the approach"
+    },
+    {"id": "P-roadmap", "page": "The roadmap on GitHub", "intro": "The canonical roadmap lives in the public youcoded-dev repository. The YouCoded issue tracker currently has no pinned issues."},
+    {
+      "id": "Q-roadmap",
+      "words": true,
+      "surface": "GitHub issue tracker",
+      "path": "itsdestin/youcoded → Issues",
+      "headline": "Should the pinned roadmap link to the latest file, or show an automatically refreshed copy?",
+      "today": "ROADMAP.md is a public index of topic-specific backlogs in the workspace repository, separate from the app's GitHub issues.",
+      "problem": "A manually pasted copy would become stale, and its relative links would point to the wrong repository when pasted into an issue.",
+      "proposal": "Use a pinned issue as the entry point. Either link directly to the current roadmap, or add automation that refreshes its contents when the roadmap changes and fixes the links.",
+      "options": [
+        {"id": "canonical-link", "label": "Pin a link to the latest", "pros": ["Always opens the canonical roadmap, including its working topic links.", "No duplicate copy or update job can fall behind."], "cons": ["Reading the roadmap takes one extra click from the pinned issue."], "recommended": true},
+        {"id": "mirrored-body", "label": "Refresh the pinned issue", "pros": ["People can read the roadmap index inside the issue."], "cons": ["Needs an automated update job with GitHub permission.", "The copy can lag if that job fails; topic backlogs still open as links."]}
+      ]
+    }
+  ]
+}

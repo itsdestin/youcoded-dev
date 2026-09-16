@@ -1,0 +1,70 @@
+{
+ "title": "Friendlier Light and Cr\u00e8me mascots contract \u2014 acceptance",
+ "key": "friendly-mascots-contract-acceptance",
+ "out": "friendly-mascots.contract.acceptance.html",
+ "themes": [
+  "light"
+ ],
+ "branch": "session/buddy-floater-regression",
+ "sources": {
+  "friendly-mascots-questions": "friendly-mascots.questions.json",
+  "friendly-mascots-review": "friendly-mascots.review.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Buddy mascot",
+   "path": "Light and Cr\u00e8me themes \u2014 floating buddy and matching in-app mascots",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "yes": "Yes, accept",
+   "no": "No, something is wrong",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "Light and Cr\u00e8me keep the same buddy with a softer palette.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "friendly-mascots-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "A lighter body and dark eyes keep the same buddy with a softer expression.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "friendly-mascots-review#V-1",
+     "verdict": "pass",
+     "evidence": "Fresh 1440x900 ui-probe captures of the built branch on isolated fake-backend workbench localhost:5544, with --fail-on-error, passed for both themes (exit 0); each reported data-friendly-mascots=built and 7 #rig-root elements. Visually read and compared approved docs/archive/design/2026-09-08-friendly-mascots/scratch/after/shots-palette/creme/01.png against built docs/archive/design/2026-09-08-friendly-mascots/built/creme.png, and approved docs/archive/design/2026-09-08-friendly-mascots/scratch/after/shots-palette/light/01.png against built docs/archive/design/2026-09-08-friendly-mascots/built/light.png. Both match the approved lighter warm-sand / pale grey-green bodies, dark eyes with light sparkles, unchanged buddy silhouettes and expressions, and outlined small in-app mascots. R1 and R3 are human checks and intentionally omitted."
+    },
+    {
+     "id": "R3",
+     "statement": "Future mascot artwork uses the approved art principles.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "friendly-mascots-review#G-1"
+    }
+   ]
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "Buddy mascot",
+   "path": "Acceptance",
+   "headline": "Light and Cr\u00e8me keep the same buddy with a softer palette.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "Buddy mascot",
+   "path": "Acceptance",
+   "headline": "Future mascot artwork uses the approved art principles.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

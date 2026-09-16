@@ -3,10 +3,10 @@
 // itself in headless Chrome, so the rig needs no PNG library and no checked-in binaries.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { diffPngs, renderTestPng, compareScreens, capture, withHeadlessChrome, FREEZE, UNFREEZE, SCREEN_NAMES } from '../screenshots.mjs';
+import { diffPngs, renderTestPng, compareScreens, capture, withHeadlessChrome, sweepStaleProfiles, FREEZE, UNFREEZE, SCREEN_NAMES } from '../screenshots.mjs';
 
 test('diffPngs reports WHERE the change is, and names a whole-frame vertical shift', async () => {
   // A DIFF percentage alone cannot be acted on: 2.21% on the welcome screen was a
@@ -202,11 +202,37 @@ test('overlapping runs never share a browser, so none of them can hang', async (
 test('each run removes its throwaway Chrome profile', async () => {
   // WHY: SIGKILL is async and a dying Chrome recreates profile files, so an immediate rmSync
   // silently left an 8 KB dir behind on every single launch. Cleanup now waits for the exit.
-  const before = readdirSync(tmpdir()).filter((f) => f.startsWith('perf-lab-diff-')).length;
-  await withHeadlessChrome(async (cdp) => cdp.evaluate('1'));
-  await withHeadlessChrome(async (cdp) => cdp.evaluate('1'));
-  const after = readdirSync(tmpdir()).filter((f) => f.startsWith('perf-lab-diff-')).length;
-  assert.equal(after, before, 'no orphaned profile directories in the OS temp dir');
+  //
+  // Asserts about the profiles THESE launches minted, reported through onProfile.
+  // It used to count every perf-lab-diff-* in the OS temp dir before and after,
+  // which cannot be correct under `node --test`: test files run in PARALLEL, so a
+  // sibling file's launch moved the count and this failed about two runs in three
+  // (measured 2026-09-09) — teaching every reader to disbelieve a red suite.
+  const mine = [];
+  const onProfile = (dir) => mine.push(dir);
+  await withHeadlessChrome(async (cdp) => cdp.evaluate('1'), { onProfile });
+  await withHeadlessChrome(async (cdp) => cdp.evaluate('1'), { onProfile });
+  assert.equal(mine.length, 2, 'both launches should have reported a minted profile');
+  const left = mine.filter((d) => existsSync(d));
+  assert.deepEqual(left, [], 'no orphaned profile directories from these launches');
+});
+
+test('a stale profile from an earlier run is swept, a fresh one is left alone', async () => {
+  // Cleanup is best-effort by design, so leftovers accumulate — 160 of them by
+  // 2026-09-09. Every process that launches a headless Chrome now sweeps its
+  // predecessors' litter, and must not touch a profile a live run is using.
+  const stale = mkdtempSync(join(tmpdir(), 'perf-lab-diff-'));
+  const fresh = mkdtempSync(join(tmpdir(), 'perf-lab-diff-'));
+  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60_000);
+  utimesSync(stale, twoHoursAgo, twoHoursAgo);
+  try {
+    sweepStaleProfiles({ force: true });
+    assert.equal(existsSync(stale), false, 'an hours-old profile should be swept');
+    assert.equal(existsSync(fresh), true, 'a profile minted moments ago could still be in use');
+  } finally {
+    rmSync(stale, { recursive: true, force: true });
+    rmSync(fresh, { recursive: true, force: true });
+  }
 });
 
 test('an explicitly supplied profile is left alone', async () => {

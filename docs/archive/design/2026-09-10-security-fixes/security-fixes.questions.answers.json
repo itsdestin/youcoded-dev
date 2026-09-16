@@ -1,0 +1,32 @@
+{
+ "deck": "security-fixes-questions",
+ "started": "2026-09-10T23:52:51.779Z",
+ "submitted": "2026-09-10T23:55:01Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "tap-to-show",
+   "seconds": 32,
+   "theme": "light"
+  },
+  "Q-2": {
+   "note": "confused. will this prompt if the assistant is just pulling data from the website, or only on attempted uploads?",
+   "v": "other",
+   "seconds": 32,
+   "theme": "light"
+  },
+  "Q-3": {
+   "v": "other",
+   "note": "we are going to do both, but not quite yet",
+   "seconds": 32,
+   "theme": "light"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "light",
+   "seconds": 32,
+   "theme": "light"
+  }
+ }
+}

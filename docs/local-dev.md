@@ -99,6 +99,15 @@ these — anything that writes under them must go through `NativeHome`'s
 mkdir-based file lock (ADR 008), which exists precisely because dev + built
 can both be running against the same home dir.
 
+**Not shared: saved API keys and the ChatGPT sign-in.** Both live in the
+profile's userData (`native-secrets.json`, `chatgpt-account.json` —
+`providers/secrets-store.ts`, `providers/chatgpt-auth.ts`), so a NEW
+`--profile` has none. Every native provider then reads not-ready, and a native
+conversation's model menu says "You have not set up any model providers" — while
+Claude Code, which reads `~/.claude/`, still works. That is the profile, not a
+regression: on 2026-09-11 it was reported as the Claude Code sign-in bug coming
+back. Reuse a profile that already has keys when a native model has to run.
+
 This is intentional — isolating these would mean dev can't test against your real plugins and settings, which defeats the point. Two coordination mechanisms keep it safe:
 
 1. **`.sync-lock` is a `mkdir`-based atomic lock.** Only one instance syncs at a time.
@@ -169,3 +178,22 @@ live-acceptance run):
    synthetic KeyboardEvents).
 5. Never do any of this against the live app (live-app-safety rule) — the flag-launched
    dev instance only.
+6. **A session you create here is a REAL conversation in Destin's synced archive.** `--profile`
+   isolates `userData` only (see "What is shared" above): the transcript lands in the real
+   `~/.claude/projects`, the reconciler mirrors it into `~/YouCoded/Personal`, and sync pushes
+   it to his other machines. On 2026-09-10 three throwaway "Reply with just the word ok."
+   runtime checks did exactly that. For scripted checks that must create sessions, launch
+   against a throwaway `HOME` the way `scripts/perf-lab/launch.mjs` does, or say so to Destin first.
+
+## Testing on a phone
+
+A phone's browser gets the app from the dev window's remote server. By default that is **live code
+from Vite**: every renderer edit reaches the phone, but hundreds of separate module files load slowly
+over a phone connection, and Vite's own page code reloads the whole page whenever its connection
+drops (sleep, wake, a dev restart), which a real phone never does.
+
+`bash scripts/run-dev.sh … --phone-build` builds the app once and serves that copy instead: it loads
+and reconnects like the installed app. Renderer edits reach the phone only after another build, so
+restart with the flag after changing renderer code. The dev log's first remote line says which copy
+the phone gets (`[RemoteServer] phone page: …`). Before 2026-09-11 the server served ANY built copy
+it found on disk, and one left by an Android test build hid a day of phone-side fixes.

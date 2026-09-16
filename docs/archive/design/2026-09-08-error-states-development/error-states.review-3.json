@@ -1,0 +1,82 @@
+{
+  "title": "Contribution and evidence — simplified",
+  "_comment_links": "Correction already applied per R2-15: Known issues and Roadmap open the real GitHub pages. Stated on the deck as a correction; not asked again.",
+  "key": "error-states-development-review-3",
+  "out": "error-states.review-3.html",
+  "images": "images/error-states.review-3",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-r4-deck/before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-r4-deck/after"
+  },
+  "labels": {
+    "before": "Before · what you reviewed",
+    "after": "After · your notes applied"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "crops": {
+    "16": [
+      "revision",
+      "contribute",
+      "420x388+430+256"
+    ],
+    "17": [
+      "revision",
+      "walkthrough",
+      "420x588+430+156"
+    ],
+    "18": [
+      "revision",
+      "report",
+      "600x719+340+91"
+    ],
+    "19": [
+      "revision",
+      "logs",
+      "600x804+340+48"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R3-16",
+      "surface": "Contribute",
+      "path": "Settings → Development → Contribute to YouCoded",
+      "headline": "16. Your wording on the button, and the technical row is gone.",
+      "crop": "16",
+      "changed": "Your R2-9 and R2-13 notes. Workspace details is deleted, the prototype status line is deleted, and the button reads Set up development workspace.",
+      "notice": "One sentence, one thing to read about, one thing to press.",
+      "risk": "Pressing it does nothing yet."
+    },
+    {
+      "id": "R3-17",
+      "surface": "Contribute · How contributing works",
+      "path": "Settings → Development → Contribute → How contributing works",
+      "headline": "17. The gray warning box is deleted.",
+      "crop": "17",
+      "changed": "Your R2-9 note: the weird warning in the gray box is gone. Step 5 already says a public proposal needs your approval.",
+      "notice": "Both pictures show the bottom of the five steps, so you can see what sat under them.",
+      "risk": "The private-backup line goes too."
+    },
+    {
+      "id": "R3-18",
+      "surface": "Submit a ticket · writing it",
+      "path": "Settings → Development → Report a Bug",
+      "headline": "18. Three plain rows under one heading.",
+      "crop": "18",
+      "changed": "Your R2-11 note. The paragraph under each choice, the gray sub-labels and the box around the public warning are gone.",
+      "notice": "Each explanation now opens from the (i) on its own row.",
+      "risk": "Explanations are a tap away."
+    },
+    {
+      "id": "R3-19",
+      "surface": "Submit a ticket · reviewing it",
+      "path": "Submit a ticket → Review ticket",
+      "headline": "19. The review page shows only what you chose.",
+      "crop": "19",
+      "changed": "Your R2-11 note: the choices are not repeated here, so this page is only what will be sent.",
+      "notice": "It says ticket everywhere now — the flow used four names for one thing.",
+      "risk": "Submit public ticket is my wording."
+    }
+  ]
+}

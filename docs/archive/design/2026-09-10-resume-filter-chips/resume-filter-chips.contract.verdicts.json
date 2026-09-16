@@ -1,0 +1,42 @@
+{
+  "R1": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review/chips--light--after.png + --midnight; built scratch/grader/crops/R1-chips--light.png + --midnight (resume-filters/resume-browser 470x50+485+288), stacked in scratch/grader/cmp/R1-chips--*.png. Same chip size, pill shape, 14 px text and chevron in both themes; the only difference is the sort glyph (round-1 arrow vs the sort bars approved in round 2, C-1)."
+  },
+  "R2": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review/projects-menu--light--after.png + --midnight; built scratch/grader/crops/R2-projects-menu--light.png + --midnight (resume-projects-open 640x180+400+288), stacked in scratch/grader/cmp/R2-projects-menu--*.png. Square boxes, counts 1/2/1 at the right edge, Clear pinned in the footer, chevron pointing up while open — identical in both themes."
+  },
+  "R3": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review/tags-menu--light--after.png + --midnight; built scratch/grader/crops/R3-tags-menu--light.png + --midnight (resume-tags-open 640x190+400+288), stacked in scratch/grader/cmp/R3-tags-menu--*.png. Opens straight onto work/bug/idea with a count each and Clear at the bottom; Manage tags… is absent, as the row note asks (the approved picture still shows it; round 2 S-10 removed it)."
+  },
+  "R4": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && ./node_modules/.bin/vitest run tests/filter-menu-chip.test.tsx — Tests 9 passed (9). Read: 'chip labels (pickLabel — contract R4)' asserts one pick → its name, two → {text:'Tags', count:2}, four → count 4, and that ResumeBrowser renders pickLabel('Projects'/'Tags') with no comma-joined names or 'Projects (N)'."
+  },
+  "R9": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-2/sort-b--light--after.png (C-1 'bars'); built scratch/grader/crops/R9-sort-b--light.png (resume-browser over resume-sort-flipped, each 470x50+485+288), stacked in scratch/grader/cmp/R9-sort-b--light.png. At rest: Most recent with three bars wide-to-narrow and a down arrow, unlit; after one tap: Oldest first, lit, bars narrow-to-wide. Matches."
+  },
+  "R10": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-2/narrow-row--light--after.png + --midnight; built scratch/grader/crops/R10b-narrow-row--light.png + --midnight (re-taken on ecef481c: resume-filters-narrow/resume-browser 390x150+0+90), side by side in scratch/grader/cmp/R10b-narrow-row--*.png — identical. Full shot scratch/grader/narrow-2/light/resume-browser.png: no chips row, the search pill with the filter button docked at its right end; scratch/grader/narrow-2/light/resume-filters-picked.png shows the count badge (1) on that button once a project is ticked."
+  },
+  "R11": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-2/tags-menu-2--light--after.png + --midnight; built scratch/grader/crops/R11-tags-menu-2--light.png + --midnight (resume-tags-open 640x190+400+288), stacked in scratch/grader/cmp/R11-tags-menu-2--*.png. Footer holds Clear alone, centred, same as the Projects menu; no Manage tags…."
+  },
+  "R12": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-3/narrow-open--light--after.png + --midnight; built scratch/grader/crops/R12-narrow-open--light.png + --midnight (re-taken on ecef481c: resume-filters-narrow/resume-filters-open 390x330+0+90), side by side in scratch/grader/cmp/R12-narrow-open--*.png. The panel opens without the earlier crash and holds Filters, the Projects and Tags dropdown chips and the Most recent sort chip wrapped to a second line, same as approved in both themes; Clear appears at the top right once something is picked (scratch/grader/narrow-2/light/resume-filters-picked.png), which the approved at-rest picture does not show either. First run (0305f346) failed: tapping the filter button crashed to 'Maximum update depth exceeded' (scratch/grader/narrow/light/_unverified/resume-filters-open.png); fixed by ecef481c."
+  },
+  "R14": {
+    "verdict": "pass",
+    "evidence": "approved docs/active/design/2026-09-10-resume-filter-chips/images/resume-filter-chips.review-3/sort-bars--light--after.png + --midnight; built scratch/grader/crops/R14-sort-bars--light.png + --midnight (resume-sort-flipped 470x50+485+288), stacked in scratch/grader/cmp/R14-sort-bars--*.png. Oldest first lit with narrow-to-wide bars; Projects and Tags unchanged beside it. Identical in both themes."
+  },
+  "R16": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && ./node_modules/.bin/vitest run tests/filter-menu-chip.test.tsx — Tests 9 passed (9). Read: pickLabel('Projects', []) → {text:'Projects'}; one name → that name; several → category + count; plus the source check that ResumeBrowser renders both chips through pickLabel."
+  }
+}

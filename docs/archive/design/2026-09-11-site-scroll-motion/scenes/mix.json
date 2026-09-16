@@ -1,0 +1,15 @@
+{
+  "_comment": "Same as today.json with ?motion=mix.",
+  "base": "http://127.0.0.1:8817/index.html?motion=mix",
+  "width": 1600,
+  "height": 960,
+  "fps": 30,
+  "ready": "document.readyState === 'complete' && !document.body.classList.contains('intro-mode') && (document.documentElement.style.scrollBehavior = 'auto', window.__at || (window.__at = scrollTo(0, document.getElementById('integrations').offsetTop - 1000) || 1), true)",
+  "boot": 1800,
+  "actions": [
+    { "eval": "document.documentElement.style.pointerEvents = 'none'", "settle": 0 },
+    { "hold": 700 },
+    { "evalFile": "scroll-tour.js", "settle": 0 },
+    { "hold": 1600 }
+  ]
+}

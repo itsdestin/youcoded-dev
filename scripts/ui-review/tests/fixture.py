@@ -1,21 +1,25 @@
-"""A synthetic screenshot run for the deck tests: flat 1440x900 'shots' with a known
-rectangle that changes, and a manifest with known measurements. Lets every deck test run
-without Chrome or the workbench."""
-import json, os, subprocess
+"""The deck specs every test builds on, over the synthetic screenshot run in
+deck/fixture/make_runs.py — flat 1440x900 'shots' with a known rectangle that changes, and a
+manifest with known measurements. Lets every deck test run without Chrome or the workbench.
 
-GEO = '400x200+500+250'
+The RUN itself is not made here any more: `review-cards.py selfie` needs the same pictures, and
+one generator with two callers cannot drift the way two copies would."""
+import json, os, sys
 
-def make_fixture(tmp, themes=('midnight', 'light'), clip=False):
-    for run in ('before', 'after'):
-        for theme in themes:
-            d = os.path.join(tmp, 'runs', run, 'shots-main', theme); os.makedirs(d, exist_ok=True)
-            cmd = ['magick', '-size', '1440x900', 'xc:#202020' if theme == 'midnight' else 'xc:#EEEEEE']
-            if run == 'after':
-                cmd += ['-fill', 'red', '-draw', 'rectangle 560,260 679,299', '-fill', 'blue', '-draw', 'rectangle 20,20 29,29']
-            subprocess.run(cmd + [os.path.join(d, 'home.png')], check=True)
-        mf = [{'name': 'home', 'theme': t, 'verified': True, 'run': '1', 'file': f'{t}/home.png',
-               'measures': {'#send': {'x': 600, 'y': 300, 'w': 80, 'h': 30}, 'text:Send': {'x': 600, 'y': 300, 'w': 80, 'h': 30}}} for t in themes]
-        json.dump(mf, open(os.path.join(tmp, 'runs', run, 'shots-main', 'manifest-main-x.json'), 'w'))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # scripts/ui-review
+from deck.fixture.make_runs import GEO, make_clips, make_runs   # noqa: E402  (GEO re-exported: tests import it from here)
+# A 90-character `path` for the header-overflow test (Task 4) — measured at 1440x900 to be
+# exactly long enough that .top's flex row runs out of room and #prev/.steps (the progress
+# bar) get squeezed toward zero width, sliding backward to sit under the path text, unless the
+# CSS fix holds. Padded with '.', not spaces, to stay exactly 90 chars if this phrase is ever
+# shortened — a trailing run of SPACES collapses under CSS whitespace rules even with
+# `white-space:nowrap`, which silently shortened an earlier version of this string to 82
+# rendered characters and made the test pass even against the un-fixed CSS (2026-09-05).
+LONG_PATH_BASE = 'Settings > Appearance > Advanced options > Debug tools > Diagnostics > Experimental flags.'
+LONG_PATH = (LONG_PATH_BASE + '.' * 90)[:90]
+
+def make_fixture(tmp, themes=('midnight', 'light'), clip=False, long_path=False):
+    make_runs(os.path.join(tmp, 'runs'), themes)
     deck = os.path.join(tmp, 'deck'); os.makedirs(deck, exist_ok=True)
     spec = {'title': 'Fixture review', 'key': 'fixture', 'out': 'fixture.html', 'images': 'images/deck',   # images/<spec stem>, the convention validate() warns about breaking
             'runs': {'before': os.path.join(tmp, 'runs', 'before'), 'after': os.path.join(tmp, 'runs', 'after')},
@@ -27,20 +31,34 @@ def make_fixture(tmp, themes=('midnight', 'light'), clip=False):
                  'headline': 'The send button moved.', 'changed': 'Moved 4 px.', 'notice': 'Nothing much.'},
                 {'id': 'S-3', 'surface': 'Home', 'path': 'Chat', 'crop': 'c', 'highlight': {'text': 'Send'},
                  'headline': 'Same, by text.', 'changed': 'Moved 4 px.', 'notice': 'Nothing much.'}]}
-    # A CLIP step: two 1-second recordings (a gray frame, then one with the red block) made
-    # with ffmpeg, where record-pair.sh would put them. Skipped if ffmpeg is absent.
-    clips = os.path.join(deck, 'images', 'deck', 'clips')
-    if clip: os.makedirs(clips, exist_ok=True)
-    try:
-        if not clip: raise FileNotFoundError('clip step not requested')
-        for run, colour in (('before', 'gray'), ('after', 'red')):
-            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'lavfi', '-i', f'color=c={colour}:s=320x200:d=1:r=12',
-                            '-c:v', 'libvpx-vp9', '-b:v', '0', '-crf', '40', os.path.join(clips, f'blink--{run}.webm')], check=True)
-            subprocess.run(['magick', '-size', '320x200', f'xc:{colour}', os.path.join(clips, f'blink--{run}.webp')], check=True)
+    # A CLIP step: two 1-second recordings, where record-pair.sh would put them. make_clips
+    # returns False (and the step is left out) when this machine has no ffmpeg — as CI has not.
+    if clip and make_clips(os.path.join(deck, 'images', 'deck', 'clips')):
         spec['steps'].append({'id': 'S-4', 'surface': 'Home', 'path': 'Chat', 'clip': 'blink',
                               'headline': 'The block now blinks.', 'changed': 'It animates.', 'notice': 'Motion.', 'risk': 'None.'})
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        pass
+    if long_path:
+        # Fix (2026-09-05): stresses both Task 4 fixes in one deck — a long `path` on every
+        # step (so #wsub can genuinely overflow the top bar at 1440px if the eyebrow's flex-
+        # shrink regresses) and a picture DECIDE step whose three option summaries plus a Risk
+        # card outgrow the side column (so the third card and Risk card would slice off, and
+        # the answer row would scroll away with them, without the col-right CSS fix). Kept
+        # behind this flag so the default fixture — every other test in this suite — never
+        # moves a byte.
+        for st in spec['steps']:
+            st['path'] = LONG_PATH
+        spec['steps'].append({
+            'id': 'S-5', 'surface': 'Home', 'path': LONG_PATH, 'crop': 'c',
+            'highlight': {'selector': '#send'}, 'headline': 'Which layout should the button use?',
+            'risk': 'A longer risk sentence, so the Risk card itself adds real height to the column, the way a genuine review often does.',
+            'options': [
+                {'id': 'a', 'label': 'Keep it on one row', 'summary':
+                 'This keeps the button exactly where it sits today, in the same row as everything else on the screen, so nothing about the surrounding layout changes and nobody has to relearn where to look. It costs nothing to build and matches every screenshot already in the help pages. The row does get busier every time a new action joins it, and on a narrow window two labels already start to touch, leaving no room to add anything else here without shrinking what is already crowded.'},
+                {'id': 'b', 'label': 'Move it to its own row', 'summary':
+                 'This drops the button onto a row of its own, underneath everything else, so it always has plenty of open space around it no matter how many other actions get added later. Nothing above it ever gets more crowded, and a narrow window never forces two labels to touch. The page grows a little taller because of the extra row, which pushes everything below it down slightly, and on a very short window that extra row can push the next section further out of view.'},
+                {'id': 'c', 'label': 'Let it wrap on its own', 'summary':
+                 'This lets the button move to a second row on its own whenever the window gets narrow, without anyone deciding the exact width in advance. At a wide window it behaves like keeping it on one row, and at a narrow window it behaves like giving it a row of its own, so both benefits arrive without a separate setting. The tradeoff is that the exact moment it wraps depends on how long the neighboring labels happen to be that day.'},
+            ],
+        })
     p = os.path.join(deck, 'deck.json'); json.dump(spec, open(p, 'w'), indent=1); return p
 
 
@@ -149,9 +167,11 @@ def live_spec(tmp, base=None, **over):
 
 # ── words-only decks ────────────────────────────────────────────────────────────────────
 def words_spec(tmp, **over):
-    """A QUESTIONS deck: no pictures anywhere. One question with a single option (plus the
-    page's own Other), one with three, and one statement to approve with relabelled buttons.
-    Picture-free on purpose, like live_spec — this is CI coverage."""
+    """A QUESTIONS deck: no pictures anywhere. Two questions written the way a question is
+    written now — today / the problem / the proposal as their own fields, options carrying
+    their own pros and cons, the preferred one flagged rather than labelled "(recommended)"
+    — one statement to approve with relabelled buttons, and one yes/no/don't-know question
+    with no options at all. Picture-free on purpose, like live_spec — this is CI coverage."""
     deck = os.path.join(tmp, 'deck')
     os.makedirs(deck, exist_ok=True)
     spec = {
@@ -160,17 +180,42 @@ def words_spec(tmp, **over):
         'steps': [
             {'id': 'Q-1', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'Where does the invite live?',
-             'options': [{'id': 'a', 'label': 'In the friends list (recommended)', 'summary': 'One place for everything about a friend.'}]},
+             'today': 'Your friends are a list you open from the games screen.',
+             'problem': 'There is nowhere on that list to start a game, so you go looking for the friend twice.',
+             'proposal': 'Put the invite next to the friend it is for.',
+             'options': [{'id': 'a', 'label': 'In the friends list', 'recommended': True,
+                          'summary': 'The invite sits on the friend it is for.',
+                          'pros': ['One place for everything about a friend.',
+                                   'Nothing new to find — the list is already open.'],
+                          'cons': ['The row gets a little busier.']}]},
             {'id': 'Q-2', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'How many boards on screen at once?',
-             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.'},
-                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.'},
-                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.'}]},
+             'today': 'One game fills the window, and a second game replaces it.',
+             'problem': 'You lose sight of the first game the moment you open another.',
+             'proposal': 'Show more than one board at a time.',
+             'options': [{'id': 'a', 'label': 'One', 'summary': 'Simplest.',
+                          'pros': ['Nothing to take in but the game you are playing.'],
+                          'cons': ['You cannot watch two games at once.']},
+                         {'id': 'b', 'label': 'Two', 'summary': 'Mine and theirs.',
+                          'pros': ['You can see both games without switching.'],
+                          'cons': ['Each board is half the size.']},
+                         {'id': 'c', 'label': 'As many as fit', 'summary': 'Costs a layout rule.',
+                          'pros': ['Nothing is ever hidden from you.'],
+                          'cons': ['Boards get small fast.']}]},
+            # A PAGE MARKER, not a step: it answers nothing and gets no line in the summary.
+            # Everything after it sits on its own page, because the thinking shifts here from
+            # "which design do we pick" to "is this statement true" (design §3.1).
+            {'id': 'P-2', 'page': 'What we promise', 'intro': 'Statements, not questions.'},
             {'id': 'Q-3', 'words': True, 'surface': 'Games', 'path': 'Questions',
              'headline': 'A game you leave keeps running for the other player.',
              'changed': 'Stated, not asked: the alternative would surprise the friend who stayed.',
              'notice': 'Nothing yet — this becomes a row of the contract.',
              'yes': 'Holds', 'no': 'Fails'},
+            {'id': 'Q-4', 'words': True, 'surface': 'Games', 'path': 'Questions',
+             'headline': 'Should a game keep its sound when you switch away from it?',
+             'today': 'A game goes quiet the moment you look at something else.',
+             'problem': 'You miss your turn, because nothing tells you the other player moved.',
+             'proposal': 'Yes keeps the game audible while you are elsewhere; No leaves it silent.'},
         ],
     }
     spec.update(over)
@@ -204,7 +249,7 @@ def contract_spec(tmp, **over):
                    'answers': {'Q-1': {'v': 'pick', 'pick': 'a', 'seconds': 12}}}, f)
     with open(os.path.join(deck, 'r1.answers.json'), 'w') as f:
         json.dump({'deck': 'arcade-r1', 'submitted': '2026-09-01T09:30:00Z',
-                   'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'note_kind': 'later', 'seconds': 20},
+                   'answers': {'S-1': {'v': 'yes', 'note': 'band could be thinner', 'seconds': 20},
                                'S-2': {'v': 'skip', 'seconds': 1}}}, f)
     spec = {
         # Fix: `out` must share the contract's stem (arcade.contract.html, not contract.html) —
@@ -230,4 +275,80 @@ def contract_spec(tmp, **over):
     p = os.path.join(deck, 'arcade.contract.json')
     with open(p, 'w') as f:
         json.dump(spec, f, indent=1)
+    return p
+
+
+def mixed_spec(tmp, **over):
+    """ONE deck holding slides that used to need two: a single-picture "build it?" slide, a
+    before/after "keep it?" slide, and a written question with options.
+
+    WHY it exists (Destin, 2026-09-06): the capture set used to belong to the DECK, so these
+    three could never share a page and he was handed two links for one ask."""
+    make_runs(os.path.join(tmp, 'runs'), ('midnight',))
+    deck = os.path.join(tmp, 'mixed'); os.makedirs(deck, exist_ok=True)
+    spec = {'title': 'Mixed fixture', 'key': 'mixed-fixture', 'out': 'mixed.html', 'images': 'images/mixed',
+            'runs': {'before': os.path.join(tmp, 'runs', 'before'), 'after': os.path.join(tmp, 'runs', 'after')},
+            'themes': ['midnight'], 'theme': 'fixed', 'crops': {'c': ['main', 'home', GEO]},
+            'steps': [
+                {'id': 'B-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c', 'runs': ['after'],
+                 'labels': {'after': 'Today'}, 'highlight': {'selector': '#send'},
+                 'headline': 'Paint the strip red.', 'changed': 'The strip would be red.',
+                 'notice': 'The strip stops being empty.'},
+                {'id': 'S-1', 'surface': 'Home', 'path': 'Chat', 'crop': 'c',
+                 'headline': 'A red block appeared.', 'changed': 'A red block was painted.',
+                 'notice': 'You see red.'},
+                {'id': 'Q-1', 'words': True, 'surface': 'Home', 'path': 'Chat',
+                 'headline': 'How loud should the block be?',
+                 'today': 'The block is painted in the strongest colour the palette has.',
+                 'problem': 'On a pale palette it is the first thing your eye lands on.',
+                 'proposal': 'Settle one strength and use it everywhere.',
+                 'options': [
+                     {'id': 'loud', 'label': 'Leave it loud', 'pros': ['Impossible to miss.'], 'cons': ['Shouts on a pale palette.']},
+                     {'id': 'quiet', 'label': 'Quieten it', 'pros': ['Stops shouting.'], 'cons': ['Slower to spot.'], 'recommended': True}]},
+            ]}
+    spec.update(over)
+    p = os.path.join(deck, 'mixed.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f)
+    return p
+
+
+def shapes_spec(tmp, paged=True):
+    """The two answer shapes that are about HOW he answers: several at once, and words he types.
+
+    `paged=False` adds a contract slide, which is what turns a words-only deck into one slide per
+    screen — so the same two shapes are exercised on both layouts."""
+    deck = os.path.join(tmp, 'shapes'); os.makedirs(deck, exist_ok=True)
+    steps = [
+        {'id': 'Q-1', 'words': True, 'surface': 'Home', 'path': 'Chat', 'pick': 'several',
+         'headline': 'Which of these should ship?',
+         'today': 'One goes in at a time.', 'problem': 'Two of them belong together.',
+         'proposal': 'Tick every one worth building.',
+         'options': [
+             {'id': 'a', 'label': 'The first one', 'pros': ['Quick.'], 'cons': ['Small.']},
+             {'id': 'b', 'label': 'The second one', 'pros': ['Useful.'], 'cons': ['Slow.']},
+             {'id': 'c', 'label': 'The third one', 'pros': ['Cheap.'], 'cons': ['Odd.']}]},
+        {'id': 'Q-2', 'words': True, 'surface': 'Home', 'path': 'Chat', 'answer': 'words',
+         'prompt': 'What should it be called?',
+         'headline': 'What should the strip be called?',
+         'today': 'It has no name in the app.', 'problem': 'Nobody can ask for it by name.',
+         'proposal': 'Give it one name and use it everywhere.'},
+    ]
+    if not paged:
+        # The slide that carries a verdict about the REAL app: no picture, a command to run.
+        steps.append({'id': 'T-1', 'words': True, 'surface': 'Home', 'path': 'Chat',
+                      'headline': 'Send a real message and watch the answer come back.',
+                      'dev': {'worktree': 'feat/shapes', 'label': 'Shapes', 'offset': 130, 'profile': 'shapes'},
+                      'changed': 'The dev window runs the real app end to end.',
+                      'notice': 'This is the step that says it works, not that it looks right.'})
+        steps.append({'id': 'C', 'words': True, 'surface': 'Home', 'path': 'Chat',
+                      'headline': 'This is what done means.',
+                      'rows': [{'id': 'R1', 'statement': 'The strip has one name everywhere.',
+                                'checkedBy': 'human', 'threshold': 'pass/fail', 'source': 'shapes#Q-2'}]})
+    spec = {'title': 'Shapes fixture', 'key': 'shapes', 'out': 'shapes.html',
+            'themes': ['midnight'], 'theme': 'fixed', 'steps': steps,
+            **({} if paged else {'sources': {'shapes': 'shapes.json'}, 'branch': 'feat/shapes'})}
+    p = os.path.join(deck, 'shapes.json')
+    with open(p, 'w') as f:
+        json.dump(spec, f)
     return p

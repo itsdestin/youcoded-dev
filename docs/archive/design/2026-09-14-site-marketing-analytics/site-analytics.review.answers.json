@@ -1,0 +1,32 @@
+{
+ "deck": "site-analytics-review",
+ "started": "2026-09-15T03:35:50.050Z",
+ "submitted": "2026-09-15T03:37:04Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 31,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

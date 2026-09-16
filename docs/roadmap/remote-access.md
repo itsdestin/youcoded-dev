@@ -1,16 +1,124 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] Some chat cards can sit in a different place on the phone than on the computer. A "Usage
+      limit reached" style prompt card is drawn by each device when it notices the prompt on its
+      own copy of the terminal, so each places it where it happened to notice; and the "Switched
+      to Opus" and clear dividers exist only on the device where the command was typed. Found by
+      the 2026-09-11 message-order investigation (proved with the real chat logic); the bigger
+      causes it found were fixed that day
+      `chat` `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] On the phone, files attached to a message in a YouCoded-runtime (native) session are dropped:
+      only the text reaches the computer. Spotted by the 2026-09-11 message-order investigation;
+      belongs with the native-sessions-on-a-phone batch
+      `remote` `needs-verify` `checked 2026-09-11`
+
+- [ ] After a phone's connection drops and comes back, some screens can still stay empty or wrong
+      until they are reopened: the model list, the native provider list in the new-session form,
+      Project View's projects and conversations, the Themes tab in the marketplace, the Remote
+      Access settings panel and the "incognito" choice for presence. A file preview that failed
+      once stays failed until the page reloads, and a specialist list that failed stays failed
+      until Settings is opened. Found by the 2026-09-11 reliability sweep; the project picker,
+      skills and commands, signed-in state, session defaults and tags were fixed the same day
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] After a reconnect the phone repeats a few requests (skills, commands, remote settings, file
+      lists) whose answers nothing on screen uses; the screens reload for themselves now.
+      Wasted traffic on every reconnect. Found 2026-09-11
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] The Android app's terminal is blank when the app is paired to a desktop. That surface
+      reads only raw terminal bytes (the phone's own runtime sends them); a desktop host
+      sends terminal text, never raw bytes, so a paired phone app gets nothing in the
+      terminal view while a phone browser gets everything. Found by the batch 2/3 design
+      review (R2-18, 2026-09-10); not a contract row of that batch, so it stays open here.
+      Fix: the host emits the raw-bytes form too, or the paired app reads text like a browser
+      `terminal` `android` `confirmed` `checked 2026-09-10`
+
+- [ ] In the Android app's Settings, removing a paired computer while the app is connected to
+      one does nothing: the row goes away, but the saved pairing (address and password) stays on
+      the phone, so the computer is still trusted and comes back. While connected, the app's
+      Remove call is answered "done" without touching the saved list (`remote-shim.ts`
+      `removePairedDevice`). Found by the batch 3 build, 2026-09-10; checked in the code, not yet
+      on a phone
+      `settings` `android` `confirmed` `checked 2026-09-10`
+
+- [ ] A "No folder" session started from the phone does not get the private No-folder place the
+      desktop gives it. The desktop swaps the "no folder" marker for a real folder before
+      starting a session, but the remote path starts the session without that swap. The batch 3
+      builder saw such a session start in the home folder. Found 2026-09-10; the missing swap is
+      checked in the code (`remote-server.ts` `session:create` never calls `resolveNoFolderCwd`)
+      `remote` `confirmed` `checked 2026-09-10`
+
+- [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
+      actionable for the user, when tailscale might just not be enabled on their phone" — the
+      phone gets the browser's own cannot-reach screen. Fix: install a service worker on the
+      first successful visit so a later failure serves OUR page instead. Newly possible: it
+      needs a secure context, which the Tailscale-only decision (`remote-access-questions-3#Q-6`)
+      provides. It cannot see VPN state, so it must not assert Tailscale is off — it can tell
+      "phone has no internet" from "phone is online but cannot reach the computer" and lead with
+      the likely fix. Limits: needs one prior successful visit; iOS evicts after ~7 days unused;
+      Add to Home Screen makes it stick and gives the app an icon. No service worker or web
+      manifest exists in the app today.
+      `remote` `confirmed` `checked 2026-09-09`
+
+- [ ] Destin 2026-09-09, same thread: the Android app can do better than any web page — it can
+      ask the system whether a VPN is active and say Tailscale is not running as a fact rather
+      than a guess. Separate from the browser fix above.
+      `android` `confirmed` `checked 2026-09-09`
+
+- [ ] Idea (Destin, 2026-09-08): sign in to a YouCoded account and connect to your computer
+      without installing Tailscale. Long-horizon, around v1.4 rather than a release commitment;
+      related to YouCoded Mesh and Cloud fallback in the native-harness backlog, but connecting
+      to a device is distinct from choosing where an automation runs. Hosting/privacy design open.
+      `remote` `parked` `checked 2026-09-08` `v1.4`
+
+- [ ] Saving a permission setting over remote access replaces the whole stored block instead
+      of merging into it, and does not refresh what the app is enforcing until something local
+      reads the settings again — harmless today because nothing writes those values any more
+      `settings/permissions` `remote` `confirmed` `checked 2026-09-07`
+
+- [ ] Over remote access the assistant-settings model picker offers models the browser cannot
+      actually run, so choosing one saves a default that quietly does nothing there
+      `settings/defaults` `remote` `confirmed` `checked 2026-09-07`
+
+- [ ] Destin 2026-09-11, on his phone during the batch 2/3 test: "i cant use native sessions";
+      "in the model selector i see native sessions when i search but clicking them resets the
+      selector to empty"; "a bunch of options are missing from the assistant settings screen
+      for me to add native providers and such". Not a regression: the app's own engine is
+      switched off for every remote client on master (`RuntimeBinding.tsx` `isNativeSupported`,
+      `remote-shim.ts` `native.supported: false`), which also hides the provider, local-model
+      and search-key pages. The switch is a leftover: `native.supported` was added hard-false
+      everywhere on 2026-07-10 ("until Phase 1"), the desktop was later turned on, the remote
+      shim never was. The host already answers 56 of the 67 native/provider/engine channels
+      over remote, including `provider:set-key` and `search:set-key` (only the remote-access
+      password, config, rename and unpair are refused as host administration); the 11 it does
+      not are mostly live events (`engine:status-changed`, `engine:install-progress`,
+      `engine:models-changed`, `models:download-progress`, `specialists:event`,
+      `native:shell-event`, `native:model-state`) plus `native:clear`, `native:compact`,
+      `native:invoke-skill`, `native:session-context`. The picker showing native models in
+      search and then clearing goes away with the switch.
+      Destin 2026-09-11: "native sessions should work fine in remote access, no? remote access
+      should be identical to the desktop?" — then "we will do it after": its own batch, right
+      after batches 2/3, starting at technical design. Still open for him: whether a phone may
+      add or change provider keys (identical to desktop) or keys stay computer-only
+      `model-picker` `remote` `decision` `checked 2026-09-11`
+
 - [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
       morphs into a copy of the newest streaming one — every connect, not a race
-      `chat` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
+            Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
+`chat` `remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
 
 - [ ] Over remote access whole features are simply missing: the files panel cannot open any
       file (not even a small note), Project View tabs are thin, the game lobby signs in but
       stays empty, several buttons throw. Which namespaces are safe to expose over a
       password-only, unencrypted channel is a decision for Destin before any bridging
       Destin 2026-09-02: none of them until the remote channel is encrypted — blocked on that item below
-      `remote` `blocked` `checked 2026-09-02` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
+      2026-09-10: the channel now exists only on the Tailscale address (batch 1), which is what the
+      milestone counts as secure. Files are batch 3; projects, games and the rest wait for their
+      own batches — nothing is bridged automatically
+      `remote` `confirmed` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
 
 - [ ] Remote: "+ Add file" in the files panel uploads the file to the desktop, then the
       import fails — the upload has already landed on the host (found 2026-07-23)
@@ -20,21 +128,29 @@ Filing test: reaching the app from another device — the protocol, the browser 
       further beat to fill in; the July byte-shaving merge changed nothing Destin could feel
       on LAN. ~2.5 s of it is scripted waiting; the white part is unmeasured on a real phone
       Destin 2026-09-02: probably much improved; keep for a future remote-access verification pass
-      `remote` `needs-verify` `checked 2026-09-02` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
+      Destin 2026-09-10, after batch 1: still "takes quite a while before showing any real app ui
+      or the password screen". Measured that day: the sign-in box ships INSIDE the whole app's
+      script, so a phone downloads and runs 2,444 KB (607 KB compressed) before it can draw a
+      text box, then fetches the 34 KB connection code as a second download, and only then
+      shows sign-in. His test ran against the dev window, which serves the 523 source files one
+      by one instead of one bundle, so the wait he felt is inflated by dev mode; the built app
+      has not been timed on his phone. Fix shape: a small first download holding only sign-in
+      and the connection code, with the app loading after the password is accepted. The 2.5 s
+      of scripted waiting after sign-in is a separate, proven cost (below)
+      Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
+      after the milestone's batches 2 and 3
+      `remote` `needs-verify` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] Finish the remote-hydration work: a remote browser can land on a different session or
       view than the desktop window shows, and events arriving during connect can double-apply
       or drop (commits 2 and 3 of the 2026-07-20 plan; ask Destin which still bites)
       Destin 2026-09-02: still sees intermittent desktop/remote mismatch bugs, not sure they are exactly this
-      `remote` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
+            Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
+`remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
 
 - [ ] A phone browser on remote access behaves like a desktop in the terminal view — touch
       adaptations off, soft keyboard and scrolling wrong (found 2026-07-20 on Chrome/Android)
       `terminal` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-shim-overwrites-device-platform.md
-
-- [ ] The desktop pays a CPU cost on every line of terminal output for a remote replay buffer,
-      even when no phone or browser is connected
-      `desktop` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-remote-pty-replay-buffer-copy-per-chunk.md
 
 - [ ] Settings read over remote access can disagree with what the desktop shows for the same
       file — defaults, folders, permission overrides (from the 2026-07-10 review)
@@ -52,7 +168,141 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Destin chose to defer the refactor on 2026-08-06
       `projects` `remote` `needs-verify` `checked 2026-08-06`
 
-- [ ] Remote access runs over a password-only connection that is not encrypted on the local network,
-      which is why files, projects and games stay switched off over it (Destin, 2026-09-02).
-      Encrypting the channel unblocks all three
-      `remote` `needs-verify` `checked 2026-09-02` `security`
+- [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers
+      only allow a microphone on a secure (https) page, and remote access is plain http, so the
+      voice-prompting mic (2026-09-05 deck, Q-7: Destin picked "desktop and Android first") stays
+      off the remote client until the channel is encrypted. When it is: record in the browser, send
+      the audio to the desktop's speech engine, so it sounds the same everywhere
+      `input-bar` `remote` `parked` `checked 2026-09-05` → docs/archive/design/2026-09-05-voice-prompting/voice-prompting.questions.json
+
+- [ ] A phone that pairs to a desktop mid-dictation cannot stop its own microphone. The mic
+      belongs to the phone's own speech service, and the only way to close it is a message the
+      pairing has just started refusing — so it stays open until the phone's recogniser times
+      out on its own. Bounded in practice (a few seconds of silence ends it) and not reachable
+      before pairing, but the fix is to let stop and cancel through while paired instead of
+      refusing them with everything else. Found reviewing the voice build, 2026-09-05
+      `input-bar` `android` `confirmed` `checked 2026-09-05`
+
+- [ ] Pairing to a desktop while the message box is open leaves the mic button looking live.
+      Nothing re-asks whether voice is available when the connection changes, so the first tap
+      shows the "voice stopped" card rather than the card that explains you are connected to
+      another computer. Recovers on its own once the screen is reopened, or on Check again
+      `input-bar` `android` `confirmed` `checked 2026-09-05`
+
+
+- [ ] An action whose answer never arrived is recorded but never shown. When a request is sent
+      over remote access and the reply is lost, the client now keeps the request instead of
+      claiming it failed, asks the host about it on reconnect, and announces the result on an
+      internal event — but nothing in the interface listens, so the person is told nothing
+      either way. Sending is safe (it never re-runs); it is the "we don't know whether that
+      happened" state that has no screen. The event and its reconciliation shipped with the
+      2026-09-09 secure-connection batch; the indicator on the affected card did not
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-code-review.md
+
+- [ ] The remote access password has no rules and no confirmation. "abc" is accepted, there is
+      no minimum length, no second box to type it again, and no way to reveal what you typed —
+      the only feedback is a tick while the field empties itself, so you cannot check what you
+      just set. It is the one secret standing between a paired device and the whole assistant.
+      Found by a beta tester setting remote access up from scratch, 2026-09-10
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] Removing a device has no "removed" message and no undo. The row simply disappears; the
+      removal is correct and immediate, but nothing confirms it happened and there is no way
+      back if the wrong row was tapped — the device has to be paired again from scratch
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] "Keep awake" never says what it does. No hint next to it, nothing about what happens when
+      the time runs out, and 4h is pre-selected without saying why — a person setting up remote
+      access has to guess whether this is the setting that keeps their phone able to reach the
+      computer. It is
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] Setup asks for three things one at a time with no sense of how many are left. "Install
+      Tailscale", then "Sign in", then "Set up" — each appears in the same spot after the last
+      one is done, so every time you think you have finished, a new demand appears. Needs a
+      deck: a step count changes an approved screen
+      `remote` `needs-verify` `checked 2026-09-10` → docs/archive/reviews/2026-09-10-remote-access-ux-review-2.md
+
+- [ ] A phone gets the theme's colours but not its wallpaper, glass or mascot pictures. The colour
+      tokens now cross the connection, so a paired phone matches the computer's palette — but the
+      background image, the blur behind panels and a theme's mascot drawings stay behind, because
+      they are files on the computer that owns the theme and their paths mean nothing in a phone
+      browser. (Destin, 2026-09-11, a screenshot of "No Active Session" with a broken image where
+      Meadow Mist's mascot belongs; the phone now shows the app's default mascot instead of a
+      broken image.) Serving those assets over the connection is the fix; it needs the theme's
+      asset paths rewritten to point at the host, and a judgement about how much a phone
+      should download before the first screen appears
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] Opening the conversation browser over remote access sometimes shows nothing, and works
+      on the second try. Destin, 2026-09-10: "oh wait it worked the second try for resume.
+      idk why nothing appeared the first time." The computer's own listing was fine at that
+      moment (946 conversations, 318KB), so the request failed somewhere between the phone
+      and the host and the screen reported it as an empty history. The screen now says the
+      load failed and offers Retry, so the next occurrence is visible instead of silent —
+      but the CAUSE is unidentified. A request in flight when the connection blips is not
+      cancelled or retried; it waits out its own 30-second timeout and then rejects, which
+      fits the symptom without being proven
+            Destin 2026-09-10, later the same day: "mostly fixed" — did not recur on his phone
+`remote` `needs-verify` `checked 2026-09-10`
+
+- [ ] Browser encryption — the optional second level — is an approved design with nothing
+      behind it. Destin went looking for it in the app on 2026-09-10 and found no trace: the
+      Advanced section renders only in the workbench mockup, and there is no certificate
+      code, no HTTPS server and no stored on/off state. What it buys is the microphone, copy
+      buttons and font picker on a phone, and a browser that stops saying "Not secure". What
+      it costs: he must enable HTTPS for the tailnet on Tailscale's own website, the
+      computer's name goes on a permanent public list, the address every paired device uses
+      changes, and certificates expire in ~90 days so renewal has to be handled. Design
+      approved in the round-4 deck; start at the technical design, not at questions
+      `remote` `confirmed` `checked 2026-09-10` → docs/archive/design/2026-09-09-remote-access/remote-access.review-4.json
+
+- [ ] A reconnect costs far more than what was missed. The computer replays a full copy of every
+      conversation (the phone's reducer replaces its whole state, so every visible message is
+      redrawn) plus every buffered tool event per session — up to 10,000, all types, not only the
+      questions still waiting — and the screens then make about fifteen requests, with skills and
+      the / commands asked twice (the shim's re-ask list AND each screen's own reconnect listener).
+      Cheapest first step: replay only open asks and drop the duplicate pair. Found 2026-09-11 in
+      the speed/sync review (`docs/archive/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
+      Destin: "it currently feels unresponsive and lags behind desktop sometimes."
+      `remote` `confirmed` `checked 2026-09-11` `performance`
+
+- [ ] Buttons on the phone wait for the computer before anything on screen changes: Stop (it only
+      sends Escape and waits for Claude Code to record the interruption), a permission answer (the
+      card clears on the reply), closing a session, sending in a YouCoded-runtime chat, and the
+      YouCoded-runtime permission mode. Each should change at once and undo itself with a plain
+      message if the computer refuses. Destin, 2026-09-11: "i [want] all buttons to feel as close
+      to instantaneous as possible."
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] Things only one window knows, so the phone and the computer disagree: YouCoded-runtime queued
+      messages (renderer-local by design note), the YouCoded-runtime permission mode (never
+      announced), the model label (corrects only on the next reply), the "working" dots on the
+      device that did not type, and the status bar (pushed on a 10 s timer). The computer should
+      announce each to every screen; moving the queue to the computer would also let it survive a
+      page reload. Destin, 2026-09-11: "the interface should almost always match the desktop ui."
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] A dropped connection should resume rather than re-sync: number what the computer sends per
+      session, let a returning phone ask for "everything after N", and keep the full copy as the
+      fallback for a gap too old or a computer that restarted. The terminal already does exactly
+      this per session; nothing else does. Would also let a request cut off mid-flight be answered
+      from the computer's record instead of asked about. Big — file behind the cheaper items above.
+      `remote` `confirmed` `checked 2026-09-11` `performance`
+
+- [ ] A YouCoded-runtime ("native") session started from a phone never starts, and a "No folder" one
+      opens in the home folder: the host's `session:create` calls `sessionManager.createSession`
+      only — no `nativeHost.create`/`resume`, no `resolveNoFolderCwd`, unlike the desktop's own
+      handler. Messages then fail as `not-live`. Belongs with the native-sessions-on-a-phone batch;
+      found 2026-09-11 while fixing the create flow.
+      `remote` `confirmed` `checked 2026-09-11`
+
+- [ ] Verify the merged remote-access security fixes on a real phone, and finish the Android
+      device-token reuse. Two things wait for a real device: (1) confirm the WebSocket origin
+      allow-list accepts the actual Android WebView — it sends an opaque `null` origin, now
+      allowed, but that path was only reasoned about, never seen on a phone; and (2) make the
+      phone reuse its saved pairing credential instead of re-sending the password on every
+      reconnect (today it re-pairs and grows a new device row each time — a UX wart, not a
+      security hole; design ready in the private security record). Destin 2026-09-11: do this
+      in the Android rebuild's testing phase — a lot of device testing happens there anyway.
+      `remote` `parked` `checked 2026-09-11` `security`

@@ -32,19 +32,37 @@ has passed ~8 items — graduate it to its own file.
 
 ## buddy
 
-- [ ] Buddy floater does not appear on Linux Wayland — the XWayland route worked but was shelved
-      (2026-07-23); the native-Wayland overlay ships switched off by default. Next attempt: native
-      Wayland.
-      `buddy-window` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
+- [ ] **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
+      every test of it, including the live Wayland run Destin signed off, ran against the dev
+      instance. Nobody has opened a real beta build and used the buddy. The specific worry is
+      the Linux helper — its files are handled specially when the app is packaged, and if that
+      handling is wrong, "Add helper" looks like it works and silently does nothing, in the
+      shipped app only, where no test looks. Destin, 2026-09-06: test the buddy in a beta
+      build before 1.3. Cut a beta, install it, and on KDE Wayland add the helper and drag the
+      buddy; elsewhere just check the buddy still opens, drags, docks and remembers where it was
+      `buddy-window` `all` `needs-verify` `checked 2026-09-06` `urgent` `v1.3`
 
-- [ ] With a buddy window open, a streaming reply makes the whole window re-lay-out on every
-      token (2026-08-27) — the twin of the main-chat stutter fixed in perf cycle 1.
-      `buddy-window` `desktop` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-buddy-bubblefeed-reflow-per-token.md
+- [ ] The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
+      alone, and Destin deferred the TV test on 2026-09-04. On a second monitor the buddy may open
+      on the wrong screen, or sit on that screen's taskbar if the app fails to match KDE's name for
+      it. Not a stranding risk: an unreachable position is already pulled back to the nearest
+      screen. Do the real two-screen run before this ships.
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-04` `v1.3.1` → docs/archive/design/2026-09-04-linux-buddy-helper/technical-design.md
 
 - [ ] Typing a message in the buddy window while Claude Code is showing a permission / question /
       plan menu sends it straight into the menu and confirms the highlighted option (2026-07-31).
       The main chat refuses and offers "Send anyway"; the buddy window doesn't.
       `buddy-window` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-buddy-chat-input-bar-pty-gate.md
+
+- [ ] The buddy reacts to the app but never does anything of his own (2026-09-05): between
+      reactions he only breathes. Wanted: small spontaneous moments — a glance around, a
+      stretch, dozing off after a few quiet minutes and waking the moment anything happens.
+      Destin's rule for it: the small movements must stay clearly quieter than the one
+      animation that means "a session needs you", so they only run while every session is
+      calm and stop the instant one turns red, amber or blue. Those status colours already
+      reach the buddy window and go unused. The asleep pose and its z's are built and signed
+      off; nothing drives them yet
+      `buddy-window` `desktop` `confirmed` `checked 2026-09-05`
 
 - [ ] Buddy companions (sun, motes, ghost, sleepy Zzz) only show on the welcome screen; the floater
       renders the mascot alone because its window has no room for them (2026-07-16). Needs a
@@ -53,32 +71,51 @@ has passed ~8 items — graduate it to its own file.
 
 ## onboarding
 
-- [ ] First launch explains nothing and nobody meets the buddy. Wanted: the mascot animatedly
-      walking a new user through the neutral provider choice (OpenRouter, Claude Code sign-in, local
-      models), each setup flow, then a tour of session switching, the resume browser, tags, games,
-      files and Project View — short, dense and whimsical, skippable, and navigable back and forth
-      rather than a forced sequence. This is the fuller vision the first-run screen item above should
-      grow toward, not a parallel build
-      `onboarding` `all` `parked` `checked 2026-09-02`
-
 - [ ] A proper first-run screen (name, comfort level, output style, install the curated defaults)
       replacing the conversational setup wizard. The backend helpers exist; the screen does not. Must
-      have a skip button
-      `onboarding` `all` `parked` `checked 2026-09-01`
-
-- [ ] Nothing on first run tells a new user the assistant can change and delete files and that
-      backups are theirs; the Terms disclaim it, but the first thing a court asks is what the user
-      was told. One sentence; wording is Destin's call
-      `onboarding` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      have a skip button. The 2026-09-10 guide keeps the wizard and changes only its sign-in step
+      and final card; this remains the later replacement
+      `onboarding` `all` `parked` `checked 2026-09-10`
 
 ## misc
+
+- [ ] The dev log shows React's "Cannot update a component while rendering a different
+      component" warning when sessions arrive (seen during the 2026-09-11 phone pass, when a
+      phone's catch-up delivers every session at once). Nothing visibly wrong yet; the handler
+      that adds a session changes other state in the middle of an update, which React may run
+      twice. Found 2026-09-11
+      `all` `confirmed` `checked 2026-09-11`
+
+- [ ] Explore bringing YouCoded to iOS. Today an iPhone only reaches the app through Safari
+      pointed at another device that runs it. Options to weigh: a native app around the shared
+      interface (the Android shape, minus the on-device runtime, which App Store rules on
+      downloaded executable code would refuse), a pair-to-desktop-only app, or a proper web
+      client over an encrypted remote connection. Wanted: a written comparison of cost, App Store
+      constraints and what each option can and cannot do, before any build. The website's iOS
+      popup says we are exploring this (2026-09-10)
+      `n/a` `decision` `checked 2026-09-10`
+
+- [ ] Nothing in the app or on youcoded.ai points to r/youcoded, the community Destin opened on
+      2026-09-10 for bug reports, feature ideas, themes and things people make with the app.
+      Proposed, not yet answered: a "Community" link in Settings and in the site footer, added
+      once the subreddit has a few posts so visitors don't land on an empty page
+      `all` `decision` `checked 2026-09-10`
 
 - [ ] Idea: automation results delivered to Telegram, Discord or email, each channel a plugin. Only
       meaningful once the Agents & Automations view exists
       `all` `parked` `checked 2026-09-01`
 
+- [ ] YouCoded Pages: a new top-left tab beside Settings and Files for installable, customizable
+      app pages. A page can reorganize existing information or present its own data — for example,
+      projects arranged differently or weather — and can connect to plugins, scripts, app channels,
+      and eventually agents. People should be able to download pages from the marketplace; creators
+      need a skill that teaches an assistant how to build one and connect it safely. Undesigned.
+      `window-chrome` `all` `parked` `checked 2026-09-08`
+
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal window as a
-      YouCoded session, no assistant attached. Destin's note on the 2026-09-05 local-engine
-      questions deck: it would win over developers, and the engine's "install ROCm prerequisites"
-      step could paste its command into one.
-      `all` `decision` `checked 2026-09-05` → docs/active/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json
+      YouCoded session, no assistant attached. Half of it is built: the local engine's "Run in
+      terminal" button already opens exactly that session, and it is a real session in the strip.
+      What is missing is the choice itself — the new-session form still never offers it, so the
+      only way to get one is that one button. Destin's note on the 2026-09-05 local-engine
+      questions deck: it would win over developers.
+      `all` `in-flight` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json

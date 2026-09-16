@@ -1,0 +1,274 @@
+{
+  "title": "Hover hints that look like the app — the questions before anything is drawn",
+  "key": "app-themed-tooltips-questions",
+  "out": "app-themed-tooltips.questions.html",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Everywhere you hover",
+      "path": "The little grey box that appears when you rest the pointer on something",
+      "headline": "Which kinds of hover hint should get the app's own look?",
+      "today": "Resting the pointer on something in YouCoded pops a small box of text. That box is drawn by Linux, not by YouCoded, so it is the same grey with the same font no matter which theme you are on. There are 236 of them in the app.",
+      "problem": "It is the one thing on screen a theme can never touch, so it always reads as belonging to the operating system rather than to the app. You first said so about the /clear hint on 28 July.",
+      "proposal": "Those 236 hints are not all doing the same job. 95 are fixed labels naming an icon; the other 141 are built from whatever is on screen — a session name too long for its row, a model's full name, the reason a button is greyed out. Pick which groups get rebuilt in the app's own style.",
+      "options": [
+        {
+          "id": "all-three",
+          "label": "Every hover hint",
+          "pros": [
+            "One look everywhere — you never see the grey box again.",
+            "It covers the worst-looking ones, which are the long sentences.",
+            "Nothing is left half-converted for you to notice later."
+          ],
+          "cons": [
+            "The most places to get wrong.",
+            "The cut-off-name hints fire constantly as the pointer crosses a list, so any wrongness shows up often."
+          ],
+          "measured": "236 hints",
+          "recommended": true
+        },
+        {
+          "id": "icon-labels",
+          "label": "Only the names of icons",
+          "summary": "The fixed words that tell you what a picture-only button is: Settings, Close Session, Projects.",
+          "pros": [
+            "The smallest change, and these are the ones you hover on purpose.",
+            "Almost no risk of a hint appearing when you did not want one."
+          ],
+          "cons": [
+            "The long explanations and the cut-off names stay grey, so you would see both styles side by side forever.",
+            "Leaves out the ones that look worst today."
+          ],
+          "measured": "95 of 236"
+        },
+        {
+          "id": "labels-and-reasons",
+          "label": "Names and explanations, not cut-off text",
+          "summary": "Skip the ones that only re-show words that did not fit in their space.",
+          "pros": [
+            "Those are the ones that pop constantly while you sweep the pointer down a session list — keeping them as they are keeps the app calm."
+          ],
+          "cons": [
+            "They are also the longest text, where the grey box looks worst.",
+            "Still a mixture of two styles."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Everywhere you hover",
+      "path": "The little grey box that appears when you rest the pointer on something",
+      "headline": "How much of the app should change in the first go?",
+      "today": "The 236 hints are spread across about 85 separate parts of the app — the bar at the bottom, the top bar, the session list, settings, the marketplace, the file browser and many more.",
+      "problem": "Today a hint is an invisible tag stuck onto a button that already exists. A themed one needs a real wrapper around that button, and in tight rows — the bottom bar especially, where things sit shoulder to shoulder — a wrapper can nudge spacing by a pixel or two. Doing all 85 at once means 85 chances of a small shift you would notice but not be able to trace back.",
+      "proposal": "Convert in one sweep, or start with the parts you look at every hour and leave the rest until we are in those files anyway.",
+      "options": [
+        {
+          "id": "always-visible",
+          "label": "The parts always on screen first",
+          "summary": "The bottom bar, the top bar and the session list and drawer.",
+          "pros": [
+            "Covers what you actually look at all day.",
+            "About a day of work instead of three.",
+            "The densest, most breakable rows get looked at deliberately rather than swept."
+          ],
+          "cons": [
+            "Settings and the marketplace keep the grey box for a while, so for a period you would see both."
+          ],
+          "measured": "56 of 236",
+          "recommended": true
+        },
+        {
+          "id": "everything",
+          "label": "All of it at once",
+          "pros": [
+            "No mixture at any point — you never see two styles.",
+            "Done once, never revisited."
+          ],
+          "cons": [
+            "Two to three days plus a full look at every screen in the app.",
+            "More chance of a spacing change landing somewhere neither of us checked."
+          ],
+          "measured": "236 hints, ~85 files"
+        },
+        {
+          "id": "essential-only",
+          "label": "Only where the hint is the only clue",
+          "summary": "A picture-only button with no label anywhere near it, and nothing else.",
+          "pros": [
+            "The smallest possible change, and the least that can go wrong."
+          ],
+          "cons": [
+            "Leaves most of the app grey, including the long explanations that look worst.",
+            "Hard to say where the line is, so it would need deciding case by case."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "How a hint behaves",
+      "intro": "The first page decided which hints change and how many at a time. These decide what one actually does."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The Android app, and your touchscreen",
+      "path": "Any picture-only button when you are using a finger instead of the touchpad",
+      "headline": "Should hints appear on touch at all, and if so how?",
+      "today": "Hovering needs a pointer. On a touchscreen there is nothing to hover with, so all 236 hints simply never appear. The Android app runs this same interface, so every hint in it is invisible too.",
+      "problem": "On Android a picture-only button has no name, no hint and no way to find out what it does short of pressing it and seeing what happens. The same is true whenever you use this laptop's touchscreen instead of the touchpad.",
+      "proposal": "Give a themed hint a way to appear without a pointer, or accept that touch has no hints.",
+      "options": [
+        {
+          "id": "long-press",
+          "label": "Press and hold shows it",
+          "pros": [
+            "Icons in the Android app finally have names.",
+            "Works the same on your touchscreen as on the touchpad.",
+            "Matches what press-and-hold already means on a phone."
+          ],
+          "cons": [
+            "Press-and-hold is also how you select text and how some lists start a drag, so it has to be taught not to fight them.",
+            "A hint appearing under your thumb can hide the thing you were pressing."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hover-only",
+          "label": "Pointer only, as today",
+          "pros": [
+            "Nothing new can go wrong; no fight with scrolling, dragging or text selection.",
+            "The least work by a wide margin."
+          ],
+          "cons": [
+            "Android keeps its unnamed icons.",
+            "Your own touchscreen keeps showing you nothing."
+          ]
+        },
+        {
+          "id": "visible-instead",
+          "label": "Put the important ones on screen",
+          "summary": "On touch, show the words next to the icon rather than hiding them behind a gesture.",
+          "pros": [
+            "Nothing to discover — the answer is already in front of you.",
+            "No gesture to conflict with anything."
+          ],
+          "cons": [
+            "Makes an already-crowded phone screen more crowded.",
+            "A much bigger design job than a hint, and a different layout on each platform."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Everywhere you hover",
+      "path": "Resting the pointer on a button in the bottom bar",
+      "headline": "How quickly should a hint appear once you rest on something?",
+      "today": "The operating system waits about a second before showing its box. Once one has appeared, moving straight to the button next to it shows the next one with no wait at all.",
+      "problem": "Instant means a hint flashes at you every time you sweep the pointer across a row of buttons on the way to somewhere else. A full second means that when you genuinely are asking what something is, the app feels like it did not hear you.",
+      "proposal": "Pick a starting point. You will be able to feel this on a working version before anything is final, so it can be changed once you have used it.",
+      "options": [
+        {
+          "id": "short-pause",
+          "label": "A short pause, then instant",
+          "summary": "Under half a second the first time; no wait at all while you keep moving along the same row.",
+          "pros": [
+            "Fast enough that asking feels answered.",
+            "Long enough that passing over a row on your way elsewhere shows nothing."
+          ],
+          "cons": [
+            "A brief moment where nothing has happened yet, which can read as unresponsive the very first time."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "instant",
+          "label": "Straight away",
+          "pros": [
+            "Never any doubt that the app heard you."
+          ],
+          "cons": [
+            "Boxes flash open and shut as you move the pointer across the bottom bar, which is busy and permanently on screen."
+          ]
+        },
+        {
+          "id": "match-today",
+          "label": "The same wait as now",
+          "pros": [
+            "Nothing about the timing changes, so only the look is different — the smallest surprise."
+          ],
+          "cons": [
+            "Keeps the delay that makes you wonder whether the app noticed."
+          ],
+          "measured": "about 1 second"
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "The bottom bar and settings",
+      "path": "The cost figure in the bottom bar, and greyed-out buttons",
+      "headline": "Should whole sentences still be hidden behind hovering?",
+      "today": "Some hints are not names, they are paragraphs. One reads: \"This provider bills for usage, but no price is available for this model here, so the session cost can't be totalled.\" Another explains why a button is greyed out. They only appear if you happen to rest the pointer in the right place.",
+      "problem": "Something that long is worth reading, but it is invisible unless you guess to hover, it makes you hold the pointer still while you read it, and it never appears on a phone at all.",
+      "proposal": "The app already has a small circled i you can click for an explanation that stays open. Long text could move there and leave hovering for short names.",
+      "options": [
+        {
+          "id": "info-button",
+          "label": "Sentences move to the circled i",
+          "pros": [
+            "Click it and it stays open while you read — no holding the pointer still.",
+            "Works on the touchscreen and on Android, where hovering never will.",
+            "The little i is a visible sign that there is something to read, which a hover hint never is."
+          ],
+          "cons": [
+            "Adds a small extra mark next to some things.",
+            "One more thing on screen in panels that are already full."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-as-hover",
+          "label": "Keep them as hover hints",
+          "pros": [
+            "Nothing new appears on screen anywhere.",
+            "Much less work — the sentences just get the new look with everything else."
+          ],
+          "cons": [
+            "Still invisible on touch and on Android.",
+            "Still requires holding the pointer still to read a long sentence."
+          ]
+        },
+        {
+          "id": "visible-text",
+          "label": "Put the sentence on screen",
+          "pros": [
+            "Impossible to miss, on every device."
+          ],
+          "cons": [
+            "Takes real space in panels that have none to spare.",
+            "A sentence you have read once becomes clutter you cannot dismiss."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Everywhere you hover",
+      "path": "The bottom bar, at the very edge of the screen",
+      "headline": "A hint drawn by the app lives inside the app window, and gives up two things the grey box does for free.",
+      "changed": "The operating system's box can float outside the app's edges and shows even when another program is in front. Anything the app draws itself is trapped inside the app window.",
+      "notice": "A hint on the bottom bar has to open upward instead of hanging below the screen edge, and hovering a YouCoded window sitting behind another program shows nothing until you click into it first.",
+      "yes": "Fine",
+      "no": "Problem"
+    }
+  ]
+}

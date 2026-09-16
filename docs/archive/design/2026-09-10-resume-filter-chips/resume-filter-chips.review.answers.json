@@ -1,0 +1,75 @@
+{
+ "deck": "resume-filter-chips-review",
+ "started": "2026-09-10T11:27:18.118Z",
+ "submitted": "2026-09-10T11:34:50Z",
+ "cur": 9,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "no",
+   "seconds": 35,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 21,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 64,
+   "theme": "light",
+   "zoom": 1,
+   "note": "remove manage tags here."
+  },
+  "S-5": {
+   "v": "yes",
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-6": {
+   "note": "still don't like the arrow. i want to see a few alternatives",
+   "v": "other",
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "other",
+   "note": "could we collapse into the expandable filter menu button thing used in the project view and session file view things? only on mobile/narrow, leave as full chips on desktop/wide",
+   "seconds": 104,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "flip",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "sessions",
+   "seconds": 47,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "note": "",
+   "pick": "shrink",
+   "seconds": 91,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "deck": "remote-access-questions",
+ "started": "2026-09-09T08:37:05.441Z",
+ "submitted": "2026-09-09T08:39:14Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "guided",
+   "seconds": 42,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "draft",
+   "seconds": 42,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "independent",
+   "seconds": 42,
+   "theme": "cotton-candy-sky"
+  }
+ }
+}

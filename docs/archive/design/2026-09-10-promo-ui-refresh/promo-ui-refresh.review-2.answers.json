@@ -1,0 +1,33 @@
+{
+ "deck": "promo-ui-refresh-review-2",
+ "started": "2026-09-11T09:35:56.278Z",
+ "submitted": "2026-09-11T09:38:19Z",
+ "cur": 3,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "yes",
+   "note": "i think we should shorten all of these clips as much as we can without losing real content. and zoom them in a smidge. i would like to shoot for 15, no more than 20s per clip. with consistent text/action flow and such between them",
+   "seconds": 84,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

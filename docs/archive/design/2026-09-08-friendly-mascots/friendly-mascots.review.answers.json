@@ -1,0 +1,21 @@
+{
+ "deck": "friendly-mascots-review",
+ "started": "2026-09-09T04:45:53.101Z",
+ "submitted": "2026-09-09T04:47:27Z",
+ "cur": 1,
+ "answers": {
+  "V-1": {
+   "v": "yes",
+   "seconds": 68,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "G-1": {
+   "v": "pick",
+   "pick": "yes",
+   "seconds": 25,
+   "theme": "creme",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "deck": "chatgpt-signin-review-2",
+ "started": "2026-09-05T04:40:10.653Z",
+ "submitted": "2026-09-05T04:47:01Z",
+ "cur": 7,
+ "answers": {
+  "P-1": {
+   "note": "i almost feel like we can reduce some of the duplicative claude code/chatgpt top-line headers. the label within the card is probably enough. and move the (i) inside the card. i think we should pin the buttons to the top right, i don't like how the gpt sign-in button is currently vertically centered.",
+   "note_kind": "now",
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "note": "same thing, alight button to top right.",
+   "note_kind": "now",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-4": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-5": {
+   "v": "yes",
+   "seconds": 53,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-6": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9": {
+   "note": "You have reached ChatGPT's 5-hour session limit (Resets @ XXXpm/am). [Switch Providers]",
+   "note_kind": "now",
+   "v": "other",
+   "seconds": 91,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-10": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

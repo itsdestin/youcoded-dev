@@ -22,7 +22,7 @@ scope: youcoded/desktop — native harness permissions, Claude Code bypass parit
 >   `bug`, independent of the native feature, and it is on no list. **This is the single highest-
 >   priority item in this document and should be filed on `ROADMAP.md` immediately.**
 > - Not superseded by the full-auto external-read work
->   (`docs/active/plans/2026-08-21-full-auto-external-read-bypass.md`) — that plan lifts the
+>   (`docs/archive/plans/2026-08-21-full-auto-external-read-bypass.md`) — that plan lifts the
 >   external-directory ask for three READ tools inside `full-auto`; it does not add a bypass mode,
 >   an `rm` analyzer, or touch the stale overrides.
 > - Frontmatter stays `draft`, which is honest: no code was written and no decision was taken.

@@ -1,0 +1,46 @@
+{
+  "title": "Error messages, batch 1 — the backup row as a full error",
+  "key": "error-batch-1-review-3",
+  "out": "error-batch-1.review-3.html",
+  "images": "images/error-batch-1.review-3",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after-3"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Now"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "sync-block": [
+      "error-batch1",
+      "sync-retry-failed",
+      "420x210+510+460"
+    ]
+  },
+  "steps": [
+    {
+      "id": "E-1c",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → a failed backup's warning → Retry",
+      "crop": "sync-block",
+      "headline": "A failed backup upload now shows an error under its row, with Retry and Report bug.",
+      "changed": "The message is the same error block the rest of the app uses. Retry uploads again. Report bug opens the ticket screen with the error already attached. A skipped upload (another backup was running) offers Retry only, since nothing went wrong.",
+      "notice": "You can act on a failed upload right where it happened, instead of reading a label.",
+      "risk": "The block stays under the row until you upload again, even if a later automatic backup succeeds.",
+      "highlight": {
+        "box": [
+          3,
+          32,
+          94,
+          34
+        ]
+      }
+    }
+  ]
+}

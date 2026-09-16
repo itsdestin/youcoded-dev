@@ -1,0 +1,15 @@
+{
+ "deck": "remote-batch-2-3-questions-2",
+ "started": "2026-09-10T22:48:19.426Z",
+ "submitted": "2026-09-10T22:49:33Z",
+ "cur": 0,
+ "answers": {
+  "Q-10": {
+   "note": "Im not sure why this would differ between pjone and deskotp? What do we gain/lose?",
+   "v": "other",
+   "seconds": 74,
+   "theme": "midnight",
+   "dk": true
+  }
+ }
+}

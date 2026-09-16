@@ -10,15 +10,35 @@ approved changes — see `docs/archive/specs/2026-07-16-ui-consistency-design-sp
 output format it produced). That process still holds. What changed on 2026-07-29 is **where the
 rendering happens**.
 
+## Small work: ask about the short route first
+
+For a small change, small feature or bug fix with clear direction, ask Destin (one line in
+chat) whether to skip the questions deck, the UX tester and the contract/acceptance rounds. On
+yes, build it in the workbench and make a UI review deck the first thing he sees (a Live step
+for motion). Everything below is the full route. Rule: `.claude/rules/feature-flow.md` →
+Short route for small work.
+
 ## Before drawing anything: the questions deck
 
 Step 2 of the feature flow (`docs/active/specs/2026-09-01-feature-flow-design.md` §5) is a
-deck, not a chat. Write `docs/active/design/<date>-<feature>/<feature>.questions.json` — one
-`"words": true` step per question, one to three options (the recommended one first, its why in
-`summary`), no picture — and `serve` it in the background. Do not ask what the design guide or
-the code already answers; do not ask what has an obvious answer (state it, the review deck
-will show it). Draw only after it is submitted: its answers are the first source of the
-contract.
+deck, not a chat. Copy `scripts/ui-review/templates/questions.json` to
+`docs/active/design/<date>-<feature>/<feature>.questions.json` — one `"words": true` step per
+question, each saying what exists today, what goes wrong (`problem`) and what would change
+(`proposal`), with one to three `options` carrying their own `pros` and `cons` and at most one
+`"recommended": true` (never that word typed into a label). The whole deck is ONE scrolling
+page unless a page marker (`{"id": "P-2", "page": "…", "intro": "…"}`) starts a new set, so err
+on more questions per page. `preview` it and read the contact sheet, then `serve` it in the
+background (it never opens a browser — put the printed link in chat as the last line of your
+turn). Do not ask what the design guide or the code already answers; do not ask what has an
+obvious answer (state it, the review deck will show it). Draw only after it is submitted: its
+answers are the first source of the contract. Every field and every refusal:
+`.claude/rules/review-deck.md`.
+
+**Hand Destin the `[deck] http://127.0.0.1:…` line from `serve`, never the `.html` path**, while
+the server runs. The app opens a pasted path as a plain file, where Submit has no server and the
+page falls back to a copy box; on 2026-09-04 that paste came back as one flattened line and the
+deck read as "not submitted". If it happens anyway: `review-cards.py record <spec> '<paste>'`
+writes the submitted answers file from the paste (both line-per-step and flattened forms).
 
 ## The mechanism: edit the real components
 
@@ -76,10 +96,24 @@ approved.
   the container, then the thumb crossing the rounded corners — none of which any 1440x900
   screenshot could have shown. Shrink the height until it overflows, and scroll to both ends. This is the workbench's one real gap: appearance is
   guaranteed identical, behaviour under real data is not.
-- **Explicit fidelity notes — never let an approximation pass silently.** Community themes
-  render in full, artwork included (two ship by default: Halftone Dimension and Meadow Mist).
-  If you hit something the workbench genuinely cannot reproduce, say so in the review rather
-  than letting Destin wonder whether it is the design or the harness.
+- **Explicit fidelity notes — never let an approximation pass silently, and never paint one
+  onto the screen.** Community themes render in full, artwork included (two ship by default:
+  Halftone Dimension and Meadow Mist). If you hit something the workbench genuinely cannot
+  reproduce, say so **in the deck** — the step's `risk` card — rather than letting Destin
+  wonder whether it is the design or the harness.
+  **The note goes in the deck, never in the mockup.** A mockup that captions itself
+  ("Setup is not connected in this preview", "Prototype · AI unavailable") or greys out its
+  own primary action is no longer a picture of the app, so the review measures the wrong
+  thing. Destin, 2026-09-09, rejecting three of four steps for exactly this: *"the workbench
+  shouldn't have code that makes it look different from the real app, that defeats the whole
+  point."* Unbuilt actions render **enabled and in the app's own style**; what they don't do
+  yet is the `risk` line. Keep any guard that stops a mock reaching real machinery as a test,
+  not as a `disabled` attribute.
+- **Use the primitive's own size guidance before styling a control.** `Button.tsx` documents
+  `sm` as "inline row actions (EngineCard, provider rows, chips)" and `md` as "forms, popup
+  footers, most actions"; the app's dialogs stack full-width `className="w-full py-2.5"`
+  actions, primary over secondary (`ContributePopup.tsx`, `BugReportPopup.tsx`). A mockup
+  that picks its own sizes reads as a different app even when every token is right.
 - **On ambiguous feedback ("make them more consistent"), prefer the smallest literal reading and
   ask.** Over-extrapolating cost a full rework in the original session.
 - When he picks among options (A/B/C), keep the rejected ones described in the ledger marked
@@ -124,7 +158,8 @@ Decisions must not live only in chat — and the deck answers ARE the record (th
    against the built branch) in parallel, each with a budget; mark every finding line in
    their review files; fix the accepted ones; hand the review files to the contract agent so
    accepted findings become `review:` rows.
-5. File a roadmap entry for every *fix later* note the contract agent listed (`docs/roadmap/<area>.md`
+5. File a roadmap entry for anything the contract agent listed under `## Not covered` that is
+   real work rather than a question for the next round (`docs/roadmap/<area>.md`
    — `ROADMAP.md` → "Filing an item"), and follow the workspace knowledge rules (pinning test >
    ast-grep rule > WHY comment > path-scoped rule) for anything durable.
 6. At the end: dispatch the grader (`scripts/ui-review/grader.md`, a fresh agent) to write

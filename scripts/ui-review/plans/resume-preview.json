@@ -1,0 +1,27 @@
+{
+  "_why": "Round-five verification for the Resume browser's conversation preview panel (docs/active/design/2026-09-10-resume-preview-panel/). The main plan's `resume-browser` shot opens the browser but never picks a row, so it only ever captured the empty right half. These pick one, and the stress variant checks the panel against the long-titled, tag-heavy fixture rows.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0",
+  "shots": [
+    {
+      "name": "resume-preview-selected",
+      "actions": [
+        { "click": "[placeholder^='Message']", "settle": 200 },
+        { "type": "/resume" },
+        { "key": "Enter", "settle": 1200 },
+        { "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>!b.hasAttribute('aria-haspopup'))[0]", "settle": 1600 }
+      ],
+      "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')"
+    },
+    {
+      "name": "resume-preview-stress",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+      "actions": [
+        { "click": "[placeholder^='Message']", "settle": 200 },
+        { "type": "/resume" },
+        { "key": "Enter", "settle": 1500 },
+        { "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>!b.hasAttribute('aria-haspopup'))[0]", "settle": 1600 }
+      ],
+      "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')"
+    }
+  ]
+}

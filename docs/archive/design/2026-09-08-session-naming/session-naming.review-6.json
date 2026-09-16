@@ -1,0 +1,28 @@
+{
+  "title": "Session naming — edit cues stay visible",
+  "key": "session-naming-review-6",
+  "stage": "review",
+  "out": "session-naming.review-6.html",
+  "images": "images/session-naming.review-6",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-6-before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-6-after"
+  },
+  "themes": ["light"],
+  "crops": {
+    "saved": ["naming", "saved", "480x530+480+190"]
+  },
+  "steps": [
+    {
+      "id": "R6-1",
+      "surface": "Saved session names",
+      "path": "Resume Session → saved session names",
+      "crop": "saved",
+      "headline": "The pencil and dotted underline stay visible.",
+      "changed": "The approved pencil and underline no longer wait for hover. Both pictures show the names at rest, without hover or focus.",
+      "highlight": {"box": [42, 161, 270, 35]},
+      "notice": "Click anywhere on the name to rename it. Keyboard and touch controls are unchanged.",
+      "risk": "The file viewer is unchanged; naming storage is still preview-only."
+    }
+  ]
+}

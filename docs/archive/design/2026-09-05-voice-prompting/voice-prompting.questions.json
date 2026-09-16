@@ -1,0 +1,173 @@
+{
+  "title": "Voice prompting — seven questions before anything is drawn",
+  "key": "voice-prompting-questions",
+  "out": "voice-prompting.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Message box (desktop) → the new mic button",
+      "path": "Today there is no mic. The app's built-in browser engine has no free speech recognizer (Chrome's needs a Google key the app does not ship), so the desktop app has to bring its own way of turning speech into text",
+      "headline": "On desktop, what should turn your speech into text?",
+      "options": [
+        {
+          "id": "a",
+          "label": "A speech model that runs on your computer, downloaded once (recommended)",
+          "summary": "Same idea as the local chat models: the first time you use the mic, the app fetches an open-source speech model (about 150 MB) and keeps it. From then on your voice never leaves the machine, it works offline, it costs nothing, and it writes proper punctuation on its own. It works for everyone, including people signed in only with a Claude subscription. Con: a one-time download, and on an older laptop a long sentence can take a couple of seconds to appear after you stop. Bigger, more accurate models can be offered as an option later.",
+          "cost": "Ship the speech engine in our own installer builds for Windows, Mac and Linux (no ready-made Linux or Mac binaries exist), a model download flow like the local chat engine's, and a microphone capture path."
+        },
+        {
+          "id": "b",
+          "label": "A cloud service through your OpenRouter account",
+          "summary": "The app records you, sends the audio to a cloud model that can hear (through the OpenRouter account you already have), and gets text back. Pro: no download, works on any laptop. Con: your voice leaves the machine, each use costs a little money, it needs internet, and people signed in only with Claude get no mic at all, because Claude cannot hear audio.",
+          "cost": "Audio recording, an upload path, and per-provider handling; nothing to ship in the installer."
+        },
+        {
+          "id": "c",
+          "label": "Both: on-your-computer by default, cloud as a switch in Settings",
+          "summary": "Option (a) out of the box, plus a Settings switch to use a cloud service instead, for people whose laptop is too slow. Pro: covers everyone. Con: two systems to keep working, and a settings choice most people will never understand; the review deck would need to explain it.",
+          "cost": "Everything in (a) plus everything in (b)."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Message box → while the mic is on",
+      "path": "Your roadmap note asked for words to appear while you are still talking, the way a phone keyboard does. The on-your-computer engine can do that, but it re-hears the last few seconds each time, so the newest words sometimes shuffle before they settle",
+      "headline": "Should words appear while you are still speaking, or only after you stop?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Live: words appear as you talk, the newest few in grey until they settle (recommended)",
+          "summary": "Feels like a phone keyboard: you see it hearing you, so you know it is working and you can stop when the sentence looks right. The last second or two shows in grey and may rewrite itself, then turns solid. Con: the computer works harder while you talk (fans on a laptop), and on a slow machine the grey tail lags a few words behind.",
+          "cost": "A streaming recognizer that re-transcribes a sliding window, plus the grey settling text in the box."
+        },
+        {
+          "id": "b",
+          "label": "After you stop: a sound meter while you talk, the finished text lands all at once",
+          "summary": "While the mic is on you see a small level meter and a timer, not words. When you stop, the whole message appears in one go, punctuated, one to three seconds later. Pro: simplest, most accurate, nothing ever rewrites in front of you. Con: no proof it heard you until the end, so a long ramble that was misheard is only discovered at the end.",
+          "cost": "Record, then one transcription pass; no sliding window."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Message box → the mic button",
+      "path": "You use a touchscreen and a touchpad, other people use a mouse or only the keyboard, and on a phone it is a thumb. The mic must work for all of them",
+      "headline": "How should the mic start and stop?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Tap to start, tap again or press Enter to stop; it also stops by itself after a pause (recommended)",
+          "summary": "One tap and the mic glows; talk with your hands free; tap again, press Enter, or just go quiet for about two seconds and it stops on its own. A keyboard shortcut does the same without the mouse. Pro: works the same with a finger, a mouse or a keyboard, and long messages do not tire a hand. Con: background noise can keep it listening, so an obvious glowing state and a Stop are essential.",
+          "cost": "A listening state with silence detection, one shortcut, and a Stop that is impossible to miss."
+        },
+        {
+          "id": "b",
+          "label": "Hold to talk, release to stop (walkie-talkie)",
+          "summary": "You press and hold the mic while speaking and let go when done. Pro: it can never be left listening by accident, and the end is exactly when you let go. Con: holding a touchscreen button through a long message is awkward, a touchpad hold is easy to lose mid-sentence, and it cannot be started from the keyboard alone.",
+          "cost": "Press-and-hold handling on touch, mouse and pen, with the accidental-release case."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Message box → after the mic stops",
+      "path": "Once your speech is text, it has to go somewhere",
+      "headline": "After you stop talking, should the text wait in the box or send itself?",
+      "options": [
+        {
+          "id": "a",
+          "label": "It lands in the message box for you to read and fix, then you send (recommended)",
+          "summary": "The text appears in the box with the cursor at the end, exactly as if you had typed it. You can fix a misheard word, add a file, or keep dictating, then press Send. Pro: nothing misheard ever reaches the assistant unread. Con: one more tap than a fully hands-free flow.",
+          "cost": "Insert at the cursor and keep the existing draft, attachments and Send behaviour."
+        },
+        {
+          "id": "b",
+          "label": "Hands-free: it sends by itself a moment after you go quiet",
+          "summary": "Stop talking and the message goes, like talking to a voice assistant. Pro: fastest, and usable from across the room. Con: a misheard word or a half-finished thought goes straight to the assistant and starts it working; there is no moment to check.",
+          "cost": "A send-on-silence countdown that can be cancelled, and a visible pause before it fires."
+        },
+        {
+          "id": "c",
+          "label": "(a) by default, with a hands-free switch in Settings",
+          "summary": "Waits in the box unless you turn on hands-free in Settings, then it behaves like (b). Pro: safe for everyone, and there for the people who want it. Con: one more setting to explain.",
+          "cost": "Both behaviours plus the setting."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Message box → the very first time you tap the mic (desktop)",
+      "path": "If the speech model runs on your computer (Q-1), it has to be downloaded once before the mic can work",
+      "headline": "What should the first tap on the mic do before the speech model is downloaded?",
+      "options": [
+        {
+          "id": "a",
+          "label": "The mic is always there; the first tap explains and offers the one-time download (recommended)",
+          "summary": "Everyone sees the mic from day one. The first tap shows a small card: what it is, that your voice stays on this computer, the download size, and a Download button. It fetches with a progress bar, then the mic just works, forever. Pro: discoverable, and the privacy point is made at the exact moment it matters. Con: a first-time user hits a download before they can try it.",
+          "cost": "A first-run card and a progress state on the mic, reusing the local chat engine's download machinery."
+        },
+        {
+          "id": "b",
+          "label": "The mic is hidden until you turn it on in Settings → Local models",
+          "summary": "The message box looks as it does today; voice is a feature you switch on in Settings, which downloads the model there. Pro: nothing new in the box for people who will never use it, and the download happens on a screen built for downloads. Con: most people will never find it, and the roadmap wanted the mic in the bar.",
+          "cost": "A Settings row and download there; the mic appears only after."
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Message box (Android app) → the mic button",
+      "path": "Your roadmap note says dictation matters most on the phone. Every Android phone already has a built-in speech recognizer (the one the keyboard's mic uses); the app can ask it directly and show the words in its own box, so the phone keyboard never needs to open",
+      "headline": "On Android, whose speech recognizer should the mic use?",
+      "options": [
+        {
+          "id": "a",
+          "label": "The phone's own recognizer, wired into our mic button (recommended)",
+          "summary": "Tap our mic, the phone's recognizer listens, words appear live in our box, and the text is ready to fix or send. Pro: instant, free, no download, live words on every phone, and on recent Pixel and Samsung phones it punctuates and works offline. Con: punctuation and offline use depend on the phone maker; a cheap or older phone may give unpunctuated text or need internet, and a phone without Google's speech service gets no mic.",
+          "cost": "A microphone permission, the phone's recognizer, and the same message-box behaviour as desktop."
+        },
+        {
+          "id": "b",
+          "label": "The same downloaded speech model as desktop, running on the phone",
+          "summary": "Identical quality and punctuation on every phone, offline, voice never leaves the device. Con: a 75 to 150 MB download on the phone, several seconds per sentence on a mid-range phone, noticeable battery use, and no live words while you talk.",
+          "cost": "Build and ship the speech engine inside the Android app, plus its download and storage flow."
+        },
+        {
+          "id": "c",
+          "label": "(a) by default, with (b) as a Settings option for phones that do not punctuate",
+          "summary": "Every phone gets the instant built-in path; people who get unpunctuated text can download the model. Pro: the best of both. Con: two systems on the phone and a setting to explain.",
+          "cost": "Everything in (a) plus everything in (b)."
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Remote access (a phone or laptop browser reaching your desktop app)",
+      "path": "Browsers only allow a microphone on a secure (https) page, and remote access today is served over plain http on your network. So a mic in the remote browser cannot work at all until remote access gets a secure address, which is its own project",
+      "headline": "Should the remote browser client have a mic in the first version?",
+      "options": [
+        {
+          "id": "a",
+          "label": "No: desktop and Android first, remote browser later with secure remote access (recommended)",
+          "summary": "The mic ships in the desktop app and the Android app. In a remote browser tab the button is simply not there. Pro: nothing half-working ships, and it does not drag secure remote access into this feature. Con: someone on a laptop browser reaching their home desktop gets no mic until later.",
+          "cost": "Nothing now; a roadmap line for secure remote access, and the mic follows it."
+        },
+        {
+          "id": "b",
+          "label": "Yes: make remote access secure as part of this feature, then send audio to the desktop's speech model",
+          "summary": "Remote access gets a secure address first, then the browser records you and your desktop transcribes it, so it sounds the same everywhere. Pro: one consistent mic on every surface. Con: secure remote access is a separate, larger job (certificates, addresses, phones trusting them), so voice would wait on it and could slip by weeks.",
+          "cost": "Secure remote access, an audio upload path, and the transcription on the desktop side."
+        }
+      ]
+    }
+  ]
+}

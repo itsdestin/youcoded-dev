@@ -1,0 +1,14 @@
+{
+ "deck": "friendly-mascots-questions",
+ "started": "2026-09-09T04:20:59.865Z",
+ "submitted": "2026-09-09T04:21:51Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "palette",
+   "seconds": 44,
+   "theme": "creme"
+  }
+ }
+}

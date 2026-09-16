@@ -1,0 +1,206 @@
+{
+  "title": "Development and tickets \u2014 revised UI",
+  "key": "error-states-development-review-2",
+  "out": "error-states.review-2.html",
+  "images": "images/error-states.review-2",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-review2-runs/before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/error-states-development/scratch/error-review2-runs/after"
+  },
+  "labels": {
+    "before": "Before \u00b7 first review design",
+    "after": "After \u00b7 revised prototype"
+  },
+  "themes": [
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "8": [
+      "design",
+      "8",
+      "620x840+0+0"
+    ],
+    "9": [
+      "design",
+      "9",
+      "620x840+0+0"
+    ],
+    "10": [
+      "design",
+      "10",
+      "620x840+0+0"
+    ],
+    "11": [
+      "design",
+      "11",
+      "620x840+0+0"
+    ],
+    "12": [
+      "design",
+      "12",
+      "620x840+0+0"
+    ],
+    "13": [
+      "design",
+      "13",
+      "620x840+0+0"
+    ],
+    "14": [
+      "design",
+      "14",
+      "620x840+0+0"
+    ],
+    "15": [
+      "design",
+      "15",
+      "620x840+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R2-8",
+      "surface": "Development",
+      "path": "Settings \u2192 Development",
+      "headline": "8. Keep contribution help inside Contribute.",
+      "crop": "8",
+      "changed": "S-1 note: the landing now contains only its four destinations.",
+      "notice": "Open Contribute for the walkthrough; existing Development labels stay unchanged.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-9",
+      "surface": "Contribution walkthrough",
+      "path": "Development \u2192 Contribute \u2192 How contributing works",
+      "headline": "9. Separate backup, public proposals and your installed app.",
+      "crop": "9",
+      "changed": "S-2 note: the warning now explains each separately.",
+      "notice": "The five approved steps remain. This picture shows the bottom of the walkthrough.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-10",
+      "surface": "Ticket header",
+      "path": "Development \u2192 Report a Bug or Request a Feature",
+      "headline": "10. Use Submit a ticket for both tabs.",
+      "crop": "10",
+      "changed": "S-3 note: the header stays the same for Bug and Feature.",
+      "notice": "Write and review without mandatory AI. The public-sharing warning is shorter.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-11",
+      "surface": "Report evidence",
+      "path": "Submit a ticket \u2192 Recent logs",
+      "headline": "11. Put optional evidence in compact settings rows.",
+      "crop": "11",
+      "changed": "S-4 revision, not previously approved: logs stay off until selected; explanations open on click or tap.",
+      "notice": "Selected sample logs stay editable. Error details are reviewed before any future transmission.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-12",
+      "surface": "Optional AI help",
+      "path": "Submit a ticket \u2192 Review report \u2192 Optional AI help",
+      "headline": "12. Keep AI help behind a review-stage disclosure.",
+      "crop": "12",
+      "changed": "S-4 revision, not previously approved: less repeated copy, one primary action and consistent button sizes.",
+      "notice": "Only the reviewed draft and selected details would go to the chosen assistant; nothing sends automatically.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-13",
+      "surface": "Contribution setup",
+      "path": "Development \u2192 Contribute to YouCoded",
+      "headline": "13. Start with one purpose and one setup action.",
+      "crop": "13",
+      "changed": "S-6 revision, not previously approved: compact settings layout; technical details behind Workspace details.",
+      "notice": "No coding knowledge needed. Existing folders and the installed app stay untouched.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-14",
+      "surface": "Contribution backup state",
+      "path": "Development \u2192 Contribute \u00b7 example backup failure",
+      "headline": "14. Keep missing backup visible when it matters.",
+      "crop": "14",
+      "changed": "S-6 revision, not previously approved: a failed-backup example stays outside collapsed details.",
+      "notice": "Local-only work also has a visible warning. This is a labelled example, not your backup status.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    },
+    {
+      "id": "R2-15",
+      "surface": "Prototype links",
+      "path": "Settings \u2192 Development",
+      "headline": "15. Make unavailable external links unmistakable.",
+      "crop": "15",
+      "changed": "Prototype correction: Known issues and Roadmap are labelled unavailable and cannot open external sites.",
+      "notice": "No GitHub changes, setup, AI, uploads or submission run in this design.",
+      "risk": "UI prototype only: external operations are disabled; nothing is collected, installed or sent.",
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      }
+    }
+  ]
+}

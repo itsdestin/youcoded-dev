@@ -1,0 +1,226 @@
+{
+  "title": "Promo film and website clips, re-filmed on today's app",
+  "key": "promo-ui-refresh-review",
+  "out": "promo-ui-refresh.review.html",
+  "images": "images/promo-ui-refresh.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "New"
+  },
+  "crops": {
+    "film-mascot-colours": ["film", "mascot-colours", "520x260+0+0"],
+    "film-part1": ["film", "part1", "2560x1080+0+0"],
+    "film-part2": ["film", "part2", "2560x1080+0+0"],
+    "film-conv-a": ["film", "conv-a", "1400x700+20+95"],
+    "film-conv-b": ["film", "conv-b", "1400x700+20+95"],
+    "site-hero-mascots": ["site", "hero-mascots", "1200x288+0+0"]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "Promo film",
+      "path": "The mascot in the Crème scene (model picker) and the Light scene (marketplace)",
+      "crop": "film-mascot-colours",
+      "themes": ["midnight"],
+      "headline": "The film's mascot now wears the app's new Crème and Light colours instead of dark brown and black.",
+      "changed": "The host is now the pale mascot the app shows on these two themes. The other themes' mascots were already current.",
+      "notice": "It matches the installed app.",
+      "risk": "On Light it is pale on a pale window."
+    },
+    {
+      "id": "F-2",
+      "surface": "Promo film",
+      "path": "The opening through the marketplace — one frame per speech bubble, in film order",
+      "crop": "film-part1",
+      "themes": ["midnight"],
+      "highlight": { "box": [50, 33.3, 50, 33.3] },
+      "headline": "The first half is re-filmed on today's app; the lines, timing and music are unchanged.",
+      "changed": "Every app shot was filmed again. The visible differences are small: the message box, grouped tool lines, the new model window and Project View's tab names.",
+      "notice": "Nothing on screen looks older than the app people will download.",
+      "risk": "I checked stills only; the motion is unchecked until you ask for a draft render."
+    },
+    {
+      "id": "F-3",
+      "surface": "Promo film",
+      "path": "Saved prompts through the ending — one frame per speech bubble, in film order",
+      "crop": "film-part2",
+      "themes": ["midnight"],
+      "highlight": { "box": [50, 66.7, 25, 33.3] },
+      "headline": "The second half is re-filmed too, including the games panel, the phone scenes and the new Resume screen.",
+      "changed": "Games open from the Games button, the phone shows today's layout, and the conversations scene lands on yesterday's redesigned Resume screen.",
+      "notice": "The film shows the Resume screen you shipped, not the old list.",
+      "risk": "In this version that screen's right half is empty — the next slide asks about it."
+    },
+    {
+      "id": "F-4",
+      "surface": "Promo film",
+      "path": "Every conversation, findable — and the website's Tags, notes, and shortcuts card",
+      "themes": ["midnight"],
+      "headline": "Which version of the conversations scene should the film use?",
+      "variants": [
+        {
+          "id": "empty",
+          "label": "Preview left empty",
+          "crop": "film-conv-a",
+          "summary": "As filmed: search, tag and note on the left, while the right half says \"Pick a conversation to read it here\".",
+          "risk": "Half the window is blank for the whole scene."
+        },
+        {
+          "id": "open",
+          "label": "Conversation opened",
+          "crop": "film-conv-b",
+          "summary": "One extra click opens \"econ midterm brief\", so its conversation and the Resume box fill the right half, then the tag and note as before. The website's tags card would be re-recorded the same way.",
+          "risk": "The click takes about two seconds, so part of the note typing is cut to keep the scene four bars long."
+        }
+      ]
+    },
+    {
+      "id": "H-1",
+      "surface": "Website",
+      "path": "youcoded.ai — the four mascot buttons beside the headline",
+      "crop": "site-hero-mascots",
+      "themes": ["cotton-candy-sky"],
+      "headline": "The website's mascot buttons now show each theme's current mascot.",
+      "changed": "Cotton Candy Sky and Meadow Mist show their own characters instead of a recoloured default mascot, and Halftone shows its new blue face.",
+      "notice": "The buttons match what those four themes look like inside the app.",
+      "risk": "The new Cotton Candy Sky and Meadow Mist mascots are pale, so they stand out less on the light buttons."
+    },
+    {
+      "id": "C-1",
+      "surface": "Website",
+      "path": "youcoded.ai — card 1, \"Tools and conversations work across any model.\"",
+      "themes": ["midnight"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/landing-row1-any-ai--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/landing-row1-any-ai--after.webm"
+      },
+      "headline": "The switch-to-Grok clip, re-recorded with today's model window.",
+      "changed": "The model now opens in its own small window with each model's provider beside its name, and the box reads \"Message your assistant\".",
+      "notice": "Same joke, same three messages, current look."
+    },
+    {
+      "id": "C-2",
+      "surface": "Website",
+      "path": "youcoded.ai — card 2, \"Hand it a spreadsheet, get something you can actually read.\"",
+      "themes": ["meadow-mist"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/landing-row2-artifact-edit--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/landing-row2-artifact-edit--after.webm"
+      },
+      "headline": "The spreadsheet-to-chart clip, re-recorded.",
+      "changed": "Same steps and chart; the tool line reads \"Read a file and created a file\" and the box reads \"Message your assistant\".",
+      "notice": "Only the wording around the chart changed."
+    },
+    {
+      "id": "C-3",
+      "surface": "Website",
+      "path": "youcoded.ai — card 3, \"Give it a task and it gets done, with boundaries you can trust.\"",
+      "themes": ["creme"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/row2-does-things--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/row2-does-things--after.webm"
+      },
+      "headline": "The morning-inbox clip, re-recorded.",
+      "changed": "The assistant's steps are grouped into one line each, like \"Used Google Calendar 2 times\", and the conversation name loses its extra badge.",
+      "notice": "The chat is shorter and easier to follow in the same length of clip."
+    },
+    {
+      "id": "C-4",
+      "surface": "Website",
+      "path": "youcoded.ai — card 4, \"Project view keeps your files, conversations, and assistant instructions organized.\"",
+      "themes": ["light"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/row3-projects--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/row3-projects--after.webm"
+      },
+      "headline": "The Project View clip, re-recorded.",
+      "changed": "The third tab is now called \"Instructions & Memories\" instead of \"Context\".",
+      "notice": "The tab names match the card's own sentence."
+    },
+    {
+      "id": "C-5",
+      "surface": "Website",
+      "path": "youcoded.ai — card 5, \"Tags, notes, and shortcuts.\"",
+      "themes": ["dark"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/row4-organized--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/row4-organized--after.webm"
+      },
+      "headline": "The tags-and-search clip, re-recorded on the new Resume screen.",
+      "changed": "Searching past conversations now opens the redesigned Resume screen, with the conversation preview beside the list.",
+      "notice": "It shows the Resume screen you shipped yesterday.",
+      "risk": "Like the film, the preview half is empty here; your answer on the film's conversations slide decides this card too."
+    },
+    {
+      "id": "C-6",
+      "surface": "Website",
+      "path": "youcoded.ai — card 6, \"Start on your laptop. Finish on your phone.\" (the computer half)",
+      "themes": ["meadow-mist"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/landing-row5-follow--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/landing-row5-follow--after.webm"
+      },
+      "headline": "The computer half of the laptop-to-phone clip, re-recorded.",
+      "changed": "Same conversation; tool lines read \"Created a file\" and \"Edited a file\", and the box reads \"Message your assistant\".",
+      "notice": "It still plays in step with the phone clip beside it."
+    },
+    {
+      "id": "C-7",
+      "surface": "Website",
+      "path": "youcoded.ai — card 6, \"Start on your laptop. Finish on your phone.\" (the phone half)",
+      "themes": ["meadow-mist"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/landing-row5-phone--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/landing-row5-phone--after.webm"
+      },
+      "headline": "The phone half of the same clip, re-recorded from the same take.",
+      "changed": "The same wording changes as the computer half, plus the phone's microphone button in the message box.",
+      "notice": "Both halves show the same moment at the same time."
+    },
+    {
+      "id": "C-8",
+      "surface": "Website",
+      "path": "youcoded.ai — card 7, \"Describe a look. Install a plugin. Share both.\"",
+      "themes": ["midnight"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/row6-yours--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/row6-yours--after.webm"
+      },
+      "headline": "The theme-builder clip, re-recorded.",
+      "changed": "Same route through the marketplace to Golden Sunbreak; the tool line reads \"Created 2 files\".",
+      "notice": "It ends on the same Golden Sunbreak window."
+    },
+    {
+      "id": "C-9",
+      "surface": "Website",
+      "path": "youcoded.ai — card 8, \"Four games, beside the conversation.\"",
+      "themes": ["halftone-dimension"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/landing-row7-play--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/landing-row7-play--after.webm"
+      },
+      "headline": "The games clip now opens Connect 4 from the Games button and ends on a win.",
+      "changed": "Connect 4 lost its own header button, so the clip opens the games panel first; four drops finish on \"You Win!\".",
+      "notice": "Visitors see the games panel people will actually find.",
+      "risk": "The last seconds of the loop show the win popup over part of the board."
+    },
+    {
+      "id": "C-10",
+      "surface": "Website",
+      "path": "youcoded.ai — card 9, \"Made to be customized and work with you.\"",
+      "themes": ["midnight"],
+      "clip": {
+        "before": "images/promo-ui-refresh.review/clips/row8-builders--before.webm",
+        "after": "images/promo-ui-refresh.review/clips/row8-builders--after.webm"
+      },
+      "headline": "The builders clip now opens Assistant settings instead of the retired Model Providers window.",
+      "changed": "Settings lost its Model Providers row on 2026-09-07, so the clip opens the Assistant settings panel that replaced it.",
+      "notice": "The clip no longer shows a window the app no longer has."
+    }
+  ]
+}

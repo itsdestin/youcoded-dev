@@ -38,9 +38,10 @@ const INSTALL = T_DETAIL + Math.round((markSec('promo-market', 'install') - mark
 // bubble off the frame). Install is
 // answered with a clap under the line, not a line of its own: the shot is too short for both.
 const P9 = present('b9', [
-  { at: B('b9', 0) + 8, say: "There's even a marketplace for skills, themes, integrations, and more!", target: inWindow(0.5, 0.78), stand: 'bar', face: 'happy' },
-  { at: T_DETAIL + 16, say: 'Download things built by your coworkers or classmates.', target: inWindow(0.5, 0.4), stand: 'bar', face: 'welcome', until: T_BACK - 8 },
-  { at: T_BACK, say: 'Just like that!', target: inWindow(0.34, 0.87), stand: 'R', face: 'happy', until: END - 8 },
+  // 2026-09-09 (60-frame bars): each line starts a few frames sooner — the five bars hold exactly the three readings
+  { at: B('b9', 0) + 4, say: "There's even a marketplace for skills, themes, integrations, and more!", target: inWindow(0.5, 0.78), stand: 'bar', face: 'happy' },
+  { at: T_DETAIL + 12, say: 'Download things built by your coworkers or classmates.', target: inWindow(0.5, 0.4), stand: 'bar', face: 'welcome', until: T_BACK - 8 },
+  { at: T_BACK - 4, say: 'Just like that!', target: inWindow(0.34, 0.87), stand: 'R', face: 'happy', until: END - 8 },
 ], 'light', P, END - 8);
 export const beat9: BeatModule = { id: 'b9', slug: 'light', home: P9.home, Component: Beat9,
   host: [...P9.host, A.clap(INSTALL + 2, 24)],                     // claps as Install lands

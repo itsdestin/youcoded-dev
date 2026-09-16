@@ -20,12 +20,14 @@ import { describe, it } from 'node:test';
 import { PRIMARY, get, runsFor, spreadPct, verdict } from '../compare.mjs';
 import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenario-history.mjs';
 import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
+import { MEASURES as PROJECTS_MEASURES, medianRun as projectsMedian } from '../scenario-projects.mjs';
+import { MEASURES as TERMINAL_MEASURES, medianRun as terminalMedian } from '../scenario-terminal.mjs';
 import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
-  EXIT, NETWORK_PATHS, PHASES, STALL_SIZES, USAGE,
-  buildArtifactsSection, buildIdleSection, buildStartupSection, buildWorkloadSection,
+  EXIT, NETWORK_PATHS, NOISE_GATE_MAX_WAIT_MS, NOISE_GATE_POLL_MS, PHASES, STALL_SIZES, USAGE,
+  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildTerminalSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
 } from '../run.mjs';
@@ -190,6 +192,38 @@ const artifactRun = (i) => ({
   warnings: [],
 });
 
+/** One Projects-view run, shaped as scenario-projects.mjs's runProjectsScenario returns it. */
+const projectsRun = (i) => ({
+  project: { name: 'gamma', files: 1600, folders: 40, bytes: 2400000, openedOn: 'gamma' },
+  open: { ok: true, openMs: 900 + i, countsMs: 1500 + i, fileCards: 24, folderCards: 8, nodes: 2200 + i },
+  search: { ok: true, firstKeyMs: 400 + i, keystroke: { count: 7, medianMs: 60 + i, p95Ms: 140 + i }, fileCards: 110, nodes: 3000 },
+  filter: { ok: true, codeMs: 1200 + i, fileCards: 720, nodes: 9000 + i },
+  scrollFlat: { ok: true, steps: 12, longtaskTotalMs: 800 + i, longtaskMaxMs: 210 + i, frameGapMaxMs: 180 + i, img: 40, iframe: 30 },
+  listView: { ok: true, ms: 300 + i },
+  switch: { smallMs: 500 + i, bigMs: 1100 + i },
+  conversations: { ok: true, ms: 200 + i, rows: 3 },
+  thrash: { ok: true, rounds: 8, toFiles: { medianMs: 150 + i, p95Ms: 400 + i, maxMs: 500 + i }, toConversations: { medianMs: 90 + i, maxMs: 200 + i }, longtaskTotalMs: 300 + i, frameGapMaxMs: 120 + i, ipcMaxMs: 210 + i, ipcStallMs: 2000 + i },
+  reopen: { ok: true, openMs: 600 + i },
+  probe: { longtaskCount: 30 + i, longtaskTotalMs: 4200 + i, longtaskMaxMs: 600 + i },
+  ipcSumOfSteps: { pings: 1200, totalStallMs: 900 + i, over250ms: 3, over1000ms: 0, maxMs: 420 + i },
+  warnings: [],
+});
+
+/** One terminal-view run, shaped as scenario-terminal.mjs's runTerminalScenario returns it. */
+const terminalRun = (i) => ({
+  sessions: { names: ['cc-0', 'cc-1', 'cc-2', 'cc-3', 'native-0', 'native-1'], switchedBetween: ['cc-0', 'cc-1', 'cc-2', 'cc-3'] },
+  renderer: 'webgl',
+  glyphs: { lines: 2000, terminals: 4, fillMs: [900, 910, 905, 920] },
+  switchCount: 40, verifiedSwitches: 40, failedSwitches: 0, menuSwitches: 0,
+  switchPaintedMedianMs: 140 + i, switchPaintedP95Ms: 260 + i,
+  atlasClearsTotal: 40, atlasClearsPerSwitch: 1, clearsOutsideSlots: 0,
+  ipc: { pings: 780 + i, totalStallMs: 30 + i, over250ms: 0, over1000ms: 0, maxMs: 180 + i, openStalls: 0, rejectedPings: 0, readErrors: 0 },
+  stallVerdicts: { none: 40 },
+  longtaskMaxMs: 120 + i, longtaskTotalMs: 900 + i, longtaskCount: 12 + i, frameGapMaxMs: 150 + i,
+  switches: [],
+  warnings: [],
+});
+
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
 /**
  * One scroll-back repeat. Every number is plausible rather than round, and
@@ -218,7 +252,7 @@ function scrollbackRun(i) {
   };
 }
 
-function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3, scrollbackRepeats = 3 } = {}) {
+function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, stallRepeats = 3, artifactRepeats = 3, terminalRepeats = 3, scrollbackRepeats = 3 } = {}) {
   const cold = Array.from({ length: runs }, (_, i) => startupRun(i));
   const wruns = Array.from({ length: workloadRepeats }, (_, i) => workloadRun(i));
   const report = emptyReport({ label: 'contract', timestamp: '2026-08-26T09:30:00.000Z' });
@@ -245,8 +279,13 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   // is: `perSize.*.reachedTopEveryRun` is computed there, and a hand-assembled median
   // would keep passing after the scenario stopped carrying it.
   report.scrollback = { runs: sruns, median: scrollMedian(sruns), warnings: [] };
-  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, scrollback: SCROLL_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, scrollbackBoot: 0 };
+  const pruns = Array.from({ length: artifactRepeats }, (_, i) => projectsRun(i));
+  report.projects = buildProjectsSection(pruns, projectsMedian);
+  // Through run.mjs's REAL builder and the scenario's REAL medianRun, like projects.
+  const truns = Array.from({ length: terminalRepeats }, (_, i) => terminalRun(i));
+  report.terminal = buildTerminalSection(truns, terminalMedian);
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES, scrollback: SCROLL_MEASURES };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, terminalBoots: [0, 0, 0], scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -281,7 +320,25 @@ describe('compare.mjs PRIMARY contract', () => {
     // 75%; nothing bounded the CEILING, because a page loaded by scrolling up is
     // prepended and never removed. A gate that judged only the floor would sign off a
     // change that left accumulation exactly where it was.
-    assert.equal(PRIMARY.length, 23, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 23 -> 25 on 2026-09-09: the two projects paths. Destin reported Project View
+    // chugging when he clicks Files/Conversations back and forth; the clicks
+    // themselves painted in ~65 ms, so the cost was invisible to every renderer
+    // metric here — the MAIN process was unresponsive 7.2-8.0 s per eight clicks.
+    // open.openMs rides along so a thrash fix that pre-warms its way to a slower
+    // first open cannot pass.
+    // 25 -> 28 on 2026-09-10: the three terminal paths. Every session switch in
+    // terminal view clears the glyph atlas shared by every open terminal; the
+    // painted switch median is the A/B target for throttling that heal, the worst
+    // long task is the other number that decision reads, and the IPC stall total
+    // catches a "fix" that moves the cost onto the main process.
+    // 28 -> 27 on 2026-09-11: terminal.median.ipc.totalStallMs left PRIMARY. The first
+    // real terminal baseline measured it at exactly 0 ms, and against a 0 baseline the
+    // 1 ms zero-baseline floor makes any candidate stall a REJECT — false rejections
+    // only. It stays in the report and in scenario-terminal's NUMERIC_PATHS.
+    assert.equal(PRIMARY.length, 27, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(!PRIMARY.includes('terminal.median.ipc.totalStallMs'), 'a metric whose baseline is 0 ms can only produce false REJECTs under ZERO_BASELINE_FLOOR');
+    assert.ok(PRIMARY.includes('terminal.median.switchPaintedMedianMs'), 'the terminal switch clock is the atlas-heal A/B target and must be judged');
+    assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
     assert.ok(PRIMARY.includes('scrollback.median.ceilingPssMb'), 'the ceiling is the cycle-3 target and must be judged');
     assert.ok(!PRIMARY.includes('scrollback.median.releasedMb'),
       'releasedMb is HIGHER-is-better; every PRIMARY path is read as lower-is-better, so including it would score the cycle-3 win as a regression');
@@ -470,7 +527,7 @@ describe('every scenario declares what it measures', () => {
   // every unit test. It is included because a rename there was the one mutation
   // the earlier tests did not catch.
   const load = async () => Object.fromEntries(await Promise.all(
-    ['workload', 'replay-stall', 'artifacts', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
+    ['workload', 'replay-stall', 'artifacts', 'projects', 'history', 'scrollback'].map(async (n) => [n, (await import(`../scenario-${n}.mjs`)).MEASURES]),
   ));
 
   it('exports MEASURES from every scenario module', async () => {
@@ -541,6 +598,69 @@ describe('stall phase wiring', () => {
     for (const row of ['artifacts.open markdown', 'artifacts.keystroke large', 'artifacts.html swap', 'artifacts IPC stall']) {
       assert.ok(md.includes(row), `summary is missing the "${row}" row`);
     }
+    for (const row of ['projects.open to first cards', 'projects.filter', 'projects.scroll flat grid', 'projects IPC stall']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+  });
+
+  it('refuses a projects run whose Files tab never painted rather than reading null as instant', () => {
+    const report = completeReport();
+    report.projects.median.open.openMs = null;
+    const problems = validateReport(report, new Set(['projects']));
+    assert.ok(problems.some((p) => /projects: open-to-first-cards was never measured/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms projects stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.projects.runs) r.ipcSumOfSteps = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: 0 };
+    report.projects = buildProjectsSection(report.projects.runs, projectsMedian);
+    const problems = validateReport(report, new Set(['projects']));
+    assert.ok(problems.some((p) => /projects: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
+  });
+});
+
+describe('terminal phase wiring', () => {
+  it('every terminal PRIMARY path is owned by the terminal phase', () => {
+    const paths = PRIMARY.filter((x) => x.startsWith('terminal.'));
+    assert.equal(paths.length, 2);
+    for (const p of paths) assert.equal(phaseOfPath(p), 'terminal', `${p} is not owned by the terminal phase`);
+    assert.ok(PHASES.includes('terminal'));
+    assert.equal(PHASES.at(-1), 'scrollback', 'scrollback must stay the last phase — it drives memory to its worst case');
+  });
+
+  it('renderMarkdown renders the terminal rows, renderer and clears included', () => {
+    const md = renderMarkdown(completeReport(), 'test-stem');
+    for (const row of ['terminal.switch, other terminal on screen', 'terminal atlas clears per switch', 'terminal long tasks across the switches', 'terminal IPC stall']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+    assert.match(md, /xterm renderer webgl/);
+    assert.match(md, /### terminal/, 'the terminal MEASURES descriptor must reach the summary');
+  });
+
+  // README rule 1: measure that the mechanism ENGAGED. A build that predates the
+  // counter (or a run where no switch verified) returns null here, and the switch
+  // timings would then describe a heal nobody saw happen.
+  it('refuses a terminal run whose atlas counter was never read rather than reading null as zero clears', () => {
+    const report = completeReport();
+    for (const r of report.terminal.runs) { r.atlasClearsPerSwitch = null; r.atlasClearsTotal = null; }
+    report.terminal = buildTerminalSection(report.terminal.runs, terminalMedian);
+    const problems = validateReport(report, new Set(['terminal']));
+    assert.ok(problems.some((p) => /terminal: atlas clears per switch was never read/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms terminal stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.terminal.runs) r.ipc = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: null };
+    report.terminal = buildTerminalSection(report.terminal.runs, terminalMedian);
+    assert.equal(get(report, 'terminal.median.ipc.totalStallMs'), 0, 'the premise: the metric itself looks flawless');
+    const problems = validateReport(report, new Set(['terminal']));
+    assert.ok(problems.some((p) => /terminal: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
+  });
+
+  it('parseArgs accepts --terminal-repeats and defaults it to 3', () => {
+    assert.equal(parseArgs([]).terminalRepeats, 3);
+    assert.equal(parseArgs(['--terminal-repeats', '1', '--only', 'terminal']).terminalRepeats, 1);
+    assert.throws(() => parseArgs(['--terminal-repeats', '0']), /whole number >= 1/);
   });
 });
 
@@ -620,7 +740,7 @@ describe('parseArgs', () => {
 
   it('USAGE names every flag it accepts', () => {
     for (const f of [...PHASES]) assert.ok(USAGE.includes(f), `USAGE never mentions phase ${f}`);
-    for (const f of ['--runs', '--only', '--dry-run', '--max-minutes', '--force-build', '--label', '--out', '--checkout', '--history-repeats', '--workload-repeats']) {
+    for (const f of ['--runs', '--only', '--dry-run', '--max-minutes', '--force-build', '--label', '--out', '--checkout', '--history-repeats', '--workload-repeats', '--terminal-repeats']) {
       assert.ok(USAGE.includes(f), `USAGE never mentions ${f}`);
     }
   });
@@ -747,5 +867,18 @@ describe('exit codes', () => {
     const vals = Object.values(EXIT);
     assert.equal(new Set(vals).size, vals.length);
     assert.equal(EXIT.OK, 0);
+  });
+});
+
+describe('the machine-idle gate', () => {
+  it('waits long enough to outlast other work rather than throwing a build away', () => {
+    // It used to stop after five 30s polls — 2.5 minutes — and the gate runs AFTER
+    // the multi-minute build, so giving up discards all of it. A load average
+    // decaying from someone else's build routinely takes longer than that:
+    // measured 12.1 -> 15.6 -> 10.0 -> 6.4 -> 4.4 across those five polls on
+    // 2026-09-09, with the machine quiet a minute after the abort.
+    assert.ok(NOISE_GATE_MAX_WAIT_MS >= 10 * 60_000,
+      `a gate that waits only ${NOISE_GATE_MAX_WAIT_MS / 60000} min throws away the build it is gating`);
+    assert.ok(NOISE_GATE_POLL_MS <= 60_000, 'poll often enough to start promptly once the machine frees up');
   });
 });

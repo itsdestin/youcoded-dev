@@ -1,0 +1,58 @@
+{
+  "title": "Beta updates \u2014 one new row in About",
+  "key": "beta-update-channel",
+  "out": "beta-update-channel.review.html",
+  "images": "images/beta-update-channel",
+  "runs": {
+    "before": "/tmp/claude-1000/deck/before",
+    "after": "/tmp/claude-1000/deck/after"
+  },
+  "crops": {
+    "about-dialog": [
+      "about-updates",
+      "about-updates",
+      "430x600+505+150"
+    ],
+    "about-updates-row": [
+      "about-updates",
+      "about-updates",
+      "430x200+505+400"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "The gear, then About, near the top",
+      "crop": "about-dialog",
+      "headline": "About has a new Updates section, above Privacy.",
+      "changed": "A short line saying the app checks every half hour and never installs on its own, and one switch under it.",
+      "measured": "1 new section, 2 lines of text, 1 switch",
+      "notice": "Nothing else in About moved or changed wording \u2014 Privacy and everything below it sit where they were, just further down the scroll.",
+      "risk": "About is already a long scroll, and this adds to it before the part most people open it for."
+    },
+    {
+      "id": "S-2",
+      "surface": "Settings",
+      "path": "About, the Updates section",
+      "crop": "about-updates-row",
+      "headline": "\"Get beta builds\" is off for you, and turning it on offers pre-release versions as updates.",
+      "changed": "The switch is off on a normal release build. On a machine already running a beta it starts ON, because that person installed a beta on purpose and would otherwise never be offered a newer one.",
+      "measured": "off by default on 1.2.4; on by default on 1.3.0-beta.77",
+      "notice": "With it on you get newer betas as they come out, and the real 1.3.0 still wins over every beta of 1.3.0 when it ships. With it off nothing changes from today.",
+      "risk": "A beta tester who never opens About will not know the switch decided something for them. The wording says what it does, but it says it in About, which is not where anyone looks first.",
+      "highlight": {
+        "box": [
+          5,
+          49,
+          91,
+          29
+        ]
+      }
+    }
+  ],
+  "themes": [
+    "devils-garden",
+    "light"
+  ]
+}

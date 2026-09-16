@@ -1,0 +1,60 @@
+{
+  "title": "\"Claude models unavailable — you're not signed in\", when you are",
+  "key": "claude-signin-live-status",
+  "out": "claude-signin.review.html",
+  "images": "images/claude-signin",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "menu": [
+      "menu",
+      "model-menu",
+      "420x275+240+225"
+    ],
+    "card": [
+      "card",
+      "cloud-providers",
+      "640x365+330+158"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Model menu",
+      "path": "Click the model name at the bottom of the window, then search",
+      "crop": "menu",
+      "headline": "Every Claude model was greyed out and told you to sign in, on a machine that was signed in.",
+      "changed": "The menu judged your sign-in from the setup wizard's notes, which come back blank after the first launch. It now asks Claude Code itself.",
+      "measured": "4 of 4 Claude models greyed before, 0 after",
+      "notice": "Haiku, Sonnet, Opus and Fable are pickable again, and the \"no model providers\" line is gone.",
+      "risk": "The new check costs about a tenth of a second, at most once a minute."
+    },
+    {
+      "id": "S-2",
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "The Claude Code card, directly above the ChatGPT one",
+      "crop": "card",
+      "headline": "Claude Code now names your account and plan, the way the ChatGPT card below it does.",
+      "changed": "The card said \"Not set up yet\" — the same wrong source. It now names your account and plan.",
+      "notice": "The two cards read as one system. My Account and Sign out appear on the Claude card too.",
+      "risk": "Your email is now on screen in Settings. The ChatGPT card already showed it, but it is one more thing a screen-share reveals."
+    },
+    {
+      "id": "S-3",
+      "surface": "Everywhere",
+      "path": "What the app says when it genuinely cannot tell",
+      "crop": "card",
+      "answer": "words",
+      "headline": "When the check can't answer, the app says so instead of inventing \"signed out\".",
+      "changed": "Four answers now, not two: signed in, signed out, not installed, couldn't tell. Only the middle two grey a model out.",
+      "notice": "Sign out in a terminal and the app notices within a minute. Before, it claimed you were signed in forever.",
+      "risk": "\"Couldn't tell\" leaves models switched on, so a real breakage shows when a message fails, not in the menu. Say if you'd rather it erred the other way."
+    }
+  ]
+}

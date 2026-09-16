@@ -21,7 +21,7 @@ const { fontFamily } = loadInter();
 // window rises under it while the wordmark hands off to the caption band.
 //
 // Every number here is a frame at 30 fps. IMPACT is the music's bar 0.
-export const IMPACT = 196;                       // must equal timeline.ts PRELUDE
+export const IMPACT = 150;                       // must equal timeline.ts PRELUDE
 export const SIZE = 140;                        // the host is bigger here than on a title bar
 const WORD = { size: 112, cx: 960, baseline: 578 };
 // Inter 800 at 112 px: "YouCoded" measures ~525 px, so its left edge (the Y) is at ~697.
@@ -40,21 +40,27 @@ export const RECOIL_X = Math.round(960 - GROUP_W / 2) - 20;       // the host's 
 export const WORD_LEFT_CENTRED = RECOIL_X + SIZE + 44;              // the Y's left edge once centred (520)
 const P = perch(0.3);
 
+// The walk: 4 steps over 36 frames (about three a second), from the edge to the stand beside the Y.
+const WALK_AT = 96, WALK_DUR = 36, WALK_STEPS = 4;
+export const STEP_FRAMES = A.walkPlants(WALK_DUR, WALK_STEPS).map((k) => WALK_AT + k);
+const LAND = 58 + Math.round(24 * 0.72);         // the frame the hop-down lands (stepIn's DROP fraction)
 export const introActions = (): Action[] => [
   // The open (Destin, 2026-09-04): the hands peek over the edge with a bit of the eyes — the app's own docked
-  // side-peek — a look across, then fully into the app's pose; a cautious step out with normal hands; a quick
-  // look around; then the walk over to the wordmark. Punch at 196 — 6.5 s of silence, and it moves for most of it.
-  A.peekIn(8, 18, GROUND_Y, SIZE, 0.36), A.face(8, 'curious'),               // mittens on the edge, then the top of the head and the eyes
-  A.look(28, 8, 0.55, 0.1), A.look(38, 8, -0.4, -0.15),
-  A.peekIn(44, 12, GROUND_Y, SIZE, 0.55), A.look(48, 8, 0.3, 0), A.blink(58), // the app's full peek pose
-  A.stepIn(64, 14, -18, GROUND_Y),                                            // steps out, hands let go, arms are its own again
-  A.face(78, 'welcome'),
-  A.look(78, 5, 0.6, 0), A.tilt(78, 5, 4), A.look(86, 5, -0.5, -0.2), A.tilt(86, 5, -4), A.look(94, 5, 0.5, 0), A.tilt(94, 6, 0),   // a quick look around
-  A.walk(100, 52, STAND_X, 5),                                                // a cautious walk across
-  A.look(104, 20, 0.5, 0),
-  A.face(152, 'curious'), A.look(152, 10, 0.6, -0.25), A.tilt(156, 10, 7), A.blink(168),   // looks the Y up and down
-  A.face(180, 'welcome'), A.look(180, 6, 0.5, -0.1), A.tilt(180, 6, 0),   // fixes on the Y (never the chevron 'idle' face — it read as empty eyes)
-  A.punch(IMPACT, 1),                             // wind-up from 224, the hit at 236
+  // side-peek — a look across, then fully into the app's pose; it rights itself and hops down (its own arms
+  // from there); one look around; the walk over to the wordmark. Punch at 150 — 5 s of silence.
+  // Re-timed 2026-09-09 (Destin: the walk-in "just doesn't look quite as smooth as I want it to be"): the
+  // step-out no longer swings the body in sideways (engine stepIn: right itself, hop down, land), the
+  // three-tilt look-around became one calm look, and the walk is four real steps (engine walk).
+  A.peekIn(6, 18, GROUND_Y, SIZE, 0.36), A.face(6, 'curious'),               // mittens on the edge, then the top of the head and the eyes
+  A.look(26, 8, 0.55, 0.1), A.look(38, 8, -0.3, -0.1),
+  A.peekIn(44, 12, GROUND_Y, SIZE, 0.55), A.look(46, 8, 0.3, 0), A.blink(54), // the app's full peek pose
+  A.stepIn(58, 24, -10, GROUND_Y),                                            // rights itself, hops down, lands
+  A.face(74, 'welcome'),
+  A.look(84, 6, 0.6, 0), A.tilt(84, 6, 3), A.look(92, 6, 0.35, 0), A.tilt(92, 4, 0),   // one look across the room
+  A.walk(WALK_AT, WALK_DUR, STAND_X, WALK_STEPS),
+  A.look(WALK_AT + 4, 16, 0.5, 0),
+  A.face(134, 'curious'), A.look(134, 6, 0.5, -0.2), A.tilt(134, 4, 5), A.blink(144),   // looks the Y up and down (never the chevron 'idle' face — it read as empty eyes)
+  A.punch(IMPACT, 1),                             // wind-up from 138, the hit at 150
   A.face(IMPACT, 'shocked'), A.costume(IMPACT, 'cotton-candy-sky'), A.look(IMPACT, 4, 0, 0),
   // the recoil: knocked STRAIGHT back off the Y in a fast low arc (lands by IMPACT+10), BEFORE the title
   // slides over to meet it — two separate motions, so it reads as a knock-back and then a re-centre
@@ -158,7 +164,8 @@ export const IntroVisuals: React.FC<{ windowFile?: string }> = ({ windowFile = '
     <Wordmark />
     {/* footsteps, the punch, the poof and the landing pop live HERE so the film (Beat1 renders
         IntroVisuals) gets them too — they were only in the study before */}
-    {[104, 114, 124, 134, 144].map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}
+    <Sfx at={LAND} name="step" volume={0.3} />
+    {STEP_FRAMES.map((at) => <Sfx key={at} at={at} name="step" volume={0.35} />)}
     <Sfx at={IMPACT} name="punch" volume={0.8} />
     <Sfx at={IMPACT} name="poof" volume={0.5} />
     <Sfx at={IMPACT + barFrame(1) + 18} name="pop" volume={0.4} />

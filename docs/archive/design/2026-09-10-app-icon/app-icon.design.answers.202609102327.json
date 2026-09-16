@@ -1,0 +1,22 @@
+{
+ "deck": "app-icon-design",
+ "started": "2026-09-10T23:26:45.094Z",
+ "submitted": "2026-09-10T23:27:49Z",
+ "cur": 1,
+ "answers": {
+  "B-1": {
+   "note": "can we try a few different variants with different mascot rigs/poses? i just want a standard un-themed mascot in purple",
+   "v": "other",
+   "seconds": 39,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "pick",
+   "pick": "strip",
+   "seconds": 24,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

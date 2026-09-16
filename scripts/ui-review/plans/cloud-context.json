@@ -1,0 +1,17 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {"click": "[aria-label='Settings']", "settle": 500},
+    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900}
+  ],
+  "shots": [
+    {
+      "name": "general",
+      "actions": [],
+      "expect": "[role=dialog] nav[aria-label='Assistant settings pages']",
+      "measure": ["[role=dialog]"]
+    }
+  ]
+}

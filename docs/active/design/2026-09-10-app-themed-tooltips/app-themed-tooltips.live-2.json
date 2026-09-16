@@ -1,0 +1,48 @@
+{
+  "title": "Hover hints, round two — the timing and the circled i",
+  "key": "app-themed-tooltips-live-2",
+  "out": "app-themed-tooltips.live-2.html",
+  "live": {
+    "worktree": "sessions/app-themed-tooltips/youcoded",
+    "offset": 180
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "The top bar",
+      "path": "The row of icons along the top of the window",
+      "headline": "Rest on one icon, then sweep along the row — is the timing right now?",
+      "changed": "Two changes, both yours. The first hint comes a little sooner than it did. And moving between neighbouring buttons is no longer instant: the next one waits a moment and fades in, instead of the bubble cutting from button to button.",
+      "notice": "Sweeping fast across the row should feel like one hint following you, not a strobe. Leave the row for about half a second and the next hover waits the full time again.",
+      "risk": "The fade is switched off entirely when Reduce Visual Effects is on, or when the system asks for less motion — so on those settings it will still cut.",
+      "measured": "800ms first, 130ms between neighbours, 110ms fade",
+      "yes": "Yes, that's it",
+      "no": "No, still off",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "L-2",
+      "surface": "The bar along the bottom",
+      "path": "The Cost, In, Out, Cached, Reuse, Speed and lines chips",
+      "headline": "Click the small circled i on the chips — is this the right home for the long explanations?",
+      "changed": "Seven chips whose explanation was a whole sentence no longer hover at all. Each has a small circled i; clicking it opens the explanation, and it stays open until you click away. This is the answer you gave on the first deck, now built.",
+      "notice": "This pane deliberately shows a session with real figures, so those chips exist. In your own app they are switched off until you turn them on with the pencil at the right-hand end of the bar. The wording inside each bubble is word for word what the old grey box said — nothing was rewritten.",
+      "risk": "That is seven new marks on a bar that was already busy, and only one bubble can be open at a time.",
+      "yes": "Yes, keep it",
+      "no": "No, too cluttered",
+      "live": { "app": "statusbar-cc" }
+    },
+    {
+      "id": "L-3",
+      "surface": "The session list",
+      "path": "The row of sessions along the top, and the files drawer on the right",
+      "headline": "Hover a session name, the close crosses and the drawer icons — does anything look out of place?",
+      "changed": "The session row and the files drawer are converted too, which finishes the set you asked for: everything that is on screen all the time. Settings and the marketplace still use the grey box, as agreed.",
+      "notice": "A session name too long for its row shows the full name on hover, the way it always did — the box around it is the only difference. The drawer's icons along the top now name themselves.",
+      "risk": "The session row is narrow and its hints are the ones that fire most often, simply because the pointer crosses it on the way to everywhere else.",
+      "yes": "Yes, looks right",
+      "no": "No, something's off",
+      "live": { "app": "default" }
+    }
+  ]
+}

@@ -12,24 +12,29 @@
 #   <worktree>   Name of a worktree under worktrees/, or a path containing
 #                desktop/. Defaults to the main youcoded checkout.
 #
+# Run it with output redirected to a file and the process detached
+# (`> log 2>&1 &`) rather than piped through `head`/`tail`: the pipe closes as
+# soon as the consumer exits, and `npm run dev:renderer` then gets SIGPIPE and
+# dies — a workbench that vanishes mid-review. `bash scripts/run-workbench.sh
+# <worktree> > /tmp/wb.log 2>&1 &` keeps vite alive for the whole session.
+#
 # Spec: docs/active/specs/2026-07-29-ui-workbench-design.md
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TARGET="${1:-}"
 
-# Resolve which checkout to serve. Mirrors run-dev.sh's resolution order, minus
-# the branch-name lookup — the workbench is for iterating on source you already
-# have open, so a worktree name or an explicit path covers it.
-if [[ -z "$TARGET" ]]; then
-  CHECKOUT="$ROOT/youcoded"
-elif [[ -d "$TARGET/desktop" ]]; then
-  CHECKOUT="$TARGET"
-elif [[ -d "$ROOT/worktrees/$TARGET/desktop" ]]; then
-  CHECKOUT="$ROOT/worktrees/$TARGET"
-else
-  echo "error: no checkout found for '$TARGET'" >&2
-  echo "  expected a path containing desktop/, or a worktree under $ROOT/worktrees/" >&2
+# Resolve which checkout to serve — the SAME names run-dev.sh takes, including a
+# branch name and a session worktree (`worktrees/sessions/<name>/youcoded`).
+# This used to know only `worktrees/<name>/desktop`, which no session worktree
+# matches, so pointing the workbench at the branch a session was working on
+# needed an absolute path typed out. See scripts/lib/resolve-checkout.sh.
+# shellcheck source=lib/resolve-checkout.sh
+source "$ROOT/scripts/lib/resolve-checkout.sh"
+if ! CHECKOUT="$(resolve_youcoded_checkout "$TARGET" "$ROOT")"; then
+  echo "error: no checkout, worktree or branch matching '$TARGET'" >&2
+  echo "" >&2
+  list_youcoded_worktrees "$ROOT" >&2
   exit 1
 fi
 

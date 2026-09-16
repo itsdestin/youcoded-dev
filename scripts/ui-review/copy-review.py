@@ -5,7 +5,7 @@ every decision is saved to <copy>.answers.json as it happens, Submit ends the
 server, and the edits come back as <copy>.answers.md ready to apply.
 
   python3 scripts/ui-review/copy-review.py build <copy.md>        # write <copy>.review.html
-  python3 scripts/ui-review/copy-review.py serve <copy.md> [--no-open] [--port N] [--timeout MIN]
+  python3 scripts/ui-review/copy-review.py serve <copy.md> [--port N] [--timeout MIN]
 
 WHY its own page rather than the deck: the deck is one picture + Yes/No per step;
 a copy review is ~110 short strings where the useful action is *rewriting the
@@ -225,7 +225,7 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest='cmd', required=True)
     b = sub.add_parser('build'); b.add_argument('md')
-    s = sub.add_parser('serve'); s.add_argument('md'); s.add_argument('--no-open', action='store_true')
+    s = sub.add_parser('serve'); s.add_argument('md')
     s.add_argument('--port', type=int, default=0); s.add_argument('--timeout', type=int, default=240)
     a = ap.parse_args()
     out, sections, n = build(a.md)
@@ -238,7 +238,7 @@ def main():
     other = already_served(spec)
     if other:
         print(f'REFUSING: already served by pid {other["pid"]} at {other["url"]}'); return 3
-    rc = serve(spec, port=a.port, open_browser=not a.no_open, timeout_min=a.timeout, log=lambda m: print(m) if not m[:1].isdigit() else None)
+    rc = serve(spec, port=a.port, timeout_min=a.timeout, log=lambda m: print(m) if not m[:1].isdigit() else None)
     if rc == 0:
         edits = write_edits_md(a.md, sections, os.path.join(base, spec['_stem'] + '.answers.json'))
         print(f'[copy-review] edits written to {edits}')

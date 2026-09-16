@@ -1,0 +1,54 @@
+{
+  "title": "The buddy on Linux \u2014 two corrections",
+  "key": "linux-buddy-helper-questions2",
+  "out": "linux-buddy-helper.questions2.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-2R",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "Linux without the helper \u2014 replaces Q-2",
+      "headline": "Correction: the buddy DOES appear today, stuck. So what should someone see if they decline the helper?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Leave it exactly as it is today, and explain why it won't move (recommended)",
+          "summary": "The buddy still appears and can still be pinned above other windows, same as now \u2014 nothing is taken away from anyone. One line in Settings explains that dragging needs the helper. Downside: people on other Linux desktops keep a buddy that sits in one spot forever, which is a bit unsatisfying but is what they already have."
+        },
+        {
+          "id": "b",
+          "label": "Hide it instead, with a line in Settings saying why",
+          "summary": "No stuck-looking buddy on screen; the Settings row explains the situation. Downside: this REMOVES something you can see today. Anyone using the buddy on a non-KDE Linux desktop would open the app after an update and find it gone. That is exactly the kind of unexplained change that is hard to trace back."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "People who already have the buddy on",
+      "headline": "You already have the buddy on, so there is no first switch-on left. When should you be offered the helper?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Next time you open the buddy's settings (recommended)",
+          "summary": "Nothing interrupts you. The offer sits in the place you would go anyway if you were wondering why the buddy won't move. Downside: you might not go looking for a while, so dragging stays broken until you happen to open that popup."
+        },
+        {
+          "id": "b",
+          "label": "A one-time prompt shortly after the update",
+          "summary": "You find out immediately that the buddy can be dragged now. Downside: an unprompted dialog after an update, about a feature you did not ask about at that moment."
+        },
+        {
+          "id": "c",
+          "label": "The buddy itself tells you \u2014 a small one-time bubble from the mascot",
+          "summary": "It comes from the character rather than a system dialog, so it fits the buddy's personality and points at the thing it is about. Downside: it is a new kind of message the buddy has never sent before, and it needs building and reviewing on its own."
+        }
+      ]
+    }
+  ]
+}

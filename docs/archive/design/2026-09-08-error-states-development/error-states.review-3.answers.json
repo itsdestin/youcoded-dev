@@ -1,0 +1,36 @@
+{
+ "deck": "error-states-development-review-3",
+ "started": "2026-09-09T21:49:13.050Z",
+ "submitted": "2026-09-09T21:52:05Z",
+ "cur": 3,
+ "answers": {
+  "R3-16": {
+   "note": "that button is ugly and doesn't match other styling in the app. why did we mock up \"setup is not connected in this preview\". the workbench shouldn't have code that makes it look different from the real app, that defeats the whole point. res-style this.",
+   "v": "other",
+   "seconds": 80,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-17": {
+   "note": "see previous",
+   "v": "other",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-18": {
+   "note": "",
+   "v": "yes",
+   "seconds": 30,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R3-19": {
+   "note": "again get rid of all the \"not connected in this preview\" shit. ",
+   "v": "other",
+   "seconds": 49,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

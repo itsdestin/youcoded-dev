@@ -1,0 +1,28 @@
+{
+  "title": "Sign in with ChatGPT — what Phase 0 found about your plan's windows",
+  "key": "chatgpt-signin-words-2",
+  "out": "chatgpt-signin.words-2.html",
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "W-2",
+      "words": true,
+      "surface": "Settings → Model Providers · Status bar chips · /usage card",
+      "path": "The plan-usage bars and chips, on an account whose plan does not have 5-hour and 7-day windows",
+      "headline": "Your ChatGPT account has one 30-day window, not a 5-hour and a 7-day one. What should the bars show?",
+      "notice": "Today (approved): the ChatGPT card, the status-bar chips and the /usage card show two bars labelled 5h and 7d, because a Plus or Pro plan has exactly those two windows. The problem: the real sign-in just ran on your account, which is on the free plan, and OpenAI reports ONE window for it: 30 days long, 0% used. There is no 5-hour and no 7-day window at all. Drawn as approved, your own account would show two empty bars that mean nothing — and the acceptance walk runs on your account. The proposal: label each bar by the real length OpenAI reports. A Plus plan still shows exactly '5h' and '7d' as approved; your free plan shows one bar labelled '30d'; a plan with no windows shows none.",
+      "options": [
+        {
+          "id": "a",
+          "label": "Label the bars by the real window length — Plus/Pro keep 5h and 7d, free shows one 30d bar (recommended)",
+          "summary": "What you see is always what OpenAI reports. You'll notice: on your free account, one bar labelled 30d on the card, one chip in the status bar, one row on /usage. Risk: the limit card's sentence for a 30-day window would read 'You have reached ChatGPT's 30-day session limit (Resets Oct 3 @ 6:43pm).' — the same shape as the weekly one you just picked."
+        },
+        {
+          "id": "b",
+          "label": "Keep the 5h and 7d bars only; a plan without those windows shows no bars",
+          "summary": "The screens stay exactly as drawn. You'll notice: on your free account the card shows no usage at all, the status bar shows no chips, and /usage says nothing about the plan — until you are on a Plus or Pro plan. Risk: the acceptance rows about chips and /usage cannot be checked on your account."
+        }
+      ]
+    }
+  ]
+}

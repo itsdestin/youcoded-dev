@@ -1,0 +1,54 @@
+{
+  "title": "The loaf's arms",
+  "key": "sleep-arms",
+  "out": "sleep-arms.review.html",
+  "intro": "You picked the loaf. Its body is settled and isn't under review here \u2014 only the arms move, so this is about one thing. The transition you flagged is fixed rather than offered as a choice: his arms used to jump straight to their new spot while his body eased down underneath them, which is what made the change of state read as a jump. They now ride the same springs his swinging arms already use, and the settle is heavier going under (620ms) than coming back (300ms, with a small overshoot). That's already in all three panes \u2014 watch the settle and the wake, not just where he ends up. \"None of these\" keeps the loaf exactly as you saw it.",
+  "live": {
+    "worktree": "mascot-sleep",
+    "paneWidth": 174
+  },
+  "steps": [
+    {
+      "id": "sleep-arms",
+      "surface": "Buddy floater",
+      "path": "Desktop corner",
+      "headline": "Where should his arms end up once he's asleep?",
+      "live": {
+        "surface": "buddy-sleep",
+        "round": 2
+      },
+      "variants": [
+        {
+          "id": "tuck",
+          "label": "Tuck",
+          "candidate": "tuck",
+          "summary": "Barely moved \u2014 his arms stay where you last saw them, just relaxed and dropped a little. The least he can do and still look asleep, and the least likely to be misread as a different creature. Also the least he DOES, so the settle is subtle."
+        },
+        {
+          "id": "dock",
+          "label": "Dock",
+          "candidate": "dock",
+          "summary": "All the way down and pulled into his body, so his outline becomes one clean shape with nothing sticking out. Reads most deliberately as \"put away\" \u2014 and it's the one that stays legible when he's tiny or half-behind a window edge, because it's a silhouette rather than a set of parts."
+        },
+        {
+          "id": "flop",
+          "label": "Flop",
+          "candidate": "flop",
+          "summary": "The wildcard: arms swung out flat to the sides, flumped. Funny rather than tidy, and the most characterful of the three \u2014 but it's also the most motion, and the widest, which is the one that could catch your eye when it shouldn't."
+        }
+      ]
+    },
+    {
+      "id": "sleep-zzz",
+      "words": true,
+      "surface": "Buddy floater",
+      "path": "Desktop corner",
+      "headline": "Should little z's drift up off him while he sleeps?",
+      "changed": "Whichever arms you pick, small z's can rise and fade above his head while he's under. (You skipped this last time \u2014 no problem, it's here again.)",
+      "notice": "It removes all doubt about what he's doing: nobody has to read his posture to know he's asleep. It's also the one part of this that isn't him \u2014 a bit of cartoon furniture floating on your desktop.",
+      "risk": "It never stops moving. A sleeping buddy is meant to be the quiet state, and that's exactly the ambient motion you said had to stay clearly below a real \"needs attention\" signal.",
+      "yes": "Yes, add z's",
+      "no": "No, keep him still"
+    }
+  ]
+}

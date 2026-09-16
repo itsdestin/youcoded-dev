@@ -3,6 +3,7 @@
 #   docs/site/           the live embed (npm run build:site)
 #   docs/media/          one WebM loop + WebP poster per showcase row (record.mjs)
 #   docs/gallery/        gallery stills as WebP (shot.mjs + magick)
+#   docs/media/embed-*   the demo window's per-theme stills, shot from the built embed (embed-posters.mjs)
 # Run before every release so the site can never drift from the app again.
 # Usage: bash scripts/ui-review/site-assets.sh <worktree-or-path>
 set -euo pipefail
@@ -57,8 +58,17 @@ node "$WS/scripts/workbench-boot-check.mjs" "$WB_PORT"
 # loops on 2026-08-27). docs/media is never touched by the embed build.
 mkdir -p "$OUT/media"
 i=0
-for scene in row1-any-ai row2-does-things row3-projects row4-organized row5-follow row5-phone row6-yours row7-play row8-builders; do
-  CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$scene"; i=$((i+1))
+# <file the page plays>:<scene that records it>. WHY a map: the 2026-09-03 redesign renamed five
+# of the page's clips to landing-* and recorded the sync pair from the -mirror scenes (one take at
+# two sizes), but this loop kept writing the old names — a release run refreshed four files the page
+# no longer shows and left those four cards stale. Keep it in step with docs/index.html #stage.
+for pair in landing-row1-any-ai:row1-any-ai landing-row2-artifact-edit:row2-artifact-edit \
+            row2-does-things:row2-does-things row3-projects:row3-projects row4-organized:row4-organized \
+            landing-row5-follow:row5-follow-mirror landing-row5-phone:row5-phone-mirror \
+            row6-yours:row6-yours landing-row7-play:row7-play; do
+  # (row8-builders left the map on 2026-09-11: the "For builders" slide was removed from the page, youcoded c11db7f0)
+  name="${pair%%:*}"; scene="${pair##*:}"
+  CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$name"; i=$((i+1))
 done
 
 # 3. gallery
@@ -83,4 +93,9 @@ du -sh "$OUT/media" "$OUT/gallery"
 
 # 4. embed — vite build is independent of the dev server; empties docs/site (see step 2)
 (cd "$TDIR/desktop" && npm run build:site >/dev/null)
+
+# 5. demo stills — AFTER step 4 on purpose: they are shot out of the embed just built, so the
+# picture in the demo window is the very app that replaces it (2026-09-14: a stale grey still
+# made the live demo "pop in" over it). Exits non-zero, writing nothing, if any theme failed to paint.
+CDP_PORT=10390 node "$HERE/embed-posters.mjs" "$OUT"
 echo "site assets regenerated under $OUT — review docs/gallery and docs/media, then commit them"

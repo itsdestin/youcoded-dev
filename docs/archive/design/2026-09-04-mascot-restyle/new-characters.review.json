@@ -1,0 +1,69 @@
+{
+  "title": "Three new characters",
+  "key": "new-characters",
+  "out": "new-characters.review.html",
+  "images": "images/new-characters.review",
+  "runs": { "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/new/runs/after" },
+  "themes": ["cotton-candy-sky"],
+  "crops": {
+    "cc-moon": ["mascots", "moon", "842x168+0+0"],
+    "cc-cloud": ["mascots", "cloud", "842x168+0+0"],
+    "cc-star": ["mascots", "star", "842x168+0+0"],
+    "mm-sprout": ["mascots", "sprout", "842x168+0+0"],
+    "mm-toadstool": ["mascots", "toadstool", "842x168+0+0"],
+    "mm-fern": ["mascots", "fern", "842x168+0+0"],
+    "dg-cactus": ["mascots", "cactus", "842x168+0+0"],
+    "dg-gold": ["mascots", "gold", "842x168+0+0"],
+    "dg-ember": ["mascots", "ember", "842x168+0+0"]
+  },
+  "steps": [
+    {
+      "id": "NC-1",
+      "surface": "Cotton Candy Sky's buddy",
+      "path": "Settings → Appearance → Cotton Candy Sky",
+      "themes": ["cotton-candy-sky"],
+      "headline": "Cotton Candy Sky has no character at all today — it falls back to the plain app buddy. Three candidates, on the theme's own lavender.",
+      "variants": [
+        { "id": "cloud", "label": "A — Cloudpuff", "crop": "cc-cloud",
+          "summary": "A soft purple body with a little white cloud sitting on his head. The only one of the three with a coloured body, so he stands out most against the pale page and is the easiest to spot at a glance. Reads youngest and softest, which matches the theme's round font." },
+        { "id": "moon", "label": "B — Moonlet", "crop": "cc-moon",
+          "summary": "A pale body outlined in deep purple, with a small crescent moon above his head and three faint stars on his chest. Closest to the wallpaper, which is a big moon over a dusk sky. Quieter than A — on a pale page he recedes rather than pops." },
+        { "id": "star", "label": "C — Stargazer", "crop": "cc-star",
+          "summary": "The pale body wearing round purple spectacles, holding a little star on a stick. The most characterful and the most specific — he looks like he does something. The cost is that the spectacles sit over his eyes, so every expression reads through a frame." }
+      ],
+      "risk": "This theme has no mascot today, so whichever wins is a new character rather than a change to one — nobody has an existing attachment to break."
+    },
+    {
+      "id": "NC-2",
+      "surface": "Meadow Mist's buddy",
+      "path": "Settings → Appearance → Meadow Mist",
+      "themes": ["meadow-mist"],
+      "headline": "Meadow Mist — a misty green forest at dawn, with red-and-white striped seed heads in the foreground.",
+      "variants": [
+        { "id": "sprout", "label": "A — Sprout", "crop": "mm-sprout",
+          "summary": "A near-white body outlined in forest green, with two small leaves growing out of his head. The calmest and cleanest of the three, and the one that most looks like it belongs to this palette. Also the least distinctive — a sprout is a common idea." },
+        { "id": "toadstool", "label": "B — Toadstool", "crop": "mm-toadstool",
+          "summary": "A cream body under a red-and-white spotted mushroom cap, picking up the striped seed heads in the wallpaper. By far the most recognisable of the three from across the room, and the only one with a second colour. The red is loud for a theme that is otherwise entirely soft greens." },
+        { "id": "fern", "label": "C — Fernkin", "crop": "mm-fern",
+          "summary": "A sage-green body with thin fern fronds curling up like antlers, and a small tail. The most creature-like of the three rather than object-like. The fronds are thin, so he loses the most detail when the buddy is small." }
+      ],
+      "risk": "The fronds on C and the leaves on A are the thinnest artwork in any of our characters; both will soften at small sizes."
+    },
+    {
+      "id": "NC-3",
+      "surface": "Devil's Garden's buddy",
+      "path": "Settings → Appearance → Devil's Garden",
+      "themes": ["devils-garden"],
+      "headline": "Devil's Garden — a dark desert theme, gold on near-black plum, with tall cacti at sunset.",
+      "variants": [
+        { "id": "gold", "label": "A — Sunstone", "crop": "dg-gold",
+          "summary": "A solid gold body with a dark face and a wine-red hat, straight out of the theme's own two colours. The most legible character we have on a dark page — he glows. Also the most conventional; he is the theme's accent colour with a face on it." },
+        { "id": "ember", "label": "B — Ember", "crop": "dg-ember",
+          "summary": "A near-black plum body with gold outlines, gold horns and a tail — the eyes are dark with a gold rim, the same trick that rescued Halftone. The most atmospheric, and the one that sits INSIDE the theme rather than on top of it. Quietest of the three; he can be missed on a dark wallpaper." },
+        { "id": "cactus", "label": "C — Saguaro", "crop": "dg-cactus",
+          "summary": "A deep teal body with faint vertical ribs and a pink bloom on a stalk, taken from the cacti in the wallpaper. The only one that brings a colour the theme does not already have, which makes him feel like a character rather than a swatch. That is also the risk: teal is not in this theme's palette." }
+      ],
+      "risk": "B repeats the horns-and-tail idea Kuromi Dreamer already owns, in different colours."
+    }
+  ]
+}

@@ -10,6 +10,7 @@
 // new Function, which parses without executing.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   rng32, buildCodeArtifact, buildMarkdownArtifact, buildHtmlArtifact,
   summarise, attributeStall, keyEventsFor, ratio,
@@ -242,6 +243,45 @@ test('installArtifactHelpers emits parseable in-page source', async () => {
   ]) {
     assert.ok(src.includes(needle), `installArtifactHelpers no longer mentions ${needle}`);
   }
+});
+
+test('the viewer probe does not read innerText unless asked', async () => {
+  // WHY (2026-09-10): `tail` reads innerText, which forces a synchronous layout
+  // of the whole pane, and waitForViewer polls this probe every 50 ms WHILE
+  // timing an artifact open. Unconditional, the probe reflowed the document it
+  // was timing and charged the app for it: the 3.5 KB markdown fixture reported
+  // 570 ms against the 93 ms a layout-free poll measures. That gap was read as a
+  // Markdown-renderer fault and three fixes were filed against the wrong code.
+  // The tail is worth having on FAILURE; it must never be on the hot path.
+  const cdp = parsingCdp();
+  await installArtifactHelpers(cdp);
+  const src = cdp.seen[0];
+  // Code lines only — the comment above the probe says "innerText" too, and a
+  // guard that trips on its own explanation teaches people to delete the guard.
+  const codeLines = src.split('\n')
+    .filter((l) => !/^\s*(\*|\/\/|\/\*)/.test(l))
+    .filter((l) => l.includes('innerText'));
+  assert.ok(codeLines.length > 0, 'the tail disappeared entirely — a failing open can no longer quote the app');
+  for (const line of codeLines) {
+    assert.ok(
+      /withTail/.test(line),
+      `viewerState reads innerText unguarded — that reflow lands inside the open it is timing:\n  ${line.trim()}`,
+    );
+  }
+});
+
+test('waitForViewer polls WITHOUT the tail and asks for it only on timeout', async () => {
+  // The pairing that matters: a cheap poll, and the app's own words when it
+  // fails. Reading the module source is the only way to see both from here.
+  const src = await readFile(new URL('../scenario-artifacts.mjs', import.meta.url), 'utf8');
+  const fn = src.slice(src.indexOf('async function waitForViewer'));
+  const body = fn.slice(0, fn.indexOf('\n}\n'));
+  assert.match(body, /viewerState\(false\)/, 'the polling loop must pass false — an unqualified call reflows every 50ms');
+  assert.match(body, /viewerState\(true\)/, 'a timed-out wait should still quote what the pane showed');
+  assert.ok(
+    body.indexOf('viewerState(false)') < body.indexOf('viewerState(true)'),
+    'the cheap read must be the one inside the loop',
+  );
 });
 
 test('registerArtifacts emits parseable source and fails loudly on a refused append', async () => {

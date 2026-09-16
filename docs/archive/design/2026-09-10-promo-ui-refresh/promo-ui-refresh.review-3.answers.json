@@ -1,0 +1,71 @@
+{
+ "deck": "promo-ui-refresh-review-3",
+ "started": "2026-09-11T10:31:51.296Z",
+ "submitted": "2026-09-11T10:35:03Z",
+ "cur": 9,
+ "answers": {
+  "S-1": {
+   "note": "this is a very bad old version of the clip/demo. needs to be softer lmao. just goofy, not actually offensive in any way",
+   "v": "other",
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-5": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-6": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-8": {
+   "v": "other",
+   "note": "can we skip the process of navigating the marketplace to switch themes and just fake swap it automatically after the assistant reply",
+   "seconds": 47,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-9": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-10": {
+   "v": "other",
+   "note": "another session is deleting the builders clip. dont bother",
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

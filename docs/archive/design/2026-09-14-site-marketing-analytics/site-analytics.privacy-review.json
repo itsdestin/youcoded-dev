@@ -1,0 +1,24 @@
+{
+  "title": "Website analytics — visitor privacy control",
+  "key": "site-analytics-privacy-review",
+  "out": "site-analytics.privacy-review.html",
+  "images": "images/site-analytics.privacy-review",
+  "runs": {"after": "runs/privacy"},
+  "themes": ["cotton-candy-sky"],
+  "labels": {"after": "New · Website privacy control"},
+  "crops": {"privacy": ["privacy", "dialog", "560x606+360+147"]},
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Visitor privacy control",
+      "path": "youcoded.ai → footer → Analytics privacy",
+      "headline": "Visitors can turn off website measurement without changing analytics in the app.",
+      "crop": "privacy",
+      "runs": ["after"],
+      "highlight": {"box": [5, 31, 88, 10]},
+      "changed": "A new footer control opens this privacy dialog. Your earlier approval covered opt-out behavior; this is its first visual review.",
+      "notice": "The choice is saved in this browser. Turning it off stops future sends; existing data still follows the retention policy.",
+      "risk": "Collection stays disabled. This approves the privacy control, not deployment, account spending, or public activation."
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "title": "Theme mascot faces — round 2",
+  "key": "theme-faces-2",
+  "out": "theme-faces-2.review.html",
+  "images": "images/theme-faces-2.review",
+  "runs": { "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/faces/runs/before", "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/faces/runs/after" },
+  "themes": ["golden-sunbreak"],
+  "crops": {
+    "faces": ["mascots", "faces", "1182x176+0+0"],
+    "hd-a": ["mascots", "varA", "1182x176+0+0"],
+    "hd-b": ["mascots", "varB", "1182x176+0+0"],
+    "hd-c": ["mascots", "varC", "1182x176+0+0"]
+  },
+  "steps": [
+    {
+      "id": "T2-1",
+      "surface": "Halftone Dimension's eyes",
+      "path": "Settings → Appearance → Halftone Dimension",
+      "themes": ["halftone-dimension"],
+      "headline": "Three ways to make Halftone's face visible without the glowing white eyes you rejected.",
+      "variants": [
+        { "id": "outlined", "label": "A — dark eye, light outline",
+          "crop": "hd-a",
+          "summary": "The eye is nearly black like the body, with a thin white outline around it and the CMYK dots inside. Nothing glows — the shape reads because of its edge, the way printed line art does. Crispest of the three, and the eyes stay clearly separate from the visor." },
+        { "id": "soft", "label": "B — soft slate eye, no outline",
+          "crop": "hd-b",
+          "summary": "The eye is a filled slate blue, lighter than the body but far darker than white, with no outline at all. Softer and calmer, and closest to how the other three characters are built. Lowest contrast of the three, so it reads as sleepier at small sizes." },
+        { "id": "no-visor", "label": "C — outlined eye, visor removed",
+          "crop": "hd-c",
+          "summary": "Option A's eyes with the red visor taken off entirely. The clearest face by a distance, and the expressions carry furthest across the room. It costs the visor, which is this character's most recognisable feature — it would still be available as an accessory rather than built in." }
+      ],
+      "risk": "Whichever wins is also the pattern for any future dark-bodied theme, so this choice outlives Halftone."
+    },
+    {
+      "id": "T2-2",
+      "surface": "Kuromi Dreamer's buddy",
+      "path": "Settings → Appearance → Kuromi Dreamer",
+      "crop": "faces",
+      "themes": ["kuromi-dreamer"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Kuromi's old eye highlights are back — one big shine high in the eye, one small one low — and they now appear on surprised too.",
+      "changed": "The three small scattered dots are gone, replaced by her original pair. Surprised uses that exact eye instead of a solid black disc, just opened wider with raised brows. Knocked-out is crossed lines again, not loops. Happy and shut-down are new. All of it moves when your cursor does.",
+      "notice": "She looks like herself. The eye shine is the thing that made her read as a character rather than a shape, and it is on every open-eyed face now instead of one.",
+      "risk": "Her eyes are a touch smaller than round one to sit the highlight properly, so she reads slightly calmer."
+    },
+    {
+      "id": "T2-3",
+      "surface": "Strawberry Kitty's buddy",
+      "path": "Settings → Appearance → Strawberry Kitty",
+      "crop": "faces",
+      "themes": ["strawberry-kitty"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "The same correction for the kitty — original eye highlights, on surprised as well, and crossed eyes when she is knocked out.",
+      "changed": "Identical to Kuromi's fix, in her berry palette, with the yellow nose kept on every face including the closed-eyed ones. Happy and shut-down are new.",
+      "notice": "Surprised no longer turns her eyes into two black holes — it is the same eye, wider, under raised brows.",
+      "risk": "None beyond the slightly smaller eye that Kuromi also takes."
+    },
+    {
+      "id": "T2-4",
+      "surface": "Golden Sunbreak's buddy",
+      "path": "Settings → Appearance → Golden Sunbreak",
+      "crop": "faces",
+      "themes": ["golden-sunbreak"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Sunbreak with the loops removed — knocked-out is crossed eyes again, as it was before.",
+      "changed": "Only the knocked-out face changed since you approved this one. The same correction went into the built-in buddy, which had also picked up the loops, and into all six starter drawings new themes are built from.",
+      "notice": "Nothing else moved. This is the version you already said yes to, with the one thing you flagged put back.",
+      "risk": "None."
+    }
+  ]
+}

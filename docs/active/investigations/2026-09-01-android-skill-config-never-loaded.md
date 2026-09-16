@@ -5,6 +5,10 @@ type: investigation
 topic: Android never reads youcoded-skills.json after first run — SkillConfigStore.load() has no production caller
 ---
 
+> **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 12 in the
+> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
+
 # Android forgets skill settings after the first launch
 
 **Roadmap entry:** `docs/roadmap/android-only.md` (bug is in Android's own Kotlin; desktop is

@@ -38,7 +38,17 @@ export async function waitForCdp(port) {
 // Selector -> JS expression the page can Runtime.evaluate. `js:...` passes an
 // arbitrary expression through (wrapped so it can be a bare object literal);
 // anything else becomes a querySelector call.
-export const selExpr = (s) => s.startsWith('js:') ? `(${s.slice(3)})` : `document.querySelector(${JSON.stringify(s)})`;
+// A `[title…]` selector that finds nothing retries as `[data-hint…]`. WHY (2026-09-10): the app's
+// hover hints (ui/Tooltip.tsx) moved every hinted control's words from title= to data-hint=, and
+// 8 of 15 promo scenes plus most landing loops died on MISSING at once — a README lesson ("scenes
+// rot against the app") had not prevented it, so the recorder now tolerates that rename itself.
+export const selExpr = (s) => {
+  if (s.startsWith('js:')) return `(${s.slice(3)})`;
+  const hinted = s.replaceAll('[title', '[data-hint');
+  return hinted === s
+    ? `document.querySelector(${JSON.stringify(s)})`
+    : `(document.querySelector(${JSON.stringify(s)}) ?? document.querySelector(${JSON.stringify(hinted)}))`;
+};
 
 // Finds the smallest element whose own text exactly matches `t` (optionally
 // scoped to a tag/selector list) — used for {"clickText": "Label"} actions

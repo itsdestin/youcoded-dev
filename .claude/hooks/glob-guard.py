@@ -38,6 +38,7 @@ Tests: node --test .claude/hooks/glob-guard.test.mjs
 
 import json
 import os
+import subprocess
 import re
 import shlex
 import sys
@@ -193,6 +194,56 @@ RG_CLUSTERED_R = re.compile(
 )
 
 
+# ---------------------------------------------------------------------------
+# Guard 6: `curl -s <url>/health && <go>` — succeeds on HTTP 503.
+#
+# curl's EXIT CODE says whether the REQUEST completed, not whether the server
+# said yes. llama-server answers /health with 503 the whole time it is loading a
+# model, so `curl -s .../health >/dev/null && break` breaks out immediately
+# against a server with nothing loaded, and every measurement taken afterwards
+# is against a server that was never ready. Cost on 2026-09-06: four benchmark
+# runs discarded, and the shape is the one this workspace keeps producing — a
+# check whose passing condition is also produced by the thing it rules out.
+# `-f/--fail` makes curl exit non-zero on 4xx/5xx; `-w '%{http_code}'` lets you
+# compare the status yourself. The repo's own probes already do this correctly
+# (`(await fetch(url)).ok` is 2xx-only) — this catches the shell spelling.
+CURL_READY_RE = re.compile(r"curl\b[^\n;|&]*?/(health|ready|healthz)\b[^\n;|&]*")
+
+
+def curl_readiness_offender(command: str):
+    """True for a curl readiness poll whose success is exit code, not HTTP status."""
+    if "<<" in command:
+        return False   # heredoc body is data, same reasoning as the glob guard
+    for m in CURL_READY_RE.finditer(command):
+        frag = m.group(0)
+        # `-f` may be clustered (`-sf`, `-fsS`), so look inside every short-flag
+        # group rather than for the literal "-f" — otherwise the guard fires on
+        # the very spelling it is telling you to use.
+        short = [t for t in frag.split() if t.startswith("-") and not t.startswith("--")]
+        if any("f" in t[1:] for t in short) or "--fail" in frag or "http_code" in frag:
+            continue
+        after = command[m.end():m.end() + 40]
+        # Only a poll: the exit code has to be feeding a decision for this to bite.
+        if "&&" in frag or "&&" in after or "||" in after or "then" in after:
+            return True
+    return False
+
+
+CURL_READY_MESSAGE = (
+    "Blocked before it ran: curl's EXIT CODE says the request completed, not that the "
+    "server said yes. A readiness endpoint answers 503 while it is still starting — "
+    "llama-server does exactly this for the whole time it is loading a model — and "
+    "`curl -s .../health && <go>` treats that 503 as ready. Everything measured after "
+    "it is measured against a server with nothing loaded, and it looks like a real "
+    "result.\n"
+    "Use one of:\n"
+    "  curl -sf <url>/health && <go>                              # -f exits non-zero on 4xx/5xx\n"
+    "  [ \"$(curl -s -o /dev/null -w '%{http_code}' <url>/health)\" = 200 ] && <go>\n"
+    "On 2026-09-06 this cost four benchmark runs, all reported as empty rather than wrong "
+    "— which was luck, not design."
+)
+
+
 def rg_replace_offender(command: str):
     """True for `rg -rn` / `rg -nr` style clusters, which silently misbehave."""
     if "<<" in command:
@@ -264,6 +315,73 @@ KILL_LIVE_MESSAGE = (
 )
 
 
+# ── guard 6: restoring a TRACKED file from a hand-made backup ────────────────────────────
+# Mutation testing is standard practice here — `.claude/rules/test-suite-hygiene.md` says
+# to break what a guard guards, watch it go red, and put it back. The obvious way to put it
+# back is `cp file /tmp/x.bak` … `cp /tmp/x.bak file`, and that is a trap with no warning
+# on it: the two halves are separate commands, so a backup that never got written (a cwd
+# the session did not expect, an `&&` chain that stopped early) leaves the RESTORE to
+# succeed anyway from whatever stale `.bak` happens to be sitting there. On 2026-09-05 that
+# silently reverted a finished fix and its comments; only a later grep for a comment that
+# should have been present caught it, about six calls after the fact. The failure is
+# invisible by construction — the restore prints nothing and exits 0.
+#
+# git already does this correctly and cannot go stale: `git stash push -- <file>` parks it,
+# `git checkout -- <file>` puts it back exactly as committed. So a `.bak`-shaped restore
+# ONTO A TRACKED FILE is refused. Making a backup is fine, and an untracked destination is
+# none of this hook's business — only overwriting version-controlled work.
+BACKUP_SUFFIXES = (".bak", ".orig", ".save", ".backup")
+RESTORE_CMD = re.compile(
+    r"(?:^|[|&;(]\s*)(?:cp|mv)\s+(?:-[a-zA-Z]+\s+)*(\S+)\s+(\S+)(?=\s|;|&|\||$)"
+)
+
+
+def _is_tracked(path: str, cwd: str) -> bool:
+    """Does git know this path? Fails open (False) on any doubt."""
+    try:
+        r = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", "--", path],
+            cwd=cwd or None, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5,
+        )
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def backup_restore_offender(command: str, cwd: str = ""):
+    """(source, destination) of a `.bak`-style restore over a tracked file, else None."""
+    if "<<" in command:
+        return None   # heredoc body is data, same reasoning as the glob guard
+    for src, dst in RESTORE_CMD.findall(command):
+        src_clean = src.strip("'\"")
+        dst_clean = dst.strip("'\"")
+        if not src_clean.endswith(BACKUP_SUFFIXES):
+            continue
+        if dst_clean.endswith(BACKUP_SUFFIXES):
+            continue   # making the backup, not restoring from one
+        if _is_tracked(dst_clean, cwd):
+            return (src_clean, dst_clean)
+    return None
+
+
+BACKUP_RESTORE_MESSAGE = (
+    "Blocked before it ran: restoring `{dst}` from `{src}` overwrites a file git is "
+    "tracking, from a copy nothing verified. The two halves of a hand-made backup are "
+    "separate commands, so when the SAVE half does not run — a cwd you did not expect, an "
+    "`&&` chain that stopped early — this RESTORE still succeeds, silently, from whatever "
+    "stale backup is lying around. On 2026-09-05 that reverted a finished fix and nobody "
+    "noticed for six calls.\n"
+    "Use git, which cannot go stale:\n"
+    "  git stash push -- {dst}    # park your version, then mutate\n"
+    "  git checkout -- {dst}      # put back exactly what is committed\n"
+    "  git stash pop              # and take your version back\n"
+    "COMMIT FIRST if the edit you are testing is not committed — `git checkout` throws away "
+    "uncommitted work, which is the same accident wearing a different hat. If the "
+    "destination is genuinely not source under version control, copy it to a path git does "
+    "not track."
+)
+
+
 def main() -> int:
     try:
         payload = json.load(sys.stdin)
@@ -302,8 +420,23 @@ def main() -> int:
         pass   # fail open
 
     try:
+        hit = backup_restore_offender(command, payload.get("cwd") or "")
+        if hit:
+            print(BACKUP_RESTORE_MESSAGE.format(src=hit[0], dst=hit[1]), file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open
+
+    try:
         if rg_replace_offender(command):
             print(RG_REPLACE_MESSAGE, file=sys.stderr)
+            return 2
+    except Exception:
+        pass   # fail open, same contract as everything else in this hook
+
+    try:
+        if curl_readiness_offender(command):
+            print(CURL_READY_MESSAGE, file=sys.stderr)
             return 2
     except Exception:
         pass   # fail open, same contract as everything else in this hook

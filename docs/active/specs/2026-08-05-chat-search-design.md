@@ -424,8 +424,8 @@ turn window and merges item lists across chunks.
 
 ### The call
 
-Shaped like the native auto-title feeder — the one existing background model
-call in the main process (`ipc-handlers.ts` / `native-title-feeder.ts`):
+Shaped like the session namer — the one existing background model
+call in the main process (`ipc-handlers.ts` / `session-namer.ts`):
 `providerRegistry.languageModel(binding)` → `generateText` with a bounded
 `AbortSignal.timeout`, and the feeder's contract of "unresolvable = skip
 silently, never an error event." A digest that fails or times out leaves no

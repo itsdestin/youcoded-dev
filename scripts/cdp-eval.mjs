@@ -30,15 +30,16 @@
 //   - The target page's globals (`window.claude`, React/xterm internals
 //     reachable via fiber walk, etc.) are evaluable directly — useful for
 //     dumping `__terminalRegistry`, monkey-patching `terminal.write`, etc.
-//   - `ws` package is the only dependency. Run from a directory whose
-//     `node_modules` resolves it (the workspace root has none, so either
-//     symlink or run from inside `youcoded/desktop` where it's installed).
+//   - NO DEPENDENCIES. It used to import the `ws` package, which the workspace
+//     root does not have, so running it from where this file lives — the only
+//     place anyone finds it — died on `Cannot find package 'ws'` before doing
+//     anything (hit 2026-09-10; the docs' own workaround was to cd elsewhere or
+//     symlink, which nobody does). Node has had a global WebSocket since v22 and
+//     this repo runs v26, so the dependency was pure friction.
 //
 // History: written during the Tier 2 android-xterm-webview dogfood pass to
 // inspect xterm scrollback live and capture the byte stream into xterm. See
 // the Tier 2 spec/plan under `docs/archive/`.
-import WebSocket from 'ws';
-
 const wsUrl = process.argv[2];
 const expr = process.argv[3];
 if (!wsUrl || !expr) {
@@ -46,17 +47,19 @@ if (!wsUrl || !expr) {
   process.exit(1);
 }
 
+// Global WebSocket is the browser API, so it is addEventListener/onmessage
+// rather than ws's EventEmitter, and `event.data` is already a string.
 const ws = new WebSocket(wsUrl);
 let id = 1;
-ws.on('open', () => {
+ws.onopen = () => {
   ws.send(JSON.stringify({
     id: id++,
     method: 'Runtime.evaluate',
     params: { expression: expr, returnByValue: true, awaitPromise: true },
   }));
-});
-ws.on('message', (raw) => {
-  const msg = JSON.parse(raw.toString());
+};
+ws.onmessage = (event) => {
+  const msg = JSON.parse(typeof event.data === 'string' ? event.data : String(event.data));
   if (msg.id) {
     if (msg.result?.exceptionDetails) {
       console.log(JSON.stringify(msg.result.exceptionDetails, null, 2));
@@ -65,5 +68,5 @@ ws.on('message', (raw) => {
     }
     ws.close();
   }
-});
-ws.on('error', (e) => { console.error('ws error:', e.message); process.exit(2); });
+};
+ws.onerror = (e) => { console.error('ws error:', e.message ?? 'connection failed'); process.exit(2); };

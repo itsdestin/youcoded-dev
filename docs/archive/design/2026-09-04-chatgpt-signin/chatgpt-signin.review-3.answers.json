@@ -1,0 +1,28 @@
+{
+ "deck": "chatgpt-signin-review-3",
+ "started": "2026-09-05T05:06:49.710Z",
+ "submitted": "2026-09-05T05:08:34Z",
+ "cur": 2,
+ "answers": {
+  "P-1": {
+   "v": "yes",
+   "note": "still need to remove the duplicative openrouter/api header, as we did for claude code/chatgpt. we will add two new topline headers (Cloud Models, Local Models) and remove the others. reduce the spacing a tad between the claude code/chatgpt cards",
+   "note_kind": "noting",
+   "seconds": 80,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-9": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "deck": "theme-faces",
+ "started": "2026-09-05T12:18:55.484Z",
+ "submitted": "2026-09-05T12:22:06Z",
+ "cur": 3,
+ "answers": {
+  "TF-1": {
+   "note": "i don't like when the eyes/mouth appear soulless and glowing like that. we should fix",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 37,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "TF-2": {
+   "v": "other",
+   "note": "for welcome/curious, i kinda like the old eyes better",
+   "note_kind": "noting",
+   "seconds": 60,
+   "theme": "kuromi-dreamer",
+   "zoom": 1
+  },
+  "TF-3": {
+   "note": "same  as kuromi, i like the old eyes better. we should also use the old welcome/curious eyes for shocked on both.",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 37,
+   "theme": "strawberry-kitty",
+   "zoom": 1
+  },
+  "TF-4": {
+   "v": "yes",
+   "note": "need to fix the weird loops on dizzy, we got rid of those intentionally.",
+   "note_kind": "noting",
+   "seconds": 35,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

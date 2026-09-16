@@ -1,0 +1,106 @@
+{
+  "title": "Hover hints that look like the app — try them",
+  "key": "app-themed-tooltips-live",
+  "out": "app-themed-tooltips.live.html",
+  "live": {
+    "worktree": "sessions/app-themed-tooltips/youcoded",
+    "offset": 180
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "The top bar",
+      "path": "The row of icons along the top of the window",
+      "headline": "Rest the pointer on the gear, the folder, the files icon — does the hint look like part of the app now?",
+      "changed": "Those hints were drawn by Linux, in a grey box no theme could reach. They are now drawn by YouCoded, on the same panel surface as every other popup, so they follow whatever theme you are on. Switch the palette at the top of this page and hover again.",
+      "notice": "Same words, same place, same wait — only the box is different. Nothing moved: the hint is attached to the button that was already there rather than wrapped around it, so no row could shift.",
+      "risk": "This hint lives inside the app window, so it cannot spill outside the edge of the window the way the grey box could.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Yes, it fits",
+      "no": "No, it does not"
+    },
+    {
+      "id": "L-2",
+      "surface": "The bar along the bottom",
+      "path": "The chips at the very bottom edge — the model, the permission mode, the theme name",
+      "headline": "Hover the chips at the bottom edge — does the hint open upward and stay inside the window every time?",
+      "changed": "The bottom bar sits on the last few pixels of the window, so a hint that opened downward would hang off the screen. It measures the space and opens upward there instead.",
+      "notice": "Sweep along the row: the first hint waits, and every one after it appears instantly while you keep moving. That is the behaviour the grey box had, kept on purpose.",
+      "risk": "The bar is the densest row in the app — this is the place a hint is most likely to cover something you wanted to see.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Yes, every time",
+      "no": "No, it slipped"
+    },
+    {
+      "id": "L-3",
+      "surface": "Anywhere you hover",
+      "path": "Any icon in the top bar",
+      "headline": "Rest on one icon and count — is the wait before the hint appears right?",
+      "changed": "The wait is a full second, the same as the grey box had. You chose that over the shorter half-second I recommended, so this is the version to judge.",
+      "notice": "It only applies to the first hint. Once one has appeared, moving to a neighbour shows the next with no wait at all, until you leave the row for about half a second.",
+      "risk": "A full second is long enough that the very first hover can feel like nothing happened.",
+      "live": {
+        "app": "default"
+      },
+      "yes": "Yes, keep the wait",
+      "no": "No, too slow"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The bar along the bottom",
+      "path": "The model chip, and the cost chip when it is switched on",
+      "headline": "The long hints are still hovers, not the circled i you picked — should I go and change that?",
+      "today": "Some hints are whole sentences rather than names. Hovering the model chip gives you a box about a third of the screen wide. On the deck last hour you chose to move sentences like that to the small circled i you click, and leave hovering for short names.",
+      "problem": "I have not built that part. Everything in this round became a hover hint, including the long ones — so what you can hover right now is not what you asked for, and you should see it before I spend the time. Two things did change for the better even here: the long hints now appear on a touchscreen with a press and hold, and one you press stays put while you read it instead of vanishing when the pointer drifts.",
+      "proposal": "Look at a long one on the bottom bar, then say which way to go.",
+      "options": [
+        {
+          "id": "build-info-button",
+          "label": "Build the circled i, as answered",
+          "summary": "Sentences move to a small mark you click; it stays open while you read.",
+          "pros": [
+            "A visible sign that there is something worth reading — a hover hint gives no clue it exists.",
+            "It is what you already decided, so nothing about that answer has to be revisited."
+          ],
+          "cons": [
+            "Adds a small extra mark beside about seven chips on a bar that is already crowded.",
+            "Another half day before this work is finished."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-as-hover",
+          "label": "Leave them as hover hints",
+          "summary": "What you can try right now — the long ones behave like the short ones.",
+          "pros": [
+            "Nothing new appears on the bottom bar.",
+            "The two real complaints are already answered: they work on touch, and a pressed one stays open while you read.",
+            "This round is finished today."
+          ],
+          "cons": [
+            "Still no sign that a chip has an explanation behind it, so you would only find it by chance.",
+            "A box a third of the screen wide is a lot to have appear under the pointer."
+          ]
+        },
+        {
+          "id": "shorten-the-copy",
+          "label": "Cut the long ones down instead",
+          "summary": "Make the sentences short enough that a hover hint is the right size for them.",
+          "pros": [
+            "One kind of hint everywhere, and nothing new on screen.",
+            "Shorter copy is easier to read at a glance, which is what a bar is for."
+          ],
+          "cons": [
+            "Some of what those sentences say would simply be lost — the cost chip's explanation of what is and is not counted has nowhere else to go.",
+            "Every one of them needs rewording and a separate look from you."
+          ]
+        }
+      ]
+    }
+  ]
+}

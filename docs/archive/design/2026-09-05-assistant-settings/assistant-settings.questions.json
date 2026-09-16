@@ -1,0 +1,167 @@
+{
+  "title": "Assistant settings — seven questions before anything is drawn",
+  "key": "assistant-settings-questions",
+  "out": "assistant-settings.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Settings → Assistant settings (the new panel)",
+      "path": "Today: four separate popups — Model Providers, Defaults, Permissions, Specialists — each a small window you close before opening the next",
+      "headline": "Inside the panel, how do you move between the pages?",
+      "options": [
+        {
+          "id": "a",
+          "label": "A list of pages down the left side, in one wider window (recommended)",
+          "summary": "One window, wider than today's popups, with a short list on the left — General, Claude Code, ChatGPT, OpenRouter, Local models, Permissions, Specialists — and the chosen page on the right. Like the Mac's System Settings. On a phone or a narrow window the list becomes the first screen and each page opens with a back arrow, like phone settings. Pro: you always see the map of what is here, and a new provider is one more line in the list, never a redesign. Local models is a long page and Defaults is five rows; a list copes with that difference, tabs do not. Con: the window is wider than any other settings window in the app, so it gets its own size.",
+          "cost": "One new window size, a two-pane layout, and the phone fold."
+        },
+        {
+          "id": "b",
+          "label": "Tabs across the top, in a window the width of today's popups",
+          "summary": "The same pages, but reached by a row of tabs under the title. On a phone the tab row scrolls sideways. Pro: no new window size; the app already has tab strips. Con: seven tabs already crowd a 600-wide window, an eighth provider (Codex, Gemini) will not fit, and the previous mockup's reviewer called an engine picker stacked above tabs 'navigation inside navigation'.",
+          "cost": "A tab strip and the scrolling tab row for phones."
+        },
+        {
+          "id": "c",
+          "label": "A full screen, like Projects, Library and Marketplace",
+          "summary": "Assistant settings becomes a fifth destination with all the room in the world, opened from the Settings row. Pro: nothing is cramped; Local models can show its whole browser. Con: it is the only settings screen that leaves the Settings drawer, so it looks and feels different from every other row, and getting back to the chat is one more step.",
+          "cost": "A new destination in the window's navigation plus the pages themselves."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Today: the Permissions popup explains three modes (Ask first, Auto edit, Full auto) and lists your Always-allow approvals — but those belong to ChatGPT, OpenRouter and local conversations only. Claude Code conversations use different modes, and their Skip permissions switch lives in the Defaults popup",
+      "headline": "Two kinds of conversation have two different permission systems. Where do they go?",
+      "options": [
+        {
+          "id": "a",
+          "label": "One Permissions page, two labelled blocks (recommended)",
+          "summary": "A single Permissions page. The first block is headed 'Claude Code conversations' and holds Skip permissions with its warning and the protection switches, exactly as they are today. The second is headed 'ChatGPT, OpenRouter and local models' and holds the three modes and the Always-allow list. Pro: there is one place to look for 'what may my assistant do', and the page is honest that the two systems differ instead of pretending they are one. Con: a Claude-only user scrolls past a block that does not apply to them, and the page is the longest in the panel after Local models.",
+          "cost": "Moving two existing blocks under one title; nothing new to build."
+        },
+        {
+          "id": "b",
+          "label": "Each provider page carries its own permissions",
+          "summary": "The Claude Code page gets Skip permissions and the protections; the Permissions page keeps only the three modes and the Always-allow list, and says which providers it covers. Pro: every provider page is complete on its own. Con: to change a permission you must first know which kind of conversation you are in, and a user who opens Permissions looking for Skip permissions will not find it there.",
+          "cost": "The same two blocks, on two pages, plus a note on each pointing at the other."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Settings → Assistant settings → General → Default model",
+      "path": "Today: the Defaults popup's Default model offers only Claude's four models (Haiku, Sonnet, Opus, Fable) and applies only to Claude Code conversations. A ChatGPT plan or a local model cannot be made the default",
+      "headline": "Should the default model become one choice across every provider?",
+      "options": [
+        {
+          "id": "a",
+          "label": "One default across all providers, chosen with the same picker the chat uses (recommended)",
+          "summary": "General → 'New conversations start on' opens the model picker you already use in the chat, so any connected model — a Claude model, a ChatGPT plan model, an OpenRouter model, a downloaded local model — can be the default. The four Claude tabs go away. Pro: one answer to 'what does a new chat use', and a ChatGPT or local-model user is no longer a second-class citizen. Con: this is the one question on this deck that means real work behind the scenes, because today the app only remembers a Claude name; a new conversation must be able to start on a ChatGPT or local model from this setting.",
+          "cost": "A stored default that names a provider and a model, and the new-conversation path reading it."
+        },
+        {
+          "id": "b",
+          "label": "Keep it Claude-only, moved to the Claude Code page and labelled honestly",
+          "summary": "The four Claude tabs move to the Claude Code page under 'Default Claude model'. Other providers' conversations keep starting on whatever they start on today. Pro: nothing to build behind the scenes; the panel ships sooner. Con: 'Assistant settings' then has no answer to 'make GPT my default', which is the first thing a ChatGPT-plan user will look for.",
+          "cost": "Moving four tabs to another page."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Settings → the Assistant settings row itself",
+      "path": "Today: four rows. Defaults shows a live summary (for example 'Sonnet · Skip Perms'); the other three show a fixed sentence. No row ever says that something is wrong, such as a rejected key or a blocked plan",
+      "headline": "What does the one row say under its name?",
+      "options": [
+        {
+          "id": "a",
+          "label": "A live summary of the default, plus a warning dot when a provider needs attention (recommended)",
+          "summary": "The line under 'Assistant settings' reads the current default, for example 'Claude Code · Sonnet' or 'ChatGPT · GPT-5.6', so you can see what a new chat will use without opening anything. When a provider is broken — a key OpenRouter rejects, a ChatGPT plan OpenAI has blocked, the local engine failed to start — a small warning dot appears on the row, and the same dot marks that provider's page inside. Pro: the drawer answers the most common question at a glance, and problems find you instead of hiding in a popup. Con: a dot on a settings row is new in this app; it must never appear for anything that is not actually broken.",
+          "cost": "One summary line and one 'needs attention' check per provider."
+        },
+        {
+          "id": "b",
+          "label": "The live summary only, no warning dot",
+          "summary": "Same summary line, no dot; a broken provider is only visible once you open the panel. Pro: nothing on the drawer ever nags. Con: the error bubble in the chat stays the only way you learn a key has stopped working.",
+          "cost": "One summary line."
+        },
+        {
+          "id": "c",
+          "label": "A fixed sentence: 'Models, permissions and specialists'",
+          "summary": "No live summary, no dot. Pro: the simplest possible row. Con: it says less than the Defaults row does today.",
+          "cost": "Nothing beyond the row."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Settings → Assistant settings → Web search",
+      "path": "Today: the Tavily and Exa search-key rows sit at the bottom of the Model Providers popup, after Local models. Search works with no key; a key raises the limits",
+      "headline": "Where do the web-search keys live in the new panel?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Their own page, 'Web search', last in the list (recommended)",
+          "summary": "A short page of its own: the sentence that search works free with no setup, then the Tavily and Exa rows exactly as today. Pro: search is a service the assistant uses, not a model that answers you, so it does not belong under any provider; and the list makes it findable by name. Con: one more line in the page list for two rows of content.",
+          "cost": "Moving the existing block onto its own page."
+        },
+        {
+          "id": "b",
+          "label": "At the bottom of the General page",
+          "summary": "The two rows sit under the defaults on General. Pro: one fewer page. Con: nobody looking for 'search' will guess it is under General, and General stops being only about how a conversation starts.",
+          "cost": "Moving the existing block under General."
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Settings on Android, and on a phone reaching this computer over remote access",
+      "path": "Today: the Android app's Settings shows only the Defaults row of the four; Model Providers, Permissions and Specialists do not exist there yet. A phone connected over remote access sees the full desktop list",
+      "headline": "Does Android get the new panel now, or keep its Defaults row until it has more to show?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Desktop and remote access get the panel; Android keeps its Defaults row for now (recommended)",
+          "summary": "Android's Settings is unchanged today: its Defaults row stays where it is, named as it is. The panel arrives on Android when the phone can serve more than one of its pages. Pro: a row named 'Assistant settings' that opens a single page of three rows promises more than it delivers; nothing on Android is being consolidated yet. Con: for a while the two platforms name the same setting differently.",
+          "cost": "Nothing on Android."
+        },
+        {
+          "id": "b",
+          "label": "Android gets the same row and panel now, showing only the pages it can serve",
+          "summary": "The Android row is also 'Assistant settings' and opens the panel with the General page alone, the other pages arriving as the phone learns to serve them. Pro: one name on every platform from day one. Con: a list with one entry looks unfinished, and it is.",
+          "cost": "The panel's phone fold, shipped on Android with one page."
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Settings → Assistant settings → Specialists",
+      "path": "Today: the Specialists popup has two parts — the Budget and Frontier tier pickers (which model each tier of helper runs on, any provider), and the roster of available specialists with their warnings and files",
+      "headline": "Specialists: one page of its own, or the tier pickers on General and the roster elsewhere?",
+      "options": [
+        {
+          "id": "a",
+          "label": "One Specialists page, both parts, as today (recommended)",
+          "summary": "The Specialists popup becomes a page in the list, unchanged inside: tiers on top, roster below, its (i) explainer kept. Pro: the popup was designed and reviewed this way three days ago and nothing about the panel changes the reasoning; a user who knows where specialists are still finds them by name. Con: the tier pickers are 'which model' choices and a purist might expect them beside the default model on General.",
+          "cost": "Moving the existing page into the list."
+        },
+        {
+          "id": "b",
+          "label": "Tier pickers move to General under the default model; the roster keeps a Specialists page",
+          "summary": "General gains a 'Specialists run on' pair of pickers below 'New conversations start on'; the Specialists page keeps only the roster. Pro: every 'which model' choice is on one page. Con: the two halves of one feature split across two pages, and the roster's warnings ('this specialist prefers a model you have not connected') lose the pickers they refer to.",
+          "cost": "Splitting the page and re-homing the warnings."
+        }
+      ]
+    }
+  ]
+}

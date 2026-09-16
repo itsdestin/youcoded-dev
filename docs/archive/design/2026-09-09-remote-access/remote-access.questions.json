@@ -1,0 +1,51 @@
+{
+  "title": "Remote access — setup and reconnecting",
+  "key": "remote-access-questions",
+  "stage": "ask",
+  "out": "remote-access.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Remote access",
+      "path": "Settings → Remote access → Setup",
+      "headline": "Should YouCoded guide the secure setup, or leave Tailscale setup to you?",
+      "today": "YouCoded already offers Tailscale installation and sign-in. The new secure address needs an additional Tailscale approval step.",
+      "problem": "Setup can involve permissions outside YouCoded. The secure address, including its computer and Tailscale network names, will appear in public certificate records; your chats and files will not.",
+      "proposal": "Use a guided setup that explains each change before making it, waits for confirmation, and checks the connection. Never publish the app or replace another service's settings. This approves the design, not changes to your current setup.",
+      "options": [
+        {"id": "guided", "label": "Guide me through", "recommended": true, "pros": ["One place to see what is done and what still needs approval.", "YouCoded checks the result instead of assuming sign-in worked."], "cons": ["Some approvals still open a Tailscale page or system prompt."]},
+        {"id": "manual", "label": "Check my setup", "pros": ["You keep direct control of Tailscale configuration."], "cons": ["You must arrange the secure address outside YouCoded before connecting."]}
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone or browser → Conversation → Lost connection",
+      "headline": "Should a message written while offline wait for you to press Send?",
+      "today": "A remote conversation stays on screen during brief disconnections. The connection and action recovery behavior needs to be made explicit.",
+      "problem": "A message sent later without another tap could start work after you have changed your mind.",
+      "proposal": "Keep your draft while reconnecting. Once connected, let you send it yourself. Actions that might already have run are never automatically repeated under either option.",
+      "options": [
+        {"id": "draft", "label": "Keep as draft", "recommended": true, "pros": ["No work starts unexpectedly when the connection returns.", "You can edit the message before sending."], "cons": ["You need one more tap after reconnecting."]},
+        {"id": "explicit-queue", "label": "Offer Send when connected", "pros": ["You can deliberately queue an unsent message and leave it waiting."], "cons": ["Needs a visible queue and cancel control.", "The message may start work later than you intended."]}
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone or browser → Choosing a conversation",
+      "headline": "Should your phone keep its own selected conversation?",
+      "today": "Remote access copies conversation state from the desktop. We are fixing mismatches, including when the desktop has several windows open.",
+      "problem": "Following the desktop automatically can move the phone away from what you were reading when someone changes conversations there.",
+      "proposal": "Keep the phone's selected conversation on reconnect if it still exists. Conversation contents stay shared; this only decides which conversation is open on each screen.",
+      "options": [
+        {"id": "independent", "label": "Keep my place", "recommended": true, "pros": ["Desktop navigation does not interrupt the phone.", "Reconnecting returns to the conversation you were using."], "cons": ["Switching on the desktop does not switch the phone with it."]},
+        {"id": "follow", "label": "Follow a desktop window", "pros": ["Both screens can stay on the same conversation."], "cons": ["Desktop navigation can interrupt phone reading.", "With several windows, you need to choose which one to follow."]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Livelier stop button",
+  "key": "stop-button-alive-live-2",
+  "out": "stop-button-alive.live-2.html",
+  "stage": "design",
+  "live": {
+    "worktree": "stop-button-alive",
+    "paneWidth": 460
+  },
+  "steps": [
+    {
+      "id": "L-2",
+      "surface": "Message box · stop button",
+      "path": "The round button left of Send, while a reply is being written",
+      "headline": "Is the smaller glowing stop button right?",
+      "changed": "The slow glow you picked, a bit smaller: the button is 24 px instead of 28 px, its stop mark shrinks to match, and the glow reaches a third less far.",
+      "measured": "Button 24 px (was 28 px); glow reaches 8 px (was 12 px)",
+      "notice": "Stop is now a little smaller than Send beside it. On a phone, the area you can tap stays the same size.",
+      "risk": "On Light and Crème the glow still reads as a soft dark shadow, just a smaller one.",
+      "yes": "Looks right",
+      "no": "Change it",
+      "live": {
+        "surface": "stop-button-alive",
+        "round": 2,
+        "candidate": "glow-small"
+      }
+    }
+  ]
+}

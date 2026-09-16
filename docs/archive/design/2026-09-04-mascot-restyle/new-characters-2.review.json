@@ -1,0 +1,46 @@
+{
+  "title": "New characters — round 2",
+  "key": "new-characters-2",
+  "out": "new-characters-2.review.html",
+  "images": "images/new-characters-2.review",
+  "runs": { "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/new/runs2/before", "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/new/runs2/after" },
+  "themes": ["devils-garden"],
+  "crops": {
+    "dg-bone": ["mascots", "bone", "784x184+0+0"],
+    "dg-sandstone": ["mascots", "sandstone", "784x184+0+0"],
+    "dg-plum": ["mascots", "plum", "784x184+0+0"],
+    "cc-star": ["mascots", "star", "784x184+0+0"]
+  },
+  "steps": [
+    {
+      "id": "NC2-1",
+      "surface": "Devil's Garden's buddy",
+      "path": "Settings → Appearance → Devil's Garden",
+      "themes": ["devils-garden"],
+      "headline": "Same cowboy, three bodies that aren't gold. The wine hat with its gold band is unchanged on all three.",
+      "variants": [
+        { "id": "bone", "label": "A — Bone",
+          "crop": "dg-bone",
+          "summary": "A pale sun-bleached cream, like weathered bone or bleached canvas. The brightest of the three against this near-black theme, so he is the easiest to find on a dark wallpaper, and the hat's wine red reads loudest against him. Closest in feel to the gold you didn't want, without being the accent colour." },
+        { "id": "sandstone", "label": "B — Sandstone",
+          "crop": "dg-sandstone",
+          "summary": "A warm terracotta taken straight from the mesa in this theme's wallpaper. The most desert of the three and the most obviously a character rather than a swatch. Sits mid-way in brightness, so he neither glows nor disappears." },
+        { "id": "plum", "label": "C — Plum",
+          "crop": "dg-plum",
+          "summary": "A dark plum body with a gold-outlined face, the same trick that rescued Halftone. He belongs to the theme more completely than the other two — but he is quiet, and on a busy dark wallpaper you will notice him last." }
+      ],
+      "risk": "C's face is drawn in gold line rather than a solid dark shape, so it reads as lit; A and B keep the ordinary painted face."
+    },
+    {
+      "id": "NC2-2",
+      "surface": "Cotton Candy Sky's buddy",
+      "path": "Settings → Appearance → Cotton Candy Sky",
+      "themes": ["cotton-candy-sky"],
+      "crop": "cc-star",
+      "headline": "The Stargazer's star moved up, so he holds it beside his head instead of down by his fist.",
+      "changed": "The star and its stick both rise about a unit and a quarter. Nothing else about him changed.",
+      "notice": "He reads as holding the star up rather than carrying it. The star now sits at head height, where your eye is already looking.",
+      "risk": "It sits closer to the edge of his frame, so on the narrowest surfaces the star's right point is the first thing to get tight."
+    }
+  ]
+}

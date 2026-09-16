@@ -1,0 +1,77 @@
+{
+ "deck": "assistant-settings-build-questions",
+ "started": "2026-09-07T22:34:49.752Z",
+ "submitted": "2026-09-07T23:05:36Z",
+ "cur": 8,
+ "answers": {
+  "P-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "pick",
+   "pick": "b",
+   "note": "but we should add an error state in the assistant settings panel itself, so a user can see their default is being ignored.",
+   "seconds": 93,
+   "theme": "midnight",
+   "zoom": 1,
+   "note_kind": "noting"
+  },
+  "P-3": {
+   "v": "pick",
+   "seconds": 158,
+   "theme": "midnight",
+   "zoom": 1,
+   "pick": "b",
+   "note": "i never want to \"default\" back to claude code when the chosed models are unavailable. all providers should be equal/neutral, no reason to randomly pick claude code. if NO models are currently available, there should be a \"You have not set up any model providers.\" copy with style [ADD PROVIDER BUTTON] below, all in the model menu between the search bar and manage models button. this will just open the assistant settings panel",
+   "note_kind": "noting"
+  },
+  "P-4": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-A": {
+   "note": "but begin squeezing first. switch to phone mode only at about 1/3 laptop screen i think",
+   "v": "pick",
+   "pick": "a",
+   "note_kind": "noting",
+   "seconds": 66,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-B": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-C": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-D": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-E": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -29,7 +29,7 @@ supersedes-partially: 2026-08-10-harness-mutation-safety-prior-art.md (its §1 h
 > | **G-9** — no diagnostics appended after Edit/Write | `docs/roadmap/native-harness.md` → tools (`parked`) |
 > | **T-1 / T-2** — the 4,000-char Bash window, and flipping the "prefer Read/Grep over cat" wording off in full-auto | `docs/roadmap/native-harness.md` → tools, one entry (`parked`; decide with the harness evaluator, not by argument) |
 > | **G-1 follow-ups** — typing into a running command, a "Running commands" list, "tell me when the log says ready" | `docs/roadmap/native-harness.md` → tools (`parked`; deferred on purpose at the 2026-08-28 sizing) |
-> | **D-8** — WebFetch/WebSearch subjects run through the file-path guard | `docs/roadmap/native-harness.md` → permissions (`blocked` on approval-card copy) → `docs/active/investigations/2026-09-01-full-auto-external-read-ask.md` |
+> | **D-8** — WebFetch/WebSearch subjects run through the file-path guard | `docs/roadmap/native-harness.md` → permissions (`blocked` on approval-card copy) → `docs/archive/investigations/2026-09-01-full-auto-external-read-ask.md` |
 > | **G-14** — Bash's secret-file guard is bypassable by `cat` | `docs/roadmap/native-harness.md` → permissions (`confirmed`, `security`) → `docs/active/investigations/2026-09-01-bash-skips-secret-path-deny.md`. No longer "documented and accepted": the 2026-09-01 sweep re-filed it as a confirmed security item |
 
 

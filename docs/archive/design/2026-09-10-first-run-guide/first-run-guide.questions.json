@@ -1,0 +1,591 @@
+{
+  "title": "First run — the buddy shows a new user around",
+  "key": "first-run-guide",
+  "out": "first-run-guide.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "intro": "Today a new person installs the app, goes through the setup wizard (it checks for Node, Git and Claude Code, then has them sign in with Claude, ChatGPT, OpenRouter, an API key or a local model), sees a card that says \"You're all set\" with three bullet points, and is dropped on a screen that says \"No Active Session\" with the buddy waving next to two buttons. Nothing after that explains what a session is, what a project is or why they would want one, where the model settings are, or that sessions can carry tags and notes. Nobody ever meets the buddy: it appears on that screen and two warning screens, never speaks and cannot be clicked. There are no tips, and the app links to no community anywhere. This deck decides four things in five pages: the guided tour, tips over the first days, the empty screens, and where help lives. Then who sees it.",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The guided tour",
+      "path": "What appears after the setup wizard's \"You're all set\" card",
+      "headline": "What shape should the tour take?",
+      "today": "After setup, a card lists three things to try (pick a theme, install a skill, sync across devices), then the app opens. That card is the only guidance in the whole app, and it is never shown again.",
+      "problem": "Three bullets about themes and sync do not tell anyone how to actually use the app. The buddy, the app's one memorable character, is standing right there and says nothing.",
+      "proposal": "The buddy becomes the guide. Three ways it could do that; pick one.",
+      "options": [
+        {
+          "id": "corner-bubble",
+          "label": "Buddy in the corner",
+          "summary": "The buddy stands in a corner of the real app with a speech bubble. Each stop points at the actual control it is talking about, with Next, Back and Skip on the bubble. The little hint bubble that already points at the chat/terminal switch is the same idea, so the look exists.",
+          "pros": [
+            "You learn on the real screen: every stop points at the thing you will press.",
+            "Skip anywhere, go back anywhere, and a Settings entry brings it back later.",
+            "The buddy gets a voice for the first time, which the tips on page 2 can reuse."
+          ],
+          "cons": [
+            "The buddy has never had a speech bubble, so this is the most building of the three.",
+            "A stop about something hidden (tags live inside the session drawer) has to open that drawer first.",
+            "On a phone the buddy is a flat picture, so it cannot wave or point the way it can on desktop."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "slideshow",
+          "label": "Slideshow before the app",
+          "summary": "Full-screen cards hosted by the buddy, one per topic, right after setup and before the app appears. Like the wizard, with pictures of the screens.",
+          "pros": [
+            "Simplest to build and nothing on the real screen can get in its way.",
+            "Reads the same on desktop and phone."
+          ],
+          "cons": [
+            "You are reading about screens you have not seen yet, and forget them by the time you get there.",
+            "A stack of cards between a person and the app is exactly what people click straight through."
+          ]
+        },
+        {
+          "id": "assistant-chat",
+          "label": "The assistant introduces itself",
+          "summary": "A first session opens on its own and the assistant gives the tour in chat, answering follow-up questions.",
+          "pros": [
+            "It can answer whatever the person actually asks.",
+            "No new screens to build."
+          ],
+          "cons": [
+            "It spends the person's tokens or plan in their first minute, on the app talking about itself.",
+            "The tour comes out a little different every time and can be wrong.",
+            "It cannot point at a control, and it only works if the model connection works, which is the thing most likely to be broken on day one."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The guided tour",
+      "path": "The moment it starts",
+      "headline": "Should the tour start on its own, or wait to be asked for?",
+      "today": "Nothing starts on its own after setup except the app itself.",
+      "problem": "A tour that starts uninvited annoys the people who do not need it; a tour that waits to be asked for is never found by the people who do.",
+      "proposal": "Three timings; pick one. Whichever you pick, a \"Show me around\" entry in Settings brings the tour back any time.",
+      "options": [
+        {
+          "id": "after-setup-once",
+          "label": "Right after setup, once",
+          "pros": [
+            "The one moment every new person is guaranteed to be paying attention.",
+            "Skip is one press, and it never starts on its own again."
+          ],
+          "cons": [
+            "It arrives before the person has a question, so some of it will not stick."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "only-when-asked",
+          "label": "Only when asked for",
+          "pros": [
+            "Never in anyone's way."
+          ],
+          "cons": [
+            "Most people never press a \"Show me around\" button, and the ones who most need it do not know they need it."
+          ]
+        },
+        {
+          "id": "stop-by-stop",
+          "label": "Each stop when you first get there",
+          "summary": "One welcome stop after setup; every other stop appears the first time you reach its screen (first time you open Projects, first time you open the drawer).",
+          "pros": [
+            "Each explanation lands at the moment it is useful, and each one is short."
+          ],
+          "cons": [
+            "No sense of the whole: you never learn that tags exist until you stumble into the drawer.",
+            "Some stops never fire, and several firing in one sitting feels like nagging. This is really what the tips on page 2 are for."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The guided tour",
+      "path": "Any stop of the tour",
+      "headline": "Should the tour ask you to do things, or just point and explain?",
+      "today": "There is no tour, so the person's first project and first session happen on their own, if at all.",
+      "problem": "A tour that only explains leaves the person on the same empty screen it found them on. A tour that makes them do things is longer and can get stuck.",
+      "proposal": "Pick how hands-on it is.",
+      "options": [
+        {
+          "id": "explain-plus-button",
+          "label": "Explain, with a Do it now button",
+          "summary": "Every stop is a sentence or two and Next. A stop that has an obvious action (add a project, start a session, add a tag) also offers a button that does it, and the tour carries on either way.",
+          "pros": [
+            "Fast for people who skim, hands-on for people who want to try.",
+            "The tour never blocks: nothing waits for you."
+          ],
+          "cons": [
+            "Two paths through every stop, so more to check.",
+            "The button's wording has to make plain what it is about to do."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "explain-only",
+          "label": "Point and explain only",
+          "pros": [
+            "Under a minute, and nothing can go wrong."
+          ],
+          "cons": [
+            "Ends with the same empty app and a person who still has not made anything."
+          ]
+        },
+        {
+          "id": "hands-on",
+          "label": "Do it as you go",
+          "summary": "Each stop waits until you have done the thing: picked a folder, started a session, added a tag.",
+          "pros": [
+            "Ends with a real project and a real session already made."
+          ],
+          "cons": [
+            "Longest of the three, and a stop you cannot finish (no folder ready yet) blocks the rest.",
+            "Waiting on the person means the tour has to notice what they did, which is the most to build."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "The guided tour",
+      "path": "The stops, in order",
+      "headline": "The tour has eight stops, in this order. Does the list hold?",
+      "changed": "1. Meet the buddy: who it is, and that it can live on the desktop as the floater. 2. Sessions: one conversation with the assistant working in one folder; the strip along the top switches between them. 3. Projects: a folder you keep coming back to; why (its context files and conversations stay with it) and Add a project. 4. Models and providers: which service answers you and where to change it (Settings, Assistant settings), including local models. 5. Tags and notes: label a session, leave yourself a note, find it again in Resume. 6. Files: what the assistant made, in the file pane and the Projects screen. 7. Make it yours: themes and the marketplace. 8. Help: the community, reporting a bug, known issues.",
+      "notice": "About a minute if you press Next through it. Anything missing from this list gets no stop, and anything you would rather cut goes in a note.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Setup and the tour",
+      "path": "Wherever the one sentence about file changes goes",
+      "headline": "Where should the sentence about the assistant changing and deleting files go?",
+      "today": "Nothing on first run tells a new person that the assistant can create, change and delete files in a folder, and that backups are their own responsibility. Only the Terms say so.",
+      "problem": "The roadmap has carried this since the company was formed: the first thing anyone asks after a lost file is what the person was told. A tour they can skip is not being told.",
+      "proposal": "One sentence. Its wording stays your call; this decides only where it lives.",
+      "options": [
+        {
+          "id": "wizard-card",
+          "label": "On the setup wizard",
+          "summary": "On the sign-in step or the final card, where nobody can skip past it.",
+          "pros": [
+            "Every single person sees it, tour or no tour.",
+            "Sits next to the moment they hand over the keys."
+          ],
+          "cons": [
+            "One more line on a card people are hurrying through."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "tour-stop",
+          "label": "In the tour's Sessions stop",
+          "pros": [
+            "Said in context, beside the folder it applies to."
+          ],
+          "cons": [
+            "Anyone who presses Skip was never told."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both places",
+          "pros": [
+            "Told once for the record and once in context."
+          ],
+          "cons": [
+            "The same warning twice in five minutes reads as nagging."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Tips over the first few days",
+      "intro": "The tour is once. Tips are the reminders that come after it: short, one at a time, and they stop on their own."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Tips",
+      "path": "Wherever a tip appears",
+      "headline": "Who delivers a tip, and where does it appear?",
+      "today": "The app shows no tips. The only \"don't show this again\" thing in it is one banner on the Projects screen's Context tab.",
+      "problem": "Things people never discover on their own (tags, notes, the resume browser, local models) stay undiscovered; the tour mentioned them once, days ago.",
+      "proposal": "Pick where tips live.",
+      "options": [
+        {
+          "id": "buddy-main-window",
+          "label": "The buddy, in the main window",
+          "summary": "The same buddy-and-bubble as the tour, in a corner of the main window, one tip at a time with a Got it button.",
+          "pros": [
+            "One character, one look: you already know to read what the buddy says.",
+            "Works whether or not the desktop floater is turned on."
+          ],
+          "cons": [
+            "A bubble over your work is an interruption, so it must never cover the chat input or appear while you are typing or while the assistant is mid-answer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "welcome-screen-line",
+          "label": "A line on the between-sessions screen",
+          "summary": "The tip sits under the buddy on the screen you see when no session is open.",
+          "pros": [
+            "Never interrupts anything."
+          ],
+          "cons": [
+            "You only see that screen when nothing is open, which after the first day is rarely."
+          ]
+        },
+        {
+          "id": "floater",
+          "label": "The desktop floater",
+          "pros": [
+            "It is the buddy's own home."
+          ],
+          "cons": [
+            "The floater is off by default, so most new people never see one.",
+            "Desktop only."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Tips",
+      "path": "What makes a tip appear",
+      "headline": "What should trigger a tip: the calendar, or the moment it becomes relevant?",
+      "today": "Nothing.",
+      "problem": "A tip about tags on a day you never open the drawer is noise. A tip that only fires when you open the drawer never fires for someone who never does.",
+      "proposal": "Pick the trigger. Either way there are about eight tips in total, never more than one per sitting, and they end when they run out.",
+      "options": [
+        {
+          "id": "relevant-moment",
+          "label": "The moment it is relevant",
+          "summary": "Each tip has its own moment: first time in the session drawer, the tags tip; first time you close a session, the notes tip; the fifth session started with no project, the projects tip.",
+          "pros": [
+            "Lands when it can be used, so it sticks.",
+            "Nothing fires on a day you only chat."
+          ],
+          "cons": [
+            "Each tip needs its own trigger, so a tip is more than a sentence to add.",
+            "Someone who never opens the drawer never hears about tags."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "daily",
+          "label": "One a day for a week",
+          "summary": "At the first launch each day for the first seven days, the next tip in a fixed order.",
+          "pros": [
+            "Predictable and bounded: never twice in a day, over after a week."
+          ],
+          "cons": [
+            "Most tips arrive out of context."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Relevant when possible, daily otherwise",
+          "pros": [
+            "Every tip gets seen eventually."
+          ],
+          "cons": [
+            "The most bubbles of the three."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Tips and Settings",
+      "path": "On every tip, and in Settings",
+      "headline": "Every tip has Got it and Stop showing tips; Settings holds the switch and Show me around.",
+      "changed": "Each tip carries two buttons: Got it (this tip is done) and Stop showing tips (all of them). Settings gets a switch, Tips for new users, that turns them back on, and a Show me around button beside it that replays the tour.",
+      "notice": "Two presses at most to never see a tip again. Nothing about tips is buried.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "P-3",
+      "page": "Empty screens",
+      "intro": "Whatever the tour says, some people skip it. These screens have to explain themselves to someone who arrives with nothing."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Projects",
+      "path": "The Projects screen, opened before any project exists",
+      "headline": "With no projects yet, what should the Projects screen show?",
+      "today": "It reads \"Select a project to view its artifacts\" above the Files, Conversations and Context tabs, all empty. There is no project to select, and \"artifacts\" is a word the app has otherwise dropped.",
+      "problem": "The screen that should sell the idea of a project instead looks broken, on the one visit that decides whether the person ever makes one.",
+      "proposal": "Pick what replaces it.",
+      "options": [
+        {
+          "id": "explainer-card",
+          "label": "An explainer card",
+          "summary": "What a project is (a folder you keep coming back to), why to make one (its context files and conversations stay with it, and this screen shows what the assistant made there), one Add a project button, and the buddy beside it.",
+          "pros": [
+            "Answers \"why would I\" at the exact moment the person is asking it.",
+            "One button, nothing else to look at."
+          ],
+          "cons": [
+            "One more paragraph that has to stay short."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "standard-empty",
+          "label": "The standard empty state",
+          "summary": "The same icon, one sentence and one button every other empty list in the app uses.",
+          "pros": [
+            "Matches everything else, and is tiny."
+          ],
+          "cons": [
+            "One sentence cannot say why anyone would want a project."
+          ]
+        },
+        {
+          "id": "tour-stop-here",
+          "label": "The tour's Projects stop runs here",
+          "pros": [
+            "No new copy to write."
+          ],
+          "cons": [
+            "A tour stop popping up when you only wanted a look, and it comes back for people who skipped the tour."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "The between-sessions screen",
+      "path": "What a new person sees the first time the app opens",
+      "headline": "Should a brand-new person get a first-time version of the No Active Session screen?",
+      "today": "It says \"No Active Session\" with the buddy waving, a New Session button that unfolds into folder, model and permissions, and a Resume Session button. On day one Resume lists nothing.",
+      "problem": "\"No Active Session\" reads like an error to someone who has never had one, Resume is a button with nothing behind it, and nothing says what a session is.",
+      "proposal": "Pick what changes.",
+      "options": [
+        {
+          "id": "first-time-version",
+          "label": "A first-time version",
+          "summary": "Headline \"Start your first session\", one sentence on what a session is, the New Session form already unfolded. Resume appears once there is something to resume, or straight away if sync is on and another device has sessions.",
+          "pros": [
+            "One thing to do and no dead button.",
+            "Once there is a session to resume, it becomes today's screen."
+          ],
+          "cons": [
+            "Two versions of one screen to keep in step.",
+            "A person setting up a second device needs Resume on day one, so the sync check has to be right."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "reword-only",
+          "label": "Reword it only",
+          "summary": "\"No Active Session\" becomes something that does not sound like an error; the buttons stay.",
+          "pros": [
+            "Tiny change, nothing moves."
+          ],
+          "cons": [
+            "Still a Resume button with nothing behind it and no word on what a session is."
+          ]
+        },
+        {
+          "id": "leave-it",
+          "label": "Leave it, the tour explains it",
+          "pros": [
+            "Nothing changes for anyone."
+          ],
+          "cons": [
+            "Whoever skips the tour lands on an error-sounding screen."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Three more empty screens",
+      "path": "The chat pane, a project's Conversations tab, the session note",
+      "headline": "This round also fixes three more empty screens the same way.",
+      "changed": "The chat pane before the first message, which today says only \"Start a conversation with (name)\", gains one line on what you can ask and that the assistant works in the session's folder. A project's Conversations tab with none gets the standard icon, sentence and button instead of a bare line. The session note field's placeholder says what a note is for (a line to your future self, shown in Resume). Any other empty screen found during the build is handled the same way and listed on the review deck.",
+      "notice": "Nothing moves; each of the three just says something useful where it said nothing.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "P-4",
+      "page": "Where help lives",
+      "intro": "The tour's last stop points somewhere. That somewhere has to exist after the tour is gone."
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "answer": "words",
+      "prompt": "r/…",
+      "surface": "Help",
+      "path": "The tour's last stop, and the help page below",
+      "headline": "What is the community's address on Reddit?",
+      "today": "The app links to no community anywhere. The only Reddit mention in the whole workspace is the promo video that was posted there.",
+      "problem": "I cannot invent the address, and a wrong one is worse than none.",
+      "proposal": "Type it here; it goes on the tour's last stop and the help page. Leave it blank if there is no community yet and the link stays out."
+    },
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Settings",
+      "path": "Settings, the page a person with a problem would open",
+      "headline": "Should Settings get a Help page, and where does the bug report go?",
+      "today": "Reporting a bug lives under Settings, Development, which files a GitHub issue for you; Known issues is there too. About has Privacy and Terms. The word Help appears nowhere.",
+      "problem": "A person with a problem will not look under \"Development\", and nothing tells a new person that a settings page is where help lives.",
+      "proposal": "Pick where help lives. Whatever the answer, the tour's last stop points at it.",
+      "options": [
+        {
+          "id": "help-page",
+          "label": "A Help page in Settings",
+          "summary": "Help & feedback: Show me around again, the tips switch, the community, Report a bug, Known issues, and the version. Report a bug stays reachable from Development too, so nobody who knows the old place loses it.",
+          "pros": [
+            "One obvious place, under the one word everyone looks for.",
+            "The tour's last stop has a real destination."
+          ],
+          "cons": [
+            "One more settings page to keep tidy.",
+            "Report a bug in two places, until Development can drop it."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "rename-development",
+          "label": "Rename Development to Help & Development",
+          "pros": [
+            "Nothing moves."
+          ],
+          "cons": [
+            "Still a page of developer tools around one button a normal person wants."
+          ]
+        },
+        {
+          "id": "no-page",
+          "label": "No page; the tour's last stop is enough",
+          "pros": [
+            "Nothing to build in Settings."
+          ],
+          "cons": [
+            "The tour is once. A week later there is nowhere to find the community or the bug report but \"Development\"."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-5",
+      "page": "Who sees it, and where",
+      "intro": "Two questions about rollout, so nothing surprises existing users or the phone."
+    },
+    {
+      "id": "Q-11",
+      "words": true,
+      "surface": "Existing users",
+      "path": "The first launch after this ships",
+      "headline": "Should people who already use the app, including you, see the tour or tips after updating?",
+      "today": "The app only knows whether the setup wizard was finished. It has no record of how long someone has used it.",
+      "problem": "If the tour keys off \"setup finished\", everyone who updates looks like a new user and gets the tour on top of their work.",
+      "proposal": "Pick who gets what. Everyone gets the Settings entries regardless.",
+      "options": [
+        {
+          "id": "fresh-installs-only",
+          "label": "Fresh installs only",
+          "summary": "The tour and tips run only for someone who finishes setup after this ships. Existing users see nothing pop up; Show me around waits in Settings.",
+          "pros": [
+            "Nothing changes for you on update."
+          ],
+          "cons": [
+            "Existing users never learn about tags, notes or local models unless they go looking."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "tips-for-everyone",
+          "label": "Tips for everyone, tour for new installs",
+          "pros": [
+            "Everyone learns the features they have not touched."
+          ],
+          "cons": [
+            "A bubble appears over an existing user's work after an update, with no warning."
+          ]
+        },
+        {
+          "id": "everyone-once",
+          "label": "Everyone gets the tour once",
+          "pros": [
+            "Everyone meets the buddy."
+          ],
+          "cons": [
+            "A tour on update reads as an advert for the app you already use."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-12",
+      "words": true,
+      "surface": "Desktop, phone and browser",
+      "path": "Which version of the app this ships on",
+      "headline": "Desktop first, or every platform at once?",
+      "today": "The setup wizard exists on desktop only; the phone app has no first-run flow of its own. The buddy on the phone and in the browser is a flat picture; on desktop it is a rig that can move and point. Empty screens and Settings pages are shared, so the phone gets those for free.",
+      "problem": "A tour that points at controls has to know where they are, and the phone and desktop lay them out differently.",
+      "proposal": "Pick the rollout.",
+      "options": [
+        {
+          "id": "desktop-tour-shared-rest",
+          "label": "Desktop tour; empty screens and Help everywhere",
+          "summary": "The tour and tips ship on desktop. The empty screens and the Help page reach the phone and browser automatically because they share the same screens.",
+          "pros": [
+            "One layout to get the tour right on.",
+            "The phone still stops looking broken on day one."
+          ],
+          "cons": [
+            "A phone-first person never meets the buddy or gets a tour."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "desktop-only",
+          "label": "Desktop only, all of it",
+          "pros": [
+            "The smallest job."
+          ],
+          "cons": [
+            "The phone keeps \"Select a project to view its artifacts\"."
+          ]
+        },
+        {
+          "id": "all-at-once",
+          "label": "Everything on every platform",
+          "pros": [
+            "Every platform is the same product on day one."
+          ],
+          "cons": [
+            "Three layouts for the tour, weeks longer, and the phone buddy still cannot point."
+          ]
+        }
+      ]
+    }
+  ]
+}

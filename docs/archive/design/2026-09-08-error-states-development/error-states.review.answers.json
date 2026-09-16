@@ -1,0 +1,55 @@
+{
+ "deck": "error-states-development-review",
+ "started": "2026-09-09T06:11:18.289Z",
+ "submitted": "2026-09-09T08:23:57Z",
+ "cur": 6,
+ "answers": {
+  "S-1": {
+   "note": "how contributing wors should be behind contribute to youcoded",
+   "v": "yes",
+   "seconds": 149,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 38,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "the warning at the bottom is unclear/confusing. "
+  },
+  "S-3": {
+   "note": "i think the top header should be \"submit a ticket\" because \"feature\" doesn't make sense under report a bug.",
+   "v": "yes",
+   "seconds": 50,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-4": {
+   "note": "there's way too much poorly organized copy with unclear visual heirarchy. we need to simplify this and make it better match existing settings menus.",
+   "v": "other",
+   "seconds": 49,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-5": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-6": {
+   "note": "this is also just ugly, too much text, poor visual heirarchy, weirdly sized buttons. doesn't match our other settings pages.",
+   "v": "other",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

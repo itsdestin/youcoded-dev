@@ -1,0 +1,36 @@
+{
+  "title": "Sign in with ChatGPT — round 5",
+  "key": "chatgpt-signin-review-5",
+  "out": "chatgpt-signin.review-5.html",
+  "images": "images/chatgpt-signin-review-5",
+  "runs": {
+    "today": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after-5"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "providers-local": [
+      "chatgpt-signin",
+      "providers-local-models",
+      "440x600+500+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → Local Models",
+      "crop": "providers-local",
+      "headline": "A custom endpoint that points at this computer, like Ollama, now lists under Local Models instead of under OpenRouter.",
+      "changed": "Your question in chat: wouldn't Ollama be local? The app sorts each custom endpoint by its address. One on this computer (localhost) lists under Local Models, after Other local apps; one on a server elsewhere stays under Cloud Models. In round 4 the list under Other local apps was empty and Ollama sat under the OpenRouter card.",
+      "notice": "Add provider stays under Cloud Models. A local endpoint added there moves to Local Models the moment it is saved.",
+      "risk": "A local server reached by a name other than localhost (a Tailscale name, your machine's own name) would still be filed under Cloud; the address is the only signal.",
+      "highlight": {
+        "selector": "[role=dialog][aria-label='Model Providers']"
+      }
+    }
+  ]
+}

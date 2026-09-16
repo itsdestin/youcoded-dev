@@ -1,0 +1,77 @@
+{
+  "title": "First run — your notes from round 1, written back as decisions",
+  "key": "first-run-guide-review-2",
+  "out": "first-run-guide.review-2.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "intro": "Round 1 had five answers of Other with a note. Each note is applied on the branch; these six items put the result on the record so the contract can carry it. One new question at the end, from your note on the welcome screen.",
+  "steps": [
+    {
+      "id": "N-1",
+      "words": true,
+      "surface": "The tour",
+      "path": "The buddy's bubble, every stop",
+      "headline": "The bubble's buttons now read Back, Skip tour, Next, with Next filled at the far right.",
+      "changed": "Next (or Done on the last stop) is the filled button and sits at the far right. Skip tour is bare text to its left. Back, when there is one, is furthest left. \"This takes about a minute\" is gone; stop 1 now says: \"Hi, I’m your buddy. I’ll show you around the app. Skip any time, and find me again under Settings, Help & feedback.\"",
+      "notice": "The filled button is the last thing you read on every stop, where a Next belongs.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "N-2",
+      "words": true,
+      "surface": "The tour",
+      "path": "Stop 6, the one about who answers you",
+      "headline": "Stops open the real screens, and stop 6 is written for someone who only knows claude.ai or ChatGPT.",
+      "changed": "Stops 2 to 8 open the New Session form, the Projects screen, Cloud providers, Appearance and Help & feedback for real, in that order, and close them when the tour moves on. Stop 6 now says: \"The account you signed in with is what answers you, and it is already set up. If you ever want a different AI service, or one that runs free on your own computer, you add it here.\"",
+      "notice": "No \"provider\", no \"model\", no \"OpenRouter\" in the sentence. The screen behind it still shows those words on its cards.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "N-3",
+      "words": true,
+      "surface": "Projects",
+      "path": "The Projects screen, before any project exists",
+      "headline": "The empty Projects card has new words and a button as wide as its text.",
+      "changed": "Heading: \"Projects keep your work together\". Then: \"A project is a folder on your computer that you work in often: a class, a client, a hobby. The assistant remembers what you told it there, keeps those conversations together, and lists the files it made.\" Then: \"Pick the folder you use most to start.\" Add a project spans the full width of the text column.",
+      "notice": "\"Folder you keep coming back to\" is gone.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "N-4",
+      "words": true,
+      "surface": "Setup",
+      "path": "The setup wizard's last card",
+      "headline": "The last card says \"Your assistant will show you around once the app opens.\"",
+      "changed": "\"Your buddy\" became \"Your assistant\" on that card, as your note said. The tour itself still opens with \"Hi, I’m your buddy\".",
+      "notice": "If you meant the tour should also stop calling itself the buddy, say so in a note.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "N-5",
+      "words": true,
+      "surface": "Setup",
+      "path": "The setup wizard's sign-in step",
+      "headline": "The file-safety sentence is exactly your wording, ending at \"cannot replace.\"",
+      "changed": "\"With your permission, the assistant may create, change, or delete files on your device. Create backups for anything you cannot replace.\" Your note had a stray quote mark at the start; nothing else was changed.",
+      "notice": "This is the one sentence every new person reads before signing in.",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "N-6",
+      "words": true,
+      "surface": "New session form",
+      "path": "The Project Folder picker on the welcome screen and the session strip",
+      "headline": "Should the new-session form get a \"No folder\" choice, for talking to the assistant without a project?",
+      "today": "Every session starts in a folder. The Project Folder picker lists your folders and a Manage projects entry; there is no way to just chat.",
+      "problem": "Your note on the welcome-screen slide: someone who only wants to ask a question has to pick a folder they do not care about, and the assistant reads that folder's instructions.",
+      "proposal": "A \"No folder\" entry at the top of the Project Folder list. The session runs in an empty folder the app owns, so the assistant starts with no instructions and no files, and anything it makes lands there. Yes builds it with this feature. No leaves it on the roadmap beside the Home folder idea, which is filed either way. Don't know leaves it for a later deck."
+    }
+  ]
+}

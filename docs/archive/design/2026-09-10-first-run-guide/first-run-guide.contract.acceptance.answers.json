@@ -1,0 +1,74 @@
+{
+ "deck": "first-run-guide-contract-acceptance",
+ "started": "2026-09-11T03:15:02.263Z",
+ "submitted": "2026-09-11T03:15:20Z",
+ "cur": 10,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R3": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R4": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R6": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R7": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R10": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R13": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R18": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R19": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R24": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "R35": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "deck": "remote-access-host-review",
+ "started": "2026-09-09T09:52:33.184Z",
+ "submitted": "2026-09-09T09:54:36Z",
+ "cur": 1,
+ "answers": {
+  "1": {
+   "note": "this is visually weird (no other menu uses a button on the bottom left like that, for example) and this would also just confuse the shit out of our average non-technical user.",
+   "v": "other",
+   "seconds": 80,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "2": {
+   "note": "this sucks. you got rid of a bunch of core ui elements like keep awake and the enabled/disabled toggle?",
+   "v": "other",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

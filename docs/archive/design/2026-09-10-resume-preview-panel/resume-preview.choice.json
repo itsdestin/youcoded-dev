@@ -1,0 +1,110 @@
+{
+  "title": "Reading a conversation before you resume it",
+  "key": "resume-preview-panel",
+  "out": "resume-preview.choice.html",
+  "images": "images/resume-preview.choice",
+  "runs": {
+    "today": "runs/today"
+  },
+  "labels": {
+    "today": "Draft"
+  },
+  "themes": ["midnight"],
+  "crops": {
+    "rb-off": ["main", "rb-off", "1060x700+190+100"],
+    "rb-b-full": ["main", "rb-b", "1060x700+190+100"],
+    "panel-a": ["main", "rb-a", "1020x690+210+105"],
+    "panel-b": ["main", "rb-b", "1020x690+210+105"],
+    "panel-c": ["main", "rb-c", "1020x690+210+105"],
+    "panel-c-open": ["main", "rb-c-open", "1020x690+210+105"],
+    "rb-empty": ["main", "rb-empty", "1060x700+190+100"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Resume Session",
+      "path": "The sessions arrow at the top of the window, then Resume",
+      "crop": "rb-b-full",
+      "headline": "Show the conversation you have picked, on the right of the Resume window.",
+      "changed": "Clicking a conversation in the list fills the right side with what was actually said in it, so you can read the end of it before you decide to go back in.",
+      "measured": "The window goes from 450 px wide to 1000 px",
+      "notice": "This is running in the real app, but against made-up conversations — the words inside the transcript are invented. The layout, spacing and controls are the real ones.",
+      "risk": "The window is twice as wide. Below 640 px — a phone, or the remote browser on a small screen — it stays exactly as it is today, list only, because a transcript and a list cannot share that width.",
+      "highlight": {
+        "box": [40, 3, 56, 94]
+      }
+    },
+    {
+      "id": "C-1",
+      "surface": "Resume Session",
+      "path": "The Resume window",
+      "headline": "Where should Model, Launch in New Window and the Resume button live?",
+      "notice": "The whole window each time. Watch the right half for the controls, and the list on the left for whether the card you clicked opens up.",
+      "risk": "Today those controls open up inside the card you clicked, and every card below it slides down the list. Two of these three stop that from happening.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Leave them in the list",
+          "crop": "panel-a",
+          "summary": "The right side is only the conversation. The card you clicked still opens up in the list with the controls in it, exactly as it does now.",
+          "risk": "Two things move when you click a row: the list grows a card and the right side fills. The Resume button ends up on the opposite side of the window from what you are reading."
+        },
+        {
+          "id": "b",
+          "label": "Under the conversation",
+          "crop": "panel-b",
+          "summary": "The controls sit beneath the transcript, on the right. The cards in the list never open up again, so the list stops jumping around.",
+          "risk": "Model and both switches are on screen the whole time, even while you are only reading."
+        },
+        {
+          "id": "c",
+          "label": "Behind a Resume button",
+          "crop": "panel-c",
+          "summary": "The right side is only the conversation, with a Resume button in the corner. Pressing it drops the same controls in above the transcript. This is how the session drawer already behaves.",
+          "risk": "Resuming takes two presses instead of one."
+        }
+      ]
+    },
+    {
+      "id": "D-1",
+      "surface": "Resume Session",
+      "path": "The right half, before you have clicked anything",
+      "crop": "rb-empty",
+      "headline": "What should the right half show in the moment before you have picked a conversation?",
+      "notice": "This is the state the window opens in, every single time.",
+      "highlight": {
+        "box": [47, 46, 46, 8]
+      },
+      "options": [
+        {
+          "id": "blank",
+          "label": "One line of text",
+          "pros": [
+            "Nothing is read off disk that you did not ask for.",
+            "The window opens the same way every time."
+          ],
+          "cons": [
+            "Half the window is empty at the moment you open it.",
+            "You have to click once before you learn anything you did not already know."
+          ],
+          "summary": "What the draft does today.",
+          "cost": "Nothing to build."
+        },
+        {
+          "id": "auto",
+          "label": "Open the most recent one",
+          "pros": [
+            "The window is useful the second it appears.",
+            "Getting back to what you were last working on takes no clicks at all."
+          ],
+          "cons": [
+            "A conversation is read every time you open the window, whether you wanted it or not.",
+            "The top row is always highlighted, which can read as 'already chosen'."
+          ],
+          "cost": "Reads one conversation on open.",
+          "recommended": true
+        }
+      ]
+    }
+  ]
+}

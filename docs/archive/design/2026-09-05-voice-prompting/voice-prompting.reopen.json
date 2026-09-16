@@ -1,0 +1,98 @@
+{
+  "title": "Voice prompting — four wording and behaviour decisions before the build",
+  "key": "voice-prompting-reopen",
+  "out": "voice-prompting.reopen.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "V-9",
+      "words": true,
+      "surface": "Message box → while the mic listens",
+      "path": "You approved (V-6): the newest two words show grey until they settle, then turn solid. Building it, we measured the real speech engine and found that is not true of it — so this is a promise we cannot keep as written, and the choice is yours",
+      "headline": "Solid text can still change. Should more of it stay grey, or should we change what grey means?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Grey everything since your last full stop (recommended)",
+          "summary": "What we found: the engine keeps re-hearing your whole sentence, so it adds and moves commas in words you have already seen turn solid. Reading the sample sentence aloud, a comma appeared after a word three places back, in black text. With this option, everything you have said since your last full stop stays grey, and turns solid the moment you finish a sentence. Pro: black text then never changes, which is what you approved. Con: while you are mid-sentence a lot of the box is grey, and if you talk for a long time without a full stop it is nearly all grey.",
+          "cost": "The grey boundary follows sentence endings instead of a word count."
+        },
+        {
+          "id": "b",
+          "label": "Keep two grey words, and accept that commas can appear in black text",
+          "summary": "The box looks calmer and mostly solid while you talk, exactly as you saw it on the deck, but a comma or full stop can quietly appear or move in a line you already read as finished. The words themselves almost never change; it is the punctuation that moves. Pro: closest to what you approved and the least visual noise. Con: something changes in front of you without being marked as unfinished.",
+          "cost": "Nothing changes in the build; the promise on the acceptance deck is reworded."
+        },
+        {
+          "id": "c",
+          "label": "Grey the last six words instead of two",
+          "summary": "A middle setting: a wider grey tail that covers most of what we measured moving, without going all the way to sentence boundaries. Pro: less grey than option A, catches most changes. Con: it is a guess — we measured changes three words back on a clean recording, and hesitant speech gives the engine more to revise, so some will still slip into black.",
+          "cost": "One number changes; the risk does not fully go away."
+        }
+      ]
+    },
+    {
+      "id": "V-10",
+      "words": true,
+      "surface": "Message box → the first-tap card",
+      "path": "You approved the card reading 'One-time download: 464 MB'. That number was the speech model alone, and rounded the way we compute it, not the way your computer reports it. The real first-time download also includes the small engine that runs the model",
+      "headline": "What size should the first-run card promise?",
+      "options": [
+        {
+          "id": "a",
+          "label": "The true total, about 500 MB (recommended)",
+          "summary": "The card says 'One-time download: about 500 MB'. This is everything that is actually fetched the first time: the speech model plus the engine that runs it. Pro: nobody watches a download run past the number they were promised, which reads as broken. Con: a bigger number than you approved, which may put some people off before they try it.",
+          "cost": "One sentence on the card."
+        },
+        {
+          "id": "b",
+          "label": "Keep 464 MB",
+          "summary": "The card keeps the number you approved. Pro: the smallest number that is defensible about the model itself. Con: a user watching their downloads sees roughly 500 MB arrive against a 464 MB promise, and the difference is visible.",
+          "cost": "Nothing; the promise is knowingly under the real figure."
+        }
+      ]
+    },
+    {
+      "id": "V-11",
+      "words": true,
+      "surface": "Message box → the first-tap card",
+      "path": "The engine we chose understands English and 24 other European languages, and nothing else. Someone dictating in Japanese or Arabic would download half a gigabyte and get nonsense",
+      "headline": "Should the first-run card say which languages the mic understands?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes, one short line (recommended)",
+          "summary": "The card gains: 'Understands English and 24 other European languages.' Pro: someone it will not work for finds out before a 500 MB download instead of after. Con: a third line on a card you approved with two, and a reminder of a limit most of your users will never hit.",
+          "cost": "One line on the card."
+        },
+        {
+          "id": "b",
+          "label": "No, keep the card as approved",
+          "summary": "The card stays exactly as you signed it off. Pro: shortest card, no extra reading for the many people it works for. Con: a speaker of an unsupported language downloads it, tries it, gets nonsense, and has no explanation.",
+          "cost": "Nothing now; likely a support question later."
+        }
+      ]
+    },
+    {
+      "id": "V-12",
+      "words": true,
+      "surface": "Message box → the card, right after the download bar fills",
+      "path": "The download arrives as one compressed file that then has to be expanded, which takes tens of seconds on a slow machine. On the card you approved, the bar would sit full and still for that whole time, which reads as stuck",
+      "headline": "What should the card show while the download is being unpacked?",
+      "options": [
+        {
+          "id": "a",
+          "label": "'Unpacking…' with a moving bar (recommended)",
+          "summary": "When the download finishes the card's label changes to 'Unpacking…' and the bar keeps moving without showing a percentage, because there is no reliable one to show. Pro: obviously still working, and the mic becomes ready the moment it ends. Con: a third state on the card, and a bar that moves without meaning a measured amount.",
+          "cost": "One more state on the card."
+        },
+        {
+          "id": "b",
+          "label": "'Almost ready…' with a moving bar",
+          "summary": "The same thing in plainer words, saying nothing about what is happening under the hood. Pro: nobody has to know what unpacking is. Con: vaguer, and if it takes a minute on an old laptop 'almost' starts to feel untrue.",
+          "cost": "The same, with different words."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "title": "Beta builds \u2014 moved to Development, and onto the update popup",
+  "key": "beta-update-homes",
+  "out": "beta-update-homes.review.html",
+  "images": "images/beta-update-homes",
+  "runs": {
+    "before": "/tmp/claude-1000/deck/before2",
+    "after": "/tmp/claude-1000/deck/after2"
+  },
+  "themes": [
+    "devils-garden",
+    "light"
+  ],
+  "crops": {
+    "development-dialog": [
+      "homes",
+      "development",
+      "430x600+505+155"
+    ],
+    "update-dialog": [
+      "homes",
+      "update-popup",
+      "610x290+415+305"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "The gear, then Development",
+      "crop": "development-dialog",
+      "headline": "The beta switch is in Development now, not About.",
+      "changed": "It sits under its own Updates heading, below the four rows that were already there. About is back to exactly what it was before this work.",
+      "measured": "1 heading, 1 line of text, 1 switch; 0 changes to About",
+      "notice": "The four rows above it all open something somewhere else. This one decides something on the spot, which is why it is under a heading of its own rather than fifth in that list.",
+      "risk": "Development reads as a place for reporting bugs and contributing, so someone hunting for update settings may still look in About first and find nothing.",
+      "highlight": {
+        "box": [
+          8,
+          70,
+          84,
+          20
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Status bar",
+      "path": "The version pill at the bottom, then the update popup",
+      "crop": "update-dialog",
+      "headline": "The same switch sits under the release notes, where you read what a new version contains.",
+      "changed": "A rule, then the switch, at the end of the popup's scroll. It appears in both states of that popup \u2014 under \"What's new\" when you are current, and under the notes when an update is waiting.",
+      "measured": "1 switch, shown in 2 places",
+      "notice": "This is the moment you are already thinking about versions, so turning betas on or off does not mean going and finding a settings screen.",
+      "risk": "It is below the notes, so on a release with long notes you scroll past everything to reach it. Putting it above them would push the thing you opened the popup for down the page.",
+      "highlight": {
+        "box": [
+          6,
+          58,
+          87,
+          13
+        ]
+      }
+    }
+  ]
+}

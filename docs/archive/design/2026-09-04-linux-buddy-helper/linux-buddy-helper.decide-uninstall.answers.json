@@ -1,0 +1,15 @@
+{
+ "deck": "linux-buddy-helper-decide-uninstall",
+ "started": "2026-09-04T21:21:44.544Z",
+ "submitted": "2026-09-04T21:26:13Z",
+ "cur": 0,
+ "answers": {
+  "D-1": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 263,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

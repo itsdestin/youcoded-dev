@@ -5,6 +5,10 @@ type: investigation
 topic: Android EventBridge repoints the mobile→Claude session-id map on every hook event, with no gate
 ---
 
+> **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 6 in the
+> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
+
 # Android `EventBridge` maps session ids with no gate
 
 **Symptom.** Risk, not yet observed on a device: after a subagent or tool hook fires, the

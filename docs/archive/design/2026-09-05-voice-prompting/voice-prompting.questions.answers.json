@@ -1,0 +1,63 @@
+{
+ "deck": "voice-prompting-questions",
+ "started": "2026-09-05T07:22:59.402Z",
+ "submitted": "2026-09-05T07:33:40Z",
+ "cur": 6,
+ "answers": {
+  "Q-1": {
+   "note": "okay how good are these local speech models actually tho? i kinda want to test before we commit to anything. and what kind of hardware do they need to run? what are the various competitors rn and which are best/worst for our use case?",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 484,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "a",
+   "note": "i would also like to be able to press and hold the spacebard in a bare input box for walkue-talkie mode though.",
+   "note_kind": "noting",
+   "seconds": 55,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-5": {
+   "note": "",
+   "v": "pick",
+   "pick": "a",
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "a",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "a",
+   "note": "will need to note on roadmap though so we dont forget",
+   "note_kind": "noting",
+   "seconds": 27,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

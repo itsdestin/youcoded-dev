@@ -19,10 +19,12 @@ assertClipCovers('promo-idle-cotton', 0, LEN('b1') - L('b1', 1));
 // Once the window has settled the host says hello from the title bar — two lines, Destin's
 // (2026-09-04): the welcome, then what YouCoded is. The beat runs to bar 5 so both can be read;
 // the second ends before the next section starts.
-const HELLO = IMPACT + barFrame(1) + 32;
+// 2026-09-09 (120 BPM, a bar is 60 frames): the hello starts 20 frames after bar 1 and the second
+// line runs to bar 4.8 — both lines keep their reading time inside the four bars under the window.
+const HELLO = IMPACT + barFrame(1) + 20;
 const P1 = present('b1', [
   { at: HELLO, say: "Welcome to YouCoded! I'm your assistant.", face: 'happy' },
-  { at: HELLO + 92, say: 'YouCoded is a free, open-source, and fully personalizable AI agent.', face: 'welcome', until: HELLO + 92 + 120 },
+  { at: HELLO + 92, say: 'YouCoded is a free, open-source, and fully personalizable AI agent.', face: 'welcome', until: HELLO + 92 + 118 },
 ], 'cotton-candy-sky', perch(0.3));
 const Beat1: React.FC = () => (
   <AbsoluteFill>

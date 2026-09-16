@@ -55,15 +55,119 @@ export function uncommittedPaths(root, runner = execFileSync) {
 }
 
 const subRepoRootCache = new Map();
+/** Commits this checkout is behind its remote default branch, or 0 when that cannot be
+ *  told (no git, no remote, a detached build). Never throws: the auditor's job is the
+ *  audit, and a missing git is not an audit failure. */
+function behindCount(root) {
+  try {
+    const out = execFileSync('git', ['-C', root, 'rev-list', '--count', 'HEAD..origin/master'],
+      { timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    return /^\d+$/.test(out) ? Number(out) : 0;
+  } catch { return 0; }
+}
+
+/** Worktrees holding work that exists on this disk only, and whose session has gone
+ *  quiet. Reported as a WARNING, never a failure: a session editing files right now is
+ *  legitimately dirty, and a red audit that everyone learns to ignore is worse than no
+ *  check at all.
+ *
+ *  WHY this exists: on 2026-09-09 a finished, review-clean implementation sat
+ *  uncommitted for 14 hours because its session was interrupted before it could ask to
+ *  commit. Its branch had ZERO commits and no upstream, so the wrap-up branch sweep —
+ *  which reads refs, not working trees — reported nothing to push. Eight other session
+ *  worktrees were in the same state. Roadmap item since 2026-09-01; the ref sweeps it
+ *  assumed were enough are structurally blind to it.
+ *
+ *  Idleness is measured from the newest evidence of work: the newest mtime among the
+ *  uncommitted files, or the tip commit date when the work is committed but unpushed.
+ *  Never throws — a missing git is not an audit failure. */
+export function strandedWorktrees(root, { now = Date.now(), idleHours = 24 } = {}) {
+  const git = (cwd, ...args) => execFileSync('git', ['-C', cwd, ...args],
+    { encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  let listed;
+  try { listed = git(root, 'worktree', 'list', '--porcelain'); } catch { return []; }
+
+  const worktrees = [];
+  for (const block of listed.split(/\n\n+/)) {
+    const wt = /^worktree (.+)$/m.exec(block)?.[1];
+    if (!wt) continue;
+    const branch = /^branch refs\/heads\/(.+)$/m.exec(block)?.[1] ?? null;
+    worktrees.push({ path: wt, branch });
+  }
+
+  const out = [];
+  for (const { path: wt, branch } of worktrees) {
+    let dirty = [];
+    try {
+      dirty = git(wt, 'status', '--porcelain', '-z', '--untracked-files=all')
+        .split('\0').map(l => l.slice(3)).filter(Boolean);
+    } catch { continue; }
+
+    // Unpushed = commits no REMOTE REF can reach. `--not --remotes` asks exactly
+    // that, of every remote-tracking ref at once.
+    //
+    // WHY not the upstream, and why not origin/master (2026-09-10): both were the
+    // old test, and both lie in the same direction — they report backed-up work as
+    // lost. `git push origin <branch>` without `-u` pushes everything and sets NO
+    // upstream, so the fallback measured "commits past master" on a branch that was
+    // fully on the server. Measured that day: 77 branches across three repos looked
+    // unpushed, every one already on the server byte-identical; one of them sat 7
+    // commits past master and would have been reported as 7 lost commits. A check
+    // that cries wolf is worse than none — real stranded work is invisible inside
+    // dozens of false alarms, which is the failure this check exists to prevent.
+    let unpushed = 0;
+    try {
+      const n = git(wt, 'rev-list', '--count', 'HEAD', '--not', '--remotes');
+      if (/^\d+$/.test(n)) unpushed = Number(n);
+    } catch { /* unborn branch, or no remote configured — nothing countable */ }
+    if (!dirty.length && !unpushed) continue;
+
+    let newest = 0;
+    for (const rel of dirty) {
+      // lstat, not stat: a dangling symlink is still evidence of recent work.
+      try { newest = Math.max(newest, fs.lstatSync(path.join(wt, rel)).mtimeMs); } catch { /* raced away */ }
+    }
+    if (unpushed) {
+      try { newest = Math.max(newest, Number(git(wt, 'log', '-1', '--format=%ct')) * 1000); } catch { /* empty branch */ }
+    }
+    // No readable timestamp at all: say nothing rather than invent an age.
+    if (!newest) continue;
+
+    const idle = (now - newest) / 3600_000;
+    if (idle >= idleHours) {
+      out.push({ path: wt, branch, dirtyFiles: dirty.length, unpushedCommits: unpushed,
+                 idleHours: Math.round(idle) });
+    }
+  }
+  return out.sort((a, b) => b.idleHours - a.idleHours);
+}
+
 export function subRepoRoot(root) {
   if (subRepoRootCache.has(root)) return subRepoRootCache.get(root);
+  // COUNT the repos, never "does it have any".
+  //
+  // The all-or-nothing test was wrong for the commonest worktree shape there is: the
+  // perf rig needs `youcoded` present, and .gitignore explicitly contemplates linking
+  // it in. One symlink made `some(...)` true, the fallback never fired, and the other
+  // FOUR repos' anchors were reported as confirmed drift — measured 2026-09-10 in a
+  // real rig worktree at 429/446 anchors and 551/585 MAP paths, 51 false failures.
+  // A check that cries wolf is worse than no check: the audit's own banner says every
+  // failure above is confirmed drift, so a reader either believes 51 lies or learns to
+  // skim the whole report.
+  //
+  // Resolving to whichever checkout holds MORE of them is right in every direction: a
+  // main checkout with all five keeps itself, a bare worktree falls back, and a
+  // partially-linked worktree falls back to the fuller copy — which is where its own
+  // symlink already pointed.
+  const have = (dir) => REPOS.filter(r => fs.existsSync(path.join(dir, r, '.git'))).length;
+  const mine = have(root);
   let resolved = root;
-  if (!REPOS.some(r => fs.existsSync(path.join(root, r, '.git')))) {
+  if (mine < REPOS.length) {
     try {
       const common = execFileSync('git', ['-C', root, 'rev-parse', '--git-common-dir'],
         { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
       const main = path.resolve(root, common, '..');
-      if (main !== root && REPOS.some(r => fs.existsSync(path.join(main, r, '.git')))) resolved = main;
+      if (main !== root && have(main) > mine) resolved = main;
     } catch { /* not a git checkout — keep root; the globs will visibly match nothing */ }
   }
   subRepoRootCache.set(root, resolved);
@@ -549,6 +653,39 @@ export function shadowedActiveDocs(root) {
     .sort();
 }
 
+// A `?switch=` the workbench mock reads that the shot rig's README never names.
+//
+// WHY THIS IS A CHECK AND NOT A SENTENCE (2026-09-09). A shot plan that omits a switch
+// does not fail — it captures the surface in whatever state the fixture defaults to, and
+// an EMPTY card is indistinguishable from a card whose feature was never built. On
+// 2026-09-09 a review deck showed the Claude Code card with no usage bars because its plan
+// omitted `?planUsage=1`; Destin read the picture correctly and asked for a feature that
+// had shipped four days earlier. Eleven of the eighteen switches were undocumented that
+// morning, `?planUsage` and `?chatgpt` among them — the two that shape the very surface
+// being reviewed.
+//
+// The README section is the list a session writing a plan actually reads, so that is what
+// this compares against; a switch documented anywhere in that file counts.
+//
+// A WARNING, not a failure: a switch added mid-build is legitimately undocumented for an
+// hour, and a permanently red audit is one everybody learns to ignore (ledger, 2026-09-09).
+export function undocumentedWorkbenchSwitches(root) {
+  const shim = path.join(subRepoRoot(root), 'youcoded', 'desktop', 'src', 'renderer',
+    'dev', 'workbench', 'mock-shim.ts');
+  const readme = path.join(root, 'scripts', 'ui-review', 'README.md');
+  // Either side absent (a checkout without the app, or without the rig) is not drift.
+  if (!fs.existsSync(shim) || !fs.existsSync(readme)) return [];
+  const src = fs.readFileSync(shim, 'utf8');
+  const docs = fs.readFileSync(readme, 'utf8');
+  const found = new Set();
+  // Both spellings in the file: `new URLSearchParams(location.search).get('x')` and a
+  // hoisted `searchParams.get('x')`.
+  for (const m of src.matchAll(/(?:location\.search\)|searchParams)\s*\)?\.get\(\s*'([A-Za-z0-9_]+)'/g)) {
+    found.add(m[1]);
+  }
+  return [...found].filter(s => !docs.includes('?' + s)).sort();
+}
+
 // ---------- main ----------
 
 const CODE_EXT = /\.(ts|tsx|js|mjs|cjs|kt|kts|java|sh|ps1|sql|toml|gradle)$/;
@@ -582,6 +719,28 @@ function main() {
   // THIS branch's docs against code that may be older than the branch expects.
   if (subRepoRoot(root) !== root && !asJson) {
     console.log(`note: sub-repos resolved from the main checkout ${subRepoRoot(root)} (this is a worktree)`);
+    // …and a behind SUB-REPO invents MAP-path failures the same way a behind
+    // workspace invents doc failures: on 2026-09-05 a test merged to youcoded
+    // master was reported missing for an hour because the shared checkout was 8
+    // commits back. The workspace warning below could not see it — the two are
+    // different repos and go stale independently.
+    for (const repo of REPOS) {
+      const behind = behindCount(path.join(subRepoRoot(root), repo));
+      if (behind > 0) {
+        console.log(`note: ${repo}/ in that checkout is ${behind} commit(s) behind origin/master — a MAP path reported missing may simply not be pulled yet.`);
+      }
+    }
+  }
+  // A behind checkout invents failures. On 2026-09-05 a session running this in the
+  // shared checkout got two: a doc reported as living in BOTH docs/active and
+  // docs/archive (it had been archived upstream) and a word-budget violation (fixed
+  // upstream) — and spent calls on each before noticing. CLAUDE.md warns that a stale
+  // checkout governs the session; this says it at the moment it would mislead.
+  if (!asJson) {
+    const behind = behindCount(root);
+    if (behind > 0) {
+      console.log(`note: this checkout is ${behind} commit(s) behind origin/master — failures below may already be FIXED upstream. Re-check from a worktree at origin/master before acting on one.`);
+    }
   }
   const result = {
     ok: true,
@@ -672,6 +831,15 @@ function main() {
   // 4e. a live doc shadowed by an archived copy of itself — see shadowedActiveDocs.
   result.shadowedDocs = shadowedActiveDocs(root);
 
+  // 4f. work that exists on this disk only — see strandedWorktrees. A WARNING:
+  // it never fails the run, because an active session is legitimately dirty.
+  result.strandedWork = strandedWorktrees(root);
+
+  // 4g. a workbench switch the shot rig's README never names — see
+  // undocumentedWorkbenchSwitches. A WARNING: a switch added mid-build is
+  // legitimately undocumented for an hour.
+  result.undocumentedSwitches = undocumentedWorkbenchSwitches(root);
+
   // 4c. frontmatter must survive a STRICT YAML parser — a rule whose frontmatter
   // throws loses its paths: and loads eagerly on every session (see the function).
   result.yamlUnsafe = yamlUnsafeFrontmatter(rules);
@@ -761,6 +929,10 @@ function printHuman(r, root = process.cwd()) {
        (r.strayRules || []).flatMap(x => x.files.map(f => `${x.repo}/.claude/rules/${f}`)));
   dump('worktree-blind rule globs (these never fire on work done in worktrees/)',
        (r.worktreeGlobs?.blind || []).map(x => `${x.rule}: ${x.glob}  ->  ${x.fix}`));
+  warn('work on this disk only — quiet worktrees holding uncommitted or unpushed work (commit and push them; do NOT delete them)',
+       (r.strandedWork || []).map(x => `${x.branch ?? '(detached)'}: ${x.dirtyFiles} uncommitted, ${x.unpushedCommits} unpushed, idle ${x.idleHours}h  ->  ${x.path}`));
+  warn('workbench switches the shot rig\'s README never names (a plan that omits one captures an EMPTY card, which reads as a missing feature)',
+       (r.undocumentedSwitches || []).map(s => `?${s}=  ->  document it in scripts/ui-review/README.md`));
   if (r.worktreeGlobs) {
     console.log(`worktree-safe globs: ${r.worktreeGlobs.blind.length} blind · `
       + `${r.worktreeGlobs.exempt.length} exempt (named) · `

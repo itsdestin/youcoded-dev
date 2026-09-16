@@ -5,6 +5,10 @@ type: investigation
 topic: Android PtyBridge still submits long messages on a 600 ms timer
 ---
 
+> **Consolidated 2026-09-10.** This bug no longer has its own roadmap item: it is item 22 in the
+> appendix of `docs/active/investigations/2026-09-10-android-parity-audit.md`, and it is fixed as
+> part of the Android rebuild (`docs/roadmap/android-only.md`, one item).
+
 # Android PtyBridge: echo-driven submit
 
 **What it is.** Desktop submits a long message by writing the body, waiting for the PTY to

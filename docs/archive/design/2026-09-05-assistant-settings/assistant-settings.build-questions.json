@@ -1,0 +1,203 @@
+{
+  "title": "Assistant settings — four proposals and five open questions before the build",
+  "key": "assistant-settings-build-questions",
+  "out": "assistant-settings.build-questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "words": true,
+      "surface": "Settings → Assistant settings → General → Default model",
+      "path": "Today: the saved default is new, so nothing behaves this way yet. As the plan is written, the panel deletes your saved choice whenever it decides that model cannot be used right now.",
+      "headline": "If your saved default looks unavailable, should the app forget it for you?",
+      "options": [
+        {
+          "id": "a",
+          "label": "No — keep your choice, and say it is unavailable (recommended)",
+          "summary": "The row keeps naming what you chose (\"ChatGPT · GPT-5.6\") and adds a short note that it is not available right now. Nothing is deleted, so the moment your local engine starts, or a sign-in check comes back, your default works again on its own. Pro: it matches the rule you set today — nothing is decided on your behalf — and a passing problem (engine not started, sign-in still checking, model list slow to load) cannot silently cost you a setting you deliberately chose. Con: a model you really did remove keeps sitting in the row, saying it is unavailable, until you change it yourself.",
+          "cost": "Less work than the plan has today: a line of wording instead of the app rewriting your settings file."
+        },
+        {
+          "id": "b",
+          "label": "Yes — clear it, as the plan says now",
+          "summary": "When the panel opens and your saved model looks unusable, the app wipes the saved choice and the row goes back to Claude. Pro: the row can never name something that no longer exists, so it is never out of date. Con: the same thing happens for problems that are only temporary, so an evening where your local engine was off can quietly erase a default you set weeks ago, with nothing telling you it happened and nothing to undo.",
+          "cost": "The app writes to your settings file every time the panel is opened."
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "words": true,
+      "surface": "New conversation form — the + New Session menu and the welcome screen",
+      "path": "Today: when your usual model cannot be reached, the form quietly starts you on a different one instead. You asked for that to stop, so the form will start with nothing chosen.",
+      "headline": "When the form opens with no model chosen, should it say why?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes — one short line under the empty picker (recommended)",
+          "summary": "The picker reads \"Choose a model…\", Create stays greyed until you pick, and one line underneath says why: \"GPT-5.6 is not available right now.\" Pro: the empty form explains itself, so it reads as a state of the world rather than as the app being broken — which matters because this reaches people who never open Assistant settings and never asked for any of this. Con: one more line of wording on a form you have already approved, and it is only ever seen when something is wrong.",
+          "cost": "One line of new wording; the form is otherwise unchanged."
+        },
+        {
+          "id": "b",
+          "label": "No — leave it silent",
+          "summary": "The picker reads \"Choose a model…\" and Create is greyed out, with nothing explaining why the model you always use is no longer there. Pro: nothing new to write or design, and the honest empty state you asked for still lands. Con: someone whose local engine is off opens the app, finds nothing chosen and the button dead, and has no way to tell whether they are looking at a setting, a sign-out or a bug — the most likely first guess is a bug.",
+          "cost": "Nothing."
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "words": true,
+      "surface": "New conversation form, on an install where the whole non-Claude model system is switched off",
+      "path": "Today: on such an install both forms fall back to Claude Code so you can still start a conversation, and your saved choice is left untouched and comes back when the system is on again.",
+      "headline": "Should that fall back stay, or should this install show nothing chosen too?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Keep the fall back for this one case (recommended)",
+          "summary": "Everywhere else your rule holds: a provider that is gone, or a model that left the list, leaves the picker empty. But when every non-Claude model is switched off at the install level, the forms keep opening on Claude Code, and your saved choice is untouched. Pro: this is not a broken choice, it is a machine that cannot run any of those models at all — showing nothing there would leave someone with an empty picker and nothing to pick. Con: it is the one place where a model you did not choose appears, so the rule is not literally universal.",
+          "cost": "Nothing — it is what the app does today, and a test already holds it in place."
+        },
+        {
+          "id": "b",
+          "label": "Show nothing there too — one rule everywhere",
+          "summary": "That install also opens with nothing chosen. Pro: one sentence describes the whole behaviour, with no exception to remember or explain. Con: on that install there is nothing in the list to choose, so the form opens empty with a dead Create button and no way forward at all; it also changes behaviour a test currently pins, so that test has to be rewritten as part of this work.",
+          "cost": "Rewriting an existing test, and a form with no way forward on that install."
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "words": true,
+      "surface": "The whole branch — what merges together",
+      "path": "Today: the \"never swap my model\" change is bundled into this feature, even though it changes the new conversation form for everyone, including people who never open Assistant settings.",
+      "headline": "Should that change ship with Assistant settings, or as its own separate change?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Ship it together (recommended)",
+          "summary": "One branch, one review, and its own before-and-after step for you at acceptance so you see the empty picker before anything merges. Pro: it is a small change, you asked for it today, and holding it back means the new default-model work would land on top of a form that still swaps your model — the exact confusion this is meant to end. Con: if the empty picker turns out to feel wrong once you use it, it is tangled with the panel, so backing it out means coming back to this branch.",
+          "cost": "Nothing extra."
+        },
+        {
+          "id": "b",
+          "label": "Ship it on its own afterwards",
+          "summary": "Assistant settings merges first; the never-swap change gets its own small branch, review and before-and-after. Pro: the panel stands or falls on its own, and the change that touches everybody gets undivided attention. Con: two rounds of review and two waits for you, and in between the app still quietly swaps your model — including for the new saved default, which is the feature's whole promise.",
+          "cost": "A second branch, a second review pass and a second deck."
+        }
+      ]
+    },
+    {
+      "id": "Q-A",
+      "words": true,
+      "surface": "Settings → Assistant settings, in a half-width window",
+      "path": "Today: the panel has been reviewed wide and at phone width. Nothing has ever asked what it should do in between, where the list of pages and the page itself both want the room.",
+      "headline": "Between phone size and full width, should the panel keep both columns or fold to the phone layout?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Fold to the phone layout early (recommended)",
+          "summary": "Below roughly a laptop half-screen, the panel becomes the phone shape you already approved: the five pages are the first screen, and a page opens with a back arrow. Pro: the layout is built and reviewed already, and every page keeps a full-width column to itself instead of two cramped ones. Con: on a half-screen laptop window you lose the map down the side, so moving between two pages is two taps rather than one.",
+          "cost": "A width rule; both layouts already exist."
+        },
+        {
+          "id": "b",
+          "label": "Keep both columns and let the page squeeze",
+          "summary": "The list stays on the left at every width, and the page on the right gets narrower. Pro: the map is always visible, and one tap always reaches any page. Con: Local models and Permissions are the long pages, and squeezed into a half-window column their rows wrap into two and three lines each — the surface you liked least in the earliest mockups.",
+          "cost": "Checking every page at every width, and probably trimming the long ones."
+        },
+        {
+          "id": "c",
+          "label": "Refuse to get that small — give the window a floor",
+          "summary": "The panel cannot be sized below its comfortable width; the app window can shrink, but this window stops. Pro: there is no in-between state to design or test at all. Con: on a small laptop screen the window would cover most of the app, and the phone layout you approved would then be reachable only on a phone.",
+          "cost": "A minimum size on one window."
+        }
+      ]
+    },
+    {
+      "id": "Q-B",
+      "words": true,
+      "surface": "Settings drawer → the Assistant settings row",
+      "path": "Today: a red dot appears on the row when a provider is genuinely broken — signed out, blocked or unreachable. Nothing says when it should go away again.",
+      "headline": "Once you have fixed the broken provider, when should the red dot disappear?",
+      "options": [
+        {
+          "id": "a",
+          "label": "As soon as the panel sees it working (recommended)",
+          "summary": "You sign back in on the Cloud providers page, and the dot clears while you are still standing there. Pro: the app agrees with what you just did, which is the moment you are looking for confirmation; a dot that lingers after a successful fix reads as \"it did not work\". Con: it means the row is re-checked each time the panel is open, so a provider that is slow to answer can leave the dot on for a second or two after the fix.",
+          "cost": "The row listens to the same check the page already runs."
+        },
+        {
+          "id": "b",
+          "label": "Next time the drawer is opened",
+          "summary": "The dot clears the next time you open Settings, not while you are in the panel. Pro: nothing is re-checked while you work, so it can never flicker. Con: you fix the problem and the warning is still there, so the natural next move is to try fixing it again.",
+          "cost": "Nothing — it is the simpler behaviour."
+        }
+      ]
+    },
+    {
+      "id": "Q-C",
+      "words": true,
+      "surface": "Settings → Assistant settings → Cloud providers, every signed-in card",
+      "path": "Today: every signed-in card carries a My Account link. You approved that as a picture; the three places it goes were never named to you in words.",
+      "headline": "Should My Account open each provider's own account page on the web?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes — each card goes to its own provider (recommended)",
+          "summary": "Claude Code goes to your Claude usage page, ChatGPT to your ChatGPT account settings, and OpenRouter to your OpenRouter credits page — each in your browser, each already signed in as you. Pro: it is the page you would go looking for anyway, and it is the only page any of them offers; the app has nothing of its own to show there. Con: it leaves the app, and if a provider changes its address the link goes stale until we notice.",
+          "cost": "Three addresses, already in the build."
+        }
+      ]
+    },
+    {
+      "id": "Q-D",
+      "words": true,
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Today: you decided the withdrawn protection switches get turned off when this ships. That decision did not mention the Always-allowed list — the separate list of individual actions you approved as you went.",
+      "headline": "Should your existing Always-allowed approvals be left exactly as they are?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Yes — leave them alone (recommended)",
+          "summary": "Every entry you approved stays approved, and the list keeps working as it does today. Pro: you gave those approvals deliberately, one at a time, for things you were watching; clearing them would mean being asked again for work you have already blessed, with no explanation of why the app suddenly forgot. Con: if any of them were approved carelessly months ago, they stay approved until you clear them yourself on this page.",
+          "cost": "Nothing — this work does not touch that list."
+        },
+        {
+          "id": "b",
+          "label": "No — clear them at the same time",
+          "summary": "The list is emptied when this ships, alongside the protection switches. Pro: a clean slate: everything the assistant may do without asking is something you allowed after this release, not before it. Con: the next few days are full of approval prompts for things you already allowed, and nothing on screen explains why they came back.",
+          "cost": "Adding the list to the one-time switch-off, and a note telling you it happened."
+        }
+      ]
+    },
+    {
+      "id": "Q-E",
+      "words": true,
+      "surface": "The model picker, in the new conversation form and in Assistant settings",
+      "path": "Today: every picker lists all four Claude models even if you set the app up with ChatGPT and have no Claude sign-in — and over remote access it lists local models the browser on your phone cannot run.",
+      "headline": "Should the picker keep offering models this install cannot actually run?",
+      "options": [
+        {
+          "id": "a",
+          "label": "List them, but marked and unpickable (recommended)",
+          "summary": "They stay in the list, greyed, each with a short reason: \"Sign in to use\" or \"Not available in the browser\". Pro: you can see what the app can do and what it would take to unlock, which matters most for a ChatGPT-only setup that would otherwise never learn the Claude models exist; and because they cannot be picked, no conversation ever starts on an engine that fails. Con: the list stays long, and it changes the look of a surface you already approved, so it comes back to you on a small deck.",
+          "cost": "A greyed row with a reason, plus one short review step."
+        },
+        {
+          "id": "b",
+          "label": "Hide anything this install cannot run",
+          "summary": "The list only ever shows what can start right now, so it is short and everything in it works. Pro: no dead ends and nothing to explain. Con: models disappear without a word — the same app shows a different list on your desktop and in your phone browser, and someone who signed in with ChatGPT never discovers the Claude side at all.",
+          "cost": "A filter on the list, plus one short review step."
+        },
+        {
+          "id": "c",
+          "label": "Leave it as it is",
+          "summary": "The picker keeps offering everything, exactly as approved. Pro: nothing to build and nothing to review again. Con: you can pick a model the install cannot start, and now that nothing is swapped on your behalf any more, that conversation simply fails instead of quietly starting on something else — the worst of both.",
+          "cost": "Nothing."
+        }
+      ]
+    }
+  ]
+}

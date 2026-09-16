@@ -1,0 +1,3 @@
+{ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default", "boot": 3500, "width": 1440, "height": 900,
+  "shots": [ { "name": "sort", "actions": [ {"click": "[placeholder^='Message']", "settle": 200}, {"type": "/resume"}, {"key": "Enter", "settle": 1200} ], "expect": "[placeholder^='Search sessions']" },
+             { "name": "sort-flipped", "actions": [ {"click": "[placeholder^='Message']", "settle": 200}, {"type": "/resume"}, {"key": "Enter", "settle": 1200}, {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Most recent'))", "settle": 500} ], "expect": "js:document.body.textContent.includes('Oldest first')" } ] }

@@ -1,0 +1,14 @@
+{
+ "deck": "remote-access-contract",
+ "started": "2026-09-09T23:01:33.780Z",
+ "submitted": "2026-09-09T23:02:02Z",
+ "cur": 0,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

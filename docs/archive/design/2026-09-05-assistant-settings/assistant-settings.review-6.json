@@ -1,0 +1,40 @@
+{
+  "title": "Assistant settings — the two pages you have not seen since the list changed",
+  "key": "assistant-settings-review-6",
+  "out": "assistant-settings.review-6.html",
+  "images": "images/assistant-settings.review-6",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r6/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r6/after"
+  },
+  "labels": { "before": "Round 1", "after": "Now" },
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "local": ["assistant-settings-r6", "assistant-local", "840x720+300+90"],
+    "specialists": ["assistant-settings-r6", "assistant-specialists", "840x720+300+90"]
+  },
+  "steps": [
+    {
+      "id": "R6-1",
+      "surface": "Settings → Assistant settings → Local models",
+      "path": "Settings → Assistant settings → Local models",
+      "crop": "local",
+      "headline": "Local models, in the five-page panel.",
+      "changed": "Nothing on the page itself. You approved it in round 1, when the list beside it was eight pages in three groups — this is the same page with the short flat list you approved later.",
+      "notice": "Its (i) still sits beside the page name, and the page is the Model Providers popup's local-engine block unchanged.",
+      "risk": "None known. This step exists because you have not actually seen this page since the list shrank.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R6-2",
+      "surface": "Settings → Assistant settings → Specialists",
+      "path": "Settings → Assistant settings → Specialists",
+      "crop": "specialists",
+      "headline": "Specialists, in the five-page panel.",
+      "changed": "Again nothing on the page, beyond the empty gap above the first group that was removed after the first tester pass. The list beside it is the short one.",
+      "notice": "The (i) opens the full Specialists explainer as its own screen, with the back arrow to return.",
+      "risk": "None known; same reason for showing it as the last step.",
+      "highlight": "auto"
+    }
+  ]
+}

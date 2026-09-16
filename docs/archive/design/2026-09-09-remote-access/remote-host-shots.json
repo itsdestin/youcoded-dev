@@ -1,0 +1,14 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default&remote=connected",
+  "shots": [
+    {
+      "name": "remote-host",
+      "actions": [
+        {"click": "[title=Settings]", "settle": 700},
+        {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900}
+      ],
+      "expect": "js:[...document.querySelectorAll('[role=dialog]')].some(d=>d.textContent.includes('Remote Access') && d.textContent.includes('Connected'))",
+      "measure": ["[role=dialog]"]
+    }
+  ]
+}

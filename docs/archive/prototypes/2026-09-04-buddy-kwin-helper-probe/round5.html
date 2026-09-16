@@ -1,0 +1,77 @@
+<meta charset="utf-8">
+<title>YC round 5</title>
+<style>
+  html,body{margin:0;height:100%;background:transparent;overflow:hidden;
+    font:12.5px/1.4 system-ui,sans-serif;color:#fff;-webkit-user-select:none;user-select:none}
+  #mascot{position:absolute;left:50%;top:14px;transform:translateX(-50%);
+    width:96px;height:96px;border-radius:26px;cursor:grab;touch-action:none;
+    background:radial-gradient(circle at 34% 30%,#7fd7ff,#2f6bd8 62%,#1b3f8f);
+    box-shadow:0 12px 34px #0007;display:grid;place-items:center;font-size:30px}
+  #mascot.drag{cursor:grabbing;filter:brightness(1.14)}
+  #panel{position:absolute;left:8px;right:8px;bottom:8px;padding:9px 11px;
+    background:#0e1430ee;border:1px solid #ffffff26;border-radius:12px}
+  code{color:#8fe6b0;font:11.5px ui-monospace,monospace}
+  ol{margin:6px 0 0;padding-left:16px} li{margin:2px 0}
+  .row{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  button{flex:1;min-width:56px;padding:6px 3px;border:0;border-radius:8px;
+    background:#3355cc;color:#fff;font:600 11.5px system-ui;cursor:pointer;touch-action:manipulation}
+  button.q{background:#8c2f3f;flex:0 0 54px}
+  h4{margin:0;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#9fb2ff}
+</style>
+
+<div id="mascot">🙂</div>
+<div id="panel">
+  <h4>Drag me</h4>
+  <ol>
+    <li>Drag, then press <b>Meta+W</b> — is the title visible?</li>
+    <li>Screen-share picker — is it listed?</li>
+  </ol>
+  <div>at <code id="pos">—</code> · <code id="scr">—</code></div>
+  <div class="row" id="jumps"></div>
+  <div class="row"><button id="quit" class="q">quit</button></div>
+</div>
+
+<script>
+let pos = {x:0,y:0}, size = {w:340,h:300}, displays = [];
+const posEl = document.getElementById('pos'), scrEl = document.getElementById('scr');
+const mascot = document.getElementById('mascot');
+
+const draw = () => {
+  posEl.textContent = `${Math.round(pos.x)}, ${Math.round(pos.y)}`;
+  const d = displays.find(d => pos.x >= d.bounds.x && pos.x < d.bounds.x + d.bounds.width);
+  scrEl.textContent = d ? `${d.label} @${d.scale}x` : '?';
+};
+const moveTo = (x,y) => { pos.x = x; pos.y = y; window.probe.move(x,y); draw(); };
+
+window.probe.onInit(d => {
+  pos = {...d.start}; size = d.win; displays = d.displays;
+  const row = document.getElementById('jumps');
+  // One button per screen, computed from ELECTRON's bounds. If the window lands
+  // on the right physical screen, Electron and KWin share a coordinate space.
+  displays.forEach(dd => {
+    const b = document.createElement('button');
+    b.textContent = dd.label || ('screen ' + (dd.i + 1));
+    b.onclick = () => moveTo(
+      Math.round(dd.workArea.x + (dd.workArea.width - size.w) / 2),
+      Math.round(dd.workArea.y + (dd.workArea.height - size.h) / 2));
+    row.appendChild(b);
+  });
+  draw();
+});
+
+// Same drag maths as round 1: no global cursor exists on Wayland, but we know
+// where our own window is because we put it there.
+let grab = null;
+mascot.addEventListener('pointerdown', e => {
+  grab = { x: e.clientX, y: e.clientY };
+  mascot.setPointerCapture(e.pointerId); mascot.classList.add('drag');
+});
+mascot.addEventListener('pointermove', e => {
+  if (!grab) return;
+  moveTo(pos.x + (e.clientX - grab.x), pos.y + (e.clientY - grab.y));
+});
+const end = () => { grab = null; mascot.classList.remove('drag'); };
+mascot.addEventListener('pointerup', end);
+mascot.addEventListener('pointercancel', end);
+document.getElementById('quit').onclick = () => window.probe.quit();
+</script>

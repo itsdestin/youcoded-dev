@@ -1,0 +1,49 @@
+{
+ "deck": "deck-selfie-review",
+ "started": "2026-09-06T02:53:24.839Z",
+ "submitted": "2026-09-06T02:57:13Z",
+ "cur": 5,
+ "answers": {
+  "selfie-p1-1440x900": {
+   "note": "what? completely unclear what's happening here. looks like you just added a bunch of unnecessary empty blank space in the header?",
+   "v": "other",
+   "seconds": 131,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "selfie-p2-1440x900": {
+   "note": "i have literally no idea what i'm supposed to be looking at. ",
+   "v": "other",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "selfie-p3-1440x900": {
+   "v": "other",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "again, confused"
+  },
+  "selfie-p3-1024x768": {
+   "note": "brother in christ, descriptions? what did you change",
+   "v": "other",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "selfie-p4-1440x900": {
+   "note": "done reviewing, this is a waste of my time. make this review deck more useful",
+   "v": "other",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "selfie-p4-1024x768": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,169 @@
+{
+  "title": "Remote access, batches 2 and 3 — contract",
+  "key": "remote-batch-2-3-contract",
+  "out": "remote-batch-2-3.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/remote-first-connect",
+  "sources": {
+    "remote-batch-2-3-questions": "remote-batch-2-3.questions.json",
+    "remote-batch-2-3-review": "remote-batch-2-3.review.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Remote access",
+      "path": "Phone → any conversation, and Phone → Files",
+      "headline": "This is what done means for remote access batches 2 and 3.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "The phone's copy of a conversation comes from whichever desktop window holds it, so closing one window never empties the phone.",
+          "checkedBy": "live-app",
+          "threshold": "a conversation dragged to a second window still reaches the phone, in a dev instance",
+          "source": "remote-batch-2-3-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "When the phone has no conversation of its own yet, it opens the one the desktop is showing.",
+          "checkedBy": "live-app",
+          "threshold": "first connect, and after its conversation is deleted, in a dev instance",
+          "source": "remote-batch-2-3-questions#Q-2"
+        },
+        {
+          "id": "R3",
+          "statement": "After a refresh that came back incomplete, the phone keeps what you were reading instead of clearing it.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-questions#Q-3"
+        },
+        {
+          "id": "R4",
+          "statement": "Switching the desktop between chat and terminal never switches the phone, whether browser or Android app.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail, checked on a browser and on Android",
+          "source": "remote-batch-2-3-questions#Q-4"
+        },
+        {
+          "id": "R5",
+          "statement": "The phone shows a conversation only from the computer's copy, so no message or tool step appears twice after a reconnect.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-questions#S-1"
+        },
+        {
+          "id": "R6",
+          "statement": "After sign-in the conversation fills in as soon as the phone says it is ready, not after a fixed wait.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-questions#S-2",
+          "note": "though we should optimize/speed this up as much as possible for the best ux."
+        },
+        {
+          "id": "R7",
+          "statement": "From the phone, Files shows what the desktop shows, with the same private paths hidden.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-questions#Q-5"
+        },
+        {
+          "id": "R8",
+          "statement": "The phone previews text up to 1 MB and images and PDFs up to 10 MB; above that it offers Download.",
+          "checkedBy": "human",
+          "threshold": "text to 1 MB, images and PDFs to 10 MB",
+          "source": "remote-batch-2-3-questions#Q-6"
+        },
+        {
+          "id": "R9",
+          "statement": "Every file on the phone has a Download button that saves to the phone's downloads folder without blocking the chat.",
+          "checkedBy": "live-app",
+          "threshold": "a large download lands in the phone's downloads folder while the chat stays usable",
+          "source": "remote-batch-2-3-questions#Q-7"
+        },
+        {
+          "id": "R10",
+          "statement": "Removing a device from the computer also ends its right to download files.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-questions#Q-7"
+        },
+        {
+          "id": "R11",
+          "statement": "A file the phone cannot preview shows its name, size and a Download button instead of a refusal.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-questions#Q-8"
+        },
+        {
+          "id": "R12",
+          "statement": "The phone's file list updates by itself while the assistant changes files on the computer.",
+          "checkedBy": "live-app",
+          "threshold": "a new file appears on the phone without leaving the screen",
+          "source": "remote-batch-2-3-questions#Q-9"
+        },
+        {
+          "id": "R13",
+          "statement": "While the phone reconnects, a grey line above the messages says so and your draft stays put.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#1"
+        },
+        {
+          "id": "R14",
+          "statement": "After a refresh that did not finish, an amber line says the conversation may be out of date and offers Refresh.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#2"
+        },
+        {
+          "id": "R15",
+          "statement": "Pressing Refresh turns the line grey while it catches up, then shows Up to date briefly before the row disappears.",
+          "checkedBy": "human",
+          "threshold": "Up to date shows for 2.5 s",
+          "source": "remote-batch-2-3-review#2b"
+        },
+        {
+          "id": "R16",
+          "statement": "Projects → Files on the phone shows the desktop's folder view: folders, files, search, grid or list.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#3"
+        },
+        {
+          "id": "R17",
+          "statement": "Tapping a file on the phone opens it in the desktop's viewer, with ‹ Files to go back and Download in the toolbar.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#4"
+        },
+        {
+          "id": "R18",
+          "statement": "Pressing Download shows a notice that the file is being saved to this device; a refusal says why.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#4b"
+        },
+        {
+          "id": "R19",
+          "statement": "A file over the phone's limit is never fetched; a card shows name, size, kind, the limit and Download.",
+          "checkedBy": "deck",
+          "threshold": "24.0 MB PDF shows the card; previews stop at 1 MB for text and 10 MB for images and PDFs",
+          "source": "remote-batch-2-3-review#5"
+        },
+        {
+          "id": "R20",
+          "statement": "A phone preview runs in the same sealed box as on the desktop, and a downloaded file is saved, never opened as a page.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#S-1"
+        },
+        {
+          "id": "R21",
+          "statement": "A failed file list shows the real error with Retry, and a phone browser never shows the desktop's window buttons.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "remote-batch-2-3-review#S-2"
+        }
+      ]
+    }
+  ]
+}

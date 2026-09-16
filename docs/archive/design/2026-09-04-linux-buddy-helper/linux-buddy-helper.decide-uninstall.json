@@ -1,0 +1,32 @@
+{
+  "title": "The buddy helper — one promise we cannot keep",
+  "key": "linux-buddy-helper-decide-uninstall",
+  "out": "linux-buddy-helper.decide-uninstall.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "D-1",
+      "words": true,
+      "surface": "Buddy Floater popup",
+      "path": "The consent card you approved",
+      "headline": "The card promises the helper is removed when you uninstall YouCoded. For most Linux users that is not true. What should it say?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Change the wording, and add a Remove helper button (recommended)",
+          "summary": "The card stops promising automatic removal, and the buddy's settings gain a Remove helper action so anyone can undo it in one click, on any Linux. Downside: one more control in the popup you just approved as a single row — it would only appear once the helper is actually installed, but it is still a new button you have not seen."
+        },
+        {
+          "id": "b",
+          "label": "Change the wording only",
+          "summary": "The card says the helper stays until you remove it, and points at KDE's own settings. Nothing new is built. Downside: removing it means digging through KDE System Settings to find a Scripts list, which most people will never do — so in practice it stays forever."
+        },
+        {
+          "id": "c",
+          "label": "Keep the promise, clean up where we can",
+          "summary": "We add removal to the three Linux installer formats that support it, and the sentence stays. Downside: it stays FALSE for anyone using the portable AppImage version — the first format we ship — and a leftover entry sits in their KDE settings with no hint of where it came from. It is also fragile on the other three: the cleanup runs as the system administrator and has to reach into each user's personal settings."
+        }
+      ]
+    }
+  ]
+}

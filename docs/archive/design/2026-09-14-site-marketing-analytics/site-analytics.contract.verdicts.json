@@ -1,0 +1,6 @@
+{
+  "R12": {
+    "verdict": "pass",
+    "evidence": "Fresh isolated dashboard captures exactly match approved S-1 images: docs/active/design/2026-09-14-site-marketing-analytics/runs/after/shots-analytics/meadow-mist/overview.png = scratch/site-analytics-grade/overview-meadow-mist.png (SHA-256 a49a018a55beab12c0f1c62325c4c2f6f9d6ff5724521bb5e926875658b21d1f); docs/active/design/2026-09-14-site-marketing-analytics/runs/after/shots-analytics/light/overview.png = scratch/site-analytics-grade/overview-light.png (SHA-256 4370fa45f6de4c670dd7e321833669de43a6568f0a6d0aa7a9d651e462ca7fd0)."
+  }
+}

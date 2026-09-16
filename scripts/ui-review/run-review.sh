@@ -108,6 +108,16 @@ for plan in "$HERE"/plans/*.json; do
     done
   done
 done
+# WHY this check: `UI_REVIEW_PLANS=cc-subagents` naming a plan that is not in THIS checkout's
+# plans/ dir (a plan added on a branch, run from a different worktree's copy of this script)
+# selected nothing, and the sweep then reported "0 covered · 0 partial · 0 missed" and exited 0
+# — a clean bill of health for a run that screenshotted nothing. Cost a session one wasted
+# sweep on 2026-09-05. A filter that matches no plan is a typo, not a result.
+if [[ -n "${UI_REVIEW_PLANS:-}" && ${#specs[@]} -eq 0 ]]; then
+  echo "error: UI_REVIEW_PLANS='$UI_REVIEW_PLANS' matched no plan in $HERE/plans/" >&2
+  echo "  available: $(ls "$HERE"/plans/*.json | xargs -n1 basename | sed 's/\.json$//' | tr '\n' ' ')" >&2
+  exit 2
+fi
 # WHY the block is chosen AFTER counting: the block must hold every job, and a full sweep is
 # 312 of them — `30000 + offset + idx` made two sweeps at nearby offsets share ports and hang
 # (ROADMAP L168). cdp-ports.sh picks a block from this run's pid, probes it, slides past a busy

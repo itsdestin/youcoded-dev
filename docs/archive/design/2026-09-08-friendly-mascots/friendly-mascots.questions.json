@@ -1,0 +1,34 @@
+{
+  "title": "Friendlier Light and Crème mascots",
+  "key": "friendly-mascots-questions",
+  "out": "friendly-mascots.questions.html",
+  "stage": "ask",
+  "themes": ["light", "creme", "midnight"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Buddy mascot",
+      "path": "Light and Crème themes — floating buddy and matching in-app mascots",
+      "headline": "Keep the character and soften its palette, or give these themes distinct characters?",
+      "today": "Light and Crème reuse the default rounded buddy. Its body and face borrow the theme's button colors, which can make the body dark and the eyes pale.",
+      "problem": "The high-contrast, inverted face reads as frightening rather than friendly. Readable button colors do not automatically make an appealing character.",
+      "proposal": "I recommend keeping the existing shape and expressions, using lighter theme-related body colors, dark facial features, and gentler shading. I will show before-and-after views before finalizing. Theme-builder guidance will cover friendly silhouettes, readable expressions, restrained highlights and shadows, and checks at actual mascot size while allowing different character styles.",
+      "options": [
+        {
+          "id": "palette",
+          "label": "Softer palette, same buddy",
+          "recommended": true,
+          "pros": ["Directly fixes the harsh face without replacing the character you already use.", "Keeps existing expressions and movement; leaves successful community artwork alone."],
+          "cons": ["Light and Crème remain variations of the same character rather than distinct mascots."]
+        },
+        {
+          "id": "characters",
+          "label": "Distinct themed characters",
+          "pros": ["Gives Light and Crème their own visual identities and more personality."],
+          "cons": ["A larger redesign, with new shapes and expressions to review rather than just a styling correction."]
+        }
+      ]
+    }
+  ]
+}

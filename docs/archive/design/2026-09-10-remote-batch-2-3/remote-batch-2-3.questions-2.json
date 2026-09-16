@@ -1,0 +1,19 @@
+{
+  "title": "Reading files from your phone — the one statement that confused, said plainly",
+  "key": "remote-batch-2-3-questions-2",
+  "out": "remote-batch-2-3.questions-2.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-10",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → tap a file → the preview",
+      "headline": "Should a file preview on the phone open in a sealed box that cannot touch the rest of the app?",
+      "today": "On the desktop, a preview is drawn inside the app itself. A web page the assistant wrote, for example, runs right there in the app's own window.",
+      "problem": "On a phone browser, anything drawn inside the app can see what the app sees, including that you are signed in. A file made by a bad skill, or a web page the assistant saved from the internet, could then act as you: read conversations, send messages, download other files.",
+      "proposal": "Previews open through a second door on the same computer, sealed off from the app, the way a phone opens an email attachment in a separate viewer that cannot read your mail. Yes builds it sealed; you would notice only that the first preview takes a moment longer. No draws previews inside the app like the desktop does; I would push back, because the milestone brief you approved asked for the sealed version. Don't know: I build it sealed."
+    }
+  ]
+}

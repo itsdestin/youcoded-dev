@@ -1,0 +1,14 @@
+{
+ "deck": "assistant-settings-contract",
+ "started": "2026-09-07T20:19:12.236Z",
+ "submitted": "2026-09-07T20:19:23Z",
+ "cur": 0,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

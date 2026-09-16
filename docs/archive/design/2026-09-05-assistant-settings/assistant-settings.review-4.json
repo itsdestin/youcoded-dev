@@ -1,0 +1,101 @@
+{
+  "title": "Assistant settings — round 4: the real folder picker, and two popups",
+  "key": "assistant-settings-review-4",
+  "out": "assistant-settings.review-4.html",
+  "images": "images/assistant-settings.review-4",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r4/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/41b4b414-8dfc-4ce7-b325-c1c2d3329ded/scratchpad/review-r4/after"
+  },
+  "labels": {
+    "before": "Round 3",
+    "after": "Round 4"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "general": [
+      "assistant-settings-r4",
+      "assistant-general",
+      "840x720+300+90"
+    ],
+    "folder": [
+      "assistant-settings-r4",
+      "assistant-general-folder",
+      "840x720+300+90"
+    ],
+    "confirm": [
+      "assistant-settings-r4",
+      "assistant-permissions-skip-on",
+      "840x720+300+90"
+    ],
+    "signout": [
+      "assistant-settings-r4",
+      "assistant-cloud-signout",
+      "840x720+300+90"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R4-1",
+      "surface": "Settings → Assistant settings → General",
+      "path": "Settings → Assistant settings → General",
+      "crop": "general",
+      "headline": "Default project folder — the row renamed, and the picker replaced.",
+      "changed": "Two things from your notes. The row is called Default project folder now, matching Default model above it. And the control is no longer a look-alike: it is the same folder picker the new conversation form uses, folder icon and all.",
+      "notice": "The picker shows the folder's short name — youcoded — with the folder icon beside it, exactly as it does when you start a conversation.",
+      "risk": "None here; the next step opens it.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R4-2",
+      "surface": "Settings → Assistant settings → General",
+      "path": "Settings → Assistant settings → General → the folder picker, open",
+      "crop": "folder",
+      "headline": "Open, it is the same list, with the same rows and the same last line.",
+      "changed": "Your saved folders with their names, paths and sync dots, a tick on the one in use, and Browse for folder… at the bottom for anything not on the list.",
+      "notice": "This is the same picker used in two places, not a copy of it — so it cannot drift away from the new conversation form later.",
+      "risk": "Someone with no saved folders sees a list with only Browse for folder… in it. That is the same thing they see on the new conversation form today.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R4-3",
+      "surface": "Settings → Assistant settings → Permissions",
+      "path": "Settings → Assistant settings → Permissions → turning the switch on",
+      "crop": "confirm",
+      "headline": "The red banner is gone. Turning the switch on now stops you and makes you tick a box.",
+      "changed": "Flipping the switch opens this and the switch does not move until you press Turn it on — which stays greyed out until the box is ticked. Turning it back off is instant; only the dangerous direction is gated.",
+      "notice": "What the popup says is measured behaviour, not a guess: we tested Claude Code with this flag on, and the only thing it still refused was a command that would delete the whole project folder.",
+      "risk": "It is a longer read than the banner it replaces, every single time you turn it on.",
+      "highlight": {
+        "box": [
+          30.0,
+          19.4,
+          40.1,
+          61.4
+        ]
+      }
+    },
+    {
+      "id": "R4-4",
+      "surface": "Settings → Assistant settings → Cloud providers",
+      "path": "Settings → Assistant settings → Cloud providers → Sign out",
+      "crop": "signout",
+      "headline": "Sign out on Claude Code tells you where to do it, and signs nothing out.",
+      "changed": "Your call from the last round. The button stays on the card so it matches ChatGPT's, and pressing it explains that Claude Code holds its own sign-in and points at the one place that clears it.",
+      "notice": "The app already says this same thing anywhere Claude Code's own commands are listed, so the two agree.",
+      "risk": "It hands the reader a typed command in a terminal, which is the one thing this app tries never to do. If that bothers you, the honest alternative is dropping the button.",
+      "highlight": {
+        "box": [
+          30.0,
+          33.6,
+          40.1,
+          33.1
+        ]
+      }
+    }
+  ]
+}

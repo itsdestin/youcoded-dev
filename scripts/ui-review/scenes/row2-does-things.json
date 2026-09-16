@@ -1,75 +1,25 @@
 {
-  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox&seed=none&title=morning+inbox",
+  "base": "http://127.0.0.1:5473/?mode=workbench&child=1&scenario=site&latency=150&reply=inbox&seed=none&title=morning+inbox&replySpeed=2.5",
   "theme": "creme",
+  "zoom": 1.15,
   "boot": 3000,
+  "why": "2026-09-11 (Destin, review-2 R-4): ~15-20 s loop, zoomed 1.15, the shared rhythm (0.3 s open, replies at 2x, 1.5 s end hold, typing 32 a second). The one exception to 2x: this reply is ~18 s of text and tool steps at normal speed, and at 2x the loop still sat at 20 s, so it plays at 2.5x. Every Yes still waits for its card to exist before clicking; only the pauses after were trimmed.",
   "actions": [
-    {
-      "hold": 500
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "go through this morning's email and handle what you can",
-      "cps": 30
-    },
-    {
-      "key": "Enter",
-      "settle": 800
-    },
-    {
-      "waitForText": "Yes",
-      "tag": "button",
-      "settle": 900
-    },
-    {
-      "clickText": "Yes",
-      "tag": "button",
-      "settle": 1500
-    },
-    {
-      "waitForText": "Yes",
-      "tag": "button",
-      "settle": 900
-    },
-    {
-      "clickText": "Yes",
-      "tag": "button",
-      "settle": 1500
-    },
-    {
-      "waitForText": "Want me to tell",
-      "tag": "p",
-      "timeout": 15000,
-      "settle": 1200
-    },
-    {
-      "click": "[placeholder^='Message']",
-      "settle": 200
-    },
-    {
-      "typeSlow": "yes, send it",
-      "cps": 30
-    },
-    {
-      "key": "Enter",
-      "settle": 600
-    },
-    {
-      "waitForText": "Yes",
-      "tag": "button",
-      "settle": 900
-    },
-    {
-      "clickText": "Yes",
-      "tag": "button",
-      "settle": 1500
-    },
-    {
-      "waitForText": "newsletters",
-      "tag": "p",
-      "settle": 2200
-    }
+    { "hold": 300 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "go through this morning's email and handle what you can", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "Yes", "tag": "button", "settle": 300 },
+    { "clickText": "Yes", "tag": "button", "settle": 300 },
+    { "waitForText": "Yes", "tag": "button", "settle": 300 },
+    { "clickText": "Yes", "tag": "button", "settle": 300 },
+    { "waitForText": "Want me to tell", "tag": "p", "timeout": 15000, "settle": 400 },
+    { "click": "[placeholder^='Message']", "settle": 200 },
+    { "typeSlow": "yes, send it", "cps": 32 },
+    { "key": "Enter", "settle": 300 },
+    { "waitForText": "Yes", "tag": "button", "settle": 300 },
+    { "clickText": "Yes", "tag": "button", "settle": 300 },
+    { "waitForText": "newsletters", "tag": "p", "settle": 300 },
+    { "hold": 1500 }
   ]
 }

@@ -1,0 +1,55 @@
+{
+  "title": "The promo video, third draft — the tail, the zoom, the whole",
+  "key": "promo-draft-2",
+  "out": "promo-draft-2.review-3.html",
+  "images": "images/promo-draft-2.review-3",
+  "runs": {
+    "before": "docs/active/design/2026-09-09-promo-second-draft/runs/before",
+    "after": "docs/active/design/2026-09-09-promo-second-draft/runs/after"
+  },
+  "labels": { "before": "Before", "after": "Now" },
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "crops": {
+    "swoop-tail": ["promo", "swoop-tail", "1000x260+0+0"],
+    "zoom-chat": ["promo", "zoom-chat", "1440x900+0+0"]
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "The promo video",
+      "path": "Every line the mascot says",
+      "crop": "swoop-tail",
+      "runs": ["before", "after"],
+      "highlight": { "box": [26, 30, 22, 40] },
+      "headline": "The curled tail no longer notches into the bubble; its top edge comes back nearly straight.",
+      "changed": "The upper edge of the tail used to curve back into the box and left a small notch at the join. Now the lower edge bulges out to the tip and the upper edge returns straight, so the outline flows round it.",
+      "notice": "The tail reads as one stroke with the bubble, pointing at the mouth.",
+      "risk": "The tail reaches 22 px toward the mascot, a few pixels more than the old wedge."
+    },
+    {
+      "id": "A-2",
+      "surface": "The promo video",
+      "path": "Every scene that shows the app window",
+      "crop": "zoom-chat",
+      "runs": ["before", "after"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "The app is filmed a notch bigger: 135 % instead of 125 %, the way Ctrl and plus does it.",
+      "changed": "Every desktop scene was re-filmed with the app zoomed to 135 %. Text and controls are about 8 % larger inside the same window; the layouts stayed the same at this size.",
+      "measured": "135 % zoom, was 125 %",
+      "notice": "Easier to read at a glance. The chat, the model picker, the marketplace, the project page, the games and the phone scene all still show what they showed.",
+      "risk": "Less of a long conversation fits in the window at once, so some scenes show a line or two less of the app's own text."
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "The promo video",
+      "path": "The whole film",
+      "headline": "Third draft: frosted bubbles with the curled tail, the reworked synthwave, the app at 135 %.",
+      "changed": "Everything you approved on the first two decks, plus the fixed tail and the bigger zoom, rendered as one film at half size: the file is draft-3.mp4 in your Videos folder under youcoded-promo/draft-2.",
+      "notice": "The film is still 1:49. If this is the cut, the next step is the full-size render with the loudness pass.",
+      "yes": "This is the cut",
+      "no": "Not yet"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+ "deck": "promo-draft-2",
+ "started": "2026-09-09T23:20:43.201Z",
+ "submitted": "2026-09-09T23:30:56Z",
+ "cur": 2,
+ "answers": {
+  "A-1": {
+   "note": "there still seems to be a visible gap between the swoop element and the main bubble. side note: STOP doing full video renders without my approval. draft/final renders should be my call, we  should itereate with only screenshots and partial elements. these glass message bubbles also need more of a frost effect, as the visible text/ui behind them can make them hard to read.",
+   "v": "other",
+   "seconds": 91,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "other",
+   "seconds": 494,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "getting there. i want to tighten \"see the status of working assistants\", \"search and filter\", and \"tags notes\" scenes. the \"see status\" seen should be a bit shorter and the bubble should be open only while the session switcher is open/visible. then we can merge the other two into a single \"Tag, search, and filter your previous conversations.\" scene. should be able to shave of another few seconds while clarifying the relationship between active status and the session switcher. the chess scene is also wonky and the board gets cut off, but that may be an actual app bug we should fix. i also just merged a separate change to master with \"message your assistant\" instead of \"message claude\" in the input area, so we should record with that change. also just wnat some additional minor refinements to where the mascot is positioned in each scene to make sure it accurately highlights the element we're focusing."
+  }
+ }
+}

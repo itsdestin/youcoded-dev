@@ -1,0 +1,41 @@
+{
+  "title": "Halftone's eye colour",
+  "key": "halftone-eyes",
+  "out": "halftone-eyes.review.html",
+  "images": "images/halftone-eyes.review",
+  "runs": { "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/faces/runs/after" },
+  "themes": ["halftone-dimension"],
+  "crops": {
+    "col-paper":  ["mascots", "col-paper",  "1182x176+0+0"],
+    "col-cyan":   ["mascots", "col-cyan",   "1182x176+0+0"],
+    "col-offset": ["mascots", "col-offset", "1182x176+0+0"],
+    "col-violet": ["mascots", "col-violet", "1182x176+0+0"]
+  },
+  "steps": [
+    {
+      "id": "HE-1",
+      "surface": "Halftone Dimension's buddy",
+      "path": "Settings → Appearance → Halftone Dimension",
+      "headline": "The visor is off, as you chose. Four ways to colour the eye and its outline on the navy body.",
+      "variants": [
+        { "id": "paper", "label": "A — white outline",
+          "crop": "col-paper",
+          "summary": "A near-black eye with a clean white outline, and the red-cyan-yellow dots inside. Highest contrast, reads furthest across the room, and stays neutral so the body's own red and cyan rim light keeps doing the colour work. The safest of the four.",
+          "measured": "outline #dfe8f5 on eye #0d1120" },
+        { "id": "cyan", "label": "B — cyan outline",
+          "crop": "col-cyan",
+          "summary": "The outline, eyelids, brows and mouth all switch to the theme's cyan. The face reads as lit rather than drawn — closest to a screen or a HUD. Strongest personality of the four, and the furthest from the other three characters.",
+          "measured": "outline #00b8ff on eye #0a1526" },
+        { "id": "offset", "label": "C — white outline, colour fringe",
+          "crop": "col-offset",
+          "summary": "Option A with a cyan and a red copy of each eye outline shifted a hair off centre, so the eyes look like a misprinted page. It is the one option that puts this theme's actual idea — colour plates out of register — into the face itself. Busiest at small sizes.",
+          "measured": "cyan and red plates offset 0.26 units" },
+        { "id": "violet", "label": "D — violet, softer",
+          "crop": "col-violet",
+          "summary": "A lighter violet eye that picks up the body's own highlight colour, with a warm off-white outline. Gentlest and least mechanical of the four — this is the option that makes the character read as a creature rather than a device.",
+          "measured": "outline #efe4ff on eye #33265c" }
+      ],
+      "risk": "Whichever you pick sets the eyelid, brow and mouth colour too, so it changes the whole face, not just the eyes."
+    }
+  ]
+}

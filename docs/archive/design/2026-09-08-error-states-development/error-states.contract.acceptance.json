@@ -1,0 +1,414 @@
+{
+ "title": "Development screens — contract — acceptance",
+ "key": "error-states-development-contract-acceptance",
+ "out": "error-states.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/error-states-development",
+ "sources": {
+  "error-states-development-questions": "error-states.questions.json",
+  "error-states-workspace-clarifications": "error-states.workspace-questions.json",
+  "error-states-development-review": "error-states.review.json",
+  "error-states-development-review-2": "error-states.review-2.json",
+  "error-states-development-review-3": "error-states.review-3.json",
+  "error-states-development-review-4": "error-states.review-4.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Settings → Development",
+   "path": "Contribute to YouCoded, and the bug and feature ticket screens",
+   "headline": "The contract, graded — accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The walkthrough of how contributing works lives inside Contribute to YouCoded, not on the Development list.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-2#R2-8",
+     "verdict": "pass",
+     "evidence": "Checked on screen: the Development list has no walkthrough on it, and 'How contributing works' opens inside Contribute. Both halves are now pinned by tests."
+    },
+    {
+     "id": "R2",
+     "statement": "The walkthrough explains contributing in plain words: describe it, review the design, try it, run checks, then choose to propose it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-questions#S-explainer",
+     "verdict": "pass",
+     "evidence": "All five steps are there, in order, each with its own explanation, numbered and indented. Re-photographed after a fix that had been clipping the numbers."
+    },
+    {
+     "id": "R3",
+     "statement": "Nothing becomes a public proposal until you approve it at the last step of the walkthrough.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review#S-2",
+     "verdict": "pass",
+     "evidence": "Step 5 says only your explicit approval sends a public proposal, and nothing in the code publishes anything without it."
+    },
+    {
+     "id": "R4",
+     "statement": "The walkthrough has no gray warning box under its five steps.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-2#R2-9",
+     "note": "just delete the wierd warning in the gray box. what is \"workspace details\"? \"set up separate workspace\"? why not jsut \"set up development workspace\"?",
+     "verdict": "pass",
+     "evidence": "The gray warning box under the steps is gone — nothing sits between step 5 and the button."
+    },
+    {
+     "id": "R5",
+     "statement": "Contribute to YouCoded leads with one sentence about its purpose and one setup action.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-2#R2-13",
+     "verdict": "pass",
+     "evidence": "The screen opens with its purpose and one setup button. Note: the purpose is three sentences, not one — but it is the paragraph in the picture you approved."
+    },
+    {
+     "id": "R6",
+     "statement": "The setup action is a full-width main button like the app's other dialogs, with no caption beneath it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-4#R4-20",
+     "verdict": "pass",
+     "evidence": "Full-width button in the app's normal style, with nothing written underneath it."
+    },
+    {
+     "id": "R7",
+     "statement": "The same full-width button sits under the five walkthrough steps.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-4#R4-21",
+     "verdict": "pass",
+     "evidence": "The same button sits under the five steps when they are open."
+    },
+    {
+     "id": "R8",
+     "statement": "The Contribute screen matches the app's other settings pages: short text, clear headings, evenly sized buttons.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review#S-6",
+     "note": "this is also just ugly, too much text, poor visual heirarchy, weirdly sized buttons. doesn't match our other settings pages.",
+     "evidence": "Yours to judge — this is the 'too much text, weirdly sized buttons' note you wrote, and whether it is fixed is your eye, not a test."
+    },
+    {
+     "id": "R9",
+     "statement": "Setup leaves an existing development folder untouched and explains that the new project is separate.",
+     "checkedBy": "live-app",
+     "threshold": "an existing folder is unchanged after setup runs in a dev instance",
+     "source": "error-states-workspace-clarifications#Q-existing-folder",
+     "evidence": "Setup walks past any folder that already exists and creates a new one. Proven by putting a file in the way: it came back untouched, byte for byte."
+    },
+    {
+     "id": "R10",
+     "statement": "You can start working in the new project on this device even when its backup has not connected.",
+     "checkedBy": "live-app",
+     "threshold": "setup finishes and the project opens with backup unavailable",
+     "source": "error-states-workspace-clarifications#Q-sync-unavailable",
+     "evidence": "You can finish setup and open the project with no backup connected. See the second question at the end — half of what you picked here no longer applies."
+    },
+    {
+     "id": "R11",
+     "statement": "A ticket starts with the error and app version; recent logs are only included when you choose them.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-questions#Q-report-evidence",
+     "verdict": "pass",
+     "evidence": "The ticket opens with the error that sent you there and your real app version; logs are only read when you tick the box."
+    },
+    {
+     "id": "R12",
+     "statement": "You can write, review and send a ticket without any AI help; asking an assistant is a separate choice.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-questions#Q-ai-help",
+     "evidence": "A ticket can be written, reviewed and sent with no AI involved. Pinned by a test that fails if sending ever calls a provider."
+    },
+    {
+     "id": "R13",
+     "statement": "You prepare and review a ticket in YouCoded, then finish attaching approved screenshots or files in GitHub.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-questions#Q-attachments",
+     "evidence": "Choosing to attach files finishes the ticket in your browser, where you attach them — and it no longer files the ticket first, which used to break this for anyone signed in."
+    },
+    {
+     "id": "R14",
+     "statement": "Before you attach a file, the screen says GitHub uploads it immediately, before you submit the ticket.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review#S-5",
+     "verdict": "pass",
+     "evidence": "Before you attach anything, the screen says GitHub uploads a file the moment it is attached."
+    },
+    {
+     "id": "R15",
+     "statement": "The ticket screen opens with an editable title and description, a public-sharing notice, and optional error details.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review#S-3",
+     "verdict": "pass",
+     "evidence": "The ticket opens with an editable title and description, the public-on-GitHub notice, and optional error details."
+    },
+    {
+     "id": "R16",
+     "statement": "Both the bug tab and the feature tab sit under one heading: Submit a ticket.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-2#R2-10",
+     "verdict": "pass",
+     "evidence": "Both tabs sit under one heading, 'Submit a ticket'."
+    },
+    {
+     "id": "R17",
+     "statement": "Optional AI help appears only on the review step, behind a disclosure you open yourself.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-2#R2-12",
+     "verdict": "pass",
+     "evidence": "Every AI action is behind the 'Optional AI help' disclosure you open yourself — nothing AI-related is in the footer."
+    },
+    {
+     "id": "R18",
+     "statement": "The ticket's optional evidence sits in three plain rows under one heading, each explained by the (i) on its row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-3#R3-18",
+     "verdict": "pass",
+     "evidence": "Three plain rows under one heading, each explained by its own (i), with no gray sub-labels. This one broke once and is now pinned by the rule, not the wording."
+    },
+    {
+     "id": "R19",
+     "statement": "The ticket screens use the same compact rows as other settings menus, without dense blocks of text.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review#S-4",
+     "note": "there's way too much poorly organized copy with unclear visual heirarchy. we need to simplify this and make it better match existing settings menus.",
+     "evidence": "Yours to judge — your 'poorly organized copy, unclear hierarchy' note, and whether it now matches the app's other settings menus."
+    },
+    {
+     "id": "R20",
+     "statement": "Review ticket is a full-width main button that stays inactive until you have typed a title and description.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-4#R4-22",
+     "evidence": "Review ticket stays inactive until you have typed both a title and a description, and the screen now says what is missing."
+    },
+    {
+     "id": "R21",
+     "statement": "No preview or mockup captions appear anywhere; Submit is the main button with Back to draft beneath it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-4#R4-23",
+     "verdict": "pass",
+     "evidence": "No preview or mockup captions anywhere, and the footer is exactly two stacked buttons: Submit, then Back to draft."
+    },
+    {
+     "id": "R22",
+     "statement": "Error details shows your real app version rather than a line saying nothing was collected.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review-4#R4-23",
+     "evidence": "The version line is your real app version, read from the app itself. It used to be a made-up string."
+    },
+    {
+     "id": "R23",
+     "statement": "If sending a ticket fails, your title, description and chosen details stay in the draft and you can retry.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "error-states-development-review#S-7",
+     "evidence": "A failed send keeps your title, description and chosen details, and offers a retry. Proven by making the send fail and reading the fields back."
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R8",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "The Contribute screen matches the app's other settings pages: short text, clear headings, evenly sized buttons.",
+   "changed": "Checked by you. Your note at review: “this is also just ugly, too much text, poor visual heirarchy, weirdly sized buttons. doesn't match our other settings pages.”",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R9",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "Setup leaves an existing development folder untouched and explains that the new project is separate.",
+   "changed": "Checked by you.",
+   "notice": "an existing folder is unchanged after setup runs in a dev instance",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R10",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "You can start working in the new project on this device even when its backup has not connected.",
+   "changed": "Checked by you.",
+   "notice": "setup finishes and the project opens with backup unavailable",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R12",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "You can write, review and send a ticket without any AI help; asking an assistant is a separate choice.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R13",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "You prepare and review a ticket in YouCoded, then finish attaching approved screenshots or files in GitHub.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R19",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "The ticket screens use the same compact rows as other settings menus, without dense blocks of text.",
+   "changed": "Checked by you. Your note at review: “there's way too much poorly organized copy with unclear visual heirarchy. we need to simplify this and make it better match existing settings menus.”",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R20",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "Review ticket is a full-width main button that stays inactive until you have typed a title and description.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R22",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "Error details shows your real app version rather than a line saying nothing was collected.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R23",
+   "words": true,
+   "surface": "Settings → Development",
+   "path": "Acceptance",
+   "headline": "If sending a ticket fails, your title, description and chosen details stay in the draft and you can retry.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "Q-handover",
+   "words": true,
+   "surface": "Submit a ticket",
+   "path": "Settings → Development → Report a Bug · Optional AI help",
+   "headline": "Should your assistant be able to try fixing the bug itself?",
+   "today": "The screen you are replacing had a second button: Let Claude Try to Fix It. It set up the workspace, opened a session, and handed the bug over. Your approved design has no such button — it was never on any deck, because I only found it while deleting the old screen.",
+   "problem": "Deleting a working feature nobody asked me to remove would be the kind of change you cannot trace back to anything. So I carried it over rather than drop it quietly — but that means there is UI in front of you that you never approved, which is the other thing I am not supposed to do.",
+   "proposal": "It now sits inside Optional AI help, under Improve wording, with a line saying it uses a lot of your model allowance. It files nothing and sends nothing. Three ways to go.",
+   "options": [
+    {
+     "id": "keep",
+     "label": "Keep it where it is",
+     "pros": [
+      "Nothing is lost that the old screen could do.",
+      "It is behind the disclosure, so it does not crowd the two main buttons.",
+      "It reuses a workspace you already set up instead of downloading a second copy."
+     ],
+     "cons": [
+      "It is a second AI action on a screen whose approved picture had one.",
+      "It spends a lot of your model allowance, and someone may press it without reading the line."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "cut",
+     "label": "Cut it",
+     "pros": [
+      "The screen is exactly the one you signed, with nothing added.",
+      "One fewer expensive action to explain."
+     ],
+     "cons": [
+      "A working feature disappears from your app with no replacement.",
+      "The path from 'I found a bug' to 'try fixing it' goes away entirely."
+     ]
+    },
+    {
+     "id": "redesign",
+     "label": "Keep it, but show me a design first",
+     "pros": [
+      "You decide how it looks and what it says before it ships."
+     ],
+     "cons": [
+      "Another review round before this can merge."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "Q-backup-warning",
+   "words": true,
+   "surface": "Contribute to YouCoded",
+   "path": "Settings → Development → Contribute to YouCoded",
+   "headline": "Half of an answer you gave has quietly stopped applying — is that alright?",
+   "today": "You chose that setup should let you start on this device even when backup has not connected. That option also promised a visible warning saying so, and a way to retry connecting it.",
+   "problem": "Since then we found that putting the workspace where the app syncs things would push about a gigabyte of source code to your backup. So it now goes somewhere outside the synced area. That removes the risk — but it also means backup can never fail here, so there is nothing to warn about and nothing to retry. Half of what you picked no longer exists, and I would rather tell you than let you find it.",
+   "proposal": "Nothing on this screen mentions backup at all, which is what you asked for separately when you said not to mess with the sync system.",
+   "options": [
+    {
+     "id": "leave",
+     "label": "Leave it — nothing to warn about",
+     "pros": [
+      "The screen stays as short as you approved it.",
+      "Nothing is uploaded, so no promise about backup can be broken.",
+      "Your other projects behave the same way; this one is not special."
+     ],
+     "cons": [
+      "The workspace is not backed up, and the screen never says so.",
+      "If you later expect to find it on another computer, it will not be there."
+     ],
+     "recommended": true
+    },
+    {
+     "id": "say-once",
+     "label": "Say once that it lives on this device",
+     "pros": [
+      "You are told where the project lives at the moment it is created."
+     ],
+     "cons": [
+      "Adds a line about backup to a screen you asked to keep clear of it.",
+      "It would be the only project in the app that explains its own backup status."
+     ]
+    }
+   ]
+  }
+ ]
+}

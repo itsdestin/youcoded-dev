@@ -1,0 +1,60 @@
+{
+  "title": "One question left before we build",
+  "key": "error-states-development-questions-2",
+  "out": "error-states.questions-2.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-backup-visibility",
+      "words": true,
+      "surface": "Contribute to YouCoded",
+      "path": "Settings → Development → Contribute to YouCoded",
+      "headline": "Should the Contribute screen tell you when your work is saved nowhere but this device?",
+      "today": "The Contribute screen explains what contributing is, opens the five steps, and offers one button: Set up development workspace. It says nothing at all about backup. Backup lives somewhere else — Settings → Cross-Device Backup & Sync — where it already turns red and says Sync Failing when it breaks.",
+      "problem": "You already decided setup should let you start on this device even when backup cannot connect. That is the right call, but it means you can work for days on a project that exists on this laptop only, and this screen would never say so. Last round I showed a made-up backup failure here and you answered \"confused?\" — fairly, since it was an invented failure sitting where your real status would go. No invented state will be shown again; this asks the real question instead.",
+      "proposal": "Three ways this screen can handle backup. Pick the one you would want on the day it actually matters.",
+      "options": [
+        {
+          "id": "only-when-broken",
+          "label": "Speak up only when it's broken",
+          "pros": [
+            "Nothing extra to read on a normal day — the screen stays as short as you approved it.",
+            "The one line only appears when the news is worth your attention.",
+            "It reports your real backup, never an example."
+          ],
+          "cons": [
+            "You never get a positive \"this is backed up\" confirmation; silence means fine.",
+            "A state you rarely see is a state that is rarely tested — it needs its own test to stay honest."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-show",
+          "label": "Always show where it's saved",
+          "summary": "A permanent line under the explanation, saying either that this project is backed up or that it lives on this device only.",
+          "pros": [
+            "You can always tell without going to another screen.",
+            "One consistent place to look, whatever the answer is."
+          ],
+          "cons": [
+            "A line that says the same thing almost every day stops being read — so it may be invisible on the one day it changes.",
+            "Adds a row to a screen you already told me was cluttered."
+          ]
+        },
+        {
+          "id": "nothing-here",
+          "label": "Leave backup out of it",
+          "summary": "The Contribute screen never mentions backup. Backup problems stay in the backup settings, which already show a red dot and Sync Failing.",
+          "pros": [
+            "The simplest screen, and the one you approved unchanged.",
+            "One screen owns backup, so there is no second copy of the truth to fall out of date."
+          ],
+          "cons": [
+            "You could start a contribution project that is saved nowhere and never be told at the moment it starts.",
+            "You would only find out by happening to open a different settings page."
+          ]
+        }
+      ]
+    }
+  ]
+}

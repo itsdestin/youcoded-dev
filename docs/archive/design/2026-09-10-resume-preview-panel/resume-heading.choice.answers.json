@@ -1,0 +1,15 @@
+{
+ "deck": "resume-browser-heading",
+ "started": "2026-09-10T21:53:56.783Z",
+ "submitted": "2026-09-10T21:56:00Z",
+ "cur": 0,
+ "answers": {
+  "R3-1": {
+   "note": "i like the frameing of the preview used in \"sheet\". i want to try to make the header a bit more useful/interesting, with the model select/project/resume dropdown buttons in a new card at the bottom floating under the last message of the preview in the same framed container. want a few different styling for the header of the preview, with different actions like the tag/name/complete stuff",
+   "v": "other",
+   "seconds": 123,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

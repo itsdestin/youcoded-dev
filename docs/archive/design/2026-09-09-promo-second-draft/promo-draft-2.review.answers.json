@@ -1,0 +1,48 @@
+{
+ "deck": "promo-draft-2",
+ "started": "2026-09-09T22:07:44.978Z",
+ "submitted": "2026-09-09T22:11:33Z",
+ "cur": 5,
+ "answers": {
+  "M-1": {
+   "v": "yes",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "pick",
+   "pick": "glass",
+   "note": "thicker outline and we need to improve the border/alignement between the main bubble and the triangle piece that makes it a speech bubble. may want to get a bit more creative with the shape of these generallly.",
+   "seconds": 96,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-2": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "M-3": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-1": {
+   "note": "",
+   "v": "pick",
+   "pick": "promo",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 28,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

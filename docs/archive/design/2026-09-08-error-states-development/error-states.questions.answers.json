@@ -1,0 +1,53 @@
+{
+ "deck": "error-states-development-questions",
+ "started": "2026-09-09T03:58:04.150Z",
+ "submitted": "2026-09-09T04:05:46Z",
+ "cur": 2,
+ "answers": {
+  "S-scope": {
+   "v": "yes",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "Q-report-evidence": {
+   "v": "pick",
+   "pick": "minimal",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "Q-attachments": {
+   "v": "pick",
+   "pick": "browser-attachments",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "Q-ai-help": {
+   "v": "pick",
+   "pick": "optional-ai",
+   "seconds": 62,
+   "theme": "meadow-mist"
+  },
+  "Q-existing-workspace": {
+   "note": "confused.",
+   "v": "other",
+   "seconds": 63,
+   "theme": "meadow-mist"
+  },
+  "S-explainer": {
+   "v": "yes",
+   "seconds": 63,
+   "theme": "meadow-mist"
+  },
+  "Q-workspace-sync": {
+   "v": "skip",
+   "seconds": 63,
+   "theme": "meadow-mist"
+  },
+  "Q-roadmap": {
+   "v": "pick",
+   "pick": "canonical-link",
+   "seconds": 24,
+   "theme": "meadow-mist"
+  }
+ }
+}

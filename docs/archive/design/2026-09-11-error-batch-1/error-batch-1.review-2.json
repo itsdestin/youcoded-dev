@@ -1,0 +1,38 @@
+{
+  "title": "Error messages, batch 1 — your two wording notes",
+  "key": "error-batch-1-review-2",
+  "out": "error-batch-1.review-2.html",
+  "images": "images/error-batch-1.review-2",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after-2"
+  },
+  "labels": {"before": "Today", "after": "Now"},
+  "themes": ["midnight", "light"],
+  "crops": {
+    "sync-row": ["error-batch1", "sync-retry-failed", "420x250+510+400"],
+    "copy-toast": ["error-batch1", "slash-copy-failed", "900x130+260+740"]
+  },
+  "steps": [
+    {
+      "id": "E-1b",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → a failed backup's warning → Retry",
+      "crop": "sync-row",
+      "headline": "When a backup upload fails, the row now says why, and the message stays until you upload again.",
+      "changed": "The bare “Error” is gone. The row reads “Upload failed:” with the reason, “Upload hasn't run yet” when the upload was skipped, or “Couldn't confirm the upload finished” when no answer came back. The reason is plain words now, not “Push to drive-1 had errors”.",
+      "notice": "You can read what went wrong without racing a two-second timer.",
+      "risk": "The message can stay on the row after a later automatic backup succeeds, until you upload again."
+    },
+    {
+      "id": "E-4b",
+      "surface": "Chat",
+      "path": "Type /copy in a conversation when the clipboard refuses",
+      "crop": "copy-toast",
+      "headline": "A failed /copy now says “Couldn't copy — please try again.”",
+      "changed": "Your wording. The old notice told you to select the text and copy it yourself, which is what /copy was for.",
+      "notice": "A short message that says what to do next."
+    }
+  ]
+}

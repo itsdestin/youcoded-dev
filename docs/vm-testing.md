@@ -360,8 +360,8 @@ gh release download v1.2.4 -p 'YouCoded.Setup.*.exe' -D ~/vms/share
 ```
 
 The build stamps `<base>.<GitHub run number>` automatically (2026-08-15), so there is no number to
-type; the `base` prefix (default `1.3.0-beta`) **must sort above the latest release** — `compareVersions` parses naively, so
-`1.2.4-beta` → `[1,2,0]`, which is *lower* than `1.2.4` and the build offers to "update" itself back
+type; the `base` prefix (default `1.3.0-beta`) **must sort above the latest release** — `compareVersions` orders
+semver-style, so `1.2.4-beta.N` is *lower* than `1.2.4` and the build offers to "update" itself back
 to the release. Bump the minor and suffix (`1.3.0-beta`), don't patch the current version.
 
 **A VM is the right home for these builds.** Per `version-line.ts`, test builds install *over* a real
@@ -391,6 +391,17 @@ this is also the actual thing under test (Gatekeeper/SmartScreen prompts, first-
 Alternatives if SMB misbehaves: the host is always `http://10.0.2.2` from inside a guest
 (`python3 -m http.server 8010 -d ~/vms/share`), or download the release in the guest browser — which
 additionally exercises the real SmartScreen path.
+
+**Prefer HTTP for putting a file in the user's Downloads.** On 2026-09-10 (`clean` snapshot), copying
+from `\\10.0.2.4\qemu` inside the logged-in session — Run box, `powershell -c "copy …"` — silently
+copied nothing, twice; `powershell -c "iwr http://10.0.2.2:8010/<file> -OutFile $env:USERPROFILE\Downloads\<file>"`
+worked first time. The cause was not traced. Also: a backslash before a closing quote in a Run-box
+command (`…\Downloads\"`) swallows the quote and breaks the whole command.
+
+**Driving the guest with no window on the host:** `scripts/vm/vmctl.sh` — `boot` (revert `clean`, start
+`--display none` with a share dir), `keys` / `type` (monitor `sendkey`), `shot` (`screendump` → PNG),
+`exec` (the agent), `off`. The Windows desktop still renders for `screendump`; the 2026-09-10 before/after
+installer test ran entirely this way, with nothing painted on Destin's screen.
 
 ## Driving guests from a session: the QEMU guest agent
 

@@ -1,0 +1,22 @@
+{
+ "deck": "resume-browser-header",
+ "started": "2026-09-10T22:08:39.463Z",
+ "submitted": "2026-09-10T22:10:49Z",
+ "cur": 1,
+ "answers": {
+  "R4-1": {
+   "note": "i want the model/project picker and resume button to be vertically stacked on top of eachother. i think i want the header to be a clone of the card on the lefthand side that just pops/animates in when changing sessions and floats at the top of the window inside the container. i want this whole page to have nice animations when jumping around between sessions.",
+   "v": "other",
+   "seconds": 106,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R4-2": {
+   "note": "this should look like it does in our other existing new/resume surfaces",
+   "v": "other",
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

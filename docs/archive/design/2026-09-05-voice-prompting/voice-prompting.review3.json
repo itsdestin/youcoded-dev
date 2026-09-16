@@ -1,0 +1,40 @@
+{
+  "title": "Voice prompting — round 3: the whole flow as it will ship, and two wordings",
+  "key": "voice-prompting-review3",
+  "out": "voice-prompting.review3.html",
+  "live": { "worktree": "voice-prompting", "paneWidth": 640 },
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "V-6",
+      "surface": "Message box → the mic, start to finish",
+      "path": "Round 1's V-1 was answered 'show me alternatives', so the basics were never approved as a step. This is the flow with your round-2 picks in place: the Listening strip above the box and the ring that follows your voice",
+      "headline": "The mic sits beside Send. Tap it, talk, and the message waits in the box for you to send.",
+      "live": { "surface": "voice-mic", "round": 1, "candidate": "ready" },
+      "changed": "A mic icon between the message and Send, drawn like the paperclip. Tap it: the button fills with the theme's accent and its ring grows and shrinks with your voice (2 to 9 px); the Listening strip appears above the box with a green dot, the meter, the clock and a Stop; the placeholder reads 'Listening…'. Words land while you talk, the newest two grey until they settle. The mic closes after two quiet seconds, a second tap, Enter, or Stop; the grey turns solid and the cursor waits at the end. Typing while the mic is open ends dictation and keeps what you typed. Also try: click into the EMPTY box and HOLD the space bar — after a quarter second it listens; let go and it stops.",
+      "measured": "Ring 2 to 9 px; strip one 36 px band; silence stop after 2 s",
+      "notice": "Nothing sends by itself. On Midnight and Dark the filled mic and its ring are the theme's light grey, since those themes are monochrome by rule.",
+      "risk": "The stand-in engine always hears the same sentence cleanly; a real engine will sometimes rewrite a grey word, which is what the grey is for."
+    },
+    {
+      "id": "V-7",
+      "words": true,
+      "surface": "Message box → hold the space bar",
+      "path": "Your note on Q-3: 'i would also like to be able to press and hold the spacebar in a bare input box for walkie-talkie mode'. Built into V-6 above; this step makes it its own decision",
+      "headline": "Hold Space in an empty box to talk; let go to stop. A quick tap does nothing.",
+      "changed": "When the box is empty and the mic is ready, holding the space bar for a quarter of a second starts listening; releasing it stops. A quick tap of the space bar is swallowed (a leading space in an empty box was never useful). With any text in the box the space bar types a space as always.",
+      "notice": "You can dictate without touching the mouse or screen. There is no other keyboard shortcut for the mic in this version.",
+      "risk": "Someone who habitually taps space to wake the box will notice nothing happens; the mic only starts on a hold."
+    },
+    {
+      "id": "V-8",
+      "words": true,
+      "surface": "Message box → the mic, when the computer refuses microphone access",
+      "path": "V-3 covered 'no microphone found'. The other real case is the operating system saying no (Mac's privacy prompt, or a Linux desktop with no audio portal). Same card, different sentence",
+      "headline": "When your computer refuses microphone access the card says so, with the way back and a Check again.",
+      "changed": "The tap opens the same small card as V-3 with: 'Microphone access was refused by your computer. Allow it for YouCoded in your system's privacy settings, then check again.' and one Check again button. On a Mac the app asks the system's own permission prompt first; this card appears only if that was declined.",
+      "notice": "The sentence is the real reason the computer gave, the same rule as every error in the app; it never guesses.",
+      "risk": "The exact words of the system prompt differ per operating system; the card's sentence stays the same."
+    }
+  ]
+}

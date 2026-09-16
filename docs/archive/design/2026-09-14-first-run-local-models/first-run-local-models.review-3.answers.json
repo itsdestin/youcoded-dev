@@ -1,0 +1,93 @@
+{
+ "deck": "first-run-local-models-review",
+ "started": "2026-09-14T23:25:32.531Z",
+ "submitted": "2026-09-14T23:29:47Z",
+ "cur": 12,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-3": {
+   "v": "other",
+   "note": "this list should matche the search/list provided in the assistant settings-> local models download screen.",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-4": {
+   "v": "no",
+   "note": "warnings should match existing styling from assitant settings -> local models",
+   "seconds": 34,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-12": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-13": {
+   "v": "other",
+   "note": "if no apps are found, we should skip the \"no found, or enter\" framing and just put\" Enter the address for your local endpoint\"",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-5": {
+   "v": "yes",
+   "note": "but only if no other endpoints are set up. we should not show this for every download, only the first-download when the app would otherwise be unusable.",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-6": {
+   "v": "yes",
+   "note": "same as prior message",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-7": {
+   "v": "other",
+   "note": "this should open a second page, like the local model button.",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-8": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-9": {
+   "note": "two separate \"installing\" cards? seems unnecssary/cluttered",
+   "v": "other",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-10": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-11": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

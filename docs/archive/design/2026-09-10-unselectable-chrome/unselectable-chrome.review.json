@@ -1,0 +1,67 @@
+{
+  "title": "Chips, tool card titles and buttons can't be highlighted or copied",
+  "key": "unselectable-chrome-review",
+  "out": "unselectable-chrome.review.html",
+  "images": "images/unselectable-chrome.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "crops": {
+    "chat-lower": ["main", "home", "1440x440+0+460"],
+    "toolcard-rows": ["main", "home", "1180x90+26+510"],
+    "no-session": ["main", "no-session", "700x340+370+300"],
+    "newchat-lower": ["main", "empty-chat", "1440x440+0+460"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Any chat, press Ctrl+A (select all)",
+      "crop": "chat-lower",
+      "headline": "Select all now highlights only the conversation's words. Chips, buttons, tool card titles and the message box stay plain.",
+      "changed": "Quick chips, status bar chips, tool card titles, buttons and the empty message box's placeholder can no longer be highlighted, by select all or by dragging across them.",
+      "measured": "Select all on this screen picks up 2,925 characters, down from 4,204",
+      "notice": "Copying a stretch of conversation pastes just the messages, without chip labels, button names or tool card titles mixed in.",
+      "risk": "Button text you did want to copy can't be copied now. Clickable file names inside messages are the exception and stay copyable.",
+      "highlight": {"box": [0, 73, 43, 27]}
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Right-click a tool card title, or right-click a message and choose Copy",
+      "crop": "toolcard-rows",
+      "headline": "Right-clicking a tool card title shows no menu, and copying a whole message leaves tool card titles out.",
+      "changed": "The right-click menu treats titles and buttons like the rest of the unselectable parts. Copy and Ask about this on a message use only the message's own words.",
+      "notice": "Right-clicking \"Ran a command\" does nothing. A copied message no longer pastes lines like \"Ran a command\".",
+      "risk": "Ask about this is gone from tool card titles. It still works on messages, code and files.",
+      "highlight": {"box": [2, 4, 26, 92]}
+    },
+    {
+      "id": "S-3",
+      "surface": "Welcome screen",
+      "path": "A window with no conversation open, press Ctrl+A",
+      "crop": "no-session",
+      "headline": "On the No Active Session screen, select all highlights nothing.",
+      "changed": "The screen title and the New Session and Resume Session buttons can no longer be highlighted.",
+      "measured": "Select all picks up 9 characters, down from 440",
+      "notice": "Nothing on this screen lights up when you press Ctrl+A or drag across it.",
+      "risk": "",
+      "highlight": {"box": [22, 4, 56, 93]}
+    },
+    {
+      "id": "S-4",
+      "surface": "Chat",
+      "path": "A brand-new chat, press Ctrl+A while it starts up",
+      "crop": "newchat-lower",
+      "headline": "A new chat's \"Initializing session…\" line, chips, message box and status bar stay plain on select all.",
+      "changed": "The start-up line and the \"Start a conversation with your assistant\" line that follows it can no longer be highlighted, alongside the chips and message box.",
+      "measured": "Select all on a new chat picks up 1,957 characters, down from 2,775",
+      "notice": "Pressing Ctrl+A in a fresh window lights up nothing. The \"Start a conversation\" line isn't pictured: the test app's pretend chat never finishes starting.",
+      "risk": "",
+      "highlight": {"box": [0, 8, 60, 92]}
+    }
+  ]
+}

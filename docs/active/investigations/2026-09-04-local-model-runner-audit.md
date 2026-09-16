@@ -17,12 +17,22 @@ the pinned binary on an isolated port, never against the live app.
 
 ## 1. What runs today
 
-One `llama-server` process in **router mode**. The exact spawn shape:
+> **DATED 2026-09-04. Sections 1-3 describe the app BEFORE the local-engine upgrades, and
+> most of §5's recommended order has since been built on `feat/local-engine-upgrades`.**
+> This report stays live for what is still OPEN: the dual-model decision and the remaining
+> §4 parity gaps, which two roadmap items link here. Read the current spawn shape, preset
+> file and asset table from `youcoded/docs/engine-dependencies.md`, never from this report.
+
+One `llama-server` process in **router mode**. The spawn shape AS IT WAS on 2026-09-04:
 
 ```
 --host 127.0.0.1 --port 9920 --no-webui --jinja --models-dir ~/.cache/llama.cpp
 --models-max 2 --sleep-idle-seconds 300 -c <contextSize>
 ```
+**Superseded 2026-09-05:** `-c` and `--sleep-idle-seconds` moved OFF the command line into
+`~/.youcoded/engine/models.ini`, because the router's own arguments merge over every preset
+and a `-c` here silently defeats each model's own context length. `--spec-default` and
+`--cache-type-k q8_0` joined it, both switchable.
 <!-- claim: {"path": "youcoded/desktop/src/main/engine/engine-supervisor.ts", "contains": "'--models-max', String\\(MODELS_MAX\\)"} -->
 
 Every other knob is the engine's default. The user-facing settings are exactly two: a

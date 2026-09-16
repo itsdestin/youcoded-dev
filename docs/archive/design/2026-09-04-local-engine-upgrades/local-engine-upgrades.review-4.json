@@ -1,0 +1,26 @@
+{
+  "title": "Local engine upgrades — review, round 4",
+  "key": "local-engine-upgrades-review-4",
+  "out": "local-engine-upgrades.review-4.html",
+  "images": "images/local-engine-upgrades-review-4",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-local-engine-before",
+    "after": "/home/destin/youcoded-dev/scratch/ui-local-engine-after"
+  },
+  "themes": ["midnight", "light", "creme", "dark", "halftone-dimension", "meadow-mist"],
+  "crops": {
+    "memory-warning": ["local-engine", "local-model-memory-warning", "460x330+490+560"]
+  },
+  "steps": [
+    {
+      "id": "P-19",
+      "surface": "New session form → model picked → memory warning",
+      "path": "Round 4 of P-18: two short lines and the app's toggle",
+      "crop": "memory-warning",
+      "headline": "Unfolded, the warning shows one line of numbers and a 'Warn me about this model' toggle row — nothing else.",
+      "changed": "The paragraph is gone. Why? now shows '9.5 GB model + 15.6 GB for 128k context, with 8.9 GB already loaded.' and a toggle row, 'Warn me about this model — Off skips this next time.', all inside the strip. The bare checkbox is replaced by the same toggle row every other on/off setting uses.",
+      "notice": "Two lines to read and one switch, in the shape you already know from Settings.",
+      "risk": "The numbers line is the whole explanation; the longer reasoning lives in the model's fit label and Settings instead."
+    }
+  ]
+}

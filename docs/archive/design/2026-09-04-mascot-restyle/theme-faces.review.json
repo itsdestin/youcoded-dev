@@ -1,0 +1,59 @@
+{
+  "title": "Theme mascot faces",
+  "key": "theme-faces",
+  "out": "theme-faces.review.html",
+  "images": "images/theme-faces.review",
+  "runs": { "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/faces/runs/before", "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b76eda7c-51df-467e-9138-0ed3b2ae28e8/scratchpad/faces/runs/after" },
+  "themes": ["golden-sunbreak"],
+  "crops": { "faces": ["mascots", "faces", "1182x176+0+0"] },
+  "steps": [
+    {
+      "id": "TF-1",
+      "surface": "Halftone Dimension's buddy",
+      "path": "Settings → Appearance → Halftone Dimension",
+      "crop": "faces",
+      "themes": ["halftone-dimension"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Halftone's buddy has never had a visible face — a near-black face on a near-black body, behind a visor painted 45% black over the eyes.",
+      "changed": "The face is now paper white instead of #1e2636 on a #191327 body, and the visor became glass — a red rim and a cyan scanline with the eyes sitting inside it, instead of a solid bar across them. Eight expressions replace six, and the sparkle in each eye is the theme's own CMYK misregistration dot. The theme's three older flat drawings got the same repaint.",
+      "notice": "You can tell what this buddy is doing for the first time. It still reads as the same character — same navy capsule, same red-and-cyan rim light, same visor silhouette.",
+      "risk": "The visor is quieter than it was: it no longer reads as an opaque slab, so the buddy looks less 'masked' and more 'wearing goggles'. If you liked the blank-visor look, this is the step to say no to."
+    },
+    {
+      "id": "TF-2",
+      "surface": "Kuromi Dreamer's buddy",
+      "path": "Settings → Appearance → Kuromi Dreamer",
+      "crop": "faces",
+      "themes": ["kuromi-dreamer"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Kuromi keeps her horns, tail, whiskers and skull charm, and gains the warmer eyes plus the two new expressions.",
+      "changed": "Surprised is no longer two solid black discs — it's the same eye shape as the rest, opened wider with both eyebrows raised. Every open-eyed face now has a three-dot highlight that follows your cursor; before, only 'curious' did. Two faces are new: happy, and shut-down. The 'seeing stars' marks moved out from behind her horns.",
+      "notice": "She looks at you. The eyes track the pointer on far more of her expressions than before, and she can now look pleased and can power down at night.",
+      "risk": "Her old resting face was a smug sideways squint. That look is gone — the closed-eye face is now content rather than smug, because you asked for warmth over smugness."
+    },
+    {
+      "id": "TF-3",
+      "surface": "Strawberry Kitty's buddy",
+      "path": "Settings → Appearance → Strawberry Kitty",
+      "crop": "faces",
+      "themes": ["strawberry-kitty"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Same treatment for the kitty — ears, bow, strawberry, yellow nose and whiskers all kept.",
+      "changed": "Identical eye and mouth grammar to Kuromi, painted in the theme's berry palette. The nose stays on every face, including the closed-eye ones. Surprised loses the black discs; happy and shut-down are new.",
+      "notice": "She reads as a cat rather than a capsule with whiskers — the expression now comes from brows and lids rather than from how big the black circles are.",
+      "risk": "Her eyes sit slightly higher than before to leave room for the nose, so she reads a touch younger. If that's wrong, the eye position is one number."
+    },
+    {
+      "id": "TF-4",
+      "surface": "Golden Sunbreak's buddy",
+      "path": "Settings → Appearance → Golden Sunbreak",
+      "crop": "faces",
+      "themes": ["golden-sunbreak"],
+      "highlight": { "box": [0, 0, 100, 100] },
+      "headline": "Sunbreak now matches the default buddy exactly — it was always the same character in amber.",
+      "changed": "The full eight-face set from the promo film, in Sunbreak's hardcoded amber instead of the theme variables. Surprised gains raised brows instead of growing black discs; dizzy became spirals; happy and shut-down are new.",
+      "notice": "Sunbreak and the built-in buddy are now indistinguishable in behaviour — every reaction you see on one, you see on the other.",
+      "risk": "None found. This is the cheapest of the four because it shared the default's geometry already."
+    }
+  ]
+}

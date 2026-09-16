@@ -1,0 +1,28 @@
+{
+  "title": "Beta builds — just the card",
+  "key": "beta-update-card",
+  "out": "beta-update-card.review.html",
+  "images": "images/beta-update-card",
+  "runs": {
+    "before": "/tmp/claude-1000/deck/after2",
+    "after": "/tmp/claude-1000/deck/after5"
+  },
+  "themes": ["devils-garden", "light"],
+  "labels": { "before": "What you saw", "after": "What you asked for" },
+  "crops": {
+    "development-dialog": ["homes", "development", "430x540+505+200"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "The gear, then Development",
+      "crop": "development-dialog",
+      "headline": "The heading and the paragraph are gone — it is the fifth card in the list now.",
+      "changed": "No \"Updates\" heading and no sentence about how often the app checks. The switch sits in the same list as the four rows above it, wearing the same card, with its own icon so the icon column stays straight.",
+      "measured": "2 lines of text removed; 1 card added to a list of 4",
+      "notice": "The popup is shorter than it was a moment ago, and nothing in it is styled differently from anything else. The four rows above still open something elsewhere; this one flips in place.",
+      "risk": "It no longer says anywhere that the app checks every half hour and never installs on its own. That was the sentence I cut — if you want it back it would have to go somewhere, and the update popup is the only other place it fits."
+    }
+  ]
+}

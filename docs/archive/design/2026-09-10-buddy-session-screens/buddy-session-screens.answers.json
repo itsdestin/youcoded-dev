@@ -1,0 +1,34 @@
+{
+ "deck": "buddy-session-screens",
+ "started": "2026-09-10T11:02:48.006Z",
+ "submitted": "2026-09-10T11:04:31Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "other",
+   "note": "should use the same red used in the main windows create/dangerous button, danger red.",
+   "seconds": 55,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "same",
+   "seconds": 28,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

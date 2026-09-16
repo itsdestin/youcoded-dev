@@ -1,0 +1,32 @@
+{
+ "deck": "unselectable-chrome-review",
+ "started": "2026-09-10T23:55:09.508Z",
+ "submitted": "2026-09-10T23:55:25Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

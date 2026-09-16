@@ -1,0 +1,22 @@
+{
+ "deck": "session-context-styled",
+ "started": "2026-09-09T21:52:22.540Z",
+ "submitted": "2026-09-09T21:53:32Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "we can shrink the top banner to 1 sentence with (See details below)",
+   "v": "pick",
+   "pick": "after",
+   "seconds": 52,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

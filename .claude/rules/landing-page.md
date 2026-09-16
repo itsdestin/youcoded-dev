@@ -15,6 +15,8 @@ verify:
   - path: scripts/ui-review/README.md
     contains: "Recording a loop"
   - path: scripts/ui-review/copy-preview.py
+  - path: scripts/ui-review/embed-posters.mjs
+    contains: "POSTER_THEMES"
   - path: youcoded/docs/index.html
     contains: "Appearance"
   - path: youcoded/docs/tools/gen-hero-mascots.py
@@ -42,9 +44,10 @@ Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-lan
 (loops + posters), `docs/gallery/` (48 stills) and `docs/site/` (embed). It refuses a
 workbench serving another tree and refuses to overwrite the gallery if any shot failed
 verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
-The last three followed on 2026-09-04: `youcoded/docs/tools/gen-hero-mascots.py` (picker
-mascots — theme rigs, ink `accent x 0.32` never on-accent, WARM faces, a lifted arm scaled
-~1.7-2x) and `gen-og-image.mjs` (bump `?v=` on `og:image` or a shared link keeps the old one).
+The last three followed on 2026-09-04: `gen-hero-mascots.py` and `gen-og-image.mjs` (bump
+`?v=` on `og:image` or a shared link keeps the old one).
+`site-assets.sh` maps each file `index.html` plays to its scene. Loop length, zoom and pace:
+README → "The landing loops' standard".
 **Why:** the previous site drifted for four months on hand-drawn mockups; the share image
 stayed a screenshot of the pre-redesign app.
 **Guard:** the script's own checks; `scripts/workbench-boot-check.mjs`.
@@ -69,7 +72,7 @@ blank chats once loops started empty.
 per turn, the Nth message plays the Nth turn (wraps); `user_message` lines put a bubble on
 the timeline only for turns nobody typed here (phone half of the sync row + `?autoplay=`).
 Conversation fixtures end with `turn_complete` or they render frozen mid-turn.
-Switches: `?seed=none` (empty chat), `?title=`, `?model=`, `?platform=android`,
+Switches: `?seed=none&scenario=site` (empty chat — site scenario only), `?title=`, `?model=`, `?platform=android`,
 `?signedIn=1` (fake friend for Connect Four), `?latency=` (0 for the live embed).
 **Guard:** `workbench-reply-script.test.ts` (`splitTurns`, `isControl`),
 `workbench-fixture-actions.test.ts`, `workbench-mock-contract.test.ts` (HAND_WRITTEN).
@@ -83,18 +86,16 @@ Switches: `?seed=none` (empty chat), `?title=`, `?model=`, `?platform=android`,
 **Invariant:** the page's floating theme button clicks the app's own gear + Appearance row
 inside the iframe (the swatch bar and its `__workbenchAppearanceSync` hook went in `8d077dcd`;
 the hook survives only for the workbench deck); never a reload; the iframe ignores the
-pointer until the visitor clicks once.
-**Why:** a reload flashed the poster; an interactive iframe under the wheel trapped page
-scroll ("janky").
-
-## Motion in a review deck
-**Invariant:** an animation, hover or visual bug is reviewed as a deck CLIP step
-(`"clip": "<scene>"`, recordings from `scripts/ui-review/record-pair.sh <scene> <before> <after> <clips-dir>`),
-never as a prose description or a still that can't show it.
-**Guard:** `tests/test_spec.py` ClipStepTests, `tests/deck-render.test.mjs` (clip step).
+pointer until the visitor clicks once. Its stills (one per `POSTER_THEMES`) come from
+`embed-posters.mjs`; the swap waits for `whenEmbedPainted()`, not `load`.
+**Why:** a reload flashed the poster; a wheel-trapping iframe was "janky"; a grey still
+swapped on `load` read as "broken" (2026-09-14).
 
 ## Copy and review
-**Invariant:** page copy is reviewed in place with `scripts/ui-review/copy-preview.py serve
-… [--media docs/media]` (edit text on a page-shaped preview; per-row loop verdicts) — never
-a table, contact sheet, or chat description (all rejected). The never-claim list is the audit's,
-referenced from the spec's "Not in scope"; the footer's Anthropic non-affiliation sentence is verbatim.
+**Invariant:** "let me edit the website" → `site-copy-editor.py serve youcoded/docs/index.html`
+(real page, edit in place, Submit writes `edits.md`). Proposed-copy review uses
+`copy-preview.py serve … [--media docs/media]` — never a table, contact sheet, or chat
+description (all rejected).
+**Why:** neither is the review deck. The never-claim list is the audit's, from the spec's "Not in
+scope"; the footer's Anthropic sentence is verbatim.
+How-to + traps paid for: `README.md` → "Editing copy on the site". Guard: `test_site_copy_editor.py`.

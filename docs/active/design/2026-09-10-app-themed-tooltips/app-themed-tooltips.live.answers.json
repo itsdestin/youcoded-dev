@@ -1,0 +1,34 @@
+{
+ "deck": "app-themed-tooltips-live",
+ "started": "2026-09-10T11:24:13.278Z",
+ "submitted": "2026-09-10T11:26:51Z",
+ "cur": 3,
+ "answers": {
+  "L-1": {
+   "v": "yes",
+   "seconds": 91,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-3": {
+   "note": "should be just a smidge faster. and there should be slightly more of a delay/fade in when moving across buttons next to eachother",
+   "v": "other",
+   "seconds": 38,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "pick": "build-info-button"
+  }
+ }
+}

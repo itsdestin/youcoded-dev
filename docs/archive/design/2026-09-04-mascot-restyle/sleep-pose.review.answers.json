@@ -1,0 +1,23 @@
+{
+ "deck": "sleep-arms",
+ "started": "2026-09-05T07:10:15.431Z",
+ "submitted": "2026-09-05T07:10:57Z",
+ "cur": 1,
+ "answers": {
+  "sleep-arms": {
+   "v": "pick",
+   "pick": "dock",
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "sleep-zzz": {
+   "v": "yes",
+   "note": "keep slow/subtle",
+   "note_kind": "noting",
+   "seconds": 12,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

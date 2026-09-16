@@ -1,0 +1,28 @@
+{
+  "title": "Sign in with ChatGPT — one wording decision from the build",
+  "key": "chatgpt-signin-words-1",
+  "out": "chatgpt-signin.words-1.html",
+  "themes": ["midnight"],
+  "steps": [
+    {
+      "id": "W-1",
+      "words": true,
+      "surface": "Chat view · the used-up-plan card",
+      "path": "A conversation on a ChatGPT model, when the plan's WEEKLY window runs out",
+      "headline": "When the weekly window runs out, how should the card say when it resets?",
+      "notice": "Today: you approved the 5-hour card exactly as 'You have reached ChatGPT's 5-hour session limit (Resets @ 6:43pm).' — that sentence is not changing. The problem: the same card is also shown when the WEEKLY window runs out, and the weekly window resets up to seven days later. Written the same way it would read 'You have reached ChatGPT's weekly session limit (Resets @ 6:43pm).' — a clock time with no day, for a reset that may be next Tuesday. The 7-day chip in the status bar beside it already says 'Resets Tue @ 6:43pm'. The proposal: add the day to the weekly sentence only, the way the chip does.",
+      "options": [
+        {
+          "id": "a",
+          "label": "Add the day to the weekly sentence: 'Resets Tue @ 6:43pm' (recommended)",
+          "summary": "The weekly card and the 7-day chip beside it say the same thing. You'll notice: the weekly card is a few characters longer. Risk: none to the 5-hour card, which keeps its approved wording."
+        },
+        {
+          "id": "b",
+          "label": "Keep the clock time only on both cards",
+          "summary": "Both cards read identically, as approved. You'll notice: after a weekly cut-off the card says 'Resets @ 6:43pm' while the chip beside it says 'Resets Tue @ 6:43pm'. Risk: a user waits until 6:43pm today and nothing resets."
+        }
+      ]
+    }
+  ]
+}

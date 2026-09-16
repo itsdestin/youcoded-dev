@@ -1,0 +1,21 @@
+{
+ "deck": "claude-signin-live-status-r2",
+ "started": "2026-09-10T03:54:39.597Z",
+ "submitted": "2026-09-10T03:54:56Z",
+ "cur": 1,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "pick",
+   "pick": "leave-on",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

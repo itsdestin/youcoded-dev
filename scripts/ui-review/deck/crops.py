@@ -8,7 +8,7 @@ import subprocess
 
 from .boxes import diff_bbox, image_size, px_to_pct, rect_to_pct
 from .live import is_live
-from .spec import AUTO_WARN_FRACTION, is_choice, is_words, no_pictures, run_names, step_themes, is_clip
+from .spec import AUTO_WARN_FRACTION, is_choice, is_page, is_words, no_pictures, step_runs, step_themes, is_clip
 
 
 def image_name(crop, theme, run):
@@ -42,13 +42,16 @@ def crop_images(spec, log=print):
         return {'boxes': {}, 'missing': [], 'warnings': [], 'count': 0}
     out_dir = os.path.join(spec['_base'], spec['images'])
     os.makedirs(out_dir, exist_ok=True)
-    runs = run_names(spec)
-    two = len(runs) == 2
     boxes, missing, warnings, cut = {}, [], [], set()
     for st in spec['steps']:
+        # Per slide, not per deck: one deck may hold a one-picture slide and a before/after one.
+        runs = step_runs(spec, st)
+        two = len(runs) == 2
         # LIVE FIRST, before is_choice: a live pick-one has `variants` too, so is_choice()
         # claims it and _crop_choice then dies on the crop those variants deliberately lack.
         # (Same reason validate() dispatches live first.)
+        if is_page(st):
+            continue   # a page marker, not a step — no crop to look up
         if is_live(st):
             continue   # a running app, not a still — nothing to cut, and no `crop` to look up
         if is_words(st):
@@ -71,7 +74,7 @@ def crop_images(spec, log=print):
                     missing.append(f'{st["id"]}: {theme}/{run} — {src} not captured')
                     continue
                 if dst not in cut:   # steps sharing a crop share the file — cut it once
-                    subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
+                    subprocess.run(['magick', src, '+repage', '-crop', geo, '+repage', dst], check=True)  # +repage FIRST: a hand-made picture (a film still, a crop of a crop) can carry a page offset, and -crop then misses the whole image ("geometry does not contain image") — three builds on 2026-09-10
                     cut.add(dst)
                 if isinstance(hl, dict) and 'box' in hl:
                     per_run[run] = hl['box']
@@ -119,7 +122,7 @@ def _crop_choice(spec, st, run, out_dir, boxes, missing, cut):
                 missing.append(f'{st["id"]}/{v["id"]}: {theme}/{run} — {src} not captured')
                 continue
             if dst not in cut:
-                subprocess.run(['magick', src, '-crop', geo, '+repage', dst], check=True)
+                subprocess.run(['magick', src, '+repage', '-crop', geo, '+repage', dst], check=True)  # +repage FIRST: a hand-made picture (a film still, a crop of a crop) can carry a page offset, and -crop then misses the whole image ("geometry does not contain image") — three builds on 2026-09-10
                 cut.add(dst)
             hl = v.get('highlight')
             if not hl:

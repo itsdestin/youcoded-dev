@@ -1,0 +1,41 @@
+{
+  "title": "Website clips — the softer joke and the automatic theme swap",
+  "key": "promo-ui-refresh-review-4",
+  "out": "promo-ui-refresh.review-4.html",
+  "images": "images/promo-ui-refresh.review-4",
+  "stage": "review",
+  "runs": {
+    "before": "runs4/before",
+    "after": "runs4/after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "steps": [
+    {
+      "id": "J-1",
+      "surface": "Website",
+      "path": "youcoded.ai — card 1, \"Tools and conversations work across any model.\"",
+      "themes": ["midnight"],
+      "clip": { "before": "images/promo-ui-refresh.review-4/clips/landing-row1-any-ai--before.webm", "after": "images/promo-ui-refresh.review-4/clips/landing-row1-any-ai--after.webm" },
+      "headline": "The switch-to-Grok joke is goofy now, with nothing offensive in it.",
+      "changed": "You ask for \"something totally unhinged. go full chaos goblin\"; Grok answers \"PINEAPPLE ON PIZZA IS ELITE. SOCKS ARE JUST FOOT BLANKETS. I FEAR NOTHING RAHHHH\". The rest of the skit is unchanged.",
+      "measured": "17.5 s → 16.2 s",
+      "notice": "The same beat — Claude declines, Grok goes too far, you reel it back — without the crude lines.",
+      "risk": "Wording is easy to change: type the lines you want in the note and I will re-record."
+    },
+    {
+      "id": "J-2",
+      "surface": "Website",
+      "path": "youcoded.ai — card 7, \"Describe a look. Install a plugin. Share both.\"",
+      "themes": ["midnight"],
+      "clip": { "before": "images/promo-ui-refresh.review-4/clips/row6-yours--before.webm", "after": "images/promo-ui-refresh.review-4/clips/row6-yours--after.webm" },
+      "headline": "The theme-builder clip switches to the new theme on its own as soon as the reply finishes.",
+      "changed": "The trip through the marketplace is gone; the moment the assistant says it built the theme, the window changes to Golden Sunbreak.",
+      "measured": "16.8 s → 10.8 s",
+      "notice": "The card goes straight from asking for a look to wearing it.",
+      "risk": "The clip no longer shows the marketplace, so this card no longer hints that themes can be shared or installed from there."
+    }
+  ]
+}

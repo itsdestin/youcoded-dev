@@ -1,0 +1,229 @@
+# Workspace workflow reference
+
+Read only the section needed for the task. `CLAUDE.md` is the operating core; this reference retains detailed recipes and incident explanations moved out of the always-loaded context. Runtime capabilities and user authorization take precedence over assumptions in a recipe. Command hooks mentioned here refer to Claude Code unless explicitly identified as native.
+
+### Git, worktrees, and shipping
+
+**Start in an isolated session workspace before working.** Use `workspace-start` below, not a manual `git pull` in shared checkouts. It fetches published workspace authority on every invocation and prints the complete private reorientation report path. New workspace worktrees start from that immutable fetched commit; resumed session and component worktrees preserve unfinished branches, indexes and files. Read the report, changed guidance, `.claude/rules/`, `docs/MAP.md`, and scripts from the returned worktree before proceeding. The report is factual inventory, not a semantic interpretation; explain material meaning yourself. Uncommitted guidance is labeled as a proposal and does not automatically override committed guidance.
+
+**Do not manually repair shared checkouts just to start work.** `workspace-start` may guardedly fast-forward shared `youcoded-dev` master when it proves a clean or unrelated dirty state is preserved. Overlaps, divergence, patch-equivalent/unique local commits, exact incoming copies without sufficient proof, unsupported types, collisions and uncertain state remain review-only, with private evidence and an isolated candidate where feasible. A candidate—even a clean textual one—is not applied or semantically approved. Resumed branches are never integrated automatically, and no startup action commits or pushes.
+
+**Use isolated worktrees for every development edit, including docs and small fixes.** Read instructions and run scripts from the returned workspace; use its absolute paths with file tools. Never edit shared files first and copy whole files into a newer branch afterward. Existing manually created worktrees can stay in use; do not migrate their unfinished work automatically.
+
+**Parallelize when possible.** Quality and speed are equally important. When building new features or making significant changes, you should endeavor to parallelize as much work as possible without sacrificing quality of the final product. Sequential work is fine when one task requires the prior completion of another, but we prefer parallelization when practical.
+
+**Never link a worktree's `node_modules` to the main checkout — `workspace-start` already copies it with `cp -al` (hardlinks) when it creates the worktree.** You normally don't run this step yourself; the startup output lists it as `deps: …`. The rules below govern what you may then DO with that hardlinked copy. On Windows, `git worktree remove` AND `npm ci` both follow `node_modules` junctions and will wipe the **main checkout's** deps; delete the junction first (`cmd //c "rmdir <path>"`, never `rm -rf`). **A POSIX symlink is no safer** (verified 2026-08-13): Gradle's `bundleWebUi` transitively runs `npm ci`, which followed the symlink and emptied the shared copy across six worktrees at once — so don't run Gradle or `build-web-ui.sh` in a linked worktree either (`-x bundleWebUi` if you must). A symlink ALSO makes `verify.sh` lie: Vite resolves the real path, sees it outside the worktree root, and fails suites at load with `Denied ID …?inline` — 2 suites silently never ran while the summary said "1 check failed". `cp -al` is near-instant, costs almost no disk, and has none of these failure modes — but it is not hazard-free: hardlinks SHARE THE INODE, so a tool that writes IN PLACE inside a worktree's `node_modules` edits every tree linked to it (one file was found on 7 links in 2026-08-27). Before running anything that patches a dependency, confirm it renames rather than writes in place. Full note: `docs/PITFALLS.md` → Cross-repo invariants.
+
+**A dependency added to master after the shared checkout's last install is absent from a worktree's hardlinked `node_modules`** (three sessions on 2026-09-11: `Failed to resolve import "dompurify"`). `workspace-start` now fetches required missing packages itself when it creates the worktree (listed after `deps:`). After merging master into an EXISTING worktree, run `node scripts/fill-missing-deps.mjs <worktree>/youcoded/desktop`. Never `npm install` for this — it writes `node_modules/.package-lock.json` in place through the shared inode (`docs/PITFALLS.md` → Worktrees); both paths `npm pack` + `tar` into a fresh directory instead.
+
+**"Merge" means merge AND push.** Don't stop at a local merge.
+
+**Clean up worktrees and branches after merging to master.** Once a feature branch is fully merged and pushed, remove its worktree and delete the branch **both remotely and locally**:
+```bash
+git worktree remove <path>
+git push origin --delete <branch>   # skip if GitHub's PR auto-delete already removed it
+git branch -D <branch>              # -D (not -d) because --no-ff merges leave the tip non-ancestral
+```
+**`gh pr merge --delete-branch` ends in `fatal: '<default>' is already used by worktree` in every
+repo here, and THE MERGE STILL SUCCEEDED** — gh merges server-side, then tries to check the default
+branch out locally, which fails because the main checkout already holds it (3/3 merges, 2026-09-03).
+Confirm with `git log --oneline origin/master -1`, then do the cleanup above by hand; do not re-run
+the merge.
+Verify the commit landed on the remote default first: `git merge-base --is-ancestor <sha> origin/master` must exit 0 (a stale local `master` is not the authority). Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
+
+**A red check on the PR: run `bash scripts/ci-red-vs-master.sh <pr> [<repo-dir>]` before opening a log.** It pulls the failing test names from the PR's failed jobs and from master's latest run of the same workflow and says which failures are already red on master (exit 0) and which are new (exit 1); build/install breaks with no test names are yours to read. Two known-red legs on 2026-09-10 — the workspace git-identity test and the desktop Windows harness checkpoint tests — cost four manual comparisons in one session before this existed.
+
+**Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
+
+**Pushing to master green-lights closing the dev server.** If you started `bash scripts/run-dev.sh` to verify a change, shut it down (plus any helper Electron processes) once the commit lands on `origin/master`. Don't leave it running unless the user explicitly asks — orphaned Vite servers hold port 5223 and trip up the next session's dev launch.
+
+**Never tell Destin to run `wrangler deploy` manually.** The Cloudflare Worker (`wecoded-marketplace/worker/`) auto-deploys on push to master via `.github/workflows/worker-deploy.yml` — CI runs tests, applies D1 migrations, deploys, and pushes secrets. To ship a Worker change, the workflow is: open a PR → merge to master → CI handles the rest. Same for `[vars]` flips like `CUTOVER_TIMESTAMP` — edit `wrangler.toml`, commit, merge. See `docs/build-and-release.md → Worker (wecoded-marketplace)`.
+
+## Workspace Setup
+
+**Normal session startup:** `node scripts/workspace-start.mjs --session <stable-key> [repo…]`. Choose a unique lowercase session key once, and reuse it on resume. Workspace docs always get their own worktree; add `youcoded` or another component name when needed. The command prints absolute paths and supports `--json`; `--root` accepts the shared workspace or a linked workspace worktree. It fetches workspace `origin/master` on every call; offline resume is allowed with freshness `unknown`, while a fresh workspace requires a successful fetch. Newly requested components retain their own fetch requirement; recorded components resume unchanged. Read the complete report and that worktree's `CLAUDE.md` and `docs/MAP.md` before proceeding. It cannot change this conversation's file-tool root: use absolute paths. Details and recovery: `docs/workspace-start.md`.
+
+**Installation / explicit maintenance only:** `bash setup.sh` clones missing repositories and remains maintenance, not a prerequisite for each session. Startup never stashes, cleans, resets, commits, pushes or deletes unfinished work. It does automatically provision configured dependencies for newly created components as a `cp -al` hardlink farm (or a real copy across filesystems), and lists them as `deps:`; resumed components are not reprovisioned. Follow the hardlink safety rule above.
+
+**Reports and recovery are private and retained.** Every run gets an owner-only directory under `<git-common-dir>/youcoded-sync/`: the parent/evidence directories are mode 0700; the complete machine-readable `report.json`, concise `report.md` briefing, diffs and other evidence files are mode 0600. The candidate's `git-safe.mjs` is intentionally owner-executable, and Git controls internal modes inside its standalone private repository. A guarded update first stores a recovery ref, raw index, patches and affected path state in `snapshot/`; it keeps those backups after success. Review-only cases may also contain a standalone `candidate/`, whose layer outcomes and conflicts are evidence—not an applied answer. Recovery is deliberate: inspect the report/current state and never restore automatically over newer edits.
+
+**Locks coordinate, but do not make a filesystem transaction.** `<git-common-dir>/youcoded-sync.lock` is shared by startup and `workspace-sync.sh`; per-session locks/manifests continue to protect provisioning ownership. Neither blocks arbitrary editors and neither is automatically stolen or removed when stale-looking. On contention, inspect the lock's owner metadata/process before deliberate removal. Startup reports workspace freshness as unknown while sync is busy.
+
+**A commit made IN the shared `youcoded-dev` checkout is refused by a pre-commit hook** (`scripts/git-hooks/pre-commit`, installed by `setup.sh`); commit from a linked worktree, which the hook always allows, and push from there. `scripts/workspace-sync.sh` is the explicit-maintenance compatibility entry point to the same preservation policy as startup: it can fast-forward only after capture and preservation checks, otherwise retaining local history/files and reporting review-required. Historical byte matches and patch-equivalent commits are evidence, never authority to discard or reset work. Override, for a commit you genuinely mean to make in the shared checkout: `YOUCODED_ALLOW_MAIN_COMMIT=1 git commit …`.
+
+**Sub-repo code changes go to the relevant sub-repo** (e.g., `youcoded/`, `youcoded-core/`, `wecoded-themes/`, `wecoded-marketplace/`) — open PRs there, push there. Do NOT mix sub-repo code into the workspace repo (`youcoded-dev`).
+
+**Workspace-level artifacts DO get committed + pushed to `youcoded-dev`.** That includes:
+- Cross-cutting docs that span multiple sub-repos: `docs/PITFALLS.md`, `docs/registries.md`, `docs/build-and-release.md`, etc. (Single-repo subsystem depth — chat-reducer, android-runtime, shared-ui-architecture, etc. — lives in `youcoded/docs/`, not here.)
+- This `CLAUDE.md` and any rule files under `.claude/rules/`.
+- Lifecycle documents (specs, plans, investigations, handoffs, prototypes) — the artifacts produced by brainstorming, writing-plans, and similar skills before any sub-repo code changes. In-flight ones live under `docs/active/`; completed/superseded ones under `docs/archive/`. (These replace the old flat `docs/superpowers/` dump.)
+- Dev tooling under `scripts/` — `run-dev.sh`, `run-workbench.sh`, `cdp-eval.mjs`, etc.
+- The workspace's own `.gitignore`, `setup.sh`, and skill marketplace pointers under `.claude/`.
+
+## Development Workflow
+
+Release builds happen through GitHub Actions CI in the relevant sub-repo. For iterating on desktop changes locally alongside Destin's installed/built app:
+
+```bash
+bash scripts/run-dev.sh <branch-or-worktree> --label "Feature Name"
+```
+
+**Always pass `--label "<Feature Name>"`** so Destin can tell concurrent dev instances apart; without it the title falls back to the branch name. When another dev instance may be running, also pass a distinct `--offset` **and** `--profile` — a collision SIGKILLs the window. `--dry-run` prints the resolved target/ports/title without launching; `--list` shows registered worktrees. Ports, what's isolated, what's shared (`~/.claude/`), and the caveats: `docs/local-dev.md`.
+
+### New Features & UI/UX Changes
+
+When designing new features or making changes to user-facing app interfaces, the first step should always be to visualize and design the UI/UX of the final feature. Planning sessions should prioritize iterative UI design using the workbench and other tooling to help Destin shape the final user experience of the feature before building backend. When Destin provides final sign-off on the UI/UX design for the feature, the UI/UX should be treated as largely final and backend should be designed around the UI/UX accordingly. The standard every new surface is measured against is `docs/active/design/2026-08-25-ui-design-guide.md` (five laws, primitives, per-surface anatomies, checklist); show him the change as a **review deck** (scripts/ui-review/review-cards.py — one point per step: Before | After with the changed region boxed by the rig, a headline and three cards — What changed / You'll notice / Risk — Yes / No / Other, answers saved to a file and handed to Claude on Submit). Build it, then `preview <spec>` and READ the contact sheet it writes before Destin sees anything, then `serve <spec>` in the background: its exit is the submit signal and it prints every answer. `serve` OPENS NOTHING — put the printed link in chat as the last line of your turn. A deck he has already answered is re-served with `serve --no-build`. Kinds, fields and refusals: `.claude/rules/review-deck.md`, depth in `scripts/ui-review/deck/AUTHORING.md`, starting points in `scripts/ui-review/templates/`. Built from the UI review rig below; never a gallery, a prose page or a chat description (all three were rejected). The flow around the deck — questions deck first, contract at sign-off, acceptance deck at the end, then the build stage (technical design → capped review → task breakdown → subagent build) — is `.claude/rules/feature-flow.md`. **This overrides the brainstorming skill's habit of asking in chat:** on a YouCoded feature, its opening questions go on a questions deck (`ui-mockup` skill → "Before drawing anything"), and a chat answer is not a source for the contract. **For motion, drag or hover, use a LIVE step** — panes of the running app he can actually operate, one authored candidate each out of `youcoded`'s `compare/registry.tsx` (`serve` boots the worktree's workbench for them). A recording is the wrong tool for a 200 ms animation: four clip steps were rejected on 2026-08-31 as "just rough to compare". `scripts/ui-review/README.md` → "Live panes". **Two context-free subagents review every feature** (decided 2026-09-04): a **UX tester** that gets only a briefing and `scripts/ui-review/tester-kit.md` drives the mockups *before Destin sees the first deck* and the built branch at the end, reporting confusion and over-long copy; a **code reviewer** reads the whole branch for bugs and broken promises; a fresh **grader** writes the verdicts. Briefs: `scripts/ui-review/{ux-tester,code-reviewer,grader,contract-agent}.md`. Destin never opens a review session.
+
+### Asking Destin many questions at once
+
+**Four or more questions that need Destin's input go on a question deck, never in a chat message** — a words-only review deck. Copy `scripts/ui-review/templates/questions.json`, then `python3 scripts/ui-review/review-cards.py preview <spec.json>` and READ the contact sheet it writes, then `serve` it in the background: its exit is the submit signal and it prints every answer. It opens nothing — put the printed link in chat as the last line of your turn (Destin, 2026-09-05). A wall of one-liners in chat was rejected on 2026-09-01: it assumes he remembers every item, and some were filed months earlier. Every question is written for someone with **no context**, in plain words, in four parts the builder enforces as fields — **today** (what exists: which part of the app, what it does for the user), **problem** (what goes wrong, as the user experiences it), **proposal** (what would change, as the user would notice it), and **options** (each with `pros` and `cons` **about the user's experience**, at most one marked `recommended`). Yes/No/Don't-know questions say in the proposal what each answer leads to. Questions share one scrolling page unless a page marker starts a new one — split only where the thinking shifts. Fewer than four, or wording-only, still go in chat. Fields, kinds and commands: `.claude/rules/review-deck.md`, depth in `scripts/ui-review/deck/AUTHORING.md`.
+
+### UI Workbench
+
+`bash scripts/run-workbench.sh` boots the **real renderer** in a browser tab (Vite only — no Electron, no PTY) against a fake `window.claude`, on port 5233. Every menu is clickable and stateful, so **new feature UI is built here before its backend exists** — channels with no backend go in `MOCK_ONLY`, which is then the backend to-do list. Toolbar switches scenario (`default`/`empty`/`no-providers`/`refused`/`stress`), fake IPC latency, narrow viewport, and the tool gallery that replaced `?mode=tool-sandbox`. Use `run-dev.sh` instead when you need real event ordering, PTY, or main-process behaviour. **After any change to the mock shim run `node scripts/workbench-boot-check.mjs`** — it loads every registered workbench route headless (16 today) and fails on a console error, and refuses (exit 2) when nothing is serving the port; the unit suite passed while the app crashed at boot three times running. Rule: `.claude/rules/react-renderer.md`; spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
+
+### UI review (autonomous screenshot sweep)
+
+`bash scripts/ui-review/run-review.sh <worktree>` screenshots **every** screen, dialog, drawer, popover and menu in all six themes (workbench, headless, ~5 min — one Chrome per plan×theme×shard), builds side-by-side theme sheets, a painted-pixel contrast report and `gallery.html` — and **every shot must prove it opened** (target found, `expect` held, pixels changed) or it lands in `coverage.md` as a miss. **Read `coverage.md` before writing any finding; a surface that isn't `covered` is "unreviewed", never "fine".** Use it for the whole-app review pass (`/ui-review` skill: capture → fix misses → judge against `docs/active/design/2026-08-25-ui-design-guide.md` → numbered ledger) and as the Before/After runs behind a review deck for any UI PR (re-run only the affected plans; a second concurrent sweep needs `YOUCODED_PORT_OFFSET` ≥ 100 away from the first). Terminal, marketplace data, sync and live sessions need the real-app pass in `scripts/ui-review/README.md`. Born from the 2026-08-25 review, whose first rig filed 40 mislabelled sheets — that failure is why the verification exists.
+
+### Demo clips and the landing page
+
+The public site (`youcoded/docs/index.html`) is built from **recordings of the running renderer**, not drawings: `scripts/ui-review/record.mjs` films one JSON scene (`scripts/ui-review/scenes/`) into a WebM loop + poster, and `bash scripts/ui-review/site-assets.sh <worktree>` regenerates every loop, gallery still and the live embed in one go (a desktop release-checklist step). What the demo "model" says is a reply fixture. Any "make a clip of feature X" / "update the website" request starts at `scripts/ui-review/README.md` → "Recording a loop"; the rule `.claude/rules/landing-page.md` auto-loads on the page and the rig. **Destin editing the copy himself** ("let me edit the website") is `python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html` — the real page, editable in place, Submit writes `edits.md`; background it and put its URL in chat. **Landing copy lives in** `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`. Do not write “real app / real files / actually reads / does real work / self-improving.” The fact sheet is inventory, not copy.
+
+### Asking a page a question, and A/B-ing the answer
+
+`node scripts/ui-probe.mjs <url> [--size WxH]… [--wait '<js>'] [--eval '<js>']… [--shot p.png] [--json]` —
+launches its own headless Chrome on a free port, waits for the page's readiness flag, evaluates, screenshots,
+reports console errors (`--fail-on-error` makes them an exit code). **Reach for this instead of writing
+another CDP script**; one session wrote fifteen throwaway ones in a day. Guard: `scripts/ui-probe.test.mjs`.
+
+`bash scripts/ab-measure.sh <file>… [--prepare '<cmd>'] -- <measurement>` — answers **"did I break this, or
+was it already broken?"** by running the same measurement against `HEAD`'s copy of those files and yours.
+Restores your files on exit; never touches the index.
+
+`bash scripts/image-churn.sh [--staged] [--revert]` — changed images whose PIXELS match `HEAD`. Any generator
+that re-emits images makes these (265 in one deck rebuild) and they bury the image that really changed.
+
+`node scripts/check-doc-commands.mjs [--list] [--local]` — runs the commands in blocks marked
+`<!-- runnable -->` (or `<!-- runnable: local -->` for ones needing magick/ffmpeg/Chrome). Marking is opt-in;
+CI runs it. Born from a test command that sat wrong in two docs for months and could not start at all.
+
+`scripts/cdp-eval.mjs` is the other half of the first one: it attaches to an **already-running** CDP target by
+WebSocket URL — most often the Android WebView over `adb forward` (recipe in its header).
+
+### Local build & test
+
+**Before claiming a desktop change is done, run `bash scripts/verify.sh [<worktree>]`.** One command, one exit code: `tsc --noEmit`, `vitest related` on the files you changed **plus every source-scanning guard** (the `*-authority` suites read the tree at runtime, so `related` can never reach them — one slipped a banned class past two green runs on 2026-08-28), `knip`, `eslint`, and the ast-grep invariant scan — in parallel, ~10s for a small diff. It runs the FULL suite automatically when the diff touches test infra (`vitest.config.ts`, `package.json`, `tests/__mocks__/`), since that invalidates the affected-test mapping; `--full` forces it, `--dry-run` prints the plan. **It covers `youcoded/desktop` only** — it says so on exit, and Android/worker still need their own commands below.
+
+```bash
+# Desktop
+cd youcoded/desktop && npm ci && npm run build
+
+# Android (requires Desktop React UI built first)
+cd youcoded && ./scripts/build-web-ui.sh && ./gradlew assembleDebug && ./gradlew test
+
+# CHECK FIRST — whether the SDK is here has flipped twice in six days, and every
+# version of this comment has been true when written and wrong days later:
+#   ls $HOME/.android-sdk/platform-tools /usr/lib/jvm
+# absent 2026-09-04 -> present 2026-09-09 (741 tests green) -> absent 2026-09-10,
+# the last confirmed by an exhaustive `find / -name platform-tools`. Do not rewrite
+# this into an assertion either way; that flip-flop is what cost a session and a
+# subagent a false "unverifiable" each, and then cost the next session a false
+# "it works".
+#
+# WHEN PRESENT: ANDROID_HOME is still unset, so name it. Any JDK 21 works;
+# /opt/android-studio/jbr has outlived every /usr/lib/jvm one on this machine.
+# `-x bundleWebUi` skips the web-UI bundle, which would run npm against the
+# worktree's HARDLINKED node_modules and write through to the shared checkout.
+# Read the result out of app/build/test-results/**/*.xml, not off the console:
+# a second run prints BUILD SUCCESSFUL with "103 tasks up-to-date" and executes
+# no tests at all.
+#
+# WHEN ABSENT: Gradle stops at `SDK location not found` during CONFIGURATION,
+# before compiling. Report the Android half as unverified. Kotlin can still be
+# compiled file-by-file with the kotlinc inside /opt/android-studio.
+cd <worktree>/youcoded && JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME=$HOME/.android-sdk \
+  ./gradlew test -x bundleWebUi
+```
+
+**`./gradlew test` can report BUILD SUCCESSFUL without running a single test.** Gradle skips
+tasks whose inputs have not changed, and prints `N actionable tasks: N up-to-date` — a green
+you did not earn. Two agents were caught by it on the same day (2026-09-05): one reported a
+cached green as a pass, the other trusted it after editing Kotlin. Force execution, and
+confirm from the XML rather than the summary:
+
+```bash
+# Really run them. `test` is an umbrella task and does NOT accept --tests;
+# name the variant task if you want to filter.
+./gradlew testDebugUnitTest -x bundleWebUi --rerun-tasks
+
+# What actually ran — the summary will not tell you.
+grep -o 'tests="[0-9]*"' app/build/test-results/testDebugUnitTest/TEST-<Class>.xml
+```
+
+Same trap on the desktop side, different shape: **`npx vitest` is not this repo's vitest.**
+npx resolves a cached global copy with no jsdom, which dies at `Cannot find package 'jsdom'`
+and looks like a broken test rather than a wrong binary. Run one suite with the local
+binary, from `desktop/`:
+
+```bash
+cd youcoded/desktop && ./node_modules/.bin/vitest run tests/<file>.test.ts
+```
+
+See `docs/build-and-release.md` for full build order, release flows, and version bumping rules.
+
+### Harness evals (native agent tools)
+
+**When you change a native harness tool, a prompt/instruction file, or want to compare models, OFFER to run the harness evaluator — then let Destin decide.** `youcoded/desktop/test-engine/harness-eval.mjs --plan <file>` runs a case across a matrix of **code version × instruction file × model**, each cell in its own disposable `os.tmpdir()` fixture, and grades every run twice: free mechanical checks read off the event stream, plus an LLM judge whose every grade must quote the text it scored. `--dry-run` is free and needs no key; `--only <cellId>` is one cell; `--max-spend <usd>` is a hard cap. A real run needs `--key-file` — **the CLI refuses to start if `OPENROUTER_API_KEY` is in its environment**, because that is readable by the models it runs. Measured ~$0.25 a cell, so **never run the paid path unasked**.
+
+Why offer at all: four live rounds found **nine** real defects that 4,500 passing tests did not — Bash returning 27,966 chars from one command, Grep reporting a 500-match cap as a true total, Glob treating `{ts,kt}` as literal text, a provider 402 rendered as `[object Object]`. Unit tests here drive scripted fake models; only a real model spending a real turn exercises the judgment these tools are built for. Rule: `.claude/rules/harness-evaluator.md` (auto-loads on `harness/tools/**` too).
+
+## Ending a Session
+
+**When Destin says "wrap up", "close out this session", "let's finish up", "we're done",
+or asks what this session taught us — invoke the `wrap-up` skill.** Do not improvise a
+summary: the skill is the procedure, and a freehand recap is the failure mode it exists
+to replace. It also runs on its own at the end of any substantial session.
+
+It replays what the session actually did — what context loaded, what you had to hunt for
+because it was unwritten, which tooling you used and why, where you took a wrong turn —
+and turns that friction into workspace changes. Every recommendation ends the session
+**applied**, as a dated roadmap entry (`docs/roadmap/<area>.md` — see `ROADMAP.md` → "Filing an item"), or **explicitly dropped with a reason**.
+A numbered list nobody actions is the failure mode, not the output.
+
+**Why it has to be asked for.** No hook can know when a session is finished: `SessionEnd`
+fires once the session is already over (Claude cannot think then) and `Stop` fires after
+every turn. There is deliberately no tracker — a tracker for this would depend on the
+undocumented transcript format and a marker string, and when it broke it would look
+exactly like a clean record. A guard that fails silently is worse than none.
+
+**"Wrap up" does not mean "merge".** It usually means the docs and workspace hygiene
+while the branch stays open — Destin often has a fresh session review the PR first,
+because the session that wrote the code is the worst reviewer of it. Merge only on an
+explicit instruction, and never end a turn suggesting it.
+
+**A handoff prompt for a new session goes in plain chat, never a file.** When Destin asks
+for a prompt to start a fresh session with, write it as one chat message he can copy —
+not a handoff document, not a path (Destin, 2026-09-04). A written handoff doc is still
+right when the material is the *record* of a piece of work (`docs/active/handoffs/`); the
+prompt that points a new session at that record is chat.
+
+**Destin does not run commands.** If the wrap-up needs `scripts/close-out.sh`,
+`scripts/audit-anchors.mjs` or a test run, YOU run it and act on the output. Never end a
+turn by handing him something to type.
+
+The mechanical anchor checker runs daily in CI; `/audit` adds an assistant-led semantic
+review and corrections when invoked. The scheduled check does not perform that review.
+`wrap-up` captures what only the session that lived through the work knows.
+
+## Keeping Documentation Accurate
+
+This workspace's documentation is intended to be self-verifying. Destin can run `/audit` — it verifies the machine-checkable anchors (`node scripts/audit-anchors.mjs`: rule `verify:` blocks, doc anchors, MAP paths, store budgets), diff-scopes semantic re-verification to what changed since the last report in `docs/audits/`, and **fixes what it finds in the same run** (the report is an audit trail, not a to-do list). `/audit full` re-verifies everything and runs every pinned test; `/audit <subsystem>` scopes to one rule (names = `.claude/rules/*.md` basenames).
+
+- Run before any release (prevents shipping with stale docs)
+- Run after major refactors touching IPC, reducer, or runtime
+- Unresolved findings live in the latest `docs/audits/` report's `## Residue` section (the only surviving drift ledger — a snapshot, not an accumulator)
+- Session-start hook surfaces a reminder if the latest `docs/audits/` report is >60 days old or its `residue:` frontmatter count is non-zero
+- The mechanical pass also runs unattended in `.github/workflows/workspace-ci.yml` — on push/PR here, **and daily on a cron**. The cron is the one that matters: anchors point into the sub-repos, so they break when `youcoded` moves, which never triggers a push to this repo
+
+If you notice Claude acting on outdated information, or you mention a file/function Claude doesn't recognize, that's the signal to run `/audit`.

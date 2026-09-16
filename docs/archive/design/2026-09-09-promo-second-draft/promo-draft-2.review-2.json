@@ -1,0 +1,48 @@
+{
+  "title": "The promo video, second draft — the bubble's shape",
+  "key": "promo-draft-2",
+  "out": "promo-draft-2.review-2.html",
+  "images": "images/promo-draft-2.review-2",
+  "runs": {
+    "after": "docs/active/design/2026-09-09-promo-second-draft/runs/after"
+  },
+  "labels": { "after": "Second draft" },
+  "themes": ["midnight"],
+  "theme": "fixed",
+  "crops": {
+    "shape-wedge": ["promo", "shape-wedge", "1000x520+0+0"],
+    "shape-swoop": ["promo", "shape-swoop", "1000x520+0+0"],
+    "shape-nub": ["promo", "shape-nub", "1000x520+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-2",
+      "surface": "The promo video",
+      "path": "Every line the mascot says, all through the film",
+      "runs": ["after"],
+      "headline": "Which shape should the frosted bubble have?",
+      "notice": "All three fix what you flagged: the box and its tail are now drawn as one piece, so the outline runs unbroken around both, and the outline is 2.5 px in the theme's colour instead of a 1 px hairline. Light theme on top, dark below.",
+      "risk": "The tails reach a little further toward the mascot than before, so a bubble sits about 4 px closer to its head.",
+      "variants": [
+        {
+          "id": "wedge",
+          "label": "Comic wedge",
+          "crop": "shape-wedge",
+          "summary": "Squarer corners and a straight, pointed tail — the classic comic-strip speech bubble."
+        },
+        {
+          "id": "swoop",
+          "label": "Curled tail",
+          "crop": "shape-swoop",
+          "summary": "A pill with a tail that sweeps down toward the mouth in a curve — softer and more playful. My pick."
+        },
+        {
+          "id": "nub",
+          "label": "Rounded nub",
+          "crop": "shape-nub",
+          "summary": "A round box with a short, rounded bump for a tail — the quietest of the three, closest to a chat app."
+        }
+      ]
+    }
+  ]
+}

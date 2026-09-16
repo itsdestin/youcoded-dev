@@ -1,0 +1,136 @@
+{
+  "title": "Sign in with ChatGPT — six decisions before drawing",
+  "key": "chatgpt-signin-questions",
+  "out": "chatgpt-signin.questions.html",
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "First-run screen · Settings → Providers",
+      "path": "Where the sign-in button lives",
+      "headline": "Where does the ChatGPT sign-in button go?",
+      "notice": "Today the first-run screen offers one sign-in: 'Sign in with your Claude Pro or Max plan'. Settings → Providers lists Local models, OpenRouter and any API-key provider you add, each with a Connected / Needs API key status.",
+      "options": [
+        {
+          "id": "a",
+          "label": "Both: a ChatGPT row in Providers, and a second button on the first-run screen (recommended)",
+          "summary": "A new user who only pays for ChatGPT gets going without hunting through Settings. The first-run screen gains one button next to the Claude one; the Providers row is where they sign out or check their plan later."
+        },
+        {
+          "id": "b",
+          "label": "Settings → Providers only",
+          "summary": "A smaller change and the first-run screen stays as it is. A ChatGPT-only user has to press 'Skip setup' and then find Providers on their own — the app looks Claude-only on day one."
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Settings → Providers · model picker",
+      "path": "What it is called",
+      "headline": "What is it called on the row, in the picker and on the chip?",
+      "notice": "The Codex spec advised against 'ChatGPT' because Codex behaves like a code tool. That objection does not apply here: the user signs into their ChatGPT account and gets ChatGPT's models inside YouCoded's own assistant.",
+      "options": [
+        {
+          "id": "a",
+          "label": "'ChatGPT' (recommended)",
+          "summary": "The name on the bill they pay every month. Row subtitle: 'Your ChatGPT plan's models, in YouCoded's assistant.' Models are labelled by their own names (GPT-5.6, and so on) underneath."
+        },
+        {
+          "id": "b",
+          "label": "'OpenAI (ChatGPT plan)'",
+          "summary": "Technically more precise, and it sits next to an 'OpenAI' API-key provider without confusion. But most students do not connect 'OpenAI' with the thing they pay for, and it is the longer label in a narrow chip."
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Model picker",
+      "path": "Which models appear",
+      "headline": "Which of the plan's models appear in the model picker?",
+      "notice": "After signing in, OpenAI tells us which models this plan may use. The list differs between Plus, Pro and Team, and changes when OpenAI ships a model. Today the picker groups models by provider and shows every model OpenRouter offers.",
+      "options": [
+        {
+          "id": "a",
+          "label": "Every model the plan allows, grouped under ChatGPT (recommended)",
+          "summary": "Same treatment as every other provider, and a new model shows up the day OpenAI ships it with nothing for us to update. The plan's fast, balanced and flagship variants all appear, so the list is five to eight rows."
+        },
+        {
+          "id": "b",
+          "label": "Only the flagship and the fast model",
+          "summary": "Less to choose from, so less to explain. But it hides models the user is paying for, and we have to hand-maintain the short list every time OpenAI renames one — the picker would lag OpenAI by a release."
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "/usage card · status bar",
+      "path": "Showing how much of the plan is left",
+      "headline": "How much of the plan is left: always visible, or only a warning?",
+      "notice": "A ChatGPT plan is metered on two rolling windows, five hours and one week, shared with the Codex app if the user also uses that. On a Plus plan the five-hour window is a few dozen messages on the top model. The /usage card already shows exactly these two windows for a Claude plan.",
+      "options": [
+        {
+          "id": "a",
+          "label": "Same as Claude: both windows and their reset times in the /usage card and the chip (recommended)",
+          "summary": "The user can check before starting a long piece of work, and the app never surprises them. Reuses the card that already exists; nothing new to learn."
+        },
+        {
+          "id": "b",
+          "label": "Only warn when a window is nearly used up",
+          "summary": "Quieter day to day. But there is no way to look before committing to a big task, and the first sign of a limit is a warning in the middle of one."
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Conversation view",
+      "path": "When the plan runs out mid-conversation",
+      "headline": "The plan runs out mid-conversation. What does the user see?",
+      "notice": "OpenAI answers with a specific 'limit reached' error and a reset time. The conversation cannot continue on ChatGPT until then.",
+      "options": [
+        {
+          "id": "a",
+          "label": "Stop with a card naming the reset time, plus a one-tap switch to another connected provider for this conversation (recommended)",
+          "summary": "The work continues if they want it to, and the model chip changes so the switch is visible. If the other provider is pay-per-use (an API key, OpenRouter credit) the card says so before they tap."
+        },
+        {
+          "id": "b",
+          "label": "Stop with the reset time only",
+          "summary": "Simplest card. The user waits, or opens the model picker themselves — which they may not know they can do mid-conversation."
+        },
+        {
+          "id": "c",
+          "label": "Switch to another provider automatically",
+          "summary": "Never blocked, which is how one competitor does it. But a pay-per-use provider would quietly start costing money with no tap from the user. I recommend against this."
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Settings → Providers",
+      "path": "Being honest about the footing",
+      "headline": "Tell the user this depends on OpenAI continuing to allow it?",
+      "notice": "OpenAI's leadership has publicly welcomed ChatGPT plans inside apps like this one, and a dozen well-known tools do it. But it is not written into OpenAI's terms, and they could stop it. Anthropic did exactly that for Claude plans in April.",
+      "options": [
+        {
+          "id": "a",
+          "label": "A short (i) note on the ChatGPT row (recommended)",
+          "summary": "One sentence: it uses your plan through OpenAI's own sign-in, OpenAI supports apps doing this today but has not promised it, and if it ever stops you will see a clear message here rather than a broken app. Sets the expectation once, where they signed in."
+        },
+        {
+          "id": "b",
+          "label": "Say nothing",
+          "summary": "Cleaner row. If OpenAI ever cuts it off, the user's first explanation will be whatever error appears that day, and it will look like YouCoded broke."
+        }
+      ]
+    }
+  ]
+}

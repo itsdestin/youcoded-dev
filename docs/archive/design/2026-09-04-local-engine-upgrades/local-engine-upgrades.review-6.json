@@ -1,0 +1,70 @@
+{
+  "title": "Local engine upgrades — round 6: four gaps before you sign",
+  "key": "local-engine-upgrades-review-6",
+  "out": "local-engine-upgrades.review-6.html",
+  "images": "images/local-engine-upgrades-review-6",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-local-engine-before",
+    "after": "/home/destin/youcoded-dev/scratch/ui-local-engine-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "memory-warning": [
+      "local-engine",
+      "local-model-memory-warning",
+      "460x330+490+560"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-21",
+      "surface": "New session form → model picked → memory warning",
+      "path": "Your P-20 note, built: the toggle as a sub-card inside the warning card",
+      "crop": "memory-warning",
+      "headline": "Open, the warning card holds the numbers line and, nested inside it as its own small card, the 'Warn me about this model' toggle.",
+      "changed": "The toggle row now sits inside the warning card's edge, indented, with its own slightly deeper tint, instead of as a sibling row beneath.",
+      "notice": "One card grows to hold everything; closing it folds the toggle away with it.",
+      "risk": ""
+    },
+    {
+      "id": "S-5",
+      "words": true,
+      "surface": "New session form → model picked → memory warning",
+      "path": "The 'too large' case on the new warning row",
+      "headline": "A too-large model shows the same row in the danger colour and opens to the numbers line only — no 'Warn me' toggle.",
+      "changed": "Stated, not asked: too-large is not a choice, so there is nothing to remember. Create Session stays blocked, as today.",
+      "notice": "Nothing yet — this becomes a row of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-6",
+      "words": true,
+      "surface": "Settings → Model Providers → Models → a model's size bubble",
+      "path": "Where the offer to lower the context length lives",
+      "headline": "On a 'tight' or 'too large' verdict, the size bubble ends with 'Lower this model's context length in its Settings to shrink this.'",
+      "changed": "Stated, not asked: you approved 'tight offers to lower context' in words on the first deck; this is the one place it appears — the last line of the hover bubble, under the memory figure. It is not built yet; the build adds it.",
+      "notice": "Nothing yet — this becomes a row of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-7",
+      "words": true,
+      "surface": "Settings → Model Providers → Models → a model's size bubble",
+      "path": "The vision file in the size bubble",
+      "headline": "The size bubble lists 'Vision file (sees images) 0.9 GB' as its own line only for models that have one.",
+      "changed": "Stated, not asked: the round-3 picture showed a text-only model, so the line was absent; a vision-capable card shows it between Model file and Download.",
+      "notice": "Nothing yet — this becomes a row of the contract.",
+      "yes": "Holds",
+      "no": "Fails"
+    }
+  ]
+}

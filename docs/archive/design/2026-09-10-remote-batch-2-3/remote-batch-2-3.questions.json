@@ -1,0 +1,382 @@
+{
+  "title": "Remote access, batches 2 and 3 — the questions before anything is drawn",
+  "key": "remote-batch-2-3-questions",
+  "out": "remote-batch-2-3.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Batch 2 — your conversation after the phone reconnects",
+      "intro": "You already decided the phone keeps its own selected conversation. These decide the rest of what the phone shows when it connects, reconnects, or cannot get a full picture."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone → any conversation, while the desktop has more than one window open",
+      "headline": "When the desktop has several windows open, which one should the phone's picture come from?",
+      "today": "The phone asks the desktop for a copy of every conversation. The desktop always answers from its first window, even after you have dragged a conversation out into a second window.",
+      "problem": "A conversation living in a second window arrives on the phone empty or stale, and if the first window is closed the phone gets nothing at all and is not told why.",
+      "proposal": "Pick where the phone's copy should come from. Whatever you pick, a conversation open on the phone stays open there; this only decides which window is asked.",
+      "options": [
+        {
+          "id": "each-owner",
+          "label": "Wherever it lives",
+          "recommended": true,
+          "pros": [
+            "Every conversation reaches the phone, whichever window holds it.",
+            "Closing one desktop window never empties the phone."
+          ],
+          "cons": [
+            "A conversation open in two windows at once shows the phone the one you touched last."
+          ]
+        },
+        {
+          "id": "main-only",
+          "label": "The first window only",
+          "pros": [
+            "Predictable: one window is the one the phone mirrors."
+          ],
+          "cons": [
+            "Anything dragged into a second window vanishes from the phone.",
+            "Closing the first window leaves the phone with an empty list."
+          ]
+        },
+        {
+          "id": "last-used",
+          "label": "The window you used last",
+          "pros": [
+            "Follows where you are actually working."
+          ],
+          "cons": [
+            "Switching windows on the desktop changes what the phone can see, mid-read.",
+            "Conversations in the other windows drop out of the phone's list."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone → first connect, or after the conversation it was on has been deleted",
+      "headline": "When the phone has no place of its own yet, which conversation should open?",
+      "today": "On a first connect the phone lands on whichever conversation happens to be last in the desktop's list. That is an accident of ordering, not a choice.",
+      "problem": "You open the phone to continue something and find a conversation you were not thinking about, then hunt for the right one.",
+      "proposal": "Choose the default for the moments the phone has nowhere to return to. Once it has a place, it keeps it (already decided).",
+      "options": [
+        {
+          "id": "desktop-current",
+          "label": "What the desktop shows",
+          "recommended": true,
+          "pros": [
+            "You pick up exactly where the desktop is right now.",
+            "Matches what you would expect if you just walked away from the computer."
+          ],
+          "cons": [
+            "If nobody is at the desktop, it may be showing something old."
+          ]
+        },
+        {
+          "id": "most-recent",
+          "label": "The newest conversation",
+          "pros": [
+            "Usually the one you were last working in."
+          ],
+          "cons": [
+            "Not always what the desktop is showing, so the two screens can start apart."
+          ]
+        },
+        {
+          "id": "list",
+          "label": "The conversation list",
+          "pros": [
+            "You choose; nothing is assumed."
+          ],
+          "cons": [
+            "One extra tap every first connect, on the slowest screen to reach."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone → any conversation, after a reconnect the computer could not fully answer",
+      "headline": "When the computer cannot give the phone a complete picture, what should the phone show?",
+      "today": "If the desktop is busy or slow, the phone silently keeps whatever it had. A blank answer looks exactly like a healthy one.",
+      "problem": "You may be reading a conversation that is behind, with nothing telling you so and nothing to press to refresh it.",
+      "proposal": "Pick how the phone should admit it is unsure. A reconnecting notice above the message box already exists from batch 1; this is about what happens after reconnecting when the refresh came back incomplete.",
+      "options": [
+        {
+          "id": "keep-and-warn",
+          "label": "Keep it, say so",
+          "recommended": true,
+          "pros": [
+            "You keep reading what you had; nothing disappears.",
+            "One line says the conversation may be behind, with a Refresh button."
+          ],
+          "cons": [
+            "What you are reading might be out of date until you press Refresh."
+          ]
+        },
+        {
+          "id": "clear-and-error",
+          "label": "Clear it, show an error",
+          "pros": [
+            "You can never mistake stale for current."
+          ],
+          "cons": [
+            "The conversation you were reading vanishes over a blip.",
+            "A draft you were typing sits above an empty screen."
+          ]
+        },
+        {
+          "id": "silent",
+          "label": "Say nothing",
+          "summary": "What happens today.",
+          "pros": [
+            "Nothing new on screen."
+          ],
+          "cons": [
+            "You cannot tell a stale conversation from a live one."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone → the chat / terminal switch",
+      "headline": "Should switching between chat and terminal on the desktop also switch the phone?",
+      "today": "The switch is independent: flipping the desktop to the terminal leaves a phone browser on chat. The Android app does follow.",
+      "problem": "Two behaviours for one control. Following can also yank a phone reader into a terminal they did not ask for.",
+      "proposal": "Yes makes every phone follow the desktop's switch. No keeps each screen's switch its own, on Android too, matching the conversation decision. Don't know leaves it as it is today.",
+      "options": [
+        {
+          "id": "independent",
+          "label": "Each screen its own",
+          "recommended": true,
+          "pros": [
+            "Same rule as conversations: the desktop never moves what you are looking at.",
+            "One behaviour on every phone."
+          ],
+          "cons": [
+            "You flip the desktop to the terminal and the phone stays on chat."
+          ]
+        },
+        {
+          "id": "follow",
+          "label": "Follow the desktop",
+          "pros": [
+            "Both screens always show the same view."
+          ],
+          "cons": [
+            "The phone changes view under your thumb when someone touches the desktop."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone → any conversation, on connect",
+      "headline": "The computer's copy of a conversation is the only source the phone uses.",
+      "changed": "Stated, not asked: today the phone also rebuilds history on its own from the transcript, and the two copies can disagree, so a message or tool step can appear twice. The computer's copy becomes the one source.",
+      "notice": "No duplicated messages after a reconnect. If the computer's copy is incomplete, the phone says so (your answer to Q-3) rather than patching the gap itself.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Remote conversation",
+      "path": "Phone → any conversation, the seconds after sign-in",
+      "headline": "The chat fills in when the phone is ready, not after a fixed wait.",
+      "changed": "Stated, not asked: after sign-in the computer currently waits up to two seconds for a snapshot and then a fixed half second before it sends the conversation, whether or not the phone is ready. The phone will tell the computer when it is ready and the computer answers at once.",
+      "notice": "The conversation appears sooner after sign-in, and events that arrive while it is loading are no longer lost or applied twice.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-2",
+      "page": "Batch 3 — reading files from your phone",
+      "intro": "Today the phone can see the project list and nothing else: every file list, preview and download is refused. These decide what reading files from a phone looks like. Uploads and editing are a later batch."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → Files, and the file list inside a conversation",
+      "headline": "Which files should a phone be able to see at all?",
+      "today": "On the desktop, Files lists the conversation's files and every saved project folder, including a seeded Home folder. Private paths such as keys and passwords are always hidden. Over the phone all of it is refused.",
+      "problem": "A phone that can command the assistant but cannot open the file it just wrote is half a tool. But a home folder is a lot to scroll on a phone, and it is also what anyone holding your unlocked phone would see.",
+      "proposal": "Pick how much of the desktop's file view the phone gets. Lists, search inside files and previews all follow this one answer.",
+      "options": [
+        {
+          "id": "same-as-desktop",
+          "label": "Same as the desktop",
+          "recommended": true,
+          "pros": [
+            "Nothing new to learn: the phone shows what the desktop shows.",
+            "The same private paths stay hidden."
+          ],
+          "cons": [
+            "A big folder is a long scroll on a phone.",
+            "Whoever holds your phone with the app open sees what the desktop sees. Batch 1 already lets them command the assistant, so this adds little."
+          ]
+        },
+        {
+          "id": "conversation-files",
+          "label": "Conversation files only",
+          "pros": [
+            "Short lists: only what the assistant made or touched in each conversation.",
+            "Nothing from your home folder reaches the phone."
+          ],
+          "cons": [
+            "A file the assistant did not touch cannot be opened from the phone.",
+            "Project folders are invisible even when a conversation is about them."
+          ]
+        },
+        {
+          "id": "projects-only",
+          "label": "Saved project folders only",
+          "pros": [
+            "The folders you deliberately saved, nothing else."
+          ],
+          "cons": [
+            "The Home folder that is saved by default disappears from the phone.",
+            "Different from what the desktop shows, so the two disagree."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → tap a file",
+      "headline": "How big a file should the phone try to show, before offering a download instead?",
+      "today": "The desktop shows text up to 3 MB (12 MB if you ask for the whole file) and images, PDFs and documents up to 50 MB, reading the whole file into memory in one go.",
+      "problem": "Over the phone, a 50 MB file is one giant download that freezes the screen while it arrives and eats mobile data if you are away from Wi-Fi.",
+      "proposal": "Set the phone's limits. Above them a file shows its name, size and type with a Download button instead of a preview (Q-8).",
+      "options": [
+        {
+          "id": "phone-limits",
+          "label": "Smaller on the phone",
+          "recommended": true,
+          "measured": "text to 1 MB, images and PDFs to 10 MB",
+          "pros": [
+            "Previews open quickly and never lock the screen.",
+            "Almost every note, page and photo fits under the limit."
+          ],
+          "cons": [
+            "A big PDF or a large photo is a download rather than a preview."
+          ]
+        },
+        {
+          "id": "same-limits",
+          "label": "Same as the desktop",
+          "measured": "text to 3 MB, other files to 50 MB",
+          "pros": [
+            "One rule everywhere."
+          ],
+          "cons": [
+            "A large file can freeze the phone for many seconds while it arrives.",
+            "Costly on mobile data."
+          ]
+        },
+        {
+          "id": "text-only",
+          "label": "Text previews only",
+          "pros": [
+            "Fast, and the simplest to get right."
+          ],
+          "cons": [
+            "Every image, PDF and document is a download, even a small one."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → any file → Download",
+      "headline": "Should the phone be able to save a copy of a file to itself?",
+      "today": "There is no way to get a file from the computer onto the phone through the app.",
+      "problem": "A report the assistant wrote stays on the computer; to send it on from the phone you would have to email it to yourself from the desktop.",
+      "proposal": "Yes adds a Download button on every file, saving to the phone's normal downloads folder; a large download does not block the chat, and removing the device also cancels its right to download. No means previews only, and a too-big file shows only its name and size. Don't know: I build it, since the milestone asked for downloads."
+    },
+    {
+      "id": "Q-8",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → tap a file that is too big, or a kind the phone cannot show",
+      "headline": "What should a file the phone cannot preview show?",
+      "today": "Nothing: the tap is refused with a notice that files are not available over remote access.",
+      "problem": "You cannot tell whether the file exists, how big it is, or what to do next.",
+      "proposal": "Pick the card for a file that will not preview.",
+      "options": [
+        {
+          "id": "card-download",
+          "label": "Name, size, Download",
+          "recommended": true,
+          "pros": [
+            "You learn what it is and how big, then decide.",
+            "One tap to get it if you want it."
+          ],
+          "cons": [
+            "No peek at the contents before downloading."
+          ]
+        },
+        {
+          "id": "head-then-download",
+          "label": "The first part, then Download",
+          "pros": [
+            "A glimpse of a big text file before committing to all of it."
+          ],
+          "cons": [
+            "Only works for text; a photo or PDF has no meaningful first part.",
+            "A half-shown file is easy to mistake for the whole."
+          ]
+        },
+        {
+          "id": "refuse",
+          "label": "Just say it is too large",
+          "pros": [
+            "Simplest."
+          ],
+          "cons": [
+            "A dead end: nothing to do about it from the phone."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-9",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → Files, while the assistant is writing files on the computer",
+      "headline": "Should the phone's file list update by itself when files change on the computer?",
+      "today": "The desktop's list refreshes live as files appear and change. The phone would get a fresh list when it opens the screen and after every reconnect.",
+      "problem": "Watching the assistant work from the phone, a new file would not appear until you leave the screen and come back.",
+      "proposal": "Yes makes the phone's list update live, like the desktop, at the cost of a little more traffic while the screen is open. No refreshes only when you open the list, reconnect, or pull down to refresh. Don't know: I make it live."
+    },
+    {
+      "id": "S-3",
+      "words": true,
+      "surface": "Files on the phone",
+      "path": "Phone → any preview",
+      "headline": "A file's contents are shown from a separate address, so a file can never act as the app.",
+      "changed": "Stated, not asked: the milestone requires it. A web page the assistant wrote, opened inside the app's own address, could read your session. Previews will come from a second address on the same computer, walled off from the app.",
+      "notice": "A preview may take a beat longer the first time. Nothing changes on the desktop. When browser encryption is added later, the second address is covered too.",
+      "yes": "Holds",
+      "no": "Fails"
+    }
+  ]
+}

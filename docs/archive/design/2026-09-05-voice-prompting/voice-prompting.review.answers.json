@@ -1,0 +1,36 @@
+{
+ "deck": "voice-prompting-review",
+ "started": "2026-09-05T08:41:00.993Z",
+ "submitted": "2026-09-05T08:44:41Z",
+ "cur": 3,
+ "answers": {
+  "V-0": {
+   "v": "yes",
+   "note": "we may want to roadmap a fallback to built-in windows or mac speech services, but not rn",
+   "note_kind": "noting",
+   "seconds": 30,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-1": {
+   "note": "i want to see a few alternatives for the counter/feedback location and styling. and the animation on the mic icon",
+   "note_kind": "noting",
+   "v": "other",
+   "seconds": 136,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-2": {
+   "v": "yes",
+   "seconds": 34,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "V-3": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

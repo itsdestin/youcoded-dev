@@ -1,0 +1,22 @@
+{
+ "deck": "promo-ui-refresh-review-4",
+ "started": "2026-09-11T10:56:08.091Z",
+ "submitted": "2026-09-11T10:57:58Z",
+ "cur": 1,
+ "answers": {
+  "J-1": {
+   "v": "yes",
+   "note": "remove pineapple on pizza, add \"I\"M GONNA SAY AN \"F\" WORD THAT RHYMES WITH DUCK. change \"i fear nothing\" to \"JUST TRY UNPLUGGING ME",
+   "seconds": 89,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "J-2": {
+   "note": "good.",
+   "v": "yes",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Session naming — match the file viewer",
+  "key": "session-naming-review-5",
+  "stage": "review",
+  "out": "session-naming.review-5.html",
+  "images": "images/session-naming.review-5",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-5-before",
+    "after": "/home/destin/youcoded-dev/worktrees/sessions/session-naming/docs/active/design/2026-09-08-session-naming/runs/review-5-after"
+  },
+  "themes": ["light"],
+  "crops": {
+    "saved": ["naming", "saved", "480x530+480+190"]
+  },
+  "steps": [
+    {
+      "id": "R5-1",
+      "surface": "Saved session names",
+      "path": "Resume Session → point at a session name",
+      "crop": "saved",
+      "headline": "The name now uses the file viewer’s rename style.",
+      "changed": "The file viewer’s exact pencil and dotted underline. Both pictures show the first name hovered.",
+      "highlight": {"box": [42, 161, 220, 35]},
+      "notice": "Hover reveals the edit cues. Click, Enter or Space to rename. Touch screens keep the pencil visible.",
+      "risk": "Settings and dialog unchanged; naming storage is still preview-only."
+    }
+  ]
+}

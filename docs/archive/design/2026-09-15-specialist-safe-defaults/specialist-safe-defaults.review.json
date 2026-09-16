@@ -1,0 +1,54 @@
+{
+  "title": "Safe automatic models for specialists — build this flow?",
+  "key": "specialist-safe-defaults-review",
+  "out": "specialist-safe-defaults.review.html",
+  "images": "images/specialist-safe-defaults.review",
+  "runs": {
+    "today": "runs/proposal"
+  },
+  "labels": {
+    "today": "Proposal"
+  },
+  "themes": ["midnight", "light"],
+  "lead": "When no specialist model is selected, YouCoded will use a safe default for the conversation’s provider instead of inheriting an expensive conversation model. These three pictures cover the recovery path when no safe default is available.",
+  "crops": {
+    "safe-warning": ["specialist-defaults-plan", "safe-default-warning", "1040x290+20+70"],
+    "ready-retry": ["specialist-defaults-plan", "safe-default-ready-to-retry", "1040x290+20+70"],
+    "automatic-settings": ["specialist-defaults-plan", "specialist-settings-automatic", "850x720+215+90"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat · specialist card",
+      "path": "A specialist hire when no safe automatic model is available",
+      "crop": "safe-warning",
+      "headline": "Stop the specialist before it can inherit an expensive model, then offer one direct route to its settings.",
+      "changed": "The failed hire explains that nothing started and why. Choose specialist models opens Assistant settings directly on Specialists.",
+      "notice": "The warning stays inside the specialist card, beside the hire that needs attention; it does not create a separate popup.",
+      "risk": "This deliberately refuses the hire until the user chooses a model if the curated provider defaults are unavailable.",
+      "highlight": { "box": [79, 68, 18, 12] }
+    },
+    {
+      "id": "S-2",
+      "surface": "Assistant settings · Specialists",
+      "path": "Choose specialist models → Specialists",
+      "crop": "automatic-settings",
+      "headline": "An unset tier says exactly what it means: “No Selection – Model will be chosen automatically.”",
+      "changed": "The user’s saved value remains empty. At runtime, Automatic follows the active conversation’s provider; an explicit selection still overrides every provider globally.",
+      "notice": "Users with several providers do not see a misleading single model here—the automatic choice depends on the conversation they are in.",
+      "risk": "The exact automatic model is intentionally not promised in this row because curated defaults will change as providers release models.",
+      "highlight": { "box": [25, 38, 70, 5] }
+    },
+    {
+      "id": "S-3",
+      "surface": "Chat · specialist card",
+      "path": "Return after saving the missing tier",
+      "crop": "ready-retry",
+      "headline": "After the required tier is saved, the same card changes its action to Try again.",
+      "changed": "The settings button remains until the app confirms that the relevant tier was saved. It then becomes Try again and asks the assistant to repeat the original specialist hire as a visible turn.",
+      "notice": "The original task, specialist type, tier and work folder are preserved; the retry is not a silent background action.",
+      "risk": "Trying again adds a short visible retry turn to the conversation rather than secretly replaying an old tool call.",
+      "highlight": { "box": [82, 70, 10, 12] }
+    }
+  ]
+}

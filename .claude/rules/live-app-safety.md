@@ -28,6 +28,17 @@ Treat the running built app the same way you would treat a production database: 
 - Any code change that requires the running app to reload it
 - Pressing keys in the running app's window (Ctrl+R, Ctrl+Shift+I, etc.)
 
+## Workspace files are not the running app
+
+Ordinary workspace documentation, guidance, roadmap and source edits are allowed under
+the usual authorization/worktree rules; they do not require closing YouCoded or launching
+a dev instance. Editing this document does not change an already-running session's instructions.
+
+Judge the action's effect, not its directory: no live reload, active-state mutation,
+held-open file changes or process stopping. Hook, plugin and active integration changes
+are not documentation edits; existing prohibitions still apply. Verify consumers before
+claiming disruption. Process ancestry establishes ownership, not proof of a crash.
+
 ## Allowed (read-only, from outside)
 
 - `Get-Process`, Task Manager observation, GPU performance counters

@@ -1,0 +1,23 @@
+{
+  "title": "Hover hints, round three — the ones I missed",
+  "key": "app-themed-tooltips-live-3",
+  "out": "app-themed-tooltips.live-3.html",
+  "live": {
+    "worktree": "sessions/app-themed-tooltips/youcoded",
+    "offset": 180
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "The top bar and the composer",
+      "path": "The Chat / Terminal switch, the quick chips above the message box, and the mic",
+      "headline": "Hover the Chat and Terminal switch and the chips above the message box — is anything still the grey box?",
+      "changed": "You were right that the Chat/Terminal switch was missing. It is done, and so is the rest of the band that sweep had walked past: the ||| menu, the quick chips, the mic, the model-loading strip, and the note on an archived message — the /clear hint you first complained about in July.",
+      "notice": "The long explanations on the bottom bar are hovers again, as you asked. The circled i is gone from those chips; it stays only where it already was, on things you click for a fuller explanation.",
+      "risk": "The quick chips can be dragged to reorder. Wrapping one in a hint had quietly deleted that; it is fixed and pinned, but dragging a chip is worth a try while you are here.",
+      "yes": "Yes, all done",
+      "no": "No, still missing",
+      "live": { "app": "default" }
+    }
+  ]
+}

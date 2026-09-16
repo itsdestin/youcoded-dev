@@ -1,0 +1,28 @@
+{
+ "deck": "claude-signin-live-status",
+ "started": "2026-09-10T02:40:00.130Z",
+ "submitted": "2026-09-10T02:41:23Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "we should also show usage limits in the same style as chatgpt."
+  },
+  "S-3": {
+   "v": "wrote",
+   "text": "confused",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

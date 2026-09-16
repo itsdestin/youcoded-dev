@@ -1,0 +1,97 @@
+{
+  "title": "The new app icon — eyes and outline",
+  "key": "app-icon-design",
+  "out": "app-icon.design.html",
+  "stage": "design",
+  "images": "images/app-icon.design",
+  "runs": {
+    "today": "runs/today"
+  },
+  "crops": {
+    "eyes-today": ["icons", "r4-eyes-today", "800x330+0+0"],
+    "eyes-white": ["icons", "r4-eyes-white", "800x330+0+0"],
+    "eyes-pair": ["icons", "r4-eyes-pair", "800x330+0+0"],
+    "eyes-rim": ["icons", "r4-eyes-rim", "800x330+0+0"],
+    "outline-white": ["icons", "r4-outline-white", "800x330+0+0"],
+    "outline-pale": ["icons", "r4-outline-pale", "800x330+0+0"],
+    "outline-lilac": ["icons", "r4-outline-lilac", "800x330+0+0"],
+    "outline-deep": ["icons", "r4-outline-deep", "800x330+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "The app's icon",
+      "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
+      "headline": "Which eyes should the waving sticker mascot have?",
+      "themes": ["light"],
+      "notice": "All four are the waving sticker mascot, now a little smaller inside the tile, with a white outline. Every eye comes from the app's own mascot face kit, so it matches the mascot inside YouCoded.",
+      "risk": "The mascot rules forbid pale or white eyes on a coloured body, because they read as glowing holes, so none of these lighten the eye itself; they lighten what is in it or around it.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Round 3 eyes",
+          "crop": "eyes-today",
+          "summary": "What you saw last round, for comparison: dark eyes with small purple sparkles."
+        },
+        {
+          "id": "white",
+          "label": "White sparkles",
+          "crop": "eyes-white",
+          "summary": "The same dark eyes with three bright white sparkles, so they look lit up."
+        },
+        {
+          "id": "pair",
+          "label": "Softer, big shine",
+          "crop": "eyes-pair",
+          "summary": "A softer, lighter purple-brown eye with one big white shine and one small one. Rounder and cuter; the look the cat mascots use.",
+          "risk": "The softer eye has less contrast against the purple body at the smallest sizes."
+        },
+        {
+          "id": "rim",
+          "label": "Light ring",
+          "crop": "eyes-rim",
+          "summary": "Dark eyes with a thin lavender ring around each and the big white shine, so the eyes stand out from the body.",
+          "risk": "The ring can blur into the body below the biggest size."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "surface": "The app's icon",
+      "path": "The Start menu, desktop shortcut, taskbar, Dock and app list, once YouCoded is installed",
+      "headline": "Which outline colour should the sticker mascot have?",
+      "themes": ["light"],
+      "notice": "All four use the white-sparkle eyes; the eyes you pick above apply to any of them.",
+      "risk": "The sticker style's own rule keeps the outline white in every theme. A different colour here changes only the app icon, not the mascot inside themes.",
+      "variants": [
+        {
+          "id": "white",
+          "label": "White",
+          "crop": "outline-white",
+          "summary": "The sticker style as designed: a crisp white die-cut edge.",
+          "risk": "On the lavender tile the white edge is soft; it pops more on dark backgrounds."
+        },
+        {
+          "id": "pale",
+          "label": "Pale lavender",
+          "crop": "outline-pale",
+          "summary": "An off-white with a hint of lavender, so the edge sits into the tile instead of glowing.",
+          "risk": "The quietest of the four; the sticker look nearly disappears on the tile."
+        },
+        {
+          "id": "lilac",
+          "label": "Lilac",
+          "crop": "outline-lilac",
+          "summary": "A mid lilac between the tile and the body: a soft, clearly visible edge."
+        },
+        {
+          "id": "deep",
+          "label": "Deep purple",
+          "crop": "outline-deep",
+          "summary": "A dark purple edge, like an ink line. The strongest outline and the easiest to read at small sizes.",
+          "risk": "Reads more like a cartoon ink line than a sticker."
+        }
+      ]
+    }
+  ]
+}

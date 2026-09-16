@@ -1,0 +1,74 @@
+{
+  "title": "What the assistant was given — clearer words",
+  "key": "session-context-clear",
+  "out": "session-context-panel.review-2.html",
+  "intro": "You asked me to review the panel myself and make it clearer. I read it as a first-time user would and reworked the words and the order of the first tab; the tabbed layout you approved is unchanged. Eleven numbered changes, approve or reject by number in the notes: (1) the title is now “What the assistant was given”, because “Context” already means how full the window is elsewhere in the app; (2) the status pill is a coloured dot with plain text, “Some left out” or “Everything fit”, instead of coloured text, and the context window size sits under the model name with a plain explanation, because a hover tooltip never shows on a touchscreen; (3) the first tab leads with what a trim costs you — “it may miss rules or skip steps” — not how the trim happened; (4) everything that was cut is one list on the first tab, one row per cut, and tapping a row jumps to the tab that shows it; (5) the Model and Context window rows left the first tab because the header already shows both; (6) the tabs are Overview / YouCoded / Project / Skills / Tools — YouCoded’s own standing instructions next to this project’s — short enough that the fifth no longer clips; (7) every tab opens with one line saying what that thing is; (8) the toggle on cut content reads “What it got | What was cut”, and its caption says the assistant never saw the red lines; (9) the small notes beside cut items are two words, “shortened to headings” or “cut short”; (10) the not-attached add-on now sits on the Tools tab, where its tools would have been; (11) the footer explains the Manage button in one clause. Also (12), on the last slide: the strip in the real chat says “Started with this project’s rules, 3 skills and 10 tools” or “This model’s context window is small, so some rules and skills were left out”, and its button says Details instead of View. Both panes on each slide are running — click the tabs and the rows.",
+  "live": {
+    "worktree": "/home/destin/youcoded-dev/worktrees/sessions/context-truncation/youcoded",
+    "paneWidth": 420
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "A small local model that had to trim: which reads better?",
+      "risk": "The consequence sentence is built from what was actually cut, so a session with many cuts will produce a long sentence. The amber callout is the app's standard warning box; it is heavier than the old inset card on purpose.",
+      "live": {
+        "surface": "session-context",
+        "round": 3
+      },
+      "variants": [
+        {
+          "id": "before",
+          "label": "Before",
+          "candidate": "before-trimmed",
+          "summary": "The panel as approved on 2026-08-17, rebased. Mechanism-first: a Trimmed pill, a Not attached callout, and the cuts found by opening each tab."
+        },
+        {
+          "id": "after",
+          "label": "After",
+          "candidate": "clear-trimmed",
+          "summary": "Changes 1 to 11. Says what it is, what was left out and what that costs, then lists each cut as a row you can tap."
+        }
+      ]
+    },
+    {
+      "id": "C-2",
+      "surface": "What the assistant was given",
+      "path": "Chat → the strip at the top of the conversation → Details",
+      "headline": "A cloud model that got everything: the same rewording in the green state.",
+      "risk": "With nothing cut, the first tab is short: one sentence and one summary row. That is intended, but check it does not feel empty.",
+      "live": {
+        "surface": "session-context",
+        "round": 3
+      },
+      "variants": [
+        {
+          "id": "before",
+          "label": "Before",
+          "candidate": "before-full",
+          "summary": "Full context pill, green check line, and three rows repeating the header."
+        },
+        {
+          "id": "after",
+          "label": "After",
+          "candidate": "clear-full",
+          "summary": "Everything fit pill, one plain sentence naming the rules, skills and tools, one summary row."
+        }
+      ]
+    },
+    {
+      "id": "C-3",
+      "surface": "Chat",
+      "path": "Any conversation, at the very top",
+      "headline": "The strip in the real chat, reworded (change 12). Keep it?",
+      "changed": "The strip's sentence now names what the assistant was handed instead of saying “full context”, and the trimmed version says why some things were left out. The button reads Details, not View.",
+      "notice": "Scroll to the top of the conversation. The strip is the one line above the first message. The panel that opens on its own is still the older layout; it changes when the approved panel is moved into the real chat.",
+      "risk": "The strip is one line, so a project with a long model name or many skills could run past the width and wrap onto two lines.",
+      "live": {
+        "app": "default"
+      }
+    }
+  ]
+}

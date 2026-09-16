@@ -10,11 +10,11 @@
    "hold": 500
   },
   {
-   "click": "[title=Settings]",
+   "click": "[title=Settings], [data-hint=Settings]",
    "settle": 800
   },
   {
-   "click": "[title='Remote Access']",
+   "click": "[title='Remote Access'], [data-hint='Remote Access']",
    "settle": 1200,
    "mark": "popup"
   },

@@ -161,9 +161,9 @@ Recorded order from the 2026-08-11 program, re-verified 2026-08-26 and unchanged
 
 | # | Step | State |
 |---|---|---|
-| 3 | **Session context transparency panel** (broadened from "tell the user what was truncated") | Design approved 2026-08-17, tabbed mockup on `feat/context-truncation-notice`; **backend unbuilt** (`native.onSessionContext` does not exist). Handoff: `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md` |
-| 4 | **Ground-truth model metadata** — pricing incl. `input_cache_read`, context, tool support, discovered not curated | Unbuilt. Blocks 5 and the cost chip's correctness. **Runs concurrently with stage two from 2026-09-05** in its own session: `docs/active/handoffs/2026-09-05-model-information-prompt.md` |
-| 5 | **Capability tiering rework** (four tiers: small/big local, small/frontier cloud) + fold `model-step-budget.ts` into the profile | Unbuilt. The specialists `Task` gate (`canDelegate`) already needs this model-class axis |
+| 3 | **Session context transparency panel** (broadened from "tell the user what was truncated") | **SHIPPED 2026-09-10.** Every chat carries a line saying what it started with; the panel behind it accounts for instructions, rules, skills and tools, for native AND Claude Code chats. Contract signed, 31 rows. What the build found — almost nothing is cut at session START, and a small model is never told its skills exist — is in `docs/archive/specs/2026-09-10-session-context-backend-design.md` |
+| 4 | **Ground-truth model metadata** — pricing incl. `input_cache_read`, context, tool support, discovered not curated | Unbuilt. Blocks 5 and the cost chip's correctness. Was to run concurrently with stage two from 2026-09-05 in its own session (`docs/active/handoffs/2026-09-05-model-information-prompt.md`); no sign it started as of 2026-09-16 |
+| 5 | **Capability tiering rework** (four tiers: small/big local, small/frontier cloud) | Unbuilt. The specialists `Task` gate (`canDelegate`) already needs this model-class axis. This is capability classification only: root step guards are explicit creation-time header snapshots, specialist limits remain definition-owned `stepCap`, and evaluator runs explicitly use `maxSteps: 100`; none derives a step limit from these tiers. |
 | 6 | **M4 leftovers** — folderless sessions | Unbuilt, low priority. (Image-by-path shipped; cost chip shipped but see §5.5) |
 | 7 | **Multi-model cwd contract** — Bash `workdir`, file-tool relative-path policy, one canonical cwd-rules block | Items 1 and 4 unbuilt; item 2 shipped differently (miss hints). **Blocked on a decision, not code** (§9 item 6) |
 | 8 | **MCP phase 2** — settings UI, adopt flow, `mcp:*` IPC parity | Unbuilt; phase 1 is developer-operable only |
@@ -428,10 +428,10 @@ has no dependency and no owner.
 - `docs/active/specs/2026-08-11-native-specialists-design.md` — specialists, both stages.
 - `docs/active/plans/2026-07-18-multi-model-cwd-contract.md` — awaiting §9 item 6.
 - `docs/active/specs/2026-07-30-permission-ask-timeout-design.md` + plan — PR #278.
-- `docs/active/specs/2026-08-18-full-auto-external-directory-permissions-design.md` + plan `2026-08-21-full-auto-external-read-bypass.md` — 0/37.
-- `docs/active/specs/2026-08-05-project-scoped-skills-design.md` + plan.
+- `docs/archive/specs/2026-08-18-full-auto-external-directory-permissions-design.md` + plan `2026-08-21-full-auto-external-read-bypass.md` — 0/37.
+- Superseded: `docs/archive/specs/2026-08-05-project-scoped-skills-design.md` + plan — narrow Claude Code compatibility shipped in YouCoded PR #424; the v1.3 native-first replacement is tracked in `docs/roadmap/native-harness.md`.
 - `docs/active/specs/2026-08-17-search-scope-and-timeout-design.md`.
-- `docs/active/handoffs/2026-08-17-session-context-panel-handoff.md`.
+- `docs/archive/handoffs/2026-09-09-session-context-panel-handoff.md` (shipped 2026-09-10).
 - `docs/active/handoffs/2026-08-16-specialists-1c-testing-checklist.md`.
 - `docs/archive/design/2026-08-17-assistant-settings-panel-design.md` (the React mockup supersedes its HTML prototype).
 - `docs/active/specs/2026-08-31-codex-session-provider-design.md`.

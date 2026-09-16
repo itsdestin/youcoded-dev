@@ -54,6 +54,16 @@ for touch, and never after a drop until the cursor leaves the strip.
 centred row under a drifting hand inside the settle (R8).
 **Guard:** `pack-sessions.test.ts`, `pill-metrics.test.ts`, `pill-label-style.test.ts`.
 
+## The All Sessions menu reorders on its OWN drag, not this one
+**Invariant:** a menu row's grip (`[data-menu-drag-grip]`) is a native `draggable` and the
+list reorders from its `dragover`; `handlePointerDown` returns early for it. Never widen
+that bail past the grip, and never put the attribute on a pill.
+**Why:** this path picks its slot from `clientX` against the BAR's rects and ignores Y, so
+a vertical list drag could never land — the grip was inert from the day it was drawn until
+2026-09-07. Widening the bail would kill the menu's tear-off on Windows/macOS; the
+attribute in a pill would silently kill every pill drag.
+**Guard:** `session-menu-reorder.test.tsx` (12 tests, incl. "the pill bar carries no grip").
+
 ## Verify motion with the sweep, not one drag
 **Invariant:** before calling a release change done, run `scripts/ui-review/drag-fuzz.mjs`
 (mouse AND touch, `DPR=1.5`, `UNLIMITED=1`, three seeds) and require every release clean

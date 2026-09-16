@@ -1,7 +1,7 @@
 // scripts/perf-lab/screenshots.mjs — "the user must notice nothing" made mechanical.
 // Pixel diff runs inside headless Chrome (canvas + getImageData) so the rig needs no PNG library.
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -39,14 +39,26 @@ function freePort(preferred) {
  * WHY the options bag: the tests need to point it at a binary that does not exist to prove
  * the failure message is useful. Production callers pass nothing.
  */
-export async function withHeadlessChrome(fn, { binary = DIFF_BINARY, port, profile, timeoutMs = 15000 } = {}) {
+export async function withHeadlessChrome(fn, { binary = DIFF_BINARY, port, profile, timeoutMs = 15000, onProfile } = {}) {
+  sweepStaleProfiles();
   port ??= await freePort(DIFF_PORT);
   // A throwaway profile per launch guarantees Chrome starts its OWN browser rather than
   // handing us someone else's (see freePort above). Removed again in the finally.
   const ownProfile = profile === undefined;
   profile ??= mkdtempSync(join(tmpdir(), 'perf-lab-diff-'));
+  // Reported so a caller can assert about the profiles IT minted. Counting every
+  // perf-lab-diff-* in the OS temp dir cannot be correct under `node --test`, which
+  // runs test files in parallel: a sibling file's launch moves the count.
+  onProfile?.(profile);
   const argv = ['--headless=new', '--disable-gpu', '--no-sandbox', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'];
-  const proc = spawn(binary, argv, { stdio: 'ignore' });
+  // detached: its OWN process group, so the kill below reaches Chrome's children
+  // (zygote, renderer, GPU) at the same instant as the parent. Killing only the
+  // parent left those children tearing down asynchronously and RE-CREATING files
+  // under the profile after it had been removed — which is how orphaned profile
+  // dirs piled up in /tmp despite a retrying delete. Windows has no process
+  // groups to signal this way; the rig is Linux-only, but the guard below keeps
+  // this helper honest anywhere else.
+  const proc = spawn(binary, argv, { stdio: 'ignore', detached: process.platform !== 'win32' });
   // WHY: `spawn` reports a bad binary asynchronously via an 'error' event. With no listener
   // Node throws it as an uncaught exception and takes the whole rig down, so we capture it
   // and fold the REAL OS error (ENOENT, EACCES…) into the message below instead of guessing.
@@ -80,9 +92,23 @@ export async function withHeadlessChrome(fn, { binary = DIFF_BINARY, port, profi
     const cdp = await connect(target.webSocketDebuggerUrl); await cdp.send('Runtime.enable');
     try { return await fn(cdp); } finally { cdp.close(); }
   } finally {
-    proc.kill('SIGKILL');
+    killChromeTree(proc);
     if (ownProfile) await removeProfile(proc, profile);
   }
+}
+
+/**
+ * SIGKILL the whole Chrome process group, falling back to the parent alone.
+ *
+ * A bare `proc.kill()` signals only the parent; a negative pid signals the group
+ * the `detached` spawn above created. ESRCH means it is already gone, which is
+ * the goal, not a failure.
+ */
+function killChromeTree(proc) {
+  if (process.platform !== 'win32' && proc.pid) {
+    try { process.kill(-proc.pid, 'SIGKILL'); return; } catch { /* group gone, or never grouped */ }
+  }
+  try { proc.kill('SIGKILL'); } catch { /* already dead */ }
 }
 
 /**
@@ -100,12 +126,45 @@ async function removeProfile(proc, profile) {
     proc.once('exit', done);
     proc.once('error', done);
   });
-  for (let i = 0; i < 4; i++) {
+  // 8 attempts on a widening delay (~2.6s total), not 4 at 120ms (~0.5s): the short
+  // budget was losing the race often enough to leave 160 orphans in /tmp by
+  // 2026-09-09. Still bounded — a measurement is never failed over a temp dir.
+  for (let i = 0; i < 8; i++) {
     try { rmSync(profile, { recursive: true, force: true }); } catch { /* still being written */ }
     if (!existsSync(profile)) return;
-    await sleep(120);
+    await sleep(120 * (i + 1));
   }
   // Best effort — a stray 8 KB dir in the OS temp dir is not worth failing a measurement over.
+}
+
+// An hour is far longer than any launch here lives (the whole helper is bounded by
+// timeoutMs, default 15s), so anything older was orphaned by a run that is gone.
+const STALE_PROFILE_MS = 60 * 60_000;
+let sweptThisProcess = false;
+
+/**
+ * Delete profile directories left behind by EARLIER runs. Cleanup is best-effort
+ * by design (above), so leftovers accumulate: 160 of them by 2026-09-09. Rather
+ * than making a person notice and sweep by hand, every process that launches a
+ * headless Chrome tidies its predecessors' litter once, first.
+ */
+export function sweepStaleProfiles({ force = false } = {}) {
+  if (sweptThisProcess && !force) return 0;
+  sweptThisProcess = true;
+  const cutoff = Date.now() - STALE_PROFILE_MS;
+  let removed = 0;
+  let names = [];
+  try { names = readdirSync(tmpdir()); } catch { return 0; }
+  for (const name of names) {
+    if (!name.startsWith('perf-lab-diff-')) continue;
+    const dir = join(tmpdir(), name);
+    try {
+      if (statSync(dir).mtimeMs > cutoff) continue;   // could still be in use
+      rmSync(dir, { recursive: true, force: true });
+      removed++;
+    } catch { /* gone already, or someone else's to delete */ }
+  }
+  return removed;
 }
 
 const b64 = (p) => readFileSync(p).toString('base64');

@@ -92,9 +92,54 @@ if (process.env.CLAUDE_DESKTOP_PIPE) {
 // print a prompt, echo whatever is typed (the submit protocol in pty-worker.js
 // waits for its own bytes to echo back before sending the CR).
 process.stdout.write(`\x1b[2Jfake claude ${sessionId.slice(0, 8)} ready\r\n> `);
+
+// ── Terminal glyph fill (added 2026-09-10 for scenario-terminal.mjs) ─────────
+// WHY: the terminal scenario measures the glyph-atlas heal, whose cost is
+// re-rasterising the glyphs each open terminal is showing. A terminal that only
+// ever says "fake claude … ready" has ~20 glyphs in its atlas, so the heal would
+// look free. The terminal view shows THIS process's PTY, not a shell, so the
+// brief's "run `seq 1 2000` in each" cannot be typed anywhere real. Instead the
+// scenario types one line, `perf-lab-glyphs <n>`, into each session's PTY and
+// this prints n lines of mixed glyphs: printable ASCII, the box-drawing and
+// status symbols Claude Code's TUI draws, in seven colours with bold every fifth
+// line (the atlas keys each glyph by colour and weight too).
+//
+// Only a line that is the command and nothing else — leading/trailing whitespace
+// is ignored (the line is trimmed), any other text on it is not — does anything, so
+// every other scenario, which never types it, sees the byte-for-byte echo it always had.
+// The final line is a fixed sentinel the scenario waits for instead of sleeping.
+const GLYPH_CMD = /^perf-lab-glyphs (\d{1,5})$/;
+const GLYPH_ASCII = Array.from({ length: 95 }, (_, i) => String.fromCharCode(32 + i)).join('');
+const GLYPH_TUI = '─│╭╮╰╯├┤●○✓✗⏺▶◆…';
+function glyphFill(n) {
+  const lines = [];
+  for (let i = 0; i < n; i++) {
+    const off = (i * 7) % GLYPH_ASCII.length;
+    const ascii = (GLYPH_ASCII + GLYPH_ASCII).slice(off, off + 64);
+    const sgr = `\x1b[${i % 5 === 0 ? '1;' : ''}3${1 + (i % 7)}m`;
+    lines.push(`${sgr}${String(i + 1).padStart(5, '0')} ${ascii} ${GLYPH_TUI}\x1b[0m`);
+  }
+  return `\r\n${lines.join('\r\n')}\r\n[perf-lab] glyph fill complete: ${n} lines\r\n> `;
+}
+let lineBuf = '';
+
 process.stdin.resume();
 process.stdin.on('data', (buf) => {
-  try { process.stdout.write(buf.toString()); } catch { /* pipe closed */ }
+  const text = buf.toString();
+  try { process.stdout.write(text); } catch { /* pipe closed */ }
+  // The PTY runs in canonical mode, so a submitted line arrives ending in \n
+  // (the tty maps the typed \r); split on either so raw mode would work too.
+  lineBuf += text;
+  const parts = lineBuf.split(/\r\n|\r|\n/);
+  lineBuf = parts.pop();
+  for (const line of parts) {
+    const m = GLYPH_CMD.exec(line.trim());
+    if (m) {
+      try { process.stdout.write(glyphFill(Math.min(Number(m[1]), 20000))); } catch { /* pipe closed */ }
+    }
+  }
+  // A line that never ends must not grow without bound.
+  if (lineBuf.length > 4096) lineBuf = lineBuf.slice(-256);
 });
 for (const sig of ['SIGTERM', 'SIGHUP', 'SIGINT']) process.on(sig, () => process.exit(0));
 setInterval(() => {}, 1 << 30);   // stay alive until killed

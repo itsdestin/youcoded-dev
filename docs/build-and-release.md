@@ -7,17 +7,15 @@ Release builds happen through GitHub Actions CI in the relevant sub-repo. Day-to
 ### React UI bundle is auto-rebuilt by Gradle
 Located at `youcoded/scripts/build-web-ui.sh`. Runs `npm ci && npm run build` in `desktop/`, then copies `desktop/dist/renderer/` into `app/src/main/assets/web/`. The `bundleWebUi` task in `app/build.gradle.kts` invokes this script before `preBuild` whenever any input changes (`desktop/src/`, `package-lock.json`, `vite.config.ts`, etc.). Kotlin-only iterations are skipped as UP-TO-DATE.
 
-If skipped (manual `-x bundleWebUi`, build break in `npm run build`, etc.), the Android app launches with a blank WebView — `index.html` references JS/CSS bundles that aren't in `assets/web/assets/`.
+If skipped (manual `-x bundleWebUi`, build break in `npm run build`, etc.), the Android app launches with a blank WebView — nothing under `assets/web/` is tracked (the April placeholder `index.html` was removed 2026-09-10), so the folder is simply empty.
 
 The Android release workflow (`android-release.yml`) still invokes the script as an explicit pre-step. With the Gradle task in place that's redundant on cold-cache CI runs (Gradle re-runs the work) but harmless, and acts as a safety net if anyone disables the Gradle task.
 
 ### Desktop version comes from git tag, not package.json
 CI extracts version from the `vX.Y.Z` tag and patches `package.json` before building (`desktop-release.yml:40-46`). Local `package.json` version is not the source of truth.
 
-### Android version requires manual bump
-Both `versionCode` (integer, monotonically increasing for Play Store) and `versionName` (string) must be bumped in `app/build.gradle.kts` **before** tagging. CI does not derive Android versions from the tag — Play Store requires `versionCode` to always increase, so it cannot be derived.
-
-Current: `versionCode = 17`, `versionName = "1.2.1"` (app/build.gradle.kts:23-24).
+### Android version is stamped in CI
+Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
 ### One tag, all platforms
 A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `desktop-release.yml`. Both upload artifacts (APK/AAB + Win/Mac/Linux installers) to the same GitHub Release.
@@ -29,6 +27,13 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 2. Regenerate the landing-page demos: `bash scripts/ui-review/site-assets.sh <worktree>`, review `docs/gallery` + `docs/media`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.
 3. Tag `vX.Y.Z` in youcoded on master
 4. Both platform workflows trigger → single GitHub Release with all artifacts
+5. Confirm `youcoded-release.json` and `youcoded-release.json.sig` are on the release — without them
+   the in-app Update button refuses the release. If `Sign release manifest` warned instead, sign by
+   hand: download every desktop installer from the release into one folder, then from `youcoded/`
+   run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key
+   ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with
+   desktop/src/main/update-signing-key.ts` and `gh release upload vX.Y.Z <folder>/youcoded-release.json
+   <folder>/youcoded-release.json.sig`.
 
 ### Toolkit (youcoded-core)
 1. Bump `version` field in `youcoded-core/plugin.json` on master
@@ -45,7 +50,7 @@ To ship a worker change:
 2. Merge (squash or merge-commit, doesn't matter).
 3. CI does the rest. Smoke-test the live endpoints once Actions reports green.
 
-If you need to flip a `[vars]` value (e.g. `CUTOVER_TIMESTAMP`), commit it to `wrangler.toml` and merge — same auto-deploy path. Wrangler `secret put` is for secrets only and lives in CI's `Push secrets` step (`MARKETPLACE_GH_CLIENT_ID`, `MARKETPLACE_GH_CLIENT_SECRET`, etc.; `KNOWN_DEV_DEVICES` is only a test var in `wrangler.toml`). Adding a new secret means a Repo → Settings → Secrets entry plus a one-line addition to the workflow's `Push secrets` step.
+If you need to flip a `[vars]` value (e.g. `CUTOVER_TIMESTAMP`), commit it to `wrangler.toml` and merge — same auto-deploy path. Wrangler `secret put` is for secrets only and lives in CI's `Push secrets` step (`MARKETPLACE_GH_CLIENT_ID`, `MARKETPLACE_GH_CLIENT_SECRET`, etc.). `KNOWN_DEV_DEVICES` — the analytics admin-device filter — is pushed from repo secret `MARKETPLACE_KNOWN_DEV_DEVICES` (comma-separated hashes; `youcoded-admin/skills/analytics/scripts/device-hash.mjs` prints a device's hash). Until 2026-09-13 it existed only as a test var, so production counts silently included Destin's devices. Adding a new secret means a Repo → Settings → Secrets entry plus a one-line addition to the workflow's `Push secrets` step.
 
 **The catalog ingest is a SECOND workflow in that repo, and it is scheduled** (`catalog-ingest.yml`, hourly at :13, shipped 2026-08-30). It rebuilds what the app reads from four upstream sources and posts it to the Worker; `wecoded-marketplace/docs/catalog.md` is the reference. Two things a release-time reader needs:
 - **`CATALOG_ENABLED` is a release-grade lever.** Set it to `"0"` in `wrangler.toml`, commit, merge: `GET /catalog` answers 503 and both apps fall back to `index.json` silently, with no user-visible error. That is the way to stop a bad catalog reaching every device within the hour, without shipping code under pressure.
@@ -93,6 +98,12 @@ gh run watch --repo itsdestin/youcoded $(gh run list --repo itsdestin/youcoded \
 gh run download --repo itsdestin/youcoded <run-id> -n youcoded-desktop-windows -D ./beta
 ```
 
+**Master's Windows tests red for someone else's reason? Add `-f skip_windows_tests=true`.** A failed
+`npm test` skips every later step, so a red Windows test means no Windows installer at all; with the
+switch only the Windows leg skips its tests (macOS and Linux still run them). On 2026-09-10 the
+installer-icon test needed a throwaway branch with the step deleted before this existed.
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "skip_windows_tests"} -->
+
 ### Publishing a beta as a PUBLIC pre-release (what youcoded.ai serves)
 
 Actions artifacts cannot be linked from the website: they need a GitHub login, they arrive
@@ -114,6 +125,15 @@ gh release edit 1.3.0-beta.72 --repo itsdestin/youcoded --draft=false
 Build first, upload second: `--draft` keeps it invisible while ~1 GB uploads, and a draft
 creates no tag at all, so nothing can fire early.
 
+**Attach the signed manifest too (2026-09-11).** A dispatch from `master` also runs a `sign` job: it
+signs that beta's installers with `UPDATE_SIGNING_KEY` exactly as a tagged release is signed, fails
+if the result does not verify against the public key built into the app, and uploads
+`youcoded-release.json` + `.sig` as the `youcoded-release-manifest` artifact. A green `sign` job is
+the proof the release key works before a release depends on it. Attach both files to the
+pre-release so its downloads can be checked; the website ignores them, since it picks files by
+extension. Branch dispatches skip the job and produce three artifacts, not four.
+<!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "youcoded-release-manifest"} -->
+
 **A pre-release does not touch anyone's installed app.** The in-app update checker reads
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
@@ -134,9 +154,24 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
 `.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
-Its APK still reports `versionName` 1.2.4 — nothing stamps a version on the Android side the
-way `desktop-test-build.yml` does (filed: `docs/roadmap/dev-workspace.md`).
+Give it the `base` input (default `1.3.0-beta`) and it stamps `<base>.<run_number>` into the APK,
+the way `desktop-test-build.yml` does; the outputs are named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
+
+**`android-test-build.yml` stamps too, since 2026-09-13 — it was the last build path that did
+not.** Its APKs used to inherit the hand-set `versionName` in `app/build.gradle.kts` (`1.2.4`, the
+May release), so every dogfood build reported itself to analytics as a 1.2.4 build — a 1.3 beta
+landing in your own version breakdown as last spring's release. It now takes the same `base` input
+and stamps `<base>.<run_number>`; the build type adds `-dev` / `-releasetest` on top, so the APKs
+read `1.3.0-beta.12-dev`. **`versionCode` is deliberately left alone**: these install as separate
+apps, so Play never sees the number, and raising it would block installing a LOCAL build (still the
+hand-set `20`) over a CI one, because Android refuses a lower `versionCode`.
+<!-- verify: {"path": "youcoded/.github/workflows/android-test-build.yml", "contains": "Stamp dogfood version"} -->
+
+Those APKs are still debug-signed, and Android's device id is scoped per signing key — so a dogfood
+install fingerprints as a **different device** than the production app on the same phone. It counts
+as an extra device in DAU/MAU and an extra "new install", and `KNOWN_DEV_DEVICES` only filters it if
+that second hash is added separately.
 
 **It replaces the installed app in place.** `electron-builder.yml` pins `appId: com.youcoded.desktop`
 and `productName: YouCoded`, so NSIS upgrades over the existing install rather than sitting beside
@@ -156,16 +191,52 @@ over the same LevelDB.
 **Betas number themselves (2026-08-15).** The workflow appends its own GitHub run counter to the
 `base` prefix (`1.3.0-beta` → `1.3.0-beta.71`, `.72`, …), so every beta sorts above the previous one
 and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
-share a name — or a hand-typed number sort *below* the installed one — is gone. `compareVersions`
-reads that fourth number, which is what makes the ordering work.
+share a name — or a hand-typed number sort *below* the installed one — is gone.
 
-**The `base` prefix is still load-bearing — read this before changing it.** `compareVersions`
-(`ipc-handlers.ts`) parses naively: `'1.2.4-beta'.split('.').map(Number)` → `Number('4-beta')` →
-`NaN` → `|| 0` → `[1,2,0]`, which is **lower** than a released `1.2.4`. The installed beta would
-then show "update available" and offer to downgrade itself to the release it's meant to be ahead
-of. **Bump the minor and suffix** (`1.3.0-beta` → `[1,3,0]`), never patch-suffix the current
-version. Corollary: once the real `1.3.0` ships it compares *equal* to `1.3.0-beta`, so the beta
-never prompts to update — that's fine, you re-dispatch to move forward.
+**How the app orders versions (2026-09-11).** One `compareVersions` (`update-manifest-verify.ts`)
+serves both the update check (`update-release-status.ts`) and the install gate, and it orders the
+semver way: X.Y.Z first, then a full release above every pre-release of it, then pre-release parts
+left to right, numbers as numbers — `1.2.4` < `1.3.0-beta.77` < `1.3.0-beta.78` < `1.3.0`. **So a beta
+is offered the full release it leads up to, and the gate installs it.** Before this the two halves
+disagreed and both were wrong: the check read `1.3.0-beta.76` as `[1,3,0,76]`, above `1.3.0`, and the
+gate dropped the suffix and refused `1.3.0` as not newer. **Every beta published before the fix —
+1.3.0-beta.76 and earlier — still behaves that way and will never offer 1.3.0 on its own**; those
+testers reinstall from the website once. The pill also waits until the release carries this
+computer's installer, because one tag starts the Android and desktop workflows separately and the
+release can exist for a while with only some of its files. v1.2.4 IS offered 1.3.0, but its Update
+button predates the allow-listed download host, fails, and offers "Open in browser instead".
+<!-- verify: {"test": "youcoded/desktop/tests/update-release-status.test.ts"} -->
+<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "readReleaseStatus"} -->
+
+**Which releases the check can SEE is a separate question from how it orders them (2026-09-13).**
+GitHub's `/releases/latest` returns the newest *stable* release and omits pre-releases entirely, so
+ordering alone never got a beta tester another beta — `1.3.0-beta.78` sorted above `.77` correctly
+and was never fetched. The check now picks its endpoint from the install's channel: off the beta
+channel it reads `/releases/latest` exactly as before, on it reads the `/releases` listing and
+`selectRelease` (`update-release-status.ts`) takes the highest **version** carrying this computer's
+installer, skipping drafts. Highest-version rather than newest-published means re-publishing an old
+tag cannot walk anyone backwards, and — because `compareVersions` already sorts `1.3.0` above every
+`1.3.0-beta.N` — the full release ends a beta run with no special case.
+<!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "selectRelease"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/update-beta-channel.test.ts"} -->
+
+**The channel is opt-in, and "never chosen" is not the same as "off"** (`update-settings.ts`,
+`~/.youcoded/config.json` → `updates.betaChannel`). An install that has never been asked inherits
+the answer its own build implies: a `1.3.0-beta.77` build checks the beta channel, a `1.3.0` build
+does not. That default is the whole point — a flat `false` would strand exactly the people already
+running betas, who are the ones the channel exists for. An explicit choice wins in both directions,
+and turning it off while on a beta is safe: the next stable release still sorts above every beta of
+its line. Settings → Development → **Get beta builds** (the fifth card in that list, no heading of its own), and the same switch under the release
+notes in the version pill's update popup (Destin moved it out of About on 2026-09-13: the rows it now
+sits with are the ones for people helping with the app rather than only using it). Desktop only,
+because Android has no in-app updater. Changing it re-checks immediately rather than leaving the 30-minute cache showing an
+answer computed against the other channel.
+<!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->
+
+**The `base` prefix is still load-bearing — read this before changing it.** A beta must sort above
+the release it is ahead of. `1.3.0-beta` does; `1.2.4-beta.N` sorts *below* a released `1.2.4`, so it
+would show "update available" and offer to downgrade itself to the release it is meant to be ahead
+of. **Bump the minor and suffix**, never patch-suffix the current version.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->
 
 **Why the version step exists at all:** only `desktop-release.yml` patches `package.json` (from the
@@ -182,10 +253,21 @@ no channel and render unchanged. Format lives in `desktop/src/shared/version-lin
 <!-- verify: {"test": "youcoded/desktop/tests/version-line.test.ts"} -->
 
 **Rolling back.** Reinstall the last release's installer from its GitHub release
-(`YouCoded.Setup.<version>.exe`). That reverts the *code* only — it does **not** un-migrate
+(`YouCoded.Setup.<version>.exe` up to 1.3.0-beta.76, `YouCoded-Installer-<version>.exe` after
+the installer rename). That reverts the *code* only — it does **not** un-migrate
 `~/.claude/` or `~/.youcoded/` state that the newer build may have already rewritten. Snapshot both
 before installing a beta that's far ahead of your release (there's precedent: the 776 MB
 `claude-snapshot.tar.gz` taken 2026-07-12 before the two-device dogfood).
+
+**Every app, installer and Android launcher icon is generated — never hand-edit one.** The
+source is `youcoded/desktop/assets/icon-mascot.svg` (the waving sticker mascot Destin picked
+2026-09-10); `node scripts/build-icons.mjs` from `youcoded/` writes the desktop SVG/PNG/ICO/ICNS
+files and the Android `mipmap-*` layers from it (needs `rsvg-convert`, `magick`, and Python with
+Pillow). The design rounds and the one-off generator that made the mascot drawing are in
+`docs/archive/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
+platform reads, because electron-builder and Android both fall back to a default icon silently.
+<!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "icon-mascot.svg"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/app-icons.test.ts"} -->
 
 **macOS ships two dmgs, and the x64 one is built on an arm64 runner.** `electron-builder.yml`
 targets both `x64` and `arm64`, but both workflows run on `macos-latest` (Apple Silicon) and cut

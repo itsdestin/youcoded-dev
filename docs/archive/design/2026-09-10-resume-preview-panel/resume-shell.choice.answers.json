@@ -1,0 +1,30 @@
+{
+ "deck": "resume-browser-shell",
+ "started": "2026-09-10T13:04:20.802Z",
+ "submitted": "2026-09-10T13:06:41Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "v": "pick",
+   "seconds": 103,
+   "theme": "midnight",
+   "zoom": 1,
+   "pick": "hero",
+   "note": "closest to what i want, but not it. i really dislike all of a-c. more options please"
+  },
+  "D-1": {
+   "v": "pick",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1,
+   "pick": "never"
+  },
+  "D-2": {
+   "v": "pick",
+   "pick": "blank",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

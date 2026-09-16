@@ -1,0 +1,35 @@
+{
+ "deck": "session-naming-review-2",
+ "started": "2026-09-09T08:45:54.565Z",
+ "submitted": "2026-09-09T08:48:51Z",
+ "cur": 3,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1,
+   "note": "this still doesn't match the card/container styling used for all other options on the page."
+  },
+  "R2-2": {
+   "note": "no. the name in the resume card should have a pencil icon directly to the right of it. no \"rename\" button.",
+   "v": "yes",
+   "seconds": 59,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-4": {
+   "v": "yes",
+   "seconds": 48,
+   "theme": "light",
+   "zoom": 1,
+   "note": "this is weird. get rid of that button. it's dumb"
+  }
+ }
+}

@@ -3,12 +3,13 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import {
   parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
-  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor,
-  uncommittedPaths,
+  globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor, REPOS,
+  uncommittedPaths, strandedWorktrees, undocumentedWorkbenchSwitches,
 } from './audit-anchors.mjs';
 
 test('parseRuleFrontmatter: block paths, last_verified, verify with contains', () => {
@@ -551,6 +552,27 @@ test('subRepoRoot: a worktree resolves sub-repos from the main checkout; a check
   assert.equal(subRepoRoot(bare), bare, 'not a git checkout: keep root, never throw');
 });
 
+test('subRepoRoot: ONE sub-repo linked into a worktree must not defeat the fallback', () => {
+  // THE BUG, measured 2026-09-10 in a real rig worktree: the perf rig needs `youcoded`
+  // present, and .gitignore explicitly contemplates symlinking it in. Doing so made
+  // `REPOS.some(...)` true, so the all-or-nothing fallback never fired and the OTHER
+  // FOUR repos' anchors were reported as drift: 429/446 anchors and 551/585 MAP paths,
+  // i.e. 51 false failures, in a check whose whole job is to be believed.
+  const { execFileSync } = require('node:child_process');
+  const main = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-anchors-partial-'));
+  const git = (...a) => execFileSync('git', ['-C', main, ...a], { stdio: ['ignore', 'pipe', 'ignore'] });
+  git('init', '-q');
+  git('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '--allow-empty', '-m', 'root');
+  for (const r of REPOS) fs.mkdirSync(path.join(main, r, '.git'), { recursive: true });
+  const wt = path.join(main, 'wt');
+  git('worktree', 'add', '-q', wt);
+  // Exactly what a rig session does: link in the ONE repo it needs.
+  fs.symlinkSync(path.join(main, 'youcoded'), path.join(wt, 'youcoded'));
+  assert.equal(subRepoRoot(wt), main,
+    'a worktree holding SOME of the repos must still resolve from the checkout holding all of them');
+  assert.equal(baseFor(wt, 'wecoded-themes/x.json'), main, 'the four unlinked repos must resolve too');
+});
+
 // --- uncommittedPaths -------------------------------------------------------
 // WHY these exist: run in the SHARED checkout, the auditor reports another
 // session's in-flight rule as "confirmed drift; fix now", and the obvious fix is
@@ -575,4 +597,186 @@ test('uncommittedPaths: runs git against the given root, not the cwd', () => {
   let seen = null;
   uncommittedPaths('/some/root', (_cmd, args) => { seen = args; return ''; });
   assert.deepEqual(seen, ['-C', '/some/root', 'status', '--porcelain']);
+});
+
+// --- stranded work: uncommitted or unpushed work whose session is gone ------------
+// WHY these tests exist: on 2026-09-09 a COMPLETE, review-clean implementation
+// (3,383 lines, 53 specialist dispatches) sat uncommitted for 14 hours because its
+// session was interrupted before it could ask to commit. Its branch had ZERO commits
+// and no upstream, so every existing sweep — which looks at refs, not working trees —
+// saw nothing. Eight other worktrees were in the same state that morning.
+function tempRepo(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stranded-'));
+  const git = (cwd, ...args) => execFileSync('git', ['-C', cwd, ...args], {
+    encoding: 'utf8',
+    env: { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_SYSTEM: '/dev/null',
+           GIT_AUTHOR_NAME: 'T', GIT_AUTHOR_EMAIL: 't@e', GIT_COMMITTER_NAME: 'T', GIT_COMMITTER_EMAIL: 't@e' },
+  }).trim();
+  git(root, 'init', '-q', '-b', 'master');
+  fs.writeFileSync(path.join(root, 'seed.txt'), 'seed\n');
+  // Mirror the real workspace, which ignores worktrees/: without this the parent
+  // checkout counts each nested worktree directory as its own untracked work.
+  fs.writeFileSync(path.join(root, '.gitignore'), 'wt-*\n');
+  git(root, 'add', 'seed.txt', '.gitignore');
+  git(root, 'commit', '-qm', 'seed');
+  // A real bare origin: "unpushed" is only answerable against a remote, and every
+  // worktree this check runs on in practice has one.
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-stranded-remote-'));
+  git(remote, 'init', '-q', '--bare', '-b', 'master');
+  git(root, 'remote', 'add', 'origin', remote);
+  git(root, 'push', '-q', '-u', 'origin', 'master');
+  t.after(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(remote, { recursive: true, force: true });
+  });
+  return { root, git, remote };
+}
+
+const ageFile = (p, hours) => {
+  const when = new Date(Date.now() - hours * 3600_000);
+  fs.utimesSync(p, when, when);
+};
+
+test('strandedWorktrees: a clean worktree is never reported', t => {
+  const f = tempRepo(t);
+  assert.deepEqual(strandedWorktrees(f.root), []);
+});
+
+test('strandedWorktrees: work being edited right now is left alone', t => {
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-live');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/live', wt);
+  fs.writeFileSync(path.join(wt, 'in-progress.txt'), 'typing\n');
+  assert.deepEqual(strandedWorktrees(f.root), [],
+    'a dirty worktree touched seconds ago is an active session, not stranded work');
+});
+
+test('strandedWorktrees: uncommitted work on a branch with zero commits is reported', t => {
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-stranded');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/stranded', wt);
+  const file = path.join(wt, 'finished.txt');
+  fs.writeFileSync(file, 'a whole day of work\n');
+  ageFile(file, 30);
+  const found = strandedWorktrees(f.root);
+  assert.equal(found.length, 1);
+  assert.equal(found[0].branch, 'session/stranded');
+  assert.equal(found[0].dirtyFiles, 1);
+  assert.equal(found[0].unpushedCommits, 0,
+    'zero commits is exactly why the ref sweeps miss this case');
+  assert.ok(found[0].idleHours >= 24);
+});
+
+test('strandedWorktrees: a branch PUSHED WITHOUT -u is not reported as unpushed', t => {
+  // The false alarm this check used to raise, and the reason it raised it: a bare
+  // `git push origin <branch>` backs the work up completely and sets NO upstream.
+  // The old test fell back to "commits past origin/master" and counted every one
+  // of them as lost. 77 branches on this machine were flagged that way on
+  // 2026-09-10, every one already on the server; one sat 7 commits past master and
+  // would have read as 7 lost commits.
+  //
+  // The `now` offset is load-bearing: without it this worktree is merely young, so
+  // it would pass on "active session" and prove nothing about pushedness — which
+  // is how the first draft of this test passed against the BROKEN code.
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-pushed');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/pushed-no-u', wt);
+  fs.writeFileSync(path.join(wt, 'work.txt'), 'real work\n');
+  f.git(wt, 'add', 'work.txt');
+  f.git(wt, 'commit', '-qm', 'work past master');
+  f.git(wt, 'push', '-q', 'origin', 'session/pushed-no-u');    // deliberately no -u
+  assert.equal(f.git(wt, 'rev-list', '--count', 'origin/master..HEAD'), '1',
+    'fixture must actually sit past master, or it proves nothing');
+  assert.equal(f.git(wt, 'for-each-ref', '--format=%(upstream:track)', 'refs/heads/session/pushed-no-u'), '',
+    'fixture must have NO upstream, or it is not reproducing the reported case');
+  assert.deepEqual(strandedWorktrees(f.root, { now: Date.now() + 48 * 3600_000 }), [],
+    'the commit is on the server; a clean, fully-backed-up worktree must stay silent');
+});
+
+test('strandedWorktrees: committed-but-unpushed work is reported too', t => {
+  const f = tempRepo(t);
+  const wt = path.join(f.root, 'wt-unpushed');
+  f.git(f.root, 'worktree', 'add', '-q', '-b', 'session/unpushed', wt);
+  fs.writeFileSync(path.join(wt, 'done.txt'), 'committed\n');
+  f.git(wt, 'add', 'done.txt');
+  f.git(wt, 'commit', '-qm', 'work');
+  const found = strandedWorktrees(f.root, { now: Date.now() + 48 * 3600_000 });
+  assert.equal(found.length, 1);
+  assert.equal(found[0].unpushedCommits, 1);
+});
+
+test('strandedWorktrees: never throws when git is unavailable', () => {
+  assert.deepEqual(strandedWorktrees('/definitely/not/a/repo'), []);
+});
+
+// ---------------------------------------------------------------------------
+// undocumentedWorkbenchSwitches — see the function's comment for the 2026-09-09
+// incident. A shot plan that omits a `?switch=` captures an EMPTY card, which is
+// indistinguishable from a feature that was never built.
+// ---------------------------------------------------------------------------
+
+function switchFixture(t, { shim, readme }) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-switches-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  if (shim !== null) {
+    const dir = path.join(root, 'youcoded', 'desktop', 'src', 'renderer', 'dev', 'workbench');
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'mock-shim.ts'), shim);
+    // subRepoRoot() resolves sub-repos from the main checkout when this root has none.
+    fs.mkdirSync(path.join(root, 'youcoded', '.git'), { recursive: true });
+  }
+  if (readme !== null) {
+    fs.mkdirSync(path.join(root, 'scripts', 'ui-review'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'scripts', 'ui-review', 'README.md'), readme);
+  }
+  return root;
+}
+
+test('undocumentedWorkbenchSwitches: a documented switch is not reported', t => {
+  const root = switchFixture(t, {
+    shim: "const x = new URLSearchParams(location.search).get('planUsage');",
+    readme: 'Switches: `?planUsage=1` (the plan bars).',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
+});
+
+test('undocumentedWorkbenchSwitches: an undocumented switch IS reported', t => {
+  // The real 2026-09-09 case: the switch exists, the README never names it, and the
+  // resulting shot shows a card with no usage bars.
+  const root = switchFixture(t, {
+    shim: "const x = new URLSearchParams(location.search).get('planUsage');",
+    readme: 'Switches: `?scenario=default`.',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['planUsage']);
+});
+
+test('undocumentedWorkbenchSwitches: reads the hoisted searchParams spelling too', t => {
+  // mock-shim.ts uses both forms; matching only one would under-report silently.
+  const root = switchFixture(t, {
+    shim: "const searchParams = new URLSearchParams(location.search);\nconst v = searchParams.get('claudeCode');",
+    readme: 'nothing here',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['claudeCode']);
+});
+
+test('undocumentedWorkbenchSwitches: results are sorted and de-duplicated', t => {
+  const root = switchFixture(t, {
+    shim: "get('zebra'); new URLSearchParams(location.search).get('alpha');\nnew URLSearchParams(location.search).get('zebra');",
+    readme: '',
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), ['alpha', 'zebra']);
+});
+
+test('undocumentedWorkbenchSwitches: a checkout without the app reports nothing', t => {
+  // A workspace worktree has no sub-repo clone; that is not drift.
+  const root = switchFixture(t, { shim: null, readme: 'Switches: none.' });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
+});
+
+test('undocumentedWorkbenchSwitches: a checkout without the rig README reports nothing', t => {
+  const root = switchFixture(t, {
+    shim: "new URLSearchParams(location.search).get('planUsage');",
+    readme: null,
+  });
+  assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
 });

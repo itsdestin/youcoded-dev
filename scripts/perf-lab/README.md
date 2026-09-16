@@ -12,6 +12,13 @@ running a command* instead of being re-investigated from scratch. What is not a
 scenario is not measured — see the coverage table, and read it as the honest list it
 is.
 
+> **Nothing here appears on Destin's desktop.** Every rig entry point — `run.mjs`,
+> `profile-open.mjs`, the screenshot sweep — launches the app on an **Xvfb virtual
+> display**, not the real one. The standing "warn before opening a window" rule is
+> about `run-dev.sh` and the workbench; it does not apply to the rig, and a session
+> that assumes it does will either warn for nothing or avoid the right instrument.
+> (Stated here because a session did exactly that on 2026-09-10.)
+
 > **Terms, once.** *Main process* — the single background process that owns the app's
 > files, IPC and windows; there is exactly one, shared by every open session.
 > *Renderer* — the process that draws a window (the web page). *IPC* — the messages the
@@ -35,20 +42,24 @@ reading the report. Do not let this table drift optimistic.
 | startup / boot chores | in `run.mjs` | **covered** |
 | history reload by size | `scenario-history.mjs` | **covered** |
 | chat under load (6 sessions, streaming, switching) | `scenario-workload.mjs` | **covered** |
-| app-wide freeze on replay | `scenario-replay-stall.mjs` | **built, never run against the real app** |
-| artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **built, never run against the real app** |
-| terminal | — | **NOT covered** |
+| memory ceiling once conversations are read back | `scenario-scrollback.mjs` | **covered** |
+| app-wide freeze on replay | `scenario-replay-stall.mjs` | **covered** (both its metrics currently read 0) |
+| artifacts / editor / HTML viewer | `scenario-artifacts.mjs` | **covered** |
+| Projects view (open, file search, type filter, flat-grid scroll, list view, project switch, Conversations tab, reopen) | `scenario-projects.mjs` | **covered** since 2026-09-09 — stock theme only, so the per-card wallpaper blur is NOT measured |
+| layouts per streamed token | `layout-cost.mjs`, in `scenario-workload` | **covered** (native leg only) |
+| blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
+| which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
+| terminal (six sessions, 40 switches in terminal view, atlas clears per switch) | `scenario-terminal.mjs` | **covered** since 2026-09-10 — software GL only, GPU upload cost NOT measured |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**The two "built, never run" rows are not yet reachable from the CLI.** `run.mjs`'s
-phase list is `PHASES = ['startup', 'history', 'workload', 'shots']` (`run.mjs:54`) —
-neither new scenario is wired into the orchestrator, the report schema or
-`compare.mjs`'s `PRIMARY` list yet. Today they exist as modules with unit tests
-(`tests/scenario-replay-stall.test.mjs`, `tests/scenario-artifacts.test.mjs`) and are
-called by hand. Wiring them in is item 1 of the remaining work in the status doc.
+**All nine phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'scrollback']`
+— pick any subset with `--only`. (`terminal` added 2026-09-10.) (This paragraph previously said the list was four
+phases and that `stall` and `artifacts` were unreachable; that stopped being true when
+they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
 
 ---
 
@@ -56,9 +67,14 @@ called by hand. Wiring them in is item 1 of the remaining work in the status doc
 
 ```bash
 node scripts/perf-lab/run.mjs [--checkout <dir>] [--runs 5] [--history-repeats 5] \
-  [--workload-repeats 3] [--only startup,history,workload,shots] [--force-build] \
+  [--workload-repeats 3] [--terminal-repeats 3] [--only startup,history,workload,shots] [--force-build] \
   [--label <text>] [--out perf-reports/] [--max-minutes 45] [--dry-run]
 ```
+
+(`--help` lists every `--*-repeats` flag.) **A default-run baseline taken before the
+`terminal` phase existed (before 2026-09-10) fails CLOSED against a newer default run**
+on its two `terminal.*` PRIMARY paths — compare.mjs judges a phase only one report ran
+as unjudgeable, by design. Re-take the baseline, or compare with `--only` phases both ran.
 
 It builds the **packaged** app, boots it repeatedly against a throwaway fixture HOME
 under a virtual X display, and writes **one JSON report** (plus a Markdown summary)
@@ -102,7 +118,7 @@ themselves are tracked) and each boot's `desktop.log` copied to
 | Exit | Meaning |
 |---|---|
 | 0 | clean report |
-| 2 | error (build failed, machine never went idle, a scenario threw) |
+| 2 | error (build failed, the machine stayed busy for 20 minutes, a scenario threw) |
 | 3 | `--max-minutes` budget exceeded — app family killed first |
 | 4 | report is missing numbers a requested phase owed (see below) |
 | 130 | interrupted |
@@ -115,6 +131,88 @@ but **no per-run samples** behind it, which would make `spreadPct()` report 0% n
 and let pure jitter through the gate as a proven win. The report is still written
 (the numbers cost real minutes) but it is stamped `incomplete` in both the JSON and
 the Markdown.
+
+### Waiting for a quiet machine
+
+Every phase, and every repeat, passes an idle gate: load average under 4 and CPU
+under 10% measured over 3 seconds. Busy means **wait**, polling every 30 s for up
+to 20 minutes, printing how long it has been waiting so a queued run is never
+mistaken for a hung one. Only after that does it give up (exit 2).
+
+It used to stop after five polls — 2.5 minutes — and because the gate runs AFTER
+the build, giving up threw the whole build away. On 2026-09-09 that happened twice
+in one session while the load average was still coming down from other work
+(12.1 → 15.6 → 10.0 → 6.4 → 4.4 across the five polls, quiet a minute later), and
+both times the workaround was an external script doing exactly this wait. The
+budget is capped by the run's own `--max-minutes`, so a gate can never push a run
+past the deadline its caller set. Pinned by `run-report.test.mjs` → "the
+machine-idle gate".
+
+### Asking a report which STEP produced a number
+
+```
+node scripts/perf-lab/explain.mjs <report.json> --phase artifacts --run 2
+```
+
+Ranks every step in a run by what it cost, main-process stall and renderer
+long-tasks side by side, with the scenario's own verdict for who froze:
+
+```
+artifacts#2 — steps by main-process stall
+  step                           main stall   worst  renderer   worst  who
+  open.mdLarge                         1312    1362      1360     743  renderer
+  open.mdSmall                          279     329       833     421  renderer
+```
+
+A phase total says a run stalled for 1.6 s; it does not say where, and where is
+what decides whether a change is to blame. That example is real: it cleared a
+branch that had not touched the markdown viewer. `--by renderer` re-ranks by
+renderer cost — a disagreement between the two orderings is itself the signal,
+because work moved off the main thread is not work removed.
+
+### Asking WHICH FUNCTIONS made a step slow
+
+```
+node scripts/perf-lab/profile-open.mjs --file mdLarge --top 20
+```
+
+`explain.mjs` stops at the step. This takes a real V8 CPU profile across one
+artifact open in the real app — on Xvfb, like every rig run, so nothing appears
+on the desktop — and ranks functions by **self** time, bucketed by subsystem:
+
+```
+================ open mdLarge — 939 ms wall, 1037 ms sampled ================
+  by subsystem:
+    our app code                                     714 ms   69%
+    V8 / GC / runtime                                210 ms   20%
+```
+
+It writes the `.cpuprofile` too, so it can be opened in Chrome DevTools when the
+buckets are not enough. Build a different tree with `--checkout <path>`; it
+defaults to this worktree's `youcoded/`.
+
+**Why it exists.** On 2026-09-09 a small Markdown file measured 570 ms against
+117 ms for a code file twenty times its size, and three fixes were filed against
+the Markdown renderer — which turns that same file into a page in ~30 ms. Half a
+second was being attributed to code that was not running. The profile found it in
+the probe, not the app (next section). A step number that surprises you is worth
+one profile before it is worth a plan.
+
+### A probe that reads layout charges the app for its own cost
+
+`viewerState()`'s `tail` calls `innerText`, which forces a synchronous layout of
+the pane — and `waitForViewer` polled it every 50 ms *while timing an open*. The
+more document there was to lay out, the more the probe billed, which reads
+exactly like "markdown is slow" and is why the 570 ms above was believed. The
+tail is now opt-in: off in the polling loop, on when a wait times out and the
+app's own error copy is worth a reflow. Pinned by two tests in
+`scenario-artifacts.test.mjs`.
+
+Two consequences worth knowing. Artifacts-phase numbers recorded **before
+2026-09-10 are not comparable** with later ones — they include the probe. And the
+general rule: anything a poll touches must not force style, layout or text
+serialisation. `innerText`, `offsetHeight`, `getBoundingClientRect` and
+`getComputedStyle` all do.
 
 ### The first run of a new scenario is a shakedown, not a baseline
 
@@ -276,6 +374,73 @@ answers one suspect:
 The fixture files are generated from a seeded PRNG (`rng32`) so they are byte-identical
 between a baseline and a candidate run — otherwise "the large file got slower" could
 just mean "the large file got different".
+
+### `scenario-projects.mjs` — the Projects view *(own boot; added 2026-09-09)*
+Seeds a second saved project of ~1,600 generated files in 40 folders (45 % code, 25 %
+markdown, 12 % HTML, 10 % PNG, 8 % JSON — every card-preview kind), lists it and the
+transcript project in `~/.claude/youcoded-folders.json`, then: opens Projects from the
+header button, **types seven real key events** into the file search, flips the grid to
+flat mode with the "Code & configs" type filter, scrolls that grid to the bottom so every
+card crosses the viewport (previews are IntersectionObserver-gated), switches to list
+view, switches projects both ways, opens the Conversations tab, closes and reopens — both
+probes over every step.
+
+**Look first at `open.openMs` versus `open.countsMs`** ("when do I see cards" versus
+"when do the numbers land"), then `filter.codeMs` beside `filter.fileCards` (the cost of
+mounting every matching file as a card — there is no virtualization), then
+`scrollFlat.longtaskTotalMs` (the per-card preview fetch + render as cards scroll in),
+then `search.keystroke.p95Ms` (the per-keystroke re-filter/re-sort). A step whose
+`stall.verdict` is `main` is the backend fan-out, not the renderer.
+
+**Blind to, by construction:** the per-card `backdrop-filter` blur that wallpaper themes
+put on every `.layer-surface` card — the fixture boots the stock theme (no wallpaper), and
+under llvmpipe a blur is software-rasterised anyway. That cost is real on Destin's
+display and this scenario says nothing about it. Also blind to a project over the
+2,000-file discovery cap and to a conversation-heavy project (the transcript project has
+three).
+
+### `scenario-terminal.mjs` — switching sessions in terminal view *(one boot per repeat; added 2026-09-10)*
+Opens the workload's same six sessions, puts the four Claude Code sessions into
+terminal view (Ctrl+`), fills each terminal with 2,000 lines of mixed glyphs, then
+makes 40 switches between those four, one a second — both probes over every switch,
+plus the app's own counter `window.__terminalRegistry.atlasClears` read around each.
+
+**Why:** every hidden -> visible terminal clears the glyph atlas that ALL open
+terminals share (TerminalView's heal), so each switch re-rasterises every terminal.
+**Look first at `atlasClearsPerSwitch`** — about 1 proves the heal engaged; well below
+means the timings do not describe it, well above means resize heals fire on switches
+too. `clearsOutsideSlots` counts clears the settled totals saw but no switch's
+one-second slot did (the few-ms gaps between slots and the settle after the last), so a
+non-zero value means a clear landed after its switch's slot closed. Then
+`switchPaintedMedianMs` (click -> the other terminal on screen, next to the workload's
+chat-view switch), `longtaskMaxMs` and `ipc.totalStallMs`. `renderer` on each run says
+whether xterm got WebGL or the DOM fallback, where the clear is only a repaint.
+
+**How the IPC stall is measured:** each switch owns a one-second slot. The IPC probe
+(a ping every 50 ms) is installed at the slot's start and read just before the next
+switch, so the time between switches is probed, not just the click. A ping still in
+flight when a slot closes counts its wait so far beyond the ping interval
+(`ipc.openStalls` counts those slots), and a slot whose reading failed is counted in
+`ipc.readErrors` and named in a warning — the total is then a floor. Still unprobed: the
+few ms of CDP round trips between slots, and each slot's first 50 ms (probe-ipc's first
+ping fires one interval after install).
+
+**Glyph fill:** the terminal shows the fake `claude`'s PTY, not a shell, so there is no
+`seq`. `fake-claude.cjs` answers one typed line, `perf-lab-glyphs <n>` (surrounding
+whitespace ignored, anything else on the line is not), with n lines of ASCII plus Claude
+Code's box-drawing glyphs in seven colours (bold every fifth line) and a sentinel the
+scenario waits for. Every other line is echoed as before.
+
+**A default run now depends on this phase working.** Like every other phase (projects
+included), a throw here aborts the whole run with exit 2, and `scrollback`, which runs
+after it, never runs. Shake it down with `--only terminal` before trusting a default run.
+
+**Blind to, by construction:** the GPU re-upload cost — the rig is llvmpipe under Xvfb,
+so WebGL may not initialise and the clear is then only a DOM repaint; wallpaper themes;
+switching through native sessions or toggling views (both resize every terminal); and
+whether glyphs stay correct after sleep/resume, which needs a human on real hardware.
+The app build must carry the counter: against an older build `atlasClearsPerSwitch` is
+null and the report is refused (exit 4).
 
 ---
 
@@ -579,6 +744,108 @@ and on the `--max-minutes` watchdog. `launchApp().kill()` deliberately **throws*
 process survived SIGKILL (a survivor would hold the CDP port and the profile lock, and
 the next boot would silently measure the wrong app); the orchestrator always prints
 that failure, and re-throws it only when the body of the boot had not already failed.
+
+---
+
+## The three instruments added on 2026-09-03
+
+All three exist because measurement failed us in perf cycle 3, not because they seemed
+nice. Read this before trusting any perf number about smoothness.
+
+### Which renderer did the rig get? — `gpu.mjs`
+
+`report.machine.renderer` now records what Chromium actually rendered with, read from
+CDP `SystemInfo.getInfo` on the browser target (WebGL `UNMASKED_RENDERER_WEBGL` is the
+fallback). It is captured once, on the first successful boot of a run.
+
+**The answer, measured 2026-09-03:** the rig is **software-rendered**.
+
+```
+ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.1.3-arch3.1)
+gpu_compositing = unavailable_off      rasterization = unavailable_off
+```
+
+So the "the rig is blind to GPU" line in five scenarios' `blindTo` lists is **correct** —
+it is now a measurement rather than an assumption, and every future report carries its
+own copy. Note that Chromium *sees* the NVIDIA device (`vendorId 4318`) and declines to
+use it: `/dev/dri/renderD128` being world-readable is not sufficient, because the app
+runs under Xvfb, which offers no hardware GL. Anything that would change this (a real
+display, a compositor) changes the numbers, so check this field before comparing two
+reports.
+
+### Layouts per streamed token — `layout-cost.mjs`
+
+Cycle 1's defect was one forced document layout per streamed token. Timing it needs a
+native stream and is hostage to local-model speed; **counting** it is not. CDP's
+`Performance` domain exposes `LayoutCount` and `RecalcStyleCount` as monotonic
+integers — confirmed empirically, not from the docs: 200 forced layouts read back as
+exactly `LayoutCount = 200`.
+
+Reported as `workload.median.nativeLayoutCost`, measured over a 3 s window on the
+**native** leg (the only real per-delta stream the rig has — the Claude Code streamer
+appends whole turns, so measuring there proves nothing). Read `verdict`:
+
+| verdict | meaning |
+|---|---|
+| `coalesced` | layouts track painted frames — the healthy shape, and the only pass |
+| `per-delta-forced-layout` | ~1 layout per render commit while commits outrun frames — **the cycle-1 defect** |
+| `forced-layout` | layouts far outrun frames, but not once per commit |
+| `stream-too-slow` | fewer deltas than frames, so the two shapes are indistinguishable — **not a pass** |
+| `no-stream` / `unmeasured` | nothing was measured — **not a pass** |
+
+**Expect `stream-too-slow` on this machine today.** Measured against master on
+2026-09-03, the local model emitted 35 deltas in 3 s against 181 frames. At that rate
+`layoutsPerCommit` is 1.0 — which is both the defect's signature and what a healthy
+renderer does when each commit lands in its own frame. Getting a conclusive reading
+needs a faster local model or a longer window; reporting `coalesced` there would have
+been a pass the data does not support.
+
+This is what re-gates cycle 1, and it is the detector the unfixed buddy-window twin
+(`BubbleFeed.tsx`) needs. It does **not** cover buddy windows yet: no scenario opens one.
+
+### Is anything late to the screen? — `late-content.mjs`
+
+The class that hid cycle 3's pop-in through three clean runs. Every other number in
+`scrollback` is taken while the app is **still**, and a lazy renderer is correct when
+still and wrong while moving.
+
+After all memory readings, the huge conversation is scrolled downward **at a fixed
+human pixel rate** (1,500 px/s for 8 s ≈ 12,000 px) while counting, every frame,
+`.timeline-entry` elements inside the viewport that are still rendering as a spacer.
+Reported as `scrollback.median.lateContent`. **The passing value is zero:** one blank
+frame is the pop-in a user sees.
+
+`clean` is the only pass. Verdicts, worst first: `blank-at-rest` (blank while standing
+still — worse than any scrolling result), `late-content`, `no-folding` (nothing was ever
+a spacer, so nothing was tested), `unmeasured`, `clean`.
+
+**This instrument needed three corrections before its readings meant anything, and each
+one turned a confident finding into an artefact of the rig.** They are worth knowing,
+because all three are traps any "measure it while it moves" probe will hit:
+
+| # | the artefact | the reading it produced | the fix |
+|---|---|---|---|
+| 1 | Crossed the whole document in a fixed time. On the huge fixture that is 4,504,187 px in 6 s — **745,000 px/s, ~500× a human scroll** | blank content on **214 of 216 frames** | scroll at a fixed human PIXEL RATE (1,500 px/s); the reading now carries `pxPerSecond` and `scrolledPx` so it can be judged |
+| 2 | Seeked to the start and sampled one frame later. No user teleports | **4 blanks on 8 frames**, every one at `scrollTop 0` | settle at rest first, and report a failure to settle as its own, worse verdict (`blank-at-rest`) |
+| 3 | Counted frames where the chat pane pinned ITSELF to the bottom | **3 blanks on 1 frame**, at `scrollTop 4,504,200` while the pass had travelled 12,003 px | compare actual scrollTop to commanded each frame; skip and count those frames (`jumpedFrames`) — an auto-scroll is a different thing from late content |
+
+Every one of those was found by looking at the number and asking whether the app could
+possibly have done that, not by a test going red. **A measurement instrument's first
+finding is usually about the instrument.**
+
+`clean` is the only pass. `no-folding` means nothing was ever a spacer during the
+scroll — the mechanism under test never engaged, so nothing was proven. A spacer is
+defined structurally (occupies height, renders nothing), so this generalises past
+folding to any lazy render.
+
+**Both verdicts are rolled up across repeats by WORST, not median** — `median()` sorts
+with `x - y`, which on a verdict string is `NaN`, so two clean repeats could otherwise
+bury the one that caught the defect.
+
+Each instrument has a **live proof** in its test file: a real headless Chromium is
+driven through both the healthy and the defective shape, and the test asserts the
+verdicts differ. Unit tests over fixtures the author wrote cannot show that an
+instrument can see the thing it was built for.
 
 ---
 

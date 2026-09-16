@@ -1,0 +1,22 @@
+{
+ "deck": "deck-rebuild-review-3",
+ "started": "2026-09-06T06:48:57.652Z",
+ "submitted": "2026-09-06T06:49:49Z",
+ "cur": 1,
+ "answers": {
+  "D-1": {
+   "note": "the top options should be contained card things, not bare text on the panel",
+   "v": "other",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-2": {
+   "note": "option B seems to get cut off by other visually?",
+   "v": "other",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

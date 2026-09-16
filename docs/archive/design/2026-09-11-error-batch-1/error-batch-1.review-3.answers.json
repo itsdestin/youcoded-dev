@@ -1,0 +1,15 @@
+{
+ "deck": "error-batch-1-review-3",
+ "started": "2026-09-11T11:09:28.015Z",
+ "submitted": "2026-09-11T11:09:44Z",
+ "cur": 0,
+ "answers": {
+  "E-1c": {
+   "v": "yes",
+   "note": "switch retry/bug positions.",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,6 @@
+{
+  "R2": {
+    "verdict": "pass",
+    "evidence": "Fresh 1440x900 ui-probe captures of the built branch on isolated fake-backend workbench localhost:5544, with --fail-on-error, passed for both themes (exit 0); each reported data-friendly-mascots=built and 7 #rig-root elements. Visually read and compared approved docs/archive/design/2026-09-08-friendly-mascots/scratch/after/shots-palette/creme/01.png against built docs/archive/design/2026-09-08-friendly-mascots/built/creme.png, and approved docs/archive/design/2026-09-08-friendly-mascots/scratch/after/shots-palette/light/01.png against built docs/archive/design/2026-09-08-friendly-mascots/built/light.png. Both match the approved lighter warm-sand / pale grey-green bodies, dark eyes with light sparkles, unchanged buddy silhouettes and expressions, and outlined small in-app mascots. R1 and R3 are human checks and intentionally omitted."
+  }
+}

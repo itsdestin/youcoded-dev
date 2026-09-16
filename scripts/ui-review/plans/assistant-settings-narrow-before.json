@@ -1,0 +1,47 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 390,
+ "height": 800,
+ "pre": [
+  {
+   "click": "[aria-label='Open menu']",
+   "settle": 500
+  },
+  {
+   "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].filter(b=>b.getBoundingClientRect().top>30).find(b=>/^Settings/.test(b.textContent.trim()))",
+   "settle": 700
+  }
+ ],
+ "shots": [
+  {
+   "name": "narrow-drawer",
+   "actions": [],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Model Providers'))"
+  },
+  {
+   "name": "narrow-list",
+   "actions": [],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Defaults'))"
+  },
+  {
+   "name": "narrow-claude",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Defaults'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  },
+  {
+   "name": "narrow-general",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Defaults'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]"
+  }
+ ]
+}

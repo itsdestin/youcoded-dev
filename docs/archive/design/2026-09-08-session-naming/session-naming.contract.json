@@ -1,0 +1,158 @@
+{
+  "title": "Session naming — contract",
+  "key": "session-naming-contract",
+  "stage": "contract",
+  "out": "session-naming.contract.html",
+  "themes": ["light"],
+  "branch": "session/session-naming",
+  "_comment": "WHY: Only submitted deck decisions define these rows; later approvals replace earlier styling and reset behavior, rather than retaining contradictory requirements.",
+  "sources": {
+    "session-naming-questions": "session-naming.questions.json",
+    "session-naming-review": "session-naming.review.json",
+    "session-naming-review-2": "session-naming.review-2.json",
+    "session-naming-review-3": "session-naming.review-3.json",
+    "session-naming-review-4": "session-naming.review-4.json",
+    "session-naming-review-5": "session-naming.review-5.json",
+    "session-naming-review-6": "session-naming.review-6.json"
+  },
+  "_comment_supersessions": [
+    {
+      "source": "session-naming-review#N-1",
+      "note": "this looks out of place, should match the card styling of other items on the page. i think it should be a",
+      "resolution": "Review 2 described this note as withdrawn; its R2-1 answer requested matching cards again, and review 3 R3-1 approved matching General cards. R10 is the final styling requirement."
+    },
+    {
+      "source": "session-naming-review#N-2",
+      "note": "we can clean this up/simplify a bit. too much text",
+      "resolution": "Review 2 R2-1 approves shorter model copy; R7 records that approval."
+    },
+    {
+      "source": "session-naming-review-2#R2-1",
+      "note": "this still doesn't match the card/container styling used for all other options on the page.",
+      "resolution": "Review 3 R3-1 supersedes the review 2 notice that styling stays unchanged."
+    },
+    {
+      "source": "session-naming-review-2#R2-2",
+      "note": "no. the name in the resume card should have a pencil icon directly to the right of it. no \"rename\" button.",
+      "resolution": "Review 3 R3-2 removes the separate Rename row; reviews 4 through 6 refine that name-and-pencil entry point. R8 retains only renaming without reopening; R12 records the final appearance."
+    },
+    {
+      "source": "session-naming-review-2#R2-4",
+      "note": "this is weird. get rid of that button. it's dumb",
+      "resolution": "Review 3 R3-3 supersedes this step and the reset notice in review 1 N-4: no automatic-name reset or replacement action remains. Only R11 is active for this decision."
+    },
+    {
+      "source": "session-naming-review-3#R3-2",
+      "note": "ugly as icon. should match the size/color/style of the tag/complete icon on the resume card. we should also add a dotted underline under the session name and make the whole name clickable to open the edit menu.",
+      "resolution": "Review 4 R4-1 received an other answer requiring the file viewer style instead; review 5 approved that style, and review 6 approved always-visible cues. The tag/complete styling request is superseded, not an additional requirement."
+    },
+    {
+      "source": "session-naming-review-4#R4-1",
+      "note": "the session artifact viewer already implements this pencil icon/dotted underline rename style. use the same styling from the session artifact viewer. same icon, same underline style",
+      "resolution": "This other answer states a requirement, subsequently shown and approved in review 5, then retained by review 6. R12 uses the latest approval."
+    },
+    {
+      "source": "session-naming-review-5#R5-1",
+      "note": "looks good, but we should keep the pencil icon and underline visible instead of them being hover/click effects",
+      "resolution": "Review 6 R6-1 approves always-visible cues and supersedes review 5 hover-only behavior. R12 is the latest requirement."
+    }
+  ],
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Session naming",
+      "path": "Assistant settings → General; session menu; Resume Session",
+      "headline": "This is what done means for session naming.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Basic is selected when no naming preference is saved, without changing existing session names.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-naming-questions#default"
+        },
+        {
+          "id": "R2",
+          "statement": "AI reviews names after replies 1 and 3, then every 25 completed replies, without an interval setting; tool steps do not count.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-naming-questions#cadence"
+        },
+        {
+          "id": "R3",
+          "statement": "Assistant settings offers Off, Basic, and AI: Off keeps names without automatic naming; Basic keeps a short first-message name without AI calls.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-naming-review#N-1",
+          "note": "this looks out of place, should match the card styling of other items on the page. i think it should be a"
+        },
+        {
+          "id": "R4",
+          "statement": "AI naming uses the conversation model or a separately chosen model, explains reviews and provider usage under information, and keeps names that still fit.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-naming-review#N-2",
+          "note": "we can clean this up/simplify a bit. too much text"
+        },
+        {
+          "id": "R5",
+          "statement": "An active session’s menu offers Rename session above Move to new window.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-naming-review#N-3"
+        },
+        {
+          "id": "R6",
+          "statement": "Save name protects a chosen name from automatic changes in every mode, even when unchanged; blank names cannot be saved.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-naming-review#N-4"
+        },
+        {
+          "id": "R7",
+          "statement": "The naming model has shorter copy without repeated reassurance, with details under the information button.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-naming-review-2#R2-1",
+          "note": "this still doesn't match the card/container styling used for all other options on the page."
+        },
+        {
+          "id": "R8",
+          "statement": "Saved sessions can be renamed without reopening the conversation, using the same dialog as active sessions.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "session-naming-review-2#R2-2",
+          "note": "no. the name in the resume card should have a pencil icon directly to the right of it. no \"rename\" button."
+        },
+        {
+          "id": "R9",
+          "statement": "At phone width, the saved-session rename dialog’s name field, Cancel, and Save name fit without horizontal scrolling.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-naming-review-2#R2-3"
+        },
+        {
+          "id": "R10",
+          "statement": "Session naming matches surrounding General cards’ background, rounded corners, padding, and title styling, keeping naming choices and the model picker together.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-naming-review-3#R3-1"
+        },
+        {
+          "id": "R11",
+          "statement": "The rename dialog offers only Cancel and Save name, with no automatic-name reset or replacement action.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-naming-review-3#R3-3"
+        },
+        {
+          "id": "R12",
+          "statement": "Saved names keep the file viewer’s exact pencil and dotted underline always visible, with the pencil directly beside the name; clicking anywhere renames.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "session-naming-review-6#R6-1"
+        }
+      ]
+    }
+  ]
+}

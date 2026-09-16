@@ -1,0 +1,28 @@
+{
+  "title": "Sign in with ChatGPT — round 4",
+  "key": "chatgpt-signin-review-4",
+  "out": "chatgpt-signin.review-4.html",
+  "images": "images/chatgpt-signin-review-4",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after-3",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after-4"
+  },
+  "labels": {"before": "Round 3", "after": "Round 4"},
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "providers-in": ["chatgpt-signin", "providers-chatgpt-signed-in", "440x600+500+150"]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers",
+      "crop": "providers-in",
+      "headline": "Two group headings, Cloud Models and Local Models. The OpenRouter/API heading is gone and the cards sit closer.",
+      "changed": "Your note on P-1 (round 3). A Cloud Models heading, with its own (i), sits above Claude Code, ChatGPT and OpenRouter; the three cards are two units apart. The OpenRouter/API heading is removed and its (i) moves into the OpenRouter card. Local Models keeps its heading as the second group. Web Search keeps its heading because it is not a model provider.",
+      "notice": "The API-key providers you add yourself (Ollama and the like) still list under the OpenRouter card, inside Cloud Models.",
+      "risk": "If Web Search should also lose its heading, say so here; it was kept on purpose.",
+      "highlight": "auto"
+    }
+  ]
+}

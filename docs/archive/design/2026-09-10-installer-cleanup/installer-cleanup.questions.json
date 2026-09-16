@@ -1,0 +1,226 @@
+{
+  "title": "Installer cleanup — the questions before building",
+  "key": "installer-cleanup-questions",
+  "out": "installer-cleanup.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Installing on Windows",
+      "path": "The installer file in your Downloads folder, after YouCoded is installed",
+      "headline": "After YouCoded installs on Windows, what should happen to the installer file that was downloaded?",
+      "today": "The installer stays in the Downloads folder wearing the same icon as the app, so searching \"youcoded\" in the Start menu can show both.",
+      "problem": "People open the installer again thinking it is the app, or can't tell which of the two to click.",
+      "proposal": "The app clears the file away itself once it is installed. It only ever touches the exact file that ran the install, and only while that file is still in Downloads.",
+      "options": [
+        {
+          "id": "trash-with-note",
+          "label": "Recycle Bin, with a note",
+          "pros": [
+            "Nothing to click: the confusing file is simply gone.",
+            "It sits in the Recycle Bin, so anyone who wanted it can put it back.",
+            "A short note after setup says where it went, so nothing vanishes unexplained."
+          ],
+          "cons": [
+            "Someone keeping the installer for another computer finds it moved.",
+            "An unsigned app removing its own installer can look suspicious to some antivirus programs. Rare, and it can't be tested ahead of time."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "ask-first",
+          "label": "Ask first",
+          "pros": [
+            "Nothing moves without a yes."
+          ],
+          "cons": [
+            "One more question in a first run that already has several setup screens.",
+            "Most people won't know why they are being asked."
+          ]
+        },
+        {
+          "id": "leave-it",
+          "label": "Leave it",
+          "pros": [
+            "No chance of surprising anyone."
+          ],
+          "cons": [
+            "The Start menu confusion stays; only the new file name helps."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Installing on Mac",
+      "path": "Opening YouCoded straight from the installer disk instead of the Applications folder",
+      "headline": "When someone opens YouCoded directly from the installer disk on a Mac, what should the app do?",
+      "today": "Opening the downloaded file shows a disk with YouCoded inside. The website says to drag it into Applications first, but it also runs straight from the disk, and then Spotlight lists two YouCodeds.",
+      "problem": "Run from the disk, the app vanishes when the disk is closed or the file deleted, and the duplicate keeps confusing search.",
+      "proposal": "Once setup is finished (never during it), a note offers to move YouCoded into Applications. Moving closes and reopens the app once.",
+      "options": [
+        {
+          "id": "offer-move",
+          "label": "Offer a move button",
+          "pros": [
+            "One press fixes it for good.",
+            "It waits until setup is done, so it can't interrupt signing in."
+          ],
+          "cons": [
+            "The app closes and reopens once.",
+            "On a Mac account without administrator rights, macOS asks for an administrator password.",
+            "Can't be tried on a real Mac here; only in a Mac virtual machine, if that machine still starts."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "explain-only",
+          "label": "Just explain",
+          "pros": [
+            "Nothing restarts, and no macOS prompts."
+          ],
+          "cons": [
+            "People have to drag the app themselves, which is the step they already skipped."
+          ]
+        },
+        {
+          "id": "do-nothing",
+          "label": "Do nothing",
+          "pros": [
+            "No risk at all."
+          ],
+          "cons": [
+            "People keep running it from the disk."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Installing on Mac",
+      "path": "The installer disk and the downloaded file, once YouCoded runs from Applications",
+      "headline": "Once YouCoded runs from Applications, should it close the installer disk and move the downloaded file to the Trash?",
+      "today": "The installer disk stays open in Finder's sidebar and the file stays in Downloads until the person removes them.",
+      "problem": "Both show up in Spotlight next to the real app. And macOS guards the Downloads folder: the first time any app touches it, macOS asks permission, so doing this silently would pop that request up out of nowhere.",
+      "proposal": "A note with a Remove installer button. Pressing it closes the disk and moves the file to the Trash.",
+      "options": [
+        {
+          "id": "remove-button",
+          "label": "A Remove button",
+          "pros": [
+            "macOS's permission request, if it appears, comes right after the person pressed the button, so it makes sense.",
+            "The file goes to the Trash, so it can be put back."
+          ],
+          "cons": [
+            "Someone has to press it; people who ignore the note keep the file."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "silent",
+          "label": "Do it silently",
+          "pros": [
+            "Nothing to press."
+          ],
+          "cons": [
+            "A macOS permission request would appear unprompted, possibly in the middle of setup, which is exactly what we are avoiding."
+          ]
+        },
+        {
+          "id": "leave-them",
+          "label": "Leave them",
+          "pros": [
+            "No prompts at all."
+          ],
+          "cons": [
+            "The Spotlight duplicate stays until they close the disk themselves."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Installing on Windows and Mac",
+      "path": "The installer file's icon, in Downloads and in search results",
+      "headline": "Should the installer files get their own icon, such as the app icon with a small download arrow?",
+      "today": "The Windows installer uses exactly the app's icon.",
+      "problem": "In a list of search results the icon is what people look at first, and the two look identical.",
+      "proposal": "Yes: I draw two or three versions and show them to you on a review page before anything ships. No: keep the app icon and rely on the new name. The renamed files are already built either way."
+    },
+    {
+      "id": "P-2",
+      "page": "Safeguards, Linux, and how this gets built",
+      "intro": "Two things I'm stating for you to confirm, then how much review this goes through."
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "First-time setup",
+      "path": "Everything the cleanup does, on every computer",
+      "headline": "Cleanup can never stop, slow down or interrupt first-time setup.",
+      "changed": "Stated, not asked. Cleanup starts only after the app window is up and runs in the background. It gives up quietly after a few tries and writes failures to the app's log instead of showing errors. It never causes a Windows or macOS prompt unless the person pressed a button. It only touches the exact file that ran the install, only in Downloads, only if that file hasn't changed since, and never an update the app downloaded for itself.",
+      "notice": "If anything goes wrong, the only thing anyone notices is that the installer file is still there.",
+      "yes": "That holds",
+      "no": "Not enough"
+    },
+    {
+      "id": "S-2",
+      "words": true,
+      "surface": "Installing on Linux",
+      "path": "The Linux download files",
+      "headline": "Linux files keep their names, and nothing on Linux is cleaned up.",
+      "changed": "Stated, not asked. The AppImage is the app itself, not an installer, so renaming or removing it would break the app. The other Linux files are handed to the system's software installer and never show up in the app menu.",
+      "notice": "Linux users see no change.",
+      "yes": "Agreed",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "How this gets built",
+      "path": "The review steps before you see the finished work",
+      "headline": "How many review steps should this go through before you see it?",
+      "today": "A normal feature goes through a design page, an outside tester, two reviewers, a written definition of done and a final sign-off.",
+      "problem": "That is many rounds for two small notes, but the failure paths (the part you asked to be airtight) are where a second pair of eyes catches mistakes.",
+      "proposal": "Pick how much review to do.",
+      "options": [
+        {
+          "id": "short-plus-reviewer",
+          "label": "Short, plus a reviewer",
+          "pros": [
+            "You see one review page with the notes, already built and tried on the Windows virtual machine.",
+            "A fresh reviewer who didn't write the code checks every failure path first."
+          ],
+          "cons": [
+            "No design page before building, so a note you dislike gets rebuilt."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "short-only",
+          "label": "Short only",
+          "pros": [
+            "Fastest."
+          ],
+          "cons": [
+            "Only the one who wrote it has checked the failure paths."
+          ]
+        },
+        {
+          "id": "full-route",
+          "label": "Full route",
+          "pros": [
+            "Every step, including an outside tester and a signed definition of done."
+          ],
+          "cons": [
+            "Several more rounds of pages for a small change."
+          ]
+        }
+      ]
+    }
+  ]
+}

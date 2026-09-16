@@ -1,0 +1,111 @@
+{
+  "title": "Sign in with ChatGPT — round 2",
+  "key": "chatgpt-signin-review-2",
+  "out": "chatgpt-signin.review-2.html",
+  "images": "images/chatgpt-signin-review-2",
+  "runs": {
+    "before": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/before",
+    "after": "/tmp/claude-1000/-home-destin-youcoded-dev/b92ad69f-fec4-4d93-8bac-d36fee6847a0/scratchpad/review/after-2"
+  },
+  "themes": ["midnight", "light", "halftone-dimension"],
+  "crops": {
+    "providers-out": ["chatgpt-signin", "providers-chatgpt-signed-out", "440x600+500+150"],
+    "providers-in": ["chatgpt-signin", "providers-chatgpt-signed-in", "440x600+500+150"],
+    "providers-waiting": ["chatgpt-signin", "providers-chatgpt-waiting", "440x600+500+150"],
+    "providers-blocked": ["chatgpt-signin", "providers-chatgpt-blocked", "440x600+500+150"],
+    "first-run": ["chatgpt-signin", "first-run-sign-in", "560x560+440+160"],
+    "first-run-waiting": ["chatgpt-signin", "first-run-chatgpt-waiting", "700x360+370+260"],
+    "plan-limit": ["chatgpt-signin", "chatgpt-plan-limit", "1240x120+10+670"],
+    "picker": ["chatgpt-signin", "chatgpt-model-picker", "440x400+500+370"]
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers",
+      "crop": "providers-out",
+      "headline": "Every provider is now one row shape: name, a grey status line, one button. The Default engine badge is gone.",
+      "changed": "Your note on P-1. Claude Code, ChatGPT and OpenRouter share one row: the name, a one-line status in the same grey, one button on the right (Preferences, Sign in with ChatGPT, Connect to OpenRouter). Claude Code's Default engine title and its sentence are removed; the (i) beside the heading still says sessions run through Claude Code unless another provider is picked.",
+      "notice": "No green text anywhere in the window. Signed in reads as words in the status line, like the Account row does.",
+      "risk": "Nothing on the row says Claude Code is the default any more; only the (i) and the opening sentence do.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-2",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers, both plans signed in",
+      "crop": "providers-in",
+      "headline": "Signed in, a plan's row carries the same two bars the usage card draws: 5-hour limit and 7-day limit, with reset times.",
+      "changed": "Your note on P-2. The signed-in line is plain grey: Signed in as your email, with the plan name (ChatGPT Plus) under it. Beneath, the 5-hour and 7-day bars, exactly as the /usage card draws them, coloured by how full they are. The Claude Code row gets the same bars for the Claude plan, so both plans read the same way.",
+      "notice": "Sign out is an outlined button on the right, where Preferences and Connect sit on the other rows.",
+      "risk": "Two sets of bars make the window taller; OpenRouter and Local Models sit one scroll further down.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-3",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → ChatGPT, mid sign-in",
+      "crop": "providers-waiting",
+      "headline": "Waiting is one short line with a spinner, and a Cancel. The extra sentence under it is gone.",
+      "changed": "Your note on P-3. The status reads Waiting for the browser… beside a small spinner; Cancel on the right. Nothing else under the row.",
+      "notice": "Cancel puts the row back to Not signed in.",
+      "risk": "There is no longer a line saying which tab to look in; the browser tab that opened is the only cue.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-4",
+      "surface": "Settings → Model Providers",
+      "path": "Settings → Model Providers → ChatGPT, when OpenAI refuses",
+      "crop": "providers-blocked",
+      "headline": "When OpenAI refuses the account, the status stays grey and OpenAI's reason sits on its own red line beneath it.",
+      "changed": "Your note on P-4. Signed in as your email in the normal grey; OpenAI's reason (for example, a workspace admin turning it off) on a second line in the destructive colour; Sign out on the right. No bars, because there is no plan to draw.",
+      "notice": "The reason is OpenAI's own text, not ours.",
+      "risk": "A long reason wraps to two lines and pushes the rows below down.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-5",
+      "surface": "First-run screen",
+      "path": "First run → sign in",
+      "crop": "first-run",
+      "headline": "Three sign-ins stacked full width: Claude filled, ChatGPT and OpenRouter outlined. The link reads Use an API key or local model.",
+      "changed": "Your note on P-5. Log in with OpenRouter joins the card. Its sign-in is the browser round-trip in the 2026-08-31 OpenRouter spec, which is written but not built, so the button is real and its backend is on the to-do list. The sentence above reads Sign in with the plan you already pay for. The link under the buttons is now Use an API key or local model.",
+      "notice": "The link still opens the key box it opened before; a local-model route on this screen needs its own step later, and is noted as such.",
+      "risk": "Three tall buttons make the card taller; on a short window the link sits near the bottom edge.",
+      "highlight": {"selector": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Log in with Claude')?.parentElement"}
+    },
+    {
+      "id": "P-6",
+      "surface": "First-run screen",
+      "path": "First run → sign in → ChatGPT",
+      "crop": "first-run-waiting",
+      "headline": "While the browser is open the card stays, with the waiting line inside it. The Skip setup link is gone.",
+      "changed": "Your note on P-6. The same framed card holds the spinner and A browser window should have opened. Finish signing in to ChatGPT there… — the screen no longer changes shape. The Skip setup (I installed via terminal) link at the bottom is removed on every step of the wizard.",
+      "notice": "Someone who installed Claude Code by hand now signs in like everyone else; there is no way past this screen without a sign-in or a key.",
+      "risk": "That is a real change for terminal installs: the old skip let them into the app without signing in here.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-9",
+      "surface": "Chat view",
+      "path": "A ChatGPT conversation when the plan's window is used up",
+      "crop": "plan-limit",
+      "headline": "The used-up-plan card is one bubble: the message, what the other provider costs, and a single Switch button.",
+      "changed": "Your note on P-9. One red-ringed bubble, like the other stop cards: Your ChatGPT plan's 5-hour limit is used up. It resets at 6:43 PM. Then, in grey inside the same sentence, Claude Sonnet 4.6 on OpenRouter is connected and bills per use. A small Switch button at the right edge of the bubble. The separate button row under the bubble is gone.",
+      "notice": "Switch rebinds this conversation to that model; the status-bar chip changes. With nothing else connected, the bubble is the message alone.",
+      "risk": "On a narrow window the sentence wraps to two lines before the button; that is how the stalled card already behaves.",
+      "highlight": "auto"
+    },
+    {
+      "id": "P-10",
+      "surface": "Model picker",
+      "path": "Status bar → model chip → search gpt",
+      "crop": "picker",
+      "headline": "The plan's models are grouped under ChatGPT Plan, as you asked.",
+      "changed": "Your note on P-10. The provider is labelled ChatGPT Plan in the picker's rows and its group; the Settings section heading stays ChatGPT.",
+      "notice": "The status-bar chip's provider name follows the same label.",
+      "risk": "None beyond the wider label in the picker row.",
+      "highlight": {"selector": "[role=dialog]"}
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+ "deck": "new-characters",
+ "started": "2026-09-05T23:43:15.210Z",
+ "submitted": "2026-09-05T23:45:05Z",
+ "cur": 2,
+ "answers": {
+  "NC-1": {
+   "v": "pick",
+   "pick": "star",
+   "note": "we redesigned dizzy to use the new sqirly eyes and drop the weird loops on the left/right side of the head. why did we reintroduce the old version? and move the want thing up in the hand slightly",
+   "note_kind": "noting",
+   "seconds": 64,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "NC-2": {
+   "v": "pick",
+   "pick": "sprout",
+   "note": "AHH its so cute",
+   "note_kind": "noting",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "NC-3": {
+   "v": "pick",
+   "pick": "gold",
+   "note": "kinda like the \"cowboy\" type vibe, but don't like gold as the body color on this one",
+   "note_kind": "noting",
+   "seconds": 26,
+   "theme": "devils-garden",
+   "zoom": 1
+  }
+ }
+}

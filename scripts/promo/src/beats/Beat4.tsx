@@ -11,12 +11,16 @@ import { B, LEN, present, inWindow, type BeatModule } from './beat';
 // clicked, the popup opens on the four favourites, Grok is picked, the chip
 // changes, a question is typed and Grok answers. The recording is 8.4 s from
 // the click to the reply; the beat is 8.6 s (a bar more since 2026-09-04, for the Grok line) and it runs at 1.35×.
-const RATE = 1.35;
+const RATE = 1.45;   // 1.35 → 1.45 on 2026-09-09: the beat is 8.0 s now (60-frame bars) and Destin wants the frames quicker
 const FROM = markFrame('promo-model', 'chip', 'start', -15);
 // Two shots: A runs from before the click to just after it; B opens with the list already
 // there. WHY: between them the picker says "Loading models…" for 1.6 s of footage (the draft review).
 const A_LEN = Math.round((markFrame('promo-model', 'chip', 'end', 6) - FROM) / RATE);
-const B_FROM = markFrame('promo-model', 'list', 'start', -4);
+// 2026-09-09: the popup opens straight onto the list now (no field to click, no "Loading models…"),
+// so when `list` lands within a few frames of `chip` the take plays as ONE continuous shot — shot B
+// simply carries on from where A ends — instead of jumping back to replay the popup's opening.
+const CONTINUOUS = markFrame('promo-model', 'list', 'start') - markFrame('promo-model', 'chip', 'end') < 12;
+const B_FROM = CONTINUOUS ? FROM + Math.round(A_LEN * RATE) : markFrame('promo-model', 'list', 'start', -4);
 /** Local frame of a mark in this beat (shot A from frame 0, shot B from A_LEN, both at RATE). */
 const M = (mark: string, edge: 'start' | 'end' = 'start') => {
   const fr = markFrame('promo-model', mark, edge);
@@ -40,6 +44,7 @@ const Beat4: React.FC = () => (
 //   the reply grows in at the bottom-left; the host stands right of it
 const P4 = present('b4', [
   { at: M('list') + 4, say: 'Use any AI, cloud or local.', target: inWindow(0.68, 0.6), stand: 'R', face: 'welcome', until: M('sent') + 4 },
-  { at: M('reply') - 2, say: "Behave, Grok, or I'm switching to Claude.", target: inWindow(0.2, 0.6), stand: 'R', face: 'smug', until: END - 8 },
+  // 0.2 → 0.25 at the 1.35 zoom (2026-09-09): the reply bubble grew and the host stood on its last words
+  { at: M('reply') - 2, say: "Behave, Grok, or I'm switching to Claude.", target: inWindow(0.25, 0.6), stand: 'R', face: 'smug', until: END - 8 },
 ], 'creme', P, END - 8);
 export const beat4: BeatModule = { id: 'b4', slug: 'creme', home: P4.home, Component: Beat4, host: P4.host, bubbles: P4.bubbles };

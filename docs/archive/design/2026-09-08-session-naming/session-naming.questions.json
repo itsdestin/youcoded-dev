@@ -1,0 +1,42 @@
+{
+  "title": "Session naming — two remaining choices",
+  "key": "session-naming-questions",
+  "stage": "ask",
+  "out": "session-naming.questions.html",
+  "steps": [
+    {
+      "id": "remaining",
+      "page": "Session naming",
+      "intro": "Already agreed: Off, Basic (no AI calls), and AI naming in assistant settings; a selectable naming model; turn-based AI reviews; user-chosen names always protected. Off keeps existing names. Basic makes a stable label from the opening request. These two choices finish the behavior before the visual preview."
+    },
+    {
+      "id": "default",
+      "words": true,
+      "surface": "Assistant settings",
+      "path": "Settings → Assistant → Session naming (proposed)",
+      "headline": "Which naming mode should be selected before a user changes the setting?",
+      "today": "Native sessions ask their conversation model for a title. Claude Code sessions rely on a tool-use reminder. There is no shared naming-mode choice.",
+      "problem": "A default AI mode can make model requests before someone has chosen a naming model. A basic name is free of AI calls but less descriptive.",
+      "proposal": "Choose the starting mode for installations with no saved naming preference. Existing session names stay unchanged; users can select any mode later.",
+      "options": [
+        {"id": "basic", "label": "Basic", "recommended": true, "pros": ["Useful labels without AI calls or model setup.", "AI naming becomes an explicit choice."], "cons": ["New labels are less descriptive until AI naming is enabled."]},
+        {"id": "ai", "label": "AI", "pros": ["Starts with model-generated summaries, using the conversation model until another is selected."], "cons": ["Naming can incur provider charges without a separate model selection."]},
+        {"id": "off", "label": "Off", "pros": ["No automatic naming activity until the user enables it."], "cons": ["New sessions need manual names to be easy to distinguish."]}
+      ]
+    },
+    {
+      "id": "cadence",
+      "words": true,
+      "surface": "Assistant settings",
+      "path": "Settings → Assistant → Session naming → AI (proposed)",
+      "headline": "Should users be able to adjust how often AI names are reviewed?",
+      "today": "Native naming stops after a successful title. Claude Code reminders use elapsed time and tool activity, not completed replies.",
+      "problem": "Time does not measure how far the conversation has progressed. More frequent reviews can track changes sooner but make more model requests.",
+      "proposal": "Name after the first completed reply, refine after reply 3, then review every 25 completed replies. Tool steps do not count. Keep a name when it still fits. Choose whether that ongoing interval is adjustable.",
+      "options": [
+        {"id": "fixed", "label": "Keep it automatic", "recommended": true, "pros": ["No extra setting to understand.", "A predictable review every 25 completed replies after early refinement."], "cons": ["Users cannot trade review frequency against naming cost."]},
+        {"id": "adjustable", "label": "Let users adjust", "pros": ["Users can choose more frequent reviews or fewer model requests."], "cons": ["Adds an interval control to AI naming settings."]}
+      ]
+    }
+  ]
+}

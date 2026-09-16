@@ -1,0 +1,21 @@
+{
+ "deck": "cloud-context-review",
+ "started": "2026-09-15T09:02:28.889Z",
+ "submitted": "2026-09-15T09:03:38Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "note": "lots of empty space, we can tighten this",
+   "v": "other",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

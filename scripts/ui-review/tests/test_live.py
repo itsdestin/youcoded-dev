@@ -21,7 +21,7 @@ sys.path.insert(0, HERE)
 from fixture import live_spec                                                    # noqa: E402
 from deck.build import build_page, deck_data                                     # noqa: E402
 from deck.crops import crop_images                                               # noqa: E402
-from deck.live import LIVE_OFFSET, PANE_WIDTH, all_live, is_live, live_base, pane_url   # noqa: E402
+from deck.live import APP_PANE_HEIGHT, APP_PANE_WIDTH, LIVE_OFFSET, PANE_WIDTH, all_live, is_live, live_base, pane_url   # noqa: E402
 from deck.spec import SpecError, load_spec, validate                             # noqa: E402
 
 
@@ -61,10 +61,22 @@ class AddressTests(unittest.TestCase):
         self.assertEqual(live_base({'live': {'base': 'http://127.0.0.1:41234/'}}), 'http://127.0.0.1:41234')
 
     def test_url_carries_child_round_and_candidate(self):
-        u = pane_url(self.spec, {'surface': 'strip-expand', 'round': 1}, 'as-built', 'midnight')
+        u = pane_url(self.spec, {'surface': 'strip-expand', 'round': 1}, {'candidate': 'as-built'}, 'midnight')
         for want in ('mode=workbench', 'child=1', 'view=live', 'surface=strip-expand',
                      'round=1', 'candidate=as-built', 'theme=midnight'):
             self.assertIn(want, u, want)
+
+    def test_an_app_pane_names_a_screen_and_carries_no_candidate(self):
+        # A pane may show a real screen of the app instead of an authored sketch — the gap
+        # Destin named on 2026-09-06: a live slide could only ever offer drafts.
+        u = pane_url(self.spec, {}, {'app': 'site'}, 'midnight')
+        for want in ('mode=workbench', 'child=1', 'scenario=site', 'theme=midnight', 'latency=0'):
+            self.assertIn(want, u, want)
+        for unwanted in ('view=live', 'candidate=', 'round='):
+            self.assertNotIn(unwanted, u, unwanted)
+
+    def test_a_named_view_is_a_screen_too(self):
+        self.assertIn('view=tools', pane_url(self.spec, {}, {'view': 'tools'}, 'midnight'))
 
     def test_round_is_always_in_the_address(self):
         # Candidate ids are unique only WITHIN a round (close-prompt-body reuses 'labelled'
@@ -148,6 +160,30 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(self.data['steps'][0]['width'], PANE_WIDTH)
 
 
+class AnswerWordsTests(unittest.TestCase):
+    """A yes/no slide on a screen of the APP shows work that is built and running in the pane,
+    so its buttons are keep / revert. 2026-09-11: labels had been made overridable (2026-09-10)
+    but the default still fell to page.js's one-picture "Yes, build it", and the next live deck
+    shipped to its contact sheet with the brief wording anyway."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def _try_this(self, mutate):
+        return deck_data(spec_with(self.tmp, mutate), {})['steps'][1]
+
+    def test_a_screen_of_the_app_defaults_to_keep_or_revert(self):
+        st = self._try_this(lambda r: r['steps'][1].update({'live': {'app': 'default'}}))
+        self.assertEqual((st['yes'], st['no']), ('Yes, keep it', 'No, revert it'))
+
+    def test_an_authored_design_keeps_the_page_default(self):
+        st = self._try_this(lambda r: None)
+        self.assertEqual((st['yes'], st['no']), ('', ''))
+
+    def test_words_the_spec_names_still_win(self):
+        st = self._try_this(lambda r: r['steps'][1].update({'live': {'app': 'default'}, 'yes': 'Looks right'}))
+        self.assertEqual(st['yes'], 'Looks right')
+
+
 class ValidationTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
@@ -163,9 +199,23 @@ class ValidationTests(unittest.TestCase):
             spec = spec_with(self.tmp, lambda r, f=field, v=value: r['steps'][0].update({f: v}))
             self.assertTrue(any(f'no {field}' in e for e in errs(spec)), field)
 
-    def test_a_variant_needs_a_candidate(self):
+    def test_a_variant_needs_a_candidate_or_a_screen(self):
         spec = spec_with(self.tmp, lambda r: r['steps'][0]['variants'][0].pop('candidate'))
-        self.assertTrue(any('missing candidate' in e for e in errs(spec)))
+        self.assertTrue(any('needs "candidate"' in e for e in errs(spec)), errs(spec))
+
+    def test_a_variant_may_name_a_screen_of_the_app_instead(self):
+        spec = spec_with(self.tmp, lambda r: (r['steps'][0]['variants'][0].pop('candidate'),
+                                              r['steps'][0]['variants'][0].update({'app': 'default'})))
+        self.assertEqual(errs(spec), [])
+
+    def test_a_screen_the_workbench_does_not_serve_is_refused(self):
+        spec = spec_with(self.tmp, lambda r: (r['steps'][0]['variants'][0].pop('candidate'),
+                                              r['steps'][0]['variants'][0].update({'app': 'nonesuch'})))
+        self.assertTrue(any('is not a screen the workbench serves' in e for e in errs(spec)), errs(spec))
+
+    def test_a_pane_shows_a_screen_or_a_design_but_not_both(self):
+        spec = spec_with(self.tmp, lambda r: r['steps'][0]['variants'][0].update({'app': 'default'}))
+        self.assertTrue(any('not both' in e for e in errs(spec)), errs(spec))
 
     def test_a_variant_may_not_carry_a_crop(self):
         spec = spec_with(self.tmp, lambda r: r['steps'][0]['variants'][0].update({'crop': 'c'}))
@@ -180,7 +230,7 @@ class ValidationTests(unittest.TestCase):
 
     def test_a_try_this_needs_candidate_changed_and_notice(self):
         spec = spec_with(self.tmp, lambda r: r['steps'][1]['live'].pop('candidate'))
-        self.assertTrue(any('live is missing candidate' in e for e in errs(spec)))
+        self.assertTrue(any('live needs "candidate"' in e for e in errs(spec)), errs(spec))
         for field in ('changed', 'notice'):
             spec = spec_with(self.tmp, lambda r, f=field: r['steps'][1].pop(f))
             self.assertTrue(any(f'missing {field}' in e for e in errs(spec)), field)
@@ -254,6 +304,23 @@ class ServeGuardTests(unittest.TestCase):
         self.assertIn(os.path.join(tree, 'desktop'), msg)  # what SHOULD be
         self.assertIn('offset', msg)                       # and the way out
 
+    def test_a_session_worktree_resolves_by_its_own_name(self):
+        """`workspace-start` puts a session's app checkout at
+        worktrees/sessions/<name>/youcoded. Before 2026-09-10 the only spelling that
+        worked was that whole path — the session key and the branch both failed, and a
+        deck pointed at its own session's build refused to start."""
+        from deck import serve as serve_mod
+        ws = os.path.join(self.tmp, 'ws')
+        tree = os.path.join(ws, 'worktrees', 'sessions', 'my-feature', 'youcoded')
+        os.makedirs(os.path.join(tree, 'desktop'), exist_ok=True)
+        real_ws = serve_mod.workspace_root
+        serve_mod.workspace_root = lambda: ws
+        self.addCleanup(lambda: setattr(serve_mod, 'workspace_root', real_ws))
+        for spelling in ('my-feature', 'session/my-feature', 'sessions/my-feature/youcoded'):
+            with self.subTest(spelling=spelling):
+                self.assertEqual(serve_mod.resolve_worktree(spelling), os.path.abspath(tree))
+        self.assertIsNone(serve_mod.resolve_worktree('no-such-session'))
+
     def test_a_server_already_serving_this_tree_is_left_alone(self):
         from deck import serve as serve_mod
         tree = os.path.join(self.tmp, 'live-tree')
@@ -270,3 +337,35 @@ class ServeGuardTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class AppPaneSizeTests(unittest.TestCase):
+    """A whole screen of the app is not sized like an authored candidate: the registry sizes a
+    candidate and the candidate reports its own height, and a real screen does neither."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def _step(self, **live):
+        def only_one_pane(r):
+            st = r['steps'][0]
+            st.pop('variants', None)
+            st['live'] = live
+        return deck_data(spec_with(self.tmp, only_one_pane), {})['steps'][0]
+
+    def test_an_app_pane_is_wide_and_tall_by_default(self):
+        st = self._step(app='site')
+        self.assertEqual(st['width'], APP_PANE_WIDTH)
+        self.assertEqual(st['height'], APP_PANE_HEIGHT)
+
+    def test_a_declared_size_still_wins(self):
+        st = self._step(app='site', paneWidth=1100, height=400)
+        self.assertEqual(st['width'], 1100)
+        self.assertEqual(st['height'], 400)
+
+    def test_a_candidate_pane_is_unchanged(self):
+        st = self._step(surface='strip-expand', round=1, candidate='as-built')
+        self.assertEqual(st['width'], PANE_WIDTH)
+        self.assertIsNone(st['height'])
+
+
+if __name__ == '__main__': unittest.main()

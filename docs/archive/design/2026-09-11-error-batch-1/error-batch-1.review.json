@@ -1,0 +1,292 @@
+{
+  "title": "Error messages, batch 1 — seventeen messages that said something untrue",
+  "key": "error-batch-1-review",
+  "out": "error-batch-1.review.html",
+  "images": "images/error-batch-1.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "sync-row": [
+      "error-batch1",
+      "sync-retry-failed",
+      "420x250+510+400"
+    ],
+    "wizard": [
+      "error-batch1",
+      "sync-wizard-upload-failed",
+      "420x290+510+335"
+    ],
+    "send-toast": [
+      "error-batch1",
+      "native-send-unconfirmed",
+      "900x130+260+740"
+    ],
+    "copy-toast": [
+      "error-batch1",
+      "slash-copy-failed",
+      "900x130+260+740"
+    ],
+    "file-link": [
+      "error-batch1",
+      "file-link-failed",
+      "480x90+950+120"
+    ],
+    "model-picker": [
+      "error-batch1",
+      "model-picker-native-failed",
+      "440x300+500+300"
+    ],
+    "file-save": [
+      "error-batch1",
+      "file-save-unchecked",
+      "490x140+945+40"
+    ],
+    "close-prompt": [
+      "error-batch1",
+      "close-prompt-meta-unreadable",
+      "600x290+420+300"
+    ],
+    "market-strip": [
+      "error-batch1",
+      "marketplace-uninstall-failed",
+      "760x60+0+840"
+    ],
+    "library": [
+      "error-batch1",
+      "library-plugins-load-failed",
+      "1100x280+0+110"
+    ],
+    "skills-drawer": [
+      "error-batch1",
+      "skills-drawer-load-failed",
+      "1440x200+0+700"
+    ],
+    "tags-load": [
+      "error-batch1",
+      "tag-manager-load-failed",
+      "430x310+505+295"
+    ],
+    "tags-refresh": [
+      "error-batch1",
+      "tag-refresh-failed",
+      "430x460+505+220"
+    ],
+    "approval": [
+      "error-batch1",
+      "approval-card-unconfirmed",
+      "650x170+75+400"
+    ],
+    "update": [
+      "error-batch1",
+      "update-download-failed",
+      "610x260+415+320"
+    ]
+  },
+  "steps": [
+    {
+      "id": "E-1",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → a failed backup's warning → Retry",
+      "crop": "sync-row",
+      "headline": "When a backup retry fails, the Google Drive row now says Error instead of Uploaded.",
+      "changed": "Retry used to show “Uploaded!” no matter what happened. It now reads the upload's answer and shows Error when the upload failed.",
+      "notice": "A failed retry no longer looks like a finished backup.",
+      "risk": "The Error label clears after two seconds, so it is easy to miss; the warning card underneath stays."
+    },
+    {
+      "id": "E-2",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → add a Google Drive backup → Start Backup",
+      "crop": "wizard",
+      "headline": "Adding a backup whose first upload fails now says so, instead of “You're all set”.",
+      "changed": "The last step used to say the first backup was syncing whatever happened. It now says whether the first backup finished, failed, hasn't run yet, or couldn't be confirmed.",
+      "notice": "You find out on the spot when a new backup didn't work, with the reason.",
+      "risk": "The new backup is still added even when its first upload fails, so it stays in your list.",
+      "highlight": {
+        "box": [
+          8,
+          27,
+          84,
+          53
+        ]
+      }
+    },
+    {
+      "id": "E-3",
+      "surface": "Chat",
+      "path": "Send a message in a conversation using a non-Claude model, when no answer comes back",
+      "crop": "send-toast",
+      "headline": "When YouCoded can't tell whether your message went through, it says so instead of claiming it failed.",
+      "changed": "The old notice said the message could not be sent, but the app didn't know that — it may have arrived. The new one says it couldn't confirm, and to check before resending.",
+      "notice": "Fewer accidental double-sends of a message that had actually arrived.",
+      "risk": "Someone who skips the check can still send it twice."
+    },
+    {
+      "id": "E-4",
+      "surface": "Chat",
+      "path": "Type /copy in a conversation when the clipboard refuses",
+      "crop": "copy-toast",
+      "headline": "/copy now says when copying failed, instead of always saying “Copied to clipboard”.",
+      "changed": "The notice used to say “Copied to clipboard” whether or not the copy worked. It now waits for the result and, on failure, asks you to select and copy the text yourself.",
+      "notice": "You're never told something is on your clipboard when it isn't."
+    },
+    {
+      "id": "E-5",
+      "surface": "Chat",
+      "path": "Click a file name in a message when the project's file list can't be read",
+      "crop": "file-link",
+      "headline": "Clicking a file name that couldn't be looked up now gives the real reason, not “the file wasn't found”.",
+      "changed": "Every failure used to say the file wasn't found in the project. It now says only what it knows: when the file lookup itself failed, it shows that reason instead.",
+      "notice": "You stop hunting for a missing file that actually exists."
+    },
+    {
+      "id": "E-6",
+      "surface": "Model picker",
+      "path": "Status bar → model name, when the model list can't be loaded",
+      "crop": "model-picker",
+      "headline": "The model list now says it couldn't load, instead of telling you no providers are set up.",
+      "changed": "A failed load used to look like an empty account and offered “Add provider”. It now says the list couldn't load, with the reason and a Retry button.",
+      "notice": "You're not sent off to re-add a provider you already have.",
+      "highlight": {
+        "box": [
+          5,
+          52,
+          90,
+          26
+        ]
+      }
+    },
+    {
+      "id": "E-7",
+      "surface": "Files pane",
+      "path": "Open a file → Edit → Save, when YouCoded can't check the file first",
+      "crop": "file-save",
+      "headline": "Saving a file YouCoded couldn't check first now stops and says nothing was saved.",
+      "changed": "When the check before saving failed, the save went ahead anyway and could overwrite someone else's changes. Now it reads the file first, and if that fails it saves nothing and says so.",
+      "notice": "An edit made elsewhere can't be silently overwritten; your own text stays in the editor.",
+      "risk": "If that check keeps failing, the file can't be saved from here until it works.",
+      "highlight": {
+        "box": [
+          1,
+          28,
+          98,
+          62
+        ]
+      }
+    },
+    {
+      "id": "E-8",
+      "surface": "Close session",
+      "path": "All Sessions → close a conversation whose tags and note can't be read",
+      "crop": "close-prompt",
+      "headline": "Closing a conversation whose note can't be read no longer shows a blank note you could overwrite.",
+      "changed": "A failed read used to show “No tags, No note” as if empty, and editing then replaced the real note. It now says they couldn't be loaded and hides the controls. The tags chip and the drawer's preview got the same treatment.",
+      "notice": "A saved note can't be wiped by accident from a screen that never showed it.",
+      "risk": "Tags and note can't be changed from these places until the read works again.",
+      "highlight": {
+        "box": [
+          22,
+          32,
+          56,
+          60
+        ]
+      }
+    },
+    {
+      "id": "E-9",
+      "surface": "Marketplace",
+      "path": "Marketplace → an installed plugin → Uninstall, when it fails",
+      "crop": "market-strip",
+      "headline": "A failed uninstall now says “Couldn't uninstall”, not “Failed to install”.",
+      "changed": "The bottom strip named every failure an install. It now names what you were doing — installing, updating or uninstalling — and a refusal that used to pass silently is reported too.",
+      "notice": "The message matches the button you pressed."
+    },
+    {
+      "id": "E-10",
+      "surface": "Your Library",
+      "path": "Browse skills → Your Library, when your installed plugins can't be loaded",
+      "crop": "library",
+      "headline": "Your Library now says your plugins couldn't load, instead of “Nothing installed yet”.",
+      "changed": "A failed load used to look like an empty library. It now shows the reason with Retry. The Themes tab does the same for themes.",
+      "notice": "You won't think your plugins or themes were deleted."
+    },
+    {
+      "id": "E-11",
+      "surface": "Skills drawer",
+      "path": "Browse skills, when your skills can't be loaded",
+      "crop": "skills-drawer",
+      "headline": "The skills drawer now says your skills couldn't load, instead of “No skills installed yet”.",
+      "changed": "A failed load used to invite you to the Marketplace as if you had nothing. It now shows the reason with Retry.",
+      "notice": "No nudge to reinstall skills you already have."
+    },
+    {
+      "id": "E-12",
+      "surface": "Tags",
+      "path": "Status bar → Tags & note → Manage tags…, when your tags can't be loaded",
+      "crop": "tags-load",
+      "headline": "Manage Tags now says your tags couldn't load, instead of “No tags yet — create one above”.",
+      "changed": "A failed load looked like an empty tag list and invited new tags. It now shows the reason with Retry. The tag picker and the tag filter in the Resume Browser say the same.",
+      "notice": "You won't create duplicates of tags you already have.",
+      "highlight": {
+        "box": [
+          2,
+          68,
+          96,
+          26
+        ]
+      }
+    },
+    {
+      "id": "E-13",
+      "surface": "Tags",
+      "path": "Manage Tags → create a tag, when the list can't be refreshed",
+      "crop": "tags-refresh",
+      "headline": "When the tag list can't refresh, your tags stay on screen with a note, instead of vanishing.",
+      "changed": "A failed refresh used to wipe the list to “No tags yet”. The tags already shown now stay, with a line saying they may be out of date and a Retry button.",
+      "notice": "Your tags don't disappear because one refresh failed.",
+      "risk": "The list may briefly be missing a change made in another window until Retry works.",
+      "highlight": {
+        "box": [
+          2,
+          44,
+          96,
+          54
+        ]
+      }
+    },
+    {
+      "id": "E-14",
+      "surface": "Chat",
+      "path": "Answer a permission request (Yes / No) when no confirmation comes back",
+      "crop": "approval",
+      "headline": "When YouCoded can't confirm your answer arrived, the request stays open and tells you, instead of closing.",
+      "changed": "The card used to mark itself failed. It now stays answerable and says YouCoded couldn't confirm the answer, so answer again if it's still waiting. Question cards work the same way.",
+      "notice": "A request that is still waiting for you doesn't look finished.",
+      "risk": "If your first answer did arrive, the card can still look like it is waiting for you.",
+      "highlight": {
+        "box": [
+          1,
+          44,
+          98,
+          44
+        ]
+      }
+    },
+    {
+      "id": "E-15",
+      "surface": "Update",
+      "path": "Status bar → Update Available → Update Now, when the download fails",
+      "crop": "update",
+      "headline": "A failed update download is now labelled “Download failed”, not “Launch failed”.",
+      "changed": "Every failure the app couldn't retry was labelled a launch failure, even when the download itself failed. The label now names the step that failed.",
+      "notice": "The button tells you which part went wrong, and offers Retry when retrying can help."
+    }
+  ]
+}

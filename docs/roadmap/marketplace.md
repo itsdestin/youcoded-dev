@@ -32,6 +32,30 @@ them. Not here: the theme renders wrong (themes).
 
 ## backend
 
+- [ ] Website analytics is live, but its account allowance, spending alerts and applicable backup
+      window are not fully verified: Free Website was confirmed, the Workers subscription lookup
+      returned 403, and provider docs alone say Free 7 days / Paid 30 days. Verify the account's
+      billing and alert coverage without assuming a free zone caps Worker costs; no plan upgrade
+      was made. Follow-up monitoring, not a new activation approval gate
+      `n/a` `needs-verify` `checked 2026-09-15`
+
+- [ ] Website analytics reports cleanup health as unknown after activation, with no last sweep yet.
+      Observe the first daily prune, then verify cleanup/recovery monitoring and provider backup
+      expiry separately from the active database's 90-day history; live ingestion success does not
+      prove retention operations. Follow-up monitoring, not a new activation approval gate
+      `n/a` `needs-verify` `checked 2026-09-15`
+
+- [ ] The Regions list in admin analytics is empty — "Region data isn't coming through yet." Every
+      device in the last 30 days arrives with a blank region, while countries come through fine.
+      Seen on Destin's analytics dashboard 2026-09-13; cause not looked into
+      `n/a` `needs-verify` `checked 2026-09-13`
+
+- [ ] Destin's Android phone (both the regular app and the ReleaseTest app) is still counted as a
+      user in admin analytics — both of his Linux computers are left out as of 2026-09-13. Android
+      gives each app its own private ID that a USB connection can't read for these builds, so the
+      likely fix is a "Copy analytics ID" control in the app's About screen, then adding both IDs
+      `n/a` `confirmed` `checked 2026-09-13`
+
 - [ ] There is no way to pay a pack author anything. Wanted: a tip that splits between YouCoded and
       the authors whose packs the user actually uses — Destin's ranking is the current theme's author
       first, then skill and other authors by a usage signal (invocations or installs, unresolved).
@@ -74,6 +98,27 @@ them. Not here: the theme renders wrong (themes).
       and file shapes; a public product cannot imply a check that never happened. Wording is
       Destin's call — candidate "No leaked secrets found"
       `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+
+- [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
+      to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to
+      deleting the account), NOT the user's GitHub account, computer or files. Pre-launch review rated
+      it MEDIUM, and the exploitable pool is smallest at launch (the attack needs an existing account),
+      so it is deferred — but fix before the accounts/social features get real traction. Fix designed
+      (device-flow → loopback proof); needs a real phone and a staged Worker rollout. Exploit detail is
+      kept out of this public repo — full record in the private security folder
+      (~/system/youcoded-security-2026-09-10/, "#5").
+      `all` `parked` `checked 2026-09-10` `security`
+
+- [ ] Retire the old `wecoded-marketplace-api.destinj101.workers.dev` API address. It is kept alive
+      by `workers_dev = true` in worker/wrangler.toml only because shipped builds hardcode it —
+      stable v1.2.4 and every beta up to 1.3.0-beta.71 do. Attaching the api.youcoded.ai custom
+      domain on 2026-09-03 silently switched it off and took the games lobby, Backup & Sync and the
+      whole account API down for those users; a hand deploy brought it back on 2026-09-06, a later
+      deploy from master turned it off again, and the line finally landed on master 2026-09-11
+      (wecoded-marketplace#90 — the address answered 200 again the same day). Retire only once no
+      supported build names it: that needs a released build everyone is on, and ideally the address
+      read from config rather than compiled in, so the next move cannot repeat this
+      `all` `confirmed` `checked 2026-09-11`
 
 ## install
 

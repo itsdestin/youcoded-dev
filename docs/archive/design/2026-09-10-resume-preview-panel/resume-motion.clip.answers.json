@@ -1,0 +1,23 @@
+{
+ "deck": "resume-browser-motion",
+ "started": "2026-09-10T22:22:17.179Z",
+ "submitted": "2026-09-10T22:24:13Z",
+ "cur": 1,
+ "answers": {
+  "M-1": {
+   "note": "i like whole sheet",
+   "v": "yes",
+   "seconds": 48,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "pick",
+   "pick": "always",
+   "note": "we can remove the folder above model. i forgot this is already displayed in the header card at the top now",
+   "seconds": 68,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "deck": "first-run-local-models-questions",
+ "started": "2026-09-14T22:46:19.836Z",
+ "submitted": "2026-09-14T22:48:15Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "fourth-button",
+   "seconds": 9,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "inside-setup",
+   "seconds": 9,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "one-suggested",
+   "seconds": 9,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "open-while-downloading",
+   "seconds": 9,
+   "theme": "meadow-mist"
+  },
+  "Q-5": {
+   "v": "other",
+   "note": "we should only install claude code when a user goes to actually set it up/sign in",
+   "seconds": 15,
+   "theme": "meadow-mist"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "show-and-warn",
+   "seconds": 15,
+   "theme": "meadow-mist"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "open-app-with-notice",
+   "seconds": 15,
+   "theme": "meadow-mist"
+  },
+  "Q-8": {
+   "v": "pick",
+   "note": "wouldnt an openai/openrouter api key work? i thought we supported all api key types",
+   "pick": "rename-api-key",
+   "seconds": 15,
+   "theme": "meadow-mist"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "meadow-mist"
+  }
+ }
+}

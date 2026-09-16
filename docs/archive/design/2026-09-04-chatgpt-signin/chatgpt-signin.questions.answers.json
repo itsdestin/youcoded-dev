@@ -1,0 +1,30 @@
+{
+ "deck": "chatgpt-signin-questions",
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "a"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "a"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "a"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "a"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "a"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "a"
+  }
+ },
+ "submitted": "2026-09-04T23:22:39Z"
+}

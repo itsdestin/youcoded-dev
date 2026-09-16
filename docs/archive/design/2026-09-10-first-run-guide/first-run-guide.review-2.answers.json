@@ -1,0 +1,38 @@
+{
+ "deck": "first-run-guide-review-2",
+ "started": "2026-09-10T23:58:27.248Z",
+ "submitted": "2026-09-10T23:59:00Z",
+ "cur": 0,
+ "answers": {
+  "N-1": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light"
+  },
+  "N-2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light"
+  },
+  "N-3": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light"
+  },
+  "N-4": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light"
+  },
+  "N-5": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light"
+  },
+  "N-6": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "light"
+  }
+ }
+}

@@ -4,6 +4,54 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
+- [ ] A "Home" folder every install starts with, holding overarching assistant settings that
+      apply everywhere (Destin's note on the first-run guide's review deck, 2026-09-10). The
+      zero-context "No folder" choice on the new-session form shipped 2026-09-11 as the first
+      half; this is the fuller idea
+      `all` `decision` `checked 2026-09-11`
+
+- [ ] Idea (Destin, 2026-09-08): "YouCoded Mesh" automatically chooses an available, suitable
+      device of yours for remote requests and scheduled/autonomous duties, without making you
+      manage which device runs each request. Build on Agents & Automations and secure remote
+      access; account-based access is tracked in remote-access. Around v1.4, not a release promise.
+      Suitability, required files/tools, permissions and avoiding duplicate runs need design.
+      `all` `parked` `checked 2026-09-08` `v1.4`
+
+- [ ] Idea (Destin, 2026-09-08): "YouCoded Cloud" could run an automation when none of your
+      devices is online, as an optional, possibly paid fallback after YouCoded Mesh. Around v1.4
+      or later, not a release promise or agreed pricing. Consent, spending limits, required data
+      and credentials, privacy and safe handoff need design; do not assume offline-only files
+      are available to the cloud or treat device/cloud retries as permission to run work twice.
+      `all` `parked` `checked 2026-09-08` `v1.4`
+- [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
+      mid-sentence and the assistant is told to "ask for the rest" without being told which file
+      that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules
+      are handled well (every heading survives, the file is named); skills, triggered rules and the
+      model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
+      are written up with options and how other tools handle each one — deck ready to serve, nothing
+      answered. Parked 2026-09-09 to finish the session-context panel first
+      `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+
+- [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
+      you picked — its own test says so and has been failing on master since the feature shipped
+      2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists
+      the same intent": both saves carry 20 after 50 was chosen). Found 2026-09-09 by a
+      `verify.sh` run on an unrelated branch; nobody has checked yet whether it reproduces in
+      the running app or is only true on the failure path the test exercises
+      `settings` `desktop` `needs-verify` `checked 2026-09-09`
+
+- [ ] Project startup reminders and before/after-action checks should work in native chats too,
+      with approval before scripts run and clear reports when a check fails or times out
+      `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] The assistant can receive a file's instructions only after its first edit has already
+      happened; it should see them and reconsider before changing the file
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
+- [ ] The assistant should know which tools, instructions and automatic checks are actually
+      active in this chat, rather than guessing from setup instructions
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+
 - [ ] Memory the desktop app holds for each session is never let go when the session ends —
       six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
       chasing the sidecar crash; not the crash cause, a few hundred bytes each)
@@ -13,6 +61,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
       dead 2026-08-31). Approved design exists; held by Destin, not yet built
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
+
+- [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual
+      refresh — Destin upgraded his ChatGPT plan and the new models didn't show up until he
+      thought to sign out and back in. A refresh button on each card so a plan or key change
+      is picked up without that workaround
+      `settings` `desktop` `confirmed` `checked 2026-09-07`
 
 - [ ] After a native session recovers from a step that produced only blank whitespace, the
       history the model sees on resume is not byte-identical to what it saw live (leading blank
@@ -63,14 +117,18 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Context & knowledge as product surfaces — five-idea outline, no design done: grow the
       context popup into a real surface (per-item token cost, "this rule loaded because…", session
       mutes); one-tap "remember this?" correction capture; work state as a first-class object;
-      shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing
-      `desktop` `parked` `checked 2026-07-28` → docs/archive/specs/2026-07-28-context-knowledge-app-features-outline.md
+      shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing.
+      Destin, 2026-09-05: also explain which instructions loaded, why, and what was skipped or
+      shortened, including after reopening a chat or changing its working folder
+      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate
       what-if. Codex was scoped for real 2026-08-31 via its official app-server interface (draft
-      spec; nothing committed to build)
-      `desktop` `parked` `checked 2026-08-31` → docs/active/specs/2026-08-31-codex-session-provider-design.md
+      spec; nothing committed to build). Superseded for the ChatGPT-plan goal on 2026-09-04:
+      OpenAI publicly welcomes the plan inside third-party apps, so the plan's models are
+      reached directly (shipped 2026-09-05); this stays for Codex-the-agent only
+      `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-09-04-chatgpt-subscription-paths.md
 
 - [ ] Native Runtime Parity Program — everything that still separates a native session from a Claude
       Code one (context truncation notice, M6 onward, cwd contract, MCP phase 2, M7–M9). The single
@@ -92,11 +150,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       request log above
       `desktop` `parked` `checked 2026-08-26`
 
-- [ ] When a small model's session has its project rules outlined, skills cut or MCP servers dropped
-      to fit the context budget, only the model is told — nothing on screen says so. In progress on
-      branch `feat/context-truncation-notice` (worktree `worktrees/context-truncation`)
-      `chat` `desktop` `in-flight` `checked 2026-09-01`
-
 - [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
       send function only accepts the literal provider names. No live caller today; fix when the retry
       affordance lands
@@ -109,13 +162,41 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 ## tools
+- [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where
+      are the model settings" it guesses. Wanted (Destin, 2026-09-10 guide deck): a line in the
+      system prompt or an info-desk tool it reaches for whenever a user asks how YouCoded or its
+      settings work, answering from a maintained description of the app rather than from memory
+      `all` `parked` `checked 2026-09-10`
+
+- [ ] The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
+      not have it reaches straight for a script or an outside service instead of the plugin that
+      already does the job. Wanted: a tool it can call to search plugins and integrations, so
+      "check what we already have" comes before "build something new". Destin, 2026-09-05: a 1.3
+      blocker, and the partner to the new "assume you can do it, find a way" rule in the prompt
+      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3`
+
+- [ ] The assistant's standing instructions grew about five times on 2026-09-05 (youcoded #423) and
+      what that did to a small model is still unknown. Measured twice on 2026-09-05 at one run per
+      arm and both runs were inconclusive — the same build scored 2-3 points apart on the judged
+      items across runs, which is the size of the effect. Needs `--repeats` (the evaluator now warns
+      when a comparison plan lacks them). Still unmeasured either way: the COMPACT prompt a small
+      LOCAL model gets, which no OpenRouter arm exercises, and whether "keep going until it's done"
+      makes a small model loop more
+      `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/investigations/2026-09-04-native-prompt-vs-competitors.md
+
 - [ ] One Grep from a conversation whose folder is your home directory can hang the turn for
       hours — on 2026-08-26 a background Explorer's search sat 4 h in Google Drive before Stop killed it
       `desktop` `confirmed` `checked 2026-09-01` `urgent` → docs/active/investigations/2026-09-01-grep-glob-no-deadline.md
 
 - [ ] On a small local vision model the assistant is told an image is "already visible earlier in
-      this conversation" and gets no picture, even though it can no longer see it, until the file changes
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
+      this conversation" and gets no picture, even though it can no longer see it, until the file changes.
+      **Now genuinely reachable** — measured 2026-09-05 while building the local-engine upgrades: no
+      `KNOWN_MODELS` entry has ever declared `supportsVision`, and local bindings always resolved to
+      "don't know", so no local model could reach the buggy path at all. Once the engine reports a
+      paired vision file, any downloaded local vision model resolves true, and the only remaining
+      precondition is a context under ~8,500 tokens — which is exactly the small vision models this
+      feature makes easy to install.
+      `desktop` `confirmed` `checked 2026-09-05` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
 
 - [ ] Write and Edit refuse a file "modified since you read it" after a plain touch or git checkout
       that changed nothing, and can miss a real outside edit made in the same second
@@ -134,6 +215,16 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       so every long result costs a second call); and the "prefer Read/Grep over cat/grep" wording
       should switch off in full-auto — decide both with the harness evaluator, not by argument
       `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
+
+- [ ] Warn the model when a background Bash command has been running 5 and 15 minutes
+      ("The (call) has been running for 5 minutes — if this is within expectations, you may
+      ignore this message"), so a model can act on a genuinely stuck call instead of polling.
+      Destin 2026-09-07: hit live — a model ran BashOutput in a 150-call polling loop on a
+      hung background command. Design note: ride the existing shell finished-notice lane
+      (ShellRegistry per-run timers → queueHostNotice → drainDeliveries), which delivers at
+      the next idle boundary, never mid-turn. Anti-poll wording shipped 2026-09-07; this is
+      the remaining proactive half
+      `desktop` `confirmed` `checked 2026-09-07`
 
 - [ ] WebFetch's "page was too thin to extract" thresholds were reasoned defaults, never measured
       against real pages the way the JS-render floor next to them was
@@ -157,15 +248,34 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
+- [ ] An explicitly authorized git push / branch-deletion cleanup was blocked with "user has not
+      responded yet — the request is still pending on their screen" even though no approval prompt
+      existed (paste-attachments merge close-out, 2026-09-15). This stops close-out and falsely tells
+      the user to approve something absent; only claim a pending approval when a real request exists,
+      and let authorized push and deletion commands proceed.
+      Likely cause (2026-09-16, from code + saved transcripts, not reproduced live): that message
+      is only ever sent to a SPECIALIST whose routed ask went unanswered for 5 minutes
+      (`child-ask-router.ts`). The ask renders only inside the helper's Task card — often in an
+      earlier, scrolled-past turn for a background helper — and the red session dot / attention
+      summary count only top-level tools in the active turn (`useSessionAttention.ts`,
+      `ChatView.tsx` awaitingTools), so nothing tells the user it exists; the only signal is the
+      Specialists chip turning amber. Workers hit it on deny-listed `git push --force-with-lease`
+      and `rm -rf` (2026-09-08 sessions). Fix changes what the user sees → options first
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-16`
+
+- [ ] In Auto-edit, a hired specialist runs any shell command that isn't on the always-ask list
+      with no prompt, although the main assistant itself would have to ask first — the launch
+      "envelope" (`envelopeGranted: true`, `native-session-host.ts` buildSpecialistSession →
+      `child-permissions.ts` step 6/7) turns every parent "ask" into "allow", and in Auto-edit
+      no hire card is shown for built-in specialists. Agreed fix (2026-09-16): grant the envelope
+      only when the session was on Ask first at hire time. Blocked on the phantom-approval item
+      above, because it routes more helper asks through that hidden path
+      `desktop` `confirmed` `checked 2026-09-16`
+
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
       as the app forgetting the approval
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
-
-- [ ] Full Auto still stops to ask before merely reading a file outside the project, and a web
-      search or fetch can raise the same file-permission card. Blocked on Destin approving the
-      approval-card copy in the workbench (plan Task 2); code tasks 3–4 can start in parallel
-      `tool-cards` `desktop` `blocked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-full-auto-external-read-ask.md
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto
@@ -192,19 +302,63 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] The session-cost chip reads low once a long session starts compacting — a step down at
       every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
-      `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
+      `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
 
 - [ ] Changing models while an answer is still streaming bills that whole turn at the new
       model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
       `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-mid-turn-model-swap-reprices-whole-turn.md
 
-- [ ] Cache efficiency — cloud and local sessions leave cache hits on the table: OpenRouter turns
-      can drift between endpoints, local models re-read the whole conversation every specialist
-      turn, long local sessions lose their cache to trimming and idle shutdown (the ~50% "Reuse"
-      reading on DeepSeek is NOT a bug — measurement artifact, documented)
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-08-17-cache-efficiency.md
+- [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
+      reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
+      and ChatGPT-plan sessions can resend a changed opening prompt after restart instead of keeping
+      the longest reusable prefix. Local models re-read the whole conversation every specialist
+      turn, and long local sessions lose their cache to trimming (the ~50% "Reuse" reading on
+      DeepSeek is NOT a bug — measurement artifact, documented). Improve resumed cloud-session
+      affinity and prefix stability, then measure the first post-resume request rather than trusting
+      historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
+      stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
+      survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
+      shipped in youcoded#461 (2026-09-09). Of the eight remaining breakers, youcoded#464
+      (2026-09-10) shipped six plus the backend half of the seventh: Anthropic caching switched on
+      and OpenRouter sessions pinned, compaction firing before the trimmer on every window,
+      pruning committed only on a prune decision, the summary reusing the conversation's warm
+      prefix and reporting its cost, an `expectedRebuild` flag on every turn, llama.cpp's reuse
+      count recorded per step, and the Task tool pinned byte-identical across catalog reloads.
+      The ChatGPT summary key was dropped on purpose (the summary shares the chat's key now).
+      What is left: the Reuse chip's DISPLAY of expected vs surprise misses (four layouts in the
+      survey, a deck for Destin), and a measurement pass in a dev instance — nothing reads the
+      recorded local reuse count yet, and whether OpenRouter honours the top-level cache field
+      and the session pin is asserted only against a stubbed network
+      `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
+
+- [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
+      OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
+      balance on every message) should become a user-facing setting instead of a hardcoded
+      number — some users may want shorter replies to stretch a small credit balance further,
+      others may want a higher ceiling for very long single replies
+      `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Audit every place YouCoded recommends or automatically chooses a model, then build one
+      maintained recommendation system so those choices do not go stale as model generations change
+      `settings/defaults` `all` `confirmed` `checked 2026-09-15`
+
+- [ ] Specialist operating limits should be adjustable in Settings: how many helpers may run at
+      once and how often the assistant may send a running helper a note. Today both are fixed
+      numbers; the 2026-09-09 transcript audit showed the assistant nagging one helper 14 times
+      `settings` `desktop` `decision` `checked 2026-09-15`
+
+- [ ] After the assistant uses 30 specialists in one session, let the user approve just the next
+      helper or waive the limit for that session instead of refusing every additional helper
+      `tool-cards` `desktop` `in-flight` `checked 2026-09-15` → docs/active/specs/2026-09-15-specialist-budget-permission-design.md
+
+- [ ] A finished helper's report should be able to arrive quietly — read with your next message
+      instead of starting a reply on its own — unless the assistant asked to be woken for that
+      helper. Codex works this way (a mailbox read at the next turn); after a Stop the app now
+      holds reports until you speak again, but after a normal answer a report still starts a turn.
+      Needs a decision on the default and on how the assistant asks to be woken
+      `desktop` `decision` `checked 2026-09-09`
+
 - [ ] Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)
@@ -222,11 +376,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       2026-09-04 on the pinned engine build (four helpers at once is the ceiling; the first
       fan-out pays most of its prompt cost again; plan authoring works from the 9B model class
       up and not below) — results in youcoded `docs/engine-dependencies.md` → "Stage-two probes".
-      Gating decisions ruled 2026-09-05 (plans and duties stay separate words; model information is
-      built concurrently in another session so cards can show dollars); design started the same
-      day under the feature flow. The Claude Code bridge (`youcoded agent run`) is unbuilt from the
-      same spec
-      `desktop` `in-flight` `checked 2026-09-05` → docs/active/design/2026-09-05-specialists-plans/specialists-plans.decisions.json
+      Gating decisions ruled 2026-09-05; card UI signed 2026-09-06; backend design reviewed and
+      split into seven tasks 2026-09-08 (`docs/active/plans/2026-09-07-specialists-plans-backend-implementation.md`).
+      Task 1 (schema, validator, eligibility, `propose_plan`) is built on `feat/specialists-plans-ui`;
+      the build session stopped before its final review. Resumed 2026-09-16: branch brought up to
+      date with master; Tasks 2-7 remain. The Claude Code bridge (`youcoded agent run`) is unbuilt
+      from the same spec
+      `desktop` `in-flight` `checked 2026-09-16` → docs/active/plans/2026-09-07-specialists-plans-backend-implementation.md
 
 - [ ] "Assistants" made of "Duties" — the unit of organisation for the future Autonomous Assistants
       view. Ruled 2026-09-05: an assistant groups duties and the first version is the coordinator
@@ -239,6 +395,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       (Settings explainer, report cards). Decided 2026-09-05: one word, "specialist", on every
       surface; sweep the remaining "helper" copy
       `desktop` `decision` `checked 2026-09-05`
+
+- [ ] In the helpers popup, the amber "Needs you" label on a helper waiting for permission is
+      close to unreadable on the three pale themes — measured 1.52:1 on light, 1.41:1 on creme
+      and 1.19:1 on meadow-mist, against a 4.5:1 floor. The fix is the one the working pill took
+      on 2026-09-05: colour the ring and tint, leave the word on the theme's own text colour.
+      Left alone there because it is the consent affordance and the branch that measured it was
+      about a different chip
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-05`
 
 - [ ] Specialists — six follow-on ideas from plan 1c, named but not designed: promote a
       foreground helper to background mid-run; open a helper's own transcript in a viewer; a
@@ -253,10 +417,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       unbuilt 2026-09-01)
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
-- [ ] Open a native session on a repo and the repo's own `.claude/skills/` folder is never picked up —
-      Claude Code in the same folder would see them. Plan written 2026-08-06
-      (`docs/active/plans/2026-08-06-project-scoped-skills.md`), build work only
-      `desktop` `needs-verify` `checked 2026-08-26` `v1.3.1`
+- [ ] **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+      only project-skill convention is Claude Code's `.claude/skills/`, so a person using only
+      YouCoded has no obvious place to put a personal or project workflow. Make `~/.youcoded/`
+      and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
+      as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
+      is Claude Code parity only and must be superseded or expanded before implementation.
+      `all` `blocked` `checked 2026-09-05` `v1.3`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a
       slash command and the text vanishes; the common `/home/…` shape was fixed 2026-08-10. Destin

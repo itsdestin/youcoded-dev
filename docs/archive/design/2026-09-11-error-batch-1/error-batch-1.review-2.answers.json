@@ -1,0 +1,21 @@
+{
+ "deck": "error-batch-1-review-2",
+ "started": "2026-09-11T10:59:13.573Z",
+ "submitted": "2026-09-11T11:00:01Z",
+ "cur": 1,
+ "answers": {
+  "E-1b": {
+   "v": "yes",
+   "note": "our rule was supposed to be all error states offer action. this should be a full error state with the retry/report bug framing we discussed.",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-4b": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

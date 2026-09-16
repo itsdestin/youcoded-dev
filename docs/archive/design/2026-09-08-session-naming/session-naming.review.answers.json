@@ -1,0 +1,34 @@
+{
+ "deck": "session-naming-review",
+ "started": "2026-09-09T08:01:03.831Z",
+ "submitted": "2026-09-09T08:04:00Z",
+ "cur": 3,
+ "answers": {
+  "N-1": {
+   "note": "this looks out of place, should match the card styling of other items on the page. i think it should be a",
+   "v": "yes",
+   "seconds": 108,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-2": {
+   "v": "yes",
+   "note": "we can clean this up/simplify a bit. too much text",
+   "seconds": 50,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-3": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "N-4": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

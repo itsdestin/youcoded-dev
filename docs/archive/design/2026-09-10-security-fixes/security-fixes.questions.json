@@ -1,0 +1,190 @@
+{
+  "title": "Security fixes: four decisions before we build",
+  "key": "security-fixes-questions",
+  "out": "security-fixes.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat replies",
+      "path": "Pictures inside the assistant's messages, in every kind of chat",
+      "headline": "Should pictures from websites in the assistant's replies wait for a tap before they load?",
+      "today": "When a reply includes a picture from a website, the app loads it straight away. This happens in every chat, Claude Code chats included.",
+      "problem": "A tricked assistant can hide private information inside a picture's web address. The moment the reply appears, that information is sent to whoever owns the website. There is no tool and no question.",
+      "proposal": "A picture from a website shows as a small box naming the site, with a Show button. One tap loads it. Pictures from your own files still show normally.",
+      "options": [
+        {
+          "id": "tap-to-show",
+          "label": "Tap to show",
+          "pros": [
+            "Closes this leak in every chat, including Claude Code chats.",
+            "Replies rarely include web pictures, so you will seldom see the box."
+          ],
+          "cons": [
+            "A web picture you actually want costs one tap."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "never-load",
+          "label": "Never load them",
+          "pros": [
+            "Simplest; there is nothing to tap."
+          ],
+          "cons": [
+            "A web picture you want can never be seen inside the chat."
+          ]
+        },
+        {
+          "id": "leave-as-is",
+          "label": "Leave as today",
+          "pros": [
+            "No change at all."
+          ],
+          "cons": [
+            "The best-known way AI apps leak data stays open."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Assistant permissions",
+      "path": "The approval cards that appear inside a chat",
+      "headline": "After the assistant reads a private settings file, should its first visit to each new website ask you?",
+      "today": "Reading any file and visiting any website never ask. That was your 5 September decision: questions are for actions that change things.",
+      "problem": "A web page can tell the assistant to read a file holding saved passwords, then visit a website with that file's contents in the address. Both steps happen silently.",
+      "proposal": "Keep reads and web visits free, with two additions. First, a short list of pure password files the assistant can never open. Second, only in a chat that has read a hidden settings file in your home folder, one question the first time it contacts each new website.",
+      "options": [
+        {
+          "id": "both",
+          "label": "Both additions",
+          "pros": [
+            "Chats that never touch those files see nothing new.",
+            "It blocks the step that actually carries data out."
+          ],
+          "cons": [
+            "A chat that read something like your shell settings asks once per new website, usually zero to three times.",
+            "A chat left running on its own can pause on that question."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "list-only",
+          "label": "Password list only",
+          "pros": [
+            "No new questions, ever."
+          ],
+          "cons": [
+            "Misses mixed files that hold passwords alongside ordinary settings.",
+            "Any file left off the list is a gap an attacker can use."
+          ]
+        },
+        {
+          "id": "ask-every-site",
+          "label": "Ask for every site",
+          "summary": "Ask the first time any chat contacts a new website, the way Claude Code does.",
+          "pros": [
+            "The simplest rule to explain."
+          ],
+          "cons": [
+            "Questions return in ordinary research chats, undoing most of the 5 September change."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Installing and updating",
+      "path": "The installer on Windows and Mac, and the Update button in the app",
+      "headline": "Should we pay about $219 a year so installs show your company name instead of warnings?",
+      "today": "Windows shows 'Unknown publisher' when installing YouCoded. On a Mac, people must open System Settings, press Open Anyway and type their password.",
+      "problem": "Students and everyday users give up at those warnings, and anyone technical reads them as a sign the project is not serious.",
+      "proposal": "Windows signing through Microsoft ($9.99 a month) and Apple's developer program ($99 a year). You would need a website and email address on a domain the company owns, a free business ID number and a photo-ID check. Approval takes days to weeks. The free part happens either way: the app checking that each update is genuine, and the broken Update button working again.",
+      "options": [
+        {
+          "id": "windows-and-mac",
+          "label": "Windows and Mac",
+          "pros": [
+            "Installs show Destin's Adventures, LLC as the publisher right away.",
+            "Mac installs become a normal double-click."
+          ],
+          "cons": [
+            "About $219 a year.",
+            "A few hours of paperwork, then waiting on approvals.",
+            "The Windows warning fades over weeks as downloads build trust, not instantly."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "windows-only",
+          "label": "Windows only",
+          "pros": [
+            "About $120 a year, and only Microsoft's paperwork."
+          ],
+          "cons": [
+            "Mac users keep the Open Anyway steps."
+          ]
+        },
+        {
+          "id": "neither",
+          "label": "Neither for now",
+          "pros": [
+            "No cost or paperwork."
+          ],
+          "cons": [
+            "The warnings stay on every install."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "How we build",
+      "path": "The review pages you answer before work is merged",
+      "headline": "Can these seven fixes skip the full new-feature process and reach you as one before-and-after review?",
+      "today": "New features go through a questions page, a fresh-eyes tester, reviewers, a written definition of done and a final acceptance round.",
+      "problem": "These are fixes with a clear direction, and most change nothing you can see. The full process adds days without adding much.",
+      "proposal": "Every fix still gets automated tests and a fresh code reviewer. Everything you can see comes to you on one before-and-after page before anything merges: the password field, the wait message, the picture box, the website question and the update error.",
+      "options": [
+        {
+          "id": "light",
+          "label": "Light route",
+          "pros": [
+            "The fixes land days sooner.",
+            "You still see and approve every visible change."
+          ],
+          "cons": [
+            "No separate fresh-eyes tester reads the new wording first."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "full-for-visible",
+          "label": "Full for visible ones",
+          "summary": "The full process for the password and website-question changes; the light route for the rest.",
+          "pros": [
+            "The two changes people will see most get the most scrutiny."
+          ],
+          "cons": [
+            "Those two fixes arrive several days later."
+          ]
+        },
+        {
+          "id": "full-for-all",
+          "label": "Full for all",
+          "pros": [
+            "The most thorough."
+          ],
+          "cons": [
+            "The slowest; launch waits longer."
+          ]
+        }
+      ]
+    }
+  ]
+}

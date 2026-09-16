@@ -1,0 +1,809 @@
+<!doctype html><html lang="en" data-theme="halftone-dimension"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Halftone&#x27;s eye colour — cyan on violet</title>
+<style id="tokens">:root[data-theme="halftone-dimension"]{--canvas:#08060e;--panel:#100e1c;--inset:#181430;--well:#0C0A14;--accent:#E51F48;--on-accent:#ffffff;--fg:#F0E8F8;--fg-2:#D4CAE4;--fg-dim:#A498C0;--fg-muted:#7468A0;--fg-faint:#4D417A;--edge:#372D56;--link:#E51F48;--radius-sm:8px;--radius-md:16px;--radius-lg:24px;color-scheme:dark}</style>
+<style>/* Review deck v2 — the approved page (docs/active/prototypes/2026-08-27-deck-mockup-g.html).
+   Theme tokens are inlined by build.py into <style id="tokens">; amber is the deck's own colour. */
+:root{--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-full:9999px;--yes:#2E9B57;--no:#E5484D;--other:#C99700;--mark:#FFB020;--font:'Cascadia Mono','Cascadia Code','Fira Code',monospace;--content:clamp(900px,80vw,1640px)}
+*{box-sizing:border-box} html,body{height:100%;margin:0}
+/* Themed scrollbars. A live pane taller than the stage makes the stage scroll, and the browser's
+   own bar is a bright slab of unrelated chrome sitting on the deck (Destin, 2026-09-01). */
+*{scrollbar-width:thin;scrollbar-color:var(--edge) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--edge);border:2px solid transparent;background-clip:padding-box;border-radius:var(--radius-full)}
+::-webkit-scrollbar-thumb:hover{background:var(--fg-muted);border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+body{font:13px/1.45 var(--font);color:var(--fg);background:var(--well);display:flex;flex-direction:column;padding:18px 10px 10px}
+/* the deck is a distinct surface: inset on the darker well, framed in amber, so it never reads as the app's own chrome */
+.deck{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;background:var(--canvas);border:2px solid rgba(255,176,32,.6);border-radius:14px;overflow:visible;box-shadow:0 0 0 1px rgba(0,0,0,.35),0 8px 30px rgba(0,0,0,.25)}
+body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit button over this strip */
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);font-weight:500}
+/* the chip sits ON the frame: tool name | deck title */
+.chip{position:absolute;top:-13px;left:18px;z-index:5;display:inline-flex;align-items:center;height:26px;background:var(--mark);color:#1a1100;border-radius:7px;padding:0 10px 0 9px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.chip .k{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap} .chip .div{width:1px;height:14px;background:rgba(0,0,0,.35);margin:0 9px} .chip .t{font-size:12px;font-weight:500;white-space:nowrap}
+.wrap{width:min(var(--content),100%);margin:0 auto;display:flex;align-items:center;gap:14px;min-width:0}
+.top{height:clamp(56px,6vh,64px);flex:none;display:flex;padding:8px 20px 0;background:var(--panel);border-bottom:1px solid var(--edge);border-radius:12px 12px 0 0}
+/* Fix (2026-08-27): a long surface + path ran straight under the Prev/Next block and the step
+   counter — the header had no shrink and no truncation, so any wordy step corrupted the top bar. */
+.top .where{flex:0 1 auto;min-width:0;overflow:hidden} .top .where .id{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .where .eyebrow{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:1400px){.top .where .eyebrow,.top .where .sep{display:none}} @media (max-width:950px){.top .count{display:none}} @media (max-width:760px){.top .long{display:none} .top .nav .btn{padding:0 6px}}
+.where{display:flex;align-items:center;gap:10px} .where .id{font-weight:500;font-size:14px} .where .sep{color:var(--fg-faint)}
+.nav{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;min-width:0}
+.steps{display:flex;gap:3px;align-items:center;flex:1;max-width:360px;min-width:90px} .steps span{flex:1;height:7px;border-radius:3px;background:var(--inset);cursor:pointer;transition:transform .15s}
+.steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
+.steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
+.count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.btn{font:inherit;font-size:12px;font-weight:500;height:32px;padding:0 14px;border-radius:var(--radius-md);border:1px solid var(--edge);background:transparent;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background .15s,transform .15s,filter .15s}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)} .btn.ghost{border-color:transparent;color:var(--fg-2)} .btn.sm{height:28px;padding:0 10px}
+@media (hover:hover){ .btn:hover{background:var(--inset)} .btn.primary:hover{background:var(--accent);filter:brightness(1.12);transform:translateY(-1px)} .btn.ghost:hover{background:var(--inset);color:var(--fg)} }
+.btn:disabled{opacity:.45;cursor:default;transform:none;filter:none}
+/* The status dots are gone (Destin, 2026-09-01: "i don't like the current status dot style").
+   Choosing looks the SAME everywhere now — a lettered card and an answer button are both
+   neutral until picked and both take the deck's amber when they are. The yes/no/other colours
+   still live in the progress strip at the top, which is where an at-a-glance read belongs. */
+.answers{display:contents}
+/* a choice step: one button per variant, lettered like its picture's caption */
+.ans .key{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:5px;background:var(--inset);border:1px solid var(--edge);font-size:11px;font-weight:700;letter-spacing:.04em} .ans.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+.card.variant{display:flex;gap:10px;align-items:flex-start;cursor:pointer} .card.variant .key{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:5px;background:var(--panel);border:1px solid var(--edge);font-size:11px;font-weight:700}
+.card.variant .vbody{min-width:0;display:flex;flex-direction:column;gap:4px} .card.variant h3{margin:0} .card.variant p{margin:0} .card.variant .r{font-size:11px;color:var(--mark)} .card.variant .cost{font-size:11px;color:var(--fg-muted)} .card.variant.on{border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)} .card.variant.on .key{background:var(--mark);color:#1a1100;border-color:var(--mark)}
+@media (hover:hover){.card.variant:hover{border-color:var(--fg-muted)}}
+.frame.pickable{cursor:pointer;border-radius:var(--radius-md);padding:4px;margin:-4px} .frame.pickable.on{outline:2px solid var(--mark);outline-offset:2px} .frame.pickable figcaption .key{margin-right:6px}
+.ans{border-color:var(--edge)}
+/* Yes and No carry their meaning in the RESTING state — a tinted border and a tinted label,
+   the same quiet-colour idiom `.card.risk` already uses for amber. Destin (2026-09-01) wanted
+   green/red back but not as a status dot, and it has to live here rather than in the chosen
+   state: amber-when-picked is now the single signal for "this is the one I picked", shared
+   with the lettered cards, and two colours competing for that job is what the dots were.
+   Mixed toward the theme's own edge/text rather than used neat, so it reads on light themes
+   too — #2E9B57 on #F2F2F2 is not enough contrast for 13px text on its own.
+   The chosen rule below is deliberately LAST: it takes the border, and leaves the label its
+   colour, so a picked answer still says which one it was. */
+.ans[data-v="yes"]{border-color:color-mix(in srgb,var(--yes) 50%,var(--edge));color:color-mix(in srgb,var(--yes) 72%,var(--fg))}
+.ans[data-v="no"]{border-color:color-mix(in srgb,var(--no) 50%,var(--edge));color:color-mix(in srgb,var(--no) 72%,var(--fg))}
+.ans.on{background:var(--inset);border-color:var(--mark);box-shadow:inset 0 0 0 1px var(--mark)}
+main{flex:1;min-height:0;display:flex;justify-content:center;padding:14px 20px 16px;overflow:auto}
+.step{position:relative;display:flex;width:min(var(--content),100%);flex-direction:column;gap:10px;min-height:0}
+.thumbs{position:absolute;left:calc(100% + 16px);top:0;display:flex;flex-direction:column;gap:10px}
+body.thumbs-inline .thumbs{position:static;flex-direction:row;justify-content:flex-end;margin-bottom:8px}
+.thumb{border:2px solid transparent;border-radius:var(--radius-md);padding:3px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font:11px var(--font);color:var(--fg-dim)}
+.thumb img{height:44px;width:auto;max-width:110px;object-fit:cover;border-radius:3px;display:block} .thumb.on{border-color:var(--accent);color:var(--fg)}
+/* ── the three peer containers on one grid; the class is chosen by page.js ── */
+.content{flex:1;min-height:0;display:grid;gap:12px}
+.content.row-below{grid-template-columns:1fr;grid-template-rows:1fr auto;grid-template-areas:"stage" "decide"}
+.content.col-right{grid-template-columns:1fr minmax(320px,30%);grid-template-rows:1fr;grid-template-areas:"stage decide"}
+.content.compact{display:flex;flex-direction:column;flex:none}
+/* WORDS: no stage at all — the question and its option cards take the row (feature-flow §5) */
+.content.words{grid-template-columns:1fr;grid-template-rows:1fr;grid-template-areas:"decide"} .content.words .stage{display:none}
+.words .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .words .card.option{min-height:96px}
+/* CONTRACT: the rows as a table; a graded row is tinted by its verdict */
+.card.contract{overflow:auto} .card.contract table{border-collapse:collapse;width:100%;font-size:12px} .card.contract th{text-align:left;font-weight:600;color:var(--fg-dim);padding:6px 8px;border-bottom:1px solid var(--edge)} .card.contract td{padding:6px 8px;border-bottom:1px solid var(--edge);vertical-align:top}
+.card.contract .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)} .card.contract tr.pass td:last-child{color:var(--yes)} .card.contract tr.fail td:last-child{color:var(--no)}
+.words .cards:has(.contract){grid-template-columns:1fr}
+.compact .stage{flex:none;overflow:visible} .compact .stage .inner{flex-direction:column;align-items:center} .compact .info{overflow:visible}
+/* COMPACT is the exception, on purpose. `.controls` is sticky to the bottom there so the
+   answer buttons stay reachable in a narrow window, and sticky needs room to move inside its
+   PARENT — wrapped in a content-height `.decide` there is none, and the bar scrolled away
+   (measured against HEAD: "ctl on screen" true before, false after). `display:contents`
+   dissolves the wrapper so the structure is exactly what it was. One card at every width a
+   review is actually done at; a reachable answer bar when the window is too narrow for it. */
+.compact .decide{display:contents}
+/* …and because the wrapper is dissolved there, the two blocks carry the card treatment
+   themselves again. Without this they are transparent and the sticky answer bar renders
+   straight over the question text. */
+.compact .info,.compact .controls{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg)}
+.step.compact-step{flex:none;min-height:0}
+.stage{grid-area:stage} .decide{grid-area:decide}
+/* ONE card, not two. The question, the options and the answer controls are a single decision —
+   Destin (2026-09-01): "the two separate cards/sections for the decision rows should be a
+   single card/section." A hairline separates the question from the answer row inside it. */
+.decide{background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:auto}
+.info,.controls{background:none;border:0;border-radius:0}
+
+.info{padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:auto}
+.controls{padding:clamp(10px,1.2vh,14px) 16px;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(8px,0.8vw,14px)}
+.compact .controls{display:grid;grid-template-columns:1fr 1fr 1fr;position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 20px rgba(0,0,0,.35)} .compact .controls .ans{max-width:none} .compact .controls .note{grid-column:1/3} .compact .controls #save{grid-column:3}
+.stage{position:relative;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);overflow:auto;min-height:0;line-height:0;font-size:0}
+.stage .inner{display:flex;justify-content:center;align-items:center;gap:18px;padding:12px 14px;min-width:100%;min-height:100%}
+.content.stacked .stage .inner{flex-direction:column;align-items:center}
+.frame{display:block;margin:0}
+figcaption{font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);margin-bottom:6px;text-align:left;display:flex;align-items:center;gap:6px;min-height:24px}
+.pic{position:relative;display:inline-block} .pic img{display:block;height:auto;border-radius:var(--radius-sm);cursor:none} body.no-loupe .pic img{cursor:default}
+/* CLIP steps: a recording per run — native controls so a bug can be paused and scrubbed; no loupe, no box */
+.pic video{display:block;height:auto;border-radius:var(--radius-sm);background:#000;cursor:default}
+
+/* ── live panes ─────────────────────────────────────────────────────────────────────────
+   SQUARE CORNERS, ON PURPOSE. A rounded, clipped wrapper round an iframe makes Chrome give
+   up on the cutout the app's glass surfaces use, so a wallpaper theme (Meadow Mist) blurs
+   the entire pane — verified, and tracked as an open landing-page bug. A 1px border and no
+   radius costs nothing and dodges it; if a pane ever needs rounding, round it from inside. */
+.pic iframe{display:block;border:1px solid var(--edge);background:var(--canvas)}
+/* Panes of different heights are TOP-aligned, not centred: three close-session designs at
+   280/279/267px sat on three different baselines and read as sloppy rather than as a
+   difference in the designs. */
+body[data-layout="live"] .stage .inner{align-items:flex-start;flex-wrap:wrap}
+/* A live step's stage takes only the height its panes need, and the question follows
+   directly beneath — not two thirds of the page empty with the cards at the very bottom
+   (Destin, 2026-09-01). minmax(0, auto): content-sized until the page runs out, then the
+   stage scrolls inside itself rather than pushing the cards off screen. */
+.content.row-below.live-fit{grid-template-rows:minmax(0,auto) auto;align-content:start}
+/* `.zoom` sets `display:inline-flex`, which OUTRANKS the `hidden` attribute's UA rule — so
+   hiding it from JS did nothing and the zoom pill sat on top of a pane's "open on its own"
+   link (2026-09-01). An explicit display always beats [hidden]; say so once, for everything. */
+[hidden]{display:none!important}
+/* The lettered chip needs air whatever the frame is. The existing rule for this is scoped to
+   `.frame.pickable`, and a live pane is deliberately NOT pickable — so its caption read
+   "aCard and row" with the letter welded to the label (seen 2026-08-31). It carries the
+   deck's own marker colour and a full stop, so "A." reads as a label rather than as the
+   first letter of the words after it. */
+figcaption .key{color:var(--mark);font-weight:700}
+/* A real button, not bare blue link text — it opens a window, so it should look like
+   something you press (Destin, 2026-09-01). `margin-left:auto` rather than a float: a float
+   escapes a one-line caption box. */
+.popout{margin-left:auto;text-transform:none;letter-spacing:0;font:500 11px/1 var(--font);
+  height:24px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;flex:none;
+  border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--inset);
+  color:var(--fg-2);text-decoration:none;transition:background .15s,color .15s,border-color .15s}
+.popout:hover{background:var(--panel);color:var(--fg);border-color:var(--fg-muted)}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yes);margin-right:6px;vertical-align:middle}
+.livehint{font:11px/1.5 var(--font);color:var(--fg-muted);margin:10px 0 0;text-align:left}
+/* The theme row for a live step: same control, no thumbnails to put in it. */
+.thumb.label-only{padding:4px 10px;border-color:var(--edge-dim);background:var(--inset)}
+.thumb.label-only.on{border-color:var(--accent);background:var(--panel);color:var(--fg)}
+.down{max-width:520px;text-align:left;border:1px solid var(--edge);border-radius:var(--radius-md);padding:18px 20px;background:var(--panel)}
+.down h3{font:600 14px var(--font);margin:0 0 8px;color:var(--fg)}
+.down p{font:13px/1.6 var(--font);color:var(--fg-2);margin:0 0 10px}
+.down p.sub{color:var(--fg-muted);font-size:12px;margin-bottom:0}
+.down pre{font:12px/1.5 var(--mono,ui-monospace,monospace);background:var(--inset);color:var(--fg);border-radius:var(--radius-sm);padding:10px 12px;margin:0 0 12px;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.down code{font:12px var(--mono,ui-monospace,monospace);background:var(--inset);border-radius:3px;padding:1px 4px}
+.zoom .replay{width:auto;padding:0 10px;font-size:12px;font-weight:500}
+.box{position:absolute;border:2px solid var(--mark);border-radius:5px;box-shadow:0 0 0 3px rgba(255,176,32,.28),0 0 14px rgba(0,0,0,.45);pointer-events:none}
+.zoom{position:sticky;top:10px;float:right;margin:10px 10px -42px 0;z-index:2;display:inline-flex;align-items:center;background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-full);padding:2px;gap:2px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.zoom button{font:inherit;font-size:12px;font-weight:500;width:28px;height:26px;border:0;border-radius:var(--radius-full);background:transparent;color:var(--fg-2);cursor:pointer} .zoom .lvl{font-size:11px;color:var(--fg-dim);min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
+.loupe{position:fixed;width:180px;height:180px;border-radius:50%;border:2px solid var(--fg);box-shadow:0 0 0 1px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.45);background-repeat:no-repeat;pointer-events:none;display:none;z-index:9;background-color:var(--panel)}
+.loupe::before,.loupe::after{content:"";position:absolute;left:50%;top:50%;background:var(--mark);box-shadow:0 0 0 1px rgba(0,0,0,.6)} .loupe::before{width:14px;height:2px;margin:-1px 0 0 -7px} .loupe::after{width:2px;height:14px;margin:-7px 0 0 -1px}
+.what{font-size:clamp(15px,1.15vw,19px);font-weight:500;margin:0;line-height:1.35}
+.cards{display:grid;gap:10px} .row-below .cards{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))} .col-right .cards{grid-template-columns:1fr} .compact .cards{grid-template-columns:1fr}
+.card{background:var(--inset);border:1px solid var(--edge);border-radius:var(--radius-md);padding:10px 12px} .card h3{margin:0 0 6px;font:500 11px/1 var(--font);text-transform:uppercase;letter-spacing:.08em;color:var(--fg-muted);display:flex;align-items:center;gap:7px}
+.card h3 svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round} .card p{margin:0;font-size:13px;color:var(--fg);line-height:1.45} .card .num{margin-top:6px;font-size:11px;color:var(--fg-dim)}
+.card.risk{border-color:color-mix(in srgb, var(--mark) 45%, var(--edge))} .card.risk h3{color:var(--mark)}
+/* Fix (2026-08-27): a DECIDE step's buttons carry the option's own words, which are far longer
+   than "Yes, build it" — at three options they overran each other and the labels collided. The
+   label truncates and the letter never does, so `a` `b` `c` stay readable and match the cards. */
+.ans{flex:1 1 140px;max-width:280px;min-width:0;justify-content:center;height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);overflow:hidden}
+.ans>span:not(.dot):not(.key){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* A pick button sizes to its own words instead of taking an equal share: yes/no are two fixed
+   labels that look right stretched, but three option names at an equal share all truncate. */
+.ans[data-v="pick"]{flex:0 1 auto;max-width:min(340px,26vw)}
+.ans .key{flex:none} .ans .dot{width:clamp(8px,0.7vw,11px);height:clamp(8px,0.7vw,11px)}
+#save{height:clamp(34px,4.4vh,52px);font-size:clamp(12px,0.95vw,15px);padding:0 clamp(14px,1.4vw,26px)}
+.note{flex:3 1 220px;font:inherit;font-size:clamp(12px,0.85vw,14px);height:clamp(34px,4.4vh,52px);padding:0 12px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)} .note::placeholder{color:var(--fg-muted)}
+/* Note tags: what the note IS. Shown only once a note has text; "Just noting" is preselected so nothing is inferred. */
+.tags{display:inline-flex;gap:6px} .tag{font:inherit;font-size:11px;padding:4px 9px;border:1px solid var(--edge);border-radius:999px;background:var(--well);color:var(--fg-dim);cursor:pointer} .tag.on{border-color:var(--mark);color:var(--fg);box-shadow:inset 0 0 0 1px var(--mark)}
+.compact .controls .tags{grid-column:1/4}
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:30} .veil.on{display:flex}
+.dlg{width:min(520px,92vw);background:var(--panel);border:1px solid var(--edge);border-radius:var(--radius-lg);padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)} .dlg h2{margin:0 0 10px;font-size:16px;font-weight:500} .dlg p{margin:0 0 10px;color:var(--fg-2);font-size:13px;line-height:1.5}
+.dlg .warn{display:flex;gap:8px;align-items:flex-start;background:var(--inset);border:1px solid color-mix(in srgb, var(--mark) 45%, var(--edge));border-radius:var(--radius-md);padding:10px 12px;color:var(--fg);margin:12px 0}
+.dlg .warn svg{width:16px;height:16px;flex:none;stroke:var(--mark);fill:none;stroke-width:1.8;margin-top:1px} .dlg .row{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+#feedback{display:none;width:100%;min-height:140px;font:12px var(--font);padding:10px;border:1px solid var(--edge);border-radius:var(--radius-md);background:var(--well);color:var(--fg)}
+
+/* ── the finish screen ────────────────────────────────────────────────────────────────
+   Shown in place of the step once the server has ACCEPTED the submit. WHY it exists:
+   before it, Submit closed the dialog and dropped Destin back on the last step with a
+   greyed-out button — indistinguishable from "the click didn't work" (2026-09-03). It is
+   also the only way to read the answers back: the server exits on submit, so there is
+   nowhere else left to ask. */
+.finished{width:min(var(--content),100%);display:flex;justify-content:center;align-items:flex-start;overflow:auto}
+/* `margin:auto 0` rather than `align-items:center`: it centres the block when there is room
+   and simply scrolls when a long deck's table does not fit, instead of clipping its top. */
+.fin-wrap{width:min(720px,100%);margin:auto 0;text-align:center;padding:clamp(12px,4vh,44px) 4px 24px}
+.tick{width:56px;height:56px;margin:0 auto 16px;display:grid;place-items:center;border-radius:50%;background:color-mix(in srgb,var(--yes) 16%,var(--panel))}
+.tick svg{width:34px;height:34px;fill:none;stroke:var(--yes);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.finished h1{margin:0 0 8px;font:500 20px var(--font);color:var(--fg)}
+.finished .lede{margin:0 0 14px;font-size:14px;line-height:1.5;color:var(--fg-2)}
+.finished .fin-meta{margin:0 0 6px;font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums}
+.finished .fin-hint{margin:0 0 18px;font-size:12px;line-height:1.5;color:var(--fg-muted)}
+.fin-actions{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+/* The answers, read back. Same table idiom as a contract step so it reads as part of the deck. */
+.responses{width:100%;border-collapse:collapse;font-size:12px;text-align:left;border:1px solid var(--edge);border-radius:var(--radius-md);overflow:hidden;background:var(--panel)}
+.responses th{font-weight:600;color:var(--fg-dim);padding:7px 10px;border-bottom:1px solid var(--edge);background:var(--inset);white-space:nowrap}
+.responses td{padding:7px 10px;border-bottom:1px solid var(--edge);vertical-align:top;color:var(--fg-2)}
+.responses tr:last-child td{border-bottom:0}
+.responses td.n{color:var(--fg-muted);font-variant-numeric:tabular-nums;width:1%;white-space:nowrap}
+.responses td.step-cell{color:var(--fg)} .responses .src{margin:2px 0 0;font-size:11px;color:var(--fg-muted)}
+.responses td.v{white-space:nowrap;font-weight:500}
+.responses td.v[data-v="yes"],.responses td.v[data-v="pick"]{color:color-mix(in srgb,var(--yes) 78%,var(--fg))}
+.responses td.v[data-v="no"]{color:color-mix(in srgb,var(--no) 78%,var(--fg))}
+.responses td.v[data-v="other"]{color:color-mix(in srgb,var(--other) 82%,var(--fg))}
+.responses td.v[data-v="skip"]{color:var(--fg-muted);font-weight:400}
+.responses .kind{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:var(--radius-full);border:1px solid var(--edge);background:var(--inset);font-size:10px;color:var(--fg-muted);white-space:nowrap}
+@media (max-width:700px){.fin-actions{flex-wrap:wrap} .responses{font-size:11px} .responses th,.responses td{padding:6px 7px}}
+/* A frame whose picture could not be fetched — see the onerror in page.js for which of the
+   two reasons it prints. Bordered so it reads as a message, not as a design with no content. */
+.frame.gone .pic{display:grid;place-items:center;min-height:120px;padding:16px;border:1px dashed var(--edge);border-radius:var(--radius-md);font-size:12px;line-height:1.5;color:var(--fg-muted);text-align:center}
+</style></head><body>
+<div class="deck">
+<div class="chip"><span class="k">Review deck</span><span class="div"></span><span class="t" id="deck-title"></span></div>
+<header class="top"><div class="wrap">
+  <div class="where"><span class="id" id="wtitle"></span><span class="sep">·</span><span class="eyebrow" id="wsub"></span></div>
+  <div class="nav"><button class="btn ghost sm" id="prev">‹ Prev</button><div class="steps" id="steps" title="Click a segment to revisit that step"></div><button class="btn ghost sm" id="next">Next ›</button></div>
+  <span class="count" id="count"></span><button class="btn" id="done">Done<span class="long"> — Submit Feedback</span></button>
+</div></header>
+<main><div class="step on" id="step">
+  <div class="thumbs" id="thumbs"></div>
+  <div class="content" id="content">
+    <div class="stage" id="stage"><div class="zoom" id="zoom"><button id="replay" class="replay" hidden title="Replay both from the start (r)">↻ replay</button><button id="zout" title="Zoom out (−)">−</button><span class="lvl" id="lvl">100%</span><button id="zin" title="Zoom in (+)">+</button></div><div class="inner" id="inner"></div><p class="livehint" id="livehint" hidden></p></div>
+    <div class="decide" id="decide">
+      <div class="info"><p class="what" id="headline"></p><div class="cards" id="cards"></div></div>
+      <div class="controls">
+        <span class="answers" id="answers"></span>
+        <input class="note" id="note" placeholder="Add a note (optional)">
+        <!-- What the note IS — shown only once it has text; hidden means "not tagged yet". -->
+        <span class="tags" id="tags" hidden><button class="tag" data-kind="now">Fix now</button><button class="tag" data-kind="later">Fix later</button><button class="tag" data-kind="noting">Just noting</button></span>
+        <button class="btn primary" id="save">Save &amp; Next ›</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- The end of the deck. Shown only after the server ACCEPTS the submit — a definitive
+     "this is finished", and the only place the answers can be read back afterwards. -->
+<section class="finished" id="finished" hidden><div class="fin-wrap">
+  <div class="tick"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m7.4 12.4 3.1 3.1 6.1-6.7"/></svg></div>
+  <h1>Feedback submitted</h1>
+  <p class="lede">The Assistant should receive your responses in just a moment.</p>
+  <p class="fin-meta" id="fin-meta"></p>
+  <p class="fin-hint">Nothing to copy or paste — go back to the conversation. Your answers are below if you want to re-read them.</p>
+  <div class="fin-actions"><button class="btn ghost" id="fin-back">‹ Back to the deck</button><button class="btn" id="fin-copy">Copy responses</button></div>
+  <table class="responses" id="responses"><thead><tr><th>#</th><th>Step</th><th>Your answer</th><th>Note</th></tr></thead><tbody></tbody></table>
+</div></section>
+</main>
+</div>
+<div class="loupe" id="loupe"></div>
+<div class="veil" id="veil"><div class="dlg"><h2>Submit your feedback?</h2><p id="dlg-text"></p>
+<div class="warn" id="skipped"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg><span><span id="skipn"></span> Skipped steps are sent as "no answer"; Claude leaves those unchanged.</span></div>
+<textarea id="feedback" readonly></textarea>
+<div class="row"><button class="btn ghost" id="cancel">Keep reviewing</button><button class="btn" id="first">Go to first skipped</button><button class="btn" id="copy">Copy feedback</button><button class="btn primary" id="submit">Submit</button></div>
+</div></div>
+<script>const DECK={"title": "Halftone's eye colour \u2014 cyan on violet", "key": "halftone-eyes-2", "runs": ["after"], "runLabels": {"before": "Before", "after": "After", "today": "Today"}, "themes": ["halftone-dimension"], "themeNames": {"halftone-dimension": "Halftone"}, "steps": [{"id": "HE2-1", "kind": "choice", "surface": "Halftone Dimension's buddy", "path": "Settings \u2192 Appearance \u2192 Halftone Dimension", "headline": "The cyan outline on the violet eye, as you asked. The only thing still open is how deep the violet sits under it.", "notice": "", "risk": "The cyan also colours his eyelids, brows and mouth, so all three of these change the whole face, not only the eyes.", "variants": [{"id": "light", "label": "A \u2014 lighter violet", "summary": "The eye is clearly a filled shape you can see from across the room, and the cyan edge sits on top of it rather than around a hole. Reads most awake of the three, and holds up best when the buddy is small on a busy wallpaper. The violet is far enough from the body that the head starts to read as two tones.", "measured": "eye #463779 on body #191327", "risk": ""}, {"id": "mid", "label": "B \u2014 middle", "summary": "The violet from the option you liked, unchanged. The eye is visibly its own colour but still clearly part of the head. Middle of the three on every count, which is usually where this kind of choice lands.", "measured": "eye #33265c on body #191327", "risk": ""}, {"id": "deep", "label": "C \u2014 deeper violet", "summary": "The violet is barely lighter than the body, so almost all the work is done by the cyan edge. Most graphic and most machine-like of the three, and the closest to a glowing outline drawn on a solid head. Loses the most at small sizes.", "measured": "eye #241a44 on body #191327", "risk": ""}], "images": {"halftone-dimension": {"light": "images/halftone-eyes-2.review/cv-light--halftone-dimension--after.png", "mid": "images/halftone-eyes-2.review/cv-mid--halftone-dimension--after.png", "deep": "images/halftone-eyes-2.review/cv-deep--halftone-dimension--after.png"}}, "boxes": {"halftone-dimension": {}}}]};</script>
+<script>/* Review deck v2 — renders DECK (one JSON object the builder inlines) one step at a time.
+   Persistence: the serve.py endpoints when the page is served (GET/POST /answers, POST /submit),
+   localStorage + a copy box when it is opened as a plain file. */
+(function () {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const N = DECK.steps.length, runs = DECK.runs;
+  let cur = 0, theme = DECK.themes[0], zoom = 1, loupeOn = true, server = false, stepStart = Date.now();
+  const state = { deck: DECK.key, started: new Date().toISOString(), submitted: null, cur: 0, answers: {} };
+  const ICON = {
+    change: '<svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m12.5 7.5 4 4"/></svg>',
+    eye: '<svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><circle cx="12" cy="17" r=".6"/></svg>' };
+  // Mirrors serve.py's NOTE_KIND: an unknown/absent note_kind (an old answers file predating
+  // tags) prints nothing in the summary rather than "[undefined]".
+  const NOTE_KIND = { now: 'fix now', later: 'fix later', noting: 'just noting' };
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  if (window.top !== window) document.body.classList.add('embedded');
+  // What the stage shows for a step: one frame per run (before/after, or today), or — for a CHOICE
+  // step — one frame per variant, lettered. Destin (2026-08-27): variants of one thing are one
+  // question on one page, not a yes/no each.
+  // A LIVE pane is NOT pickable: a click inside it is an interaction with the candidate
+  // (hover, drag, open a menu), not an answer. Picking stays on the lettered card and the
+  // answer button. `open on its own` is the same address in a new tab — room and quiet.
+  const popout = url => `<a class="popout" href="${esc(url)}" target="_blank" rel="noopener" title="Open this design alone in a new browser window">Open in New Window ↗</a>`;
+  const frames = st => st.kind === 'choice'
+    ? st.variants.map(v => ({ key: v.id, caption: `<span class="key">${esc(v.id)}.</span>${esc(v.label)}`, pickable: true }))
+    : st.kind === 'live'
+    ? st.panes.map(p => ({ key: p.id, url: p.url, pickable: false,
+        caption: (p.label ? `<span class="key">${esc(p.id)}.</span>${esc(p.label)}` : '<span class="live-dot"></span>Live') + popout(p.url) }))
+    : runs.map(r => ({ key: r, caption: esc(DECK.runLabels[r] || r), pickable: false }));
+  // CLIP step: one <video> per run instead of a still. They start PAUSED on their poster
+  // (Destin, 2026-08-28) — ↻ or `r` plays both from the start together; native controls
+  // so a bug can be paused and scrubbed; muted + looping once started.
+  // LIVE: `data-src` rather than `src`, filled in only once the probe says the app server is
+  // answering. Pointing an iframe at a dead port paints Chrome's own error page inside the
+  // pane, which looks like a broken candidate rather than a stopped server.
+  const media = (st, f) => st.kind === 'clip'
+    ? `<video src="${esc(st.clips[f.key])}"${st.posters[f.key] ? ` poster="${esc(st.posters[f.key])}"` : ''} muted loop playsinline controls preload="auto"></video>`
+    : st.kind === 'live'
+    ? `<iframe data-src="${esc(f.url)}" data-pane="${esc(f.key)}" loading="eager" title="Live pane"></iframe>`
+    : `<img src="${esc(st.images[theme][f.key])}" alt=""><span class="box"></span>`;
+  function replay() { const vs = $$('#inner video'); vs.forEach(v => { v.pause(); v.currentTime = 0; }); vs.forEach(v => v.play().catch(() => {})); }
+  let curFrames = frames(DECK.steps[0]), lastStep = null;
+
+  // ── live panes ──────────────────────────────────────────────────────────────────────
+  const MIN_PANE_H = 160;   // a pane whose script never reported is visibly empty, not a 0px line
+  // One probe per entry to a live step (not one per page): a server started AFTER the deck
+  // was opened must be able to recover on the next visit. `no-cors` gives an opaque response
+  // — useless to read, but a REJECTION is unambiguous, and it is the only reliable signal
+  // here: Chrome fires an iframe `load` event on its own error page too.
+  const probeLive = () => fetch(DECK.live.base + '/', { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
+  function drawLivePanes() {
+    $$('#inner iframe').forEach(f => { if (f.dataset.src) f.src = f.dataset.src; });
+  }
+  function drawServerDown(st) {
+    // Specific and accurate (docs/error-message-standards.md): we know exactly which address
+    // did not answer and exactly what starts it. This is also what an ARCHIVED review shows.
+    inner.innerHTML = `<div class="down"><h3>The app server for this review is not running</h3>`
+      + `<p>Nothing answered at <code>${esc(DECK.live.base)}</code>, so the ${st.panes.length === 1 ? 'pane has' : 'panes have'} nothing to show. Start it with:</p>`
+      + `<pre>${esc(DECK.live.command)}</pre>`
+      + `<p class="sub">Or re-run <code>review-cards.py serve &lt;spec&gt;</code>, which starts it for you. A review read back later always lands here — live panes do not replay.</p></div>`;
+  }
+  // Theme WITHOUT render(): render() rebuilds #inner, which reloads every iframe and throws
+  // away a half-finished drag or an animation mid-play. The app applies the swap live through
+  // __workbenchAppearanceSync, the same path the landing page's embed uses.
+  function setLiveTheme() {
+    document.documentElement.dataset.theme = theme;
+    $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
+    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ } });
+  }
+  // What a pane may be wide, as a range. A width the pane MEASURED for itself beats the one
+  // the spec guessed at — the number lives in the registry in the other repo, so the deck can
+  // only ever be estimating. A FLUID pane reports a [min, max] range instead of one number.
+  const paneRangeOf = (st, i) => {
+    const f = $$('#inner iframe')[i];
+    if (f && f.dataset.minWidth && f.dataset.maxWidth) return { min: Number(f.dataset.minWidth), max: Number(f.dataset.maxWidth) };
+    const w = Number((f && f.dataset.reportedWidth) || st.width);
+    return { min: w, max: w };
+  };
+  const PANE_GAP = 18;
+  // THE FIT RULE. A pane is never wider than the stage and the row never scrolls sideways.
+  // Try every count of panes per row; a count fits when every pane's `min` fits in its share
+  // of the row. Each pane then gets its share, clamped to its range. Choose the count that
+  // gives the WIDEST panes; among equals, the most per row (fewer rows to scroll through).
+  //   - fixed panes (min = max): as many per row as fit, at their real size, then wrap;
+  //   - fluid panes (the session strip, a header row): stacked one per row at their `max`
+  //     when the stage is wide enough, at the stage's width when it is not — never three
+  //     abreast at a third of their size with both ends cut off (Destin, 2026-09-01).
+  function fitPanes(ranges, stageWidth) {
+    const n = ranges.length;
+    let best = null;
+    for (let perRow = n; perRow >= 1; perRow--) {
+      const share = Math.floor((stageWidth - PANE_GAP * (perRow - 1)) / perRow);
+      if (!ranges.every(r => r.min <= share)) continue;
+      const widths = ranges.map(r => Math.max(r.min, Math.min(r.max, share)));
+      const score = Math.min(...widths);
+      if (!best || score > best.score) best = { perRow, widths, score };
+    }
+    // Nothing fits even alone: one per row at `min`, and the stage scrolls — the honest
+    // failure, and validate() warns about a pane wider than any screen before the build.
+    return best || { perRow: 1, widths: ranges.map(r => r.min), score: 0 };
+  }
+  function layoutLive() {
+    const st = DECK.steps[cur], c = $('#content'), step = $('#step');
+    // Panes have a DECLARED width (or a range) — there is no natural image size to solve an
+    // arrangement from, so none of layout()'s scoring applies; fitPanes() decides instead.
+    // A narrow FIXED pane (a dialog) still gets the cards in a side column when it fits
+    // beside them — that hands the stage the full height of the page for a tall design.
+    const info = Math.max(320, c.clientWidth * 0.30);
+    const ranges = st.panes.map((p, i) => paneRangeOf(st, i));
+    const fixedRow = ranges.reduce((sum, r, i) => sum + r.max + (i ? PANE_GAP : 0), 0);
+    const sideColumn = ranges.every(r => r.min === r.max) && c.clientWidth - info - 40 >= fixedRow;
+    c.className = 'content ' + (sideColumn ? 'col-right' : 'row-below live-fit');
+    step.classList.remove('compact-step');
+    // ALWAYS inline, no width threshold. The theme row is absolutely positioned beside the
+    // step, and a live row is wide by nature — two to four panes at real size — so the side
+    // column lands outside the window and the buttons get cut in half (seen 2026-08-31).
+    // There is no width at which a side column is right here, so don't compute one.
+    document.body.classList.add('thumbs-inline');
+    // The stage's inner row: its padding (14px a side) and border come off the width.
+    const stage = $('.stage');
+    const stageWidth = (sideColumn ? c.clientWidth - info - 40 : (stage ? stage.clientWidth : c.clientWidth)) - 30;
+    const fit = fitPanes(ranges, stageWidth);
+    $$('#inner iframe').forEach((f, i) => {
+      const w = fit.widths[i];
+      f.style.width = w + 'px';
+      if (!f.style.height) f.style.height = (st.height || MIN_PANE_H) + 'px';
+      // A fluid pane lays its design out at the width it is given. Told by message, never by
+      // reloading (a reload restarts the animation being judged); only when it changes.
+      if (ranges[i].min !== ranges[i].max && f.dataset.askedWidth !== String(w)) {
+        f.dataset.askedWidth = String(w);
+        try { f.contentWindow.postMessage({ type: 'youcoded:pane-width', width: w }, DECK.live.base); } catch (e) { /* not loaded yet */ }
+      }
+    });
+    document.body.dataset.layout = 'live';
+    document.body.dataset.scores = '{}';
+    // layout() is the ONLY place this is ever set and deck-render.test.mjs polls it for ten
+    // seconds before giving up. A live branch that returned early without setting it would
+    // hang every test in the suite and explain nothing.
+    window.__deckReady = true;
+  }
+  // A one-run deck is a BRIEF (nothing built yet): "keep / revert" would ask about work that does not exist.
+  const YES = runs.length === 1 ? 'Yes, build it' : 'Yes, keep it', NO = runs.length === 1 ? 'No, leave it' : 'No, revert it';
+  // A words step may relabel the buttons ("Holds / Fails" on an acceptance row): the deck's
+  // build/keep wording is about a picture, and a statement has none.
+  const yesLabel = st => st.yes || YES, noLabel = st => st.no || NO;
+  // The things a step offers to pick between, or null if it is a yes/no. A LIVE step's
+  // question shape rides in `shape`, because `kind` already says where its picture comes
+  // from — so a live pick-one answers exactly like a picture pick-one.
+  const pickList = st => st.kind === 'choice' ? st.variants
+    : (st.kind === 'live' && st.shape === 'choice') ? st.panes : null;
+  function renderAnswers(st) {
+    // A DECIDE step's options ARE its answers, so there is no yes/no: picking one is the answer,
+    // and "Other" carries anything he wants instead. No "None of these" — with written options
+    // that button and "Other" would mean the same thing twice.
+    const picks = pickList(st);
+    // Fix: the lettered options used to appear TWICE — once as the cards, once again as
+    // buttons repeating the same letter and the same label directly beneath them. Destin
+    // (2026-09-01): "two distinct multiple-choice decision rows that kinda offer the same
+    // options." The cards are the better of the two (they carry the summary, the measurement
+    // and the risk), so they are now the only place you pick. What stays here is only what a
+    // card CANNOT say: none of them, or something else entirely.
+    $('#answers').innerHTML = picks || st.kind === 'decide'
+      ? (picks ? `<button class="btn ans" data-v="no">None of these</button>` : '')
+        + `<button class="btn ans" data-v="other">Other</button>`
+      : `<button class="btn ans" data-v="yes">${yesLabel(st)}</button><button class="btn ans" data-v="no">${noLabel(st)}</button><button class="btn ans" data-v="other">Other</button>`;
+    if (state.submitted) $$('.ans').forEach(e => e.disabled = true);   // the buttons are rebuilt per step; a submitted deck stays read-only
+  }
+  function answer(v, pick) {
+    if (state.submitted) return;
+    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), v }; if (v === 'pick') a.pick = pick; else delete a.pick;
+    state.answers[id] = a; paintState(); save(); $('#note').focus();
+  }
+  $('#deck-title').textContent = DECK.title; document.title = DECK.title;
+  document.body.dataset.screen = 'deck';   // 'finished' once submitted — read by deck-render.test.mjs
+  $('#steps').innerHTML = DECK.steps.map(() => '<span></span>').join('');
+  const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
+
+  // ── persistence ──
+  const LS = 'deck:' + DECK.key;
+  async function load() {
+    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
+    try { const j = JSON.parse(localStorage.getItem(LS) || 'null'); if (j && j.answers) Object.assign(state, j); } catch (e) { /* no storage */ }
+  }
+  async function save() {
+    try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
+    if (server) { try { await fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); } catch (e) { /* server gone — the file has everything up to the last successful POST */ } }
+  }
+
+  // ── render the current step ──
+  function render() {
+    const st = DECK.steps[cur];
+    const themes = st.themes || DECK.themes;   // a real-app capture exists in one theme only — that step lists just that one
+    if (st.themes && st !== lastStep) theme = st.themes[0];   // a step with its own theme list opens on the first: that list says which themes matter here
+    else if (!themes.includes(theme)) theme = themes[0];
+    lastStep = st;
+    document.documentElement.dataset.theme = theme;   // before the pictures load, so a theme switch never flashes the old colours
+    $('#wtitle').textContent = st.surface; $('#wsub').textContent = st.path;
+    // A words step has no frames: the stage is hidden by layout() and the cards fill the row.
+    curFrames = st.words ? [] : frames(st);
+    inner.innerHTML = curFrames.map(f => `<figure class="frame${f.pickable ? ' pickable' : ''}${st.kind === 'clip' ? ' clip' : ''}" data-run="${esc(f.key)}"${f.pickable ? ` title="Pick ${esc(f.key)}"` : ''}><figcaption>${f.caption}</figcaption><div class="pic">${media(st, f)}</div></figure>`).join('');
+    $$('#inner .frame .box').forEach(box => { const b = ((st.boxes || {})[theme] || {})[box.closest('.frame').dataset.run]; if (b) box.style.cssText = `left:${b[0]}%;top:${b[1]}%;width:${b[2]}%;height:${b[3]}%`; else box.style.display = 'none'; });
+    // The server EXITS on submit, so a step he never opened has no picture left to fetch. An
+    // empty frame under a caption reads as a broken deck; say which of the two it actually is.
+    $$('#inner img').forEach(i => i.onerror = () => {
+      const f = i.closest('.frame'); if (!f) return; f.classList.add('gone');
+      f.querySelector('.pic').textContent = state.submitted
+        ? 'This picture is no longer available — the review server stopped when you submitted.'
+        : 'This picture did not load (' + i.getAttribute('src') + ').';
+    });
+    $('#replay').hidden = st.kind !== 'clip';
+    // Zoom is off on a live step: it scales a still image, and a pane at anything but real
+    // size stops showing the thing it is there to show. (The magnifier needs no switch — its
+    // handler looks for `#inner img`, finds none, and hides itself.)
+    $('#zoom').hidden = st.kind === 'live' || !!st.words;
+    $('#livehint').hidden = st.kind !== 'live';
+    if (st.kind === 'live') {
+      // Once a click lands inside a pane, focus is in ITS document and this page stops seeing
+      // key presses — so say so rather than leaving arrow keys mysteriously dead. Prev/Next
+      // and every answer button still work with the mouse.
+      $('#livehint').textContent = 'These panes are the running app — hover, click and drag them. Click the page outside a pane to use ← → again.';
+      probeLive().then(up => {
+        if (DECK.steps[cur] !== st) return;   // he moved on while we were asking
+        if (up) drawLivePanes(); else drawServerDown(st);
+        layoutLive();
+      });
+    }
+    if (st.kind === 'clip') $$('#inner video').forEach(v => v.addEventListener('loadedmetadata', layout));
+    $$('#inner .frame.pickable').forEach(f => f.onclick = () => answer('pick', f.dataset.run));
+    $('#headline').textContent = st.headline;
+    const optionCard = (o, cls) => `<section class="card variant${cls}" data-pick="${esc(o.id)}" title="Pick ${esc(o.id)}"><span class="key">${esc(o.id)}</span><div class="vbody"><h3>${esc(o.label)}</h3><p>${esc(o.summary)}</p>${o.measured ? `<p class="num">Measured: ${esc(o.measured)}</p>` : ''}${o.cost ? `<p class="cost">${esc(o.cost)}</p>` : ''}${o.risk ? `<p class="r">${esc(o.risk)}</p>` : ''}</div></section>`;
+    // CONTRACT: the rows as one table, not a card per row — grading (a `verdict` on any row)
+    // adds a Verdict column instead of always reserving one nobody has filled in yet.
+    const graded = st.kind === 'contract' && st.rows.some(r => r.verdict);
+    const rowsTable = () => `<section class="card contract"><table><thead><tr><th>#</th><th>Statement</th><th>Checked by</th><th>Threshold</th><th>From</th>${graded ? '<th>Verdict</th>' : ''}</tr></thead><tbody>${st.rows.map(r => `<tr class="${esc(r.verdict)}"><td>${esc(r.id)}</td><td>${esc(r.statement)}${r.note ? `<p class="src">“${esc(r.note)}”</p>` : ''}</td><td>${esc(r.checkedBy)}${r.guard ? `<p class="src">${esc(r.guard)}</p>` : ''}</td><td>${esc(r.threshold || 'pass / fail')}</td><td class="src">${esc(r.source)}</td>${graded ? `<td>${esc(r.verdict || '—')}${r.evidence ? `<p class="src">${esc(r.evidence)}</p>` : ''}</td>` : ''}</tr>`).join('')}</tbody></table></section>`;
+    $('#cards').innerHTML = st.kind === 'contract'
+      ? rowsTable()
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : pickList(st)
+      ? pickList(st).map(v => optionCard(v, '')).join('')
+        + (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : st.kind === 'decide'
+      ? (st.notice ? `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>` : '')
+        + st.options.map(o => optionCard(o, ' option')).join('')
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '')
+      : `<section class="card"><h3>${ICON.change}What changed</h3><p>${esc(st.changed)}</p>${st.measured ? `<p class="num">Measured: ${esc(st.measured)}</p>` : ''}</section>`
+        + `<section class="card"><h3>${ICON.eye}You'll notice</h3><p>${esc(st.notice)}</p></section>`
+        + (st.risk ? `<section class="card risk"><h3>${ICON.warn}Risk</h3><p>${esc(st.risk)}</p></section>` : '');
+    // Fix: this ran BEFORE #cards was filled in, so it bound handlers to the PREVIOUS step's
+    // cards and the current step's got none — a lettered card looked clickable (pointer
+    // cursor, "Pick B" tooltip) and did nothing, on every pick-one step. It matters more on a
+    // live step, where the pane deliberately isn't a pick target and the card is the big one.
+    $$('.card.variant').forEach(c => c.onclick = () => answer('pick', c.dataset.pick));
+    renderAnswers(st);
+    const last = curFrames.length ? curFrames[curFrames.length - 1].key : null;
+    // A clip is recorded in one theme; there are no per-theme variants to switch between.
+    // A words step has no picture of any theme — the theme pills would be empty.
+    $('#thumbs').innerHTML = st.words ? '' : st.kind === 'clip' ? ''
+      // A live step has no thumbnails to show — there is no picture of the other themes, only
+      // the panes themselves, one theme at a time. Same control, rendered as plain labels.
+      : st.kind === 'live' ? themes.map(t => `<button class="thumb label-only${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><span>${esc(DECK.themeNames[t])}</span></button>`).join('')
+      : themes.map(t => `<button class="thumb${t === theme ? ' on' : ''}" data-v="${esc(t)}" title="${esc(DECK.themeNames[t])}"><img src="${esc(st.images[t][last])}" alt=""><span>${esc(DECK.themeNames[t])}</span></button>`).join('');
+    $$('.thumb').forEach(b => b.onclick = () => {
+      theme = b.dataset.v;
+      if (DECK.steps[cur].kind === 'live') { setLiveTheme(); return; }   // never render(): that reloads every pane
+      render();
+    });
+    $$('#inner img').forEach(i => i.addEventListener('load', layout));
+    layout(); paintState();
+  }
+  function paintState() {
+    const a = state.answers[DECK.steps[cur].id] || {};
+    $$('.ans').forEach(b => b.classList.toggle('on', b.dataset.v === a.v && (a.v !== 'pick' || b.dataset.pick === a.pick)));
+    $$('.card.variant').forEach(c => c.classList.toggle('on', a.v === 'pick' && c.dataset.pick === a.pick));
+    $$('#inner .frame.pickable').forEach(f => f.classList.toggle('on', a.v === 'pick' && f.dataset.run === a.pick));
+    const note = $('#note'); note.value = a.note || ''; note.placeholder = a.v === 'other' ? 'Explain what you’d like instead…' : 'Add a note (optional)';
+    // The tag row is shown only once a note has text — nothing about an empty note is tagged.
+    // A visible default, never an inference: an old answer's note (written before tags existed)
+    // has no note_kind, so it shows none selected — the default is written only when a note
+    // gains text under the #note input handler below, never painted on here.
+    const hasNote = !!(a.note && a.note.trim());
+    $('#tags').hidden = !hasNote;
+    $$('#tags .tag').forEach(b => b.classList.toggle('on', hasNote && b.dataset.kind === a.note_kind));
+    $$('#steps span').forEach((s, i) => { const x = state.answers[DECK.steps[i].id]; s.className = (x && x.v ? x.v : '') + (i === cur ? ' on' : ''); });
+    const done = Object.values(state.answers).filter(x => x.v && x.v !== 'skip').length;
+    $('#count').textContent = 'step ' + (cur + 1) + ' of ' + N + ' · ' + done + ' answered' + (state.submitted ? ' · submitted, read-only' : '');   // survives every repaint (theme clicks included)
+    // browsing a submitted deck must never re-arm Save & Next
+    $('#save').disabled = !!state.submitted || !(a.v && a.v !== 'skip');
+    $('#prev').disabled = cur === 0; $('#next').disabled = cur === N - 1; $('#next').textContent = cur === N - 1 ? 'Last step' : 'Next ›';
+  }
+
+  // ── layout: try each arrangement for real, keep the one that shows the pictures largest (spec §3.4) ──
+  const PAD = 28, CAP = 24, GAP = 18;
+  function layout() {
+    if (DECK.steps[cur].words) {   // no picture to size: one column of cards, answer bar under it
+      $('#content').className = 'content words'; $('#step').classList.remove('compact-step');
+      document.body.dataset.layout = 'words';
+      // Fix: without this, navigating from a picture step to a words step left the PREVIOUS
+      // step's scores in the DOM — a stale table the render test (and anyone reading the DOM
+      // by hand) could mistake for this step's own layout choice. Match the live branch.
+      document.body.dataset.scores = '{}';
+      window.__deckReady = true; return;
+    }
+    if (DECK.steps[cur].kind === 'live') { layoutLive(); return; }
+    const c = $('#content'), step = $('#step'); const img = $('#inner img, #inner video'); if (!img) return;
+    const natW = img.naturalWidth || img.videoWidth, natH = img.naturalHeight || img.videoHeight; if (!natW) return;
+    const margin = (document.querySelector('main').clientWidth - step.clientWidth) / 2; document.body.classList.toggle('thumbs-inline', margin < 150);
+    const n = curFrames.length, w = natW, h = natH + CAP;
+    const opts = { A: 'row-below', B: 'col-right stacked', C: 'col-right', D: 'row-below stacked' }; const score = {};
+    step.classList.remove('compact-step');
+    for (const k in opts) {
+      if (opts[k].includes('col-right') && (c.clientWidth < 820 || DECK.steps[cur].kind === 'choice')) { score[k] = 0; continue; }   // a side column needs real width; variant PICTURES need the full row (a decide step has only one picture, so it keeps the column)
+      if (n === 1 && opts[k].includes('stacked')) { score[k] = 0; continue; }                 // one picture: stacking means nothing
+      if (DECK.steps[cur].kind === 'clip' && opts[k].includes('stacked')) { score[k] = 0; continue; }   // clips: side by side, or the two recordings can't be watched together
+      c.className = 'content ' + opts[k]; const SW = stage.clientWidth - PAD, SH = stage.clientHeight - PAD; const stacked = opts[k].includes('stacked');
+      score[k] = Math.min(stacked ? SW / w : (SW - GAP * (n - 1)) / n / w, stacked ? (SH - GAP * (n - 1)) / n / h : SH / h);
+    }
+    let best = 'A'; for (const k of ['B', 'C', 'D']) if (score[k] > score[best] * 1.05) best = k;   // A wins ties
+    let s;
+    // A clip pair is worth watching smaller: compact only under 30% (stills: 50%).
+    const floor = DECK.steps[cur].kind === 'clip' ? 0.3 : 0.5;
+    if (score[best] < floor) { c.className = 'content compact'; step.classList.add('compact-step'); s = Math.min((c.clientWidth - PAD) / w, 1); }
+    else { c.className = 'content ' + opts[best]; s = Math.min(score[best], 1.5); }
+    $$('#inner img, #inner video').forEach(i => i.style.width = ((i.naturalWidth || i.videoWidth) * s * zoom) + 'px');
+    $('#lvl').textContent = Math.round(zoom * 100) + '%';
+    // Read by the render test: the choice, and the scores it was made from (so the test checks the RULE, not a table).
+    document.body.dataset.layout = score[best] < floor ? 'compact' : best;
+    document.body.dataset.scores = JSON.stringify(score);
+    const b = $('#inner .frame .box'); if (b && zoom > 1) b.scrollIntoView({ block: 'center', inline: 'center' });
+    window.__deckReady = true;   // the render test waits for this — set only once a real layout has been chosen
+  }
+
+  // ── navigation & answers ──
+  function record() {
+    const id = DECK.steps[cur].id; const a = state.answers[id] || {};
+    if (!a.v) a.v = 'skip';
+    a.seconds = (a.seconds || 0) + Math.round((Date.now() - stepStart) / 1000); a.theme = theme; a.zoom = zoom;
+    state.answers[id] = a;
+  }
+  function go(i) {
+    // Fix: after Submit, arrow keys / progress segments must not keep POSTing answers — but
+    // they may still MOVE. A submitted deck is a read-only record he can page back through;
+    // record()/save() are what must not run, not the navigation itself.
+    if (state.submitted) { cur = Math.max(0, Math.min(N - 1, i)); zoom = 1; hideFinished(); render(); return; }
+    record(); cur = Math.max(0, Math.min(N - 1, i)); state.cur = cur; save(); zoom = 1; stepStart = Date.now(); render();
+  }
+  // Fix: save on EVERY answer, not only when the step changes — a tab closed on the last
+  // answered step used to lose that answer entirely. The note debounces so a sentence typed
+  // at speed is one POST, not one per keystroke.
+  let noteTimer = null;
+  $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) answer(b.dataset.v, b.dataset.pick); });
+  $('#note').addEventListener('input', e => {
+    const id = DECK.steps[cur].id; const a = { ...(state.answers[id] || {}), note: e.target.value };
+    // A note that just gained text is "just noting" until he says otherwise — a visible default,
+    // not an inference: it is on screen, selected, and one click away from the other two.
+    if (a.note.trim() && !a.note_kind) a.note_kind = 'noting';
+    if (!a.note.trim()) delete a.note_kind;
+    state.answers[id] = a; paintState(); clearTimeout(noteTimer); noteTimer = setTimeout(save, 300);
+  });
+  $('#tags').addEventListener('click', e => {
+    const b = e.target.closest('.tag'); if (!b || state.submitted) return;
+    const id = DECK.steps[cur].id; state.answers[id] = { ...(state.answers[id] || {}), note_kind: b.dataset.kind }; paintState(); save();
+  });
+  $('#save').onclick = () => { if (cur === N - 1) openDialog(); else go(cur + 1); };
+  // From the finish screen, Prev means "back into the deck" — the step he left, not the one
+  // before it; and there is nothing after the end, so Next is off there (see showFinished).
+  const step = d => go(document.body.dataset.screen === 'finished' ? cur : cur + d);
+  $('#next').onclick = () => step(1); $('#prev').onclick = () => step(-1);
+  $$('#steps span').forEach((s, i) => s.onclick = () => go(i));
+
+  // ── submit ──
+  function summary() {
+    const counts = { yes: 0, no: 0, other: 0, skip: 0 }; const lines = [];
+    // Mirrors serve.py's summary(): the note's tag prints right after its quoted text, same words.
+    for (const st of DECK.steps) { const a = state.answers[st.id] || { v: 'skip' }; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1; const what = v === 'pick' ? 'pick ' + (a.pick || '?') : (v === 'no' && pickList(st) ? 'none' : v); const tag = NOTE_KIND[a.note_kind]; lines.push(st.id + ' ' + what + (a.note && a.note.trim() ? ' — "' + a.note.trim() + '"' + (tag ? ' [' + tag + ']' : '') : '')); }
+    return DECK.key + ' · ' + (state.submitted ? 'submitted ' + state.submitted.slice(0, 16).replace('T', ' ') : 'not submitted') + ' · ' + counts.yes + ' yes · ' + counts.no + ' no · ' + counts.other + ' other · ' + (counts.pick ? counts.pick + ' picked · ' : '') + counts.skip + ' skipped\n' + lines.join('\n');
+  }
+  function openDialog() {
+    record(); save();
+    // Fix: record() already banked elapsed seconds into the current step's answer; without resetting
+    // stepStart, a Done -> Keep reviewing -> Done round trip would add those seconds a second time.
+    // paintState() repaints so a step that record() just marked "skip" turns grey immediately.
+    stepStart = Date.now(); paintState();
+    const missing = DECK.steps.map((st, i) => [(state.answers[st.id] || {}).v, i]).filter(([v]) => !v || v === 'skip').map(([, i]) => i + 1);
+    $('#skipped').style.display = missing.length ? 'flex' : 'none';
+    $('#skipn').textContent = missing.length + (missing.length === 1 ? ' step has' : ' steps have') + ' no answer (step' + (missing.length > 1 ? 's ' : ' ') + missing.join(', ') + ').';
+    $('#first').style.display = missing.length ? 'inline-flex' : 'none'; $('#first').onclick = () => { $('#veil').classList.remove('on'); go(missing[0] - 1); };
+    $('#dlg-text').innerHTML = server
+      ? 'Your answers have been saving to a file next to this deck as you went. Submitting tells Claude you\'re finished — it picks them up in the session and replies there. <b>Nothing to copy or paste</b>: close this tab and go back to the conversation.'
+      : 'This deck is not being served, so Claude is not watching it. Copy the feedback below and paste it into the chat.';
+    $('#feedback').style.display = server ? 'none' : 'block'; $('#copy').style.display = server ? 'none' : 'inline-flex'; $('#submit').style.display = server ? 'inline-flex' : 'none';
+    $('#feedback').value = summary(); $('#veil').classList.add('on');
+  }
+  $('#done').onclick = openDialog; $('#cancel').onclick = () => $('#veil').classList.remove('on');
+  $('#submit').onclick = async () => {
+    // Fix: only a POST the server actually accepted may say "Submitted ✓". Claiming success
+    // when the server is gone sends Destin back to the conversation with nothing waiting there.
+    let ok = false, why = '';
+    try { const r = await fetch('/submit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); ok = r.ok; if (!ok) why = 'HTTP ' + r.status; }
+    catch (e) { why = (e && e.message) || String(e); server = false; }   // the server is gone: a re-opened dialog must take the copy/paste branch, not repeat "saving as you went"
+    if (!ok) {
+      state.submitted = null;   // summary() then labels it "not submitted", which is the truth
+      $('#dlg-text').textContent = 'The deck could not reach its server (' + why + '). Your answers up to the last save are in the answers file; copy the feedback below and paste it into the chat.';
+      $('#feedback').value = summary(); $('#feedback').style.display = 'block'; $('#copy').style.display = 'inline-flex'; $('#submit').style.display = 'none';
+      return;   // veil stays open — there is still something for him to do here
+    }
+    state.submitted = new Date().toISOString();
+    $('#veil').classList.remove('on'); lockSubmitted(); showFinished();
+  };
+  // A submitted deck is read-only, and says so — silently ignoring clicks read as "I can't click through the pages".
+  // The header button stays LIVE and becomes the way back to the finish screen: after a submit
+  // it is the only place the answers can still be read (the server exits on submit).
+  function lockSubmitted() {
+    $('#done').innerHTML = 'Submitted ✓<span class="long"> — view responses</span>';
+    $('#done').onclick = showFinished; $('#done').disabled = false;
+    $$('.ans,#save,#note,.tag').forEach(e => e.disabled = true); paintState();
+  }
+
+  // ── the finish screen ──
+  // WHY it exists: Submit used to just close the dialog, leaving him on the last step with a
+  // greyed-out button — the same thing a click that did nothing would look like. This is the
+  // definitive end of the deck, and the read-back of what was sent.
+  const ANS_LABEL = (st, a) => {
+    const v = a.v || 'skip';
+    if (v === 'skip') return 'No answer';
+    if (v === 'pick') { const o = (pickList(st) || []).find(x => x.id === a.pick); return a.pick + (o ? ' — ' + o.label : ''); }
+    if (v === 'other') return 'Something else';
+    if (v === 'no') return pickList(st) ? 'None of these' : noLabel(st);
+    return yesLabel(st);
+  };
+  function renderResponses() {
+    const counts = { yes: 0, no: 0, other: 0, pick: 0, skip: 0 };
+    const rows = DECK.steps.map((st, i) => {
+      const a = state.answers[st.id] || {}; const v = a.v || 'skip'; counts[v] = (counts[v] || 0) + 1;
+      const note = (a.note || '').trim(); const tag = NOTE_KIND[a.note_kind];
+      return `<tr><td class="n">${i + 1}</td>`
+        + `<td class="step-cell">${esc(st.surface)}<p class="src">${esc(st.headline)}</p></td>`
+        + `<td class="v" data-v="${esc(v)}">${esc(ANS_LABEL(st, a))}</td>`
+        + `<td>${note ? esc(note) + (tag ? `<span class="kind">${esc(tag)}</span>` : '') : '<span class="src">—</span>'}</td></tr>`;
+    }).join('');
+    $('#responses').querySelector('tbody').innerHTML = rows;
+    const when = (state.submitted || '').slice(0, 16).replace('T', ' ');
+    const parts = [counts.yes + ' yes', counts.no + ' no', counts.other + ' other'];
+    if (counts.pick) parts.splice(2, 0, counts.pick + ' picked');
+    if (counts.skip) parts.push(counts.skip + ' with no answer');
+    $('#fin-meta').textContent = N + (N === 1 ? ' step' : ' steps') + ' · ' + parts.join(' · ') + (when ? ' · submitted ' + when : '');
+  }
+  function showFinished() {
+    renderResponses(); $('#step').hidden = true; $('#finished').hidden = false; document.body.dataset.screen = 'finished';
+    // The header describes what is ON SCREEN. Left saying "Home · chat — step 3 of 3" it would
+    // be labelling a step nobody is looking at. The progress strip stays: it is the summary at
+    // a glance, and clicking a segment is still the way back into that step.
+    $('#wtitle').textContent = DECK.title; $('#wsub').textContent = 'review complete';
+    $('#count').textContent = 'all ' + N + ' steps · read-only';
+    $('#prev').disabled = false; $('#next').disabled = true;   // Prev goes back into the deck; nothing follows the end
+  }
+  function hideFinished() { $('#finished').hidden = true; $('#step').hidden = false; document.body.dataset.screen = 'deck'; }
+  $('#fin-back').onclick = () => { hideFinished(); render(); };
+  $('#fin-copy').onclick = () => {
+    // A scratch textarea, not #feedback: that one lives inside the (display:none) dialog, and
+    // execCommand's fallback cannot select text in a hidden element — it would copy nothing.
+    const t = document.createElement('textarea'); t.value = summary();
+    t.style.cssText = 'position:fixed;top:0;left:0;opacity:0'; document.body.appendChild(t); t.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')).finally(() => t.remove());
+    $('#fin-copy').textContent = 'Copied';
+  };
+  $('#copy').onclick = () => { const t = $('#feedback'); t.select(); (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).catch(() => document.execCommand('copy')); $('#copy').textContent = 'Copied'; };
+
+  // ── loupe, zoom, keys ──
+  const K = 2.5, R = 90;
+  stage.addEventListener('mousemove', e => {
+    if (!loupeOn) { loupe.style.display = 'none'; return; }
+    const img = $$('#inner img').find(i => { const r = i.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; });
+    if (!img) { loupe.style.display = 'none'; return; }
+    const r = img.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
+    loupe.style.display = 'block'; loupe.style.left = (e.clientX - R) + 'px'; loupe.style.top = (e.clientY - R) + 'px';
+    loupe.style.backgroundImage = 'url("' + img.src + '")'; loupe.style.backgroundSize = (r.width * K) + 'px ' + (r.height * K) + 'px'; loupe.style.backgroundPosition = (-x * K + R) + 'px ' + (-y * K + R) + 'px';
+  });
+  stage.addEventListener('mouseleave', () => loupe.style.display = 'none');
+  function setZoom(z) {
+    if (DECK.steps[cur].kind === 'live') return;   // real size is the point; there is no image to scale
+    zoom = Math.max(1, Math.min(4, Math.round(z * 10) / 10)); layout();
+  }
+  $('#zin').onclick = () => setZoom(zoom + 0.1); $('#zout').onclick = () => setZoom(zoom - 0.1); $('#replay').onclick = replay;
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1);   // go() decides what a submitted deck is allowed to do
+    if (e.key === '+' || e.key === '=') setZoom(zoom + 0.1); if (e.key === '-') setZoom(zoom - 0.1); if (e.key === '0') setZoom(1);
+    if (e.key === 'r' && DECK.steps[cur].kind === 'clip') replay();
+    if (e.key === 'l') { loupeOn = !loupeOn; if (!loupeOn) loupe.style.display = 'none'; document.body.classList.toggle('no-loupe', !loupeOn); }
+  });
+  // A pane measures its own content and says how tall it is. WHY measured rather than
+  // declared: a candidate taller than its box would otherwise be cut off with no sign, and
+  // the deck cannot know a candidate's height — it lives in the other repo.
+  window.addEventListener('message', e => {
+    // Symmetric with the route, which only accepts theme messages from a loopback origin.
+    if (!DECK.live || e.origin !== DECK.live.base) return;
+    const d = e.data;
+    if (!d || d.type !== 'youcoded:pane-height' || !(d.height > 0)) return;
+    const st = DECK.steps[cur];
+    if (st.kind !== 'live' || st.height) return;   // a declared height is an override, not a suggestion
+    // contentWindow identity, not the id in the payload: it is the only thing that cannot be
+    // wrong when four panes report independently. The id is the fallback if the frame moved.
+    const panes = $$('#inner iframe');
+    const f = panes.find(x => x.contentWindow === e.source) || panes.find(x => x.dataset.pane === d.candidate);
+    if (!f) return;
+    // The pane's address carries the deck's FIRST theme, baked at build time — so a live step
+    // opened while the deck is on any other theme (switched on an earlier step, or ?theme= in
+    // the URL) showed Midnight panes inside a Light deck. Answering its height report is the
+    // right moment to correct that: the pane has MOUNTED and is listening. The iframe's own
+    // `load` event is not — it fires before the app's async boot installs the listener, and
+    // the message is dropped silently (tried that first, 2026-09-01).
+    try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+    // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
+    // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
+    // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of
+    // the design, and a design you cannot see all of is not a design you can judge. The stage
+    // is `overflow:auto` already, so a tall pane makes the STAGE scroll and stays whole.
+    f.style.height = Math.max(MIN_PANE_H, d.height) + 'px';
+    // WIDTH is not capped and not guessed. It comes from the registry in the other repo, so
+    // the pane is the only thing that knows it; a deck-level `live.paneWidth` that is too
+    // small clips the design's right-hand edge with nothing to say so (permissions-mode-control
+    // is 420 while close-prompt-body is 380 — one number cannot serve a review showing both).
+    if (d.width > 0) f.dataset.reportedWidth = d.width;
+    // A range means a FLUID pane: the deck fits it to the row (fitPanes), rather than taking
+    // the width it happened to mount at. A fixed pane keeps what it measured.
+    if (d.minWidth > 0 && d.maxWidth >= d.minWidth) { f.dataset.minWidth = d.minWidth; f.dataset.maxWidth = d.maxWidth; }
+    else if (d.width > 0) f.style.width = d.width + 'px';
+    layoutLive();
+  });
+  window.addEventListener('resize', layout);
+  load().then(() => {
+    const q = new URLSearchParams(location.search);
+    cur = q.get('step') ? Math.max(0, Math.min(N - 1, +q.get('step') - 1)) : Math.max(0, Math.min(N - 1, state.cur || 0));
+    if (q.get('theme') && DECK.themes.includes(q.get('theme'))) theme = q.get('theme');
+    stepStart = Date.now(); render();
+    if (state.submitted) { lockSubmitted(); showFinished(); }   // an archived deck re-opened after its submit lands on the finish screen — its answers, read back — instead of a step full of dead buttons
+  });
+})();
+</script>
+</body></html>

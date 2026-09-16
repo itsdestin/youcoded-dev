@@ -34,7 +34,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
 - **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
 - **Perf:** prefer `content-visibility: auto` over virtualization; memoize every Context value; the reducer preserves `toolCalls`/`toolGroups` Map refs — don't clone them.
-- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (sole sanctioned caller: `RemoteSnapshotExporter`); **never `store.getState()` during render** (tears).
+- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (no production caller remains: since 2026-09-10 `RemoteSnapshotExporter` calls `flushTranscriptActions()` then reads the store, off the render path); **never `store.getState()` during render** (tears).
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
 - **ONE backdrop-filter, ever** — the frame chrome is a single `<div class="chrome-glass">` clipped via `clip-path: polygon()`; per-element backdrop-filters seam at non-100% zoom.
@@ -44,8 +44,9 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **The right slot holds EITHER the artifact drawer OR the games panel** — both read `var(--right-pane-width)`; `chrome-glass--drawer-open` gates on `activeDrawerOpen || gameState.panelOpen`. Don't hardcode the width.
 
 ## Theme color contrast (`desktop/scripts/audit-theme-contrast.mjs`; CI `wecoded-themes/scripts/audit-contrast.mjs`)
-- **`panel` vs `canvas` ≥ 1.07:1**; `fg` ≥8, `fg-2` ≥5.5, `fg-dim` ≥4, `fg-muted` ≥3, `fg-faint` ≥2 on five surfaces (`contrast-rules.js`); `on-accent` vs `accent` ≥4.5.
-- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit; the audit doesn't catch a mismatch.
+- **Surface/text/accent thresholds are BLOCKING CI** (`audit-contrast.mjs`) — the numbers live in the depth doc; you cannot violate them silently.
+- **chat-pane bg == drawer-pane bg (both `--canvas`)** — change them in the SAME edit; the audit does NOT catch this one.
+- **Status colour == `StatusDot.tsx` STATUS_LABEL** (green *Working*, blue *Response Ready*), and it goes in the ring/tint, NEVER the word — fixed across themes, so as text it fails the pale ones · depth doc → "Status colours".
 
 ## Header bar (`HeaderBar.tsx`)
 - **No `min-w-0` on the left cluster** (collapses below the gear's `shrink-0`); put it on an individual child. Layout is SPACE-aware (`packSessions()` + ResizeObserver) — no `@media`/`window.innerWidth`; viewport branches only via `useNarrowViewport()`.
@@ -54,6 +55,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Control primitives (`components/ui/`)
 - **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
 - **Padding groups are per-axis** (`px-`/`py-` independent; `p-N` in ALL groups) — an `px-`-only override must NOT drop `py-` · guard: `Button.test.tsx` if you touch `CONFLICT_GROUPS`.
+- **Chrome is unselectable:** `<button>`s + `select-none` areas; content buttons opt in with `select-text` · guard: `unselectable-chrome.test.ts`.
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.
@@ -62,7 +64,3 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
 - **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
 - **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. App's `statusData` handler's `attentionMap` diff is load-bearing.
-
-## UI iteration tooling
-- **Building or redesigning UI? `bash scripts/run-workbench.sh`** (real renderer, fake `window.claude`); `run-dev.sh` only for PTY/main-process behaviour. Unbacked channels → `MOCK_ONLY`; review under `stress`/`empty`. **After ANY shim change: `node scripts/workbench-boot-check.mjs`.** Spec: `docs/archive/specs/2026-07-29-ui-workbench-design.md`.
-- **UI review sweep: `bash scripts/ui-review/run-review.sh <worktree>`** — self-verified, 6 themes; read `coverage.md`; `/ui-review`.

@@ -1,0 +1,77 @@
+{
+ "deck": "remote-batch-2-3-questions",
+ "started": "2026-09-10T22:36:43.202Z",
+ "submitted": "2026-09-10T22:39:48Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "each-owner",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "desktop-current",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "keep-and-warn",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "independent",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "S-2": {
+   "v": "yes",
+   "note": "though we should optimize/speed this up as much as possible for the best ux.",
+   "seconds": 17,
+   "theme": "midnight"
+  },
+  "Q-9": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight"
+  },
+  "S-3": {
+   "note": "confused",
+   "v": "other",
+   "seconds": 14,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "pick",
+   "seconds": 14,
+   "theme": "midnight",
+   "pick": "same-as-desktop"
+  },
+  "Q-6": {
+   "v": "pick",
+   "seconds": 14,
+   "theme": "midnight",
+   "pick": "phone-limits"
+  },
+  "Q-7": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight"
+  },
+  "Q-8": {
+   "v": "pick",
+   "seconds": 14,
+   "theme": "midnight",
+   "pick": "card-download"
+  }
+ }
+}

@@ -1,0 +1,156 @@
+{
+  "_comment": "The first-run guide's review shots. Run twice: this file against the branch's workbench (port 5233) for `after`, and guide-before.json (same shots, port 5243, the master checkout) for `before`. Shots that only exist on the branch fail the before run and land in _unverified, which is the point.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0",
+  "boot": 3500,
+  "width": 1440,
+  "height": 900,
+  "shots": [
+    {
+      "name": "welcome",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
+      "sameAsBaseline": true,
+      "expect": "js:document.body.innerText.includes('ession')"
+    },
+    {
+      "name": "wizard-auth",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&firstRun=AUTHENTICATE",
+      "sameAsBaseline": true,
+      "expect": "js:document.body.innerText.includes('Log in with Claude')"
+    },
+    {
+      "name": "wizard-done",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&firstRun=LAUNCH_WIZARD",
+      "boot": 700,
+      "sameAsBaseline": true,
+      "expect": "js:document.body.innerText.includes('all set')"
+    },
+    {
+      "name": "projects-empty",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&projects=none",
+      "actions": [
+        {
+          "click": "js:document.querySelector('[aria-label=\"Open Projects\"],[title=\"Open Projects\"]')",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:/Back to chat/.test(document.body.innerText)"
+    },
+    {
+      "name": "settings-drawer",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+      "actions": [
+        {
+          "click": "js:document.querySelector('[aria-label=\"Settings\"],[title=\"Settings\"]')",
+          "settle": 900
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('Development')"
+    },
+    {
+      "name": "help-popup",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+      "actions": [
+        {
+          "click": "js:document.querySelector('[aria-label=\"Settings\"],[title=\"Settings\"]')",
+          "settle": 900
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Help & feedback'))",
+          "settle": 700
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('Show me around')"
+    },
+    {
+      "name": "chat-empty",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=site&seed=none",
+      "sameAsBaseline": true,
+      "expect": "js:document.body.innerText.includes('Start a conversation')"
+    },
+    {
+      "name": "tour-1",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty&projects=none&guide=tour",
+      "sameAsBaseline": true,
+      "expect": "[data-guide-bubble]"
+    },
+    {
+      "name": "tour-3",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty&projects=none&guide=tour",
+      "actions": [
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 900
+        },
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 1400
+        }
+      ],
+      "expect": "js:document.querySelector('[data-guide-bubble]')?.innerText.toLowerCase().includes('3 of 8')"
+    },
+    {
+      "name": "tour-4",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty&projects=none&guide=tour",
+      "actions": [
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 900
+        },
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 900
+        },
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 900
+        },
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 900
+        },
+        {
+          "eval": "[...document.querySelectorAll('[data-guide-bubble] button')].find(b=>b.innerText.trim()==='Next')?.click()",
+          "settle": 1400
+        }
+      ],
+      "expect": "js:document.querySelector('[data-guide-bubble]')?.innerText.toLowerCase().includes('6 of 8')"
+    },
+    {
+      "name": "tip",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=site&seed=none&guide=tip:tags",
+      "boot": 4500,
+      "sameAsBaseline": true,
+      "expect": "[data-guide-bubble]"
+    },
+    {
+      "name": "warn-skip",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
+      "actions": [
+        {
+          "click": "[aria-label=\"Skip Permissions\"]",
+          "settle": 800
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('Before you turn on')"
+    },
+    {
+      "name": "warn-full-auto",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+      "actions": [
+        {
+          "clickText": "gpt-5.6 debug session",
+          "settle": 900
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.getBoundingClientRect().y>850&&/ASK|AUTO|EDIT/i.test(b.innerText)&&b.innerText.length<30)",
+          "settle": 900
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.getBoundingClientRect().y>850&&/ASK|AUTO|EDIT/i.test(b.innerText)&&b.innerText.length<30)",
+          "settle": 900
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('Before you pick Full auto')"
+    }
+  ]
+}

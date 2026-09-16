@@ -1,0 +1,66 @@
+{
+  "base": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default",
+  "shots": [
+    {
+      "name": "ready",
+      "url": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default&remote=connected&remotePreview=ready",
+      "actions": [
+        {
+          "click": "[title=Settings]",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))",
+          "settle": 900
+        },
+        {
+          "scrollDialog": "bottom",
+          "settle": 400
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Browser encryption')"
+    },
+    {
+      "name": "consent",
+      "url": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default&remote=connected&remotePreview=consent",
+      "actions": [
+        {
+          "click": "[title=Settings]",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))",
+          "settle": 900
+        },
+        {
+          "scrollDialog": "bottom",
+          "settle": 400
+        },
+        {
+          "clickText": "Browser encryption",
+          "settle": 600
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('cannot be undone')"
+    },
+    {
+      "name": "encrypted",
+      "url": "http://127.0.0.1:5537/?mode=workbench&child=1&latency=150&scenario=default&remote=connected&remotePreview=encrypted",
+      "actions": [
+        {
+          "click": "[title=Settings]",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))",
+          "settle": 900
+        },
+        {
+          "scrollDialog": "bottom",
+          "settle": 400
+        }
+      ],
+      "expect": "js:document.body.textContent.includes('Browser encryption')"
+    }
+  ]
+}

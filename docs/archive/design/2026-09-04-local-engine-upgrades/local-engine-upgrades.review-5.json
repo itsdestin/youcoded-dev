@@ -1,0 +1,37 @@
+{
+  "title": "Local engine upgrades — review, round 5",
+  "key": "local-engine-upgrades-review-5",
+  "out": "local-engine-upgrades.review-5.html",
+  "images": "images/local-engine-upgrades-review-5",
+  "runs": {
+    "before": "/home/destin/youcoded-dev/scratch/ui-local-engine-before",
+    "after": "/home/destin/youcoded-dev/scratch/ui-local-engine-after"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "creme",
+    "dark",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "crops": {
+    "memory-warning": [
+      "local-engine",
+      "local-model-memory-warning",
+      "460x330+490+560"
+    ]
+  },
+  "steps": [
+    {
+      "id": "P-20",
+      "surface": "New session form → model picked → memory warning",
+      "path": "Round 5 of P-18 (round 4 was answered by screenshot in chat, not on its deck): the warning as a settings row",
+      "crop": "memory-warning",
+      "headline": "The warning is an expandable settings row: an amber sentence, a chevron that flips down to reveal the numbers and the toggle row.",
+      "changed": "No status dot, no strip, no Less button. It is the same expandable row every Settings screen uses: 'This model may not fit in available memory' with the right-hand chevron; open, the row's second line is '9.5 GB model + 15.6 GB for 128k context, with 8.9 GB already loaded.' and a normal toggle row sits below it. The picture shows it open.",
+      "notice": "Two rows that look like every other row in the form. Closed, it is one amber line.",
+      "risk": "Amber title text is the only warning signal; on Halftone and Meadow check it still reads as a warning against the theme."
+    }
+  ]
+}

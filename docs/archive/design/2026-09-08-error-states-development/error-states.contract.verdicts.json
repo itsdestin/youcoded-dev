@@ -1,0 +1,117 @@
+{
+  "_note": "RE-GRADED FROM SCRATCH 2026-09-10 (third pass), branch session/error-states-development @ 23006e58. Nothing was carried over from the two earlier verdicts files and nothing was taken from the implementing session's summary: every row was re-judged against the code and against screenshots re-taken from THIS worktree. Graded rows (checkedBy deck) carry a verdict; rows Destin checks (human/live-app) carry an observation only, per scripts/ui-review/grader.md. The contract has no mechanical rows.",
+
+  "_evidence_base": "A workbench serving this worktree (127.0.0.1:5243, offset 70) was started and stopped for this grade. Shots: scripts/ui-review/shot.mjs, midnight, 1280x900, into /tmp/claude-1000/-home-destin-youcoded-dev/1a3b5b1c-b064-42bd-98a5-2ef75f8e58ec/scratchpad/g5 (devlist, contribute, walkthrough-top, walkthrough-bottom, report-draft) and /g6 (review-footer, review-disclosure). Every shot self-verified. bash scripts/verify.sh: PASS types, PASS types in tests, PASS tests (related), PASS knip, PASS lint, PASS ast-grep. npx vitest run tests/report-screen-shape.test.tsx tests/development-popup.test.tsx src/renderer/components/development/DevelopmentDesign.test.tsx — 3 files, 40 tests, all passed.",
+
+  "_the_two_fixes_verified": "R17 and R21 failed the second pass for one reason: 'Let your assistant try to fix it' and its allowance caption sat in the review footer. Both are now inside the 'Optional AI help' disclosure — measured, not read off the source: with the disclosure CLOSED the footer is exactly Submit public ticket (y=715) and Back to draft (y=759) and nothing else; with it OPEN the two AI buttons appear at y=607 and y=653 and the caption between them and the footer, which is still Submit (y=730) + Back to draft (y=774). g6/midnight/review-footer.png and review-disclosure.png. DevelopmentPopup.tsx's own ?mode=workbench branch is gone: devlist.png shows the four-row reviewed list, Roadmap included, with no query string in play. The walkthrough's hanging indent is back and — the thing that mattered — the markers are NOT clipped: the scroll box runs x=463..817 and the <ol> content box starts at x=487, so '1.'..'5.' are drawn in the 24px between them, inside the clip. All five markers are legible in walkthrough-top.png and walkthrough-bottom.png.",
+
+  "_new_tests_audited": "tests/report-screen-shape.test.tsx was read assertion by assertion, and two of its five claims do NOT hold. (1) R18's no-sub-label rule does not catch the sub-label that broke R18 for a whole round. Its check is queryByText(/\\. /) — text containing a period FOLLOWED BY A SPACE — and the offending string was description=\"Finish this ticket in your browser, where you can attach them\" (d9f63efa), which has no period at all. Proven, not argued: the SettingRow DOM was rebuilt in jsdom with the project's own @testing-library and the test's exact two-hop selector, and the real regression came back GREEN, as did any other one-sentence sub-label; only a two-sentence one goes red. What that test DOES pin, and pins well, is three checkbox rows and three (i) buttons under the heading. (2) R2's marker fix is pinned as /list-decimal/ and /ml-\\d/ on the <ol> — but the previous broken state was `list-decimal list-inside ml-…`, which satisfies both regexes, so re-adding list-inside would leave it green; and marker clipping is a layout fact jsdom cannot see at any rate. The other three are real: R6/R21's footer test counts buttons INSIDE the footer div, and the shipped-then-rejected footer had three there, so it goes red; R17's queryByRole(/assistant/i)-is-null-before-you-open-it catches exactly the defect that failed the row; R22 fails red if the version line is deleted or hardcoded (the old 'YouCoded 1.2.4 · Linux x64 · Electron 41.10.3' fails both of its assertions). The file's header claim that it pins 'the full-width button (R6)' is wrong about which screen: R6 is the CONTRIBUTE setup button, and that test measures the ticket screen's footer.",
+
+  "R1": {
+    "verdict": "pass",
+    "evidence": "g5/midnight/devlist.png: the Development list is four nav rows and an intro line, with no walkthrough anywhere on it; g5/midnight/contribute.png: 'How contributing works' is a disclosure row inside the Contribute dialog. DevelopmentPopup.tsx no longer imports or renders ContributionWalkthrough in any branch, and ContributionDesign.tsx:97 is its only mount. Both sides are now pinned, which they were not last round: DevelopmentDesign.test.tsx:19 asserts the row is absent from the list, and report-screen-shape.test.tsx:98 opens it inside ContributePopup with no query string."
+  },
+  "R2": {
+    "verdict": "pass",
+    "evidence": "Re-shot and re-measured. walkthrough-top.png and walkthrough-bottom.png show all five steps with their markers '1.'–'5.' fully drawn and a proper hanging indent — each explanation sits under its title, not under the number. ContributionWalkthrough.tsx:15 is `list-decimal ml-5`; the ol's content box (x=487) sits 24px inside the scroll box (x=463), which is where the markers are painted, so the overflow-y clip cannot eat them. Words are unchanged and identical to the approved images/error-states.review-4/21--midnight--after.png: Describe your idea / Review the design / Try an isolated preview / Check the result / Choose whether to propose it. GUARD: report-screen-shape.test.tsx:96 now pins the count, the five titles in order, and that each step keeps an explanation — a real improvement. It does NOT pin the marker fix: `list-inside` (the previous regression) still matches both class regexes it asserts."
+  },
+  "R3": {
+    "verdict": "pass",
+    "evidence": "Step 5 reads 'Only your explicit approval sends a public proposal to GitHub. Maintainers decide whether to accept it.' — legible in walkthrough-bottom.png, word for word the approved picture. Nothing in ContributionDesign.tsx or dev-tools.ts setupManagedWorkspace publishes anything; setup clones and runs setup.sh. Guard: the step-5 title is pinned, the sentence is not."
+  },
+  "R4": {
+    "verdict": "pass",
+    "evidence": "walkthrough-bottom.png: between step 5 and the button there is nothing — no Callout, no gray box. ContributionWalkthrough.tsx closes the <ol> at 21 and the component at 23; the button follows in ContributionDesign.tsx:100. GUARD STILL WEAK, unchanged for three rounds: DevelopmentDesign.test.tsx:38-41 asserts two specific deleted strings ('Workspace details', /Private backup saves/) are absent. That pins those two deletions, not the rule — a different gray box under the steps would stay green."
+  },
+  "R5": {
+    "verdict": "pass",
+    "evidence": "g5/midnight/contribute.png is content-equivalent to the approved 20--midnight--after.png: lead paragraph, one disclosure row, one primary action (ContributionDesign.tsx:96-100). Recorded honestly for the third time: the lead is three sentences, not literally one — but it is the paragraph in the picture Destin signed, so it is not build drift."
+  },
+  "R6": {
+    "verdict": "pass",
+    "evidence": "Measured from the live shot, not read off a class: 'Set up development workspace' is 354px wide inside a 420px dialog (33px gutters, i.e. the dialog's own padding), at y=543 in contribute.png, with the dialog ending at y=612 and no text between. ContributionDesign.tsx:100 is a default-variant <Button className=\"w-full py-2.5\"> with nothing rendered after it. GUARD STILL ABSENT, and now mislabelled: the new test named 'R6/R21' measures the TICKET screen's footer buttons; nothing anywhere asserts this button's width, and no test would go red if a caption were added beneath it (the CAPTION regex only knows preview/prototype/sample-log wording)."
+  },
+  "R7": {
+    "verdict": "pass",
+    "evidence": "walkthrough-bottom.png: the same 'Set up development workspace' button sits below step 5, outside the scrolling steps box, one button serving both states (ContributionDesign.tsx:97-100 renders walkthrough then button in the same 'idle' branch). Matches the approved 21--midnight--after.png, which is itself a scrolled shot. OBSERVATION, not a fail and unchanged from the last grade: the walkthrough's own max-h-[46vh] box (414px at a 900px window) is taller than the room the dialog leaves it, so on FIRST expand the button is below the dialog's fold and the user scrolls a dialog that contains a second scroller — walkthrough-top.png measures the box at y=402..816 against a dialog ending at y=744. GUARD: nothing asserts the button follows the steps."
+  },
+
+  "R11": {
+    "verdict": "pass",
+    "evidence": "ReportDesign.tsx:53-54 defaults 'Error details and version' ON and 'Recent logs' OFF; logTail is called only from chooseLogs (68-81), i.e. only when the box is ticked; the error and versionLine() are printed on the review step before send (254-262). report-draft.png shows the three rows in their unticked/ticked states, and review-footer.png shows the version line and the log text on screen, editable, before Submit. Real guard, running with no query string: DevelopmentDesign.test.tsx:58-60 asserts logTail has NOT been called, ticks the box, then asserts it has been called exactly once."
+  },
+  "R14": {
+    "verdict": "pass",
+    "evidence": "ReportDesign.tsx:252 (AnchorTip: 'GitHub uploads a file the moment it is attached, so it has to happen where you can see it') and :275 (Callout the moment the box is ticked: 'GitHub uploads a file as soon as you attach it — before you submit the issue'), both before any send and before any file exists. Pinned by DevelopmentDesign.test.tsx:99-100, which ticks the box and asserts the sentence."
+  },
+  "R15": {
+    "verdict": "pass",
+    "evidence": "report-draft.png vs approved 22--midnight--after.png: same public-sharing line, same Bug/Feature tabs, editable Title and Description, 'INCLUDE WITH TICKET' with error details optional and pre-ticked. ReportDesign.tsx:228, 233-238, 241-252. The one addition to the approved picture is the U13 line 'Add a title and a description to carry on.', shown only while the fields are empty — the approved shot is of the filled state, so it is not a contradiction."
+  },
+  "R16": {
+    "verdict": "pass",
+    "evidence": "ReportDesign.tsx:176 gives one Dialog title 'Submit a ticket' for both tabs; report-draft.png shows it above the tabs. Pinned twice, and both now run on the shipped path: tests/development-popup.test.tsx:76 switches to Feature and re-asserts the heading, DevelopmentDesign.test.tsx:26-33 does the same. Either goes red if the title becomes tab-dependent again."
+  },
+  "R17": {
+    "verdict": "pass",
+    "evidence": "FIXED, and verified on the screen rather than from the diff. ReportDesign.tsx:277 renders 'Optional AI help' only when phase === 'review', collapsed by default, and BOTH AI actions now live inside it: 'Improve wording with the assistant' (285) and the carried-over 'Let your assistant try to fix it' (294), with its allowance caption (297). g6/midnight/review-footer.png — disclosure closed — contains no AI control at all; g6/midnight/review-disclosure.png — after clicking the row — shows both. Guard: report-screen-shape.test.tsx:57 asserts no button matching /assistant/i exists on the review step until the disclosure is opened, then that both are there; that assertion goes red on exactly the arrangement that failed this row last round. Pre-existing caveat stands, unchanged and deliberate (design review F11): ReportDesign.tsx:58 opens the disclosure pre-expanded when context.diagnose is set, so on the 'Diagnose with the assistant' route the user did not open it. FOR DESTIN, not a fail: the disclosure now holds an action no deck ever showed him — R2-12's approved picture has one AI action, this has two plus a caption. Keeping, cutting or redesigning it is his call on the acceptance deck."
+  },
+  "R18": {
+    "verdict": "pass",
+    "evidence": "report-draft.png: three bare rows under one 'INCLUDE WITH TICKET' heading — 'Error details and version', 'Recent logs', 'Screenshots or files' — each with an (i) and a checkbox and no gray sub-label; the explanations open from the (i) only (DevelopmentDesign.tsx:29-31 proves the text is absent until it is clicked). ReportDesign.tsx:244-252 passes no `description` prop. Matches the approved 22--midnight--after.png. Note, unchanged and not a fail: three rows is the Bug tab; the Feature tab has one, and R3-18's approved picture is the Bug screen. GUARD IS HALF REAL: report-screen-shape.test.tsx:68 pins three checkboxes and three (i) buttons — delete a row and it goes red. Its no-sub-label half does not work: queryByText(/\\. /) needs a period followed by a space, and the sub-label that actually broke this row for a round ('Finish this ticket in your browser, where you can attach them') has neither. Reproduced in jsdom with the test's own selector: the real regression passes it."
+  },
+  "R21": {
+    "verdict": "pass",
+    "evidence": "FIXED on both clauses. First: no preview or mockup caption survives anywhere — DevelopmentDesign.test.tsx:121's CAPTION regex is asserted against document.body.textContent across draft, review and the open AI disclosure, and ReportDesign.tsx:272 fills the log box from logTail instead of captioning it; confirmed by eye on all three shots. Second: the footer is Submit public ticket then Back to draft and nothing else — measured at y=715 and y=759, both 534px wide in a 600px dialog, with the 'Optional AI help' row above them at y=663 (g6/midnight/review-footer.png). The third button and the caption that failed this row moved inside the disclosure. Guard: report-screen-shape.test.tsx:42 asserts both buttons share one parent, that the parent holds exactly two buttons, and that both are w-full — the rejected footer had three buttons in that same div, so it goes red. TWO HONEST GAPS: a caption is still not guarded (a new one under Submit is only caught if it uses preview/prototype wording), and while a send error shows, Submit is removed and the footer is Back to draft alone (ReportDesign.tsx:307, deliberate — the error owns the retry)."
+  },
+
+  "R8": {
+    "checkedBy": "human",
+    "observation": "Destin's call, and these are the screens he will actually get — no gate anywhere in the three components. contribute.png and walkthrough-bottom.png are the whole Contribute screen.",
+    "evidence": "ContributionDesign.tsx:92-101; matches approved images/error-states.review-4/20 and 21 --midnight--after.png."
+  },
+  "R9": {
+    "checkedBy": "live-app",
+    "observation": "Destin's call in a dev instance. The code supports it: freeWorkspacePath() (dev-tools.ts:849) refuses to reuse any existing directory, walking ~/YouCoded/Development/youcoded-workspace, -2 … -100 until one does not exist; setupManagedWorkspace never touches ~/youcoded-dev and never calls the legacy installWorkspace; a failed run deletes only the folder it created, so a retry cannot accumulate broken copies. The ticket screen's carried-over 'Let your assistant try to fix it' routes through setupStatus/setupWorkspace too (ReportDesign.tsx:113-116), so it does not reopen the fixed-folder hazard.",
+    "evidence": "GUARD GAP: DevelopmentDesign.test.tsx:147 pins that managed setup calls setupWorkspace and never installWorkspace — on the Contribute screen only. setupManagedWorkspace and freeWorkspacePath have NO test of any kind (no file in tests/ references either), so the free-path walk against a pre-existing folder is verified only by reading it."
+  },
+  "R10": {
+    "checkedBy": "live-app",
+    "observation": "Destin's call, and the one row I would call met in letter more than in spirit. It is satisfied by REMOVING backup rather than by handling a failed one: setupManagedWorkspace puts the project in ~/YouCoded/Development, deliberately outside the sync roots (its own WHY comment: ~/YouCoded/Projects would push ~1GB to backup), so no backup step exists that can fail and 'Open it' always works. The answered option Q-sync-unavailable/allow-local also promised 'a visible backup warning and a way to retry'. There is none, because there is nothing to warn about — which is defensible, but it is not what the option said.",
+    "evidence": "dev-tools.ts setupManagedWorkspace; ContributionDesign.tsx:120 openProject → window.claude.dev.openSessionIn({ cwd: path })."
+  },
+  "R12": {
+    "checkedBy": "human",
+    "observation": "Destin's call. Built, reachable and pinned on the shipped path: DevelopmentDesign.test.tsx:339 drives title → description → Review ticket → Submit and asserts summarizeIssue was never called; tests/development-popup.test.tsx runs the same journey with no query string. The send path (ReportDesign.tsx:126-174) never calls summarizeIssue. Moving the second AI action into the disclosure strengthens this row rather than weakening it: the review step now shows no AI control at all until you open one.",
+    "evidence": "ReportDesign.tsx:126-174; dev-tools.ts SubmitArgs.summary is optional."
+  },
+  "R13": {
+    "checkedBy": "human",
+    "observation": "Destin's call. Built and reachable. browserOnly short-circuits before any issue is created (dev-tools.ts submitIssue) and the screen hands off with 'Finish your ticket in GitHub' (ReportDesign.tsx:202-217). Pinned by DevelopmentDesign.test.tsx:224, which asserts browserOnly:true reached the backend and openExternal was called with the fallback URL.",
+    "evidence": "ReportDesign.tsx:143, 202-217."
+  },
+  "R19": {
+    "checkedBy": "human",
+    "observation": "Destin's call, on the shipped screens: report-draft.png (writing) and review-footer.png (reviewing). Worth his eye on two points, both his own words from the note that produced this row. One: the review footer is now two stacked buttons again, which is what he approved — but open 'Optional AI help' and the dialog grows two more full-width buttons and a small gray line, and at a 900px window that stack reaches y=845 of 900. Two: expanding 'How contributing works' puts a scrolling list inside a scrolling dialog, so the setup button is below the fold until he scrolls.",
+    "evidence": "g5/midnight/report-draft.png, g6/midnight/review-footer.png, g6/midnight/review-disclosure.png, g5/midnight/walkthrough-top.png."
+  },
+  "R20": {
+    "checkedBy": "human",
+    "observation": "Destin's call. Pinned, and on the shipped screen: tests/development-popup.test.tsx:83 asserts Review ticket is disabled with both fields empty, STILL disabled with only a title, and enabled once the description is typed — that file sets no query string. ReportDesign.tsx:318 is a full-width primary with disabled={!title.trim() || !description.trim()}, and the U13 line above it says what would enable it. Visible in report-draft.png (534px wide in a 600px dialog).",
+    "evidence": "ReportDesign.tsx:312-318; tests/development-popup.test.tsx:83-91."
+  },
+  "R22": {
+    "checkedBy": "human",
+    "observation": "Destin's call. Real, not hardcoded: versionLine() reads Vite's __APP_VERSION__ define through app-version.ts:19-30, with a guard for builds where the define is absent, and the re-shot review step prints 'YouCoded 1.2.4 · Linux x86_64'. Small difference from the approved picture, which read 'YouCoded 1.2.4 · Linux x64 · Electron 41.10.3': the Electron build is no longer shown. NOW PINNED, which it was not last round — report-screen-shape.test.tsx:82 asserts the screen shows whatever versionLine() returns and that '1.2.4' appears nowhere, so deleting the line or hardcoding the old string turns it red. It cannot catch versionLine() itself being wrong; that would need a unit test of the helper, which is possible today because it takes the platform as an argument.",
+    "evidence": "ReportDesign.tsx:258; src/renderer/app-version.ts:26-30; g6/midnight/review-footer.png."
+  },
+  "R23": {
+    "checkedBy": "human",
+    "observation": "Destin's call. Built, reachable and genuinely pinned: DevelopmentDesign.test.tsx:207 fails the send, then asserts the Retry button AND reads back both field values, so deleting the draft or the retry turns it red. A failure returns to the review step with state intact rather than to a separate screen (ReportDesign.tsx:161-173, 223-227). Checkbox choices are React state and survive the same way, and the log text the user edited survives too (asserted at DevelopmentDesign.test.tsx:102).",
+    "evidence": "ReportDesign.tsx:161-173, 223-227."
+  },
+
+  "_still_unguarded": "What a future edit could break with the suite staying green: (1) the Contribute setup button's full width and the absence of a caption under it — R6's actual subject, tested nowhere; (2) any NEW caption on any of these screens, since the CAPTION regex only knows preview/prototype/sample-log wording — the exact defect class that cost R21 a round; (3) a one-sentence sub-label on an evidence row (R18, proven above); (4) re-adding list-inside to the walkthrough, and marker clipping generally, which no jsdom test can see; (5) a different gray box under the five steps (R4 pins two deleted strings); (6) the setup button's placement under the steps (R7); (7) the entire 'Let your assistant try to fix it' flow — handOver, the handing-over and handed-over screens and HANDOVER_PROMPT — which no test touches at all, and the 'Improve wording' click path, which no test clicks; (8) setupManagedWorkspace and freeWorkspacePath in the main process, which have no test file (R9/R10's real machinery); (9) versionLine() itself.",
+
+  "_cross_platform_note": "The dev:* IPC parity net is now derived from shared/types.ts rather than hand-listed, and dev:setup-workspace / dev:setup-status / dev:setup-clear are declared desktop-only WITH a refusal path (tests/ipc-channels.test.ts:150-180), so a phone or remote user gets 'Developer tools isn't available via remote access yet' rather than 'is not a function'. That applies to the new AI hand-over button too: on Android and remote it will fail with that sentence, draft intact — the same behaviour the approved Contribute button already has."
+}

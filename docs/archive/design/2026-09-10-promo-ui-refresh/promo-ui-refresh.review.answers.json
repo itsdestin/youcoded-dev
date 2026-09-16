@@ -1,0 +1,104 @@
+{
+ "deck": "promo-ui-refresh-review",
+ "started": "2026-09-11T06:57:47.579Z",
+ "submitted": "2026-09-11T07:17:34Z",
+ "cur": 14,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-2": {
+   "note": "first half? what about the resume browser scenes",
+   "v": "other",
+   "seconds": 361,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-3": {
+   "note": "ahh okay",
+   "v": "yes",
+   "seconds": 189,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-4": {
+   "v": "pick",
+   "pick": "open",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "H-1": {
+   "v": "yes",
+   "note": "but keep current website animations. remove wand from purple's hand",
+   "seconds": 95,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "yes",
+   "note": "side note, can we speed all these up so typing feels consistently fast. currently varies wildly and crawls on some",
+   "seconds": 164,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "seconds": 227,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-3": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-4": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-5": {
+   "v": "yes",
+   "note": "i wanted the loaded conversation on this one in the previes",
+   "seconds": 43,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-6": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-7": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-8": {
+   "v": "yes",
+   "seconds": 32,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-9": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "C-10": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "deck": "beta-update-homes",
+ "started": "2026-09-14T03:47:43.363Z",
+ "submitted": "2026-09-14T03:53:01Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "remove the header/copy, leave just the card thing",
+   "v": "other",
+   "seconds": 309,
+   "theme": "devils-garden",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "devils-garden",
+   "zoom": 1
+  }
+ }
+}

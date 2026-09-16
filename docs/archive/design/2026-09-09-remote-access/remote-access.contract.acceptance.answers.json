@@ -1,0 +1,110 @@
+{
+ "deck": "remote-access-contract-acceptance",
+ "started": "2026-09-10T12:50:50.963Z",
+ "submitted": "2026-09-10T12:52:20Z",
+ "cur": 16,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R1": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R2": {
+   "v": "yes",
+   "seconds": 37,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R8": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R9": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R10": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R11": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R12": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R14": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R15": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R18": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R19": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R20": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R21": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R22": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R23": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

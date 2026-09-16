@@ -28,10 +28,11 @@ flow. Do it in this order.
   engine build; the numbers there are the ground truth for local-model fan-out and
   plan authoring. Do not re-run them.
 
-**2. Put these decisions on a question deck** (`python3 scripts/questions/serve.py
-<spec.json>`, run in the background; every question in the four-part format the
-script's header describes: today / the problem / the proposal / options with pros and
-cons about what I will experience). One question each:
+**2. Put these decisions on a question deck** (`python3 scripts/ui-review/review-cards.py
+serve <spec.json>`, run in the background; a words-only deck copied from
+`scripts/ui-review/templates/questions.json`, every question in the four-part format:
+today / the problem / the proposal / options with pros and cons about what I will
+experience). One question each:
 
 1. **What the user organizes.** The 2026-07-09 design has one object: an agent is one
    automation. On 2026-09-01 I proposed two nested ones: an *assistant* is what I name

@@ -1,0 +1,27 @@
+{
+ "deck": "session-naming-review-3",
+ "started": "2026-09-09T09:05:42.776Z",
+ "submitted": "2026-09-09T09:07:00Z",
+ "cur": 2,
+ "answers": {
+  "R3-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-2": {
+   "note": "ugly as icon. should match the size/color/style of the tag/complete icon on the resume card. we should also add a dotted underline under the session name and make the whole name clickable to open the edit menu.",
+   "v": "yes",
+   "seconds": 44,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-3": {
+   "v": "yes",
+   "seconds": 22,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

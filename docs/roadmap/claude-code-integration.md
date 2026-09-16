@@ -4,24 +4,16 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
+- [ ] Non-ASCII messages can cross Claude Code’s 64-byte paste threshold while YouCoded still
+      treats them as a short atomic send, because desktop and Android count UTF-16 characters
+      instead of encoded bytes. Desktop’s echo check can also miss a valid message when an ANSI
+      escape sequence is split across PTY output chunks, then suppress Enter after 12 seconds
+      `all` `confirmed` `checked 2026-09-15`
+
 - [ ] Clicking a plan-approval button other than the first ("No, refine plan", "Tell Claude what to
       change") may still approve the plan as option 1 on Claude Code 2.1.220+ (found 2026-07-30
       during the permission-timeout review; not yet tried in a dev instance)
       `tool-cards` `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-plan-approval-single-write.md
-
-- [ ] On Android the permission-mode chip never shows "auto", and shows "normal" for any screen it
-      cannot read — where desktop shows "unknown" (found 2026-07-17)
-      `status-bar` `android` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-permission-mode-auto-unknown.md
-
-- [ ] Android pops phantom prompt cards — a paste-your-sign-in-code card, or a Continue / "Ready"
-      card — when Claude's ordinary reply merely contains phrases like "press Enter to continue" or
-      "paste the code" (2026-07-16 sweep)
-      `tool-cards` `android` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-bare-phrase-prompt-cards.md
-
-- [ ] Android still submits long messages (over ~56 bytes) with a fixed 600 ms pause before Enter,
-      where desktop waits for the terminal's own echo — mirror the desktop approach (PITFALLS
-      sweep, 2026-07-15)
-      `android` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-android-pty-echo-driven-submit.md
 
 - [ ] Idea: the app's bundled hooks (write-guard, hook-relay) could rewrite tool output at the
       boundary — redact secrets or PII, normalize paths — now that Claude Code lets a PostToolUse
@@ -54,11 +46,6 @@ chat-data).
       client that connected mid-prompt, Android's native prompt hook, the buddy window's feed) — all
       the same family the 2026-07-17 fix covered for the main chat only
       `tool-cards` `all` `needs-verify` `checked 2026-07-17`
-
-- [ ] On the phone, Claude Code's full-screen redraws push duplicate banner chrome into the terminal's
-      scroll history. Two candidate approaches (bigger scrollback, or disabling the alternate screen at
-      launch); newer Claude Code versions fixed some cases upstream, so re-check first
-      `terminal` `android` `parked` `checked 2026-05-18`
 
 - [ ] Idea: show Claude Code's `claude agents` view — one list of every session, including daemon-run
       background sessions — inside the app's multi-session UI. Large and speculative
