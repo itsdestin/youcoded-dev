@@ -46,7 +46,7 @@ verify:
 
 ## Reducer state (`chat-reducer.ts`)
 - **Current-turn status checks use `activeTurnToolIds` (a Set), not the `toolCalls` Map** — the Map is never cleared (ToolCards need old results).
-- **Always use the `endTurn()` helper** on turn-ending paths — it fails orphaned tools and resets all turn state. `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR` are the only spread-then-override exceptions.
+- **Always use the `endTurn()` helper** on turn-ending paths — it fails orphaned tools and resets all turn state. `SESSION_PROCESS_EXITED`/`NATIVE_SESSION_ERROR`/`TRANSCRIPT_REPLAY_COMPLETE` are the only spread-then-override exceptions.
 - **`AttentionState` is `'ok'|'stuck'|'session-died'|'error'|'stalled'` — five reachable states, each with a writer.** One without a writer resurrects dead `AttentionBanner` branches. `stalled` = a PARKED native turn; a stall WARNING is `'stuck'`, the ONLY amber state. **`stalledSince` is stamped once and held, ONLY while already `'stalled'`** — nine `'ok'` writers never clear it, so that guard sits at the WRITE site.
 - **`NATIVE_PARTS_DROPPED` removes only the TRAILING run of matching segments**, stopping at the first non-match: part ids repeat across steps, so a whole-turn `.filter()` deleted FINISHED paragraphs.
 - **User-message dedup uses the `pending` flag, never content matching** — `USER_PROMPT` appends `pending:true`; `TRANSCRIPT_USER_MESSAGE` clears the oldest match, else appends. **`TRANSCRIPT_TOOL_USE` dedups by `toolUseId`, never uuid** — the watcher re-emits on a repeated uuid by design, so writes there stay idempotent.
