@@ -54,7 +54,8 @@ fi
 # 2026-09-16: +1 for main-registers-all-quit-routes (Plan B).
 # 2026-09-16: +1 for resume-listener-guards-detail-before-call (Plan B).
 # 2026-09-16: +1 for appearance-broadcast-reaches-all-windows (Plan B).
-EXPECTED_VIOLATIONS=15
+# 2026-09-16: +1 for no-two-bare-bg-utilities (Plan B).
+EXPECTED_VIOLATIONS=16
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
