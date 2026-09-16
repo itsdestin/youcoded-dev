@@ -443,14 +443,35 @@ per-word cost that grew with the chat was the seen-uuid set, which is fixed. **A
 streaming bubble re-parses and re-highlights per frame) remains deferred: it changes what the
 eye sees while text appears and needs a before/after clip and Destin's call.
 
-**Batch C `perf/main-thread-click-paths` — built, verified, reviewed (review findings applied
-below if any). Awaiting Destin's merge call.** Eight commits: C1 (incremental transcript
-reader for the per-turn publish), C2 (`isLive`, async history pages), C3 (git snapshot
-precomputed async at all four build sites), C4 (Glob/Read/Edit/Write async + per-path lock),
-C5 (status push, topic poll and transcript safety poll async; topic poll upgrades to a
-watcher), C6 (native Resume listing async), C8+C9 (watcher sink sends to subscribed windows;
-own-write markers expire; Home watched two levels deep), plus two test-found fixes. The guard
-`main-hot-path-no-sync-fs.test.ts` now covers every converted path.
+**Batch C `perf/main-thread-click-paths` — built, verified, reviewed, review applied.
+Awaiting Destin's merge call.** C1 (incremental transcript reader for the per-turn
+publish), C2 (`isLive`, async history pages), C3 (git snapshot precomputed async at all four
+build sites), C4 (Glob/Read/Edit/Write async + per-path lock), C5 (status push, topic poll
+and transcript safety poll async; topic poll upgrades to a watcher), C6 (native Resume
+listing async), C8+C9 (watcher sink sends to subscribed windows; own-write markers expire;
+Home watched two levels deep), plus the fixes below. The guard
+`main-hot-path-no-sync-fs.test.ts` covers every converted path. Both branches were merged
+with master (`128cf334`, the CI-health and helper-approval merges) and re-verified green.
+
+**Fresh-eyes review of C (2026-09-16) — one real regression, fixed:** the incremental reader
+STOPPED at the first unparseable transcript line where the old reader skipped it; a
+crash-sealed torn record would have made every later publish for that session
+`unreferenced-history` for good. It skips again, pinned by a junk-line-mid-file test with
+incremental reads on both sides. Also applied: the reader's cache is capped (24, LRU) and
+`remove()` forgets a session; the Resume listing reads heads sixteen at a time (an open
+failure reads as "not a native session", so unbounded parallelism could silently drop rows);
+the topic watch falls back to the poll on `rename` (the hook's daily prune recreates the
+file on a new inode) and every deferred read checks it still owns the session;
+`TRANSCRIPT_REPLAY` tolerates a window closed mid-read; the watcher sink skips destroyed
+windows; the phone's history page, the resume-time history seed and Read's stat/readdir
+also moved off the main thread. **Named trade (C9):** with Home as the project, an assistant
+edit deeper than two levels neither joins the Files list nor refreshes an open preview until
+the tab is reopened — recorded in `files.md` and the WHY.
+
+**Follow-ups the review named, not built:** `restore()` still reads the whole transcript
+synchronously once per Resume to verify the checkpoint digest (an async twin of
+`rawTranscriptSync` is the recipe); the "two parallel Writes" lock test passes without the
+lock most of the time (the Edits one fails on revert; the Writes one is a weaker pin).
 
 **Not built, filed:** C7 (conversation-store heal readdir; chatsearch re-index on star/rename)
 behind `session/sync-safety-audit-20260908`; C10 (30-minute reconcile; sub-agent watcher
