@@ -1,0 +1,112 @@
+{
+ "_comment": "YouCoded Pages, shell deck round 3: four layouts for an open page (bar, frameless, rail, frame), picked by ?pageLayout= \u2014 a workbench-only knob in PageHost.tsx. Each shot opens the Week planner from the library so the picture is the same page in every layout.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "layout-bar",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&pageLayout=bar",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Page options']"
+   ]
+  },
+  {
+   "name": "layout-frameless",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&pageLayout=frameless",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Page options']",
+    "[aria-label='Back']"
+   ]
+  },
+  {
+   "name": "layout-rail",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&pageLayout=rail",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "layout-frame",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&pageLayout=frame",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "[aria-label='Pin Week planner']",
+     "settle": 400
+    },
+    {
+     "click": "[aria-label='Exit pages']",
+     "settle": 500
+    },
+    {
+     "click": "[aria-label='Open Week planner']",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Page options']",
+    "[aria-label='Open Pages']"
+   ]
+  },
+  {
+   "name": "layout-bar-menu",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&pageLayout=bar",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "click": "[aria-label='Page options']",
+     "settle": 500
+    }
+   ],
+   "expect": "[role=menu]",
+   "measure": [
+    {
+     "text": "Edit in chat"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,69 @@
+{
+  "title": "Pages — the shell, round 3: how an open page is framed",
+  "key": "youcoded-pages-shell-r3",
+  "out": "youcoded-pages-shell-r3.review.html",
+  "images": "images/youcoded-pages-shell-r3.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": { "after": "Round 3" },
+  "themes": ["midnight", "light", "halftone-dimension", "meadow-mist"],
+  "stage": "design",
+  "crops": {
+    "layout-bar": ["pages-layouts", "layout-bar", "1440x620+0+0"],
+    "layout-frameless": ["pages-layouts", "layout-frameless", "1440x620+0+0"],
+    "layout-rail": ["pages-layouts", "layout-rail", "1440x620+0+0"],
+    "layout-frame": ["pages-layouts", "layout-frame", "1440x620+0+0"],
+    "layout-bar-menu": ["pages-layouts", "layout-bar-menu", "1440x300+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "A page",
+      "path": "Any open page, shown here with the week planner",
+      "headline": "Which frame should an open page sit in?",
+      "variants": [
+        {
+          "id": "frameless",
+          "label": "Frameless",
+          "crop": "layout-frameless",
+          "summary": "No bar at all. The page fills the window; a small Back pill floats top-left and a ⋯ pill top-right holds pin, edit and all pages. Most room for the page; the page's own title does the naming.",
+          "risk": "A page with a busy top edge has two pills sitting on it, and there is nothing that says where you are."
+        },
+        {
+          "id": "rail",
+          "label": "Side panel",
+          "crop": "layout-rail",
+          "summary": "A panel on the left: Back to chat, the page's name, your pinned pages to switch between, All pages, and the page actions tucked at the bottom. The page fills the rest.",
+          "risk": "The panel costs 240 px of width on every page, even ones with nothing to switch to; on a phone it would have to collapse."
+        },
+        {
+          "id": "frame",
+          "label": "In the app frame",
+          "crop": "layout-frame",
+          "summary": "The page takes the pane the chat normally fills, under the app's own top bar, so the Pages button and pinned buttons stay where they always are. A Chat pill returns you; ⋯ holds the actions.",
+          "risk": "The composer and status bar are hidden while a page is open, and the rounded pane wastes a little space at the edges."
+        },
+        {
+          "id": "bar",
+          "label": "Slim bar",
+          "crop": "layout-bar",
+          "summary": "A thin bar: Back, the page's icon and name, and a ⋯ on the right. The Pin and Edit chips from rounds 1 and 2 are gone; they live in the ⋯ menu.",
+          "risk": "Still a bar above every page, which is the thing you said you may not want."
+        }
+      ]
+    },
+    {
+      "id": "S-13",
+      "surface": "A page",
+      "path": "The ⋯ at the top-right of an open page",
+      "crop": "layout-bar-menu",
+      "runs": ["after"],
+      "headline": "Pin, Edit in chat and All pages move behind one ⋯ menu, whichever frame you pick.",
+      "changed": "The Pin and Edit chips are gone from the page's edge. One small ⋯ opens a menu with the three actions, in the same style as the ||| menu at phone width.",
+      "notice": "The page's top edge is quieter. The actions are one click further away.",
+      "risk": "Someone who never opens ⋯ may not find pinning from inside a page; the library's card pin still works.",
+      "highlight": { "text": "Edit in chat" }
+    }
+  ]
+}
