@@ -126,8 +126,10 @@ The new central responsibility is a Pages host: identity, storage, pinning, isol
 
 Entry points inspected by the architecture explorer: `youcoded/desktop/src/renderer/components/HeaderBar.tsx`, `components/artifact-views/HtmlView.tsx`, `themes/theme-engine.ts`, `components/ui/`, `youcoded/desktop/src/main/harness/permission-engine.ts`, `tools/bash.ts`, `tools/task.ts` and `native-session-host.ts`. Analytics HTML was separately inspected read-only in the shared marketplace checkout at `wecoded-marketplace/worker/src/admin/dashboard-html.ts`; that component was not provisioned in this session workspace.
 
-## Next stage — not yet approved or implemented
+## Next stage
 
-Show before/after UI designs for the library and pinned navigation, chat-to-preview creation, service setup and honest permission summaries, plus running/background/failed states. Include a native-looking example page and live theme behavior. Use the context-free UX tester before the first visual review deck, then produce the sourced contract from approved review decisions. Conversation approval here must not be misrepresented as a signed UI contract.
-
-After visual approval, write and review technical designs and staged implementation plans covering page hosting, connection/auth boundaries, program trust/versioning, task ownership, storage/update lifecycle and desktop/remote behavior. Keep the approved breadth while separating it into testable parts. No app code, production configuration, commits or publishing were authorized by this scope approval.
+Build order lives in `docs/active/plans/2026-09-16-youcoded-pages-phasing.md` (2026-09-16).
+Only Phase 1, the shell, is pinned; the permission model and everything after it stay open
+questions answered per phase. Destin reviews decks himself; the automated UX tester, code
+reviewer and grader are not used. Conversation approval here is product scope, not a signed UI
+contract, and does not authorize shipping.

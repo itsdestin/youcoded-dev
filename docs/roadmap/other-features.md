@@ -108,9 +108,11 @@ has passed ~8 items — graduate it to its own file.
 - [ ] YouCoded Pages: let people create and install their own native-looking pages, from dashboards
       and paint studios to specialized assistants, and pin favorites beside Projects. Scope approved:
       live themes, personal/project pages, marketplace pages and custom services, controlled outside
-      access and optional computer programs; desktop + paired remote first. Visual design next.
+      access and optional computer programs; desktop + paired remote first. Phased: the shell
+      (icon, library, pins, isolated themed page, creator skill) is being built first; permissions,
+      connections, model tasks and marketplace follow, each an open question until its phase.
       Later: chat-alongside visual editing with drag/reorganize/resize, independent Android and durable automation.
-      `window-chrome` `all` `in-flight` `checked 2026-09-15` → docs/active/specs/2026-09-15-youcoded-pages-scope.md
+      `window-chrome` `all` `in-flight` `checked 2026-09-16` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal window as a
       YouCoded session, no assistant attached. Half of it is built: the local engine's "Run in
