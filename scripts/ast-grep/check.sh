@@ -53,7 +53,8 @@ fi
 # 2026-09-16: +1 for iframe-sandbox-no-allow-same-origin (Plan B).
 # 2026-09-16: +1 for main-registers-all-quit-routes (Plan B).
 # 2026-09-16: +1 for resume-listener-guards-detail-before-call (Plan B).
-EXPECTED_VIOLATIONS=14
+# 2026-09-16: +1 for appearance-broadcast-reaches-all-windows (Plan B).
+EXPECTED_VIOLATIONS=15
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
