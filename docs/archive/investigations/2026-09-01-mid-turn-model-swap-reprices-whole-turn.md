@@ -3,7 +3,7 @@ date: 2026-09-01
 status: shipped
 type: investigation
 topic: native-harness cost — a model swap while a turn is still streaming prices the whole turn at the new model's rate and labels it with the new model's name
-shipped: 2026-09-16 on session/roadmap-five (PENDING MERGE) — see docs/roadmap/shipped.md
+shipped: 2026-09-16 youcoded#480 `510fe0f5` — see docs/roadmap/shipped.md
 ---
 
 # Swapping models mid-turn bills the WHOLE turn at the new model's rate
