@@ -1,0 +1,10 @@
+# Source-grep sweep ledger (Plan B)
+
+Baseline 2026-09-16: Test Files 888 (886 passed, 1 skipped, 1 failed), Tests 11613 total (11569–11570 passed, 43–47 skipped across two runs), `it(`/`test(` sites 9958, EXPECTED_VIOLATIONS=11.
+
+The one failing file is load-sensitive and outside this plan: `tests/chatgpt-request-diagnostics.test.ts` › "evicts inactive fingerprints within 8 MiB and drops an oversized observation" took 46.6s under the full run and passes alone in 5.3s. The budget to reconcile against is the **total** (11613), since skip counts wobble between runs.
+
+Packaging (Destin, 2026-09-16): one PR per repo for the whole sweep, one "ready to merge?" at the end — Task 7's wording governs over the per-group line in Global Constraints.
+
+| file | cases before | cases after | deleted case titles | rule / tool added |
+|---|---|---|---|---|
