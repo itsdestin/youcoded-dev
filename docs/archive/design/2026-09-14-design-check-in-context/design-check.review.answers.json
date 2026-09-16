@@ -1,0 +1,18 @@
+{
+ "deck": "design-check-in-context",
+ "started": "2026-09-14T23:58:34.005Z",
+ "submitted": "2026-09-15T00:00:12Z",
+ "cur": 9,
+ "answers": {
+  "C-1": {"v": "yes", "seconds": 12, "theme": "light", "zoom": 1},
+  "C-2": {"v": "yes", "seconds": 4, "theme": "light", "zoom": 1},
+  "C-3": {"v": "yes", "seconds": 3, "theme": "light", "zoom": 1},
+  "C-4": {"v": "yes", "seconds": 2, "theme": "light", "zoom": 1},
+  "F-1": {"v": "pick", "pick": "larger", "seconds": 12, "theme": "light", "zoom": 1},
+  "F-2": {"v": "pick", "pick": "smaller", "seconds": 14, "theme": "light", "zoom": 1},
+  "F-3": {"v": "pick", "pick": "smaller", "seconds": 6, "theme": "light", "zoom": 1},
+  "R-1": {"v": "pick", "pick": "add-size", "seconds": 21, "theme": "light", "zoom": 1},
+  "R-2": {"v": "pick", "pick": "small-round", "seconds": 10, "theme": "light", "zoom": 1},
+  "O-1": {"v": "pick", "pick": "use-scale", "seconds": 13, "theme": "light", "zoom": 1}
+ }
+}
