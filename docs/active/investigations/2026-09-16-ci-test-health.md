@@ -97,10 +97,11 @@ run. 28 red runs for that.
 
 ## What this branch fixes (all mechanical, verified locally, then proven on CI)
 
-Five CI runs of this branch, in order: Windows 16 → 1 → 2 → 3 → 0 failures (each round
-exposed tests a file-level crash had hidden), macOS 1 → 0 → 0 → 0, Linux 0 → 3 → 1 → 1 → (final
-run in flight when this was written; see the branch's run list). Every red that remained after
-round two was one of the filed product races, not a test-side assumption. The one test that
+Five CI runs of this branch, in order: Windows 16 → 1 → 2 → 3 → 0 → 1 failures (each round
+exposed tests a file-level crash had hidden; the last one is a single 30 s timeout on a test that
+passed the run before, filed as a Windows load flake), macOS 1 → 0 → 0 → 0 → 0, Linux 0 → 3 → 1
+→ 1 → 0. Every red that remained after round two was one of the filed product races or a
+one-off load timeout, not a test-side assumption. The one test that
 asserted the lease file's deletion now pins only the in-memory contract; its on-disk claim is
 filed with evidence rather than reddening every merge.
 

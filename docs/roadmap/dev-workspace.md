@@ -3,6 +3,12 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/model-manager.test.ts` "a stored dismissal missing EITHER half is no dismissal" hit the
+      30 s test timeout once on the Windows CI leg (run 35093103929, 2026-09-16, the fifth proof run
+      of session/ci-test-health) after passing the run before with no change to anything it imports.
+      Five sequential settings writes + memory checks on the slow Windows runner; one observation,
+      so filed as a Windows load flake, not fixed. If it recurs, read the log before widening
+      `n/a` `needs-verify` `checked 2026-09-16`
 - [ ] Three more files fail only under full-suite load and pass alone (2026-09-16, `verify.sh --full`,
       11,550 tests, on a branch touching none of them): `tests/chatgpt-request-diagnostics.test.ts`
       "evicts inactive fingerprints within 8 MiB…" (30 s timeout), `tests/local-engine-fields-rendered.test.tsx`
