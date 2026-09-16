@@ -2,6 +2,13 @@
 Filing test: getting a model onto this machine and serving it — downloads, disk, the engine
 process. Would this break the same way on a cloud model? No. (Yes → native-harness.)
 
+- [ ] `EngineManager.stopAll()` resolves while the preset writer can still land a file: a stop
+      called during a wedged stream returns before its writes are quiesced, so the engine directory
+      is not safe to remove or reuse the moment stop() returns. Surfaced as the `ENOTEMPTY` teardown
+      failure in `engine-model-settings.test.ts` on macOS and Ubuntu CI (retries already at 10×25 ms
+      and still losing). Fix belongs in stopAll: await the in-flight preset write before resolving;
+      found by the 2026-09-16 CI/test health review
+      `settings/local-models` `desktop` `confirmed` `checked 2026-09-16`
 - [ ] A 2B model says "will be tight" on a 128 GB laptop — and every other local model is
       mislabelled the same way, because the estimate scores against the 4 GB slice the BIOS
       calls "video memory" instead of the ~90 GB the graphics chip can really reach. Destin

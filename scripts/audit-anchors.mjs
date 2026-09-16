@@ -745,7 +745,7 @@ function main() {
   const result = {
     ok: true,
     anchors: { total: 0, failed: [] },
-    mapPaths: { total: 0, missing: [] },
+    mapPaths: { total: 0, missing: [], unverifiable: [] },
     ruleGlobs: { failed: [] },
     budgets: { violations: [], eagerTokens: 0, eagerLimit: BUDGETS.eagerTokens },
     diffScope: null,
@@ -805,6 +805,16 @@ function main() {
     const mapPaths = harvestMapPaths(fs.readFileSync(mapFile, 'utf8'));
     result.mapPaths.total = mapPaths.length;
     for (const p of mapPaths) {
+      // WHY the repo-presence check: Workspace CI clones only the PUBLIC sub-repos
+      // (youcoded-admin needs a PAT), so a MAP row pointing into youcoded-admin
+      // reported "missing" on every CI run from 2026-09-11 to 09-16 — 30 red runs
+      // for paths that exist. A repo that is not on disk cannot be verified
+      // either way; say so as a note instead of failing the run.
+      const repo = p.split('/')[0];
+      if (REPOS.includes(repo) && !fs.existsSync(path.join(subRepoRoot(root), repo, '.git'))) {
+        result.mapPaths.unverifiable.push(p);
+        continue;
+      }
       if (!fs.existsSync(path.join(baseFor(root, p), p))) result.mapPaths.missing.push(p);
     }
   } else {
@@ -922,6 +932,7 @@ function printHuman(r, root = process.cwd()) {
   };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
+  if (r.mapPaths.unverifiable.length) console.log(`NOTE ${r.mapPaths.unverifiable.length} MAP path(s) live in a repo not on disk (unverified here): ${r.mapPaths.unverifiable.join(', ')}`);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
   // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.

@@ -25,6 +25,14 @@ if [[ ! -d "$SOURCE_DIR" ]]; then
     exit 2
 fi
 
+# The test tree beside src/ is scanned too (2026-09-16): rules scoped with a
+# `**/tests/**` glob guard the tests themselves — the Windows-only breakages that
+# kept master red for a week were all test-side shapes. Rules scoped to src/ do
+# not match there, so the extra dir costs nothing for them.
+TESTS_DIR="$(dirname "$SOURCE_DIR")/tests"
+SCAN_DIRS=("$SOURCE_DIR")
+[[ -d "$TESTS_DIR" ]] && SCAN_DIRS+=("$TESTS_DIR")
+
 # Prefer a real install (pacman -S ast-grep / npm i -g @ast-grep/cli); npx works but
 # re-resolves the binary on every invocation, which is slow enough to notice.
 if command -v ast-grep >/dev/null 2>&1; then
@@ -41,12 +49,13 @@ fi
 # 2026-08-28: +1 for observer-ref-returns-cleanup (perf cycle 3 — an observed
 # element that is never released makes any later removal free nothing).
 # 2026-09-10: +1 for no-workbench-gate-in-shipped-ui.
-EXPECTED_VIOLATIONS=10
+# 2026-09-16: +1 for test-file-url-to-path (the tests tree is scanned too, see TESTS_DIR).
+EXPECTED_VIOLATIONS=11
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
     local out
-    out="$("${AG[@]}" scan -c "$HERE/sgconfig.yml" --json "$1" 2>/dev/null)"
+    out="$("${AG[@]}" scan -c "$HERE/sgconfig.yml" --json "$@" 2>/dev/null)"
     if command -v jq >/dev/null 2>&1; then
         printf '%s' "$out" | jq 'length' 2>/dev/null || echo "ERR"
     else
@@ -89,12 +98,12 @@ else
 fi
 
 echo "== real source (no rule may fire) =="
-got="$(count_findings "$SOURCE_DIR")"
+got="$(count_findings "${SCAN_DIRS[@]}")"
 if [[ "$got" == "0" ]]; then
-    echo "  OK — no invariant violations in youcoded/desktop/src"
+    echo "  OK — no invariant violations in ${SCAN_DIRS[*]}"
 else
     echo "  FAIL — $got invariant violation(s):"
-    "${AG[@]}" scan -c "$HERE/sgconfig.yml" "$SOURCE_DIR" 2>/dev/null
+    "${AG[@]}" scan -c "$HERE/sgconfig.yml" "${SCAN_DIRS[@]}" 2>/dev/null
     fail=1
 fi
 
