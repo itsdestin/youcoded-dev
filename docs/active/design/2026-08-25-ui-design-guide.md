@@ -160,7 +160,7 @@ rule — the validator does not check it (P-16, decided 2026-08-25: no new pack 
 | `SearchFilterPill` | every search-with-filter control (Projects, Session Files, Marketplace, Skills drawer; Resume at phone width only — Destin kept its desktop box over the pill, 2026-09-10 resume-filter-chips S-2, do not re-propose) | four bespoke search boxes |
 | `SettingRow` | any row that navigates or holds one control; **also every expand-in-place section** (`expanded` turns its right-hand chevron down) | hand-rolled `flex` rows with a chevron; **a bare leading “›” text toggle** (Destin, 2026-09-05: “I HATE the bare dropdowns with a chevron”) |
 | `Dialog` (`prompt` 340 / `panel` 420 / `document` 600) | all modals. `prompt` = one question + buttons; `panel` = a settings screen; `document` = long prose | choosing `prompt` for a list (Keyboard Shortcuts); headerless dialogs (Donate/Development) |
-| `Callout` | inline explainer or warning inside a panel | coloured borders on ad-hoc divs |
+| `Callout` | inline explainer or warning inside a panel; `collapsible` for a warning whose detail is a list — one-line header, chevron on the RIGHT (Destin, 2026-09-16) | coloured borders on ad-hoc divs; a native `<details>` triangle (guard: `no-bare-disclosure.test.ts`) |
 | `LoadingState` / `EmptyState` / `ErrorState` | *every* async surface's three states; `EmptyState` always names what's missing **and** offers the way out | a lone sentence ("Nothing matches those filters."); two empty states on one screen; blank headings |
 | `Toast` | transient confirmation; action slot for one follow-up | toasts for errors that need reading (use `ErrorState`) |
 | `ProgressBar` | determinate progress with a label | percent in a disabled button label |

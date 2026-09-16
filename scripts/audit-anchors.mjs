@@ -175,6 +175,25 @@ export function subRepoRoot(root) {
 }
 // The directory a workspace-relative path resolves against: sub-repo paths against the
 // clone location, everything else (docs/, .claude/, ROADMAP.md) against the checkout itself.
+/** Split MAP paths into missing ones and ones in a sub-repo that is not on disk at all.
+ *  WHY: workspace CI clones only the PUBLIC sub-repos. When MAP gained youcoded-admin
+ *  paths (2026-09-15) every CI run went red on "MAP paths missing" for files that exist,
+ *  and a check that is always red stops being read. An absent repo is reported as a note;
+ *  a missing file inside a repo that IS present still fails. */
+export function classifyMapPaths(root, paths) {
+  const missing = [];
+  const unchecked = {};
+  for (const p of paths) {
+    const repo = p.split('/')[0];
+    if (REPOS.includes(repo) && !fs.existsSync(path.join(baseFor(root, p), repo))) {
+      unchecked[repo] = (unchecked[repo] || 0) + 1;
+    } else if (!fs.existsSync(path.join(baseFor(root, p), p))) {
+      missing.push(p);
+    }
+  }
+  return { missing, unchecked };
+}
+
 export function baseFor(root, rel) {
   return REPOS.includes(rel.split('/')[0]) ? subRepoRoot(root) : root;
 }
@@ -804,9 +823,7 @@ function main() {
   if (fs.existsSync(mapFile)) {
     const mapPaths = harvestMapPaths(fs.readFileSync(mapFile, 'utf8'));
     result.mapPaths.total = mapPaths.length;
-    for (const p of mapPaths) {
-      if (!fs.existsSync(path.join(baseFor(root, p), p))) result.mapPaths.missing.push(p);
-    }
+    Object.assign(result.mapPaths, classifyMapPaths(root, mapPaths));
   } else {
     result.mapPaths.missing.push('docs/MAP.md (the map itself is missing)');
   }
@@ -922,6 +939,9 @@ function printHuman(r, root = process.cwd()) {
   };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
+  for (const [repo, n] of Object.entries(r.mapPaths.unchecked || {})) {
+    console.log(`note: repo ${repo} not found on disk — ${n} MAP path(s) unchecked`);
+  }
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
   // was deleted in youcoded PR #378, so a sub-repo rules dir can only be a new mistake now.

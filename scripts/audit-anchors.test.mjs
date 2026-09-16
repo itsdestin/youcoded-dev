@@ -780,3 +780,14 @@ test('undocumentedWorkbenchSwitches: a checkout without the rig README reports n
   });
   assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
 });
+
+import { classifyMapPaths } from './audit-anchors.mjs';
+
+test('classifyMapPaths: a sub-repo absent from disk is unchecked, a missing file in a present one fails', () => {
+  const root = makeFixture();
+  fs.mkdirSync(path.join(root, 'youcoded'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'youcoded', 'here.ts'), '');
+  const r = classifyMapPaths(root, ['src/a.ts', 'src/gone.ts', 'youcoded/here.ts', 'youcoded/gone.ts', 'youcoded-admin/x.mjs', 'youcoded-admin/y.mjs']);
+  assert.deepEqual(r.missing, ['src/gone.ts', 'youcoded/gone.ts']);
+  assert.deepEqual(r.unchecked, { 'youcoded-admin': 2 });
+});

@@ -551,3 +551,14 @@ recurred — the repetition is the data.
 - One `--include=*.ts` grep was blocked by the glob guard hook before running → dropped: the hook did its job, one call
 - An older test (`buddy-animation-continuity`) encoded "a tucked-in buddy bounces for attention"; verify.sh caught it → applied: moved to an out-of-edge buddy, WHY comment added
 - deleted/merged: removed the hover guard and the "attention releases the sink" branch from `BuddyMascot.tsx`; no docs to delete
+
+## 2026-09-16 — sync stuck 9 days: over-cap upload guard, honest Try again, gear dot (session/sync-oversize-fix, youcoded#483 + youcoded-dev#106)
+- RECURRENCE: the design guide already said Destin hates bare dropdowns (2026-09-05), and I built one anyway; he rejected it twice (two extra review rounds, ~25 min) → applied: `youcoded/desktop/tests/no-bare-disclosure.test.ts` blocks new native `<summary>` triangles (shown red first); design guide Callout row names `collapsible`
+- An earlier session's llama.cpp build set `http.lowSpeed*` in `~/.gitconfig` for the whole machine; it helped break YouCoded sync → applied: settings removed; `~/system/tools/git.md` (never set global git config for a one-off)
+- `ci-red-vs-master.sh` read the whole run's log for each OS leg, so a Windows-only failure showed as "NEW" on ubuntu too; ~6 wasted calls over two CI rounds → applied: it reads the job's own log (`--job`), checked against youcoded#483
+- Workspace CI has been red on every master push since 2026-09-15: MAP names private youcoded-admin files that CI cannot clone → applied: `classifyMapPaths` in `scripts/audit-anchors.mjs` reports an absent repo as a note (unit test red first); workflow comment corrected
+- The report I was handed named one oversized file and no cause; the repo showed six, and a dev copy of the app syncing the same folder → roadmap: `sync.md` (dev copy shares the folder; long conversations never sync; history growth; slow-link limit; over-cap file edited on two devices)
+- A context-free reviewer found 12 real issues in my guard, two of which broke its own promises; my tests had missed all of them → applied: all fixed with a pinning test each (no new guidance — the feature flow already prescribes the reviewer)
+- A test written for a `:big` filename could not run on Windows → dropped: fixed in the test; the platform rule is well known
+- Destin: Try again goes right and inline with Show details; Connect GitHub only when sign-in is really the problem; warnings collapse to one informative line with the switcher's chevron on the right → applied: code + WHY comments, design guide row
+- deleted/merged: `syncSpacesSyncNowAwaited` is now a timeout wrapper around `syncSpacesSyncNow` (the duplicate sync loop went); stale "fire-and-forget" comments removed
