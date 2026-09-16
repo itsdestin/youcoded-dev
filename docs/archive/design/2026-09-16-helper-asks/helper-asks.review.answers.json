@@ -1,0 +1,20 @@
+{
+ "deck": "helper-asks-review",
+ "started": "2026-09-16T10:46:31.528Z",
+ "submitted": "2026-09-16T10:46:58Z",
+ "cur": 1,
+ "answers": {
+  "H-1": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "H-2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

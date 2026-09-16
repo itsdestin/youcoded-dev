@@ -236,29 +236,16 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
-- [ ] An explicitly authorized git push / branch-deletion cleanup was blocked with "user has not
-      responded yet — the request is still pending on their screen" even though no approval prompt
-      existed (paste-attachments merge close-out, 2026-09-15). This stops close-out and falsely tells
-      the user to approve something absent; only claim a pending approval when a real request exists,
-      and let authorized push and deletion commands proceed.
-      Likely cause (2026-09-16, from code + saved transcripts, not reproduced live): that message
-      is only ever sent to a SPECIALIST whose routed ask went unanswered for 5 minutes
-      (`child-ask-router.ts`). The ask renders only inside the helper's Task card — often in an
-      earlier, scrolled-past turn for a background helper — and the red session dot / attention
-      summary count only top-level tools in the active turn (`useSessionAttention.ts`,
-      `ChatView.tsx` awaitingTools), so nothing tells the user it exists; the only signal is the
-      Specialists chip turning amber. Workers hit it on deny-listed `git push --force-with-lease`
-      and `rm -rf` (2026-09-08 sessions). Fix changes what the user sees → options first
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-16`
-
 - [ ] In Auto-edit, a hired specialist runs any shell command that isn't on the always-ask list
       with no prompt, although the main assistant itself would have to ask first — the launch
       "envelope" (`envelopeGranted: true`, `native-session-host.ts` buildSpecialistSession →
       `child-permissions.ts` step 6/7) turns every parent "ask" into "allow", and in Auto-edit
-      no hire card is shown for built-in specialists. Agreed fix (2026-09-16): grant the envelope
-      only when the session was on Ask first at hire time. Blocked on the phantom-approval item
-      above, because it routes more helper asks through that hidden path
-      `desktop` `confirmed` `checked 2026-09-16`
+      no hire card is shown for built-in specialists. Direction discussed 2026-09-16: a helper
+      asks whenever the main assistant would (drop the envelope; always-ask commands unchanged),
+      optionally a "let it work without asking" choice on the hire card later. Unblocked since
+      youcoded#489 (helper requests show at the bottom of the chat and wait with no timeout);
+      Destin chose to leave it for now. Cost: more helper prompts, most in Ask first
+      `desktop` `decision` `checked 2026-09-16`
 
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
