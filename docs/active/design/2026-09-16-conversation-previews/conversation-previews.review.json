@@ -1,0 +1,58 @@
+{
+  "title": "Conversation previews — look like the real chat",
+  "key": "conversation-previews-review",
+  "out": "conversation-previews.review.html",
+  "images": "images/conversation-previews.review",
+  "stage": "review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["midnight", "light", "meadow-mist", "halftone-dimension"],
+  "crops": {
+    "resume-sheet": ["conversation-previews", "resume-preview-selected", "1000x700+235+110"],
+    "whole-drawer": ["conversation-previews", "drawer-preview-panel", "1440x900+0+0"],
+    "project-preview": ["conversation-previews", "projects-conversation-preview", "1440x900+0+0"],
+    "project-cards": ["conversation-previews", "projects-conversations-list", "1100x560+170+60"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Resume browser",
+      "path": "Type /resume, then click a conversation in the list",
+      "crop": "resume-sheet",
+      "headline": "The preview on the right now shows the conversation the way the chat will after you resume it.",
+      "changed": "The preview is drawn by the chat's own bubbles, tool groups and reasoning sections, built by the same logic a resumed chat uses. It sits on the chat's background, with your wallpaper behind the bubbles.",
+      "notice": "Tool work shows as the usual tool group (\"Read a file and searched the code\") instead of \"3 tools — not shown\". Background notes no longer appear as your own bubbles. Wallpaper themes show the wallpaper under frosted bubbles.",
+      "risk": "Older messages now load in pages of 30 turns as you scroll up, like the chat, so a very tool-heavy conversation shows less on first open than before."
+    },
+    {
+      "id": "S-2",
+      "surface": "Side panel",
+      "path": "Click Preview on a conversation the assistant found for you",
+      "crop": "whole-drawer",
+      "headline": "The side-panel preview matches the chat next to it.",
+      "changed": "Same new preview as the Resume browser: the chat's own bubbles and tool groups, on the chat's background.",
+      "notice": "The panel and the chat beside it now read as the same kind of conversation. On wallpaper themes the wallpaper shows through here too.",
+      "risk": ""
+    },
+    {
+      "id": "S-3",
+      "surface": "Projects page",
+      "path": "Projects, Conversations tab, click a conversation",
+      "crop": "project-preview",
+      "headline": "The Projects page preview now shows the conversation instead of \"No messages to preview\", in the same chat style.",
+      "changed": "It uses the same preview as the other two. The 20-message limit and the \"Open full transcript\" button are gone; scrolling up loads older messages. The strip under the title now shows only the date.",
+      "measured": "Before: 0 messages shown in the test app. After: the newest 10 turns, with tool groups.",
+      "notice": "A long conversation no longer needs a button to see more, and never loads all at once. This preview now also works from a phone browser, which it never did before.",
+      "risk": "The \"Open full transcript\" button you may be used to is gone, and the \"last N messages · read-only preview\" line is now just the date (the pane itself still says read-only)."
+    },
+    {
+      "id": "S-4",
+      "surface": "Projects page",
+      "path": "Projects, Conversations tab",
+      "crop": "project-cards",
+      "headline": "Conversation cards on the Projects page now look like the Resume browser's cards.",
+      "changed": "Same card surface and border, bold title, tag chips, and the bottom line with model, size and date. The chat-bubble icon on the left is gone. The first line of the conversation stays under the title, since it tells two similar titles apart.",
+      "notice": "Priority and tags now show on these cards, and hovering a card brightens its border like in the Resume browser.",
+      "risk": "Tags, notes and the model only appear when this page's list has them. It is built from a thinner source than the Resume browser, so some cards show fewer details there than in /resume."
+    }
+  ]
+}
