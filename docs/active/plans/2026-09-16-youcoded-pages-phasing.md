@@ -95,6 +95,15 @@ chat sessions"; Manage pages wider; Back to chat "should match styling of max/mi
 (no outline); and "remove the edit option from the page header, and keep it only accessible in
 the manage pages view". Applied in round 6.
 
+Round 6 (`youcoded-pages-shell-r6.review.answers.json`): all three approved — the quiet Back
+to chat pill, the framed panel with a full-width Manage pages, and Edit only on the library
+cards. One note: align "Back to chat" and "Esc" and put a dot between them (applied).
+
+**Where the shell stands after round 6:** every screen of Phase 1 is approved (top-bar button
+and pins, library, empty library, page view with its own band and framed panel, phone
+layouts, two fuller sample pages). Still to build in Phase 1: the real backend behind the four
+workbench-only channels, the creator skill behind Make a page / Edit in chat, and draft/apply.
+
 ## Phase 2 — connections and refresh (open)
 
 **A person can:** make a page that shows information from a service and keeps it current
