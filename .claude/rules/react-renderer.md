@@ -21,7 +21,7 @@ verify:
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
   - path: scripts/ast-grep/rules/no-hardcoded-z-index-or-scrim.yml
   - test: youcoded/desktop/tests/drawer-card-glass.test.ts
-  - test: youcoded/desktop/tests/type-scale-authority.test.ts
+  - path: scripts/ast-grep/rules/no-arbitrary-text-size.yml
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
   - test: youcoded/desktop/tests/workbench-mock-contract.test.ts
