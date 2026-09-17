@@ -31,9 +31,8 @@ UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 ## Short route for small work
 **Invariant:** small changes, features or bug fixes with clear direction may skip every step
 but the UI review deck, his first sight of the work. Ask Destin before skipping. **Why:** "just
-show them to me. this is a simple feature" (2026-09-10). "Wait on the deck" holds the DECK,
-not the build: keep building, capture nothing, serve nothing until he asks (2026-09-17, said
-twice). **Guard:** none — candidate.
+show them to me. this is a simple feature" (2026-09-10). "Wait on the deck" = keep building,
+no captures, no deck until he asks. **Guard:** none — candidate.
 
 ## Questions before drawing
 **Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
@@ -42,10 +41,10 @@ answer is not a source; a row must resolve to an answered step. **Guard:** `test
 
 ## The UX tester runs before the first deck and after the build
 **Invariant:** a fresh subagent given ONLY `scripts/ui-review/ux-tester.md`'s briefing and
-`scripts/ui-review/tester-kit.md` — no CLAUDE.md, rules, spec or plan — drives the mockups before
-the first review deck, and the built branch after the code review; each finding line is triaged
+`scripts/ui-review/tester-kit.md` — nothing else from the workspace — drives the mockups before
+the first review deck and the built branch after the code review; each finding is triaged
 `accepted` / `rejected` / `already handled`.
-**Why:** a tester who read the design doc is not a beta tester (decided 2026-09-04).
+**Why:** a tester who read the design doc is not a beta tester.
 **Guard:** none — candidate.
 
 ## Sources are answered steps or accepted findings
@@ -59,7 +58,7 @@ marked `accepted` in a review file. A FRESH agent writes it from
 ## Answers files are committed
 **Invariant:** `docs/**/*.answers.json` (and stamped rotations) are tracked; only `scratch/` is
 ignored.
-**Why:** the only record of decisions; ignored, they lived on one disk.
+**Why:** the only record of decisions.
 **Guard:** none — candidate.
 
 ## Reopen only through a deck
@@ -72,7 +71,6 @@ wait; the answer amends the row's `source`.
 **Invariant:** `review-cards.py contract-check` is the only reader: every source resolves and every
 `mechanical` guard exists on disk or on the contract's `branch` (exit 1 otherwise); the contract
 was signed (`.contract.answers.json`, step `yes`); the acceptance deck was submitted.
-`close-out.sh` relays its lines.
 **Why:** a branch's guard is absent from the main checkout until merge; unsigned is not done.
 **Guard:** `test_contract.py` (ContractCheckTests); `close-out-contract.test.sh`.
 
