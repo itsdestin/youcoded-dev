@@ -1,3 +1,7 @@
+# GENERATED — edit scripts/ast-grep/generators/no-unstepped-infinite-animation.py,
+# then run it (`python3 scripts/ast-grep/generators/no-unstepped-infinite-animation.py`).
+# check.sh runs this generator with --check and fails loudly if this file has
+# drifted from what it would produce (review round 2, 2026-09-16).
 id: no-unstepped-infinite-animation
 language: tsx
 severity: error

@@ -60,7 +60,11 @@ def q(rx):
     return '"' + rx.replace('\\', '\\\\').replace('"', '\\"') + '"'
 
 
-YAML = f'''id: no-unstepped-infinite-animation
+YAML = f'''# GENERATED — edit scripts/ast-grep/generators/no-unstepped-infinite-animation.py,
+# then run it (`python3 scripts/ast-grep/generators/no-unstepped-infinite-animation.py`).
+# check.sh runs this generator with --check and fails loudly if this file has
+# drifted from what it would produce (review round 2, 2026-09-16).
+id: no-unstepped-infinite-animation
 language: tsx
 severity: error
 message: >-
@@ -134,35 +138,57 @@ rule:
           regex: {q(BRACKET)}
 '''
 
-open(f'{ROOT}/rules/no-unstepped-infinite-animation.yml', 'w').write(YAML)
+RULE_PATH = f'{ROOT}/rules/no-unstepped-infinite-animation.yml'
 
 # Self-check the generated regexes with Python's engine (same syntax subset).
-b = re.compile(BRACKET)
-cases = {
-    'animate-[version-glow_2s_ease_infinite]': True,
-    'animate-[version-glow_2s_steps(16)_infinite]': False,
-    'animate-[rig-breathe_2s_ease_infinite]': False,
-    'animate-[rig-breathe_2s_steps(4)_infinite] animate-[glow_1s_infinite]': True,
-    'animate-[rig-breathex_2s_infinite]': True,
-    'animate-[rig_2s_infinite]': True,
-    'animate-[glow_2s_ssteps(3)_infinite]': False,
-    'animate-[glow_2s_stepss_infinite]': True,
-    'animate-[glow_2s_steps_(3)_infinite]': True,
-    'animate-[glow_2s_ease]': False,
-    'animate-[${x}_infinite]': True,
-    'animate-[model-load-sweep_1s_infinite]': False,
-    'animate-[glow_1s_infinite_steps(2)]': False,
-}
-bad = 0
-for t, want in cases.items():
-    got = bool(b.search(t))
-    if got != want:
-        bad += 1
-        print('BRACKET MISMATCH', t, got, want)
-i = re.compile(INLINE)
-for t, want in {"animation: 'glow 2s ease infinite'": True, "animation: 'glow 2s steps(8) infinite'": False,
-                "animation: 'a 1s both'": False, "animation:'x infinite steps(2)'": False}.items():
-    if bool(i.search(t)) != want:
-        bad += 1
-        print('INLINE MISMATCH', t)
-print('selfcheck bad', bad)
+def selfcheck() -> int:
+    b = re.compile(BRACKET)
+    cases = {
+        'animate-[version-glow_2s_ease_infinite]': True,
+        'animate-[version-glow_2s_steps(16)_infinite]': False,
+        'animate-[rig-breathe_2s_ease_infinite]': False,
+        'animate-[rig-breathe_2s_steps(4)_infinite] animate-[glow_1s_infinite]': True,
+        'animate-[rig-breathex_2s_infinite]': True,
+        'animate-[rig_2s_infinite]': True,
+        'animate-[glow_2s_ssteps(3)_infinite]': False,
+        'animate-[glow_2s_stepss_infinite]': True,
+        'animate-[glow_2s_steps_(3)_infinite]': True,
+        'animate-[glow_2s_ease]': False,
+        'animate-[${x}_infinite]': True,
+        'animate-[model-load-sweep_1s_infinite]': False,
+        'animate-[glow_1s_infinite_steps(2)]': False,
+    }
+    bad = 0
+    for t, want in cases.items():
+        got = bool(b.search(t))
+        if got != want:
+            bad += 1
+            print('BRACKET MISMATCH', t, got, want)
+    i = re.compile(INLINE)
+    for t, want in {"animation: 'glow 2s ease infinite'": True, "animation: 'glow 2s steps(8) infinite'": False,
+                    "animation: 'a 1s both'": False, "animation:'x infinite steps(2)'": False}.items():
+        if bool(i.search(t)) != want:
+            bad += 1
+            print('INLINE MISMATCH', t)
+    return bad
+
+
+if __name__ == '__main__':
+    import sys
+    bad = selfcheck()
+    if bad:
+        print('selfcheck bad', bad, file=sys.stderr)
+        sys.exit(1)
+    if '--check' in sys.argv:
+        # WHY (review round 2, 2026-09-16): a hand-edit to the generated YAML
+        # (or a generator edit nobody re-ran) drifts silently — check.sh wires
+        # this in so drift fails the same way a rule with no fixture does.
+        current = open(RULE_PATH).read() if os.path.exists(RULE_PATH) else None
+        if current != YAML:
+            print(f'DRIFT: {RULE_PATH} does not match this generator\'s output.', file=sys.stderr)
+            print('  Run: python3 scripts/ast-grep/generators/no-unstepped-infinite-animation.py', file=sys.stderr)
+            sys.exit(1)
+        print('OK — no-unstepped-infinite-animation.yml matches the generator')
+    else:
+        open(RULE_PATH, 'w').write(YAML)
+        print('selfcheck bad', bad)

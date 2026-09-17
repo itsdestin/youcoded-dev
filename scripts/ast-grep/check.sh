@@ -200,6 +200,26 @@ count_findings() {
 
 fail=0
 
+# WHY a generator drift check (review round 2, 2026-09-16): a rule file built by
+# a generator (scripts/ast-grep/generators/*.py — currently
+# no-unstepped-infinite-animation, whose regexes are generated because ast-grep's
+# Rust regex has no lookaround) can be hand-edited, or its generator edited
+# without re-running it, and the two silently disagree from then on. Each
+# generator supports `--check`: compares its own output to the committed YAML,
+# prints and fails instead of writing. python3 is a soft dependency — skipped
+# (not failed) when absent, same as the jq fallback above.
+echo "== generated rules (drift check) =="
+if command -v python3 >/dev/null 2>&1; then
+    for gen in "$HERE"/generators/*.py; do
+        [[ -e "$gen" ]] || continue
+        if ! python3 "$gen" --check; then
+            fail=1
+        fi
+    done
+else
+    echo "  SKIP — python3 not found; generated rules were not checked for drift"
+fi
+
 # WHY a per-rule check and not just the total (2026-09-10): the count alone
 # cannot tell "every rule fired" from "the right NUMBER of findings appeared".
 # A rule added with no fixture — or one whose `files:` globs exclude the fixture
