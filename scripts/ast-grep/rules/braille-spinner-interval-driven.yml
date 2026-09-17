@@ -1,0 +1,37 @@
+id: braille-spinner-interval-driven
+language: tsx
+severity: error
+message: >-
+  BrailleSpinner ticks from setInterval(tick, …) and never uses
+  requestAnimationFrame — a rAF chain wakes at the display's refresh rate
+  (180/s at 180Hz) for a 12.5fps spinner.
+note: |
+  Invariant source: tests/animation-css-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "BrailleSpinner is interval-driven, not a rAF chain"). The retired read deleted block comments only, so a line comment naming requestAnimationFrame also fails.
+files:
+  - "**/src/renderer/components/BrailleSpinner.tsx"
+  - "**/fixtures/braille-spinner-interval-driven.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  any:
+    - matches: code-leaf
+      regex: "requestAnimationFrame"
+      not: { has: { regex: "requestAnimationFrame" } }
+    - kind: program
+      not: { has: { stopBy: end, kind: call_expression, regex: "^setInterval\\(tick" } }

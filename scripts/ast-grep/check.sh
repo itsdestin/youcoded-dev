@@ -126,7 +126,12 @@ fi
 #   fixture gains a destructured name, +1).
 # 2026-09-16 (review of t6a, I2): +2 — no-unstepped-infinite-animation's fixture gains a
 #   string holding an exempt bracket beside an unstepped one, and a bracket split by ${}.
-EXPECTED_VIOLATIONS=82
+# 2026-09-16 (review of t6a, I5 animation-css-budget.test.ts): +10 for
+#   braille-spinner-interval-driven (2), theme-effects-draws-from-interval (2),
+#   mascot-rig-raf-only-for-drag (2), mascot-rig-pauses-when-hidden (1),
+#   setting-row-base-is-stepped-hover (1), session-strip-menu-rows-stepped-hover (1),
+#   session-strip-no-transition-all (1).
+EXPECTED_VIOLATIONS=92
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

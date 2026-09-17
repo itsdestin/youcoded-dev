@@ -1,0 +1,21 @@
+id: setting-row-base-is-stepped-hover
+language: tsx
+severity: error
+message: >-
+  SettingRow's base class string carries `stepped-hover` — settings lists
+  are dense hover surfaces swept by one pointer motion, and each smooth fade
+  presents at the full refresh rate.
+note: |
+  Invariant source: tests/animation-css-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "defines .stepped-hover and applies it to the dense hover surfaces"). The retired regex `ROW_BASE\s*=\s*'[^']*stepped-hover` matched SETTING_ROW_BASE too.
+files:
+  - "**/src/renderer/components/ui/SettingRow.tsx"
+  - "**/fixtures/setting-row-base-is-stepped-hover.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: variable_declarator
+      all:
+        - has: { field: name, regex: "ROW_BASE$" }
+        - has: { field: value, kind: string, regex: "^'[^']*stepped-hover" }

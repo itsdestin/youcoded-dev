@@ -1,0 +1,17 @@
+id: session-strip-menu-rows-stepped-hover
+language: tsx
+severity: error
+message: >-
+  The All Sessions menu rows fade on stepped timing — `transition: 'opacity
+  150ms steps(4), background 150ms steps(4)'` — because one pointer sweep
+  hovers many rows and each smooth fade presents at the full refresh rate.
+note: |
+  Invariant source: tests/animation-css-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "defines .stepped-hover and applies it to the dense hover surfaces").
+  The stylesheet half stays a text read; SettingRow's half is
+  setting-row-base-is-stepped-hover.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-menu-rows-stepped-hover.tsx"
+rule:
+  kind: program
+  not: { has: { stopBy: end, kind: pair, regex: "^transition: 'opacity 150ms steps\\(4\\), background 150ms steps\\(4\\)'$" } }
