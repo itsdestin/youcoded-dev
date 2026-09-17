@@ -16,10 +16,7 @@ note: |
      stripping) on the innermost node holding it — a call, including
      `x.setPlaying(false)`, a `new` expression, a comment, string, template,
      regex or JSX text — anywhere inside the `const endRun …` declaration,
-     nested callbacks included; reported once. A whole-declaration backstop
-     (1b) fires when the declaration's text holds it but none of those kinds
-     does (only malformed code gets there, e.g. `let x: setPlaying(false)`),
-     so every node kind the retired raw-text read saw is covered;
+     nested callbacks included; reported once;
   2. whole file (`kind: program`): no JSX attribute named onExit on any
      element (the old `toContain('onExit=')`).
   DIFFERENCES, deliberate: the old check read a 900-character window starting
@@ -62,13 +59,6 @@ rule:
       inside:
         stopBy: end
         matches: end-run-declaration
-    # 1b. backstop: the text is in the declaration but no listed kind holds it
-    - matches: end-run-declaration
-      regex: "setPlaying\\(false\\)"
-      not:
-        has:
-          stopBy: end
-          matches: holds-stop-play
     # 2. no onExit prop anywhere in the file
     - kind: program
       not:

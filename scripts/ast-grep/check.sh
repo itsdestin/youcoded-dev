@@ -254,6 +254,9 @@ fi
 #   only the whole-declaration backstop sees it (1); a shell with no onExit prop (1)) and
 #   solo-game-uses-run-over-card (a game that never renders the card, and one whose card
 #   has no retryKeyHint (2)).
+# 2026-09-16 (review of u6, fix 2): -1 — arcade-end-run-keeps-playing's
+#   whole-declaration backstop branch is gone, and its malformed-TS fixture with
+#   it: only unparseable code could reach it, so it guarded nothing real.
 # 2026-09-16 (u7, runtime-default.test.tsx): +16 — runtime-default-key-single-owner (a
 #   string, a template piece and a regex naming the key in a .ts file (3)), its -tsx twin
 #   (an attribute string, a JSX attribute name and JSX text (3)), its -present branch (an
@@ -273,7 +276,7 @@ fi
 # 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
 #   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
 #   with no previewMeta.saveNote editor (1)).
-EXPECTED_VIOLATIONS=291
+EXPECTED_VIOLATIONS=290
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
