@@ -16,9 +16,12 @@ note: |
   Branch 1 (whole file): no node whose text contains `isWorkbenchDocument` —
   the same raw-text presence, comments included, so it is exactly as loose as
   the old check (a comment-only mention satisfied it too).
-  Branch 2: any leaf token of the comment-stripped text — every identifier
-  kind, string/template fragment and regex body — containing
-  `isWorkbenchMode`. Comments of both kinds are excluded, as the old strip did.
+  Branch 2: any leaf token of the comment-stripped text containing
+  `isWorkbenchMode` — the leaf kinds listed in `code-leaf` below (the
+  identifier kinds found by probing, including a `#private` class member,
+  string/template fragments and regex bodies). A leaf kind missing from that
+  list is silent, so add one when a probe finds it. Comments of both kinds are
+  excluded, as the old strip did.
   One difference, deliberately kept: the old strip regex also deleted a `//…`
   run INSIDE a string literal (so 'http://x/isWorkbenchMode' passed); this rule
   sees that string fragment and fires. That spelling does not exist and would
@@ -36,6 +39,9 @@ utils:
       - kind: string_fragment
       - kind: identifier
       - kind: property_identifier
+      # 2026-09-16 (review of u11): `#isWorkbenchMode` / `this.#isWorkbenchMode`
+      # is its own leaf kind and was silent.
+      - kind: private_property_identifier
       - kind: shorthand_property_identifier
       - kind: shorthand_property_identifier_pattern
       - kind: type_identifier

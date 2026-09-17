@@ -354,7 +354,9 @@ fi
 #   exact count pins its silence).
 # 2026-09-16 (review of u11, fix 1): +2 — voice-assets-runs-no-other-program lists named
 #   function and generator EXPRESSIONS as text nodes; its fixture gains one of each (2).
-EXPECTED_VIOLATIONS=398
+# 2026-09-16 (review of u11, fix 2): +2 — voice-mic-gate-uses-workbench-document counts a
+#   `#private` class member as a code leaf; its dev-only fixture gains one declared and read (2).
+EXPECTED_VIOLATIONS=400
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
