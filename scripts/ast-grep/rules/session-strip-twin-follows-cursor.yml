@@ -1,0 +1,53 @@
+id: session-strip-twin-follows-cursor
+language: tsx
+severity: error
+message: >-
+  The pill in hand follows the cursor 1:1 (clampFloatLeft), and the slot is
+  decided against synthetic settled geometry (layoutRects, nextSlotId,
+  neighbourOffsets) — never by the drawn position (draggedSlotOffset /
+  nearestPillId / clampDragDx). The twin's transition list animates box-
+  shadow only, never its position (left/transform) — the review cut hopped
+  26px per slot and trailed like a rubber band.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "keeps the pill in hand under the cursor, with no transition on its position").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-twin-follows-cursor.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  any:
+    - matches: code-leaf
+      regex: "draggedSlotOffset|nearestPillId|clampDragDx"
+      not: { has: { regex: "draggedSlotOffset|nearestPillId|clampDragDx" } }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "clampFloatLeft($$$)" } }
+        - not: { has: { stopBy: end, pattern: "layoutRects($$$)" } }
+        - not: { has: { stopBy: end, pattern: "nextSlotId($$$)" } }
+        - not: { has: { stopBy: end, pattern: "neighbourOffsets($$$)" } }
+        - not:
+            has:
+              stopBy: end
+              kind: pair
+              regex: "^transition: 'box-shadow"
+              inside: { stopBy: end, pattern: "isBeingDragged && dragLeft !== null && $TWIN" }
+    - kind: pair
+      regex: "^transition: '[^']*(left|transform)"
+      inside: { stopBy: end, pattern: "isBeingDragged && dragLeft !== null && $TWIN" }

@@ -131,7 +131,30 @@ fi
 #   mascot-rig-raf-only-for-drag (2), mascot-rig-pauses-when-hidden (1),
 #   setting-row-base-is-stepped-hover (1), session-strip-menu-rows-stepped-hover (1),
 #   session-strip-no-transition-all (1).
-EXPECTED_VIOLATIONS=92
+# 2026-09-16 (review of t6a, I5 animation-frame-budget.test.ts): +43 for 22 rules —
+#   session-strip-label-window-from-stylesheet (2)
+#   session-strip-dot-flows-never-touches (2)
+#   session-strip-no-select-on-scaffold (1)
+#   index-no-arrival-scaffold (2)
+#   chatview-arrival-only-on-incoming (1)
+#   session-strip-twin-is-the-real-pill (5)
+#   session-strip-twin-follows-cursor (2)
+#   session-strip-peek-survives-press-and-drag (2)
+#   session-strip-drag-state-keyed-by-id (2)
+#   session-strip-held-pill-keeps-name (2)
+#   session-strip-packs-real-room (3)
+#   session-strip-tear-off-vertical-only (2)
+#   session-strip-pill-is-dot-and-name (2)
+#   session-strip-name-laid-out-once (2)
+#   session-strip-no-hand-written-curve (1)
+#   session-strip-drag-visuals-are-state (2)
+#   session-strip-drop-never-glides-dot (2)
+#   session-strip-peek-waits-for-dwell (1)
+#   session-strip-hover-handlers-unconditional (1)
+#   session-strip-label-via-pill-label-style (3)
+#   pill-label-reveals-with-motion-tokens (1)
+#   voice-button-level-ring-stepped (2)
+EXPECTED_VIOLATIONS=135
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

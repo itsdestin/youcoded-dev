@@ -1,0 +1,37 @@
+id: index-no-arrival-scaffold
+language: tsx
+severity: error
+message: >-
+  index.tsx must not carry the switch-arrival review scaffold (the
+  `?arrival=` param) — Spring was picked on 2026-09-02 and is the plain
+  value in globals.css.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "has no review scaffolds left — every round was picked on 2026-09-02").
+  The retired check was `not.toMatch(/arrival/)` on index.tsx with block
+  comments deleted, so any token spelling "arrival" (line comments included)
+  fails.
+files:
+  - "**/src/renderer/index.tsx"
+  - "**/fixtures/index-no-arrival-scaffold.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  matches: code-leaf
+  regex: "arrival"
+  not: { has: { regex: "arrival" } }

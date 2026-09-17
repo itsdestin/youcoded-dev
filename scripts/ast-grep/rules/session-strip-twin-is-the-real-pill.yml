@@ -1,0 +1,61 @@
+id: session-strip-twin-is-the-real-pill
+language: tsx
+severity: error
+message: >-
+  The pill in hand is a TWIN of the real pill — the same {pillBody} rendered
+  in-flow (kept invisible with visibility: hidden) and again in the floating
+  twin, which takes no pointer events and carries no data-session-*
+  attribute (everything walking the row by [data-session-id] must find one
+  node per session). No ghost target, drag label/colour state or dimmed
+  `opacity-30 scale-95` copy.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "draws the pill in hand as a TWIN of the real pill, never a ghost or an insertion line").
+  The twin is the `isBeingDragged && dragLeft !== null && (…)` expression; the
+  retired slice ran from its start to its first {pillBody}, this rule covers the
+  whole expression (only closing tags follow that point).
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-twin-is-the-real-pill.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  any:
+    - matches: code-leaf
+      regex: "ghostTarget|dragLabel|dragColor|opacity-30 scale-95"
+      not: { has: { regex: "ghostTarget|dragLabel|dragColor|opacity-30 scale-95" } }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, kind: pair, regex: "^visibility: isBeingDragged \\? 'hidden' :" } }
+        - not: { has: { stopBy: end, kind: pair, regex: "^pointerEvents: 'none'$" } }
+        # {pillBody} twice: once inside the twin, once outside it.
+        - not:
+            has:
+              stopBy: end
+              kind: jsx_expression
+              regex: "^\\{pillBody\\}$"
+              inside: { stopBy: end, pattern: "isBeingDragged && dragLeft !== null && $TWIN" }
+        - not:
+            has:
+              stopBy: end
+              kind: jsx_expression
+              regex: "^\\{pillBody\\}$"
+              not: { inside: { stopBy: end, pattern: "isBeingDragged && dragLeft !== null && $TWIN" } }
+    - kind: jsx_attribute
+      regex: "^data-session"
+      inside: { stopBy: end, pattern: "isBeingDragged && dragLeft !== null && $TWIN" }

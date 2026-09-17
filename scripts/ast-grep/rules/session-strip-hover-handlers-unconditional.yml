@@ -1,0 +1,22 @@
+id: session-strip-hover-handlers-unconditional
+language: tsx
+severity: error
+message: >-
+  Pill hover handlers are attached unconditionally and gate inside the
+  handler — `onMouseEnter={pack.expanded.has(s.id) ? undefined : …}` leaves
+  a pill the packer collapses under a still cursor a dot until the user
+  moves off and back.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "attaches pill hover handlers unconditionally").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-hover-handlers-unconditional.tsx"
+rule:
+  kind: jsx_attribute
+  regex: "^onMouse(Enter|Leave)="
+  has:
+    stopBy: end
+    kind: ternary_expression
+    all:
+      - has: { field: condition, pattern: "pack.expanded.has(s.id)" }
+      - has: { field: consequence, regex: "^undefined$" }

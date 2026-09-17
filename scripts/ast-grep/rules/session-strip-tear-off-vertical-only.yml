@@ -1,0 +1,26 @@
+id: session-strip-tear-off-vertical-only
+language: tsx
+severity: error
+message: >-
+  A pill tears off only when dragged above or below the window (`clientY < 0
+  || clientY > window.innerHeight`, in both the pointer and the native-drag
+  path) — sideways overshoot stays in the row, as in Chrome. Destin, R6: "i
+  still cant drag a session into the leftmost position".
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "tears a pill off only above or below the window — sideways stays in the row, as in Chrome").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-tear-off-vertical-only.tsx"
+rule:
+  any:
+    - any:
+        - kind: binary_expression
+        - all:
+            - kind: comment
+            - not: { regex: "^/\\*" }
+      regex: "clientX < 0|clientX > window\\.innerWidth"
+      not: { has: { regex: "clientX < 0|clientX > window\\.innerWidth" } }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "const outsideOwnWindow = e.clientY < 0 || e.clientY > window.innerHeight" } }
+        - not: { has: { stopBy: end, pattern: "const outsideOwnWindow = clientY < 0 || clientY > window.innerHeight" } }

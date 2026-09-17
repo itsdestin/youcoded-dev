@@ -1,0 +1,59 @@
+id: session-strip-packs-real-room
+language: tsx
+severity: error
+message: >-
+  The row is packed into the room it really has: stripBudget(bar:
+  HTMLElement) subtracts the strip's own padding (parseFloat(cs.paddingLeft)
+  … parseFloat(cs.paddingRight)) and is the only place reading
+  `parentElement?.clientWidth ?? bar.clientWidth`; BOTH packSessions calls
+  (the press-time freeze in handlePointerDown and the live repack) reserve
+  `overflowChipWidth: OVERFLOW_CHIP_PX`; the held pill's width is capped
+  with `Math.max(COLLAPSED_PILL_PX, target.pillBudget)`. A row packed 37px
+  too wide snapped every dot back on release (2026-09-03).
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "packs the row into the room it really has, so a drag is judged against the widths that get drawn").
+  The retired case banned the width read as a statement ending
+  (`…clientWidth;`), with the comment "only inside stripBudget"; this rule bans
+  the expression anywhere outside function stripBudget, the comment's intent.
+  Its exact count of two `overflowChipWidth: OVERFLOW_CHIP_PX` became: every
+  packSessions call carries it, and one call inside handlePointerDown plus one
+  outside it both exist.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-packs-real-room.tsx"
+rule:
+  any:
+    - pattern: "$A.parentElement?.clientWidth ?? $B.clientWidth"
+      not: { inside: { stopBy: end, kind: function_declaration, has: { field: name, regex: "^stripBudget$" } } }
+    - kind: call_expression
+      has: { field: function, regex: "^packSessions$" }
+      not: { has: { field: arguments, has: { kind: object, has: { kind: pair, regex: "^overflowChipWidth: OVERFLOW_CHIP_PX$" } } } }
+    - kind: program
+      any:
+        - not:
+            has:
+              stopBy: end
+              kind: function_declaration
+              all:
+                - has: { field: name, regex: "^stripBudget$" }
+                - has: { field: parameters, regex: "^\\(bar: HTMLElement\\)$" }
+        - not:
+            has:
+              stopBy: end
+              kind: binary_expression
+              all:
+                - has: { stopBy: end, pattern: "parseFloat(cs.paddingLeft)" }
+                - has: { stopBy: end, pattern: "parseFloat(cs.paddingRight)" }
+        - not:
+            has:
+              stopBy: end
+              kind: call_expression
+              has: { field: function, regex: "^packSessions$" }
+              inside: { stopBy: end, kind: variable_declarator, has: { field: name, regex: "^handlePointerDown$" } }
+        - not:
+            has:
+              stopBy: end
+              kind: call_expression
+              has: { field: function, regex: "^packSessions$" }
+              not: { inside: { stopBy: end, kind: variable_declarator, has: { field: name, regex: "^handlePointerDown$" } } }
+        - not: { has: { stopBy: end, pattern: "Math.max(COLLAPSED_PILL_PX, target.pillBudget)" } }
