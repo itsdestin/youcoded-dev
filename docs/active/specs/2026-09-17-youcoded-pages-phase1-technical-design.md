@@ -21,10 +21,10 @@ A page is a folder:
   page.html        the working version — a complete document
   page.json        { "name", "description", "icon" }
   data.json        { "savedAt", "data" } — the page's own saved data (optional, written through the host)
+```
 
 Stamps come from the files, never from the skill: `updatedAt` is `page.json`'s mtime, `htmlStamp`
 is `page.html`'s mtime (F11). Slugs are checked case-insensitively (`findCaseCollisions`).
-```
 
 Two homes:
 
