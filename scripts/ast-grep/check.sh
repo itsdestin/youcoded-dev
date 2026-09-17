@@ -344,7 +344,10 @@ fi
 #   registry.error read only in a guard position; its fixture gains an unrelated earlier
 #   title={registry.error}, the error check dropped from the condition, the condition
 #   replaced with `false`, and a sibling-only guard beside an unconditional empty state (4).
-EXPECTED_VIOLATIONS=393
+# 2026-09-16 (review of u10, fix 3): +2 — main-web-security-never-disabled scans every
+#   non-test .ts under src/main/ (was main.ts only) and fires on a quoted or computed key;
+#   its fixture gains `'webSecurity': false` and `["webSecurity"]: false` (2).
+EXPECTED_VIOLATIONS=395
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
