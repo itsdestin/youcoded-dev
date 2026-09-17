@@ -254,7 +254,15 @@ fi
 #   only the whole-declaration backstop sees it (1); a shell with no onExit prop (1)) and
 #   solo-game-uses-run-over-card (a game that never renders the card, and one whose card
 #   has no retryKeyHint (2)).
-EXPECTED_VIOLATIONS=259
+# 2026-09-16 (u7, runtime-default.test.tsx): +16 — runtime-default-key-single-owner (a
+#   string, a template piece and a regex naming the key in a .ts file (3)), its -tsx twin
+#   (an attribute string, a JSX attribute name and JSX text (3)), its -present branch (an
+#   owner naming the key only in a comment (1)), and new-session-forms-use-default-runtime
+#   (a literal seed; a literal reset after a close, which is also a second literal; no
+#   lazy seed; a second literal outside any close's block; no close; no reset after the
+#   close; the welcome form's literal reset in a nested callback; the welcome form with no
+#   reset after a close statement; its second literal (9)).
+EXPECTED_VIOLATIONS=275
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

@@ -1,0 +1,29 @@
+id: runtime-default-key-single-owner-tsx
+language: tsx
+severity: error
+message: >-
+  The install-wide runtime default ('youcoded-runtime-default') has ONE
+  reader/writer pair: defaultRuntime() and persistRuntimeDefault() in
+  components/RuntimeBinding.tsx. Call those; never touch the key directly.
+note: |
+  Invariant source: tests/runtime-default.test.tsx (Plan B, 2026-09-16) —
+  "(e) exactly one file under src mentions youcoded-runtime-default".
+  `.tsx` twin of runtime-default-key-single-owner (see its note): every .tsx
+  file under src/ except RuntimeBinding.tsx and *.test.tsx. In .tsx the
+  hyphenated key can also be a JSX element name (identifier), a JSX
+  attribute name (property_identifier) or JSX body text (jsx_text), so those
+  leaves count too. Comments do not (the retired case blanked them).
+files:
+  - "**/src/**/*.tsx"
+  - "**/fixtures/runtime-default-key-single-owner-tsx.tsx"
+ignores:
+  - "**/src/**/*.test.tsx"
+  - "**/src/renderer/components/RuntimeBinding.tsx"
+rule:
+  regex: "youcoded-runtime-default"
+  any:
+    - kind: string_fragment
+    - kind: regex_pattern
+    - kind: jsx_text
+    - kind: identifier
+    - kind: property_identifier
