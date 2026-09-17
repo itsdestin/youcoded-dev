@@ -1,4 +1,4 @@
-// Violation fixture for shortcuts-dialog-keeps-scroll-body-session-name.
+// Violation fixture for session-name-line-clamp.
 function SessionName({ name }: { name: string }) {
   return (
     <span className="block leading-snug text-sm-tight" style={{ WebkitLineClamp: 3 }}>
