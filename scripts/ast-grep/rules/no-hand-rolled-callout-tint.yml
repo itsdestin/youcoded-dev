@@ -32,13 +32,18 @@ note: |
   whole-file `ignores:` cannot express "at most N here". That exact-count
   case ("every exemption still exists and still applies") is kept as a text
   read in the trimmed test file per global.md's "at most N matches" guidance.
-  Matched on the className string OR a template literal containing one
-  (Tailwind class list may be built with `cn()`/a template), requiring BOTH
-  the tint token and the literal word `border` somewhere in the same string
-  — the retired test's own 150-char either-direction window was, per its
-  comment, an approximation of "within one class string's worth of
-  characters", which a same-string match reproduces directly rather than
-  approximates.
+  Matched on (a) one string or template literal holding BOTH the tint token
+  and the word `border`, and (b) FIX (review of t6a, 2026-09-16) one
+  `className` attribute — or one mergeClasses(…) call — whose pieces hold
+  them between them (`className={`border ${x}` + (t ? ' bg-accent/10' : '')}`),
+  reported once (a piece that already matches on its own reports instead).
+  NOT the same as the retired check: that counted a tint with the word
+  `border` anywhere within 150 characters either side, which also caught a
+  tint and a border in NEIGHBOURING attributes or elements. The window was
+  written as a stand-in for "one class string"; this rule follows that intent
+  (one attribute), so a tint in one element's classes next to a border in
+  another's no longer counts. The kept exact-count case in the test still
+  uses the 150-character window for the exempt files.
 files:
   - "**/src/renderer/App.tsx"
   - "**/src/renderer/components/*.tsx"
@@ -75,13 +80,30 @@ ignores:
   - "**/components/specialists/**"
   - "**/components/tags/**"
   - "**/components/tool-views/**"
+utils:
+  tint-and-border:
+    all:
+      - regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
+      - regex: "\\bborder\\b"
+  class-piece:
+    any:
+      - kind: string_fragment
+      - kind: template_string
 rule:
   any:
-    - kind: string_fragment
+    - matches: class-piece
       all:
-        - regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
-        - regex: "\\bborder\\b"
-    - kind: template_string
+        - matches: tint-and-border
+        # a template holding a fragment that already matches reports via the fragment
+        - not: { has: { stopBy: end, all: [{ matches: class-piece }, { matches: tint-and-border }] } }
+    # Split across pieces of one className attribute or one mergeClasses(…) call.
+    - any:
+        - kind: jsx_attribute
+          regex: "^className="
+        - kind: call_expression
+          has: { field: function, regex: "^mergeClasses$" }
+          not: { inside: { stopBy: end, kind: jsx_attribute, regex: "^className=" } }
       all:
-        - regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
-        - regex: "\\bborder\\b"
+        - matches: tint-and-border
+        - not: { has: { stopBy: end, all: [{ matches: class-piece }, { matches: tint-and-border }] } }
+        - not: { has: { stopBy: end, kind: call_expression, has: { field: function, regex: "^mergeClasses$" }, matches: tint-and-border } }

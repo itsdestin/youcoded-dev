@@ -167,7 +167,9 @@ fi
 # 2026-09-16 (review of t6a, I5 buddy-consent-gate.test.ts): +4 for
 #   buddy-show-refuses-before-creating, buddy-drag-reads-cached-helper-status,
 #   buddy-work-area-only-where-needed, buddy-work-area-reresolved-on-display-change.
-EXPECTED_VIOLATIONS=159
+# 2026-09-16 (review of t6a, I6): +2 — no-hand-rolled-callout-tint's fixture gains a
+#   tint and border split across one className attribute, and across one mergeClasses call.
+EXPECTED_VIOLATIONS=161
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
