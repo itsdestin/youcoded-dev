@@ -337,7 +337,10 @@ fi
 # 2026-09-16 (u11, voice-assets.test.ts): +4 for voice-assets-runs-no-other-program (the
 #   child_process import (1); an execFileSync call and a spawnSync( comment (2); an unpacker
 #   named in a string (1)).
-EXPECTED_VIOLATIONS=386
+# 2026-09-16 (u11, voice-rehear.test.ts): +3 for voice-worker-uses-shared-sentence-split (a
+#   worker importing something else from the shared file (1); a local `=== '!'` comparison
+#   and the same text in a comment (2)).
+EXPECTED_VIOLATIONS=389
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
