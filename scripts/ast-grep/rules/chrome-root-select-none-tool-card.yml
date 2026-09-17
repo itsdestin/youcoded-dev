@@ -1,0 +1,45 @@
+id: chrome-root-select-none-tool-card
+language: tsx
+severity: error
+message: >-
+  ToolCard.tsx must keep select-none in BOTH header variants:
+  `const headerClass = isCompactSkill ? '… select-none …' : '… select-none …'`.
+  A tool card's title row is chrome: Ctrl+A must not paint it (Destin,
+  2026-09-10).
+note: |
+  Invariant source: tests/unselectable-chrome.test.ts (Plan B, 2026-09-16),
+  the "tool card title (both header variants)" case of "chrome areas carry
+  select-none on their own root". The retired case blanked comments and
+  required the regex
+  `const headerClass = isCompactSkill\s*\?\s*'[^']*\bselect-none\b[^']*'\s*:\s*'[^']*\bselect-none\b[^']*'`.
+  Fires on the file when no `const headerClass = isCompactSkill ? A : B`
+  declaration has single-quoted strings holding `select-none` in both A
+  and B.
+  DIFFERENCES (minimal): any whitespace around `=` is accepted (the regex
+  needed exactly one space); a string or comment quoting the code no longer
+  satisfies it.
+files:
+  - "**/src/renderer/components/ToolCard.tsx"
+  - "**/fixtures/chrome-root-select-none-tool-card.tsx"
+utils:
+  select-none-string:
+    kind: string
+    regex: "^'[^']*\\bselect-none\\b[^']*'$"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: lexical_declaration
+      regex: "^const\\b"
+      has:
+        kind: variable_declarator
+        all:
+          - has: { field: name, regex: "^headerClass$" }
+          - has:
+              field: value
+              kind: ternary_expression
+              all:
+                - has: { field: condition, regex: "^isCompactSkill$" }
+                - has: { field: consequence, matches: select-none-string }
+                - has: { field: alternative, matches: select-none-string }

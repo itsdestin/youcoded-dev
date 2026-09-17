@@ -327,7 +327,11 @@ fi
 #   read (4); a file with no "No tags yet" empty state (1)).
 # 2026-09-16 (u10, theme-protocol-cors.test.ts): +4 for main-web-security-never-disabled
 #   (an object property, a type member, a string piece, a regex body).
-EXPECTED_VIOLATIONS=366
+# 2026-09-16 (u10, unselectable-chrome.test.ts): +12 — one file each for
+#   chrome-root-select-none-{status-bar,header-bar,input-bar,quick-chips,thinking-line,
+#   empty-chat-hint,tool-card} (7) and for each of chrome-root-select-none-app's two texts (2);
+#   file-name-button-select-text (a button not opted in, a third button, a file with one (3)).
+EXPECTED_VIOLATIONS=378
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
