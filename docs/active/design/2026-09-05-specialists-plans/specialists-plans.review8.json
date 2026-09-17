@@ -1,0 +1,178 @@
+{
+  "title": "Plans — round 8: your layout notes, and the Ask the assistant button",
+  "key": "specialists-plans-review8",
+  "out": "specialists-plans.review8.html",
+  "images": "images/specialists-plans.review8",
+  "stage": "review",
+  "runs": {
+    "before": "runs/r910-before",
+    "after": "runs/r910-after"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "r9-buttons": [
+      "plans-card-r9",
+      "proposed-buttons",
+      "1000x230+16+40"
+    ],
+    "r9-chip": [
+      "plans-card-r9",
+      "chip-popup-plan-expanded",
+      "580x620+370+110"
+    ],
+    "r9-note": [
+      "plans-card-r9",
+      "handoff-pending-chat",
+      "1100x470+16+40"
+    ],
+    "r10-ask": [
+      "plans-card-r10",
+      "ask-budget",
+      "1000x430+16+40"
+    ],
+    "r10-wait": [
+      "plans-card-r10",
+      "ask-pending-after-reply",
+      "1100x430+16+40"
+    ],
+    "r10-fail": [
+      "plans-card-r10",
+      "ask-failed-reply",
+      "1320x470+16+40"
+    ],
+    "r10-interrupted": [
+      "plans-card-r10",
+      "interrupted-unchanged",
+      "1000x280+16+40"
+    ],
+    "r10-narrow": [
+      "plans-card-r10-narrow",
+      "ask-budget-narrow",
+      "390x640+0+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R8-A",
+      "surface": "Chat · plan card",
+      "path": "A plan waiting for approval",
+      "crop": "r9-buttons",
+      "headline": "Approve and Comment now sit on the same line as the limit text.",
+      "changed": "The buttons moved up beside \"5 specialists · Up to about $0.12…\", using the empty space you pointed out.",
+      "notice": "The card is one line shorter.",
+      "risk": "On a narrow window the buttons drop below the text.",
+      "highlight": {
+        "box": [
+          0,
+          72,
+          100,
+          14
+        ]
+      }
+    },
+    {
+      "id": "R8-B",
+      "surface": "Status bar",
+      "path": "Specialists popup while a plan runs next to an ordinary specialist",
+      "crop": "r9-chip",
+      "headline": "A running plan is now a \"Plan: …\" card the same width as the other specialists, with no separate heading.",
+      "changed": "The \"Plans\" heading is gone; the plan's card sits in the list like any specialist and opens to show its specialists.",
+      "notice": "Plans and ordinary specialists line up in one list.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          4,
+          16,
+          92,
+          8
+        ]
+      }
+    },
+    {
+      "id": "R8-C",
+      "surface": "Chat",
+      "path": "Below a plan card after the assistant was asked",
+      "crop": "r9-note",
+      "headline": "The \"Note for the assistant\" row no longer appears in the chat.",
+      "changed": "The row under the card is gone, as you asked.",
+      "notice": "A cleaner chat.",
+      "risk": "None visible.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R8-D",
+      "surface": "Chat · plan card",
+      "path": "A plan paused at its limit",
+      "crop": "r10-ask",
+      "headline": "A paused plan no longer hands itself to the assistant; it shows an \"Ask the assistant\" button instead.",
+      "changed": "The pause shows its reason and buttons at once. \"Ask the assistant\" is the light button on the left; nothing happens unless you press it.",
+      "notice": "No automatic messages or greyed card unless you ask.",
+      "risk": "You read the reason yourself first.",
+      "highlight": {
+        "box": [
+          2,
+          66,
+          96,
+          9
+        ]
+      }
+    },
+    {
+      "id": "R8-E",
+      "surface": "Chat · plan card",
+      "path": "After pressing Ask the assistant while it is still answering something else",
+      "crop": "r10-wait",
+      "headline": "After you ask, the card greys out and says when the assistant will look.",
+      "changed": "If the assistant is mid-reply the card says \"The assistant will look at this after its current reply.\"; otherwise \"The assistant is looking into this.\" The chat shows \"You asked the assistant about this plan.\"",
+      "notice": "You know your question was received and when it will be answered.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          66,
+          96,
+          10
+        ]
+      }
+    },
+    {
+      "id": "R8-F",
+      "surface": "Chat · plan card",
+      "path": "When the assistant couldn't answer",
+      "crop": "r10-fail",
+      "headline": "If the assistant can't answer, the card says so and offers Retry.",
+      "changed": "The error line gives the real reason (here the provider was overloaded) with Retry, and the card's normal buttons come back.",
+      "notice": "A failed question never leaves the card stuck.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          69,
+          96,
+          8
+        ]
+      }
+    },
+    {
+      "id": "R8-H",
+      "surface": "Chat · plan card",
+      "path": "A paused plan on a phone-width window",
+      "crop": "r10-narrow",
+      "headline": "On a narrow window, step titles and the pause reason are readable again.",
+      "changed": "Titles were cut to \"1.\" and the reason squeezed into a sliver; now titles wrap and the buttons move below the reason.",
+      "notice": "Plans are usable on a narrow window.",
+      "risk": "The card is taller on narrow windows.",
+      "highlight": {
+        "box": [
+          2,
+          64,
+          96,
+          20
+        ]
+      }
+    }
+  ]
+}

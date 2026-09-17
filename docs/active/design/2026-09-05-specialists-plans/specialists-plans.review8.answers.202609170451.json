@@ -1,0 +1,50 @@
+{
+ "deck": "specialists-plans-review8",
+ "started": "2026-09-17T04:50:24.123Z",
+ "submitted": "2026-09-17T04:51:18Z",
+ "cur": 6,
+ "answers": {
+  "R8-A": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-B": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-C": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-D": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-E": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-F": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-H": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
