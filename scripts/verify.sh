@@ -209,6 +209,7 @@ if [[ $DRY -eq 1 ]]; then
   echo "  npx tsgo --noEmit -p tsconfig.tests.json"
   echo "  npm run knip"
   echo "  npm run lint"
+  grep -q '"lint:design"' "$DESKTOP/package.json" && echo "  npm run lint:design"
   if [[ $RUN_FULL -eq 1 ]]; then
     echo "  npx vitest run"
   elif [[ ${#REL[@]} -gt 0 ]]; then
@@ -240,6 +241,14 @@ start knip  "dead code (knip)"     npm run knip --silent
 # runtime imports of undeclared packages). Rule set + the measured cost of every
 # deferred rule: desktop/.oxlintrc.json (it replaced eslint.config.mjs 2026-09-14).
 start lint  "lint (oxlint)"        npm run lint --silent
+# The design-system lint is a RATCHET (2026-09-16): its npm script carries
+# `--max-warnings <count measured that day>`, so it fails only when a change
+# ADDS a raw colour / arbitrary value / restyled primitive. Until then it had
+# zero callers and the count drifted 539 → 542 unseen. Skipped, not failed, on
+# a checkout that predates the script.
+if grep -q '"lint:design"' "$DESKTOP/package.json"; then
+  start design "design lint (oxlint --max-warnings ratchet)" npm run lint:design --silent
+fi
 
 if [[ $RUN_FULL -eq 1 ]]; then
   start tests "tests (full suite)" npx vitest run
@@ -253,7 +262,7 @@ start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" 
 
 FAILED=0
 FAILED_KEYS=()
-for key in types testtypes tests knip lint invariants; do
+for key in types testtypes tests knip lint design invariants; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then
