@@ -110,7 +110,8 @@ fi
 # 2026-09-16 (t6a): +1 for chatview-passes-provider-to-attentionbanner
 #   (attention-banner.test.tsx).
 # 2026-09-16 (t6a): +1 for buddy-window-move-only-in-place (buddy-caption-channel.test.ts).
-EXPECTED_VIOLATIONS=68
+# 2026-09-16 (t6a): +1 for buddy-show-consults-refusal-gate (buddy-consent-gate.test.ts).
+EXPECTED_VIOLATIONS=69
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
