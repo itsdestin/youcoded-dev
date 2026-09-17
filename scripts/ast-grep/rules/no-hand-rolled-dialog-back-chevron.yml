@@ -1,0 +1,24 @@
+id: no-hand-rolled-dialog-back-chevron
+language: tsx
+severity: error
+message: >-
+  Only <Dialog> and the sync setup wizard implement a back chevron. The
+  chevron is <Dialog>'s `onBack` — three separate reimplementations once
+  existed at three sizes (a 24px rounded button in SyncPanel and the wizard, a
+  bare "←" glyph in the theme editor; a fourth was deleted from
+  SettingsExplainer by K12).
+note: |
+  Invariant source: tests/dialog-chrome-authority.test.ts (retired by Plan B,
+  2026-09-16; case 4 of 4 — "only Dialog and the wizard implement a back
+  chevron"). Matches the literal SVG path Dialog.tsx's chevron uses
+  (`M15 19l-7-7 7-7`); Dialog.tsx and SyncSetupWizard.tsx are the two
+  legitimate implementations and are excluded.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/dialog-chrome-authority-chevron.tsx"
+ignores:
+  - "**/Dialog.tsx"
+  - "**/SyncSetupWizard.tsx"
+rule:
+  kind: string_fragment
+  regex: "M15 19l-7-7 7-7"

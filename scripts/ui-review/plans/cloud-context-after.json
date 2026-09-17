@@ -1,0 +1,35 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {"click": "[aria-label='Settings']", "settle": 500},
+    {"click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))", "settle": 900}
+  ],
+  "shots": [
+    {
+      "name": "general",
+      "actions": [],
+      "expect": "section[aria-label='Context']",
+      "measure": ["[role=dialog]", "section[aria-label='Context']"]
+    },
+    {
+      "name": "info",
+      "actions": [{"click": "section[aria-label='Context'] button[aria-expanded]", "settle": 500}],
+      "expect": "[role='dialog'][style*='left']",
+      "measure": ["[role='dialog'][style*='left']"]
+    },
+    {
+      "name": "empty",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=empty",
+      "actions": [],
+      "expect": "section[aria-label='Context']"
+    },
+    {
+      "name": "stress",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=stress",
+      "actions": [],
+      "expect": "section[aria-label='Context']"
+    }
+  ]
+}

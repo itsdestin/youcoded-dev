@@ -1,0 +1,43 @@
+id: no-two-bare-bg-utilities-ts
+language: typescript
+severity: error
+message: >-
+  Two unprefixed `bg-*` Tailwind utilities in one class string do not blend
+  — only one paints. Twin of no-two-bare-bg-utilities for the `.ts` files a
+  `language: tsx` rule cannot see.
+note: |
+  Invariant source: tests/background-layer-authority.test.ts (retired by Plan B,
+  2026-09-16). FIX (review of batch A, 2026-09-16): the retired test's
+  `inScopeFiles(['.tsx', '.ts'])` read BOTH extensions across the whole
+  renderer tree; the batch-A rule's `**/src/renderer/**/*.ts` files: entry
+  under `language: tsx` matched no file (a tsx-language rule cannot parse a
+  .ts file), so this half of the original scope was silently unguarded. No
+  current renderer `.ts` file matches (checked: components/ui/field.ts and
+  provider-brand.ts each mention `bg-*` only inside comments, never inside a
+  string literal, so no exemption is needed) — this rule exists for
+  completeness against the retired test's actual scope, not because a
+  violation is known to exist. The cross-substitution case is matched
+  structurally (two `string_fragment` siblings of one `template_string`),
+  not with a regex over the whole template's text — see
+  no-two-bare-bg-utilities's note for why a whole-text regex false-positives
+  on ternary alternatives and on comments inside a substitution.
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/no-two-bare-bg-utilities-ts.ts"
+ignores:
+  - "**/*.test.ts"
+  - "**/*.d.ts"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "(?:^|\\s)bg-[\\w./\\[\\]%-]+(?:.*\\s)bg-[\\w./\\[\\]%-]+"
+    - kind: string_fragment
+      regex: "(?:^|[\\s`])bg-[\\w./\\[\\]%-]+"
+      inside:
+        kind: template_string
+      follows:
+        stopBy: end
+        kind: string_fragment
+        regex: "(?:^|[\\s`])bg-[\\w./\\[\\]%-]+"
+        inside:
+          kind: template_string

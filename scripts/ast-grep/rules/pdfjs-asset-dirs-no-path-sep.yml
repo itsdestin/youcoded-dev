@@ -1,0 +1,74 @@
+id: pdfjs-asset-dirs-no-path-sep
+language: typescript
+severity: error
+message: >-
+  pdfjsAssetDirs() in pdf-text.ts must end its two dirs with a literal "/",
+  never path.sep. pdf.js rejects a factory url whose last character is not
+  "/", and path.sep is "\" on Windows — so every PDF read on Windows threw
+  before parsing (fixed 2026-08-28). The runtime test in read-pdf.test.ts
+  cannot see this on Linux or macOS, where path.sep IS "/".
+note: |
+  Invariant source: tests/read-pdf.test.ts — "does not build those dirs with
+  path.sep — the assertion above is VACUOUS on POSIX" (Plan B, 2026-09-16).
+  The retired check sliced the RAW file text from `export function
+  pdfjsAssetDirs` up to `export const DEFAULT_PDF_PAGES` (comments included)
+  and refused `path.sep` anywhere in it, and it failed when the function was
+  missing (an empty slice). This rule covers the same region:
+    1. anything inside the `export function pdfjsAssetDirs` statement;
+    2. any top-level statement or comment AFTER that export and BEFORE
+       `export const DEFAULT_PDF_PAGES` (or, when that export is gone, anything
+       after the function — the old slice then ran to the end of the file).
+  In the region, the innermost node whose text holds `path.sep` is reported
+  once (code like `path.sep` / `mypath.sep` / `path.separator`, a string or
+  template piece, a comment, a regex) — as `toContain` saw it. A parent whose
+  direct child already holds the text is skipped.
+  3. PRESENCE: a whole-file branch fires when pdf-text.ts no longer has an
+     exported function named pdfjsAssetDirs (renamed or removed), as the old
+     `body.length > 0` check did. Deliberate difference: the old slice was
+     also empty if DEFAULT_PDF_PAGES moved ABOVE the function; that ordering
+     is not the invariant, so it is not an error here (the function itself is
+     still checked). The doc comment ABOVE the function (which explains the
+     bug and names path.sep) was outside the old slice and stays outside.
+files:
+  - "**/src/main/harness/pdf-text.ts"
+  - "**/fixtures/pdfjs-asset-dirs-no-path-sep.ts"
+  - "**/fixtures/pdfjs-asset-dirs-no-path-sep-absent.ts"
+utils:
+  asset-dirs-export:
+    kind: export_statement
+    has:
+      kind: function_declaration
+      has: { field: name, regex: "^pdfjsAssetDirs$" }
+  default-pages-export:
+    kind: export_statement
+    has:
+      stopBy: end
+      kind: variable_declarator
+      has: { field: name, regex: "^DEFAULT_PDF_PAGES$" }
+  # A top-level node between the two exports (the old slice's tail).
+  between-exports:
+    follows: { stopBy: end, matches: asset-dirs-export }
+    any:
+      - precedes: { stopBy: end, matches: default-pages-export }
+      - inside:
+          kind: program
+          not: { has: { matches: default-pages-export } }
+rule:
+  any:
+    - kind: program
+      not: { has: { matches: asset-dirs-export } }
+    - all:
+        - any:
+            - kind: member_expression
+            - kind: string_fragment
+            - kind: template_string
+            - kind: string
+            - kind: comment
+            - kind: regex_pattern
+            - kind: nested_type_identifier
+        - regex: "path\\.sep"
+        - not: { has: { regex: "path\\.sep" } }
+        - any:
+            - inside: { stopBy: end, matches: asset-dirs-export }
+            - matches: between-exports
+            - inside: { stopBy: end, matches: between-exports }

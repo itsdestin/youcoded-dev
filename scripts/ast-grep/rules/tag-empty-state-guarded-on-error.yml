@@ -1,0 +1,84 @@
+id: tag-empty-state-guarded-on-error
+language: tsx
+severity: error
+message: >-
+  The Resume Browser's tag filter may say "No tags yet" only after checking
+  registry.error. A failed tag read must show "Couldn't load your tags", not
+  an empty state that invites duplicates of tags the person already has
+  (code review 2026-09-11, F5).
+note: |
+  Invariant source: tests/tag-picker-unreadable.test.tsx (Plan B, 2026-09-16;
+  "checks the registry error before saying \"No tags yet\""). The retired case
+  blanked comments in ResumeBrowser.tsx, required the text
+  `message="No tags yet"` to appear, and required `registry.error` somewhere
+  in the 600 characters before its FIRST occurrence.
+  Two branches:
+  - MISSING: the file has no `message="No tags yet"` JSX attribute. Fires on
+    the file.
+  - UNGUARDED: a `message="No tags yet"` attribute that does not sit behind a
+    `registry.error` read in a GUARD position (same shape as
+    note-editor-guarded-on-unreadable): the condition of an enclosing
+    ternary (today's code), the left operand of an enclosing `&&` / `||` /
+    `??` (`registry.error && …`, `!registry.error && …`), the condition of an
+    enclosing `if`, or the condition of an `if` that comes before an
+    enclosing statement (an early return).
+    It checks that the error read DECIDES whether the empty state renders,
+    not which branch the empty state sits in: `registry.error ? <Empty/> :
+    …` (the empty state on the ERROR branch) passes, as it passed the
+    retired case (review of u10, 2026-09-16).
+  DIFFERENCES, deliberate: the 600-character window becomes "a guarding
+  condition". An earlier read that guards nothing no longer counts — an
+  unrelated statement or attribute (`useLog(registry.error)`,
+  `title={registry.error}`), the error message's own `${registry.error}`
+  inside a branch whose condition was replaced with `false` (the retired
+  case passed that inversion; this rule fires), or a SIBLING
+  `{registry.error && <X/>}` rendered before an unconditional empty state:
+  the sibling shows the error but the empty state still renders beside it,
+  which is the exact "No tags yet" lie the invariant forbids, so firing
+  there is right (review of u10, 2026-09-16). `registry.error` must be a
+  real member read (`registry.error`, also as the tail of
+  `props.registry.error`), not text in a string; a comparison operand
+  (`(registry.error === x) === …`) is not a guard — only `&&`/`||`/`??`
+  are; the attribute must be a real JSX attribute; every such attribute is
+  checked, not only the first; no limit on how far the guard sits.
+files:
+  - "**/src/renderer/components/ResumeBrowser.tsx"
+  - "**/fixtures/tag-empty-state-guarded-on-error.tsx"
+  - "**/fixtures/tag-empty-state-guarded-on-error-missing.tsx"
+utils:
+  no-tags-attr:
+    kind: jsx_attribute
+    regex: '^message="No tags yet"$'
+  holds-error-read:
+    any:
+      - { kind: member_expression, regex: 'registry\.error$' }
+      - has: { stopBy: end, kind: member_expression, regex: 'registry\.error$' }
+  guard-if:
+    kind: if_statement
+    has: { field: condition, matches: holds-error-read }
+  # WHY guard positions only (review of u10, 2026-09-16): the first draft
+  # accepted any earlier sibling holding the read, so a condition replaced
+  # with `false` stayed silent (the message's `${registry.error}` sat in the
+  # branch before the empty state). A read counts only where it decides
+  # whether the empty state renders.
+  guarded:
+    inside:
+      stopBy: end
+      any:
+        - kind: ternary_expression
+          has: { field: condition, matches: holds-error-read }
+        - kind: binary_expression
+          all:
+            - has: { field: operator, regex: '^(&&|\|\||\?\?)$' }
+            - has: { field: left, matches: holds-error-read }
+        - matches: guard-if
+        - follows: { stopBy: end, matches: guard-if }
+rule:
+  any:
+    # MISSING.
+    - kind: program
+      not: { has: { stopBy: end, matches: no-tags-attr } }
+    # UNGUARDED.
+    - all:
+        - matches: no-tags-attr
+        - not: { matches: guarded }

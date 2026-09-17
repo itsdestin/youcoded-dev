@@ -1,0 +1,24 @@
+id: remote-session-create-refuses-shell-provider
+language: typescript
+severity: error
+message: >-
+  remote-server.ts must keep its `if (payload?.provider === 'shell')` check
+  in the session:create case — a remote client may not open a plain shell
+  session directly; shells come only from the validated Run in terminal path.
+note: |
+  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; "the
+  remote session:create case refuses a client-supplied shell provider" —
+  behaviour pinned in tests/remote-server.test.ts). The retired test
+  asserted the file's text contains `if (payload?.provider === 'shell')`;
+  this matches an if statement (an `else if` included) with exactly that
+  condition, whatever the whitespace. A mention only in a comment or string
+  no longer counts.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/remote-session-create-refuses-shell-provider.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      pattern: "if (payload?.provider === 'shell') $BODY"

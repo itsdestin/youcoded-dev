@@ -205,10 +205,11 @@ echo ""
 # is how the changed-file detection above gets exercised without paying for a run.
 if [[ $DRY -eq 1 ]]; then
   echo "would run:"
-  echo "  npx tsc --noEmit -p tsconfig.json"
-  echo "  npx tsc --noEmit -p tsconfig.tests.json"
+  echo "  npx tsgo --noEmit -p tsconfig.json"
+  echo "  npx tsgo --noEmit -p tsconfig.tests.json"
   echo "  npm run knip"
   echo "  npm run lint"
+  grep -q '"lint:design"' "$DESKTOP/package.json" && echo "  npm run lint:design"
   if [[ $RUN_FULL -eq 1 ]]; then
     echo "  npx vitest run"
   elif [[ ${#REL[@]} -gt 0 ]]; then
@@ -218,21 +219,36 @@ if [[ $DRY -eq 1 ]]; then
   exit 0
 fi
 
-start types "types (tsc --noEmit)" npx tsc --noEmit -p tsconfig.json
+# WHY tsgo (TypeScript 7's native compiler) instead of tsc: measured 2026-09-14,
+# the two trees take ~1.3s + ~1.9s under tsgo against ~11s + ~16s under tsc,
+# with identical verdicts. The BUILD still compiles with tsc (TypeScript 6), and
+# CI runs that build, so an emit-only divergence between the compilers is still
+# caught before release. Checkouts that predate tsgo fall back to tsc.
+TSC=tsc
+[[ -x "$DESKTOP/node_modules/.bin/tsgo" ]] && TSC=tsgo
+start types "types ($TSC --noEmit)" npx "$TSC" --noEmit -p tsconfig.json
 # The test tree is its own TS project (different module resolution, allowJs for
 # the .mjs orchestrator). Separate check so a failure names which tree broke.
 # Older checkouts have no tsconfig.tests.json; skip rather than fail on them.
 if [[ -f "$DESKTOP/tsconfig.tests.json" ]]; then
   TESTS_EXCLUDED=$(grep -cE '^ *"tests/.*\.tsx?"' "$DESKTOP/tsconfig.tests.json" || true)
-  start testtypes "types in tests/ (tsc --noEmit, ${TESTS_EXCLUDED} file(s) still excluded)" \
-    npx tsc --noEmit -p tsconfig.tests.json
+  start testtypes "types in tests/ ($TSC --noEmit, ${TESTS_EXCLUDED} file(s) still excluded)" \
+    npx "$TSC" --noEmit -p tsconfig.tests.json
 fi
 start knip  "dead code (knip)"     npm run knip --silent
-# eslint is the bug gate, not a style gate — it catches the classes tsc/knip
+# oxlint is the bug gate, not a style gate — it catches the classes tsc/knip
 # structurally cannot (conditional React hooks, floating promises in main,
 # runtime imports of undeclared packages). Rule set + the measured cost of every
-# deferred rule: desktop/eslint.config.mjs.
-start lint  "lint (eslint)"        npm run lint --silent
+# deferred rule: desktop/.oxlintrc.json (it replaced eslint.config.mjs 2026-09-14).
+start lint  "lint (oxlint)"        npm run lint --silent
+# The design-system lint is a RATCHET (2026-09-16): its npm script carries
+# `--max-warnings <count measured that day>`, so it fails only when a change
+# ADDS a raw colour / arbitrary value / restyled primitive. Until then it had
+# zero callers and the count drifted 539 → 542 unseen. Skipped, not failed, on
+# a checkout that predates the script.
+if grep -q '"lint:design"' "$DESKTOP/package.json"; then
+  start design "design lint (oxlint --max-warnings ratchet)" npm run lint:design --silent
+fi
 
 if [[ $RUN_FULL -eq 1 ]]; then
   start tests "tests (full suite)" npx vitest run
@@ -246,7 +262,7 @@ start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" 
 
 FAILED=0
 FAILED_KEYS=()
-for key in types testtypes tests knip lint invariants; do
+for key in types testtypes tests knip lint design invariants; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then
@@ -280,5 +296,9 @@ if [[ $FAILED -eq 0 ]]; then
   echo "   Not covered: Android (./gradlew test), marketplace worker."
 else
   echo "$FAILED check(s) failed."
+  # WHY: this is the one moment every session is guaranteed to see a failing
+  # test, and running a script loads no path-scoped rule. Destin's standing
+  # rule (2026-09-17): fix failing/flaky tests on sight, never file them.
+  [[ " ${FAILED_KEYS[*]} " == *" tests "* ]] && echo "   A failing or flaky test is fixed now, even if it predates this change — not filed on the roadmap. See CLAUDE.md → Local build & test."
 fi
 exit $(( FAILED > 0 ? 1 : 0 ))

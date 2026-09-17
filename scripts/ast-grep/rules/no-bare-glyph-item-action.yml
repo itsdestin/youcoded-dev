@@ -1,0 +1,78 @@
+id: no-bare-glyph-item-action
+language: tsx
+severity: error
+message: >-
+  No bare ✕ glyph survives as a list-item action or a container dismiss. A
+  list-item action is a labelled <Button size="sm">; a container dismiss is
+  <CloseButton>. Change 41 banned hand-rolled glyph buttons app-wide, but FIVE
+  survived: two genuine item actions (disconnect a remote client, remove a
+  saved device), two container dismisses reimplementing CloseButton at the
+  wrong size with no focus ring, and one already a proper Button primitive.
+note: |
+  Invariant source: tests/item-list-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 4 — "no bare glyph survives...").
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx (flat only), components/development/*.tsx,
+  components/ui/*.tsx — the same non-recursive walk (guard-scope.ts's own
+  IN_SCOPE_DIRS = ['', 'development', 'ui']).
+  FIX (review of batch B, 2026-09-16): a single `*` in this ast-grep's
+  `files:` glob is NOT bounded by `/` — measured empirically (scratch probe,
+  2026-09-16): `**/src/renderer/components/*.tsx` matched files nested
+  arbitrarily deep under components/, including *.test.tsx, not just the
+  direct children `component/*.tsx` reads as. That is exactly the
+  glob-crossed-`/`-and-widened-scope bug guard-scope.ts's own header
+  comment names ("The dialog adoption guard's copy globbed
+  `components/*.tsx`... it passed while blind to a third of its own stated
+  scope") — recreated here by trusting the glob's name instead of testing
+  it. `ignores:` now lists every current components/ subdirectory
+  inScopeFiles() does NOT walk (artifact-views, assistant-settings, buddy,
+  context-menu, diff, first-run, game, git, guide, header, library,
+  marketplace, mascot, model, overlays, permissions, project-view, remote,
+  specialists, tags, tool-views) plus `**/*.test.tsx`, so scope is the same
+  files inScopeFiles() reads today. A directory added to components/ later
+  needs a new ignore line here the same way it would need a new entry in
+  IN_SCOPE_DIRS to be walked by inScopeFiles() — neither list updates itself.
+  EXEMPT (carried as `ignores:`): QueuedMessagesStrip.tsx — already a
+  <Button variant="ghost" size="icon"> with a real aria-label and focus ring;
+  the glyph is its visible label, not a hand-rolled button (compact composer
+  strip, not a settings list).
+  LIMITATION: the retired test counted per-file and allowed QueuedMessagesStrip.tsx
+  EXACTLY 1, not "0 or more" — a whole-file `ignores:` cannot express "at most
+  1 here"; that exact-count case is kept as a small text case in the trimmed
+  test file per global.md's "at most N matches" guidance, rather than dropped.
+  A bare glyph is matched as a `jsx_text` node whose entire (trimmed) content
+  is the glyph — this is the AST-node equivalent of the retired regex
+  `/>\s*✕\s*</g` (glyph directly between a `>` and a `<`, i.e. an element's
+  sole text child), regardless of the enclosing tag's name or attributes —
+  the original regex made no such distinction either.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-bare-glyph-item-action.tsx"
+ignores:
+  - "**/QueuedMessagesStrip.tsx"
+  - "**/*.test.tsx"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+rule:
+  kind: jsx_text
+  regex: "^\\s*✕\\s*$"

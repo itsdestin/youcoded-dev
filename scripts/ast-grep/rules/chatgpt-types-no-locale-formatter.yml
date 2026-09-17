@@ -1,0 +1,43 @@
+id: chatgpt-types-no-locale-formatter
+language: typescript
+severity: error
+message: >-
+  shared/chatgpt-types.ts must never spell a locale-formatter name
+  (toLocaleString / toLocaleTimeString / toLocaleDateString) in ANY form —
+  a direct call, an indirect string key, a reflective lookup, or an
+  import — because a locale formatter prints a different clock on a
+  non-US machine, and this file's clock text must come from ./time-format
+  instead.
+note: |
+  Invariant source: u1 fix-list item 1 (review of u1's
+  limit-sentence-uses-shared-time-format, 2026-09-16). The retired test's
+  whole-text regex /toLocale(Time|Date)?String/ caught the name wherever it
+  appeared; the replacement oxlint rule (no-restricted-properties, scoped to
+  this file in desktop/.oxlintrc.json) only sees a direct property access
+  (`d.toLocaleTimeString()`) and misses:
+    - an indirect string key: `const k = 'toLocaleTimeString'; d[k]()`
+    - a reflective/computed lookup: `Reflect.get(d, 'toLocaleString')`
+    - an import of the name: `import { toLocaleDateString } from './y'`
+      followed by a bare call
+    - an aliased import specifier: `import { toLocaleDateString as x }
+      from './y'` (the ORIGINAL name is still an identifier node)
+  This rule is the backstop: it scans every leaf that can carry the name as
+  TEXT — identifier, property_identifier, shorthand_property_identifier(_pattern)
+  and string_fragment — for regex toLocale(Time|Date)?String. Comments are
+  excluded automatically: comment text is not parsed into these node kinds.
+  The oxlint override stays — it gives a faster, more specific message for
+  the direct-call shape it does catch.
+files:
+  - "**/src/shared/chatgpt-types.ts"
+  - "**/fixtures/chatgpt-types-no-locale-formatter.ts"
+utils:
+  name-leaf:
+    any:
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: string_fragment
+rule:
+  matches: name-leaf
+  regex: "toLocale(Time|Date)?String"

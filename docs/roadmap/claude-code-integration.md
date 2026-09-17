@@ -4,6 +4,19 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
+- [ ] When `~/.claude/settings.json` could not be read at launch (a stray comma, a half-written
+      save), the app now quietly moves it aside as `settings.json.corrupt-<time>` and writes a
+      fresh one so its hooks keep working — but it only says so in its log. Anything the user had
+      put in that file (their own permissions, a custom status line) is in the backup and nobody
+      is told. Wanted: tell them in the app that a backup was saved at that path, with a button to
+      open it, instead of only a log line (rule decided 2026-09-17, simplification phase 3)
+      `chat` `all` `confirmed` `checked 2026-09-17`
+
+- [ ] In the model picker, Fast mode’s “⚠ Billed Per Token” warning is a one-off hand-built box
+      rather than the app’s shared warning box, so it will not follow changes to how warnings
+      look. Found by the design check on 2026-09-16; moving it changes its look slightly.
+      `model-picker` `desktop` `confirmed` `checked 2026-09-16`
+
 - [ ] Clicking a plan-approval button other than the first ("No, refine plan", "Tell Claude what to
       change") may still approve the plan as option 1 on Claude Code 2.1.220+ (found 2026-07-30
       during the permission-timeout review; not yet tried in a dev instance)
@@ -53,16 +66,24 @@ chat-data).
       (`CLAUDE_CODE_FORK_SUBAGENT`)
       `settings/development` `desktop` `parked` `checked 2026-04-21`
 
-- [ ] Chat view hangs on "Initializing session..." forever when Claude Code is waiting on its
+- [ ] Chat view hangs on "Initializing session..." when Claude Code is waiting on its
       trust-folder prompt — terminal view shows the prompt and answers fine, chat view never
-      surfaces it and never times out (Destin, 2026-09-03, screenshot on file: "Accessing
-      workspace: /home/destin ... Yes, I trust this folder"). The parser markers DO match that
-      wording (`ink-select-parser.ts` — `quick safety check`, `execute files here`, `yes, i
-      trust this folder`), so this is not a missing string: either `TrustGate` is not rendering
-      it into chat view, or the session-initialized gate ("first hook = initialized",
-      `App.tsx`) can never clear because CC has not started, which is a deadlock either way.
-      Note the confounder in this repro — `~/.claude/settings.json` also had 12 dangling hook
-      paths at the time, so hooks could not fire; re-verify with healthy hooks before
-      concluding. An unclearable overlay was already noted as a UX bug in the 2026-08-07
-      shipped entry and never tracked
-      `desktop` `needs-verify` `checked 2026-09-03` `needs-repro`
+      surfaces it (Destin, 2026-09-03, screenshot on file: "Accessing workspace: /home/destin
+      ... Yes, I trust this folder"). Since 2026-09-14 the screen at least says "Something may
+      be wrong" after 6 s with a Check terminal view button, so it no longer hangs silently. The
+      parser markers DO match that wording (`ink-select-parser.ts`), and the init gate is
+      already released the moment a trust prompt is detected — so the remaining suspect is the
+      trust-gate detection itself never seeing the prompt in chat state. Note the confounder in
+      this repro — `~/.claude/settings.json` also had 12 dangling hook paths at the time, so
+      hooks could not fire; re-verify with healthy hooks before concluding
+      `desktop` `needs-verify` `checked 2026-09-16` `needs-repro`
+
+- [ ] The sub-agent watcher keeps two 5-second timers per open Claude Code session for the
+      session's whole life (one prunes an index, one `readdirSync`s the subagents folder), plus
+      one file watch per helper the session ever ran — never released until the session closes,
+      so a session that ran fifty helpers holds fifty watches and fifty buffers. At five open
+      sessions that is two synchronous directory listings a second, forever. Found by the
+      2026-09-16 smoothness sweep (C10), not built: the directory poll should stop once its
+      watcher is attached, and a settled helper's file watch should close with it
+      (`subagent-watcher.ts`)
+      `desktop` `confirmed` `checked 2026-09-16` `performance`

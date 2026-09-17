@@ -1,0 +1,43 @@
+id: buddy-window-move-only-in-place
+language: typescript
+severity: error
+message: >-
+  A buddy BrowserWindow's position or title must only be written inside
+  BuddyWindowManager's `place()` method. On native-Wayland Linux the app is
+  not allowed to move its own window, so `place()` renames it instead
+  ("YC:mascot@480,900") for a desktop helper to read and move — a
+  setPosition/setBounds/setContentBounds/setTitle call anywhere else bypasses
+  that channel silently, since Wayland gives no readback to notice the move
+  failed (design §3).
+note: |
+  Invariant source: tests/buddy-caption-channel.test.ts (Plan B, 2026-09-16;
+  "no window-moving API is called outside place()" + "setTitle is called in
+  exactly one place, inside place()" — the two `!l.trimStart().startsWith('//')`
+  line-scans over buddy-window-manager.ts). setBounds/setContentBounds are
+  banned everywhere (the retired test found ZERO legitimate uses); setPosition
+  and setTitle are banned everywhere EXCEPT inside `place()`.
+  NOT converted (kept as text-reads in the test, unchanged): the same
+  describe block's other two cases assert EXACT call-site COUNTS ("nine
+  `this.place(` sites, three `this.create(` sites" and "createBuddyWindow
+  called in exactly one place, inside create()") — an ast-grep rule reports
+  violations, not a required count of legitimate calls, so a write path
+  being silently deleted (the failure mode those two cases exist to catch)
+  is not expressible this way.
+files:
+  - "**/src/main/buddy-window-manager.ts"
+  - "**/fixtures/buddy-window-move-only-in-place.ts"
+rule:
+  kind: call_expression
+  has:
+    field: function
+    kind: member_expression
+    has:
+      field: property
+      regex: "^(setPosition|setBounds|setContentBounds|setTitle)$"
+  not:
+    inside:
+      stopBy: end
+      kind: method_definition
+      has:
+        field: name
+        regex: "^place$"

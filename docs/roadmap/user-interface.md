@@ -2,6 +2,15 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] The design check still lists about 530 places where a screen overrides a shared button’s
+      look, types a size in by hand, or uses a color outside the theme. Only the mechanical
+      fixes were made on 2026-09-16; each remaining group needs its own design call.
+      `all` `confirmed` `checked 2026-09-16`
+
+- [ ] Two "Show details" style dropdowns in Backup & Sync still use the browser's bare triangle, the look Destin said he
+      hates (2026-09-05). A test now blocks new ones and lists these two as known; restyling them is his call.
+      `settings/sync` `desktop` `decision` `checked 2026-09-16`
+
 - [ ] Phone-width polish the batch 2/3 UX tester found while driving a phone browser over
       remote access (2026-09-10), none of it specific to remote access: "Session Files" and
       "Session in <project>" (a student does not call a chat a session); the "Deliverables"
@@ -55,24 +64,18 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       the drag starts, so it can draw the carried pill too
       `window-chrome` `desktop` `confirmed` `checked 2026-09-04`
 
-- [ ] After voice ships: a fallback to the speech service built into Windows and macOS for
-      people who do not want the 464 MB download. Destin on the review deck 2026-09-05: "we may
-      want to roadmap a fallback to built-in windows or mac speech services, but not rn".
-      Same shelf: Moonshine v2 (106 MB, English only, 8 s at a time) as a smaller download if
-      the 464 MB first download draws complaints (accepted on review V-0's risk card)
-      `input-bar` `desktop` `parked` `checked 2026-09-05`
-
-- [ ] On a phone the app is a shrunk desktop — status-bar chips, panels and desktop session
-      switching — where Gemini, Siri and Claude mobile are built around quick dispatch and search.
-      Wanted: a rethought default for the Android app and the mobile browser client covering quick
-      chips, session switching and resume/history, with the full desktop-narrow UI still reachable
-      rather than removed. Bigger than the 2026-07-20 narrow-viewport pass, and design-first: it
-      needs its own workbench mockup round before any build
-      `android` `parked` `checked 2026-09-02`
+- [ ] A fallback to the speech service built into Windows and macOS for people who do not want
+      the ~650 MB voice download (voice shipped 2026-09-05). Destin on the review deck
+      2026-09-05: "we may want to roadmap a fallback to built-in windows or mac speech services,
+      but not rn". Same shelf: Moonshine v2 (106 MB, English only, 8 s at a time) as a smaller
+      download if the first download draws complaints (accepted on review V-0's risk card)
+      `input-bar` `desktop` `parked` `checked 2026-09-16`
 
 - [ ] Browser-default hover tooltips look foreign to the app — the whole main chat screen is
-      done (`<Tooltip>`, ~88 hints); what is left is settings, the marketplace and project
-      view, which Destin deferred until those files are touched anyway
+      done (`<Tooltip>`, 82 hints); what is left is settings, the marketplace and project
+      view (~148 of 236 real hints), which Destin deferred until those files are touched anyway.
+      Settled: the ~1 s delay stays (he rejected a shorter one) and there is no circled-i — every
+      hint, long ones included, is a hover hint
       `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
 - [ ] Error messages still guess at causes in many places — the app-wide re-audit is done and
@@ -111,8 +114,18 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       back 4,346 → 1,784 MB, session switch 243 → 112 ms, main-thread blocking 4,882 → 1,703 ms.
       KEEP OPEN until Destin says real use feels better over hours — the investigation's second
       half (every open session stays mounted) is only partly addressed, since views still mount
-      and it is their CONTENT that folds
-      `all` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+      and it is their CONTENT that folds. 2026-09-16 smoothness sweep
+      (docs/active/investigations/2026-09-16-smoothness-sweep.md): Batch A (MERGED
+      2026-09-16, youcoded#501) stops the whole shell re-rendering per streamed word and the
+      per-word reducer work that grew with the chat — measured on the rig's new native-stream
+      phase, a reply streaming on screen costs the window's main thread 25 % less; Batch C
+      (same merge) removes the main-process whole-file reads on click and per-turn paths.
+      Batch B — the per-open-tab cost (hidden terminals never pause, every chat tree rebuilt
+      per shell render, per-session timers in hidden chats) — is the sweep's next build and
+      the rest of this item's second half; Batches D (theme blur/particles) and E (file opens)
+      follow. A5 (throttling the streaming bubble's markdown re-parse) is a visible change
+      that needs a before/after clip and Destin's call
+      `all` `confirmed` `checked 2026-09-16` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not
@@ -152,16 +165,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       marketplace rails (phases A–E decided and shipped 2026-08-25 → 2026-08-28)
       `all` `needs-verify` `checked 2026-09-01`
 
-- [ ] Remove the theme chip's cycle arrow altogether (Destin 2026-09-02); the outlined chips stay —
-      special cases like the model-selector and permissions chips. Was: two Phase B chip questions: the theme chip's
-      cycle glyph only shows on hover, so Android gets no cue; and two chips (teal, and the
-      orange announcement pill) still carry coloured outlines
-      `all` `needs-verify` `checked 2026-09-02`
-
-- [ ] The main app shell is still one ~3,900-line component — three planned extraction
+- [ ] The main app shell is still one ~4,650-line component — three planned extraction
       tranches remain after the first one shipped 2026-07-17 (welcome screen and session
       hooks; memoised bottom/content areas for fewer re-renders; the event-bridge mount)
-      `all` `needs-verify` `checked 2026-09-01` `performance`
+      `all` `needs-verify` `checked 2026-09-16` `performance`
 
 - [ ] The specialists chip and the session strip (twice) still draw their own badges instead
       of the shared one, so chips, tags and key caps do not quite match
@@ -204,7 +211,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `quick-chips` `all` `needs-verify` `checked 2026-09-02`
 
 - [ ] Two places still open a section with a bare "›" beside a word — the Backup & Sync log
-      ("Show log") and the system marker in chat. Destin (2026-09-05 review deck): "I HATE the
+      ("Sync Log") and the system marker in chat. Destin (2026-09-05 review deck): "I HATE the
       bare dropdowns with a chevron." The rule is now design-guide G-22; the Local Models engine
       card, its model rows and its recommended-model card all switched to it on
       `feat/local-engine-upgrades`, these two have not.

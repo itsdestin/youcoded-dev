@@ -1,0 +1,47 @@
+id: session-strip-drop-never-glides-dot
+language: tsx
+severity: error
+message: >-
+  At the drop a dot is never glided (the FLIP skips dot ids — the flow owns
+  their two images), yields judge the pill's VISIBLE leading edge (leadDrawn
+  → mapToSettled ± heldWidth/2), only a dot-SIZED pill flows or is veiled (>
+  COLLAPSED_PILL_PX + 1 is wide), the post-drop peek lock never lifts on 8px
+  of travel, a finger never gets a peek, and a press closes ANOTHER pill's
+  peek before the geometry freezes. Fuzzed 2026-09-03.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "never glides a dot at the drop — the flow owns its two images; yields judge the visible edge").
+  The retired proximity windows ({0,200}/{0,600} characters) became "inside the
+  same loop / if-block".
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-drop-never-glides-dot.tsx"
+rule:
+  any:
+    - kind: binary_expression
+      regex: "hoverLock\\.current\\.x\\)\\s*>\\s*8\\b"
+      not: { has: { regex: "hoverLock\\.current\\.x\\)\\s*>\\s*8\\b" } }
+    - kind: program
+      any:
+        - not:
+            has:
+              stopBy: end
+              pattern: "for (const [id, wasLeft] of armed.lefts) $BODY"
+              has: { stopBy: end, pattern: "if (dotIdsRef.current.has(id)) continue;" }
+        - not: { has: { stopBy: end, pattern: "const leadDrawn = floatLeft !== null ? (tv.dir < 0 ? floatLeft : tv.dir > 0 ? floatLeft + widthNow : floatLeft + widthNow / 2) : $ELSE" } }
+        - not: { has: { stopBy: end, pattern: "mapToSettled(drawn, rects, leadDrawn) + (tv.dir < 0 ? heldWidth / 2 : tv.dir > 0 ? -heldWidth / 2 : 0)" } }
+        - not:
+            has:
+              stopBy: end
+              kind: if_statement
+              all:
+                - has: { field: condition, pattern: "(w > COLLAPSED_PILL_PX + 1)" }
+                - has: { field: consequence, has: { nthChild: 1, pattern: "el.style.removeProperty('--flow');" } }
+        - not: { has: { stopBy: end, pattern: "const wide = el.offsetWidth > COLLAPSED_PILL_PX + 1" } }
+        - not: { has: { stopBy: end, pattern: "if (lastPointerType.current === 'touch') return;" } }
+        - not:
+            has:
+              stopBy: end
+              kind: if_statement
+              all:
+                - has: { field: condition, pattern: "(hoveredRef.current !== null && hoveredRef.current !== sessionId)" }
+                - has: { field: consequence, has: { stopBy: end, pattern: "setHoveredId(null)" } }

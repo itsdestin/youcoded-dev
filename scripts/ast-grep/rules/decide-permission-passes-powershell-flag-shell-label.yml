@@ -1,0 +1,25 @@
+id: decide-permission-passes-powershell-flag-shell-label
+language: typescript
+severity: error
+message: >-
+  bash.ts's detectShell() must return `label: 'PowerShell'` exactly — the
+  string decidePermission's `powershell: getShell().label === 'PowerShell'`
+  wiring compares against. If the label spelling drifts, the comparison
+  silently goes false everywhere, and PowerShell wildcard grants stop being
+  restricted.
+note: |
+  Invariant source: tests/permission-shell-context.test.ts (retired by Plan B,
+  2026-09-16; case 3 of 3 — "the label it compares against is the one
+  detectShell actually returns"). Twin of decide-permission-passes-powershell-flag
+  (different file: bash.ts, not native-session-host.ts).
+files:
+  - "**/src/main/harness/tools/bash.ts"
+  - "**/fixtures/decide-permission-passes-powershell-flag-shell-label.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      pattern:
+        context: "const x = { label: 'PowerShell' };"
+        selector: pair

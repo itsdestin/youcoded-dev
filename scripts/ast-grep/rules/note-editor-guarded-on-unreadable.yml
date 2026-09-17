@@ -1,0 +1,69 @@
+id: note-editor-guarded-on-unreadable
+language: tsx
+severity: error
+message: >-
+  SessionDrawer's preview sheet must render its note editor
+  (`onNote={previewMeta.saveNote}`) only behind a check of
+  `previewMeta.unreadable`. An unreadable note is reported, never opened as an
+  empty editor: a save writes the WHOLE note, so typing would replace the
+  stored note nobody was shown (code review 2026-09-11, F1).
+note: |
+  Invariant source: tests/session-meta-unreadable.test.tsx (Plan B,
+  2026-09-16) — "the drawer does not open a note editor for an unreadable
+  note". The file's four hook cases stay. The retired case read
+  SessionDrawer.tsx with comments blanked, found the FIRST
+  `onNote={previewMeta.saveNote}`, and required the text
+  `previewMeta.unreadable` somewhere in the 1,500 characters before it.
+  Here, on the same file:
+    - presence (whole file): no JSX attribute `onNote={previewMeta.saveNote}`;
+    - every such attribute whose element is not guarded by a read of
+      `previewMeta.unreadable` (the member expression, in code): in the
+      condition of an enclosing ternary or if, in the left operand of an
+      enclosing `&&`/`||`/`??`, or in the condition of an if statement that
+      comes before an enclosing statement (an early return).
+  DIFFERENCES, deliberate: the text must be a guarding condition — a mention
+  only in a message string or unrelated code before the editor no longer
+  counts (the case's title is the guard, and the window was its stand-in);
+  there is no 1,500-character limit on how far the guard sits; every editor
+  is checked, not only the first; whitespace inside the attribute's braces no
+  longer matters.
+files:
+  - "**/src/renderer/components/SessionDrawer.tsx"
+  - "**/fixtures/note-editor-guarded-on-unreadable*.tsx"
+utils:
+  reads-unreadable:
+    any:
+      - kind: member_expression
+        regex: "^previewMeta\\.unreadable$"
+      - has:
+          stopBy: end
+          kind: member_expression
+          regex: "^previewMeta\\.unreadable$"
+  guard-if:
+    kind: if_statement
+    has: { field: condition, matches: reads-unreadable }
+  saves-preview-note:
+    kind: jsx_attribute
+    all:
+      - has: { kind: property_identifier, regex: "^onNote$" }
+      - has: { kind: jsx_expression, regex: "^\\{\\s*previewMeta\\.saveNote\\s*\\}$" }
+  guarded:
+    any:
+      - inside:
+          stopBy: end
+          kind: ternary_expression
+          has: { field: condition, matches: reads-unreadable }
+      - inside:
+          stopBy: end
+          kind: binary_expression
+          has: { field: left, matches: reads-unreadable }
+      - inside: { stopBy: end, matches: guard-if }
+      - inside:
+          stopBy: end
+          follows: { stopBy: end, matches: guard-if }
+rule:
+  any:
+    - kind: program
+      not: { has: { stopBy: end, matches: saves-preview-note } }
+    - matches: saves-preview-note
+      not: { matches: guarded }

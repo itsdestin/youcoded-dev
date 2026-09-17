@@ -5,7 +5,7 @@ paths:
   - "**/desktop/src/renderer/components/header/pack-sessions.ts"
   - "**/desktop/src/renderer/components/header/pill-metrics.ts"
   - "**/desktop/src/renderer/components/header/pill-label-style.ts"
-last_verified: 2026-09-03
+last_verified: 2026-09-16
 verify:
   - path: youcoded/desktop/src/renderer/components/SessionStrip.tsx
     contains: "setDragActive. = useState[(]false[)]"
@@ -16,7 +16,10 @@ verify:
   - path: youcoded/desktop/src/renderer/components/header/pack-sessions.ts
     contains: "overflowChipWidth"
   - path: scripts/ui-review/drag-fuzz.mjs
-  - test: youcoded/desktop/tests/animation-frame-budget.test.ts
+  - path: scripts/ast-grep/rules/session-strip-drag-visuals-are-state.yml
+  - path: scripts/ast-grep/rules/session-strip-dot-flows-never-touches.yml
+  - path: scripts/ast-grep/rules/session-strip-drop-never-glides-dot.yml
+  - path: scripts/ast-grep/rules/session-strip-packs-real-room.yml
   - test: youcoded/desktop/tests/drag-order.test.ts
   - test: youcoded/desktop/tests/pack-sessions.test.ts
   - test: youcoded/desktop/tests/pill-metrics.test.ts
@@ -25,8 +28,8 @@ verify:
 # Session strip motion — the switcher's press, drag and drop
 
 Eleven review rounds (2026-08-31 → 09-03), signed off on round 11. Every rule below has a
-dated WHY comment at its edit site; the pins are `animation-frame-budget.test.ts` (source
-pins on `SessionStrip.tsx`) and the header unit tests.
+dated WHY comment at its edit site; the pins are the `session-strip-*` ast-grep rules
+(`scripts/ast-grep/rules/`) and the header unit tests.
 
 ## The drag visuals are state until the drop lands
 **Invariant:** the twin, the hidden in-flow box and the neighbours' step-aside render off
@@ -34,7 +37,7 @@ pins on `SessionStrip.tsx`) and the header unit tests.
 `isDragging.current` in render.
 **Why:** pointerup flips the ref before `dropResolve` returns; a hand lifting mid-motion
 (touchpad, finger) rendered in that gap, snapped the pill home, then jumped it (R10).
-**Guard:** `animation-frame-budget.test.ts` → "holds the drag visuals as STATE".
+**Guard:** ast-grep `session-strip-drag-visuals-are-state`.
 
 ## A crossed dot has two images; the swap is at its centre; dots never FLIP
 **Invariant:** the flow draws a covered dot at its box and at its mirror one pill-width
@@ -43,7 +46,7 @@ box; the flow runs as a layout effect on every commit that changes `overId`/`set
 are skipped in the settle's FLIP; only dot-sized pills flow or are veiled.
 **Why:** a one-frame race doubled the dot (R9); a FLIP'd dot popped whole under the settling
 pill (R10); a closing ex-active pill flowed as a dot drew a ghost of its name.
-**Guard:** same test → "never draws a dot touching", "never glides a dot at the drop".
+**Guard:** ast-grep `session-strip-dot-flows-never-touches`, `session-strip-drop-never-glides-dot`.
 
 ## The packer packs the room it has; a reserved width is a rendered width
 **Invariant:** `stripBudget()` subtracts the strip's padding; `packSessions` reserves the
@@ -52,7 +55,8 @@ text + tail + chrome; a hover peek opens only into free room, after `PEEK_DWELL_
 for touch, and never after a drop until the cursor leaves the strip.
 **Why:** a squeezed active name made every dot yield 25px too far (R6); a peek widened a
 centred row under a drifting hand inside the settle (R8).
-**Guard:** `pack-sessions.test.ts`, `pill-metrics.test.ts`, `pill-label-style.test.ts`.
+**Guard:** `pack-sessions.test.ts`, `pill-metrics.test.ts`, `pill-label-style.test.ts`; ast-grep
+`session-strip-packs-real-room`, `session-strip-peek-waits-for-dwell`.
 
 ## The All Sessions menu reorders on its OWN drag, not this one
 **Invariant:** a menu row's grip (`[data-menu-drag-grip]`) is a native `draggable` and the

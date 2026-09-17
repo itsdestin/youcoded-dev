@@ -1,0 +1,54 @@
+id: no-ip-keyed-failure-bucket
+language: typescript
+severity: error
+message: >-
+  remote-server.ts must not key a failed-login budget by network address
+  (`failedAttempts.get(ip)`, `failedAttempts.set(ip…`, `isRateLimited(ip)`,
+  `recordFailedAttempt(ip)`, or any `this.…attempts….get|set(ip…`). Behind the
+  loopback bind every device arrives as 127.0.0.1, so a per-address bucket is
+  ONE bucket for the household: five bad guesses from anybody lock the owner
+  out, and nothing may count attempts where two connections can both reach it.
+note: |
+  Invariant source: tests/remote-rate-limit.test.ts (Plan B, 2026-09-16) — "no
+  failure bucket is keyed by network address" and "no failure budget is
+  shared between connections". The file's socket-driving cases stay; the
+  presence half ("a burst slows new connections…") is
+  remote-burst-slows-not-refuses.
+  The retired checks were `not.toContain` / `not.toMatch` on the RAW file
+  text, comments included:
+    'failedAttempts.get(ip)'  'failedAttempts.set(ip'  'isRateLimited(ip)'
+    /recordFailedAttempt\(ip\)/  /this\.\w*[aA]ttempts\w*\.(get|set)\(ip/
+  Here, the same five spellings match the same raw text:
+    - reported on the innermost node holding them, for the kinds the text
+      normally sits in — a call or `new`, a method or function definition
+      (`isRateLimited(ip) {…}` spells it too), a comment, a string or
+      template piece, a regex;
+    - and, so no node kind is missed, the whole file fires when the raw text
+      holds a spelling that no such innermost node reports (e.g. an
+      interface's `isRateLimited(ip): boolean` signature).
+  No deliberate difference: every file the old check failed, this fails.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/no-ip-keyed-failure-bucket*.ts"
+utils:
+  ip-bucket-hit:
+    any:
+      - kind: call_expression
+      - kind: new_expression
+      - kind: method_definition
+      - kind: function_declaration
+      - kind: comment
+      - kind: string_fragment
+      - kind: template_string
+      - kind: string
+      - kind: regex_pattern
+    regex: "failedAttempts\\.get\\(ip\\)|failedAttempts\\.set\\(ip|isRateLimited\\(ip\\)|recordFailedAttempt\\(ip\\)|this\\.\\w*[aA]ttempts\\w*\\.(get|set)\\(ip"
+    not:
+      has:
+        regex: "failedAttempts\\.get\\(ip\\)|failedAttempts\\.set\\(ip|isRateLimited\\(ip\\)|recordFailedAttempt\\(ip\\)|this\\.\\w*[aA]ttempts\\w*\\.(get|set)\\(ip"
+rule:
+  any:
+    - matches: ip-bucket-hit
+    - kind: program
+      regex: "failedAttempts\\.get\\(ip\\)|failedAttempts\\.set\\(ip|isRateLimited\\(ip\\)|recordFailedAttempt\\(ip\\)|this\\.\\w*[aA]ttempts\\w*\\.(get|set)\\(ip"
+      not: { has: { stopBy: end, matches: ip-bucket-hit } }

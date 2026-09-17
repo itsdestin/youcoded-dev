@@ -44,8 +44,8 @@ not a count of resolved references; distinguish comments, definitions, and real 
 ## Verification reads the branch
 
 Run `bash scripts/verify.sh <app-worktree>` from the workspace worktree for desktop
-verification: TypeScript, related tests plus source-scanning guards, knip, ESLint, and
-ast-grep. For a specific question, run the corresponding verdict tool directly from
+verification: TypeScript (tsgo), related tests plus source-scanning guards, knip, oxlint,
+and ast-grep. For a specific question, run the corresponding verdict tool directly from
 `youcoded/desktop/`. Read its findings as well as the exit code; knip's configured
 warning categories are not all release gates.
 
@@ -114,6 +114,22 @@ positive fails as loudly as a false negative.
 
 Step 5 is the point of the exercise. Every invariant promoted to a scan is one less
 sentence an agent has to read and choose to honor.
+
+ast-grep's regex is Rust's: no lookahead or lookbehind. A rule that needs "this bracket
+has no `steps(`" is spelled as a generated complement language — edit its generator in
+`scripts/ast-grep/generators/`, never the generated YAML (2026-09-16).
+
+`constraints:` are checked only after the whole rule matches. A `has:` stops at the first
+node its pattern fits, so a constrained metavariable inside `has:` lets one non-matching
+node (an `fs.watch(…)` ahead of an `fs.readFileSync(…)`) silence the whole rule, including
+its presence branches. Inside `has:`/`inside:`, match the shape directly
+(`has: { field: property, regex: … }`) instead (2026-09-17).
+
+Besides the two directions above, `check.sh` runs three more passes before them:
+**generator drift** (each generated rule equals what its generator prints now), **rule
+paths** (every concrete `files:` path names a file that exists, so renaming a guarded
+file fails loudly), and **exemption tables** (a kept test's counted-exemption list equals
+its rule's `ignores:`).
 
 ### Where it runs
 

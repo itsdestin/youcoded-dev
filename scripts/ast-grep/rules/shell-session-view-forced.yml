@@ -1,0 +1,61 @@
+id: shell-session-view-forced
+language: tsx
+severity: error
+message: >-
+  App.tsx must keep a shell session on the terminal view: it opens there, the
+  view is FORCED (not merely defaulted) and both panes read the forced view,
+  the chat/terminal toggle handler refuses a shell session, and Settings
+  closes when one lands so the user sees the terminal. A shell session has no
+  chat — without these the user is stranded on an empty chat pane.
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  "a new shell session opens on the terminal, not on chat", "the view is
+  forced, not merely defaulted, so nothing can leave it", "both panes read
+  the forced view, not the raw per-session map", "the toggle handler refuses
+  a shell session", and "Settings closes itself when a shell session lands,
+  or the user never sees it"). Each retired case asserted App.tsx's text
+  contains an exact line; each is one whole-file presence branch below,
+  matched structurally (whitespace-insensitive; a mention only in a comment
+  or string no longer counts):
+    - `const defaultView = info.provider === 'shell' ? 'terminal' : 'chat'`
+    - `const isShellSession = activeSessionProvider === 'shell'`
+    - `const currentViewMode = isShellSession ? 'terminal' : …` (the test
+      pinned only that prefix)
+    - a `visible={s.id === sessionId && currentViewMode === 'chat'}` and a
+      `… === 'terminal'}` attribute (any element)
+    - `if (sessionsRef.current.find((x) => x.id === sessionId)?.provider === 'shell') return;`
+      anywhere (the retired toContain also accepted the copy in cyclePermission,
+      which shell-session-permission-cycle-guarded pins on its own)
+    - `if (info.provider === 'shell') setSettingsOpen(false);` — braces around
+      the call are also accepted (a formatting difference, looser than the text)
+  One fixture file per branch.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/shell-session-view-forced-*.tsx"
+utils:
+  visible-reads:
+    kind: jsx_attribute
+    has: { kind: property_identifier, regex: "^visible$" }
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "const defaultView = info.provider === 'shell' ? 'terminal' : 'chat'" } }
+    - not: { has: { stopBy: end, pattern: "const isShellSession = activeSessionProvider === 'shell'" } }
+    - not: { has: { stopBy: end, pattern: "const currentViewMode = isShellSession ? 'terminal' : $ALT" } }
+    - not:
+        has:
+          stopBy: end
+          matches: visible-reads
+          has: { kind: jsx_expression, has: { pattern: "s.id === sessionId && currentViewMode === 'chat'" } }
+    - not:
+        has:
+          stopBy: end
+          matches: visible-reads
+          has: { kind: jsx_expression, has: { pattern: "s.id === sessionId && currentViewMode === 'terminal'" } }
+    - not: { has: { stopBy: end, pattern: "if (sessionsRef.current.find((x) => x.id === sessionId)?.provider === 'shell') return;" } }
+    - not:
+        has:
+          stopBy: end
+          any:
+            - pattern: "if (info.provider === 'shell') setSettingsOpen(false);"
+            - pattern: "if (info.provider === 'shell') { setSettingsOpen(false); }"

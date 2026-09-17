@@ -1,0 +1,44 @@
+id: workbench-document-checks-vite-workbench
+language: typescript
+severity: error
+message: >-
+  isWorkbenchDocument() in workbench-mode.ts must check VITE_WORKBENCH — the
+  flag `npm run build:site` sets. Without it the predicate is `false` in the
+  landing page's production build of the workbench, and every safety gate that
+  relies on it (the microphone gate first) disappears there.
+note: |
+  Invariant source: tests/useVoiceInput.test.ts › "isWorkbenchDocument checks
+  VITE_WORKBENCH, which is what the site build sets" (retired by Plan B,
+  2026-09-16). The retired case sliced workbench-mode.ts from
+  `export function isWorkbenchDocument` to the first `}` and required the text
+  `VITE_WORKBENCH` in that slice (comments included). A missing function also
+  failed it.
+  Rule (whole file): no TOP-LEVEL `export function isWorkbenchDocument` with
+  any descendant whose text contains VITE_WORKBENCH — comments count, as they
+  did. The declaration must sit directly in an export statement at the top of
+  the file, as the retired slice's `export function` marker required, so a
+  nested or unexported function of the same name cannot satisfy it (review of
+  u11, 2026-09-16).
+  Difference, minimal: the whole function body counts rather than the text up
+  to its first `}` (today the body has no inner braces, so the two are the
+  same region).
+  SCOPING: workbench-mode.ts only plus its fixtures.
+files:
+  - "**/src/renderer/workbench-mode.ts"
+  - "**/fixtures/workbench-document-checks-vite-workbench.ts"
+  - "**/fixtures/workbench-document-checks-vite-workbench-nested.ts"
+rule:
+  kind: program
+  not:
+    has:
+      # Direct children only: program > export_statement > function_declaration.
+      kind: export_statement
+      has:
+        kind: function_declaration
+        has:
+          field: name
+          regex: "^isWorkbenchDocument$"
+        all:
+          - has:
+              stopBy: end
+              regex: "VITE_WORKBENCH"

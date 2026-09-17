@@ -29,12 +29,14 @@ primitives, tokens, review decks); error states have one component; onboarding i
 the conversational wizard. Hover hints are the app's own on the whole main chat screen —
 themed, and reachable by press-and-hold where a pointer hover never was — with settings,
 the marketplace and project view still to convert. Blocking: the misleading-error audit
-(v1.3.1), those remaining tooltips, and a first-run screen that does not exist yet.
+(v1.3.1), those remaining tooltips, and the proper first-run screen (the 2026-09-11 guide
+wrapped the wizard; the replacement itself is still parked).
 
 **Platforms.** Windows, macOS and Linux desktop, Android with an on-device runtime, and any
 browser through remote access; sync, backup and restore on all of them. Blocking for
-`v1.3`: one product gate (does Connected accounts show an in-app GitHub sign-in?) and the
-release mechanics; Android still lacks tags, notes, the native harness and the local engine.
+`v1.3`: the release mechanics — the last product gate (Connected accounts shows an in-app
+GitHub sign-in) was confirmed 2026-09-02; Android still lacks tags, notes, the native
+harness and the local engine.
 
 ## Next release
 Target: `v1.3`
@@ -48,25 +50,24 @@ Target: `v1.3`
 - marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
 - native-harness: **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
-- other-features: **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 114 | 33 | 4 | 10 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 12 | 4 | 23 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 7 | 1 | 4 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 37 | 16 | 1 | 6 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 27 | 11 | 4 | 2 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 8 | 0 | 9 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 11 | 1 | 5 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 17 | 5 | 2 | 5 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 17 | 5 | 0 | 6 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 15 | 2 | 3 | 2 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 11 | 6 | 0 | 4 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
-| [games](docs/roadmap/games.md) — the arcade | 3 | 2 | 0 | 1 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 33 | 6 | 10 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 62 | 11 | 5 | 22 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 38 | 9 | 1 | 4 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 37 | 15 | 2 | 5 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 8 | 2 | 2 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 22 | 6 | 0 | 9 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 12 | 1 | 4 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 18 | 6 | 3 | 6 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 4 | 2 | 5 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 14 | 6 | 0 | 4 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 13 | 1 | 3 | 2 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
+| [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,

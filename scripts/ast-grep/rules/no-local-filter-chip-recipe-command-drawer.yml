@@ -1,0 +1,43 @@
+id: no-local-filter-chip-recipe-command-drawer
+language: tsx
+severity: error
+message: >-
+  The skills drawer draws its chips (and its Favorites toggle) with
+  <FilterChip>, not a local recipe. The retired drawer chips were 12px pills
+  with their own border pair (`text-xs px-2 py-0.5 rounded-full`), the
+  Favorites toggle had a third "on" colour (`bg-accent/20 text-accent
+  border-accent/50`), and the toggle was pushed right with `ml-auto`.
+note: |
+  Invariant source: tests/filter-chip.test.tsx (Plan B, 2026-09-16; "the
+  skills drawer draws its chips with FilterChip too, not a local recipe" —
+  case 3 of the "MarketplaceFilterBar after the extraction" describe block).
+  Two branches, both from the retired check on the comment-stripped file:
+  (a) PRESENCE — it required `<FilterChip`, so a file with no tag whose name
+  starts with FilterChip fires (whole-file `kind: program`); (b) ABSENCE — it
+  refused `text-xs px-2 py-0.5 rounded-full`, `bg-accent/20 text-accent
+  border-accent/50` and `ml-auto` anywhere, so any string piece or JSX text
+  holding one fires (a substring cannot span a `${…}`, so string pieces cover
+  every non-comment place it could match).
+  STRICTER than the retired check (review of u2, 2026-09-16): a file whose
+  only `<FilterChip` sits in a string or a generic type argument passed the
+  old presence check; here it fires, because only a rendered tag counts.
+files:
+  - "**/src/renderer/components/CommandDrawer.tsx"
+  - "**/fixtures/no-local-filter-chip-recipe-command-drawer.tsx"
+  - "**/fixtures/no-local-filter-chip-recipe-command-drawer-absent.tsx"
+rule:
+  any:
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          any:
+            - kind: jsx_opening_element
+            - kind: jsx_self_closing_element
+          has:
+            field: name
+            regex: "^FilterChip"
+    - any:
+        - kind: string_fragment
+        - kind: jsx_text
+      regex: "text-xs px-2 py-0[.]5 rounded-full|bg-accent/20 text-accent border-accent/50|ml-auto"

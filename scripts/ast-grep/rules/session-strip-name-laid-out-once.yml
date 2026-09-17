@@ -1,0 +1,22 @@
+id: session-strip-name-laid-out-once
+language: tsx
+severity: error
+message: >-
+  A pill's name is laid out once (max-content inside a clipping label box,
+  <span className="session-pill__name">) and faded, never re-ellipsised per
+  state (`text-ellipsis ${isActive…}`) — that re-truncated the name mid-
+  animation ("theme …", "theme cont…").
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "lays the name out once and fades what does not fit").
+  The LABEL_TAIL_PX half of that case stays a text read: it reads the number
+  from pill-label-style.ts at run time and checks globals.css with it, a
+  cross-file comparison no single-file rule expresses.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-name-laid-out-once.tsx"
+rule:
+  any:
+    - kind: template_string
+      regex: "text-ellipsis \\$\\{isActive"
+    - kind: program
+      not: { has: { stopBy: end, kind: jsx_attribute, regex: "^className=\"session-pill__name\"$" } }

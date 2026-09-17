@@ -1,0 +1,37 @@
+id: arcade-shared-state-has-seat-vocabulary
+language: typescript
+severity: error
+message: >-
+  game-types.ts must still define the shared game vocabulary — seat,
+  turnSeat, outcome and play. Without it the ban on Connect 4's words
+  (arcade-shared-state-no-connect4-vocabulary) could pass simply because the
+  file was emptied.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "Connect 4's vocabulary is gone from the shared state").
+  The retired case required each word somewhere in game-types.ts +
+  game-reducer.ts together. All four are DEFINED in game-types.ts (the
+  reducer only uses them), so presence is checked in that file.
+files:
+  - "**/src/renderer/state/game-types.ts"
+  - "**/fixtures/arcade-shared-state-has-seat-vocabulary.ts"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, matches: code-token, regex: "seat" } }
+    - not: { has: { stopBy: end, matches: code-token, regex: "turnSeat" } }
+    - not: { has: { stopBy: end, matches: code-token, regex: "outcome" } }
+    - not: { has: { stopBy: end, matches: code-token, regex: "play" } }

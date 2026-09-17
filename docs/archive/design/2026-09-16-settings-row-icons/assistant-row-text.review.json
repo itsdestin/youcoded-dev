@@ -1,0 +1,29 @@
+{
+  "title": "Settings \u2014 Assistant settings row wording",
+  "key": "settings-assistant-row-text-review",
+  "out": "assistant-row-text.review.html",
+  "images": "images/assistant-row-text.review",
+  "runs": {
+    "before": "runs/round3",
+    "after": "runs/after"
+  },
+  "crops": {
+    "assistantrow": [
+      "settings-rows",
+      "settings-rows",
+      "320x62+0+120"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings \u2192 Assistant settings row",
+      "crop": "assistantrow",
+      "headline": "The Assistant settings row now reads \"Models, permissions, defaults, and more\".",
+      "changed": "The grey second line used to show your current default model, like \"Claude Code \u00b7 Sonnet\". It now describes what the panel holds. This applies on desktop and phone.",
+      "notice": "You can no longer see which model new chats will use without opening the panel. The model picker on its General page still shows it.",
+      "risk": "The line does not fit the settings panel at any window size. Meadow Mist cuts it to \"Models, permissions, defaults, and m\u2026\", and the other themes' font cuts it to \"Models, permissions, defaul\u2026\". Say in a note if you want shorter wording instead."
+    }
+  ]
+}

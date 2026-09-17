@@ -1,0 +1,45 @@
+id: resume-browser-no-local-filter-chip-parts
+language: tsx
+severity: error
+message: >-
+  The Resume browser's filter row draws nothing of its own: no local
+  FilterPill, no text-glyph chevrons or arrows (▾▴▼▲↓↑ — the chevron is the
+  Select field's SVG inside FilterMenuChip), no hand-made `rounded-sm border
+  ${checked…}` check box (use <CheckboxMark>), and no chip label that joins
+  names with ', ' or reads "Projects (N)" (use pickLabel).
+note: |
+  Invariant source: tests/filter-menu-chip.test.tsx (Plan B, 2026-09-16) —
+  the ABSENCE halves of "is what the Resume browser renders on both chips",
+  "uses the shared chips, the shared search pill and the checkbox mark" and
+  all of "draws no text-glyph chevrons or arrows and no hand-made check box".
+  The presence halves are resume-browser-uses-shared-filter-chips.
+  Each branch is one retired `not.toMatch` on the comment-stripped file:
+  - `/function FilterPill\b/` → a function declaration/expression named so;
+  - `/[▾▴▼▲↓↑]/` → a string piece (template text included), JSX text or
+    regex literal holding one (identifiers cannot);
+  - `/rounded-sm border \$\{checked/` → a template literal whose text has
+    it (the substitution is part of the match, so template text, not pieces);
+  - `/join\(', '\)/` → a call whose callee ends in `join` with exactly
+    `(', ')` as its argument list;
+  - `/Projects \(\$\{/` → a template literal whose text has `Projects (${`.
+files:
+  - "**/src/renderer/components/ResumeBrowser.tsx"
+  - "**/fixtures/resume-browser-no-local-filter-chip-parts.tsx"
+rule:
+  any:
+    - any:
+        - kind: function_declaration
+        - kind: function_expression
+        - kind: generator_function_declaration
+      has: { field: name, regex: '^FilterPill\b' }
+    - any:
+        - kind: string_fragment
+        - kind: jsx_text
+        - kind: regex_pattern
+      regex: "[▾▴▼▲↓↑]"
+    - kind: template_string
+      regex: "rounded-sm border [$][{]checked|Projects [(][$][{]"
+    - kind: call_expression
+      all:
+        - has: { field: function, regex: "join$" }
+        - has: { field: arguments, regex: "^[(]', '[)]$" }

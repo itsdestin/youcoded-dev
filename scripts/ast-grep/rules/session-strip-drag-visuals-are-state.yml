@@ -1,0 +1,56 @@
+id: session-strip-drag-visuals-are-state
+language: tsx
+severity: error
+message: >-
+  The drag visuals are React STATE until the drop is committed: `const
+  [dragActive, setDragActive] = useState(false)`, `const dragging = dragId
+  !== null && dragActive && dragLeft !== null`, every `isBeingDragged` is
+  `dragId === s.id && dragActive`, releaseVisuals clears it
+  (setDragActive(false)), and the isDragging ref is never read after
+  `dragging` is derived (render). The ref flipped at pointerup before the
+  commit landed — "jumping around the switcher on release" (R10).
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "holds the drag visuals as STATE until the drop is committed — never the isDragging ref").
+  "Never read in render" was a text slice from `const dragging = dragId !== null && dragActive && dragLeft !== null` to end of file;
+  the rule matches an isDragging.current (or a line comment naming it) any of
+  whose ancestors is a later sibling of that declaration or of a node
+  containing it — the same region. The retired exact count of two
+  isBeingDragged declarations became: at least one, and none that differs.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-drag-visuals-are-state.tsx"
+utils:
+  dragging-decl:
+    any:
+      - pattern: "const dragging = dragId !== null && dragActive && dragLeft !== null"
+      - has: { stopBy: end, pattern: "const dragging = dragId !== null && dragActive && dragLeft !== null" }
+rule:
+  any:
+    - regex: "isDragging\\.current"
+      not: { has: { regex: "isDragging\\.current" } }
+      all:
+        - any:
+            - kind: member_expression
+            - all:
+                - kind: comment
+                - not: { regex: "^/\\*" }
+        # after the declaration in text: the node itself, or any ancestor, is a
+        # later sibling of the declaration (or of a node containing it).
+        - any:
+            - follows: { stopBy: end, matches: dragging-decl }
+            - inside: { stopBy: end, follows: { stopBy: end, matches: dragging-decl } }
+    - kind: variable_declarator
+      has: { field: name, regex: "^isBeingDragged$" }
+      not: { has: { field: value, pattern: "dragId === s.id && dragActive" } }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "const [dragActive, setDragActive] = useState(false)" } }
+        - not: { has: { stopBy: end, pattern: "const dragging = dragId !== null && dragActive && dragLeft !== null" } }
+        - not: { has: { stopBy: end, pattern: "const isBeingDragged = dragId === s.id && dragActive" } }
+        - not:
+            has:
+              stopBy: end
+              kind: variable_declarator
+              all:
+                - has: { field: name, regex: "^releaseVisuals$" }
+                - has: { stopBy: end, pattern: "setDragActive(false)" }

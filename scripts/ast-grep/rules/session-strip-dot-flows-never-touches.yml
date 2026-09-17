@@ -1,0 +1,63 @@
+id: session-strip-dot-flows-never-touches
+language: tsx
+severity: error
+message: >-
+  A dot never visibly touches the pill in hand: it is veiled within VEIL_PX
+  (1px) of the twin, jumps (0s) rather than slides while hidden, keeps
+  `scale(var(--flow, 1))` through the settle, flows around the pill with a
+  mirror ghost (a layout effect runs the flow on every commit), and the rAF
+  loop — not React — positions the twin. Destin, 2026-09-02: "as long as
+  they dont visually touch the dragged pill".
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "never draws a dot touching the pill in hand — veiled by proximity, moved while hidden").
+  The stylesheet half of that case (.session-pill--veiled, no pill-hop/data-yield)
+  stays a text read there; pill-label-style.ts's reveal transition is
+  pill-label-reveals-with-motion-tokens. The old regex also required
+  `if (!flowActive) return;` to be the effect's FIRST statement — the pattern
+  below keeps that ($$$ only after it). The "direction-blind" ban is a statement
+  ending in `travel.current.dir` immediately followed by `const barL…`, exactly
+  the retired `travel.current.dir;\n\s+const barL` adjacency.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-dot-flows-never-touches.tsx"
+rule:
+  any:
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "const VEIL_PX = 1" } }
+        # `… && r.right > t.left - VEIL_PX && r.left < t.right + VEIL_PX` (left-assoc chain).
+        - not:
+            has:
+              stopBy: end
+              kind: binary_expression
+              all:
+                - has: { field: right, pattern: "r.left < t.right + VEIL_PX" }
+                - has:
+                    field: left
+                    any:
+                      - pattern: "r.right > t.left - VEIL_PX"
+                      - has: { field: right, pattern: "r.right > t.left - VEIL_PX" }
+        - not: { has: { stopBy: end, pattern: "(dragging || settle !== null) && isDot ? '0s' : 'var(--dur-hover) var(--ease-out)'" } }
+        - not:
+            has:
+              stopBy: end
+              kind: ternary_expression
+              all:
+                - has: { field: condition, pattern: "settle !== null && isDot" }
+                - has: { field: consequence, regex: "^'scale\\(var\\(--flow, 1\\)\\)'$" }
+        - not:
+            has:
+              stopBy: end
+              pattern: "useLayoutEffect(() => { if (!flowActive) return; $$$REST }, $$$DEPS)"
+              has: { stopBy: end, pattern: "flow(bar, t, heldId)" }
+        - not: { has: { stopBy: end, pattern: "ghost.dataset.ghost = $V" } }
+        - not: { has: { stopBy: end, pattern: "const mirror = at.origin === 'right center' ? left - (t.width + G) : left + (t.width + G)" } }
+        - not: { has: { stopBy: end, pattern: "ghost.removeAttribute('data-session-id')" } }
+        - not: { has: { stopBy: end, pattern: "twin.style.left = $V" } }
+    - any:
+        - kind: lexical_declaration
+        - kind: expression_statement
+      regex: "travel\\.current\\.dir;$"
+      precedes:
+        kind: lexical_declaration
+        regex: "^const barL"

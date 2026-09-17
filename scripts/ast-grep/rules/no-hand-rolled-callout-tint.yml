@@ -1,0 +1,145 @@
+id: no-hand-rolled-callout-tint
+language: tsx
+severity: error
+message: >-
+  Passive information goes through `<Callout>`. A tint from the callout
+  palette (accent/destructive/amber/red/green/emerald at 5% or 10% opacity)
+  paired with a `border` in the same class recipe is the shape a hand-rolled
+  callout wears — K4's whole spec is "3 geometries", and matching that SHAPE
+  rather than a list of known-bad recipes is what found the app's actual
+  drift: a second red tint at a different border opacity, and a green
+  success block the three named tones cannot even express. If the block
+  carries a button it is a K5 status strip, a different kit entry — add a
+  file-level exemption with the reason rather than hand-rolling either one.
+note: |
+  Invariant source: tests/callout-authority.test.tsx (Plan B, 2026-09-16;
+  "no in-scope file grows a new hand-rolled callout" — case 2 of the
+  "callout adoption" describe block's 3 cases).
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx (flat only, `*` crosses `/` in this ast-grep so every
+  OTHER components/ subdirectory is listed under ignores:),
+  components/development/*.tsx, components/ui/*.tsx — Callout.tsx itself is
+  ignored (where the three tones are defined).
+  EXEMPT (carried as `ignores:`, from the retired test's NOT_CALLOUTS table):
+  Button.tsx (danger-outline's hover fill — a control's own state),
+  ModelPickerPopup.tsx (Fast mode's warning box — a hand-rolled warning
+  callout, follow-up filed separately), ThemeShareSheet.tsx (an <a> styled
+  as a button), AssistantTurnBubble.tsx (the Plan card — not a menu surface),
+  SessionContextBanner.tsx / SettingsPanel.tsx / SyncPanel.tsx /
+  SpecialistsChip.tsx (K5 status strips or state pills, per NOT_CALLOUTS).
+  scripts/ast-grep/check.sh fails if the marked ignores: block and the
+  NOT_CALLOUTS keys differ (review of u10, 2026-09-16).
+  LIMITATION: NOT_CALLOUTS counted per file (e.g. SyncPanel.tsx: exactly 4)
+  so a FIFTH tinted block there would have failed the retired test; a
+  whole-file `ignores:` cannot express "at most N here". That exact-count
+  case ("every exemption still exists and still applies") is kept as a text
+  read in the trimmed test file per global.md's "at most N matches" guidance.
+  Matched on (a) one string or template literal holding BOTH the tint token
+  and the word `border`, and (b) FIX (review of t6a, 2026-09-16) one
+  `className` attribute — or one mergeClasses(…) call — whose pieces hold
+  them between them (`className={`border ${x}` + (t ? ' bg-accent/10' : '')}`),
+  reported once (a piece that already matches on its own reports instead),
+  and (c) FIX (review round 2, 2026-09-16) a tint in `className` paired with
+  the word `border` in a DIFFERENT attribute of the SAME opening tag (most
+  often `style={{ border: '...' }}`) — the shape the retired ±150-char
+  window also caught (a border a few characters past the end of the
+  className string) that (b) does not, because it only looks inside
+  className/mergeClasses. Matches both the open (`<div ...>`) and
+  self-closing (`<div ... />`) tag forms; excluded whenever `border` already
+  appears inside className itself (branches (a)/(b) already cover that
+  shape, so this one does not re-report it).
+  NOT the same as the retired check: that counted a tint with the word
+  `border` anywhere within 150 characters either side, which also caught a
+  tint and a border in NEIGHBOURING attributes or elements. The window was
+  written as a stand-in for "one class string"; this rule follows that intent
+  (one attribute, or — per (c) — one JSX tag), so a tint in one element's
+  classes next to a border in ANOTHER ELEMENT's still does not count. The
+  kept exact-count case in the test still uses the 150-character window for
+  the exempt files.
+  KNOWN GAP (review round 2, 2026-09-16, not covered): a tint held in a
+  constant interpolated into className (e.g. `className={`border ${TONE.warn}`}`)
+  where `TONE.warn` is not itself a literal tint token in THIS file. Resolving
+  it needs cross-file constant lookup, which risks false positives on any
+  interpolated identifier that merely LOOKS like a tone name — left as a text
+  read if it's ever needed rather than guessed at here.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-hand-rolled-callout-tint.tsx"
+ignores:
+  - "**/*.test.tsx"
+  - "**/Callout.tsx"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+  # exemption-table: NOT_CALLOUTS — counted in tests/callout-authority.test.tsx,
+  # not here; check.sh fails if this block and that table differ. Keep it last.
+  - "**/Button.tsx"
+  - "**/ModelPickerPopup.tsx"
+  - "**/ThemeShareSheet.tsx"
+  - "**/AssistantTurnBubble.tsx"
+  - "**/SessionContextBanner.tsx"
+  - "**/SettingsPanel.tsx"
+  - "**/SyncPanel.tsx"
+  - "**/SpecialistsChip.tsx"
+utils:
+  tint-and-border:
+    all:
+      - regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
+      - regex: "\\bborder\\b"
+  tint-only:
+    regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
+  class-piece:
+    any:
+      - kind: string_fragment
+      - kind: template_string
+  # The className attribute (own text), used both to find the tint and to
+  # confirm border is NOT already inside it (branches (a)/(b) own that case).
+  classname-attr:
+    kind: jsx_attribute
+    regex: "^className="
+rule:
+  any:
+    - matches: class-piece
+      all:
+        - matches: tint-and-border
+        # a template holding a fragment that already matches reports via the fragment
+        - not: { has: { stopBy: end, all: [{ matches: class-piece }, { matches: tint-and-border }] } }
+    # Split across pieces of one className attribute or one mergeClasses(…) call.
+    - any:
+        - kind: jsx_attribute
+          regex: "^className="
+        - kind: call_expression
+          has: { field: function, regex: "^mergeClasses$" }
+          not: { inside: { stopBy: end, kind: jsx_attribute, regex: "^className=" } }
+      all:
+        - matches: tint-and-border
+        - not: { has: { stopBy: end, all: [{ matches: class-piece }, { matches: tint-and-border }] } }
+        - not: { has: { stopBy: end, kind: call_expression, has: { field: function, regex: "^mergeClasses$" }, matches: tint-and-border } }
+    # (c) FIX (review round 2, 2026-09-16): tint in className, `border` in a
+    # DIFFERENT attribute of the same opening tag (e.g. style={{ border: … }}).
+    - any:
+        - kind: jsx_opening_element
+        - kind: jsx_self_closing_element
+      all:
+        - has: { stopBy: end, all: [{ matches: classname-attr }, { matches: tint-only }] }
+        - not: { has: { stopBy: end, all: [{ matches: classname-attr }, { regex: "\\bborder\\b" }] } }
+        - has: { stopBy: end, all: [{ kind: jsx_attribute }, { regex: "\\bborder\\b" }, { not: { matches: classname-attr } }] }

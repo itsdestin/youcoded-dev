@@ -1,0 +1,171 @@
+id: new-session-forms-use-default-runtime
+language: tsx
+severity: error
+message: >-
+  Both new-session forms (SessionStrip's and App's welcome form) must open on
+  `useState<Runtime>(() => defaultRuntime())`, never the literal 'claude', and
+  the code that closes the form after a create must reset the runtime to
+  defaultRuntime(), never to 'claude' (review R2-3: a literal reset made a
+  ChatGPT-only install's default last one session). The only literal
+  setRuntime('claude') / setWelcomeRuntime('claude') allowed is the user's own
+  pick in applyModelChoice / applyWelcomeModelChoice.
+note: |
+  Invariant source: tests/runtime-default.test.tsx (Plan B, 2026-09-16) —
+  "(f) both forms initialise from defaultRuntime() and reset to it after a
+  create". The retired case read each form with comments blanked:
+    SessionStrip.tsx — setter setRuntime, close setShowNewForm(false);
+    App.tsx          — setter setWelcomeRuntime, close setWelcomeFormOpen(false);
+  and asserted, per file:
+    a. no /useState<Runtime>\(\s*'claude'\s*\)/ anywhere;
+    b. /useState<Runtime>\(\s*\(\)\s*=>\s*defaultRuntime\(\)\s*\)/ somewhere;
+    c. the close text occurs at least once;
+    d. the 600 characters from each close hold no `<setter>('claude')`;
+    e. at least one such window holds `<setter>(defaultRuntime())`;
+    f. `<setter>('claude')` occurs at most once in the file.
+  Here, branch by branch:
+    a. the innermost non-comment node holding that text (a call, a `new`,
+       a string piece, JSX text or a regex) — anywhere in either file;
+    b. whole file: no `useState<Runtime>(() => defaultRuntime())` call;
+    c. whole file: neither form's close call (`setShowNewForm(false)` /
+       `setWelcomeFormOpen(false)`) — each file holds only its own;
+    d. the innermost node holding `<setter>('claude')` that sits after a
+       close STATEMENT in the same block (a later sibling, at any depth);
+    e. whole file holding the form's close: no close statement with a later
+       sibling that is or contains a `<setter>(defaultRuntime())` call;
+    f. a node holding `<setter>('claude')` with an earlier holder somewhere
+       in the file (it, or an ancestor, follows a sibling that is or holds
+       one) — i.e. the second and later ones fire.
+  e and f run only in the file whose close they belong to (the "whole file
+  holding the form's close" gate), as the retired case checked each setter
+  in its own file only.
+  DIFFERENCES, deliberate: "the rest of the close statement's block"
+  replaces the 600-character window (stricter past 600 characters inside
+  the block; looser across the block's end, where the window read into
+  unrelated code — the next handler, or a sibling JSX element). A close
+  that is not a statement (App's Cancel, `onClick={() => set…(false)}`)
+  has no block tail, so it is not checked for d/e; the Create handler's
+  close is a statement and is. b, c and e need real calls: a string or
+  regex spelling them no longer counts, and a call on a receiver
+  (`x.setRuntime(defaultRuntime())`) no longer satisfies e. f counts holder
+  nodes, so two literals inside one string count once.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/new-session-forms-use-default-runtime*.tsx"
+utils:
+  # The node kinds that can hold a call's text whole. Comments do not count
+  # (the retired case blanked them), neither alone nor inside a call.
+  literal-seed:
+    any:
+      - kind: call_expression
+      - kind: new_expression
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: regex_pattern
+    regex: "useState<Runtime>\\(\\s*'claude'\\s*\\)"
+    # a comment inside a call is part of its text; one there does not count
+    not: { has: { stopBy: end, kind: comment, regex: "useState<Runtime>\\(\\s*'claude'\\s*\\)" } }
+  strip-literal:
+    any:
+      - kind: call_expression
+      - kind: new_expression
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: regex_pattern
+    regex: "setRuntime\\('claude'\\)"
+    # a comment inside a call is part of its text; one there does not count
+    not: { has: { stopBy: end, kind: comment, regex: "setRuntime\\('claude'\\)" } }
+  welcome-literal:
+    any:
+      - kind: call_expression
+      - kind: new_expression
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: regex_pattern
+    regex: "setWelcomeRuntime\\('claude'\\)"
+    # a comment inside a call is part of its text; one there does not count
+    not: { has: { stopBy: end, kind: comment, regex: "setWelcomeRuntime\\('claude'\\)" } }
+  strip-close:
+    kind: expression_statement
+    has: { pattern: setShowNewForm(false) }
+  welcome-close:
+    kind: expression_statement
+    has: { pattern: setWelcomeFormOpen(false) }
+  strip-form-file:
+    kind: program
+    has: { stopBy: end, pattern: setShowNewForm(false) }
+  welcome-form-file:
+    kind: program
+    has: { stopBy: end, pattern: setWelcomeFormOpen(false) }
+  # A node that is, or contains, a holder — for the "earlier one" test in f.
+  is-or-has-strip-literal:
+    any:
+      - matches: strip-literal
+      - has: { stopBy: end, matches: strip-literal }
+  is-or-has-welcome-literal:
+    any:
+      - matches: welcome-literal
+      - has: { stopBy: end, matches: welcome-literal }
+rule:
+  any:
+    # a. literal seed, innermost holder
+    - matches: literal-seed
+      not: { has: { stopBy: end, matches: literal-seed } }
+    # b. no lazy default seed
+    - kind: program
+      not: { has: { stopBy: end, pattern: "useState<Runtime>(() => defaultRuntime())" } }
+    # c. neither form's close
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          any:
+            - pattern: setShowNewForm(false)
+            - pattern: setWelcomeFormOpen(false)
+    # d. literal reset after a close, in the close's block
+    - matches: strip-literal
+      not: { has: { stopBy: end, matches: strip-literal } }
+      any:
+        - follows: { stopBy: end, matches: strip-close }
+        - inside: { stopBy: end, follows: { stopBy: end, matches: strip-close } }
+    - matches: welcome-literal
+      not: { has: { stopBy: end, matches: welcome-literal } }
+      any:
+        - follows: { stopBy: end, matches: welcome-close }
+        - inside: { stopBy: end, follows: { stopBy: end, matches: welcome-close } }
+    # e. no close is followed by the reset to the default
+    - matches: strip-form-file
+      not:
+        has:
+          stopBy: end
+          matches: strip-close
+          precedes:
+            stopBy: end
+            any:
+              - pattern: setRuntime(defaultRuntime())
+              - has: { stopBy: end, pattern: setRuntime(defaultRuntime()) }
+    - matches: welcome-form-file
+      not:
+        has:
+          stopBy: end
+          matches: welcome-close
+          precedes:
+            stopBy: end
+            any:
+              - pattern: setWelcomeRuntime(defaultRuntime())
+              - has: { stopBy: end, pattern: setWelcomeRuntime(defaultRuntime()) }
+    # f. a second literal in the file
+    - matches: strip-literal
+      all:
+        - not: { has: { stopBy: end, matches: strip-literal } }
+        - inside: { stopBy: end, matches: strip-form-file }
+        - any:
+            - follows: { stopBy: end, matches: is-or-has-strip-literal }
+            - inside: { stopBy: end, follows: { stopBy: end, matches: is-or-has-strip-literal } }
+    - matches: welcome-literal
+      all:
+        - not: { has: { stopBy: end, matches: welcome-literal } }
+        - inside: { stopBy: end, matches: welcome-form-file }
+        - any:
+            - follows: { stopBy: end, matches: is-or-has-welcome-literal }
+            - inside: { stopBy: end, follows: { stopBy: end, matches: is-or-has-welcome-literal } }

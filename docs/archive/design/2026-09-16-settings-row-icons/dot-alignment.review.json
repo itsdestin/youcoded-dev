@@ -1,0 +1,21 @@
+{
+  "title": "Settings — status dot lined up with its text",
+  "key": "settings-dot-alignment-review",
+  "out": "dot-alignment.review.html",
+  "images": "images/dot-alignment.review",
+  "runs": { "before": "runs/round1", "after": "runs/after" },
+  "crops": { "dotrows": ["settings-rows", "settings-rows", "200x110+55+370"] },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings → the Backup & Sync and Remote Access rows",
+      "crop": "dotrows",
+      "headline": "The dot now sits level with the middle of the status text instead of slightly below it.",
+      "changed": "The dot is now centred on the height of the capital letters beside it. Before, it lined up with the middle of the small letters, which put it a little low. Both rows use the same shared piece, so they stay matched.",
+      "measured": "Dot raised 1 to 2 px; its centre now matches the text centre to the pixel",
+      "notice": "\"Sync Failing\" and \"Disabled\" read as level with their dots. Zoom in on the page to compare Before and After closely.",
+      "risk": "The move is tiny, so on a small screen it may be hard to see. Long status text is still cut off with \"…\" as before."
+    }
+  ]
+}

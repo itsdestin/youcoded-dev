@@ -1,0 +1,41 @@
+id: session-strip-drag-state-keyed-by-id
+language: tsx
+severity: error
+message: >-
+  Drag state is keyed by session id, never by index (no dragIdx/overIdx —
+  see drag-order.ts's header). Each pill still carries BOTH data-session-
+  id={s.id} and data-session-idx={idx}: the idx attribute is read from
+  outside the renderer (main.ts torn-off placement, scripts/perf-lab), which
+  fail silently on a rename.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "keys drag state by session id, never by index").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-drag-state-keyed-by-id.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  any:
+    - matches: code-leaf
+      regex: "\\bdragIdx\\b|\\boverIdx\\b"
+      not: { has: { regex: "\\bdragIdx\\b|\\boverIdx\\b" } }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, kind: jsx_attribute, regex: "^data-session-id=\\{s\\.id\\}$" } }
+        - not: { has: { stopBy: end, kind: jsx_attribute, regex: "^data-session-idx=\\{idx\\}$" } }

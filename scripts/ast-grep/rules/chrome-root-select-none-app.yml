@@ -1,0 +1,49 @@
+id: chrome-root-select-none-app
+language: tsx
+severity: error
+message: >-
+  App.tsx must keep select-none on the "No Active Session" title and the
+  "Initializing session..." line (`<p className="… select-none …">text</p>`).
+  They are placeholders, not content: Ctrl+A must not paint them (Destin,
+  2026-09-10).
+note: |
+  Invariant source: tests/unselectable-chrome.test.ts (Plan B, 2026-09-16),
+  the "no-session title" and "initializing line" cases of "chrome areas
+  carry select-none on their own root". The retired cases blanked comments
+  and required the regexes
+  `className="[^"]*\bselect-none\b[^"]*">No Active Session<` and
+  `className="[^"]*\bselect-none\b[^"]*">Initializing session\.\.\.<`.
+  Two branches, one per text; each fires on the file when no JSX element
+  has an opening tag ending in `className="…select-none…">` and, as its
+  first child, exactly that text followed by a tag (not a `{…}`).
+  DIFFERENCE (minimal): a string quoting the markup no longer satisfies
+  it — it must be a real JSX element.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/chrome-root-select-none-app*.tsx"
+utils:
+  select-none-tag-last:
+    kind: jsx_opening_element
+    regex: 'className="[^"]*\bselect-none\b[^"]*">$'
+rule:
+  any:
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: jsx_element
+          has:
+            kind: jsx_text
+            regex: '^No Active Session$'
+            follows: { matches: select-none-tag-last }
+            precedes: { regex: '^<' }
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: jsx_element
+          has:
+            kind: jsx_text
+            regex: '^Initializing session\.\.\.$'
+            follows: { matches: select-none-tag-last }
+            precedes: { regex: '^<' }

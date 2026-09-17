@@ -1,0 +1,34 @@
+id: no-arbitrary-text-size
+language: tsx
+severity: error
+message: >-
+  Use a named step (text-4xs/3xs/2xs/xs/sm-tight/sm/base/lg), never a
+  hand-typed `text-[Npx]` (decimal or whole). Before this, 572 sites across
+  87 files set font size with an arbitrary pixel value; nothing listed the
+  sizes the app actually used, so "make this one step smaller" meant
+  grepping for a pixel value and hoping every sibling was found. If the app
+  genuinely needs a new size, add it to the @theme block in globals.css and
+  to NAMED_TOKENS in the (now-retired) test's spirit — that is the decision
+  this rule exists to force.
+note: |
+  Invariant source: tests/type-scale-authority.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 2 — "no component sets a font size with an arbitrary
+  text-[Npx]"). Decimal sizes too (`text-[12.5px]`): 29 of them slipped past
+  a whole-pixel-only pattern until the design check found them, 2026-09-14.
+  No separate `template_string` branch: unlike a class-string ban whose
+  banned token can be SPLIT across a `${...}` substitution, the pixel digits
+  here are always a literal, contiguous run — `text-[${expr}px]` never
+  contains literal digits between the brackets, so it can never match this
+  regex either way, and `string_fragment` already covers both a quoted
+  string's contents and a template literal's own fragment text (verified
+  empirically, scratch probe 2026-09-16: adding a `template_string` branch
+  double-counted the SAME violation when the whole token sat inside one
+  fragment of a template literal).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/no-arbitrary-text-size.tsx"
+ignores:
+  - "**/src/renderer/**/*.test.tsx"
+rule:
+  kind: string_fragment
+  regex: "text-\\[\\d+(?:\\.\\d+)?px\\]"

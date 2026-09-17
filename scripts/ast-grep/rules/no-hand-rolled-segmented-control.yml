@@ -1,0 +1,32 @@
+id: no-hand-rolled-segmented-control
+language: tsx
+severity: error
+message: >-
+  Pick-one-of-N goes through <SegmentedTabs>, never a hand-rolled button pair.
+  Seven hand-rolled groups shipped alongside SegmentedTabs — 4 corner radii,
+  4 text sizes, 3 inactive treatments, for one function. <=4 short options:
+  segmented. Needs a description: radio list. >5: Select.
+note: |
+  Invariant source: tests/choice-group-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 2 — "no hand-rolled segmented control ships"). Matches
+  one of the four retired class fragments verbatim (the full fragment, not
+  just `bg-accent text-on-accent`, which would also flag legitimate non-choice
+  uses like badges and the InputBar send button). Case 2, "SegmentedTabs has
+  real consumers", is a cross-file existence count ast-grep cannot express (no
+  single file's rule can assert "somewhere among N other files") — kept in
+  the test file (review of batch A, 2026-09-16: restored to its original
+  threshold >=4 and title, not weakened — see global.md), routed through
+  readSource.
+  FIX (review of batch A, 2026-09-16): the retired test's `walk()` matched
+  `/\.tsx?$/`, reading both extensions across the whole renderer tree; the
+  old `**/src/renderer/**/*.ts` entry here did nothing under `language: tsx`
+  (a tsx-language rule cannot parse a .ts file). See
+  no-hand-rolled-segmented-control-ts for the real `.ts` twin.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/choice-group-authority.tsx"
+ignores:
+  - "**/*.test.tsx"
+rule:
+  kind: string_fragment
+  regex: "(flex-1 px-1\\.5 py-1 rounded-sm|flex-1 px-1\\.5 py-1\\.5 rounded-sm|flex-1 py-1\\.5 px-3 text-sm rounded|px-2 py-1 rounded text-3xs)"

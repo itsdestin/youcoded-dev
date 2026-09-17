@@ -1,0 +1,15 @@
+id: session-strip-no-transition-all
+language: tsx
+severity: error
+message: >-
+  Session pills transition explicit properties, never `all` — `transition:
+  all` animates layout properties too, and each presents at the full refresh
+  rate.
+note: |
+  Invariant source: tests/animation-css-budget.test.ts (Plan B t6a review fix, 2026-09-16; "transitions explicit properties on session pills, never `all`"). The retired regex was `'all \\d+ms` over the file (block comments deleted) — a single-quoted string starting with `all <n>ms`.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-no-transition-all.tsx"
+rule:
+  kind: string
+  regex: "^'all \\d+ms"

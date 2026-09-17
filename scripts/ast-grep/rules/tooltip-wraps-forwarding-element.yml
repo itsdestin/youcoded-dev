@@ -1,0 +1,140 @@
+id: tooltip-wraps-forwarding-element
+language: tsx
+severity: error
+message: >-
+  <Tooltip> only wraps an element, or a component that forwards its props and
+  a ref to one (see FORWARDS below) — never any other component. A hint
+  clones its child and injects pointer handlers and a ref, so the child must
+  reach a real DOM node.
+note: |
+  Invariant source: tests/tooltip-adoption.test.ts (retired by Plan B,
+  2026-09-16; case 3 of 4 — "only wraps an element, or a component that
+  forwards to one"). FORWARDS mirrors the retired test's list exactly:
+  Button, CloseButton, IconBtn, IconButton, Toggle. Checks only the DIRECT
+  child (one `jsx_self_closing_element`, or one `jsx_element`'s own
+  `open_tag`) — not `stopBy: end`, on purpose: a forwarding component's own
+  JSX body may legitimately contain other uppercase components deeper down
+  (verified empirically, scratch probe 2026-09-16:
+  `<Tooltip><Button><WeirdIcon /></Button></Tooltip>` must NOT fire), and the
+  retired test itself only inspected the FIRST tag after the `<Tooltip>`
+  wrapper, not every descendant.
+  If a genuinely-forwarding component is added later, add it to FORWARDS here
+  deliberately, having checked it forwards its props and a ref — same as the
+  retired test's own comment.
+  ALSO CHECKS a child wrapped in a JSX expression container — `{cond ? <X/> :
+  <Y/>}` or `{cond && <X/>}` (review, 2026-09-16). The retired test's
+  `after.match(/<([A-Za-z]...)/)` found the first tag textually regardless of
+  a `{...}` wrapper around it, so a violation hidden behind a ternary or `&&`
+  was in its scope and this rule was narrower. Matched STRUCTURALLY, not with
+  `stopBy: end`: a `ternary_expression`'s `consequence`/`alternative` field,
+  or a `$A && $B` binary expression's `right` field, must ITSELF be the
+  offending tag — not a deep search of the whole expression, which would
+  also catch an unrelated element nested inside the condition.
+  ALSO CHECKS the same tag wrapped in one extra layer of parens —
+  `{open ? (\n<X/>\n) : null}` / `{open && (\n<X/>\n)}` (review round 2,
+  2026-09-16: the retired textual scan is indifferent to parens too).
+  `parenthesized_expression`'s inner expression is an unlabeled direct
+  child (verified empirically, scratch probe 2026-09-16: `has: {kind:
+  jsx_self_closing_element}` with no `field:` matched it directly) — one
+  `has:` level added inside each `consequence`/`alternative`/`right` branch,
+  not `stopBy: end`, so a tag genuinely nested deeper inside the parens
+  still doesn't fire.
+  KNOWN STRICTNESS (review round 2, 2026-09-16): the ternary branch checks
+  `consequence` and `alternative` INDEPENDENTLY — a violation in EITHER
+  branch fires, even if the other branch is fine and textually comes
+  first. The retired test's `.match()` only ever returned the FIRST tag it
+  found after the `<Tooltip>` wrapper, so a `{cond ? <Button/> :
+  <SomeWeirdWidget/>}` (fine consequence, offending alternative) may not
+  actually have been in the retired test's own scope — this rule is
+  deliberately BROADER than the retired test here, not a fidelity match.
+  KNOWN GAP: a child produced by `.map()` — `{items.map(item =>
+  <SomeWeirdWidget key={item.id} />)}` as Tooltip's direct child — is NOT
+  covered. Only `ternary_expression` and `$A && $B` are matched inside a
+  `jsx_expression`; a `call_expression` (`.map(...)`) is a different
+  shape and falls through uninspected.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/tooltip-wraps-forwarding-element.tsx"
+ignores:
+  - "**/src/renderer/dev/workbench/**"
+rule:
+  kind: jsx_element
+  all:
+    - has:
+        field: open_tag
+        has:
+          field: name
+          regex: "^Tooltip$"
+    - has:
+        any:
+          - kind: jsx_self_closing_element
+            has: &offending-tag-name
+              field: name
+              regex: "^[A-Z]"
+              not:
+                regex: "^(Button|CloseButton|IconBtn|IconButton|Toggle)$"
+          - kind: jsx_element
+            has:
+              field: open_tag
+              has: *offending-tag-name
+          - kind: jsx_expression
+            has:
+              any:
+                - kind: ternary_expression
+                  any:
+                    - has:
+                        field: consequence
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *offending-tag-name
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *offending-tag-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *offending-tag-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *offending-tag-name
+                    - has:
+                        field: alternative
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *offending-tag-name
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *offending-tag-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *offending-tag-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *offending-tag-name
+                - all:
+                    - pattern: "$COND && $CHILD"
+                    - has:
+                        field: right
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *offending-tag-name
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *offending-tag-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *offending-tag-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *offending-tag-name

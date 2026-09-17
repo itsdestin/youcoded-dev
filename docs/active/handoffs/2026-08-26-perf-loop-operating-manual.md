@@ -878,8 +878,11 @@ cd /home/destin/youcoded-dev/worktrees/perf-lab/desktop
 npx vitest run tests/perf-marks-*.test.ts
 ```
 
-(three files: `perf-marks.test.ts`, `perf-marks-placement.test.ts`,
-`perf-marks-renderer.test.ts`). A failure names the mark you broke. **Exit 4 from `run.mjs`
+(two files: `perf-marks.test.ts`, `perf-marks-placement.test.ts` — the renderer marks'
+presence/order/proximity are now ast-grep rules `perf-mark-index-order` and
+`perf-mark-sessions-listed-inside-session-list`, `bash scripts/ast-grep/check.sh`, since
+`perf-marks-renderer.test.ts` was retired by Plan B, 2026-09-16). A failure names the mark
+you broke. **Exit 4 from `run.mjs`
 is the same problem caught by the rig itself**: it validates its report against
 `compare.mjs`'s `PRIMARY` list and refuses to exit 0 when a metric a requested phase owed came
 back missing — **or came back with a median but no per-run samples behind it**, which would

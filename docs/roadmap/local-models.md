@@ -21,13 +21,6 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       do not warn on a machine whose memory is deliberately full of cache the load can reclaim.
       `settings/local-models` `desktop` `decision` `checked 2026-09-06` → docs/active/investigations/2026-08-16-dual-model-oom-desktop-crash.md
 
-- [ ] A local model's helper limit is decided when the conversation opens, before the model has
-      loaded — and asking the engine about an unloaded model would load it — so most local
-      conversations still get the one-helper cap until they are resumed after a first message.
-      The number should be re-read once the model is actually loaded (after the first turn), or
-      taken from any model the engine already has loaded. Follow-on to the slot-count fix
-      `desktop` `confirmed` `checked 2026-09-04`
-
 - [ ] "Run in background" option — keep the downloaded models serving other AI tools on this
       machine after the YouCoded window closes; today the engine is deliberately stopped on
       quit. Destin's note during the 2026-07-20 engine-lifecycle fix; only if real demand shows.
@@ -88,14 +81,6 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       loosening it wrongly makes unrelated files look like downloadable models.
       `desktop` `confirmed` `checked 2026-09-05`
 
-- [ ] Starting a session on a hosted model builds and throws away every other provider's model
-      list, for the same reason a local session used to. Measured 2026-09-05 while fixing the
-      local half: `pricingFor` hands the catalog the whole provider list when it only ever reads
-      the binding's own provider, and a total network failure is never remembered, so the cost
-      repeats on every create, resume and model swap. The local half is fixed and pinned; this
-      is the same one-line narrowing in `ipc-handlers.ts`'s pricing closure.
-      `desktop` `confirmed` `checked 2026-09-05`
-
 - [ ] A vision model downloaded while the app is already running can be told to the assistant as
       text-only. The engine does re-read the file pairing on request, and a download completing
       does ask it to — but fire-and-forget with a swallowed error, while the model's profile is
@@ -133,6 +118,6 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       settings panel. Today a model auto-sleeps after 15 minutes idle (`sleep-idle-seconds`,
       engine-wide default 900) and the whole engine stops after 25 minutes idle (`idleMs`),
       both hard-coded in `engine-supervisor.ts`. Surfaces: the per-model auto-sleep and the
-      whole-engine shutdown. Only when the settings panel exists — the two values ride that
-      feature's plumbing
-      `settings/local-models` `desktop` `needs-verify` `checked 2026-09-07`
+      whole-engine shutdown. The Assistant settings panel it was waiting on exists now
+      (2026-09-07); the two values still ride nothing
+      `settings/local-models` `desktop` `confirmed` `checked 2026-09-16`

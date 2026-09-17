@@ -1,0 +1,80 @@
+{
+  "_why": "Conversation previews rework (2026-09-16): the three places a past conversation is previewed \u2014 Resume browser, Projects page, the side drawer \u2014 captured Before and After.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0",
+  "shots": [
+    {
+      "name": "resume-preview-selected",
+      "actions": [
+        {
+          "click": "[placeholder^='Message']",
+          "settle": 200
+        },
+        {
+          "type": "/resume"
+        },
+        {
+          "key": "Enter",
+          "settle": 1200
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button[aria-expanded][aria-label]')].filter(b=>!b.hasAttribute('aria-haspopup'))[0]",
+          "settle": 1600
+        }
+      ],
+      "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Resume Session')"
+    },
+    {
+      "name": "projects-conversation-preview",
+      "actions": [
+        {
+          "click": "[title=Projects]",
+          "settle": 900
+        },
+        {
+          "click": "[aria-label=Conversations]",
+          "settle": 900
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.getBoundingClientRect().top>360 && /fix chat scroll stick|menu internals/.test(b.textContent))",
+          "settle": 1000
+        }
+      ],
+      "expect": "[role=dialog]",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+    },
+    {
+      "name": "drawer-preview-panel",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+      "boot": 4000,
+      "actions": [
+        {
+          "dispatch": {
+            "name": "youcoded:preview-session",
+            "detail": {
+              "provider": "claude",
+              "id": "a3f2aaaa-1111-4111-8111-111111111111",
+              "title": "Permission ask timeout"
+            }
+          },
+          "settle": 1200
+        }
+      ],
+      "expect": "js:!!document.querySelector('[data-conversation-id]')"
+    },
+    {
+      "name": "projects-conversations-list",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+      "actions": [
+        {
+          "click": "[title=Projects]",
+          "settle": 900
+        },
+        {
+          "click": "[aria-label=Conversations]",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:[...document.querySelectorAll('button')].some(b=>/fix chat scroll stick|menu internals/.test(b.textContent))"
+    }
+  ]
+}

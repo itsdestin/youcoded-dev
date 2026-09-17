@@ -1,0 +1,26 @@
+id: session-strip-label-window-from-stylesheet
+language: tsx
+severity: error
+message: >-
+  SessionStrip arms its label window from the stylesheet (motionWindowMs
+  reading the --dur-* tokens with getPropertyValue), never from a literal
+  duration at a useOneShotWindow call — a fixed 360ms closed before the
+  reveal finished and the badge popped ("jank").
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "arms the label window from the stylesheet, not a number tuned to an older vocabulary").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-label-window-from-stylesheet.tsx"
+rule:
+  any:
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "motionWindowMs($$$)" } }
+        - not: { has: { stopBy: end, pattern: "$CS.getPropertyValue(name)" } }
+    # A literal number as the LAST argument of useOneShotWindow(…).
+    - kind: call_expression
+      all:
+        - has: { field: function, regex: "^useOneShotWindow$" }
+        - has:
+            field: arguments
+            has: { kind: number, nthChild: { position: 1, reverse: true } }

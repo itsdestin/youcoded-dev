@@ -1,0 +1,140 @@
+id: tags-list-no-empty-fallback-remote
+language: typescript
+severity: error
+message: >-
+  remote-server.ts's `case 'tags:list':` answers through listTagsForHost(…)
+  and never falls back to an empty list (`.catch(() => [])`, `… : [];`). A
+  failed or unavailable tag read must reach a phone as `{ ok: false, error }`
+  ("Couldn't load your tags"), not as "this person has no tags" (error
+  inventory 2026-09-10, false message 16).
+note: |
+  Invariant source: tests/tag-list-host.test.ts (Plan B, 2026-09-16;
+  "remote-server's tags:list case answers through listTagsForHost, with no
+  empty-list fallback"). The retired case blanked comments, took the text from
+  the first `case 'tags:list':` to the next `case '` (or the end of the file),
+  and required `listTagsForHost(` in it and no match of
+  `catch\(\s*\(\)\s*=>\s*\[\s*\]\s*\)` or `:\s*\[\s*\]\s*;`. Main's handler is
+  tags-list-no-empty-fallback (a different shape, so its own rule).
+  THE REGION here is the same stretch: a `case 'tags:list':` clause, plus
+  everything after it in the file up to the next clause spelled `case '…`
+  (a `default:` or `case "…"` does not end it, as it did not for the slice).
+  Three branches:
+  - NO DELEGATION: the file has no call whose callee ends in
+    `listTagsForHost` inside the region — which also covers a file with no
+    such case at all. Fires on the file.
+  - CATCH FALLBACK: inside the region, a call whose callee ends in `catch`
+    with the argument list `(() => [])` (any spacing), or a string/template
+    piece, template or regex body holding that text.
+  - COLON FALLBACK: inside the region, the smallest node of a statement-like
+    kind (or a clause, or a string/template/regex) whose text holds
+    `: [];` (any spacing) — e.g. `const tags = reg ? … : [];`. The clause
+    itself is on that list, so a match no smaller listed node holds still
+    fires, on the clause. A node holding a comment that quotes `: [];` is
+    skipped (the comment's own text would otherwise make it match).
+  DIFFERENCES (minimal): `listTagsForHost(` must be a real call (a string or
+  comment naming it no longer counts); every such case is checked, not only
+  the first; a node that itself holds the next `case '…` clause is outside the
+  region (the old slice kept its text up to that clause); a comment inside a
+  matched span hides it; a string holding `case '` no longer ends the region.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/tags-list-no-empty-fallback-remote*.ts"
+utils:
+  tl-case:
+    kind: switch_case
+    regex: "^case 'tags:list':"
+  holds-tl-case:
+    any:
+      - matches: tl-case
+      - has: { stopBy: end, matches: tl-case }
+  after-tl-case:
+    any:
+      - follows: { stopBy: end, matches: holds-tl-case }
+      - inside:
+          stopBy: end
+          follows: { stopBy: end, matches: holds-tl-case }
+  # The region ends at the next `case '…` clause — after the tags:list clause,
+  # or nested inside it.
+  boundary:
+    kind: switch_case
+    regex: "^case '"
+    any:
+      - matches: after-tl-case
+      - inside: { stopBy: end, matches: tl-case }
+  holds-boundary:
+    any:
+      - matches: boundary
+      - has: { stopBy: end, matches: boundary }
+  in-region:
+    all:
+      - any:
+          - matches: tl-case
+          - inside: { stopBy: end, matches: tl-case }
+          - matches: after-tl-case
+      - not:
+          any:
+            - matches: holds-boundary
+            - follows: { stopBy: end, matches: holds-boundary }
+            - inside: { stopBy: end, matches: boundary }
+            - inside:
+                stopBy: end
+                follows: { stopBy: end, matches: holds-boundary }
+  delegation:
+    kind: call_expression
+    has: { field: function, regex: "listTagsForHost$" }
+  catch-empty:
+    any:
+      - kind: call_expression
+        all:
+          - has: { field: function, regex: "catch$" }
+          - has: { field: arguments, regex: "^\\(\\s*\\(\\)\\s*=>\\s*\\[\\s*\\]\\s*\\)$" }
+      - kind: string_fragment
+        regex: "catch\\(\\s*\\(\\)\\s*=>\\s*\\[\\s*\\]\\s*\\)"
+      - kind: template_string
+        regex: "catch\\(\\s*\\(\\)\\s*=>\\s*\\[\\s*\\]\\s*\\)"
+        not: { has: { kind: string_fragment, regex: "catch\\(\\s*\\(\\)\\s*=>\\s*\\[\\s*\\]\\s*\\)" } }
+      - kind: regex_pattern
+        regex: "catch\\(\\s*\\(\\)\\s*=>\\s*\\[\\s*\\]\\s*\\)"
+  colon-listed:
+    any:
+      - kind: expression_statement
+      - kind: lexical_declaration
+      - kind: variable_declaration
+      - kind: return_statement
+      - kind: throw_statement
+      - kind: labeled_statement
+      - kind: public_field_definition
+      - kind: object_type
+      - kind: switch_case
+      - kind: switch_default
+      - kind: string_fragment
+      - kind: template_string
+      - kind: regex_pattern
+  colon-empty:
+    matches: colon-listed
+    regex: ":\\s*\\[\\s*\\]\\s*;"
+rule:
+  any:
+    # NO DELEGATION (and: no such case at all).
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          all:
+            - matches: delegation
+            - matches: in-region
+    # CATCH FALLBACK.
+    - all:
+        - matches: catch-empty
+        - matches: in-region
+    # COLON FALLBACK — the smallest listed node holding it.
+    - all:
+        - matches: colon-empty
+        - not:
+            has:
+              stopBy: end
+              any:
+                - matches: colon-empty
+                - kind: comment
+                  regex: ":\\s*\\[\\s*\\]\\s*;"
+        - matches: in-region

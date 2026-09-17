@@ -1,0 +1,65 @@
+id: no-hand-rolled-toast
+language: tsx
+severity: error
+message: >-
+  Use <Toast> (components/ui/), never a hand-placed toast strip. Two
+  competing toasts once shipped, each with its own geometry, setTimeout and
+  z-index — `fixed bottom-16` was the App one's signature, and its timers
+  were where the leaks lived (tranche 8, change 44).
+note: |
+  Invariant source: tests/primitive-adoption.test.ts (Plan B, 2026-09-16) —
+  "the toast is not re-hand-rolled".
+  The retired regex was /className="[^"]*fixed bottom-16[^"]*"/ over each
+  file's text: a double-quoted className holding `fixed bottom-16`, whether
+  a JSX attribute or text inside a string. Same regex here, on the innermost
+  node that holds it. Its App.tsx half (no manual setToast(null) timer) is
+  toast-auto-dismiss-owned-by-primitive.
+  SCOPE mirrors the retired CONSUMERS list: every .ts/.tsx under
+  src/renderer except components/ui/ (the primitives themselves) and
+  *.test.* files. The ignore is `components/ui*` because the retired walk
+  dropped every path STARTING with components/ui (a startsWith, no slash),
+  and `*` crosses `/` in this ast-grep — so it is the same prefix test.
+  Comments are skipped, as the retired stripComments() pass skipped them
+  (it blanked block comments and every `//` comment, trailing ones included).
+  The .ts twin is no-hand-rolled-toast-ts (a tsx rule never parses .ts).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/no-hand-rolled-toast.tsx"
+ignores:
+  - "**/src/renderer/components/ui*"
+  - "**/*.test.tsx"
+  - "**/*.test.ts"
+rule:
+  # ast-grep needs a kind list; these are every node the text can sit in
+  # innermost — a string or template piece, JSX text or attribute, a regex,
+  # or code that spells it out. A node whose direct child already holds the
+  # text is skipped, so each occurrence reports once.
+  any:
+    - kind: string_fragment
+    - kind: string
+    - kind: template_string
+    - kind: regex_pattern
+    - kind: pair
+    - kind: labeled_statement
+    - kind: binary_expression
+    - kind: assignment_expression
+    - kind: variable_declarator
+    # WHY (review of u3, 2026-09-16): a default value in a destructure or a
+    # parameter, and a class field, hold the text with no listed child
+    # holding it, so without these kinds such a spelling fired nowhere.
+    # (No optional_parameter: `className?=` never parses, and a default value
+    # spelling `className="…"` is an assignment_expression listed above — review
+    # of u6, 2026-09-16.)
+    - kind: required_parameter
+    - kind: object_assignment_pattern
+    - kind: public_field_definition
+    # a JSX element whose text is split across jsx_text and {…} children
+    - kind: jsx_element
+    - kind: jsx_text
+    - kind: jsx_attribute
+  regex: "className=\"[^\"]*fixed bottom-16[^\"]*\""
+  not:
+    any:
+      - kind: comment
+      - has:
+          regex: "className=\"[^\"]*fixed bottom-16[^\"]*\""

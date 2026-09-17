@@ -198,9 +198,10 @@ warned this was "destructive for anything a user or model reads back".
 ### The lesson about guards
 The PDF contract test (*"both dirs end with `/`"*) is **vacuous on POSIX** — `path.sep`
 *is* `/` there. That is exactly why the bug shipped and survived: the only machine that
-could see it was the leg nobody read. So the guard that matters is the **source scan**
-asserting `path.sep` never returns to that function; it goes red on a developer's own
-machine. Confirmed red-first by reverting the fix.
+could see it was the leg nobody read. So the guard that matters is the ast-grep rule
+**`pdfjs-asset-dirs-no-path-sep`** (`scripts/ast-grep/rules/`; a source-text scan in
+`read-pdf.test.ts` until Plan B, 2026-09-16) asserting `path.sep` never returns to that
+function; it goes red on a developer's own machine. Confirmed red-first by reverting the fix.
 
 Prefer a guard that can fail where the work happens. A test that can only fail on a
 platform you don't run is a guard in name only.
@@ -223,6 +224,11 @@ speculation. If it ever fails on real CI, the fix is to restructure the mock so 
 can move to module scope — **not** to raise the number again.
 
 Both are tracked in `docs/roadmap/dev-workspace.md` → `## tests`.
+
+**`tests/xterm-webgl-mipmap-patch.test.ts` failing is environmental:** that checkout's
+`node_modules` never had the postinstall patch. Run `node scripts/patch-xterm-webgl-mipmap.js`
+in `youcoded/desktop` of that checkout. The patch writes temp-then-rename, so patching one
+hardlinked tree does not patch the others.
 
 ## Temp roots: why snapshot-restore fails, and why removal retries
 

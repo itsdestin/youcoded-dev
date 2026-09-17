@@ -19,9 +19,9 @@ verify:
     contains: "mergeClasses"
   - test: youcoded/desktop/src/renderer/components/ui/Button.test.tsx
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
-  - test: youcoded/desktop/tests/overlay-layer-authority.test.ts
+  - path: scripts/ast-grep/rules/no-hardcoded-z-index-or-scrim.yml
   - test: youcoded/desktop/tests/drawer-card-glass.test.ts
-  - test: youcoded/desktop/tests/type-scale-authority.test.ts
+  - path: scripts/ast-grep/rules/no-arbitrary-text-size.yml
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
   - test: youcoded/desktop/tests/workbench-mock-contract.test.ts
@@ -34,7 +34,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
 - **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
 - **Perf:** prefer `content-visibility: auto` over virtualization; memoize every Context value; the reducer preserves `toolCalls`/`toolGroups` Map refs — don't clone them.
-- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (no production caller remains: since 2026-09-10 `RemoteSnapshotExporter` calls `flushTranscriptActions()` then reads the store, off the render path); **never `store.getState()` during render** (tears).
+- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (no production caller since 2026-09-10); **never `store.getState()` during render** (tears).
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
 - **ONE backdrop-filter, ever** — the frame chrome is a single `<div class="chrome-glass">` clipped via `clip-path: polygon()`; per-element backdrop-filters seam at non-100% zoom.
@@ -55,7 +55,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Control primitives (`components/ui/`)
 - **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
 - **Padding groups are per-axis** (`px-`/`py-` independent; `p-N` in ALL groups) — an `px-`-only override must NOT drop `py-` · guard: `Button.test.tsx` if you touch `CONFLICT_GROUPS`.
-- **Chrome is unselectable:** `<button>`s + `select-none` areas; content buttons opt in with `select-text` · guard: `unselectable-chrome.test.ts`.
+- **Chrome is unselectable** (`<button>`s/`select-none` roots; content buttons add `select-text`) · guard: ast-grep `chrome-root-select-none-*`/`file-name-button-select-text` (classes), `unselectable-chrome.test.ts` (CSS).
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.

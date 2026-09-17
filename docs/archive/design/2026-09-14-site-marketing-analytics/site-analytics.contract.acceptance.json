@@ -1,0 +1,287 @@
+{
+ "title": "Website analytics \u2014 contract \u2014 acceptance",
+ "key": "site-analytics-contract-acceptance",
+ "out": "site-analytics.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/site-marketing-analytics",
+ "sources": {
+  "site-analytics-questions": "site-analytics.questions.json",
+  "site-analytics-review": "site-analytics.review.json",
+  "site-analytics-privacy-amendment": "site-analytics.privacy-amendment.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Website analytics",
+   "path": "Analytics \u2192 Website and App",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "One page visit connects page loads, install-instructions opens and final download clicks using a temporary random label kept only in the open page.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "Reloading or opening another tab starts a new visit, without analytics cookies, a saved visitor ID or a fingerprint.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-1"
+    },
+    {
+     "id": "R3",
+     "statement": "Website activity stays separate from app device records, without identifying unique people or tracking them across days.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-1"
+    },
+    {
+     "id": "R4",
+     "statement": "The website privacy notice discloses website measurement without a visitor opt-out.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-privacy-amendment#A-1"
+    },
+    {
+     "id": "R5",
+     "statement": "Create labeled links lets you enter a source and campaign name, then copy a labeled youcoded.ai link for each marketing post.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-2"
+    },
+    {
+     "id": "R6",
+     "statement": "Website measurement records only approved campaign labels and the referring site's domain, never full referring URLs.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-2"
+    },
+    {
+     "id": "R7",
+     "statement": "Campaign measurement starts with future visits, cannot recover old traffic, and keeps a shared link's original campaign label when shared elsewhere.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-2"
+    },
+    {
+     "id": "R8",
+     "statement": "Website history lasts three months, with earlier campaigns disappearing as the window moves.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-3"
+    },
+    {
+     "id": "R9",
+     "statement": "Website analytics reuses the existing Cloudflare service instead of adding a paid analytics subscription, with account allowance and storage cost checked before activation.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-3"
+    },
+    {
+     "id": "R10",
+     "statement": "Website and App are separate dashboard sections, with website date, source, campaign and download-platform controls.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-4"
+    },
+    {
+     "id": "R11",
+     "statement": "Website trends, traffic sources, campaign results and installer-platform download clicks show interest, not completed installs, while existing app statistics and privacy restrictions stay unchanged.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-questions#Q-4"
+    },
+    {
+     "id": "R12",
+     "statement": "Website has its own overview, totals and filters, while App stays accessible in a separate tab.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "site-analytics-review#S-1",
+     "verdict": "pass",
+     "evidence": "Fresh isolated dashboard captures exactly match approved S-1 images: docs/active/design/2026-09-14-site-marketing-analytics/runs/after/shots-analytics/meadow-mist/overview.png = scratch/site-analytics-grade/overview-meadow-mist.png (SHA-256 a49a018a55beab12c0f1c62325c4c2f6f9d6ff5724521bb5e926875658b21d1f); docs/active/design/2026-09-14-site-marketing-analytics/runs/after/shots-analytics/light/overview.png = scratch/site-analytics-grade/overview-light.png (SHA-256 4370fa45f6de4c670dd7e321833669de43a6568f0a6d0aa7a9d651e462ca7fd0)."
+    },
+    {
+     "id": "R13",
+     "statement": "Totals show visits, instructions opened, download clicks and visits\u2019 click rate; repeated clicks increase clicks, but each visit counts once in the rate.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-review#S-4"
+    },
+    {
+     "id": "R14",
+     "statement": "Campaigns show visits, clicks and once-per-visit click rates alongside platform click shares; the platform filter changes only the breakdown.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-review#S-2"
+    },
+    {
+     "id": "R15",
+     "statement": "Source and campaign hints explain shared links; the finished link updates as you type, and Copy link prepares it to share.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "site-analytics-review#S-3"
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "One page visit connects page loads, install-instructions opens and final download clicks using a temporary random label kept only in the open page.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R2",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Reloading or opening another tab starts a new visit, without analytics cookies, a saved visitor ID or a fingerprint.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Website activity stays separate from app device records, without identifying unique people or tracking them across days.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R4",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "The website privacy notice discloses website measurement without a visitor opt-out.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R5",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Create labeled links lets you enter a source and campaign name, then copy a labeled youcoded.ai link for each marketing post.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R6",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Website measurement records only approved campaign labels and the referring site's domain, never full referring URLs.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R7",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Campaign measurement starts with future visits, cannot recover old traffic, and keeps a shared link's original campaign label when shared elsewhere.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R8",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Website history lasts three months, with earlier campaigns disappearing as the window moves.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R9",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Website analytics reuses the existing Cloudflare service instead of adding a paid analytics subscription, with account allowance and storage cost checked before activation.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R10",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Website and App are separate dashboard sections, with website date, source, campaign and download-platform controls.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R11",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Website trends, traffic sources, campaign results and installer-platform download clicks show interest, not completed installs, while existing app statistics and privacy restrictions stay unchanged.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R13",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Totals show visits, instructions opened, download clicks and visits\u2019 click rate; repeated clicks increase clicks, but each visit counts once in the rate.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R14",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Campaigns show visits, clicks and once-per-visit click rates alongside platform click shares; the platform filter changes only the breakdown.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R15",
+   "words": true,
+   "surface": "Website analytics",
+   "path": "Acceptance",
+   "headline": "Source and campaign hints explain shared links; the finished link updates as you type, and Copy link prepares it to share.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

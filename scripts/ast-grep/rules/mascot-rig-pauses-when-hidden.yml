@@ -1,0 +1,43 @@
+id: mascot-rig-pauses-when-hidden
+language: tsx
+severity: error
+message: >-
+  MascotRig pauses when the document is hidden (a visibilitychange listener)
+  and resets its clock on resume (`last = performance.now()`) — otherwise
+  stepSpring integrates the whole hidden period as one dt and the springs
+  fling off-model. That pause is what makes the rig's steps() exemption
+  honest.
+note: |
+  Invariant source: tests/animation-css-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "pauses mascot motion when the document is hidden"). The mascot.css half stays a text read. Presence mirrors the retired regexes: `visibilitychange` in any token (line comments included), `last = performance.now()` as a declaration or assignment.
+files:
+  - "**/src/renderer/components/mascot/MascotRig.tsx"
+  - "**/fixtures/mascot-rig-pauses-when-hidden.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, matches: code-leaf, regex: "visibilitychange" } }
+    - not:
+        has:
+          stopBy: end
+          any:
+            - kind: assignment_expression
+            - kind: variable_declarator
+          regex: "last\\s*=\\s*performance\\.now\\(\\)"

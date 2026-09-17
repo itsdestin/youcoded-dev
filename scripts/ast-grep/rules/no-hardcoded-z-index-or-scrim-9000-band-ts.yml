@@ -1,0 +1,27 @@
+id: no-hardcoded-z-index-or-scrim-9000-band-ts
+language: typescript
+severity: error
+message: >-
+  No .ts file under components/project-view/ hardcodes a 9000-band z-index
+  string. Twin of no-hardcoded-z-index-or-scrim-9000-band for the `.ts`
+  files a `language: tsx` rule cannot see (the retired test's `walk()`
+  matched `/\.tsx?$/`, so it read BOTH extensions; a single `tsx`-language
+  rule scanning that same directory would silently skip every `.ts` file).
+note: |
+  Invariant source: tests/overlay-layer-authority.test.ts (retired by Plan B,
+  2026-09-16; case 3 of 5, `.ts`-file half). No current `.ts` file under
+  project-view matches (verified: only context-labels.ts exists there, and
+  it has no z-9xxx string) — this rule exists for completeness against the
+  retired test's actual scope, not because a violation is known to exist.
+files:
+  - "**/src/renderer/components/project-view/**/*.ts"
+  - "**/fixtures/no-hardcoded-z-index-or-scrim-9000-band-ts.ts"
+ignores:
+  - "**/*.test.ts"
+  - "**/*.d.ts"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "z-\\[9\\d{3}\\]"
+    - kind: template_string
+      regex: "z-\\[9\\d{3}\\]"

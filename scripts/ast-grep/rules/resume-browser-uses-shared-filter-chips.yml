@@ -1,0 +1,101 @@
+id: resume-browser-uses-shared-filter-chips
+language: tsx
+severity: error
+message: >-
+  The Resume browser's filter row is built from the shared primitives: a
+  <FilterMenuChip>, a <FilterChip kind="toggle"> for the sort, a
+  <SearchFilterPill> and <CheckboxMark> in the menus — and its two chip labels
+  come from pickLabel('Projects', …) then pickLabel('Tags', …), once each.
+  Destin (2026-09-10) found the old local pills "generic/unstyled" with
+  chevrons that did not feel native; pickLabel is contract R4's
+  name-one-count-several wording.
+note: |
+  Invariant source: tests/filter-menu-chip.test.tsx (Plan B, 2026-09-16) —
+  the PRESENCE halves of "uses the shared chips, the shared search pill and
+  the checkbox mark" and "is what the Resume browser renders on both chips".
+  The ABSENCE halves are resume-browser-no-local-filter-chip-parts.
+  Whole-file (`kind: program`), fires when ANY of these holds, all read from
+  the retired checks on the comment-stripped file:
+  - no tag named `FilterMenuChip\b`, `SearchFilterPill\b` or `CheckboxMark\b`
+    (the old `/<Name\b/` — a tag, open or self-closing);
+  - no `FilterChip\b` tag carrying the attribute `kind="toggle"` (the old
+    `/<FilterChip\b[^>]*kind="toggle"/`; that regex also failed when an
+    earlier attribute held a `>` such as an arrow function — a formatting
+    accident, not an invariant, so the attribute counts wherever it sits);
+  - the pickLabel calls are not exactly `pickLabel('Projects'` then
+    `pickLabel('Tags'` (the old `toEqual` on every
+    `/pickLabel\('(Projects|Tags)'/g` match): either call missing, either
+    call present twice, or Tags before Projects. "Twice" and "before" use the
+    tree: two distinct calls sit in two different children of their lowest
+    common ancestor, and `follows` compares exactly those siblings (the same
+    trick as perf-mark-index-order). A call counts when its callee ends in
+    `pickLabel` and its argument list starts `('Projects'` / `('Tags'` with a
+    single quote and no space, as the old regex required.
+files:
+  - "**/src/renderer/components/ResumeBrowser.tsx"
+  - "**/fixtures/resume-browser-uses-shared-filter-chips*.tsx"
+utils:
+  tag:
+    any:
+      - kind: jsx_opening_element
+      - kind: jsx_self_closing_element
+  projects-call:
+    kind: call_expression
+    all:
+      - has: { field: function, regex: "pickLabel$" }
+      - has: { field: arguments, regex: "^[(]'Projects'" }
+  tags-call:
+    kind: call_expression
+    all:
+      - has: { field: function, regex: "pickLabel$" }
+      - has: { field: arguments, regex: "^[(]'Tags'" }
+  holds-projects:
+    any:
+      - matches: projects-call
+      - has: { stopBy: end, matches: projects-call }
+  holds-tags:
+    any:
+      - matches: tags-call
+      - has: { stopBy: end, matches: tags-call }
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          matches: tag
+          has: { field: name, regex: '^FilterMenuChip\b' }
+    - not:
+        has:
+          stopBy: end
+          matches: tag
+          all:
+            - has: { field: name, regex: '^FilterChip\b' }
+            - has: { kind: jsx_attribute, regex: '^kind="toggle"$' }
+    - not:
+        has:
+          stopBy: end
+          matches: tag
+          has: { field: name, regex: '^SearchFilterPill\b' }
+    - not:
+        has:
+          stopBy: end
+          matches: tag
+          has: { field: name, regex: '^CheckboxMark\b' }
+    - not: { has: { stopBy: end, matches: projects-call } }
+    - not: { has: { stopBy: end, matches: tags-call } }
+    # a second Projects call
+    - has:
+        stopBy: end
+        matches: holds-projects
+        follows: { stopBy: end, matches: holds-projects }
+    # a second Tags call
+    - has:
+        stopBy: end
+        matches: holds-tags
+        follows: { stopBy: end, matches: holds-tags }
+    # Tags before Projects
+    - has:
+        stopBy: end
+        matches: holds-projects
+        follows: { stopBy: end, matches: holds-tags }

@@ -1,0 +1,101 @@
+id: tags-list-no-empty-fallback
+language: typescript
+severity: error
+message: >-
+  Main's tags:list handler answers through listTagsForHost(…) and never falls
+  back to `return []`. A failed or unavailable tag read must reach the screen
+  as `{ ok: false, error }` ("Couldn't load your tags"), not as "this person
+  has no tags" (error inventory 2026-09-10, false message 16).
+note: |
+  Invariant source: tests/tag-list-host.test.ts (Plan B, 2026-09-16; "main's
+  tags:list handler answers through listTagsForHost, with no empty-list
+  fallback"). The retired case blanked comments, took the text from the first
+  `ipcMain.handle(IPC.TAGS_LIST` to the next `ipcMain.handle(` (or the end of
+  the file), and required `listTagsForHost(` in it and no match of
+  `return\s*\[\s*\]`. The remote host is tags-list-no-empty-fallback-remote.
+  THE REGION here is the same stretch: the inside of an
+  `ipcMain.handle(IPC.TAGS_LIST, …)` call, plus everything after it in the
+  file up to the next `ipcMain.handle(…)` call.
+  Two branches:
+  - NO DELEGATION: the file has no call whose callee ends in
+    `listTagsForHost` inside the region — which also covers a file with no
+    tags:list registration at all. Fires on the file.
+  - EMPTY FALLBACK: inside the region, a `return` statement whose text starts
+    `return []` (any spacing), or a string/template piece, template or regex
+    body holding that text.
+  DIFFERENCES (minimal): `listTagsForHost(` must be a real call (a string or
+  comment naming it no longer counts); every tags:list registration is
+  checked, not only the first (a second one is a runtime error in Electron
+  anyway); a node that itself holds the next `ipcMain.handle(` is outside
+  the region (the old slice kept its text up to that call); a comment inside
+  `return /* x */ []` hides it.
+files:
+  - "**/src/main/ipc-handlers.ts"
+  - "**/fixtures/tags-list-no-empty-fallback.ts"
+  - "**/fixtures/tags-list-no-empty-fallback-missing.ts"
+utils:
+  tl-call:
+    pattern: "ipcMain.handle(IPC.TAGS_LIST, $$$)"
+  holds-tl-call:
+    any:
+      - matches: tl-call
+      - has: { stopBy: end, matches: tl-call }
+  after-tl-call:
+    any:
+      - follows: { stopBy: end, matches: holds-tl-call }
+      - inside:
+          stopBy: end
+          follows: { stopBy: end, matches: holds-tl-call }
+  # The region ends at the next ipcMain.handle(…) — after the tags:list call,
+  # or nested inside it.
+  handle-after-tl-call:
+    pattern: "ipcMain.handle($$$)"
+    any:
+      - matches: after-tl-call
+      - inside: { stopBy: end, matches: tl-call }
+  holds-boundary:
+    any:
+      - matches: handle-after-tl-call
+      - has: { stopBy: end, matches: handle-after-tl-call }
+  # Inside or after a tags:list call, and not at or after the boundary: not
+  # holding it, not inside it, and not following (itself or through an
+  # ancestor) a node that holds it.
+  in-region:
+    all:
+      - any:
+          - inside: { stopBy: end, matches: tl-call }
+          - matches: after-tl-call
+      - not:
+          any:
+            - matches: holds-boundary
+            - follows: { stopBy: end, matches: holds-boundary }
+            - inside: { stopBy: end, matches: handle-after-tl-call }
+            - inside:
+                stopBy: end
+                follows: { stopBy: end, matches: holds-boundary }
+  delegation:
+    kind: call_expression
+    has: { field: function, regex: "listTagsForHost$" }
+rule:
+  any:
+    # NO DELEGATION (and: no registration at all).
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          all:
+            - matches: delegation
+            - matches: in-region
+    # EMPTY FALLBACK.
+    - all:
+        - any:
+            - kind: return_statement
+              regex: "^return\\s*\\[\\s*\\]"
+            - kind: string_fragment
+              regex: "return\\s*\\[\\s*\\]"
+            - kind: template_string
+              regex: "return\\s*\\[\\s*\\]"
+              not: { has: { kind: string_fragment, regex: "return\\s*\\[\\s*\\]" } }
+            - kind: regex_pattern
+              regex: "return\\s*\\[\\s*\\]"
+        - matches: in-region

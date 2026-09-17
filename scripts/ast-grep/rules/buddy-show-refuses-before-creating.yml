@@ -1,0 +1,45 @@
+id: buddy-show-refuses-before-creating
+language: typescript
+severity: error
+message: >-
+  The BUDDY_SHOW handler returns the refusal (`return { ok: false, … }`)
+  BEFORE it creates the buddy (`buddyManager.show()`). Asking the gate and
+  then showing the buddy anyway is the same bug as never asking: the product
+  promise is "say no to the KWin script and you get no buddy at all".
+note: |
+  Invariant source: tests/buddy-consent-gate.test.ts (Plan B t6a review fix,
+  2026-09-16; "returns the refusal WITHOUT creating the buddy", plus the
+  product half of "found the show handler (otherwise every assertion below
+  is vacuous)" — the handler still calls buddyManager.show()). The retired
+  case sliced main.ts from `IPC.BUDDY_SHOW` to `IPC.BUDDY_HIDE` and required
+  the first `return { ok: false` to come before `buddyManager.show()`.
+  Here: every buddyManager.show() inside the handler must sit after (a
+  statement containing) such a return, searched only within the handler; the
+  handler must contain both. buddy-show-consults-refusal-gate covers asking
+  the gate and the handler's existence.
+files:
+  - "**/src/main/main.ts"
+  - "**/fixtures/buddy-show-refuses-before-creating.ts"
+utils:
+  show-handler:
+    kind: call_expression
+    pattern: ipcMain.handle(IPC.BUDDY_SHOW, $H)
+  refusal-return:
+    kind: return_statement
+    regex: "^return \\{ ok: false"
+  after-refusal:
+    any:
+      - matches: refusal-return
+      - has: { stopBy: end, matches: refusal-return }
+rule:
+  any:
+    - pattern: buddyManager.show()
+      inside: { stopBy: end, matches: show-handler }
+      not:
+        inside:
+          stopBy: { matches: show-handler }
+          follows: { stopBy: end, matches: after-refusal }
+    - matches: show-handler
+      any:
+        - not: { has: { stopBy: end, matches: refusal-return } }
+        - not: { has: { stopBy: end, pattern: buddyManager.show() } }

@@ -126,6 +126,21 @@ else
   # after landing.
   MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="(^|[[:space:]/'])$BRANCH([[:space:]']|\$)" \
                  --extended-regexp --format=%h -1 2>/dev/null || true)
+  # WHY a second lookup by BRANCH rather than by words (2026-09-16): the grep above
+  # only ever finds a merge whose subject still names the branch. A message rewritten
+  # by hand to describe the feature for Destin (the voice merge, 2026-09-05) drops the
+  # name, and the script then called a fully merged, fully pushed branch "never pushed".
+  # GitHub keeps the branch → PR → merge commit link regardless of wording, and `gh`
+  # answers it in one call; it fails fast (no network needed) on a repo whose origin
+  # is not on GitHub, which is what the test fixtures use. The merge commit it names
+  # must still be an ancestor of $BASE, or it is somebody else's history.
+  if [[ -z "$MERGE_COMMIT" ]] && command -v gh >/dev/null 2>&1; then
+    PR_SHA=$(cd "$REPO_DIR" && gh pr list --state merged --head "$BRANCH" --limit 1 \
+             --json mergeCommit --jq '.[0].mergeCommit.oid // empty' 2>/dev/null || true)
+    if [[ -n "$PR_SHA" ]] && git -C "$REPO_DIR" merge-base --is-ancestor "$PR_SHA" "$BASE" 2>/dev/null; then
+      MERGE_COMMIT=$(git -C "$REPO_DIR" rev-parse --short "$PR_SHA")
+    fi
+  fi
   if [[ -n "$MERGE_COMMIT" ]]; then
     pass "no ref left, and $BASE carries the merge commit $MERGE_COMMIT for it — the work landed"
     MERGED=yes
