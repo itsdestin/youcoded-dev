@@ -62,7 +62,7 @@ verify:
 ---
 # Sync Spaces, SyncHub, backup & GitHub-connect
 
-**Depth + why per bullet: `youcoded/docs/sync-spaces.md`; guards = frontmatter `verify:`.**
+**Depth + why: `youcoded/docs/sync-spaces.md`; guards = frontmatter `verify:`.**
 
 ## Git transport (`sync-spaces/git-transport.ts`)
 - **`GIT_DIR` env, not `--separate-git-dir`; ignores/attributes in `$GIT_DIR/info/`; `info/attributes` = `* -text`, NOT `text=auto`.**
@@ -86,7 +86,7 @@ verify:
 - **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync; store remaps degrade to WARNINGS, never silent drops.
 
 ## Project UX + discovery
-- **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state and label); other status-coloured controls are not sync.
+- **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state/label); other status-coloured controls aren't sync.
 - **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); **fold-on-read** blocks resurrection; schema stays 1.
 - **Per-field merge: `laterOf` takes `{v, at}` wrappers (`description` does; the name dimension passes whole entries); `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`.** Whole-entry `laterOf` tie-breaks on `JSON.stringify` (broke associativity); a shared clock reverts a peer's rename.
 
@@ -100,8 +100,8 @@ verify:
 
 ## Sync Warnings
 - **`~/.claude/.sync-warnings.json` is authoritative; two writers, non-overlapping codes**; push-failure warnings are non-dismissible.
-- **`runHealthCheck` runs at launch AND every 60s — a health warning must not outlive its cause**.
-- **Node-killed timeouts have empty stderr — use `extractStderr(e, timeoutMs)`**, never raw `e.stderr`.
+- **`runHealthCheck`: launch, then 5-min ticks (60 s while offline) while watched and sync is on — a warning must not outlive its cause**.
+- **Node-killed timeouts have empty stderr — use `extractStderr(e, timeoutMs)`**.
 
 ## GitHub auth (`github-{auth,connect,client}.ts`)
 - **The access token NEVER leaves the main process** — only the github-client store (safeStorage, per-install userData, never `~/.claude`/synced dirs) and `gh auth login --with-token` stdin; never logged, thrown, or in payloads/WS/git argv/config. App store PRIMARY, gh best-effort.
