@@ -115,6 +115,10 @@ positive fails as loudly as a false negative.
 Step 5 is the point of the exercise. Every invariant promoted to a scan is one less
 sentence an agent has to read and choose to honor.
 
+ast-grep's regex is Rust's: no lookahead or lookbehind. A rule that needs "this bracket
+has no `steps(`" is spelled as a generated complement language — edit its generator in
+`scripts/ast-grep/generators/`, never the generated YAML (2026-09-16).
+
 ### Where it runs
 
 The workspace CI runs the invariant scan; desktop branch verification also invokes it
