@@ -184,9 +184,9 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 
 | Phase | State |
 |---|---|
-| 1a | in progress 2026-09-16 |
-| 1b | in progress 2026-09-16 |
-| T | in progress 2026-09-16 |
+| 1a | merged 2026-09-16 (youcoded#497 `289730cb`) |
+| 1b | merged 2026-09-16 (youcoded#498 `ad2b709b`; rules youcoded-dev#118 `3eb6e5c0`) |
+| T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119) |
 | 2 | not started |
 | 3 | not started |
 | 4 | not started |
