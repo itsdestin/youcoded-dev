@@ -212,7 +212,12 @@ fi
 #   Projects labelled twice) and resume-browser-no-local-filter-chip-parts (6 — a local
 #   FilterPill, a glyph in JSX text, a glyph in a string, the hand-made check box, a
 #   ', ' join and a "Projects (N)" template).
-EXPECTED_VIOLATIONS=200
+# 2026-09-16 (review of u1, fix round 1, item 1): +5 for the new rule
+#   chatgpt-types-no-locale-formatter — the shapes the oxlint no-restricted-properties
+#   ban misses: an indirect string key, a Reflect.get lookup, a bare-call import,
+#   and an aliased import specifier's original name (2 fixture matches on one line
+#   pair, 1 each on the other three).
+EXPECTED_VIOLATIONS=205
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
