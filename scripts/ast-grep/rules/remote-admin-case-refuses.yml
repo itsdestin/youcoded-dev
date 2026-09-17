@@ -33,7 +33,9 @@ note: |
       fall-through label directly followed by a case that refuses (the 200
       characters would have reached that case's refusal);
     - the two banned texts fire on the innermost node holding them — comment,
-      string or template piece, regex, or code (a binary or call expression).
+      string or template piece, regex, or code (a binary, call or member
+      expression) — and, so no node kind is missed, the whole file fires when
+      the raw text holds one that no such node reports (e.g. inside a `new`).
   "HOST_ADMIN_REFUSAL anywhere" is implied by the rename/unpair arm check,
   which already requires it inside two cases that must exist.
   Deliberate differences: a comment or string spelling `case '…':` no longer
@@ -47,6 +49,7 @@ files:
   - "**/src/main/remote-server.ts"
   - "**/fixtures/remote-admin-case-refuses.ts"
   - "**/fixtures/remote-admin-case-refuses-no-*.ts"
+  - "**/fixtures/remote-admin-case-refuses-new.ts"
 utils:
   refusal-arm:
     kind: switch_case
@@ -73,6 +76,20 @@ utils:
           precedes:
             matches: empty-label
             precedes: { matches: refusal-arm }
+  retired-idiom-hit:
+    any:
+      - kind: string_fragment
+      - kind: template_string
+      - kind: string
+      - kind: comment
+      - kind: regex_pattern
+      - kind: binary_expression
+      - kind: call_expression
+      - kind: member_expression
+    regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
+    not:
+      has:
+        regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
 rule:
   any:
     # Presence: each channel must still have a real case.
@@ -94,16 +111,7 @@ rule:
         regex: "^['\"]remote:devices:(rename|unpair)['\"]$"
       not: { matches: refusing-case }
     # The two retired idioms, wherever the raw text sits.
-    - any:
-        - kind: string_fragment
-        - kind: template_string
-        - kind: string
-        - kind: comment
-        - kind: regex_pattern
-        - kind: binary_expression
-        - kind: call_expression
-        - kind: member_expression
+    - matches: retired-idiom-hit
+    - kind: program
       regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
-      not:
-        has:
-          regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
+      not: { has: { stopBy: end, matches: retired-idiom-hit } }

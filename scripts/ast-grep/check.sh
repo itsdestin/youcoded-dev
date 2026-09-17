@@ -241,7 +241,10 @@ fi
 #   (a performed rename arm, the address check in a comment and the disconnect call (3);
 #   one file per missing channel case (5)) and unpair-button-disabled-on-remote (the
 #   button without disabled={hostOnly}, and a row description without the hint (2)).
-EXPECTED_VIOLATIONS=244
+# 2026-09-16 (u5, fix to remote-admin-case-refuses): +1 for its new
+#   whole-file backstop (a retired spelling inside a `new` expression, a kind the innermost
+#   branch does not list).
+EXPECTED_VIOLATIONS=245
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
