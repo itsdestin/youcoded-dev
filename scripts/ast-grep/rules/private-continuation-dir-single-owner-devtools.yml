@@ -1,0 +1,24 @@
+id: private-continuation-dir-single-owner-devtools
+language: typescript
+severity: error
+message: >-
+  dev-tools.ts (the bug-report/diagnostics attachment collector) must never
+  name 'userData' or 'private-continuation' — it is the one module allowed to
+  gather arbitrary app state for a report, so it is the one place a leak of
+  the private reasoning sidecar's location would be hardest to notice.
+note: |
+  Invariant source: tests/accepted-history-privacy.test.ts (Plan B, 2026-09-16;
+  the test's only case, "Reader 6" — devTools half). Scoped to this one file
+  only: 'userData' is a common, legitimate literal elsewhere in the app
+  (app.getPath('userData'), NativeHome's constructor, …), so this ban cannot
+  share private-continuation-dir-single-owner's broad files: glob without
+  false-positiving on every ordinary use.
+files:
+  - "**/src/main/dev-tools.ts"
+  - "**/fixtures/private-continuation-dir-single-owner-devtools.ts"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "(userData|private-continuation)"
+    - kind: template_string
+      regex: "(userData|private-continuation)"

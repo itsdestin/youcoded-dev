@@ -101,7 +101,9 @@ fi
 # 2026-09-16 (t5c): +3 for type-scale-named-tokens-declared + no-arbitrary-text-size +
 #   its -ts twin.
 # 2026-09-16 (t5c): +2 for app-no-switch-view-broadcast + app-no-switch-view-receiver.
-EXPECTED_VIOLATIONS=60
+# 2026-09-16 (t6a): +2 for private-continuation-dir-single-owner + its -devtools twin
+#   (accepted-history-privacy.test.ts).
+EXPECTED_VIOLATIONS=62
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
