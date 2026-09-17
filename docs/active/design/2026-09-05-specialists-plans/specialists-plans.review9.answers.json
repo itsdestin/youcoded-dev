@@ -1,0 +1,65 @@
+{
+ "deck": "specialists-plans-review9",
+ "started": "2026-09-17T05:43:49.611Z",
+ "submitted": "2026-09-17T05:46:48Z",
+ "cur": 8,
+ "answers": {
+  "D9-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-2": {
+   "note": "no, this doesnt match literally any existing app ui surface. this should just show up as a regular user message.",
+   "v": "other",
+   "seconds": 36,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-3": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-4": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-5": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-6": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-7": {
+   "v": "yes",
+   "seconds": 39,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D9-8": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q9-1": {
+   "v": "pick",
+   "pick": "leave",
+   "note": "confused",
+   "seconds": 38,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
