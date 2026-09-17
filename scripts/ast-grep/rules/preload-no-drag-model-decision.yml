@@ -28,11 +28,44 @@ note: |
   DIFFERENCES, deliberate: presence needs code — a comment or type annotation
   spelling `platformFacts: {` no longer counts, and `wayland:` must be a pair
   in the platformFacts object (the fact the case title says preload exposes),
-  not the text anywhere in the file.
+  not the text anywhere in the file. The object may sit inside `as`,
+  `satisfies` or parentheses (up to three deep); parentheses are a
+  loosening — the retired /platformFacts:\s*\{/ refused `({`.
 files:
   - "**/src/main/preload.ts"
   - "**/fixtures/preload-no-drag-model-decision*.ts"
 utils:
+  # WHY unwrapped (review of u7, 2026-09-16): `platformFacts: { … } as Facts`
+  # and `… satisfies Facts` still hand preload's facts over, and the retired
+  # /platformFacts:\s*\{/ + /wayland:/ read accepted both; `({ … })` is the
+  # same object too (the retired read refused it — a deliberate loosening).
+  # Up to three wrappers deep (ast-grep utils cannot recurse).
+  facts-object:
+    kind: object
+    has:
+      kind: pair
+      has: { field: key, regex: "^wayland$" }
+  facts-wrapper:
+    any:
+      - kind: as_expression
+      - kind: satisfies_expression
+      - kind: parenthesized_expression
+  facts-value:
+    any:
+      - matches: facts-object
+      - all:
+          - matches: facts-wrapper
+          - has:
+              any:
+                - matches: facts-object
+                - all:
+                    - matches: facts-wrapper
+                    - has:
+                        any:
+                          - matches: facts-object
+                          - all:
+                              - matches: facts-wrapper
+                              - has: { matches: facts-object }
   names-model:
     any:
       - kind: string
@@ -68,10 +101,7 @@ rule:
           all:
             - has:
                 field: value
-                kind: object
-                has:
-                  kind: pair
-                  has: { field: key, regex: "^wayland$" }
+                matches: facts-value
     # a named model — innermost holder, reported once
     - matches: names-model
       not: { has: { stopBy: end, matches: names-model } }

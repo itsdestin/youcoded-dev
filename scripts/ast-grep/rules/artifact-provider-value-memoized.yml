@@ -26,7 +26,7 @@ note: |
     2. the whole file when no `const artifactContextValue = useMemo(…)`
        declaration exists;
     3. an `artifactContextValue = useMemo(…)` declarator whose second argument
-       is not an array whose text contains `artifactState` (a substring, as
+       (comments between arguments skipped) is not an array whose text contains `artifactState` (a substring, as
        before — `artifactStateRef` would still count).
   DIFFERENCES, deliberate: every tag is checked, not only the first; the tag
   name is matched whole; whitespace inside the braces or around `=` no longer
@@ -71,4 +71,10 @@ rule:
           field: value
           has:
             field: arguments
-            has: { nthChild: 2, kind: array, regex: "artifactState" }
+            # WHY ofRule (review of u7, 2026-09-16): nthChild counts comment
+            # nodes, so `useMemo(fn, /* deps */ [artifactState])` read the
+            # comment as the second argument and fired on correct code.
+            has:
+              nthChild: { position: 2, ofRule: { not: { kind: comment } } }
+              kind: array
+              regex: "artifactState"
