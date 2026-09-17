@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # CI follow-ups A — protect master, fix the three product races
 

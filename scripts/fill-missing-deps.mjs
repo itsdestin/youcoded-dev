@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Fetches the packages a worktree component's package-lock.json requires but
-// its hardlinked node_modules lacks — the step workspace-start runs when it
-// CREATES a worktree, for the case it cannot see: merging master into an
-// existing worktree later, which can bring a new dependency with it.
+// Tops up a worktree component's hardlinked node_modules against its
+// package-lock.json — missing packages and native binaries fetched, major-version
+// mismatches replaced, missing .bin commands linked. workspace-start runs the same
+// step on create and resume; this is for a merge of master in between.
 //
 //   node scripts/fill-missing-deps.mjs <worktree>/youcoded/desktop
 //

@@ -225,6 +225,11 @@ can move to module scope — **not** to raise the number again.
 
 Both are tracked in `docs/roadmap/dev-workspace.md` → `## tests`.
 
+**`tests/xterm-webgl-mipmap-patch.test.ts` failing is environmental:** that checkout's
+`node_modules` never had the postinstall patch. Run `node scripts/patch-xterm-webgl-mipmap.js`
+in `youcoded/desktop` of that checkout. The patch writes temp-then-rename, so patching one
+hardlinked tree does not patch the others.
+
 ## Temp roots: why snapshot-restore fails, and why removal retries
 
 Moved out of `.claude/rules/test-suite-hygiene.md` on 2026-09-04 when that rule hit its

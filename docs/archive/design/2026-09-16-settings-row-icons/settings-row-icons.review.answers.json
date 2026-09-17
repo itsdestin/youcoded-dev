@@ -1,0 +1,21 @@
+{
+ "deck": "settings-row-icons-review",
+ "started": "2026-09-16T22:39:40.358Z",
+ "submitted": "2026-09-16T22:40:24Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "the alignement between the dot and the text next to it looks a bit off. i think the text looks too high relative to the dot.",
+   "v": "other",
+   "seconds": 39,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

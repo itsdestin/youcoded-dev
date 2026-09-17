@@ -43,7 +43,7 @@ echo
 echo "Watch it with the Monitor tool — this filter catches progress AND failure,"
 echo "so a hang is never reported as silence:"
 echo
-echo "  tail -f -n 0 $LOG | grep -E --line-buffered \"^EXIT |aborted|TIMED OUT|Error:|ERROR|^\\[perf-lab .*\\] (cold start|workload|history\\.|stall\\.|artifacts |screenshot)\""
+echo "  tail -f -n 0 $LOG | grep -E --line-buffered \"^EXIT |aborted|TIMED OUT|Error:|ERROR|^\\[perf-lab .*\\] (cold start|workload|history\\.|stall\\.|artifacts |projects |terminal |native-stream |native-resume |screenshot)\""
 echo
 echo "Then gate with:"
 echo "  node scripts/perf-lab/compare.mjs <baseline>.json <new>.json --target <primary.path>"

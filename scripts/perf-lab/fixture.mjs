@@ -8,7 +8,7 @@
 // Node built-ins only (the workspace root has no package.json and must not gain one).
 import {
   appendFileSync, chmodSync, copyFileSync, cpSync, existsSync, mkdirSync,
-  readFileSync, rmSync, statSync, writeFileSync,
+  readFileSync, rmSync, statSync, utimesSync, writeFileSync,
 } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -20,7 +20,8 @@ import { fileURLToPath } from 'node:url';
 // tool cards, so a prose-only fixture measured a FLOOR rather than what the
 // owner actually pays. content.mjs emits those shapes and is deterministic by
 // construction (seeded PRNG, no clock, no entropy pool) — see its header.
-import { realisticTranscriptLines, messagesPerTurn } from './content.mjs';
+import { assistantContentBlocks, realisticTranscriptLines, messagesPerTurn } from './content.mjs';
+import { FAKE_MODEL_ID, FAKE_PROVIDER_ID, FAKE_PROVIDER_PORT } from './fake-provider.mjs';
 
 const HERE = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -56,6 +57,51 @@ const GGUF_NAME = 'qwen2.5-0.5b-instruct-q4_k_m.gguf';
  * Neither applies here: fixture paths are POSIX and ~60 chars, well under the cap.
  * This is a COPY on purpose — the workspace has no build step and cannot import TS.
  */
+/**
+ * Faithful copy of nativeStoreSlug (youcoded/desktop/src/main/slug-encoding.ts:57-63),
+ * the slug the NATIVE session store keys its directory by. It is deliberately NOT
+ * ccProjectSlug: only backslash, colon, slash and space are rewritten, and the app
+ * froze it that way so existing native session folders keep resolving. A COPY for
+ * the same reason as ccProjectSlug above (no TS import from the workspace).
+ */
+export function nativeStoreSlug(cwd) {
+  return cwd.replace(/\\/g, '/').replace(/:/g, '-').replace(/\//g, '-').replace(/ /g, '-');
+}
+
+/**
+ * The lines of ONE native session file, in the shapes the app's reader accepts
+ * (session-store.ts:19-34 for the header, shared/types.ts:243-280 for events):
+ *   line 1  {"v":1,"sessionId":<file stem>,"harnessId","binding","cwd","createdAt"}
+ *   then    user-message / assistant-text / turn-complete events, each with a uuid
+ *           (lines 2+ are deduped BY uuid, so every uuid must be distinct).
+ * The header carries no `title` on purpose: the Resume list then derives one from
+ * the first user message (session-store.ts:415-423), which is the path a real
+ * untitled session takes and the work the listing actually pays per file.
+ *
+ * `assistant-text` is one line per part holding the WHOLE text (the store coalesces
+ * same-partId deltas on write), so a seeded turn is exactly what a streamed turn
+ * leaves behind. Content is the transcript generator's realistic markdown, seeded.
+ */
+export function nativeSessionLines({ sessionId, cwd, turns, startedAt, binding, seed = CONTENT_SEED }) {
+  if (!Number.isInteger(turns) || turns < 1) throw new Error(`nativeSessionLines: turns must be a whole number >= 1, got ${JSON.stringify(turns)}`);
+  const lines = [JSON.stringify({ v: 1, sessionId, harnessId: 'coder', binding, cwd, createdAt: startedAt })];
+  const kinds = ['prose', 'code', 'prose', 'diff', 'long_output'];
+  for (let i = 0; i < turns; i++) {
+    const base = startedAt + i * 60_000;
+    const text = assistantContentBlocks(kinds[i % kinds.length], `${seed}:${sessionId}:${i}`)
+      .filter((b) => b.type === 'text' && b.text).map((b) => b.text).join('\n\n') || `Turn ${i + 1}.`;
+    lines.push(
+      JSON.stringify({ type: 'user-message', sessionId, uuid: stableUuid(`${sessionId}:u:${i}`), timestamp: base, data: { text: `Question ${i + 1} about ${cwd.split('/').pop()}: what should change next?` } }),
+      JSON.stringify({ type: 'assistant-text', sessionId, uuid: stableUuid(`${sessionId}:a:${i}`), timestamp: base + 2_000, data: { text, partId: `text-${i}` } }),
+      JSON.stringify({ type: 'turn-complete', sessionId, uuid: stableUuid(`${sessionId}:t:${i}`), timestamp: base + 4_000, data: { stopReason: 'end_turn', model: binding.modelId } }),
+    );
+  }
+  return lines;
+}
+
+/** Native sessions the `nativeSessions` fixture option seeds: how many, and the size of the one the phase resumes. */
+export const NATIVE_SESSIONS = Object.freeze({ count: 100, bigTurns: 400, smallTurns: 3 });
+
 export function ccProjectSlug(cwd) {
   return cwd.replace(/[^a-zA-Z0-9]/g, '-');
 }
@@ -404,7 +450,18 @@ export async function ensureAssets({ log = () => {} } = {}) {
  * diffs, tool cards, what the app actually renders) or 'plain' (the old prose
  * filler). Everything else about the fixture is identical between the two.
  */
-export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', log = () => {} } = {}) {
+/**
+ * @param {object} [opts]
+ * @param {boolean} [opts.fakeProvider]  add the perf-lab fake endpoint as a third
+ *   provider row (see fake-provider.mjs). OPT-IN: the default fixture is byte-for-byte
+ *   what every earlier report was measured against, so phases that do not need the
+ *   fake never see a different providers.json.
+ * @param {{count?:number,bigTurns?:number,smallTurns?:number}|boolean} [opts.nativeSessions]
+ *   seed native session files under ~/.youcoded/sessions (the Resume list's native
+ *   rows). OPT-IN for the same reason: 100 extra files on disk are a different
+ *   configuration, and only the native-resume phase measures at that scale.
+ */
+export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', fakeProvider = false, nativeSessions = false, log = () => {} } = {}) {
   // Synchronous on purpose (the plan's interface) — but provisioning needs
   // `await fetch`. So: fast sync check first, and only when an asset is genuinely
   // missing do we shell out to ourselves to run the async download once. On a
@@ -528,13 +585,52 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
   // Exactly ProvidersFile (provider-registry.ts:34) seeded with BUILT_INS
   // (provider-registry.ts:21-26). No secretRef — the fixture holds no API keys,
   // so a run cannot spend money even if something tries.
+  // The fake endpoint row (opt-in). Exactly the ProviderConfig shape
+  // (provider-types.ts:15-22): no secretRef, so it is keyless and `ready` the
+  // moment the app reads the file — no key entry, no catalog, no engine spawn.
+  const fake = fakeProvider
+    ? { id: FAKE_PROVIDER_ID, type: 'openai-compatible', label: 'perf-lab fake endpoint', baseUrl: `http://127.0.0.1:${FAKE_PROVIDER_PORT}/v1`, enabled: true }
+    : null;
   w('.youcoded/providers.json', JSON.stringify({
     v: 1,
     providers: [
       { id: 'local', type: 'local-engine', label: 'Local models (llama.cpp)', enabled: true },
       { id: 'openrouter', type: 'openrouter', label: 'OpenRouter', enabled: true },
+      ...(fake ? [fake] : []),
     ],
   }));
+
+  // ── Native session files (opt-in) ──────────────────────────────────────
+  // ~/.youcoded/sessions/<nativeStoreSlug(cwd)>/<id>.jsonl, one per session. The
+  // app lists them by reading the first 256 KB of every file (native-home.ts
+  // readSessionHeadAsync), so the COUNT is what the Resume-list cost scales with;
+  // the small ones are three turns each. One session is big enough to page
+  // (bigTurns > the 30-turn first page), and it is the newest by mtime so it is
+  // the first row on screen. mtimes are staggered and derived, so the list order
+  // and every "N days ago" label are identical between builds.
+  let native = null;
+  if (nativeSessions) {
+    const spec = { ...NATIVE_SESSIONS, ...(typeof nativeSessions === 'object' ? nativeSessions : {}) };
+    const binding = { providerId: fake ? FAKE_PROVIDER_ID : 'local', modelId: fake ? FAKE_MODEL_ID : GGUF_NAME.replace(/\.gguf$/i, '') };
+    const cwd = projects.alpha;
+    const slug = nativeStoreSlug(cwd);
+    const dir = mk('.youcoded', 'sessions', slug);
+    const ids = [];
+    let big = null;
+    for (let i = 0; i < spec.count; i++) {
+      const isBig = i === 0;
+      const sessionId = stableUuid(`${CONTENT_SEED}:native:${i}`);
+      const turns = isBig ? spec.bigTurns : spec.smallTurns;
+      const startedAt = now - (isBig ? 1 : 2 + i) * 3_600_000 - turns * 60_000;
+      const p = join(dir, `${sessionId}.jsonl`);
+      writeJsonl(p, nativeSessionLines({ sessionId, cwd, turns, startedAt, binding }));
+      const mtime = new Date(now - (isBig ? 1 : 2 + i) * 3_600_000);
+      utimesSync(p, mtime, mtime);
+      ids.push(sessionId);
+      if (isBig) big = { sessionId, turns, path: p, bytes: statSync(p).size };
+    }
+    native = { dir, slug, cwd, count: ids.length, ids, big, binding, smallTurns: spec.smallTurns };
+  }
   // Hardlink the model, same reasoning as the engine below: the app only READS a
   // GGUF from cacheDir (a download writes a NEW file), so links can't write back
   // into the cached asset.
@@ -590,6 +686,10 @@ export function buildFixture(root, { engineSrc, ggufSrc, content = 'realistic', 
     decoyTranscripts: decoys.length,
     modelId: GGUF_NAME.replace(/\.gguf$/i, ''),   // ggufIdFromFileName (cache-scan.ts:22)
     engine: { dir: engineDir, version: pin.version, backend: pin.backend, binaryRelPath: pin.binaryRelPath },
+    // null unless opted in — a scenario that needs either must check and throw,
+    // never fall back to the real engine or an empty Resume list.
+    fakeProvider: fake ? { id: fake.id, port: FAKE_PROVIDER_PORT, baseUrl: fake.baseUrl, modelId: FAKE_MODEL_ID } : null,
+    nativeSessions: native,
     // The env a launcher MUST use. XDG_CONFIG_HOME is pinned explicitly rather
     // than left to default: if the launching shell ever exports it, Electron's
     // userData would escape the fixture and land in the REAL ~/.config/youcoded.

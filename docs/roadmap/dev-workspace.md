@@ -3,6 +3,12 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/artifacts/import-file.test.ts` — the two `failed copy rollback` cases that use
+      `onCollision: 'replace'` with `disclosedCollisions` (ENOSPC and COPY_INCOMPLETE) sometimes
+      return `{ok: true, skipped: true}` on the Windows CI leg, so the mocked copy failure is never
+      reached. An unchanged re-run of 01a2fa4b went green on all three (2026-09-06); the file and
+      its source were untouched since 2026-07-23. Re-run before bisecting
+      `n/a` `needs-verify` `checked 2026-09-06`
 - [ ] `tests/specialist-run.test.ts` "a background completion is injected as a user-role turn when
       the parent goes idle" timed out once on the Windows CI leg (run 35156247052, 2026-09-16, the
       merged-commit dispatch of session/ci-test-health): the child's ledger status was still
@@ -32,20 +38,6 @@ seen-on is always n/a here.
       in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
-- [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
-      new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
-      five times in isolation right after; the run's changes touched nothing it imports.
-      Load-sensitive, like the step-guard entry below.
-      2026-09-16 (session/ci-test-health, runs 35088148602 macOS and 35089626563 Ubuntu): the test
-      now awaits EVERY `fs.promises.rm` its spy observed before reading the disk, and the lease file
-      is STILL present afterwards while `isHeld` is false and the rm was called with the right path.
-      A resolved rm followed by an existing file means something writes it back after the delete —
-      no path in `lease-client.ts` was found that does, so the next step is to log the file-op
-      queue order under load, not to widen the test again. The on-disk assertion is REMOVED from
-      the test on session/ci-test-health (the in-memory contract stays pinned) so master can be
-      green; this entry is the only record that the file-gone claim is unproven
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
       pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
@@ -108,8 +100,14 @@ seen-on is always n/a here.
       on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
       prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
       3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
-      but it fails whole runs, which is how a real failure next to it gets ignored
-      `n/a` `confirmed` `checked 2026-09-03`
+      but it fails whole runs, which is how a real failure next to it gets ignored.
+      2026-09-16: now THREE files, same `ENOTEMPTY … /.youcoded/sessions` on teardown —
+      `specialist-run.test.ts` on master's own Ubuntu leg (run 35158812538), `task-tool.test.ts`
+      on macOS and `native-session-host.test.ts` on Ubuntu (run 35160811595). With master
+      protected on the Linux check (Plan A) this can block a good PR. Same shape as the two
+      write-after-teardown races Plan A fixed (engine stopAll, lease destroy): find what still
+      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
@@ -207,14 +205,6 @@ seen-on is always n/a here.
       `n/a` `needs-verify` `checked 2026-07-22`
 
 ## rigs
-- [ ] Resuming a session with `workspace-start --session <key> youcoded` does not top up the
-      worktree's hardlinked `node_modules` when master has since added packages: after merging
-      origin/master on 2026-09-16 (which adopted `oxlint` and `tsgo`) `verify.sh` failed types,
-      knip and lint with "oxlint: command not found" and an old tsc, while the tests passed.
-      Creation fetches missing packages ("deps: … fetched 4 package(s)"); resume should too, or
-      say plainly that the deps are behind master's package.json
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
       this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
@@ -412,11 +402,6 @@ seen-on is always n/a here.
       Destin 2026-09-02: retire it — after checking nothing real is lost; reconsider if so
       `n/a` `confirmed` `checked 2026-09-02` `security` → docs/active/investigations/2026-09-01-review-harness-key-leak.md
 
-- [ ] The perf rig cannot see native per-token streaming — its workload streams whole turns
-      through the Claude Code transcript path, so the gate under-represents the exact path
-      cycle 1's fixes target
-      `n/a` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
-
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
       identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%
       first recorded and larger than the 6.38% a real candidate change produced against the same
@@ -491,6 +476,16 @@ seen-on is always n/a here.
       conversation rather than folding it in
       `n/a` `confirmed` `checked 2026-09-13`
 
+- [ ] `fillMissingPackages` fetches a missing tool package but not what makes it runnable, so
+      `verify.sh` reports `types` and `lint` as FAIL on a correct change. On 2026-09-16 it fetched
+      `@typescript/native-preview` and `oxlint` into a new worktree; both then failed with
+      `tsgo: command not found` / `oxlint: command not found` (no `node_modules/.bin` links are
+      made), and calling their bin scripts directly died with `MODULE_NOT_FOUND` — the loop skips
+      every `optional` lock entry, which is where their per-platform native binaries live. The
+      same two FAILs showed on four verify runs in that session; the only workaround was
+      installing both into a scratch folder and running them from there (both passed)
+      `n/a` `confirmed` `checked 2026-09-16`
+
 - [ ] A fresh worktree came up missing a package its own lockfile names (`dompurify`), so the first
       full verify failed 41 test files at import. `workspace-start` already has the fix for this —
       `fillMissingPackages` — and it printed no note; run by hand against the same worktree straight
@@ -499,8 +494,25 @@ seen-on is always n/a here.
       at fresh `origin/master` (whose lock names dompurify) while its `node_modules` was hardlinked
       from the shared checkout (whose lock does not), and the only `deps:` line printed was
       `hardlinked`. This is the FIFTH time this package has cost a session — four on 2026-09-11, all
-      closed as "the recipe works" or "fixed on master"
-      `n/a` `needs-verify` `checked 2026-09-13` `regression`
+      closed as "the recipe works" or "fixed on master".
+      2026-09-16: cause still unknown, but no longer a dead end — `workspace-start` now tops up on
+      RESUME too, so re-running it with the same key fetches what creation missed. Creation printed
+      its `fetched` note correctly on two fresh worktrees that day
+      `n/a` `needs-verify` `checked 2026-09-16` `regression`
+
+- [ ] A fresh worktree's hardlinked `node_modules` is the SHARED checkout's, and the shared checkout
+      sits hundreds of commits behind master: on 2026-09-16 it carried TypeScript 5.9 where master's
+      `package.json` wants 6, and `fillMissingPackages` fetched `oxlint` and `oxlint-tsgolint` but
+      not their native platform bindings (`@oxlint/binding-linux-x64-gnu`, `@oxlint-tsgolint/linux-x64`,
+      which are optionalDependencies) nor `.bin` links for them. So `verify.sh` fails its `types`
+      check (`TS5095`) and its `lint` check (`oxlint: command not found`, then "Cannot find native
+      binding") on EVERY new worktree until someone unpacks the tarballs by hand — two sessions did
+      exactly that on 2026-09-16 (this one, and the one that closed the status-bar accounting
+      item, which "ran from the npm cache"). Fix shape: `fillMissingPackages` compares the
+      worktree's lock against what is on disk for the top-level packages that matter to the
+      checks (typescript, oxlint, oxlint-tsgolint) and fetches optionalDependencies for the
+      current platform plus `.bin` links; a `deps:` line names what it replaced
+      `n/a` `confirmed` `checked 2026-09-16` `regression`
 
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
@@ -714,6 +726,11 @@ seen-on is always n/a here.
       the explanation sits about ten screens further down, so someone taps it expecting an App
       Store link
       `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] The promo film's opening still shows Cotton Candy holding the wand that Destin removed from
+      the site's hero button (2026-09-11 refresh). Not asked yet — his call whether to re-film it;
+      renders need his go-ahead
+      `n/a` `decision` `checked 2026-09-11`
 
 - [ ] Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
       1.2.4 in both manifests; the CHANGELOG carries a `1.3.0-beta` section but no `1.3.0` entry),

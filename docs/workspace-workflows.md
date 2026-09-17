@@ -14,7 +14,9 @@ Read only the section needed for the task. `CLAUDE.md` is the operating core; th
 
 **Never link a worktree's `node_modules` to the main checkout — `workspace-start` already copies it with `cp -al` (hardlinks) when it creates the worktree.** You normally don't run this step yourself; the startup output lists it as `deps: …`. The rules below govern what you may then DO with that hardlinked copy. On Windows, `git worktree remove` AND `npm ci` both follow `node_modules` junctions and will wipe the **main checkout's** deps; delete the junction first (`cmd //c "rmdir <path>"`, never `rm -rf`). **A POSIX symlink is no safer** (verified 2026-08-13): Gradle's `bundleWebUi` transitively runs `npm ci`, which followed the symlink and emptied the shared copy across six worktrees at once — so don't run Gradle or `build-web-ui.sh` in a linked worktree either (`-x bundleWebUi` if you must). A symlink ALSO makes `verify.sh` lie: Vite resolves the real path, sees it outside the worktree root, and fails suites at load with `Denied ID …?inline` — 2 suites silently never ran while the summary said "1 check failed". `cp -al` is near-instant, costs almost no disk, and has none of these failure modes — but it is not hazard-free: hardlinks SHARE THE INODE, so a tool that writes IN PLACE inside a worktree's `node_modules` edits every tree linked to it (one file was found on 7 links in 2026-08-27). Before running anything that patches a dependency, confirm it renames rather than writes in place. Full note: `docs/PITFALLS.md` → Cross-repo invariants.
 
-**A dependency added to master after the shared checkout's last install is absent from a worktree's hardlinked `node_modules`** (three sessions on 2026-09-11: `Failed to resolve import "dompurify"`). `workspace-start` now fetches required missing packages itself when it creates the worktree (listed after `deps:`). After merging master into an EXISTING worktree, run `node scripts/fill-missing-deps.mjs <worktree>/youcoded/desktop`. Never `npm install` for this — it writes `node_modules/.package-lock.json` in place through the shared inode (`docs/PITFALLS.md` → Worktrees); both paths `npm pack` + `tar` into a fresh directory instead.
+**A dependency added to master after the shared checkout's last install is absent from a worktree's hardlinked `node_modules`** (three sessions on 2026-09-11: `Failed to resolve import "dompurify"`). `workspace-start` closes the gap itself, on creation AND on every resume (listed after `deps:`): it fetches missing required packages and this machine's native binaries, replaces packages a MAJOR version behind the lockfile (2026-09-16: `typescript` 5.9 vs 6 broke `tsc`), and links missing `node_modules/.bin` commands (`tsgo`, `oxlint`). Minor/patch drift is left alone. After merging master mid-session, re-run `workspace-start` with the same key, or `node scripts/fill-missing-deps.mjs <worktree>/youcoded/desktop`. Never `npm install` for this — it writes `node_modules/.package-lock.json` in place through the shared inode (`docs/PITFALLS.md` → Worktrees); both paths `npm pack` + `tar` into a fresh directory instead.
+
+**Stage filenames, never a directory.** `git add docs/active` is not an explicit path — it swept seven files from two other live sessions into a commit (2026-08-31). Read `git diff --cached --name-only` before every commit (`docs/PITFALLS.md` → Staging).
 
 **"Merge" means merge AND push.** Don't stop at a local merge.
 
@@ -31,7 +33,19 @@ Confirm with `git log --oneline origin/master -1`, then do the cleanup above by 
 the merge.
 Verify the commit landed on the remote default first: `git merge-base --is-ancestor <sha> origin/master` must exit 0 (a stale local `master` is not the authority). Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
-**A red check on the PR: run `bash scripts/ci-red-vs-master.sh <pr> [<repo-dir>]` before opening a log.** It pulls the failing test names from the PR's failed jobs and from master's latest run of the same workflow and says which failures are already red on master (exit 0) and which are new (exit 1); build/install breaks with no test names are yours to read. Two known-red legs on 2026-09-10 — the workspace git-identity test and the desktop Windows harness checkpoint tests — cost four manual comparisons in one session before this existed.
+**A red check on the PR is yours until proven otherwise.** Master is protected on
+`build (ubuntu-latest)` (2026-09-16), so a red Linux check stops the merge: open the failed
+job's log (`gh run view <id> --log-failed`), find the `FAIL` lines, and fix them on the branch.
+Windows and macOS run on master and nightly, not on PRs; a red there after your merge is
+still yours the same day. Never re-run a red job hoping it goes green without reading it. To prove Windows and macOS before
+merging, `gh workflow run desktop-ci.yml --ref <branch>` (a dispatch runs all three; a PR runs Linux
+only). `--log-failed` is EMPTY while a run is still in progress — wait for it to finish.
+
+**Never chain a merge behind a check, or cleanup behind `gh pr merge`, in one command.** Run the
+check, read its output, then merge; read the merge result, then clean up. A guard like
+`rg -n 'budget'` matches the FAIL line too and exits 0 — that merged a red audit (youcoded-dev#15,
+2026-09-01); a refused merge in a chained command still went on to delete its branch and worktree
+(youcoded-dev#24, 2026-09-03).
 
 **Run `bash scripts/close-out.sh <branch> [<repo>]` yourself** — it reports all of the above plus the docs half (live docs still naming the branch, shipped docs still under `docs/active/`, the ROADMAP and MAP items). Read-only, always exits 0: it says what is left, it does not do it, so address every line within the authorized scope. The `wrap-up` procedure includes it at close-out.
 
@@ -89,6 +103,8 @@ When designing new features or making changes to user-facing app interfaces, the
 ### Demo clips and the landing page
 
 The public site (`youcoded/docs/index.html`) is built from **recordings of the running renderer**, not drawings: `scripts/ui-review/record.mjs` films one JSON scene (`scripts/ui-review/scenes/`) into a WebM loop + poster, and `bash scripts/ui-review/site-assets.sh <worktree>` regenerates every loop, gallery still and the live embed in one go (a desktop release-checklist step). What the demo "model" says is a reply fixture. Any "make a clip of feature X" / "update the website" request starts at `scripts/ui-review/README.md` → "Recording a loop"; the rule `.claude/rules/landing-page.md` auto-loads on the page and the rig. **Destin editing the copy himself** ("let me edit the website") is `python3 scripts/ui-review/site-copy-editor.py serve youcoded/docs/index.html` — the real page, editable in place, Submit writes `edits.md`; background it and put its URL in chat. **Landing copy lives in** `docs/active/handoffs/2026-08-31-landing-redesign-START-HERE.md`. Do not write “real app / real files / actually reads / does real work / self-improving.” The fact sheet is inventory, not copy.
+
+**Promo film: a full draft or final render is Destin's call, every time** (said 2026-09-04 and again 2026-09-09). Iterate with stills (`remotion still … --frame N`) and short partial studies on a deck. **A context-free reviewer on a draft** is for work he won't see soon, or when he asks; when he is reviewing drafts live he told sessions to stop — check the contact sheet and changed frames yourself.
 
 ### Asking a page a question, and A/B-ing the answer
 
