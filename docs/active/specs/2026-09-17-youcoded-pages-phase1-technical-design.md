@@ -97,8 +97,11 @@ Pages-specific in sync.
 Project homes do NOT get a watcher of their own (F8): `project-watcher.ts` already watches each
 known project root to depth 6, so the pages store subscribes to its external-change events and
 rescans when a changed path is under `Pages/`. A `Pages/` folder that appears later is found on
-the next `list()`. `Pages` joins the project file discovery's skip set for Phase 1 (F9), so
-`page.html` and every `data.json` save stay out of the Files tab and its change churn.
+the next `list()`. `Pages` is NOT added to the discovery/watch skip sets after all (F9, decided
+at build time): the two sets are pinned equal, and skipping `Pages/` in the watcher would also
+silence the very events the store relies on. So a page's files appear in the project's Files
+tab like any other project file, and the app's own data saves are suppressed as own-writes;
+only a synced save from another device shows up as an external change.
 
 ## 4. Pins, per device
 
@@ -196,8 +199,7 @@ dispatcher path turns `/page-builder …` into `invokeSkill`.
    walk-through the plugin is copied into `~/.claude/plugins` by hand.
 2. Store + scan + ids + stamps + folding (`main/pages/pages-store.ts`) with tests.
 3. Pins file + data envelope, caps, locks.
-4. Watcher on Personal/Pages + project-watcher subscription + `pages:changed` broadcast;
-   `Pages` in the discovery skip set.
+4. Watcher on Personal/Pages + project-watcher subscription + `pages:changed` broadcast.
 5. Five-surface wiring + parity tests; delete `MOCK_ONLY` rows; keep the workbench fake.
 6. Renderer: `setData` in `PagesBridge`, data baked in by `prepareHostedDocument`, the
    source-checked relay in `PageHost`, refetch on `htmlStamp`.
