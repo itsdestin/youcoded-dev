@@ -161,7 +161,10 @@ fi
 #   arcade-challenge-game-in-presence-hook (1), -in-reducer (1), -in-lobby (1),
 #   -not-hardcoded (1), chatview-yields-keys-to-game-board (1),
 #   arcade-handlers-no-ranking-or-formatting (2), arcade-stop-play-keyed-on-open-game (1).
-EXPECTED_VIOLATIONS=153
+# 2026-09-16 (review of t6a, I4): +2 — chatview-passes-provider-to-attentionbanner's
+#   fixture gains the open/close form, and a second fixture fires its whole-file
+#   "no banner rendered" branch.
+EXPECTED_VIOLATIONS=155
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
