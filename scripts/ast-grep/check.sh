@@ -334,8 +334,20 @@ def files_globs(text):
     if m:
         items = m.group(1).split(',')
     else:
-        m = re.search(r'^files:[ \t]*\n((?:[ \t]+-.*\n?)+)', text, re.M)
-        items = [l.split('-', 1)[1] for l in m.group(1).splitlines()] if m else []
+        # WHY line by line (review of u2, 2026-09-16): the old one-regex block match
+        # ended at the first line that was not `- item`, so a `# comment` line inside
+        # the list silently dropped every path after it from this check. Walk the
+        # lines under `files:` instead — list items are kept, comment and blank lines
+        # skipped — and stop at the next top-level key (any other non-indented line).
+        items = []
+        m = re.search(r'^files:[ \t]*(?:#.*)?$', text, re.M)
+        for line in (text[m.end():].split('\n')[1:] if m else []):
+            if re.match(r'^[ \t]*(#.*)?$', line):
+                continue
+            item = re.match(r'^[ \t]*-[ \t]*(.*)$', line)
+            if not item:
+                break
+            items.append(item.group(1))
     return [i.split(' #')[0].strip().strip('"\'') for i in items if i.strip()]
 
 existing = []
