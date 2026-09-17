@@ -91,7 +91,7 @@ carries it; `—` means the source-reading case is deleted outright (nothing els
 | `tests/read-pdf.test.ts` | PDF extraction behaviour; one bans path.sep in one function | M, D | split (ast-grep that case) | `pdfjs-asset-dirs-no-path-sep` | 1/17 |
 | `tests/remote-appearance-relay.test.ts` | Server relay behaviour; two grep main.ts appearance wiring | M, B | split (server cases stay) | `appearance-broadcast-relays-to-remote` | 2/4 |
 | `tests/remote-download.test.ts` | Download route dispatched before static handler and Vite proxy | M, B | split (keep the HTTP behaviour suite) | `download-route-before-static` | 1/31 |
-| `tests/remote-host-admin-desktop-only.test.ts` | Admin channels refused; greps server cases and Unpair props | M, B | split (responseOutcome cases stay) | `remote-admin-case-refuses` | 2/4 |
+| `tests/remote-host-admin-desktop-only.test.ts` | Admin channels refused; greps server cases and Unpair props | M, B | split (responseOutcome cases stay) | `remote-admin-case-refuses` (+ `unpair-button-disabled-on-remote` for the SettingsPanel half — a tsx file) | 2/4 (u5 correction: plus the source half of the mixed case "reading the configuration is still allowed"; its responseOutcome half stays) |
 | `tests/remote-page-source.test.ts` | main.ts passes exact serveBuiltPage expression | M, B | split (keep the three pure-function cases) | — | 1/4 |
 | `tests/remote-rate-limit.test.ts` | Socket-budget behaviour; three grep server for absent idioms | M, B | split (socket-driving cases stay) | `no-ip-keyed-failure-bucket` | 3/5 |
 | `tests/remote-readiness.test.ts` | Real WS hydrate/replay tests; one greps fallback timer constants | M (B) | split (keep the 13 WS behaviour cases) | — | 1/14 |

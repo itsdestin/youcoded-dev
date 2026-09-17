@@ -1,0 +1,57 @@
+id: unpair-button-disabled-on-remote
+language: tsx
+severity: error
+message: >-
+  SettingsPanel's Unpair button (the element with aria-label={`Unpair …`}) must
+  carry disabled={hostOnly}, and a remote device row must say
+  hostOnly ? `${row.online ? 'Online' : 'Offline'} · unpair on the computer itself`.
+  The host refuses Unpair from a phone; a live button there only offers a
+  press whose one outcome is an error.
+note: |
+  Invariant source: tests/remote-host-admin-desktop-only.test.ts (Plan B,
+  2026-09-16) — the SettingsPanel half of "a phone cannot unpair a device".
+  The server half is remote-admin-case-refuses.
+  The retired checks were two regexes over the RAW file text:
+    /disabled=\{hostOnly\} aria-label=\{`Unpair /
+    /hostOnly \? `\$\{row\.online \? 'Online' : 'Offline'\} · unpair on the computer itself`/
+  (anchored to the Unpair button because a bare `disabled={hostOnly}` search
+  passed while this exact prop had been deleted — two other controls carry it).
+  Here, on the same file, the whole file fires when:
+    - no JSX tag (self-closing or opening) has BOTH an `aria-label` attribute
+      whose template starts with `Unpair ` and the attribute
+      `disabled={hostOnly}`; or
+    - no conditional expression has a condition ending in `hostOnly` (the
+      old regex's `hostOnly ?`) and, as its consequence, exactly that template.
+  Deliberate differences: the two attributes may sit in either order, with
+  other attributes or line breaks between them (the same button); a comment
+  or string spelling either shape no longer counts (stricter); spacing around
+  `?` of the outer conditional is free (the template's own text stays exact).
+files:
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/fixtures/unpair-button-disabled-on-remote*.tsx"
+utils:
+  unpair-button:
+    any:
+      - kind: jsx_self_closing_element
+      - kind: jsx_opening_element
+    all:
+      - has:
+          kind: jsx_attribute
+          regex: "^aria-label=\\{`Unpair "
+      - has:
+          kind: jsx_attribute
+          regex: "^disabled=\\{hostOnly\\}$"
+  remote-row-description:
+    kind: ternary_expression
+    all:
+      - has: { field: condition, regex: "hostOnly$" }
+      - has:
+          field: consequence
+          kind: template_string
+          regex: "^`\\$\\{row\\.online \\? 'Online' : 'Offline'\\} · unpair on the computer itself`$"
+rule:
+  any:
+    - kind: program
+      not: { has: { stopBy: end, matches: unpair-button } }
+    - kind: program
+      not: { has: { stopBy: end, matches: remote-row-description } }

@@ -237,7 +237,11 @@ fi
 # 2026-09-16 (u4, remote-download.test.ts): +5 for download-route-before-static (a static
 #   call before the route (1); a server callback with no route — the callback and both
 #   fallbacks (3); a file with no http.createServer((req, res) => …) call (1)).
-EXPECTED_VIOLATIONS=234
+# 2026-09-16 (u5, remote-host-admin-desktop-only.test.ts): +10 for remote-admin-case-refuses
+#   (a performed rename arm, the address check in a comment and the disconnect call (3);
+#   one file per missing channel case (5)) and unpair-button-disabled-on-remote (the
+#   button without disabled={hostOnly}, and a row description without the hint (2)).
+EXPECTED_VIOLATIONS=244
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

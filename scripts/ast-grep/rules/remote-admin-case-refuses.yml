@@ -1,0 +1,109 @@
+id: remote-admin-case-refuses
+language: typescript
+severity: error
+message: >-
+  remote-server.ts must refuse host administration over the remote socket:
+  `case 'remote:set-password'`, `'remote:set-config'`, `'remote:devices:rename'`
+  and `'remote:devices:unpair'` stay as cases (the last two answering with
+  HOST_ADMIN_REFUSAL), `'remote:get-config'` stays answered, and neither the old
+  address check (`client.ip === '127.0.0.1'`) nor the old disconnect handler
+  (`this.disconnectClient(payload.clientId…`) may come back. Behind a loopback
+  bind every phone arrives as 127.0.0.1, so an address check let any paired
+  phone change the host password; a performed Unpair left the device with full
+  access while its row vanished.
+note: |
+  Invariant source: tests/remote-host-admin-desktop-only.test.ts (Plan B,
+  2026-09-16) — "refuses the administration channels, and not by comparing an
+  address", the server half of "a phone cannot unpair a device", and the
+  source half of "reading the configuration is still allowed". The file's
+  responseOutcome cases stay. The Unpair button half is
+  unpair-button-disabled-on-remote.
+  The retired checks read the RAW file text:
+    - `case '<channel>':` present, for the five channels above;
+    - the 200 characters from the first `case 'remote:devices:rename|unpair':`
+      contain HOST_ADMIN_REFUSAL;
+    - HOST_ADMIN_REFUSAL anywhere in the file;
+    - `client.ip === '127.0.0.1'` and `this.disconnectClient(payload.clientId`
+      nowhere in the file, comments included.
+  Here, on the same file:
+    - presence: a whole file with no real `switch_case` for any one of the
+      five channels fires once per missing channel's branch;
+    - a rename/unpair `switch_case` whose own text (label, body and any comment
+      inside it) lacks HOST_ADMIN_REFUSAL fires — unless it is an empty
+      fall-through label directly followed by a case that refuses (the 200
+      characters would have reached that case's refusal);
+    - the two banned texts fire on the innermost node holding them — comment,
+      string or template piece, regex, or code (a binary or call expression).
+  "HOST_ADMIN_REFUSAL anywhere" is implied by the rename/unpair arm check,
+  which already requires it inside two cases that must exist.
+  Deliberate differences: a comment or string spelling `case '…':` no longer
+  counts as the case (stricter); the channel may be single- or double-quoted
+  (the same case); "inside this case's arm" replaces "within 200 characters of
+  the first label" — every case with that label is checked, and the next
+  case's refusal no longer counts for a non-empty arm (stricter), while a
+  refusal further down a long arm now counts (looser, and the arm is what
+  answers).
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/remote-admin-case-refuses.ts"
+  - "**/fixtures/remote-admin-case-refuses-no-*.ts"
+utils:
+  refusal-arm:
+    kind: switch_case
+    regex: "HOST_ADMIN_REFUSAL"
+  empty-label:
+    kind: switch_case
+    not: { has: { field: body, pattern: $BODY } }
+  # An arm that refuses, or an empty fall-through label (`case 'a': case 'b':
+  # { … }`) followed — up to two more empty labels — by one that does.
+  # ast-grep's `precedes` defaults to the immediately following sibling.
+  # (utils cannot recurse, so the chain is spelled out three labels deep.)
+  refusing-case:
+    any:
+      - matches: refusal-arm
+      - matches: empty-label
+        precedes: { matches: refusal-arm }
+      - matches: empty-label
+        precedes:
+          matches: empty-label
+          precedes: { matches: refusal-arm }
+      - matches: empty-label
+        precedes:
+          matches: empty-label
+          precedes:
+            matches: empty-label
+            precedes: { matches: refusal-arm }
+rule:
+  any:
+    # Presence: each channel must still have a real case.
+    - kind: program
+      not: { has: { stopBy: end, kind: switch_case, has: { field: value, kind: string, regex: "^['\"]remote:set-password['\"]$" } } }
+    - kind: program
+      not: { has: { stopBy: end, kind: switch_case, has: { field: value, kind: string, regex: "^['\"]remote:set-config['\"]$" } } }
+    - kind: program
+      not: { has: { stopBy: end, kind: switch_case, has: { field: value, kind: string, regex: "^['\"]remote:get-config['\"]$" } } }
+    - kind: program
+      not: { has: { stopBy: end, kind: switch_case, has: { field: value, kind: string, regex: "^['\"]remote:devices:rename['\"]$" } } }
+    - kind: program
+      not: { has: { stopBy: end, kind: switch_case, has: { field: value, kind: string, regex: "^['\"]remote:devices:unpair['\"]$" } } }
+    # The device channels are refused inside their own arm.
+    - kind: switch_case
+      has:
+        field: value
+        kind: string
+        regex: "^['\"]remote:devices:(rename|unpair)['\"]$"
+      not: { matches: refusing-case }
+    # The two retired idioms, wherever the raw text sits.
+    - any:
+        - kind: string_fragment
+        - kind: template_string
+        - kind: string
+        - kind: comment
+        - kind: regex_pattern
+        - kind: binary_expression
+        - kind: call_expression
+        - kind: member_expression
+      regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
+      not:
+        has:
+          regex: "client\\.ip === '127\\.0\\.0\\.1'|this\\.disconnectClient\\(payload\\.clientId"
