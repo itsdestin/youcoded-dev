@@ -131,6 +131,18 @@ Built and committed the same day. Rows R22 (panel starts hidden), R21 (library h
 to chat") and the round-1 "Pages button opens the library" reading are superseded; the contract
 needs a round-9 deck and a refresh before signing.
 
+**Second redirection during testing (2026-09-17, in chat):** Create a page / Make a page / Edit
+open the app's new-session dialog (folder, model, skip permissions) with the page-builder command
+waiting in the composer; a pinned button opens its page edge to edge with the panel hidden and
+the button lit (the Pages icon brings the panel back); the chat's global shortcuts are blocked
+under the page view; Project View wears the same band and framed pane (ScreenBand). In floating
+chrome (Halftone Dimension) the screens went transparent over the wallpaper with glass panes;
+four framings were captured (`youcoded-pages-floating.choice.json`) and Destin picked **two
+cards** in chat, then asked for the gap under the header pill to match the gutters (8px
+everywhere). Two Settings bugs fixed (scrim order, Esc from inside a page). The round-10 deck
+spec (`youcoded-pages-shell-r10.review.json`) is written, unbuilt, on his instruction to hold
+decks until asked.
+
 **Build status (2026-09-17):** the contract (24 rows) is written and awaits Destin's signature;
 the technical design is reviewed (12/12 findings folded in); the `wecoded-pages-plugin` skill,
 the store, the watcher, the five-surface bridge, page data and the Make a page / Edit in chat

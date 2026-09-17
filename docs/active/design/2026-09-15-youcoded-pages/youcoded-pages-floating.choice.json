@@ -1,5 +1,5 @@
 {
-  "title": "Pages in floating themes — four ways the panel and the page can sit on the wallpaper",
+  "title": "Pages in floating themes \u2014 four ways the list and the frame can sit on the wallpaper",
   "key": "youcoded-pages-floating",
   "out": "youcoded-pages-floating.choice.html",
   "images": "images/youcoded-pages-floating.choice",
@@ -11,70 +11,64 @@
   ],
   "stage": "design",
   "crops": {
-    "cards-page": ["pages-floating", "cards-page", "1440x900+0+0"],
-    "sheet-page": ["pages-floating", "sheet-page", "1440x900+0+0"],
-    "rail-page": ["pages-floating", "rail-page", "1440x900+0+0"],
-    "bleed-page": ["pages-floating", "bleed-page", "1440x900+0+0"],
-    "cards-idle": ["pages-floating", "cards-idle", "1440x900+0+0"],
-    "sheet-idle": ["pages-floating", "sheet-idle", "1440x900+0+0"],
-    "rail-idle": ["pages-floating", "rail-idle", "1440x900+0+0"],
-    "bleed-idle": ["pages-floating", "bleed-idle", "1440x900+0+0"],
-    "cards-projects": ["pages-floating", "cards-projects", "1440x900+0+0"],
-    "bleed-projects": ["pages-floating", "bleed-projects", "1440x900+0+0"]
+    "cards": [
+      "pages-floating",
+      "cards-idle",
+      "720x900+0+0"
+    ],
+    "sheet": [
+      "pages-floating",
+      "sheet-idle",
+      "720x900+0+0"
+    ],
+    "rail": [
+      "pages-floating",
+      "rail-idle",
+      "720x900+0+0"
+    ],
+    "bleed": [
+      "pages-floating",
+      "bleed-idle",
+      "720x900+0+0"
+    ]
   },
   "steps": [
     {
       "id": "C-1",
       "surface": "Pages",
-      "path": "Top bar → Pages, in Halftone Dimension",
-      "headline": "In a floating theme, how should the page list and the page sit on the wallpaper?",
-      "notice": "Whichever you pick also decides how Project View's pane sits under the same band. In every option the sheet behind them is gone, so the wallpaper shows, and each pane is glass on the header pill's recipe: the theme's panel colour at its panel opacity, the theme's border, the theme's blur.",
-      "risk": "The page itself always paints its own background inside its frame, so the glass shows only around a page, or before one is picked.",
+      "path": "Top bar \u2192 Pages, in Halftone Dimension, no page picked",
+      "headline": "In a floating theme, how should the page list and the frame sit on the wallpaper?",
+      "notice": "The left half of the window, enlarged, so the edges show. Look at three things: is the list its own card, is there a gap or a line between list and frame, and does the frame have gutters and corners or run to the window's edge.",
+      "risk": "An open page paints its own background inside the frame, so these differences show around a page and before one is picked, not inside it.",
       "variants": [
         {
           "id": "cards",
           "label": "Two cards",
-          "crop": "cards-page",
-          "summary": "The list and the page are two glass cards side by side, in the same gutters as the header pill. The straight translation of the framed look; it ships today.",
-          "measured": "8 px gutters, 2 cards"
+          "crop": "cards",
+          "summary": "The list and the frame are two glass cards with an 8 px gap between them and 8 px gutters, matching the header pill. Ships today.",
+          "measured": "2 cards, 8 px gap"
         },
         {
           "id": "sheet",
           "label": "One sheet",
-          "crop": "sheet-page",
-          "summary": "One glass card holds both, with a border down the middle instead of a gap. Reads as a single window, like the chat and its files pane.",
-          "measured": "1 card, 1 divider",
-          "risk": "Less wallpaper shows between the two."
+          "crop": "sheet",
+          "summary": "One glass card holds both; a 1 px line divides list from frame and there is no gap. Reads as a single window.",
+          "measured": "1 card, 0 px gap"
         },
         {
           "id": "rail",
-          "label": "Bare list, one card",
-          "crop": "rail-page",
-          "summary": "The list loses its card and sits straight on the wallpaper; only the page is a card. The lightest of the four.",
-          "measured": "1 card",
-          "risk": "List text sits on the picture, so a busy wallpaper can fight it."
+          "label": "Bare list",
+          "crop": "rail",
+          "summary": "The list has no card at all: its rows sit straight on the wallpaper. Only the frame is a card.",
+          "measured": "1 card, list uncarded"
         },
         {
           "id": "bleed",
-          "label": "Edge to edge, list floats",
-          "crop": "bleed-page",
-          "summary": "The page runs to the window's edges with no gutters or corners, and the list floats over its left side as a card with a shadow. The page starts to the right of the list, so nothing is covered.",
-          "measured": "0 px gutters",
-          "risk": "The page's frame no longer matches the pill above it; only the list reads as floating."
+          "label": "Edge to edge",
+          "crop": "bleed",
+          "summary": "The frame runs to the window's left, right and bottom edges with no gutters or corners; the list floats over it as a card with a shadow.",
+          "measured": "0 px gutters, list floats"
         }
-      ]
-    },
-    {
-      "id": "C-2",
-      "surface": "Pages",
-      "path": "Top bar → Pages, no page picked",
-      "headline": "The same four with no page open: which empty frame reads best on the wallpaper?",
-      "notice": "The empty frame is what you see first every time you open Pages, so it carries the theme more than a page does.",
-      "variants": [
-        { "id": "cards", "label": "Two cards", "crop": "cards-idle", "summary": "Two glass cards, the frame empty but for its message." },
-        { "id": "sheet", "label": "One sheet", "crop": "sheet-idle", "summary": "One card with the divider; the empty frame is the card's right side." },
-        { "id": "rail", "label": "Bare list, one card", "crop": "rail-idle", "summary": "The list on the picture, one empty card beside it." },
-        { "id": "bleed", "label": "Edge to edge, list floats", "crop": "bleed-idle", "summary": "The empty frame fills the window; the list floats over it." }
       ]
     }
   ]
