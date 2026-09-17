@@ -325,7 +325,9 @@ fi
 # 2026-09-16 (u10, tag-picker-unreadable.test.tsx): +5 for tag-empty-state-guarded-on-error
 #   (no check, a check after the empty state, a check only in a string, an unrelated earlier
 #   read (4); a file with no "No tags yet" empty state (1)).
-EXPECTED_VIOLATIONS=362
+# 2026-09-16 (u10, theme-protocol-cors.test.ts): +4 for main-web-security-never-disabled
+#   (an object property, a type member, a string piece, a regex body).
+EXPECTED_VIOLATIONS=366
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
