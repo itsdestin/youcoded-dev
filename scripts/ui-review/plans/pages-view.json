@@ -1,32 +1,69 @@
 {
- "_comment": "YouCoded Pages, shell deck round 4: the page view's own frame — rail toggle top-left, page name centre, Back to chat top-right, window buttons kept; a collapsible rail listing every page with its pin and a centred Manage pages button.",
+ "_comment": "YouCoded Pages: the page view \u2014 its own band, the side panel (hidden by default, shown from the top-left button), and switching pages from the panel.",
  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
  "shots": [
   {
    "name": "view",
    "actions": [
-    { "click": "[aria-label='Open Pages']", "settle": 700 },
-    { "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))", "settle": 1400 }
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    }
    ],
    "expect": "iframe[title='Week planner']",
-   "measure": ["[aria-label='Hide pages panel']", "[aria-label='Back to chat']", {"text": "Manage pages"}, "[aria-label='Pin Week planner']"]
+   "measure": [
+    "[aria-label='Show pages panel']",
+    "[aria-label='Back to chat']"
+   ]
   },
   {
-   "name": "view-collapsed",
+   "name": "view-panel",
    "actions": [
-    { "click": "[aria-label='Open Pages']", "settle": 700 },
-    { "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))", "settle": 1400 },
-    { "click": "[aria-label='Hide pages panel']", "settle": 500 }
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "click": "[aria-label='Show pages panel']",
+     "settle": 500
+    }
    ],
-   "expect": "[aria-label='Show pages panel']",
-   "measure": ["[aria-label='Show pages panel']"]
+   "expect": "[aria-label='Hide pages panel']",
+   "measure": [
+    "[aria-label='Hide pages panel']",
+    {
+     "text": "Manage pages"
+    },
+    "[aria-label='Pin Week planner']"
+   ]
   },
   {
    "name": "view-switched",
    "actions": [
-    { "click": "[aria-label='Open Pages']", "settle": 700 },
-    { "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))", "settle": 1200 },
-    { "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Paint studio'))", "settle": 1400 }
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "click": "[aria-label='Show pages panel']",
+     "settle": 500
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Paint studio'))",
+     "settle": 1400
+    }
    ],
    "expect": "iframe[title='Paint studio']"
   }
