@@ -187,7 +187,7 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 | 1a | merged 2026-09-16 (youcoded#497 `289730cb`) |
 | 1b | merged 2026-09-16 (youcoded#498 `ad2b709b`; rules youcoded-dev#118 `3eb6e5c0`) |
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
-| 2 | not started |
+| 2 | built 2026-09-16 on youcoded `session/simplify-phase2` (pushed; c1e238c1…5c37539b, one commit per item). All nine items done; none was already resolved by #501. `verify.sh`: types, knip, lint, design lint, ast-grep green; the line-budget ratchet is the one red line (ipc-handlers +35, main +5, remote-server +6, App.tsx +3 — the reviewed shape of W2/W12/W18, numbers left for review, not raised). Reviewer and merge pending. |
 | 3 | not started |
 | 4 | not started |
 | 5 | not started |
