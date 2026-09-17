@@ -63,7 +63,12 @@ fi
 # 2026-09-16: +4 for no-sync-fs-in-main-read-path + its -theme-preview, -transcript-cwd and -session-browser extras (Plan B, t5b).
 # 2026-09-16: +4 for shortcuts-dialog-keeps-scroll-body + its -session-name, -session-menu-height and -model-picker-upward extras (Plan B, t5b).
 # 2026-09-16: +7 for no-hardcoded-z-index-or-scrim + its -screen-layer, -9000-band(-ts), -scrim(-ts) and -settings-panel extras (Plan B, t5b).
-EXPECTED_VIOLATIONS=40
+# 2026-09-16 (review of batch A, fixes 1+2): +1 for no-two-bare-bg-utilities's new
+#   template_string fixture line (a bare bg- pair split by a substitution, the shipped
+#   bug's own shape); +1 for its real .ts twin no-two-bare-bg-utilities-ts; +1 for
+#   no-hand-rolled-segmented-control-ts (both rules' old `.ts` glob did nothing under
+#   `language: tsx` — ast-grep only parses a file under the language it's configured with).
+EXPECTED_VIOLATIONS=43
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
