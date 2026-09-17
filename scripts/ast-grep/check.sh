@@ -340,7 +340,11 @@ fi
 # 2026-09-16 (u11, voice-rehear.test.ts): +3 for voice-worker-uses-shared-sentence-split (a
 #   worker importing something else from the shared file (1); a local `=== '!'` comparison
 #   and the same text in a comment (2)).
-EXPECTED_VIOLATIONS=389
+# 2026-09-16 (review of u10, fix 1): +4 — tag-empty-state-guarded-on-error now counts a
+#   registry.error read only in a guard position; its fixture gains an unrelated earlier
+#   title={registry.error}, the error check dropped from the condition, the condition
+#   replaced with `false`, and a sibling-only guard beside an unconditional empty state (4).
+EXPECTED_VIOLATIONS=393
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

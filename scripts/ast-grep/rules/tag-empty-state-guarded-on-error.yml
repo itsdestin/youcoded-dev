@@ -15,21 +15,28 @@ note: |
   Two branches:
   - MISSING: the file has no `message="No tags yet"` JSX attribute. Fires on
     the file.
-  - UNGUARDED: a `message="No tags yet"` attribute with no `registry.error`
-    read before it in the same JSX (an enclosing node that comes after a
-    sibling holding the read, both inside a JSX element or `{…}`), no
-    earlier `if (…registry.error…)` statement beside an enclosing node, and
-    no enclosing branch of such an `if`.
-    This is the structural form of "before it, close by": the ternary
-    condition (today's code), a `registry.error && …` / `!registry.error &&`
-    left side, a sibling `{registry.error && …}`, or an early-return `if`.
-  DIFFERENCES (minimal): the 600-character window becomes "earlier in the
-  same JSX tree, or an earlier if-statement" — an earlier unrelated
-  statement (say a hook call reading registry.error) no longer counts;
-  `registry.error` must be a real member read (`registry.error`, also as
-  the tail of `props.registry.error`), not text in a string; the attribute
-  must be a real JSX attribute, not text in a string; every such attribute
-  is checked, not only the first.
+  - UNGUARDED: a `message="No tags yet"` attribute that does not sit behind a
+    `registry.error` read in a GUARD position (same shape as
+    note-editor-guarded-on-unreadable): the condition of an enclosing
+    ternary (today's code), the left operand of an enclosing `&&` / `||` /
+    `??` (`registry.error && …`, `!registry.error && …`), the condition of an
+    enclosing `if`, or the condition of an `if` that comes before an
+    enclosing statement (an early return).
+  DIFFERENCES, deliberate: the 600-character window becomes "a guarding
+  condition". An earlier read that guards nothing no longer counts — an
+  unrelated statement or attribute (`useLog(registry.error)`,
+  `title={registry.error}`), the error message's own `${registry.error}`
+  inside a branch whose condition was replaced with `false` (the retired
+  case passed that inversion; this rule fires), or a SIBLING
+  `{registry.error && <X/>}` rendered before an unconditional empty state:
+  the sibling shows the error but the empty state still renders beside it,
+  which is the exact "No tags yet" lie the invariant forbids, so firing
+  there is right (review of u10, 2026-09-16). `registry.error` must be a
+  real member read (`registry.error`, also as the tail of
+  `props.registry.error`), not text in a string; a comparison operand
+  (`(registry.error === x) === …`) is not a guard — only `&&`/`||`/`??`
+  are; the attribute must be a real JSX attribute; every such attribute is
+  checked, not only the first; no limit on how far the guard sits.
 files:
   - "**/src/renderer/components/ResumeBrowser.tsx"
   - "**/fixtures/tag-empty-state-guarded-on-error.tsx"
@@ -38,36 +45,30 @@ utils:
   no-tags-attr:
     kind: jsx_attribute
     regex: '^message="No tags yet"$'
-  error-read:
-    kind: member_expression
-    regex: 'registry\.error$'
   holds-error-read:
     any:
-      - matches: error-read
-      - has: { stopBy: end, matches: error-read }
+      - { kind: member_expression, regex: 'registry\.error$' }
+      - has: { stopBy: end, kind: member_expression, regex: 'registry\.error$' }
+  guard-if:
+    kind: if_statement
+    has: { field: condition, matches: holds-error-read }
+  # WHY guard positions only (review of u10, 2026-09-16): the first draft
+  # accepted any earlier sibling holding the read, so a condition replaced
+  # with `false` stayed silent (the message's `${registry.error}` sat in the
+  # branch before the empty state). A read counts only where it decides
+  # whether the empty state renders.
   guarded:
     inside:
       stopBy: end
       any:
-        # In JSX: an ancestor that comes after a sibling holding the read.
-        - all:
-            - follows: { stopBy: end, matches: holds-error-read }
-            - inside:
-                stopBy: end
-                any:
-                  - kind: jsx_expression
-                  - kind: jsx_element
-        # In a function body: an ancestor statement after an `if` whose
-        # condition reads registry.error (an early return).
-        - follows:
-            stopBy: end
-            kind: if_statement
-            has: { field: condition, matches: holds-error-read }
-        # The if's own branches (`if (!registry.error) { … }` and its else):
-        # a direct child of the if that comes after its condition.
-        - all:
-            - inside: { kind: if_statement }
-            - follows: { stopBy: end, matches: holds-error-read }
+        - kind: ternary_expression
+          has: { field: condition, matches: holds-error-read }
+        - kind: binary_expression
+          all:
+            - has: { field: operator, regex: '^(&&|\|\||\?\?)$' }
+            - has: { field: left, matches: holds-error-read }
+        - matches: guard-if
+        - follows: { stopBy: end, matches: guard-if }
 rule:
   any:
     # MISSING.
