@@ -507,6 +507,32 @@ paths it fixes (the same coverage gap the 2026-09-10 plan recorded), and nothing
 got worse. Neither branch regressed a PRIMARY metric beyond noise (A: CPU-seconds +3.5 %,
 C: switch p95 +7 %, both inside the spread of a three-repeat run).
 
+**Destin's call (2026-09-16, after the table above): fix the rig first, then measure A and C
+on it, then a dev-window review, then merge.** Two phases were built on the workspace branch
+(`scripts/perf-lab/`), both one boot per repeat, both with their own fixture options so no
+existing phase's fixture changes:
+
+- `native-stream` (`scenario-native-stream.mjs` + `fake-provider.mjs`): the workload's six
+  sessions, the two native ones bound to an in-process fake OpenAI-compatible endpoint
+  reached through the app's own custom-provider row (`~/.youcoded/providers.json`), streaming
+  3,000 deltas at 150/s — the rate of a cloud model; the local model here manages ~12/s.
+  Three legs: on screen, while switching huge <-> streaming (8 switches), and hidden behind
+  the huge conversation. PRIMARY: `visible.taskMs` (the renderer main thread's busy time over
+  the stream — the first shakedown showed long tasks read 0 ms while 1,202 commits went by at
+  60 fps, because per-frame work under 50 ms never reaches the long-task observer),
+  `switching.switchPaintedMedianMs`, `hidden.taskMs`. This is the instrument Batch A was missing.
+- `native-resume` (`scenario-native-resume.mjs`): 100 seeded native session files, Resume
+  list opened from the strip and scrolled to its end, the 400-turn session resumed through the
+  app's `youcoded:resume-session` event, one history page, a reply, a tear-off into a second
+  window, a reply into that window — IPC probe over every step. PRIMARY:
+  `ipcSumOfSteps.totalStallMs`, `browse.openMs`, `resume.paintedMs`. This is the instrument
+  Batch C was missing.
+
+Unit tests: 429 rig tests green (`node --test scripts/perf-lab/tests/*.test.mjs`) after three
+fixes found by them — the fake endpoint hung forever when a client disconnected mid-stream
+(a backpressure wait on a closed socket), and two wrong expectations of mine. First real
+runs (shakedowns) and the A/C re-measurement follow in the table below once taken.
+
 ## Close-out per branch
 
 Commit by explicit path, push, `bash scripts/close-out.sh <branch> youcoded`, address findings within scope, then stop and ask "ready to merge?". Never merge unasked.

@@ -50,14 +50,17 @@ reading the report. Do not let this table drift optimistic.
 | blank content while scrolling | `late-content.mjs`, in `scenario-scrollback` | **covered** (huge conversation only) |
 | which renderer the rig got | `gpu.mjs`, in `run.mjs` | **covered** — and the answer is llvmpipe, see below |
 | terminal (six sessions, 40 switches in terminal view, atlas clears per switch) | `scenario-terminal.mjs` | **covered** since 2026-09-10 — software GL only, GPU upload cost NOT measured |
+| a native reply streaming at cloud-model speed (150 deltas/s, six sessions open): on screen, while switching, and hidden | `scenario-native-stream.mjs` + `fake-provider.mjs` | **covered** since 2026-09-16 — text deltas only; no tool calls, no thinking, no buddy window |
+| Resume list over 100 native sessions, resuming a 400-turn native session, a history page, a reply, tear-off into a new window, a reply into the other window | `scenario-native-resume.mjs` | **covered** since 2026-09-16 — the detached window's own rendering is NOT measured |
 | marketplace | — | **NOT covered** |
 | sync | — | **NOT covered** |
 | themes / theme switching | — | **NOT covered** |
 | buddy / multi-window | — | **NOT covered** |
 
-**All nine phases are reachable from the CLI.** `run.mjs`'s phase list is
-`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'scrollback']`
-— pick any subset with `--only`. (`terminal` added 2026-09-10.) (This paragraph previously said the list was four
+**All eleven phases are reachable from the CLI.** `run.mjs`'s phase list is
+`PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'native-stream', 'native-resume', 'scrollback']`
+— pick any subset with `--only`. (`terminal` added 2026-09-10; `native-stream` and
+`native-resume` added 2026-09-16.) (This paragraph previously said the list was four
 phases and that `stall` and `artifacts` were unreachable; that stopped being true when
 they were wired in, and the doc did not follow. Corrected 2026-09-03 against the code.)
 
@@ -435,6 +438,73 @@ scenario waits for. Every other line is echoed as before.
 included), a throw here aborts the whole run with exit 2, and `scrollback`, which runs
 after it, never runs. Shake it down with `--only terminal` before trusting a default run.
 
+### `scenario-native-stream.mjs` — a native reply at cloud-model speed *(one boot per repeat; added 2026-09-16)*
+Opens the workload's same six sessions, but binds the two native ones to the
+**perf-lab fake endpoint** (`fake-provider.mjs`, below) instead of the local engine, then
+streams three replies of 3,000 deltas at **150 deltas a second** — the rate of a cloud
+model, not the ~12/s the local model manages here:
+
+| leg | what is on screen | what it measures |
+|---|---|---|
+| `visible` | the streaming session | the renderer main thread's busy time over the stream (the cost a user feels as jank reading a reply as it arrives), DOM commits and layouts against frames, IPC stall |
+| `switching` | huge <-> the streaming session, 8 switches 2 s apart | click -> messages on screen, counted only for switches made while deltas were still arriving (the fake server says when the stream ended) |
+| `hidden` | the huge conversation | what the stream costs a window that is not showing it — a per-delta shell redraw shows here in full |
+
+**Look first at `visible.taskMs`** (and its `taskPct`, the share of the window the thread
+was busy), then `switching.switchPaintedMedianMs`, then `hidden.taskMs` — all three are
+PRIMARY. **Busy time, not long tasks, on purpose:** the first shakedown streamed 3,000
+deltas into 1,202 commits at 60 fps with a long-task total of exactly 0 ms, because the
+long-task observer counts only stretches over 50 ms and per-frame work under that never
+registers. The long-task figures stay in the row, read by eye. `visible.commits` beside `framesPerSec`
+is the mechanism check: the transcript batcher coalesces deltas to one commit per frame,
+so commits ≈ frames is the healthy shape and commits far above frames means it is not
+engaging. `turnEndSignal` says whether the app's own Stop button was seen ending the
+turn or the server's completion plus a settle stood in.
+
+**Why a fake endpoint and not the engine binary.** The app supports a user-added
+"Custom endpoint (OpenAI-compatible)" provider (`provider-registry.ts:390-399`): a row in
+`~/.youcoded/providers.json` with a `baseUrl` and no key is `ready` at once, and a native
+session bound to it sends `POST <baseUrl>/chat/completions` with `stream: true` through
+the AI SDK's openai-compatible client, which turns every SSE frame's `delta.content` into
+one `assistant-text` event — the unit the renderer pays per. The fixture writes that row
+only when asked (`buildFixture(root, { fakeProvider: true })`), so every other phase's
+fixture is byte-for-byte what it always was. The server runs inside the rig's own
+process, paces deltas by the wall clock (a late tick catches up, so the average rate
+holds under load) and records what it actually sent; its content is the transcript
+generator's realistic markdown, byte-identical between baseline and candidate.
+
+**Blind to, by construction:** the real engine (the fake answers at once, so
+`firstResponseMs` is the app's send path, not prefill); tool calls, thinking blocks and
+attachments; the buddy window; GPU paint. The local model's own rate is deliberately not
+a factor — this phase is about the renderer.
+
+### `scenario-native-resume.mjs` — the native session journey *(one boot per repeat; added 2026-09-16)*
+The fixture seeds **100 native session files** under `~/.youcoded/sessions/<slug>/`
+(`buildFixture(root, { nativeSessions: true })`: 99 of three turns, one of 400 turns of
+realistic markdown, mtimes staggered so the list order is identical run to run), and the
+scenario walks the doors the main process opens on a click, with the IPC ping probe
+armed over every step:
+
+| step | what happens | clock |
+|---|---|---|
+| `browse` | All Sessions menu -> Resume | click -> the list heading and its first rows |
+| `reveal` | scroll the list to its end | until the row count stops growing |
+| `resume` | the 400-turn native session, through the app's own `youcoded:resume-session` event with its binding (the picker never opens) | dispatch -> entries on screen and still |
+| `pageUp` | scroll to the top of the resumed conversation | -> one more history page on screen |
+| `turn` | a 300-delta reply from the fake endpoint | send -> Stop button gone |
+| `tearoff` | `detach.openDetached` | -> the pill gone from this window, a second window on CDP |
+| `detachedTurn` | a reply into the detached session | this window's own IPC latency while the other window receives the stream |
+
+**Look first at `ipcSumOfSteps.totalStallMs`** — how long the whole app was unresponsive
+across the journey — then each step's `stall.verdict` (`main` = the app-wide freeze),
+then `browse.openMs` and `resume.paintedMs`. Those three are PRIMARY. A fresh Claude Code
+session is created first so the window survives the tear-off (the app auto-closes an
+emptied window, and the CDP target is that window).
+
+**Blind to, by construction:** the detached window's own rendering (one CDP target); the
+Resume list's preview pane and search; Claude Code resumes (scenario-history); a native
+session whose title-bearing message sits past the 256 KB head-read window.
+
 **Blind to, by construction:** the GPU re-upload cost — the rig is llvmpipe under Xvfb,
 so WebGL may not initialise and the clear is then only a DOM repaint; wallpaper themes;
 switching through native sessions or toggling views (both resize every terminal); and
@@ -663,6 +733,7 @@ under `~` lands in a throwaway directory.
 | Local engine (llama-server) | **10020** | `ENGINE_PORT = 9920 + offset` |
 | App CDP | **9555** | `--remote-debugging-port`; the rig refuses to attach if something it does not own is already there |
 | Pixel-diff Chrome | **9556**, else OS-assigned | each diff gets its own port *and* its own throwaway profile — see troubleshooting |
+| perf-lab fake endpoint | **9558** | `fake-provider.mjs`, in the rig's own process; the fixture's provider row points at it (only when built with `fakeProvider: true`) |
 | Xvfb display | `:99` at **1600x1000x24** | reused between runs if already up |
 | `YOUCODED_NATIVE` | `1` | enables the native harness so the workload journey can create native sessions |
 | Engine context size | **16384** | written into the fixture's `config.json`; llama.cpp clamps `-c` down to the model's trained context, and the app's agent system prompt alone is 4,244 tokens |

@@ -398,8 +398,14 @@ seen-on is always n/a here.
 
 - [ ] The perf rig cannot see native per-token streaming — its workload streams whole turns
       through the Claude Code transcript path, so the gate under-represents the exact path
-      cycle 1's fixes target
-      `n/a` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
+      cycle 1's fixes target. **PENDING MERGE 2026-09-16** on `session/perf-smoothness-20260916`:
+      a `native-stream` phase streams 3,000 deltas at 150/s from an in-process fake
+      OpenAI-compatible endpoint (`scripts/perf-lab/fake-provider.mjs`, reached through the
+      app's own custom-provider row) with six sessions open — visible, while switching, and
+      hidden — plus a `native-resume` phase (Resume list over 100 seeded native sessions,
+      400-turn native resume, history page, reply, tear-off). Six new PRIMARY paths; every
+      default-run baseline before this date fails closed on them by design.
+      `n/a` `confirmed` `checked 2026-09-16` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
 
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
       identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%

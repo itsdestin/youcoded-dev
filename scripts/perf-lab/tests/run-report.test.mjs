@@ -22,12 +22,14 @@ import { MEASURES as HISTORY_MEASURES, NUMERIC_KEYS, medianRun } from '../scenar
 import { MEASURES as ARTIFACT_MEASURES, medianRun as artifactMedian } from '../scenario-artifacts.mjs';
 import { MEASURES as PROJECTS_MEASURES, medianRun as projectsMedian } from '../scenario-projects.mjs';
 import { MEASURES as TERMINAL_MEASURES, medianRun as terminalMedian } from '../scenario-terminal.mjs';
+import { MEASURES as STREAM_MEASURES, medianRun as streamMedian } from '../scenario-native-stream.mjs';
+import { MEASURES as RESUME_MEASURES, medianRun as resumeMedian } from '../scenario-native-resume.mjs';
 import { MEASURES as STALL_MEASURES, SIZES as STALL_SIZES_REAL, medianRun as stallMedian, summarizeBlame } from '../scenario-replay-stall.mjs';
 import { MEASURES as SCROLL_MEASURES, SCROLL_SIZES, medianRun as scrollMedian } from '../scenario-scrollback.mjs';
 import { SCREEN_NAMES } from '../screenshots.mjs';
 import {
   EXIT, NETWORK_PATHS, NOISE_GATE_MAX_WAIT_MS, NOISE_GATE_POLL_MS, PHASES, STALL_SIZES, USAGE,
-  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildStartupSection, buildTerminalSection, buildWorkloadSection,
+  buildArtifactsSection, buildIdleSection, buildProjectsSection, buildRepeatedSection, buildStartupSection, buildTerminalSection, buildWorkloadSection,
   emptyReport, median, medianTree, parseArgs, phaseOfPath, primaryPathsFor,
   renderMarkdown, stemFor, validateReport,
 } from '../run.mjs';
@@ -224,6 +226,54 @@ const terminalRun = (i) => ({
   warnings: [],
 });
 
+const ipcRowFor = (i) => ({ everyMs: 100, pings: 190 + i, totalStallMs: 12 + i, maxMs: 140 + i, over250ms: 0, over1000ms: 0, openStallMs: null, rejectedPings: 0, missedTicks: 0 });
+const legFor = (i, { charsShown }) => ({
+  taskMs: 6100 + i, scriptMs: 3900 + i, taskPct: 29.8,
+  deltasPlanned: 3000, deltasSent: 3000, perSecTarget: 150, perSecAchieved: 149.6 + i / 10, streamMs: 19990 + i, backpressureWaits: 0, aborted: false,
+  charsStreamed: 13500, charsShown, firstResponseMs: 120 + i, turnMs: 20400 + i, turnEndSignal: 'stop-button',
+  commits: 1180 + i, layouts: 1200 + i, layoutsPerFrame: 1.01, commitsPerFrame: 0.99, framesPerSec: 59.4,
+  longtaskTotalMs: 900 + i, longtaskMaxMs: 130 + i, longtaskCount: 11 + i, frameGapMaxMs: 160 + i, windowMs: 20500 + i,
+  ipc: ipcRowFor(i), stall: { verdict: 'none', why: 'under threshold' },
+});
+
+/** One native-stream run, shaped as scenario-native-stream.mjs's runNativeStreamScenario returns it. */
+const nativeStreamRun = (i) => ({
+  sessions: { names: ['cc-0', 'cc-1', 'cc-2', 'cc-3', 'native-0', 'native-1'], streaming: 'native-0', huge: 'cc-0' },
+  deltas: { planned: 3000, perSecTarget: 150, requests: 3 },
+  visible: legFor(i, { charsShown: 12800 + i }),
+  switching: {
+    switchCount: 8, duringStream: 8, verifiedSwitches: 8, failedSwitches: 0, menuSwitches: 0,
+    switchPaintedMedianMs: 210 + i, switchPaintedP95Ms: 480 + i, intoStreamingMedianMs: 90 + i, intoHugeMedianMs: 330 + i,
+    deltasSent: 3000, perSecAchieved: 149.5, turnMs: 20300 + i, taskMs: 7400 + i, taskPct: 35.9,
+    longtaskTotalMs: 1400 + i, longtaskMaxMs: 300 + i, frameGapMaxMs: 320 + i, windowMs: 20600 + i,
+    ipc: ipcRowFor(i), stall: { verdict: 'none', why: 'under threshold' }, switches: [],
+  },
+  hidden: legFor(i, { charsShown: 0 }),
+  probe: { longtaskCount: 40 + i, longtaskTotalMs: 5200 + i, longtaskMaxMs: 600 + i },
+  warnings: [],
+});
+
+const stepFor = (i, fields) => ({ ok: true, ...fields, probe: { longtaskMaxMs: 90 + i, longtaskTotalMs: 200 + i, windowMs: 1000 }, ipc: { ...ipcRowFor(i), everyMs: 50 }, stall: { verdict: 'none', why: 'under threshold' } });
+
+/** One native-resume run, shaped as scenario-native-resume.mjs's runNativeResumeScenario returns it. */
+const nativeResumeRun = (i) => ({
+  nativeSessionsOnDisk: 100,
+  bigSession: { turns: 400, bytes: 2_400_000 },
+  resumedId: 'abc',
+  createCc: stepFor(i, { createMs: 400 + i }),
+  browse: stepFor(i, { openMs: 350 + i, firstRowsMs: 40 + i, rowsFirst: 2, rowsSettled: 703, names: ['Question 1 about alpha', 'perf-lab'] }),
+  reveal: stepFor(i, { ms: 2200 + i, rows: 703, rounds: 14 }),
+  resume: stepFor(i, { pillMs: 60 + i, paintedMs: 900 + i, entries: 60 }),
+  pageUp: stepFor(i, { ms: 180 + i, entriesBefore: 60, entriesAdded: 60 }),
+  turn: stepFor(i, { firstResponseMs: 110 + i, turnMs: 2400 + i, turnEndSignal: 'stop-button', deltasSent: 300, perSecAchieved: 149.8, streamMs: 1995, aborted: false }),
+  tearoff: stepFor(i, { ms: 700 + i, windows: 2, windowsBefore: 1 }),
+  detachedTurn: stepFor(i, { firstResponseMs: null, turnMs: 3500 + i, turnEndSignal: 'server', deltasSent: 300, perSecAchieved: 149.7, streamMs: 1996, aborted: false }),
+  ipcSumOfSteps: { pings: 1500 + i, totalStallMs: 96 + i, over250ms: 0, over1000ms: 0, maxMs: 147 + i, rejectedPings: 0, readErrors: 0, steps: 8 },
+  stallVerdicts: { createCc: 'none', browse: 'none', reveal: 'none', resume: 'none', pageUp: 'none', turn: 'none', tearoff: 'none', detachedTurn: 'none' },
+  probe: { longtaskCount: 20 + i, longtaskTotalMs: 1600 + i, longtaskMaxMs: 300 + i },
+  warnings: [],
+});
+
 /** A complete, clean report — assembled ONLY through run.mjs's real builders. */
 /**
  * One scroll-back repeat. Every number is plausible rather than round, and
@@ -284,8 +334,12 @@ function completeReport({ runs = 5, historyRepeats = 5, workloadRepeats = 3, sta
   // Through run.mjs's REAL builder and the scenario's REAL medianRun, like projects.
   const truns = Array.from({ length: terminalRepeats }, (_, i) => terminalRun(i));
   report.terminal = buildTerminalSection(truns, terminalMedian);
-  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES, scrollback: SCROLL_MEASURES };
-  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, terminalBoots: [0, 0, 0], scrollbackBoot: 0 };
+  // The two native phases (2026-09-16) go through the shared repeated-section builder
+  // and each scenario's REAL medianRun, for the same reason as terminal.
+  report.nativeStream = buildRepeatedSection(Array.from({ length: terminalRepeats }, (_, i) => nativeStreamRun(i)), streamMedian);
+  report.nativeResume = buildRepeatedSection(Array.from({ length: terminalRepeats }, (_, i) => nativeResumeRun(i)), resumeMedian);
+  report.measures = { history: HISTORY_MEASURES, stall: STALL_MEASURES, artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES, nativeStream: STREAM_MEASURES, nativeResume: RESUME_MEASURES, scrollback: SCROLL_MEASURES };
+  report.errors = { coldStarts: cold.map((r) => r.errorLines), scenarioBoot: 0, workloadBoots: [0, 0, 0], stallBoot: 0, artifactsBoot: 0, projectsBoot: 0, terminalBoots: [0, 0, 0], nativeStreamBoots: [0, 0, 0], nativeResumeBoots: [0, 0, 0], scrollbackBoot: 0 };
   report.screens = { dir: '/tmp/shots', names: [...SCREEN_NAMES], failures: [] };
   return report;
 }
@@ -335,7 +389,13 @@ describe('compare.mjs PRIMARY contract', () => {
     // real terminal baseline measured it at exactly 0 ms, and against a 0 baseline the
     // 1 ms zero-baseline floor makes any candidate stall a REJECT — false rejections
     // only. It stays in the report and in scenario-terminal's NUMERIC_PATHS.
-    assert.equal(PRIMARY.length, 27, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 27 -> 33 on 2026-09-16: three native-stream paths (renderer blocking while a
+    // reply streams at cloud speed on screen, the painted switch during it, and the
+    // blocking a HIDDEN stream costs the visible window) and three native-resume
+    // paths (the IPC stall summed over the native journey's steps, the Resume list
+    // open, the native resume painted). Until then no phase streamed faster than
+    // the local model's ~12 deltas/s or opened the Resume list at all.
+    assert.equal(PRIMARY.length, 33, 'PRIMARY changed size — re-check that run.mjs still produces every path');
     assert.ok(!PRIMARY.includes('terminal.median.ipc.totalStallMs'), 'a metric whose baseline is 0 ms can only produce false REJECTs under ZERO_BASELINE_FLOOR');
     assert.ok(PRIMARY.includes('terminal.median.switchPaintedMedianMs'), 'the terminal switch clock is the atlas-heal A/B target and must be judged');
     assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
@@ -661,6 +721,105 @@ describe('terminal phase wiring', () => {
     assert.equal(parseArgs([]).terminalRepeats, 3);
     assert.equal(parseArgs(['--terminal-repeats', '1', '--only', 'terminal']).terminalRepeats, 1);
     assert.throws(() => parseArgs(['--terminal-repeats', '0']), /whole number >= 1/);
+  });
+});
+
+describe('native-stream phase wiring', () => {
+  it('every nativeStream PRIMARY path is owned by the native-stream phase, which sits before scrollback', () => {
+    const paths = PRIMARY.filter((x) => x.startsWith('nativeStream.'));
+    assert.equal(paths.length, 3);
+    for (const p of paths) assert.equal(phaseOfPath(p), 'native-stream', `${p} is not owned by the native-stream phase`);
+    assert.ok(PHASES.includes('native-stream'));
+    assert.ok(PHASES.indexOf('native-stream') < PHASES.indexOf('scrollback'));
+  });
+
+  it('renderMarkdown renders the three legs with commits beside frames', () => {
+    const md = renderMarkdown(completeReport(), 'test-stem');
+    for (const row of ['native-stream.visible: renderer main thread busy', 'native-stream.visible commits / layouts', 'native-stream.switching', 'native-stream.hidden']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+    assert.match(md, /### native-stream/, 'the native-stream MEASURES descriptor must reach the summary');
+  });
+
+  // README rule 1: a stream that never reached the pane leaves every renderer number
+  // describing an idle window. Both tells — deltas sent and characters shown — are checked.
+  it('refuses a run whose visible pane never grew rather than reading an idle window as a smooth stream', () => {
+    const report = completeReport();
+    for (const r of report.nativeStream.runs) r.visible.charsShown = 0;
+    report.nativeStream = buildRepeatedSection(report.nativeStream.runs, streamMedian);
+    assert.equal(get(report, 'nativeStream.median.visible.longtaskTotalMs') > 0, true, 'the premise: the timing itself looks real');
+    const problems = validateReport(report, new Set(['native-stream']));
+    assert.ok(problems.some((p) => /native-stream: the visible pane did not grow/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a run with no verified switch during the stream', () => {
+    const report = completeReport();
+    for (const r of report.nativeStream.runs) { r.switching.verifiedSwitches = 0; r.switching.switchPaintedMedianMs = null; }
+    report.nativeStream = buildRepeatedSection(report.nativeStream.runs, streamMedian);
+    const problems = validateReport(report, new Set(['native-stream']));
+    assert.ok(problems.some((p) => /native-stream: no switch during the stream was verified/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms visible-leg stall total that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.nativeStream.runs) r.visible.ipc = { everyMs: 100, pings: 0, totalStallMs: 0, maxMs: null };
+    report.nativeStream = buildRepeatedSection(report.nativeStream.runs, streamMedian);
+    const problems = validateReport(report, new Set(['native-stream']));
+    assert.ok(problems.some((p) => /native-stream: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
+  });
+
+  it('parseArgs accepts --native-stream-repeats and defaults it to 3', () => {
+    assert.equal(parseArgs([]).nativeStreamRepeats, 3);
+    assert.equal(parseArgs(['--native-stream-repeats', '1', '--only', 'native-stream']).nativeStreamRepeats, 1);
+    assert.throws(() => parseArgs(['--native-stream-repeats', '0']), /whole number >= 1/);
+  });
+});
+
+describe('native-resume phase wiring', () => {
+  it('every nativeResume PRIMARY path is owned by the native-resume phase', () => {
+    const paths = PRIMARY.filter((x) => x.startsWith('nativeResume.'));
+    assert.equal(paths.length, 3);
+    for (const p of paths) assert.equal(phaseOfPath(p), 'native-resume', `${p} is not owned by the native-resume phase`);
+    assert.ok(PHASES.includes('native-resume'));
+    assert.equal(PHASES.at(-1), 'scrollback', 'scrollback must stay the last phase — it drives memory to its worst case');
+  });
+
+  it('renderMarkdown renders every step and the IPC sum', () => {
+    const md = renderMarkdown(completeReport(), 'test-stem');
+    for (const row of ['native-resume.browse', 'native-resume.resume', 'native-resume.page-up', 'native-resume.turn', 'native-resume.tearoff', 'native-resume IPC stall (sum over steps)']) {
+      assert.ok(md.includes(row), `summary is missing the "${row}" row`);
+    }
+    assert.match(md, /### native-resume/, 'the native-resume MEASURES descriptor must reach the summary');
+  });
+
+  it('refuses a run whose Resume list never showed a row', () => {
+    const report = completeReport();
+    for (const r of report.nativeResume.runs) r.browse.rowsFirst = 0;
+    report.nativeResume = buildRepeatedSection(report.nativeResume.runs, resumeMedian);
+    const problems = validateReport(report, new Set(['native-resume']));
+    assert.ok(problems.some((p) => /native-resume: the Resume list never showed a row/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a run whose tear-off produced no second window', () => {
+    const report = completeReport();
+    for (const r of report.nativeResume.runs) r.tearoff.windows = 1;
+    report.nativeResume = buildRepeatedSection(report.nativeResume.runs, resumeMedian);
+    const problems = validateReport(report, new Set(['native-resume']));
+    assert.ok(problems.some((p) => /native-resume: no second app window appeared/.test(p)), problems.join('\n'));
+  });
+
+  it('refuses a 0 ms stall sum that no probe ever reported', () => {
+    const report = completeReport();
+    for (const r of report.nativeResume.runs) r.ipcSumOfSteps = { pings: 0, totalStallMs: 0, over250ms: 0, over1000ms: 0, maxMs: null, rejectedPings: 0, readErrors: 8, steps: 0 };
+    report.nativeResume = buildRepeatedSection(report.nativeResume.runs, resumeMedian);
+    assert.equal(get(report, 'nativeResume.median.ipcSumOfSteps.totalStallMs'), 0, 'the premise: the metric itself looks flawless');
+    const problems = validateReport(report, new Set(['native-resume']));
+    assert.ok(problems.some((p) => /native-resume: the IPC responsiveness probe never got a single reply/.test(p)), problems.join('\n'));
+  });
+
+  it('parseArgs accepts --native-resume-repeats and defaults it to 3', () => {
+    assert.equal(parseArgs([]).nativeResumeRepeats, 3);
+    assert.equal(parseArgs(['--native-resume-repeats', '2', '--only', 'native-resume']).nativeResumeRepeats, 2);
   });
 });
 

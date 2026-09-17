@@ -677,7 +677,12 @@ export async function installArtifactHelpers(cdp) {
  * steps are short — a two-second step at 100ms yields ~20 samples, which is too
  * few for a p95 to mean anything.
  */
-async function step(cdp, label, fn, { pingMs = 50 } = {}) {
+/**
+ * One measured step: both probes armed over `fn`, the IPC reading and the renderer
+ * window attached to its result, and the stall attributed. Exported (2026-09-16)
+ * so the native-resume phase measures its steps the same way this file does.
+ */
+export async function step(cdp, label, fn, { pingMs = 50 } = {}) {
   await mark(cdp, `${label}:start`);
   await installIpcStallProbe(cdp, { everyMs: pingMs });
   let result, thrown = null;

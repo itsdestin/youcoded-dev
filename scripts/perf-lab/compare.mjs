@@ -119,6 +119,41 @@ export const PRIMARY = [
   //    and the worst long task, not the p95, so it is reported beside the median.
   'terminal.median.switchPaintedMedianMs',
   'terminal.median.longtaskMaxMs',
+
+  // ── A native reply at cloud speed (native-stream phase, added 2026-09-16) ──
+  // The workload's native leg streams from the real local model at ~12 deltas/s,
+  // an order of magnitude under real use, so the per-delta renderer cost — the
+  // shell redrawing per streamed word — was invisible to every path above. These
+  // stream 150 deltas/s from the perf-lab fake endpoint with six sessions open.
+  // visible: the renderer main thread's BUSY time while the reply streams on screen
+  // (CDP TaskDuration delta) — the cost a user feels as jank while reading a reply.
+  // Busy time and NOT the long-task total: the first shakedown (2026-09-16) streamed
+  // 3,000 deltas into 1,202 commits at 60 fps and logged 0 ms of long tasks, because
+  // per-frame work under 50 ms never reaches the long-task observer. A 0 ms baseline
+  // would also make every candidate's first millisecond a false REJECT.
+  'nativeStream.median.visible.taskMs',
+  // switching: click -> messages on screen while a reply is streaming, the moment
+  // Destin describes as "the app hitches when I change tabs mid-reply".
+  'nativeStream.median.switching.switchPaintedMedianMs',
+  // hidden: what a stream costs a window that is not showing it. A per-delta shell
+  // redraw shows here in full, since nothing visible needs to change.
+  'nativeStream.median.hidden.taskMs',
+  // NOT gated: the long-task totals and visible.ipc.totalStallMs (both read 0 on the
+  // first baseline, so ZERO_BASELINE_FLOOR could only produce false REJECTs — reported
+  // by eye, like terminal.median.ipc.totalStallMs) and the commit/layout counters
+  // (mechanism checks, read by validateReport and the summary, not judged).
+
+  // ── The native session journey (native-resume phase, added 2026-09-16) ─────
+  // Every step here lands on the MAIN process: listing a hundred native session
+  // files' heads, reading a 400-turn transcript to resume it, a history page, a
+  // reply's history publish, moving a session to another window. The IPC sum over
+  // the steps is the number that has to stay down.
+  'nativeResume.median.ipcSumOfSteps.totalStallMs',
+  // Click -> rows: the Resume list over a hundred native sessions and six hundred
+  // Claude Code transcripts.
+  'nativeResume.median.browse.openMs',
+  // Dispatch -> the resumed conversation on screen and still.
+  'nativeResume.median.resume.paintedMs',
 ];
 
 // Dotted-path getter used everywhere below — keeps report shape out of the decision logic.
@@ -268,6 +303,10 @@ const errorTotal = (r) =>
   // Each terminal repeat is its own boot too (2026-09-10). Without this, a change that
   // starts logging errors while switching in terminal view would still read as KEEP.
   + (r.errors?.terminalBoots ?? []).reduce((a, b) => a + b, 0)
+  // The two native phases (2026-09-16) boot per repeat as well; a change that starts
+  // logging errors while a reply streams or a session is torn off must not read as KEEP.
+  + (r.errors?.nativeStreamBoots ?? []).reduce((a, b) => a + b, 0)
+  + (r.errors?.nativeResumeBoots ?? []).reduce((a, b) => a + b, 0)
   // The projects and long-scrollback phases boot on their own as well (run.mjs writes
   // both counters); they were the two left out, so a Projects-view or scrollback error
   // storm could still read as KEEP (dev-workspace.md, found 2026-09-10; fixed 2026-09-16).
