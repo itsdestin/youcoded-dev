@@ -193,7 +193,11 @@ fi
 # 2026-09-16 (u1, chatgpt-oauth.test.ts): +3 for limit-sentence-uses-shared-time-format (1)
 #   and status-bar-uses-shared-format-time12 (2 — its fixture lacks the import AND
 #   keeps a local formatTime12).
-EXPECTED_VIOLATIONS=172
+# 2026-09-16 (u1, close-prompt-meta-unreadable.test.tsx): +5 for
+#   get-meta-marks-failed-read-unreadable (2 — blank answers, and a -missing file with
+#   no handler) + its -remote twin (3 — no unreadable key, a "fall through to empty"
+#   string, and a -missing file with no case).
+EXPECTED_VIOLATIONS=177
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
