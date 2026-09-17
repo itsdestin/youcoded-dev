@@ -1,0 +1,23 @@
+id: arcade-no-forbidden-attention-apis-ts
+language: typescript
+severity: error
+message: >-
+  A game file must not react to the assistant finishing a turn — no sound, no
+  attention-summary subscription, no reading whether the assistant is
+  thinking or has session attention (see arcade-no-forbidden-attention-apis
+  for the full rationale; this is its `.ts` twin, for game files that are not
+  `.tsx`).
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B, 2026-09-16; same
+  five cases as the -tsx base rule). A `language: tsx` rule never scans `.ts`
+  (Task 5 review lesson), and this game directory mixes both (arcade-api.ts,
+  flappy-engine.ts, friends-data.ts, game-registry.ts, head-to-head.ts,
+  local-best.ts, twenty-forty-eight.ts are all `.ts`).
+files:
+  - "**/src/renderer/components/game/**/*.ts"
+  - "**/fixtures/arcade-no-forbidden-attention-apis-ts.ts"
+ignores:
+  - "**/*.test.ts"
+rule:
+  kind: identifier
+  regex: "^(playSound|useAnyAttentionNeeded|onAttentionSummary|isThinking|sessionAttention)$"

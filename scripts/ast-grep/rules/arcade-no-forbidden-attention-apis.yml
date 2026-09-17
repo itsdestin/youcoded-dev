@@ -1,0 +1,26 @@
+id: arcade-no-forbidden-attention-apis
+language: tsx
+severity: error
+message: >-
+  A game file must not react to the assistant finishing a turn — no sound, no
+  attention-summary subscription, no reading whether the assistant is
+  thinking or has session attention. Destin, 2026-08-30: when the assistant
+  finishes, NOTHING happens beyond the existing ready chime and the header
+  status light. Four independently-built game modules could each quietly
+  break this on their own, turning one rule into four separate bugs.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B, 2026-09-16; the
+  five loop-generated "no game file references X" cases under "the
+  assistant-finishing rule (§7)"). FORBIDDEN mirrors the retired test's list
+  exactly: playSound, useAnyAttentionNeeded, onAttentionSummary, isThinking,
+  sessionAttention. See the -ts twin for .ts game files (arcade-api.ts,
+  flappy-engine.ts, game-registry.ts, …) — this rule's `language: tsx` never
+  scans those.
+files:
+  - "**/src/renderer/components/game/**/*.tsx"
+  - "**/fixtures/arcade-no-forbidden-attention-apis.tsx"
+ignores:
+  - "**/*.test.tsx"
+rule:
+  kind: identifier
+  regex: "^(playSound|useAnyAttentionNeeded|onAttentionSummary|isThinking|sessionAttention)$"

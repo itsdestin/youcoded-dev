@@ -105,7 +105,9 @@ fi
 #   (accepted-history-privacy.test.ts).
 # 2026-09-16 (t6a): +2 for no-unstepped-infinite-animation (its fixture fires both
 #   branches — inline style and Tailwind arbitrary value) (animation-frame-budget.test.ts).
-EXPECTED_VIOLATIONS=64
+# 2026-09-16 (t6a): +2 for arcade-no-forbidden-attention-apis + its -ts twin
+#   (arcade-authority.test.ts).
+EXPECTED_VIOLATIONS=66
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
