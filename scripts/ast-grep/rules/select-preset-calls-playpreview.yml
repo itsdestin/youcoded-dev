@@ -1,0 +1,31 @@
+id: select-preset-calls-playpreview
+language: tsx
+severity: error
+message: >-
+  Selecting a sound must play it: SettingsPanel's select handler persists the
+  choice with setSelectedPresetId(…) and then, as the very next statement,
+  calls playPreview(…). Otherwise the preset list cannot be auditioned at all
+  (the 2026-07-26 design: with one shared list, assigning IS how you listen).
+note: |
+  Invariant source: tests/sound-preview.test.ts (Plan B, 2026-09-16;
+  "selecting a preset auditions it"). The retired case matched
+  `setSelectedPresetId\([^)]*\);\s*playPreview\(` against SettingsPanel.tsx's
+  raw text. Here: the file must hold a statement whose text ends in
+  `setSelectedPresetId(…);` (no `)` inside the arguments — so a bare, member
+  or awaited call, or an unbraced `if` ending in one, as the regex allowed)
+  whose IMMEDIATE next sibling starts with `playPreview(` — only whitespace
+  between, as `\s*` required (a comment in between breaks it for both).
+  DELIBERATE DIFFERENCE: the sequence must be real code; a comment or string
+  quoting it no longer satisfies the check.
+files:
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/fixtures/select-preset-calls-playpreview.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      regex: "setSelectedPresetId\\([^)]*\\);$"
+      not: { kind: comment }
+      precedes:
+        regex: "^playPreview\\("

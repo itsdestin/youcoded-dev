@@ -305,7 +305,10 @@ fi
 #   shell-session-permission-cycle-guarded (a guard after the raw write, and a file with no
 #   const cyclePermission (2)); session-strip-runtime-never-shell (an untyped runtime state,
 #   and the banned call spelled as a call, a comment and a string (4)).
-EXPECTED_VIOLATIONS=340
+# 2026-09-16 (u8, sound-preview.test.ts): +1 for select-preset-calls-playpreview (a select
+#   handler whose audition is separated from the save by a comment, the right sequence quoted
+#   only in a comment).
+EXPECTED_VIOLATIONS=341
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
