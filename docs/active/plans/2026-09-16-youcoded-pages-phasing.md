@@ -102,7 +102,10 @@ cards. One note: align "Back to chat" and "Esc" and put a dot between them (appl
 **Build decisions (interview, 2026-09-17):**
 
 - **Sync is built in.** Personal pages live in the Personal sync space (`~/YouCoded/Personal/Pages/<slug>/`);
-  project pages live inside the project (`<project>/.youcoded/pages/<slug>/`) and travel with it.
+  project pages live inside the project in a VISIBLE folder (`<project>/Pages/<slug>/`) and
+  travel with it. Not `<project>/.youcoded/`: that folder is git-ignored and excluded from sync
+  by design (`sync-spaces/guards.ts` DEFAULT_IGNORES, `artifacts/project-manager.ts`), so a page
+  there would never leave the machine.
   A page's own saved data lives in its folder and syncs with it (later save wins on a conflict).
   Pin state rides in the per-device file the Personal space already keeps.
 - **Versioning is git.** Both homes are git repositories; "put it back" in chat restores from
