@@ -18,7 +18,10 @@ note: |
   inline string and the import left unused (no noUnusedLocals here).
   Branch 1 (whole file): no `<anything>.executeJavaScript(MOUNT_PROBE_JS)` call
   (any receiver or none — the receiver was never pinned; a multi-line member
-  chain counts).
+  chain counts, and so does an optional-chain receiver like
+  `win.webContents?.executeJavaScript(MOUNT_PROBE_JS)`, added 2026-09-16
+  review round 1 item 3 — `?.` is a distinct node shape the plain-dot pattern
+  did not match).
   Branch 2 (whole file): no import/export statement whose source is
   './dev-mount-probe' (the old regex matched either).
 files:
@@ -33,6 +36,7 @@ rule:
           stopBy: end
           any:
             - pattern: $OBJ.executeJavaScript(MOUNT_PROBE_JS)
+            - pattern: $OBJ?.executeJavaScript(MOUNT_PROBE_JS)
             - pattern: executeJavaScript(MOUNT_PROBE_JS)
     - not:
         has:
