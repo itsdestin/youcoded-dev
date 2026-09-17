@@ -1,0 +1,24 @@
+id: type-scale-named-tokens-declared
+language: css
+severity: error
+message: >-
+  globals.css's @theme block must declare every named sub-Tailwind step
+  (--text-2xs, --text-3xs, --text-4xs, --text-sm-tight) with a px value.
+  Naming the scale makes it greppable and makes a new odd size a visible
+  decision instead of a silent one.
+note: |
+  Invariant source: tests/type-scale-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 2 — "every step of the sub-Tailwind scale is defined
+  in globals.css"). Whole-stylesheet presence check, same shape as
+  main-registers-all-quit-routes: fires if ANY of the four required
+  declarations is missing or lacks a `px` value.
+files:
+  - "**/src/renderer/styles/globals.css"
+  - "**/fixtures/type-scale-named-tokens-declared.css"
+rule:
+  kind: stylesheet
+  any:
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-2xs:\\s*\\d+px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-3xs:\\s*\\d+px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-4xs:\\s*\\d+px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-sm-tight:\\s*\\d+px" } }

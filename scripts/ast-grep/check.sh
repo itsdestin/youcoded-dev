@@ -98,7 +98,9 @@ fi
 #   section-label-no-h4.
 # 2026-09-16 (t5c): +3 for tooltip-wraps-forwarding-element + tooltip-title-is-not-data +
 #   tooltip-key-on-wrapper-not-child.
-EXPECTED_VIOLATIONS=55
+# 2026-09-16 (t5c): +3 for type-scale-named-tokens-declared + no-arbitrary-text-size +
+#   its -ts twin.
+EXPECTED_VIOLATIONS=58
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
