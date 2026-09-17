@@ -67,7 +67,8 @@ ignores:
   - "**/components/specialists/**"
   - "**/components/tags/**"
   - "**/components/tool-views/**"
-  # CENTRED_STATUS_ELSEWHERE in the test — counted there, not here.
+  # exemption-table: CENTRED_STATUS_ELSEWHERE — counted in tests/status-strip-authority.test.tsx,
+  # not here; check.sh fails if this block and that table differ.
   - "**/FirstRunView.tsx"
   - "**/ShareSheet.tsx"
   - "**/ThemeShareSheet.tsx"

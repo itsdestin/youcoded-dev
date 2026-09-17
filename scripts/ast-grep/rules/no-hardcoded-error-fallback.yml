@@ -64,7 +64,8 @@ ignores:
   - "**/components/specialists/**"
   - "**/components/tags/**"
   - "**/components/tool-views/**"
-  # HARDCODED_ERROR_FALLBACK in the test — counted there, not here.
+  # exemption-table: HARDCODED_ERROR_FALLBACK — counted in tests/status-strip-authority.test.tsx,
+  # not here; check.sh fails if this block and that table differ.
   - "**/AccountSection.tsx"
   - "**/SyncPanel.tsx"
   - "**/SyncSetupWizard.tsx"
