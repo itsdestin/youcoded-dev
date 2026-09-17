@@ -1,0 +1,87 @@
+id: no-hand-rolled-callout-tint
+language: tsx
+severity: error
+message: >-
+  Passive information goes through `<Callout>`. A tint from the callout
+  palette (accent/destructive/amber/red/green/emerald at 5% or 10% opacity)
+  paired with a `border` in the same class recipe is the shape a hand-rolled
+  callout wears — K4's whole spec is "3 geometries", and matching that SHAPE
+  rather than a list of known-bad recipes is what found the app's actual
+  drift: a second red tint at a different border opacity, and a green
+  success block the three named tones cannot even express. If the block
+  carries a button it is a K5 status strip, a different kit entry — add a
+  file-level exemption with the reason rather than hand-rolling either one.
+note: |
+  Invariant source: tests/callout-authority.test.tsx (Plan B, 2026-09-16;
+  "no in-scope file grows a new hand-rolled callout" — case 2 of the
+  "callout adoption" describe block's 3 cases).
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx (flat only, `*` crosses `/` in this ast-grep so every
+  OTHER components/ subdirectory is listed under ignores:),
+  components/development/*.tsx, components/ui/*.tsx — Callout.tsx itself is
+  ignored (where the three tones are defined).
+  EXEMPT (carried as `ignores:`, from the retired test's NOT_CALLOUTS table):
+  Button.tsx (danger-outline's hover fill — a control's own state),
+  ModelPickerPopup.tsx (Fast mode's warning box — a hand-rolled warning
+  callout, follow-up filed separately), ThemeShareSheet.tsx (an <a> styled
+  as a button), AssistantTurnBubble.tsx (the Plan card — not a menu surface),
+  SessionContextBanner.tsx / SettingsPanel.tsx / SyncPanel.tsx /
+  SpecialistsChip.tsx (K5 status strips or state pills, per NOT_CALLOUTS).
+  LIMITATION: NOT_CALLOUTS counted per file (e.g. SyncPanel.tsx: exactly 4)
+  so a FIFTH tinted block there would have failed the retired test; a
+  whole-file `ignores:` cannot express "at most N here". That exact-count
+  case ("every exemption still exists and still applies") is kept as a text
+  read in the trimmed test file per global.md's "at most N matches" guidance.
+  Matched on the className string OR a template literal containing one
+  (Tailwind class list may be built with `cn()`/a template), requiring BOTH
+  the tint token and the literal word `border` somewhere in the same string
+  — the retired test's own 150-char either-direction window was, per its
+  comment, an approximation of "within one class string's worth of
+  characters", which a same-string match reproduces directly rather than
+  approximates.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-hand-rolled-callout-tint.tsx"
+ignores:
+  - "**/*.test.tsx"
+  - "**/Callout.tsx"
+  - "**/Button.tsx"
+  - "**/ModelPickerPopup.tsx"
+  - "**/ThemeShareSheet.tsx"
+  - "**/AssistantTurnBubble.tsx"
+  - "**/SessionContextBanner.tsx"
+  - "**/SettingsPanel.tsx"
+  - "**/SyncPanel.tsx"
+  - "**/SpecialistsChip.tsx"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+rule:
+  any:
+    - kind: string_fragment
+      all:
+        - regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
+        - regex: "\\bborder\\b"
+    - kind: template_string
+      all:
+        - regex: "bg-(amber-500|amber-700|accent|destructive|red-500|red-400|green-500|green-400|emerald-500)/(10|5)\\b"
+        - regex: "\\bborder\\b"
