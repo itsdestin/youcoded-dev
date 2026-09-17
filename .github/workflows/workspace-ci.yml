@@ -164,6 +164,12 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-wrong-repo.test.sh
 
+      # And a doc check read from a stale shared checkout named an already-archived plan
+      # as a TODO (2026-09-17); it reads origin's default branch now.
+      - name: close-out.sh judges docs from origin, not a stale working tree
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-stale-checkout.test.sh
+
       # The launchers' name resolution. A session's app checkout sits at
       # worktrees/sessions/<name>/youcoded, and run-workbench is normally invoked from
       # INSIDE that worktree — where the workspace-relative layouts it checks cannot match.

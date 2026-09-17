@@ -265,13 +265,6 @@ seen-on is always n/a here.
       `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
       `desktop` `confirmed` `checked 2026-09-11`
 
-- [ ] A new worktree's libraries can be older than the ones CI installs, so a green local check may
-      not be the check CI runs. On 2026-09-11 a worktree held fourteen packages at a different
-      version than the lockfile — the React hooks lint plugin a whole major version behind, plus
-      knip, typescript-eslint, zod and the AI SDK. Filling in missing packages at startup does not
-      touch packages that are present but outdated. Found while fixing a missing one, 2026-09-11
-      `n/a` `needs-verify` `checked 2026-09-11`
-
 - [ ] The speed-test comparison judges two runs taken at very different machine load as if
       they were alike. On 2026-09-10 two freeze-fix branches both read 16–20% slower than master
       on long-conversation switches; it took a second master run and a second run of each branch

@@ -43,7 +43,8 @@ not full-file dumps.
 
 - Search repo-wide before narrowing. For cross-platform questions include both
   `desktop/` and `app/`; for cross-repo questions search each relevant sub-repo explicitly
-  (the workspace ignores its sub-repo directories).
+  (the workspace ignores its sub-repo directories: `rg <workspace-root>` never reads
+  `youcoded/`, and skips `.claude/` as hidden — Plan B missed stale pointers this way).
 - Quote shell patterns and globs. Default ignores and hidden-file filtering can hide a
   relevant file; use explicit paths or deliberate `--hidden`/`--no-ignore` scope when needed.
 - Text hits include comments and strings, and miss renamed imports or dynamic calls.

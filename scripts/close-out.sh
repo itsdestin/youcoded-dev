@@ -269,7 +269,21 @@ echo "Docs"
 # Scoped to THIS branch. A doc naming a branch that no longer exists holds
 # commands that error instead of answering, and claims that read as current.
 DEAD=""
-[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null || true)
+# WHY read the workspace's origin default branch, not its working tree (2026-09-17):
+# close-out runs from the shared checkout, which can sit hundreds of commits behind.
+# There it reported Plan B's plan as "still names the branch" after the merge had
+# already moved it to docs/archive/. The fresh working tree is only the fallback when
+# the workspace has no origin ref (a test fixture, an offline clone).
+git -C "$WORKSPACE" fetch origin --quiet 2>/dev/null || true
+WS_BASE=$(git -C "$WORKSPACE" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
+if [[ "$MERGED" == yes ]]; then
+  if git -C "$WORKSPACE" rev-parse --verify -q "$WS_BASE" >/dev/null 2>&1; then
+    DEAD=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active docs/roadmap 2>/dev/null \
+      | sed "s|^$WS_BASE:|$WORKSPACE/|" || true)
+  else
+    DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null || true)
+  fi
+fi
 if [[ "$MERGED" != yes ]]; then
   note "docs naming this branch are FINE while it is unmerged — check skipped"
 fi
