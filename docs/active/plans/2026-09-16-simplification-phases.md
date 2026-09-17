@@ -188,6 +188,6 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 | 1b | merged 2026-09-16 (youcoded#498 `ad2b709b`; rules youcoded-dev#118 `3eb6e5c0`) |
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
-| 3 | built 2026-09-17 on `session/simplify-phase3` (youcoded, 8 commits, pushed, no PR) — every item taken; W25's rehype-highlight half and W22's debounce not taken (both would be visible); reviewer + Destin's merge call pending |
+| 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
 | 4 | not started |
 | 5 | not started |
