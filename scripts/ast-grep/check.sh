@@ -319,7 +319,10 @@ fi
 #   beside the delegation (1); a handler that never delegates (1)) and its -remote twin (a
 #   `.catch(() => [])` and a `: [];` beside the delegation (2); a case that never
 #   delegates (1)).
-EXPECTED_VIOLATIONS=356
+# 2026-09-16 (review of u8, fix 1): +1 for shell-session-permission-cycle-guarded's
+#   branch (c) — a first cyclePermission holding neither the raw Shift+Tab write (moved
+#   to a helper declared after it) nor the shell guard.
+EXPECTED_VIOLATIONS=357
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

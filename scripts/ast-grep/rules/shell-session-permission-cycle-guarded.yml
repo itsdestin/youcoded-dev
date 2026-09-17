@@ -18,11 +18,15 @@ note: |
   call whose callee ends in `sendInput` with arguments exactly
   `(sessionId, '\x1b[Z')` that does not come after the guard statement —
   "after" meaning the call or an ancestor up to the declaration follows a
-  sibling that is or holds the guard.
+  sibling that is or holds the guard; (c) the FIRST declaration holds neither
+  that write nor the guard (the write moved to a later helper and the guard
+  went with it — the retired slice ran on to that write and failed).
+  A first declaration that keeps the guard but writes elsewhere stays silent,
+  as the retired slice did.
   DELIBERATE DIFFERENCES: the guard must be a real statement (a comment
   quoting it no longer counts), and a cyclePermission with NO such write
-  inside it does not fire — the retired slice then ran on to a write
-  elsewhere in the file (or to the end), which is not this function's.
+  inside it does not fire while it keeps the guard — the retired slice then
+  also passed.
 files:
   - "**/src/renderer/App.tsx"
   - "**/fixtures/shell-session-permission-cycle-guarded*.tsx"
@@ -69,6 +73,17 @@ rule:
   any:
     - kind: program
       not: { has: { stopBy: end, matches: cycle-decl } }
+    # WHY (review of u8, 2026-09-16): the raw write moved into a helper declared
+    # AFTER cyclePermission, with the guard deleted, left branch (b) nothing to
+    # match — but the retired slice then ran on to that later write and failed
+    # for the missing guard. (c) the FIRST declaration holds neither the raw
+    # write nor the guard.
+    - matches: cycle-decl
+      not:
+        any:
+          - matches: after-an-earlier-cycle-decl
+          - has: { stopBy: end, matches: raw-shift-tab }
+          - has: { stopBy: end, matches: shell-guard }
     - matches: raw-shift-tab
       inside:
         stopBy: end
