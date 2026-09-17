@@ -308,7 +308,9 @@ fi
 # 2026-09-16 (u8, sound-preview.test.ts): +1 for select-preset-calls-playpreview (a select
 #   handler whose audition is separated from the save by a comment, the right sequence quoted
 #   only in a comment).
-EXPECTED_VIOLATIONS=341
+# 2026-09-16 (u9, specialist-delegation-ledger.test.ts): +2 for ledger-single-mutatejson-call
+#   (a second direct call in another method (1); a ledger with no call at all (1)).
+EXPECTED_VIOLATIONS=343
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
