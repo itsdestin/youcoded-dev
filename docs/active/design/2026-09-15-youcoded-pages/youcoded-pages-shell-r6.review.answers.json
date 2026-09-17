@@ -1,0 +1,27 @@
+{
+ "deck": "youcoded-pages-shell-r6",
+ "started": "2026-09-17T01:25:30.022Z",
+ "submitted": "2026-09-17T01:26:27Z",
+ "cur": 2,
+ "answers": {
+  "S-22": {
+   "v": "yes",
+   "note": "this looks weird, the back to chat/esc arent aligned. and we should add a dot or something between them",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-23": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-24": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
