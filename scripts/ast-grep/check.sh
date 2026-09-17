@@ -334,7 +334,10 @@ fi
 # 2026-09-16 (u11, useVoiceInput.test.ts): +4 — voice-mic-gate-uses-workbench-document (a gate
 #   naming no predicate (1); the dev-only predicate as a property and as a string (2)) and
 #   workbench-document-checks-vite-workbench (a predicate checking only DEV (1)).
-EXPECTED_VIOLATIONS=382
+# 2026-09-16 (u11, voice-assets.test.ts): +4 for voice-assets-runs-no-other-program (the
+#   child_process import (1); an execFileSync call and a spawnSync( comment (2); an unpacker
+#   named in a string (1)).
+EXPECTED_VIOLATIONS=386
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

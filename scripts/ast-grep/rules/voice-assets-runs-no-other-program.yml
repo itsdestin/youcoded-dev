@@ -1,0 +1,90 @@
+id: voice-assets-runs-no-other-program
+language: typescript
+severity: error
+message: >-
+  voice-assets.ts must run no other program — no child_process, no exec/spawn
+  call, no external unpacker named in code. A shell-out to `tar` or `bzip2`
+  works on this Linux machine and breaks on a stranger's computer that lacks
+  it; the npm tarballs are unpacked in process (untarGz) instead.
+note: |
+  Invariant source: tests/voice-assets.test.ts › "never reaches for
+  child_process" and "names no external unpacking program" (retired by Plan B,
+  2026-09-16). Destin, 2026-09-05: "users don't have to enter terminal commands
+  or download things externally. Should be seamless."
+  The retired cases, over voice-assets.ts:
+    A. raw text (comments included) must not match /from 'child_process'/
+    B. raw text (comments included) must not match
+       /\b(execFile|execFileSync|spawn|spawnSync|exec)\s*\(/
+    C. text with /* */ and // comments deleted must not contain bzip2, lbzip2,
+       pbzip2, tar.exe or System32.
+  Each branch reports the DEEPEST node whose text matches (a node that matches
+  while none of its children do), so every node kind the raw-text check could
+  see is covered — an import statement, a call, a function or method declared
+  with that name, a string or template piece, a comment — and a match is
+  reported once, not on every ancestor.
+  Branch A and B include comments, as the retired case did (it read the file
+  unstripped). Branch C excludes comments of both kinds.
+  The import half is ALSO oxlint `no-restricted-imports` scoped to this file
+  (youcoded/desktop/.oxlintrc.json), which adds the `node:child_process`
+  spelling and double quotes; this branch keeps the retired exact text so a
+  comment or string carrying it still fails.
+  One difference, deliberately kept: the retired strip also deleted a `//…`
+  run INSIDE a string (so 'https://x/bzip2' passed C); here that string fires.
+  SCOPING: voice-assets.ts only (the file the cases read) plus its fixture.
+files:
+  - "**/src/main/voice/voice-assets.ts"
+  - "**/fixtures/voice-assets-runs-no-other-program.ts"
+utils:
+  # Every node kind that can be the DEEPEST holder of the matched text (plus
+  # their usual parents, harmlessly: a parent is reported only when no child
+  # holds the whole match, and then the raw-text check would have failed too).
+  text-node:
+    any:
+      - kind: comment
+      - kind: string_fragment
+      - kind: string
+      - kind: template_string
+      - kind: regex_pattern
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: nested_identifier
+      - kind: nested_type_identifier
+      - kind: member_expression
+      - kind: call_expression
+      - kind: new_expression
+      - kind: arguments
+      - kind: decorator
+      - kind: function_declaration
+      - kind: generator_function_declaration
+      - kind: function_signature
+      - kind: method_definition
+      - kind: method_signature
+      - kind: abstract_method_signature
+      - kind: import_statement
+      - kind: export_statement
+      - kind: expression_statement
+      - kind: lexical_declaration
+      - kind: variable_declarator
+      - kind: program
+rule:
+  any:
+    # A — the import, in any node.
+    - matches: text-node
+      regex: "from 'child_process'"
+      not: { has: { regex: "from 'child_process'" } }
+    # B — a call (or a declaration) of a process-spawning name, in any node.
+    - matches: text-node
+      regex: "\\b(execFile|execFileSync|spawn|spawnSync|exec)\\s*\\("
+      not: { has: { regex: "\\b(execFile|execFileSync|spawn|spawnSync|exec)\\s*\\(" } }
+    # C — an external unpacker named in code (comments excluded).
+    - matches: text-node
+      regex: "bzip2|tar\\.exe|System32"
+      not:
+        any:
+          - kind: comment
+          - has: { regex: "bzip2|tar\\.exe|System32" }
