@@ -270,7 +270,10 @@ fi
 #   artifact-provider-value-memoized (an inline value object, a self-closing provider
 #   handed another value, a useMemo whose deps miss artifactState (3); an App with no
 #   provider tag, one whose value is not a useMemo (2)).
-EXPECTED_VIOLATIONS=288
+# 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
+#   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
+#   with no previewMeta.saveNote editor (1)).
+EXPECTED_VIOLATIONS=291
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
