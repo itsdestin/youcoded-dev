@@ -1,0 +1,88 @@
+{
+ "deck": "specialists-plans-review7",
+ "started": "2026-09-17T00:44:08.241Z",
+ "submitted": "2026-09-17T01:31:12Z",
+ "cur": 11,
+ "answers": {
+  "R7-1": {
+   "v": "yes",
+   "seconds": 29,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7-2": {
+   "v": "yes",
+   "note": "we can put the buttons in-line with the text on the left. lots of empty space.",
+   "seconds": 66,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7-3": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7-4": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7-5": {
+   "note": "no, plan card should be same width as the independent specialists cards. remove the separate header and add a Plan: before the name/description",
+   "v": "other",
+   "seconds": 292,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-1": {
+   "v": "other",
+   "note": "we should not show the not for the assistant card",
+   "seconds": 507,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-2": {
+   "note": "sorry i'm starting to think this handoff to the assistant may be a bit odd. can you summarize all  instances where a plan would hand back off to the assistant vs waiting for the user?",
+   "v": "other",
+   "seconds": 1486,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-3": {
+   "v": "other",
+   "note": "i also think this is weird. just a lot of messages/cards/responses for a straightforward action.",
+   "seconds": 28,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-4": {
+   "v": "other",
+   "note": "idk",
+   "seconds": 140,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R8-5": {
+   "v": "other",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q7-1": {
+   "v": "pick",
+   "pick": "tilde",
+   "seconds": 251,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q7-2": {
+   "v": "pick",
+   "pick": "hide",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

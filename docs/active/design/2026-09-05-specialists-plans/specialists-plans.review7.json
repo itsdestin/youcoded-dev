@@ -1,0 +1,353 @@
+{
+  "title": "Plans — round 7: the changes you asked for, and the assistant stepping in",
+  "key": "specialists-plans-review7",
+  "out": "specialists-plans.review7.html",
+  "images": "images/specialists-plans.review7",
+  "stage": "review",
+  "runs": {
+    "before": "runs/r7-before",
+    "after": "runs/r7-after2",
+    "today": "runs/r8-after"
+  },
+  "labels": {
+    "today": "Now"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "r7-approx": [
+      "plans-card-r7",
+      "approximate",
+      "1080x260+16+40"
+    ],
+    "r7-buttons": [
+      "plans-card-r7",
+      "proposed-buttons",
+      "1080x260+16+40"
+    ],
+    "r7-dot": [
+      "plans-card-r7",
+      "session-dot-asking",
+      "1440x44+0+0"
+    ],
+    "r7-chip-closed": [
+      "plans-card-r7-new",
+      "running-chip-popup-collapsed",
+      "620x200+410+365"
+    ],
+    "r7-chip-open": [
+      "plans-card-r7-new",
+      "running-chip-popup-expanded",
+      "620x500+410+200"
+    ],
+    "r8-pending": [
+      "plans-card-r8",
+      "handoff-pending",
+      "1100x400+16+60"
+    ],
+    "r8-budget": [
+      "plans-card-r8",
+      "recommend-add-budget-open",
+      "1100x520+16+40"
+    ],
+    "r8-continue": [
+      "plans-card-r8",
+      "recommend-continue",
+      "1100x480+16+40"
+    ],
+    "r8-stop": [
+      "plans-card-r8",
+      "recommend-stop",
+      "1100x480+16+40"
+    ],
+    "r8-stoponly": [
+      "plans-card-r8",
+      "answered-stop-only",
+      "1100x440+16+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R7-1",
+      "surface": "Chat · plan card",
+      "path": "A ChatGPT plan waiting for approval",
+      "crop": "r7-approx",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Approximate limits now show a ~ in front of the number, and the extra sentence is gone.",
+      "changed": "\"Up to about 42,000 tokens\" plus a warning line became \"Up to ~42,000 tokens\", as you asked.",
+      "notice": "A shorter card; the ~ says the limit is approximate.",
+      "risk": "Someone who doesn't know what ~ means gets no explanation.",
+      "highlight": {
+        "box": [
+          2,
+          62,
+          70,
+          10
+        ]
+      }
+    },
+    {
+      "id": "R7-2",
+      "surface": "Chat · plan card",
+      "path": "Any plan waiting for approval",
+      "crop": "r7-buttons",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Approve is now on the right, with Comment to its left.",
+      "changed": "The two buttons swapped places and moved to the right edge, following your new rule for filled buttons, now written into the design guide.",
+      "notice": "The main action sits where the app's other dialogs put it.",
+      "risk": "If you're used to the old spot, you may reach left for Approve once.",
+      "highlight": {
+        "box": [
+          68,
+          72,
+          30,
+          14
+        ]
+      }
+    },
+    {
+      "id": "R7-3",
+      "surface": "Conversation tabs",
+      "path": "The dot on a conversation's tab while a specialist waits for your answer",
+      "crop": "r7-dot",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "A specialist waiting on you now lights the conversation's red dot and plays the alert sound.",
+      "changed": "This now happens for ordinary specialists and plan specialists alike, the same way it does when the assistant itself asks.",
+      "notice": "You notice a waiting question even from another conversation.",
+      "risk": "More alerts during busy plans with several specialists.",
+      "highlight": "auto"
+    },
+    {
+      "id": "R7-4",
+      "surface": "Status bar",
+      "path": "Specialists button while a plan runs",
+      "crop": "r7-chip-closed",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "headline": "The Specialists popup lists a running plan as one line you can open.",
+      "changed": "Each plan is a single row with its name and where it is (\"step 1 of 3\", matching the card). Ordinary specialists are listed as before.",
+      "notice": "You can see a plan is running without scrolling to its card.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          54,
+          96,
+          20
+        ]
+      }
+    },
+    {
+      "id": "R7-5",
+      "surface": "Status bar",
+      "path": "Specialists popup, plan row opened",
+      "crop": "r7-chip-open",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "headline": "Opening a plan's row shows the specialists working on it.",
+      "changed": "Each specialist appears with the same controls ordinary ones have (Note, Stop). A plan with a waiting question opens by itself.",
+      "notice": "You can check on or stop one specialist without finding the card.",
+      "risk": "The popup gets long while a big plan runs.",
+      "highlight": {
+        "box": [
+          4,
+          20,
+          92,
+          10
+        ]
+      }
+    },
+    {
+      "id": "R8-1",
+      "surface": "Chat · plan card",
+      "path": "A plan that ran out of budget, just after it paused",
+      "crop": "r8-pending",
+      "runs": [
+        "today"
+      ],
+      "headline": "When a plan needs a decision, the card greys out while the assistant looks into it.",
+      "changed": "The card is dimmed with no buttons and says \"The assistant is looking into this.\" Below it, a collapsed \"Note for the assistant\" row shows what the assistant was told.",
+      "notice": "You don't have to work out what went wrong yourself.",
+      "risk": "The assistant's look costs a normal reply's worth of usage.",
+      "highlight": {
+        "box": [
+          2,
+          72,
+          96,
+          10
+        ]
+      }
+    },
+    {
+      "id": "R8-2",
+      "surface": "Chat · plan card",
+      "path": "After the assistant suggests adding budget, with Add budget pressed",
+      "crop": "r8-budget",
+      "runs": [
+        "today"
+      ],
+      "headline": "The assistant explains the problem and the card comes back with its suggested amount ready.",
+      "changed": "The card shows \"The assistant suggests: …\" and Add budget opens pre-filled with the suggested 15,000 tokens. Nothing is added until you press Continue.",
+      "notice": "One click from the recommendation to a running plan, and you still decide.",
+      "risk": "It's easy to accept the suggested amount without reading why.",
+      "highlight": {
+        "box": [
+          2,
+          50,
+          96,
+          17
+        ]
+      }
+    },
+    {
+      "id": "R8-3",
+      "surface": "Chat · plan card",
+      "path": "After the assistant suggests trying again",
+      "crop": "r8-continue",
+      "runs": [
+        "today"
+      ],
+      "headline": "When trying again makes sense, the assistant says why and Continue is the main button.",
+      "changed": "Stop is the light button on the left and Continue the filled one on the right.",
+      "notice": "The card tells you whether it's worth continuing.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          55,
+          96,
+          17
+        ]
+      }
+    },
+    {
+      "id": "R8-4",
+      "surface": "Chat · plan card",
+      "path": "After the assistant suggests stopping",
+      "crop": "r8-stop",
+      "runs": [
+        "today"
+      ],
+      "headline": "When continuing wouldn't help, the assistant recommends stopping and the card offers only Stop.",
+      "changed": "One filled Stop button, with the assistant's reason above it; it may also propose a revised plan below.",
+      "notice": "No buttons that would just fail again.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          55,
+          96,
+          17
+        ]
+      }
+    },
+    {
+      "id": "R8-5",
+      "surface": "Chat · plan card",
+      "path": "Repeating steps that never met their goal, after the assistant replied in chat",
+      "crop": "r8-stoponly",
+      "runs": [
+        "today"
+      ],
+      "headline": "If the assistant only answers in chat, the card comes back with its normal buttons.",
+      "changed": "For repeated steps that never met their goal that is Stop only; the assistant's reply below explains what to do instead.",
+      "notice": "The card never stays greyed out.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          58,
+          96,
+          12
+        ]
+      }
+    },
+    {
+      "id": "Q7-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "A priced ChatGPT plan's limit line",
+      "headline": "Should approximate dollar amounts also use the ~ (\"~$0.12\") instead of \"about $0.12\"?",
+      "today": "The builder put a ~ in front of dollar amounts too, so a ChatGPT plan's limit line reads \"Up to ~$0.12\". You asked for the ~ on the usage numbers only.",
+      "problem": "Mixing \"about\" and \"~\" in one line reads inconsistently, but you only asked about the usage numbers.",
+      "proposal": "Pick one style for dollar amounts.",
+      "options": [
+        {
+          "id": "tilde",
+          "label": "~$0.12",
+          "pros": [
+            "Same style as the usage numbers.",
+            "Shorter."
+          ],
+          "cons": [
+            "\"~\" before a dollar sign is less familiar to some people."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "about",
+          "label": "about $0.12",
+          "pros": [
+            "Plain words."
+          ],
+          "cons": [
+            "The same line mixes \"about\" and \"~\"."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q7-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "The collapsed \"Note for the assistant\" row under a greyed-out plan card",
+      "headline": "Should the note the app sends the assistant stay visible in the chat as a collapsed row?",
+      "today": "When a plan is handed to the assistant, the app sends it a short note about what happened. That note shows in the chat as a collapsed \"Note for the assistant\" row you can open.",
+      "problem": "It's honest about what the assistant was told, but it's one more line in the chat.",
+      "proposal": "Keep it visible and collapsed, or hide it.",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep it, collapsed",
+          "pros": [
+            "You can always see what the assistant was told.",
+            "Takes one line."
+          ],
+          "cons": [
+            "A little extra clutter."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "hide",
+          "label": "Hide it",
+          "pros": [
+            "Cleaner chat."
+          ],
+          "cons": [
+            "The assistant's reply can look like it came from nowhere."
+          ]
+        }
+      ]
+    }
+  ]
+}
