@@ -197,7 +197,9 @@ fi
 #   get-meta-marks-failed-read-unreadable (2 — blank answers, and a -missing file with
 #   no handler) + its -remote twin (3 — no unreadable key, a "fall through to empty"
 #   string, and a -missing file with no case).
-EXPECTED_VIOLATIONS=177
+# 2026-09-16 (u1, dev-load-recovery.test.tsx): +2 for main-uses-shared-mount-probe
+#   (an inlined same-name copy with no import; an inline-string call with the import kept).
+EXPECTED_VIOLATIONS=179
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

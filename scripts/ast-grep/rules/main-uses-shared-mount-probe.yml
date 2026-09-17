@@ -1,0 +1,44 @@
+id: main-uses-shared-mount-probe
+language: typescript
+severity: error
+message: >-
+  main.ts's dev-load watchdog must evaluate the shared probe —
+  `….executeJavaScript(MOUNT_PROBE_JS)` with MOUNT_PROBE_JS imported from
+  './dev-mount-probe' — never an inlined copy. Only the shared module is tested
+  against the real index.html; an inlined probe once read "mounted" for every
+  stranded dev window and silently disabled recovery for six days.
+note: |
+  Invariant source: tests/dev-load-recovery.test.tsx › "main.ts uses the shared
+  probe rather than an inlined copy" (retired by Plan B, 2026-09-16). The retired
+  case required /executeJavaScript\(MOUNT_PROBE_JS\)/ and
+  /from '\.\/dev-mount-probe'/ in main.ts.
+  WHY a rule and not "tsc already sees the import": main.ts compiles just as
+  well with the import replaced by a local `const MOUNT_PROBE_JS = '…'` — the
+  inlined copy the case exists to forbid — or with the call switched to an
+  inline string and the import left unused (no noUnusedLocals here).
+  Branch 1 (whole file): no `<anything>.executeJavaScript(MOUNT_PROBE_JS)` call
+  (any receiver or none — the receiver was never pinned; a multi-line member
+  chain counts).
+  Branch 2 (whole file): no import/export statement whose source is
+  './dev-mount-probe' (the old regex matched either).
+files:
+  - "**/src/main/main.ts"
+  - "**/fixtures/main-uses-shared-mount-probe.ts"
+  - "**/fixtures/main-uses-shared-mount-probe-inline-call.ts"
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          any:
+            - pattern: $OBJ.executeJavaScript(MOUNT_PROBE_JS)
+            - pattern: executeJavaScript(MOUNT_PROBE_JS)
+    - not:
+        has:
+          any:
+            - kind: import_statement
+            - kind: export_statement
+          has:
+            field: source
+            regex: "^['\"]\\./dev-mount-probe['\"]$"
