@@ -1,0 +1,33 @@
+id: chatview-yields-keys-to-game-board
+language: tsx
+severity: error
+message: >-
+  ChatView's arrow-key transcript scroll must yield to a focused game board
+  (`[data-game-keys]`) — otherwise the chat scrolls BEHIND the player. The
+  game cannot win that race from its own side: the capture listener
+  registers first and runs outermost-first.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "ChatView yields arrow keys to a
+  focused game board"). Its companion "a game that claims the arrow keys marks itself" (at least
+  one game file carries the attribute) stays a text read: it is a count across files.
+files:
+  - "**/src/renderer/components/ChatView.tsx"
+  - "**/fixtures/chatview-yields-keys-to-game-board.tsx"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  kind: program
+  not: { has: { stopBy: end, matches: code-token, regex: "\\[data-game-keys\\]" } }

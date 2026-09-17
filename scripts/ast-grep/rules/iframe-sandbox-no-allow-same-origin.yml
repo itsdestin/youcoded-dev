@@ -1,0 +1,25 @@
+id: iframe-sandbox-no-allow-same-origin
+language: tsx
+severity: error
+message: >-
+  An <iframe sandbox> must never carry allow-same-origin: the preview runs in a
+  sealed box with an opaque origin, so nothing a file contains can reach the
+  app's storage, cookies or bridge (remote access batch 3, contract R20).
+note: |
+  Invariant source: tests/html-view-sealed.test.ts (retired by Plan B, 2026-09-16).
+  Guard: this rule + its fixture. SCOPING: every renderer .tsx and the fixture.
+  FIX (review of batch A, 2026-09-16): this rule only fires when a sandbox
+  attribute is PRESENT and contains allow-same-origin — it says nothing if the
+  sandbox attribute (or allow-scripts within it) is simply missing. See
+  iframe-sandbox-requires-allow-scripts for that half of the retired test's
+  requirement.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/iframe-sandbox.tsx"
+rule:
+  kind: jsx_attribute
+  has:
+    kind: property_identifier
+    regex: "^sandbox$"
+  # the attribute's string value mentions the forbidden token
+  regex: "allow-same-origin"

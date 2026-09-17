@@ -1,0 +1,49 @@
+id: arcade-shared-state-no-connect4-vocabulary
+language: typescript
+severity: error
+message: >-
+  Connect 4's vocabulary (myColor, PlayerColor, winLine:, lastMove:) stays
+  off the shared game state — it made chess and 2048 read Connect 4's
+  language to render at all. The shared state speaks seats, turnSeat and
+  outcome; each game's own detail lives in `play`.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "Connect 4's vocabulary is gone from the shared state").
+  The retired case concatenated game-types.ts and game-reducer.ts (comments
+  blanked) and asserted none of the four substrings appear. `winLine:` /
+  `lastMove:` include the colon, so they match a key or annotation spelled
+  that way (property signature, object pair, parameter, declaration) or a
+  string. The presence half ("seat", "turnSeat", "outcome", "play" still
+  there) is arcade-shared-state-has-seat-vocabulary.
+files:
+  - "**/src/renderer/state/game-types.ts"
+  - "**/src/renderer/state/game-reducer.ts"
+  - "**/fixtures/arcade-shared-state-no-connect4-vocabulary.ts"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  any:
+    - matches: code-token
+      regex: "myColor|PlayerColor|winLine:|lastMove:"
+      not: { has: { regex: "myColor|PlayerColor|winLine:|lastMove:" } }
+    - any:
+        - kind: property_signature
+        - kind: pair
+        - kind: pair_pattern
+        - kind: required_parameter
+        - kind: variable_declarator
+        - kind: public_field_definition
+        - kind: labeled_statement
+      regex: "winLine:|lastMove:"
+      not: { has: { regex: "winLine:|lastMove:" } }

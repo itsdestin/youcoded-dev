@@ -1,0 +1,100 @@
+id: no-hardcoded-error-fallback
+language: tsx
+severity: error
+message: >-
+  A user-facing error never falls back to a hardcoded cause
+  (`someError || 'Setup failed'`). Show the real error, or say you do not
+  have one and offer Report bug / Diagnose with the assistant
+  (<ErrorState mode="general">) — docs/error-message-standards.md. A hardcoded
+  fallback asserts a cause nobody verified.
+note: |
+  Invariant source: tests/status-strip-authority.test.tsx (Plan B,
+  2026-09-16; "no user-facing error falls back to a hardcoded cause"). The
+  retired case counted the regex
+  `\b\w*[eE]rror\s*\|\|\s*['"][^'"]+['"]` per in-scope file and required
+  0 outside its HARDCODED_ERROR_FALLBACK list (the v1.3.1 error-audit
+  backlog). Those listed files (AccountSection, SyncPanel, SyncSetupWizard)
+  are under ignores: here; their exact per-file counts are still pinned by
+  that case, kept as a source read, because a per-file count is not
+  something a rule can express.
+  MATCHING: the retired case ran its regex over each file's whole text with
+  comments blanked. So the rule fires on the SMALLEST node of these kinds
+  whose text holds a match: the `||` expression itself, a string or template
+  piece, a whole template (a quoted fallback around a `${…}`), JSX text, a
+  JSX element (JSX text whose quoted part wraps a `{…}`), a regex body — and,
+  as a last resort, the whole file (a match inside any other container). A
+  node is skipped when a smaller listed node already holds the match, or
+  when a comment inside it does (so a comment quoting the idiom never fires
+  on its own). DIFFERENCES (minimal): a comment inside the matched span
+  (`a.error /* x */ || 'y'`) hides it, where the old blanking did not; the
+  whole-file last resort is also skipped when any comment in the file
+  quotes the idiom.
+  TERNARY MASKING (review of u9): a match spanning a ternary's two strings
+  (`x ? 'saveError || ' : 'boom'`) is seen only by that whole-file last
+  resort, so a real finding elsewhere in the same file masks it — the file still fires,
+  but with one finding where the retired count saw two.
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx, components/development/*.tsx, components/ui/*.tsx, no
+  `.test.` files. `*` crosses `/` in this ast-grep, so every OTHER
+  components/ subdirectory (as of 2026-09-16) is listed under ignores:, as
+  are folders nested below development/ and ui/. A NEW components/
+  subdirectory is in scope here until it is added to that list.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-hardcoded-error-fallback.tsx"
+ignores:
+  - "**/*.test.*"
+  - "**/components/development/*/**"
+  - "**/components/ui/*/**"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+  # exemption-table: HARDCODED_ERROR_FALLBACK — counted in tests/status-strip-authority.test.tsx,
+  # not here; check.sh fails if this block and that table differ.
+  - "**/AccountSection.tsx"
+  - "**/SyncPanel.tsx"
+  - "**/SyncSetupWizard.tsx"
+utils:
+  holds-match:
+    regex: "\\b\\w*[eE]rror\\s*\\|\\|\\s*['\"][^'\"]+['\"]"
+  listed:
+    any:
+      - kind: binary_expression
+      - kind: string_fragment
+      - kind: template_string
+      - kind: jsx_text
+      - kind: jsx_element
+      - kind: regex_pattern
+rule:
+  all:
+    - matches: holds-match
+    - any:
+        - matches: listed
+        - kind: program
+    - not:
+        has:
+          stopBy: end
+          all:
+            - matches: holds-match
+            - any:
+                - matches: listed
+                - kind: comment

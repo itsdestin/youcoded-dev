@@ -1,0 +1,26 @@
+id: voice-button-level-ring-stepped
+language: tsx
+severity: error
+message: >-
+  The mic's level ring — the motion every user sees for the whole dictation
+  — transitions box-shadow on steps(N), never linear, and moves in whole-
+  pixel steps (`${2 + Math.round(level * 7)}px`) so it repaints only when
+  the level crosses a step. Whole-branch review F3.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "steps the level ring — the motion that actually ships"). and "keeps the ring on whole-pixel steps, so it repaints only when the level moves a step" (the file's two VoiceButton cases).
+files:
+  - "**/src/renderer/components/VoiceButton.tsx"
+  - "**/fixtures/voice-button-level-ring-stepped.tsx"
+rule:
+  any:
+    - kind: pair
+      regex: "^transition:\\s*'box-shadow[^']*linear'"
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, kind: pair, regex: "^transition:\\s*'box-shadow\\s+\\d+ms\\s+steps\\(\\d+\\)'$" } }
+        - not:
+            has:
+              stopBy: end
+              kind: template_substitution
+              has: { pattern: "2 + Math.round(level * 7)" }
+              precedes: { kind: string_fragment, regex: "^px" }

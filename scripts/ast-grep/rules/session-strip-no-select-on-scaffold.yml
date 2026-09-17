@@ -1,0 +1,36 @@
+id: session-strip-no-select-on-scaffold
+language: tsx
+severity: error
+message: >-
+  The select-on review scaffold ([data-select], press-dot, readSelectOn) was
+  picked and deleted on 2026-09-02 — the winner is the plain value. (data-
+  select-portal is the Select menu's, unrelated.)
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "has no review scaffolds left — every round was picked on 2026-09-02").
+  index.tsx's half of the same case is index-no-arrival-scaffold; the
+  stylesheet half stays a text read in the test.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-no-select-on-scaffold.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  matches: code-leaf
+  regex: "\\[data-select\\]|press-dot|readSelectOn"
+  not: { has: { regex: "\\[data-select\\]|press-dot|readSelectOn" } }

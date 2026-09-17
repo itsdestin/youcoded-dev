@@ -1,0 +1,20 @@
+id: no-arbitrary-text-size-ts
+language: typescript
+severity: error
+message: >-
+  Use a named step (text-4xs/3xs/2xs/xs/sm-tight/sm/base/lg), never a
+  hand-typed `text-[Npx]` — including in a plain .ts class-name constant, not
+  just a className attribute. See no-arbitrary-text-size for the full WHY.
+note: |
+  Invariant source: tests/type-scale-authority.test.ts (retired by Plan B,
+  2026-09-16). `.ts` twin of no-arbitrary-text-size: this ast-grep's
+  `language: tsx` rule never scans a `.ts` file — the retired test's own walk
+  read both `.tsx` and `.ts` (`/\.tsx?$/`).
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/no-arbitrary-text-size-ts.ts"
+ignores:
+  - "**/src/renderer/**/*.test.ts"
+rule:
+  kind: string_fragment
+  regex: "text-\\[\\d+(?:\\.\\d+)?px\\]"

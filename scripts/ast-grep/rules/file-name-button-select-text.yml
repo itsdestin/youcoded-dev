@@ -1,0 +1,77 @@
+id: file-name-button-select-text
+language: tsx
+severity: error
+message: >-
+  FilepathToken.tsx must render exactly two clickable file-name buttons (the
+  inline and pill variants, each a `<button … data-file-path=…>`), and each
+  must carry `className="… select-text …"`. globals.css makes every <button>
+  unselectable chrome, but a file name is part of the message and must stay
+  selectable and copyable (Destin, 2026-09-10).
+note: |
+  Invariant source: tests/unselectable-chrome.test.ts (Plan B, 2026-09-16;
+  "both clickable file-name variants carry select-text"). The retired case
+  blanked comments, split the file on `<button`, cut each piece at its
+  `</button>`, kept the pieces holding `data-file-path=`, required exactly
+  2 of them, and required `className="[^"]*\bselect-text\b` in each.
+  A FILE-NAME BUTTON is a `<button …>…</button>` element (or a self-closing
+  `<button … />`) holding, anywhere inside it, a JSX attribute starting
+  `data-file-path=`. Three branches, together "count == 2, each opted in":
+  - NOT OPTED IN: a file-name button with no `className="…select-text…"`
+    JSX attribute anywhere inside it.
+  - EXTRA: a file-name button that comes after two others (inside one, or
+    a later sibling of one or of an ancestor of one) — "count >= 3".
+  - TOO FEW: the file holds no file-name button that comes after another
+    one — "count <= 1".
+  DIFFERENCE (minimal): a string or comment quoting the markup no longer
+  counts — the buttons and attributes must be real JSX.
+files:
+  - "**/src/renderer/components/FilepathToken.tsx"
+  - "**/fixtures/file-name-button-select-text*.tsx"
+utils:
+  file-name-button:
+    any:
+      - kind: jsx_element
+        has: { field: open_tag, regex: "^<button\\b" }
+      - kind: jsx_self_closing_element
+        regex: "^<button\\b"
+    has:
+      stopBy: end
+      kind: jsx_attribute
+      regex: "^data-file-path="
+  holds-file-name-button:
+    any:
+      - matches: file-name-button
+      - has: { stopBy: end, matches: file-name-button }
+  second-file-name-button:
+    matches: file-name-button
+    any:
+      - inside: { stopBy: end, matches: file-name-button }
+      - follows: { stopBy: end, matches: holds-file-name-button }
+      - inside:
+          stopBy: end
+          follows: { stopBy: end, matches: holds-file-name-button }
+  holds-second-file-name-button:
+    any:
+      - matches: second-file-name-button
+      - has: { stopBy: end, matches: second-file-name-button }
+rule:
+  any:
+    # NOT OPTED IN.
+    - matches: file-name-button
+      not:
+        has:
+          stopBy: end
+          kind: jsx_attribute
+          regex: '^className="[^"]*\bselect-text\b'
+    # EXTRA — a third (or later) button.
+    - matches: file-name-button
+      any:
+        - inside: { stopBy: end, matches: second-file-name-button }
+        - follows: { stopBy: end, matches: holds-second-file-name-button }
+        - inside:
+            stopBy: end
+            follows: { stopBy: end, matches: holds-second-file-name-button }
+    # TOO FEW.
+    - kind: program
+      not:
+        has: { stopBy: end, matches: second-file-name-button }

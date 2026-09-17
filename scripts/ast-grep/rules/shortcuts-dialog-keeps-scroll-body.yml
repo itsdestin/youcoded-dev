@@ -1,0 +1,80 @@
+id: shortcuts-dialog-keeps-scroll-body
+language: tsx
+severity: error
+message: >-
+  ShortcutsPopup must keep the shared Dialog's scrolling body
+  (scrollBody defaults true — never pass scrollBody={false}), must stay the
+  "panel" (420px) size, and must render its rows from the SHORTCUTS list
+  itself. Phase E of the 2026-08-25 UI review (P-7/P-8) found the popup at
+  `size="prompt"` (340px) with `scrollBody={false}`: four labels wrapped to
+  two lines AND the last three of the thirteen rows fell outside the
+  dialog's 476px cap with no scroll region anywhere — the last three
+  shortcuts could never be read at any window size. It looked fine in every
+  screenshot, because a clipped list looks exactly like a short one.
+note: |
+  Invariant source: tests/menu-row-reachability.test.ts (retired by Plan B,
+  2026-09-16; cases 1–3 of 7 — "keeps the scrolling body", "is the wider
+  size", "every shortcut in the list is rendered from the list itself" [the
+  SHORTCUTS.map half only — see LIMITATION]).
+  Fires four ways at the whole-file (`program`) level, each `has:`/`not:has:`
+  scoped `inside:` the ShortcutsPopup function: (a) scrollBody={false}
+  present (banned), (b) size="panel" missing, (c) SHORTCUTS.map missing, (d)
+  ShortcutsPopup itself is gone entirely — the retired test's own
+  `block()` helper asserted its start marker was found
+  (`toBeGreaterThan(-1)`); a bare `inside:`-scoped rule with no existence
+  branch would silently stop guarding that once the function is renamed.
+  A JSX attribute (`scrollBody={false}`, `size="panel"`) cannot be matched by
+  a bare `pattern:` — ast-grep parses it as a labeled statement outside JSX
+  context — so each uses `context:`/`selector: jsx_attribute` to anchor it.
+  LIMITATION: case 3's OTHER half — `rows = [...settings.matchAll(/{ keys: '/g)].length;
+  expect(rows).toBeGreaterThanOrEqual(13)` — is a quantity/non-vacuity check
+  ("the list is long enough to overflow") with nothing left to guard once
+  the shape check exists; dropped per the Task 5 doc's own rule for this
+  class ("at least N" quantity checks are dropped, not approximated — the
+  fixture pass is the non-vacuity check now).
+files:
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/fixtures/shortcuts-dialog-keeps-scroll-body.tsx"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        pattern:
+          context: "<Dialog scrollBody={false} />"
+          selector: jsx_attribute
+        inside:
+          kind: function_declaration
+          stopBy: end
+          has:
+            field: name
+            regex: "^ShortcutsPopup$"
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: '<Dialog size="panel" />'
+            selector: jsx_attribute
+          inside:
+            kind: function_declaration
+            stopBy: end
+            has:
+              field: name
+              regex: "^ShortcutsPopup$"
+    - not:
+        has:
+          stopBy: end
+          pattern: SHORTCUTS.map($$$ARGS)
+          inside:
+            kind: function_declaration
+            stopBy: end
+            has:
+              field: name
+              regex: "^ShortcutsPopup$"
+    - not:
+        has:
+          stopBy: end
+          kind: function_declaration
+          has:
+            field: name
+            regex: "^ShortcutsPopup$"

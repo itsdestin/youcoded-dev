@@ -1,0 +1,36 @@
+id: run-in-terminal-chunked-write
+language: typescript
+severity: error
+message: >-
+  A shell session's initial command must go to the PTY worker as
+  send({ type: 'input-chunked', data: command }). Windows ConPTY silently
+  truncates a single write over ~600 chars, and the command carries no
+  trailing carriage return, so on the ordinary input path it could land
+  half-typed on the prompt for the user to run.
+note: |
+  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; "the
+  initial command goes out on the chunked channel, not ordinary input"). The
+  retired test asserted session-manager.ts's text contains
+  `send({ type: 'input-chunked', data: command })`. Matched as a real call
+  whose callee ends in `send` (bare, member or optional-chained, as the
+  substring allowed) and whose arguments are exactly that one object, same
+  keys in the same order, whatever the whitespace; a mention only in a
+  comment or string no longer counts.
+files:
+  - "**/src/main/session-manager.ts"
+  - "**/fixtures/run-in-terminal-chunked-write.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: call_expression
+      has:
+        field: function
+        regex: "send$"
+      all:
+        - has:
+            field: arguments
+            pattern:
+              context: "f({ type: 'input-chunked', data: command })"
+              selector: arguments

@@ -1,0 +1,70 @@
+id: voice-worker-uses-shared-sentence-split
+language: typescript
+severity: error
+message: >-
+  voice-worker.ts must import splitAtLastSentenceEnd from
+  '../../shared/voice-types' and keep no copy of the grey/solid rule (no
+  `=== '.'`-style sentence-mark comparison). Two implementations of one promise
+  is how the composer and the phone came to disagree about what is grey — if
+  this fires, delete the copy; do not loosen the rule.
+note: |
+  Invariant source: tests/voice-rehear.test.ts › "the worker imports the shared
+  helper and keeps no copy of the rule" (retired by Plan B, 2026-09-16). The
+  retired case read voice-worker.ts raw and required
+    1. the text `import { splitAtLastSentenceEnd } from '../../shared/voice-types'`
+    2. no match of /===\s*'[.?!]'/ (comments included).
+  Branch 1 (whole file): no value import statement of `splitAtLastSentenceEnd`
+  (not aliased, not `type`) whose source is '../../shared/voice-types'.
+  Differences, both minimal and deliberate: the import is matched as syntax, so
+  other specifiers beside it, double quotes or different spacing still count
+  (the brittleness Plan B removes); and a COMMENT quoting the import no longer
+  satisfies it — a comment imports nothing, and would let a local copy
+  with the same name pass. The type checker holds the other half (the name
+  must exist in shared/voice-types.ts).
+  Branch 2: the DEEPEST node whose raw text matches /===\s*'[.?!]'/ — a
+  comparison, a string or template piece, a regex body, or a comment (the
+  retired read did not strip comments). Same text as before: `!==`, double
+  quotes and a reversed `'.' === ch` were not caught then and are not now.
+  SCOPING: voice-worker.ts only (the file the case read) plus its fixtures.
+files:
+  - "**/src/main/voice/voice-worker.ts"
+  - "**/fixtures/voice-worker-uses-shared-sentence-split.ts"
+  - "**/fixtures/voice-worker-uses-shared-sentence-split-missing.ts"
+utils:
+  shared-split-import:
+    kind: import_statement
+    not: { regex: "^import\\s+type\\b" }
+    all:
+      - has:
+          field: source
+          regex: "^['\"]\\.\\./\\.\\./shared/voice-types['\"]$"
+      - has:
+          stopBy: end
+          kind: import_specifier
+          # not `type splitAtLastSentenceEnd`, not `… as other`
+          not:
+            any:
+              - regex: "^type\\s"
+              - has: { field: alias, regex: "." }
+          has:
+            field: name
+            regex: "^splitAtLastSentenceEnd$"
+  # Kinds that can be the deepest holder of the retired regex's text.
+  mark-text-node:
+    any:
+      - kind: binary_expression
+      - kind: comment
+      - kind: string_fragment
+      - kind: template_string
+      - kind: regex_pattern
+rule:
+  any:
+    # Branch 1 — the shared helper is not imported.
+    - kind: program
+      not:
+        has:
+          matches: shared-split-import
+    # Branch 2 — a sentence-mark comparison: a copy of the rule.
+    - matches: mark-text-node
+      regex: "===\\s*'[.?!]'"
+      not: { has: { regex: "===\\s*'[.?!]'" } }

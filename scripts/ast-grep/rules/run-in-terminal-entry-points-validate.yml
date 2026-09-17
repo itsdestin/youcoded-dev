@@ -1,0 +1,34 @@
+id: run-in-terminal-entry-points-validate
+language: typescript
+severity: error
+message: >-
+  The desktop "Run in terminal" handler must build its shell session through
+  prepareRunInTerminal(command) — the validator that refuses a command
+  carrying a carriage return (which would run itself at the user's prompt)
+  and mints the token createSession demands.
+note: |
+  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; the
+  ipc-handlers.ts half of "both entry points call it"). The retired test
+  asserted ipc-handlers.ts's text contains `prepareRunInTerminal(command)`.
+  Matched as a real call (bare, member or optional-chained callee), whatever
+  the whitespace; a mention only in a comment or string no longer counts —
+  a comment is not a call. Twin: run-in-terminal-entry-points-validate-remote
+  (the remote-server.ts half, which needs a different argument).
+files:
+  - "**/src/main/ipc-handlers.ts"
+  - "**/fixtures/run-in-terminal-entry-points-validate.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: call_expression
+      has:
+        field: function
+        regex: "prepareRunInTerminal$"
+      all:
+        - has:
+            field: arguments
+            pattern:
+              context: "f(command)"
+              selector: arguments

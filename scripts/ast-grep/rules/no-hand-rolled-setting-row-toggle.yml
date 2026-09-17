@@ -1,0 +1,129 @@
+id: no-hand-rolled-setting-row-toggle
+language: tsx
+severity: error
+message: >-
+  A label with a switch beside it is a
+  <SettingRow variant="item" control={<Toggle …/>} />. This <Toggle> is not in
+  a control slot. If the row genuinely is not a settings row, add its file to
+  TOGGLES_OUTSIDE_A_ROW in tests/setting-row-authority.test.tsx with the
+  reason and a count, and to this rule's ignores:.
+  If this file sits in a new components/ subfolder, which inScopeFiles()
+  (tests/helpers/guard-scope.ts) does not cover, add the folder to this
+  rule's ignores: instead.
+note: |
+  Invariant source: tests/setting-row-authority.test.tsx (Plan B, 2026-09-16;
+  "no in-scope file grows a new hand-rolled toggle row"). The retired test
+  counted `<(Ui)?Toggle\b` in each in-scope file (comments blanked) that was
+  NOT in a control slot, and failed on any count for a file outside its
+  TOGGLES_OUTSIDE_A_ROW table. "In a control slot" was textual: the nearest
+  `control={` before the match, with no `/>` or `</` between the two.
+  SPLIT: the exempted files (the table) are ignored here; their EXACT counts
+  stay a text read in the test ("every exemption still exists and still
+  applies") — "exactly N in this file" is not expressible as a rule.
+  Toggle.tsx (the definition) and SettingRow.tsx (the renderer) were skipped
+  by the retired test and are ignored here too.
+  MATCHED: every node whose own text holds `<Toggle`/`<UiToggle` (word
+  boundary after): a JSX opening or self-closing tag, a string or template
+  piece, a regex body, type arguments/parameters (`Array<Toggle>`), and a
+  `<` comparison whose right operand starts with the name — the occurrence
+  lies in neither operand, so it is the operator touching the name.
+  IN A SLOT: inside a `control={…}` attribute, and neither the node nor any
+  ancestor up to that attribute comes after a sibling that is or holds a
+  closing tag (a self-closing tag, a `</…>`, or a string/regex/JSX text
+  holding `/>` or `</`) — the AST form of "nothing closed since the slot
+  opened". The attribute's own preceding attributes do not count (the
+  textual scan started at `control={`).
+  DELIBERATE DIFFERENCE: the textual scan took the nearest PRECEDING
+  `control={` even when the Toggle was not inside it (`<X control={y}>`
+  followed by `<Toggle/>` among X's children read as "in a slot"); here the
+  Toggle must actually sit inside the attribute.
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(), as in
+  no-hand-rolled-setting-row (see its note for the subdirectory list).
+files:
+  # App.tsx is in inScopeFiles() but exempted (TOGGLES_OUTSIDE_A_ROW), so not listed.
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-hand-rolled-setting-row-toggle.tsx"
+ignores:
+  - "**/*.test.*"
+  # where the switch is defined / rendered (skipped by the retired test)
+  - "**/components/ui/Toggle.tsx"
+  - "**/components/ui/SettingRow.tsx"
+  # exemption-table: TOGGLES_OUTSIDE_A_ROW — exact counts kept as a text read in
+  # tests/setting-row-authority.test.tsx; check.sh fails if this block and that table differ.
+  - "**/components/SessionStrip.tsx"
+  - "**/components/SettingsPanel.tsx"
+  - "**/components/SyncPanel.tsx"
+  - "**/components/ProvidersSection.tsx"
+  - "**/components/SyncSetupWizard.tsx"
+  - "**/components/ResumeBrowser.tsx"
+  - "**/components/ResumeOptions.tsx"
+  - "**/components/CloseSessionPrompt.tsx"
+  # out of the guard's scope
+  - "**/components/development/*/**"
+  - "**/components/ui/*/**"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+utils:
+  control-attr:
+    kind: jsx_attribute
+    regex: "^control=\\{"
+  closes-a-tag:
+    any:
+      - kind: jsx_self_closing_element
+      - kind: jsx_closing_element
+      - all:
+          - any: [{ kind: string_fragment }, { kind: regex_pattern }, { kind: jsx_text }]
+          - regex: "/>|</"
+  after-a-close:
+    follows:
+      stopBy: end
+      any:
+        - matches: closes-a-tag
+        - has: { stopBy: end, matches: closes-a-tag }
+  names-toggle:
+    any:
+      - kind: jsx_opening_element
+        regex: "^<(Ui)?Toggle\\b"
+      - kind: jsx_self_closing_element
+        regex: "^<(Ui)?Toggle\\b"
+      - any: [{ kind: string_fragment }, { kind: regex_pattern }]
+        regex: "<(Ui)?Toggle\\b"
+      - any: [{ kind: type_arguments }, { kind: type_parameters }]
+        regex: "^<(Ui)?Toggle\\b"
+      - kind: binary_expression
+        regex: "<(Ui)?Toggle\\b"
+        has: { field: right, regex: "^(Ui)?Toggle\\b" }
+        all:
+          - not: { has: { field: left, regex: "<(Ui)?Toggle\\b" } }
+          - not: { has: { field: right, regex: "<(Ui)?Toggle\\b" } }
+rule:
+  matches: names-toggle
+  not:
+    all:
+      - inside: { stopBy: end, matches: control-attr }
+      - not: { matches: after-a-close }
+      - not:
+          inside:
+            stopBy: { matches: control-attr }
+            all:
+              - not: { matches: control-attr }
+              - matches: after-a-close

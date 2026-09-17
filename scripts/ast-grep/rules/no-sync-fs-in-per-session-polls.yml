@@ -1,0 +1,43 @@
+id: no-sync-fs-in-per-session-polls
+language: typescript
+severity: error
+message: >-
+  ipc-handlers.ts's per-session polls — buildStatusData (status push, every
+  10 s), readTopicFile (topic name, every 2 s), startPolling and
+  attachTopicWatch — must never call a blocking fs.*Sync: they run for every
+  open session on a timer, on the main process.
+note: |
+  Invariant source: tests/main-hot-path-no-sync-fs.test.ts on origin/master
+  (added by the 2026-09-16 smoothness sweep, Batch C, after Plan B had
+  already retired that file on its branch). Ported by the Plan B close-out
+  merge, 2026-09-17 ("merge port" rows in
+  docs/archive/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
+  Case: "the three per-session polls: status push (10 s), topic name (2 s),
+  transcript safety poll (2 s)" — its ipc-handlers.ts half (the transcript
+  poll half is no-sync-fs-in-transcript-global-poll, a different file). The
+  four are function declarations nested inside the handler registration.
+  Fires at the `program` level on an fs.*Sync call inside any of them, or
+  when any of them is gone (the retired methodBody() presence check).
+files:
+  - "**/src/main/ipc-handlers.ts"
+  - "**/fixtures/no-sync-fs-in-per-session-polls.ts"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          all:
+            - has: { field: object, regex: "^fs$" }
+            - has: { field: property, regex: "Sync$" }
+        inside:
+          stopBy: end
+          kind: function_declaration
+          has: { field: name, regex: "^(buildStatusData|readTopicFile|startPolling|attachTopicWatch)$" }
+    - not: { has: { stopBy: end, kind: function_declaration, has: { field: name, regex: "^buildStatusData$" } } }
+    - not: { has: { stopBy: end, kind: function_declaration, has: { field: name, regex: "^readTopicFile$" } } }
+    - not: { has: { stopBy: end, kind: function_declaration, has: { field: name, regex: "^startPolling$" } } }
+    - not: { has: { stopBy: end, kind: function_declaration, has: { field: name, regex: "^attachTopicWatch$" } } }

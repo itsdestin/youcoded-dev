@@ -1,0 +1,47 @@
+id: mascot-rig-raf-only-for-drag
+language: tsx
+severity: error
+message: >-
+  MascotRig runs requestAnimationFrame ONLY for the drag-gated chain
+  (rafTick) and its idle sway from setInterval — an unconditional rAF self-
+  chain would present 180 frames/s of ambient sway forever.
+note: |
+  Invariant source: tests/animation-css-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "MascotRig runs rAF only for the drag chain, idle from an interval").
+  The retired regex `requestAnimationFrame\(\s*(\w+)` looked only at calls
+  whose first argument starts with a word character (an inline arrow was not
+  captured); every captured name had to be exactly rafTick, and at least one had
+  to exist. Line comments were not stripped by that read; a line comment with a
+  non-rafTick call shape is matched here too.
+  FIX (review round 2, 2026-09-16): the retired regex found `requestAnimationFrame(`
+  as a SUBSTRING anywhere — it does not care what (if anything) precedes it — so
+  `window.requestAnimationFrame(x)` counted too. The function-field check dropped
+  its `^` anchor (now matches a bare identifier OR a member expression ending in
+  `.requestAnimationFrame`, never a longer name like `myRequestAnimationFrame`),
+  and the "at least one rafTick call exists" presence branch now accepts either
+  `requestAnimationFrame(rafTick)` or `window.requestAnimationFrame(rafTick)`.
+files:
+  - "**/src/renderer/components/mascot/MascotRig.tsx"
+  - "**/fixtures/mascot-rig-raf-only-for-drag.tsx"
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has: { field: function, regex: "(^|\\.)requestAnimationFrame$" }
+        - has:
+            field: arguments
+            has:
+              nthChild: 1
+              regex: "^\\w"
+              not: { regex: "^rafTick\\b" }
+    - all:
+        - kind: comment
+        - not: { regex: "^/\\*" }
+        - regex: "requestAnimationFrame\\(\\s*\\w"
+        - not: { regex: "requestAnimationFrame\\(\\s*rafTick\\b" }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "setInterval($$$)" } }
+        - not:
+            any:
+              - has: { stopBy: end, pattern: "requestAnimationFrame(rafTick)" }
+              - has: { stopBy: end, pattern: "window.requestAnimationFrame(rafTick)" }

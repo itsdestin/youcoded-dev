@@ -1,0 +1,33 @@
+id: danger-zone-has-danger-callout
+language: tsx
+severity: error
+message: >-
+  Each settings danger zone (SettingsPanel, AccountSection, LocalModelsSection)
+  states its consequence in a danger callout: a <Callout … tone="danger"> tag.
+  The three zones used to hold that sentence in three different containers (a
+  raw red span, a bare <p>, a bordered box) — K9's shape is the one callout.
+note: |
+  Invariant source: tests/status-strip-authority.test.tsx (Plan B,
+  2026-09-16; "every danger zone states its consequence in a danger
+  callout"). The retired case required `<Callout[^>]*tone="danger"` in each
+  of the three files with comments blanked. Here: the file must hold a JSX
+  opening or self-closing tag whose name starts with `Callout` carrying a
+  `tone="danger"` attribute. DELIBERATE DIFFERENCES: the tag must be real
+  JSX (a string or template quoting it no longer counts), and an attribute
+  holding `>` before tone (`onClose={() => …}`) no longer hides it.
+files:
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/src/renderer/components/AccountSection.tsx"
+  - "**/src/renderer/components/LocalModelsSection.tsx"
+  - "**/fixtures/danger-zone-has-danger-callout.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      any:
+        - kind: jsx_opening_element
+        - kind: jsx_self_closing_element
+      all:
+        - has: { field: name, regex: "^Callout" }
+        - has: { kind: jsx_attribute, regex: "tone=\"danger\"" }

@@ -1,0 +1,151 @@
+id: shell-session-permission-cycle-guarded
+language: tsx
+severity: error
+message: >-
+  App.tsx's cyclePermission must refuse a shell session —
+  `if (sessionsRef.current.find((x) => x.id === sessionId)?.provider === 'shell') return;`
+  — BEFORE its raw sendInput(sessionId, '\x1b[Z'). That write bypasses
+  canPtySend, so without the guard a Shift+Tab in a shell session types an
+  escape sequence at the user's own prompt.
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  "the permission cycle refuses a shell session"). The retired case sliced
+  App.tsx from the FIRST `const cyclePermission =` to the first
+  `sendInput(sessionId, '\x1b[Z')` after it and asserted the slice holds the
+  guard line.
+  MATCHED: (a) the file has no `const cyclePermission = …` declaration (the
+  retired slice was then empty); (b) inside the FIRST such declaration, a
+  call whose callee ends in `sendInput` with arguments exactly
+  `(sessionId, '\x1b[Z')` that does not come after the guard statement —
+  "after" meaning the call or an ancestor up to the declaration follows a
+  sibling that is or holds the guard; (c) the FIRST declaration holds neither
+  that write nor the guard, and the retired slice would fail: there is no
+  raw write after the declaration at all, or one after it does not come
+  after a guard that is itself after the declaration (the write moved to a
+  later helper and the guard was deleted — the retired slice ran on to that
+  write and failed). When the guard moved WITH the write (the later helper
+  checks for a shell before writing) (c) stays silent, as the retired slice
+  did (review of u8 re-review, 2026-09-16). "After" is document order, via
+  siblings of the node or its ancestors — the same order the text slice
+  used, so once the first later write is guarded every later one is too.
+  A first declaration that keeps the guard but writes elsewhere stays silent,
+  as the retired slice did.
+  DELIBERATE DIFFERENCES: the guard must be a real statement (a comment
+  quoting it no longer counts), and a cyclePermission with NO such write
+  inside it does not fire while it keeps the guard — the retired slice then
+  also passed.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/shell-session-permission-cycle-guarded*.tsx"
+utils:
+  cycle-decl:
+    kind: lexical_declaration
+    regex: "^const\\s"
+    has:
+      kind: variable_declarator
+      has: { field: name, regex: "^cyclePermission$" }
+  shell-guard:
+    pattern: "if (sessionsRef.current.find((x) => x.id === sessionId)?.provider === 'shell') return;"
+  after-the-guard:
+    follows:
+      stopBy: end
+      any:
+        - matches: shell-guard
+        - has: { stopBy: end, matches: shell-guard }
+  after-an-earlier-cycle-decl:
+    any:
+      - follows:
+          stopBy: end
+          any:
+            - matches: cycle-decl
+            - has: { stopBy: end, matches: cycle-decl }
+      - inside:
+          stopBy: end
+          follows:
+            stopBy: end
+            any:
+              - matches: cycle-decl
+              - has: { stopBy: end, matches: cycle-decl }
+      - inside: { stopBy: end, matches: cycle-decl }
+  # WHY ordered `all:` lists here and below (review of u10, 2026-09-16): a rule
+  # object's fields have no guaranteed order, and the position checks
+  # (after-an-earlier-cycle-decl) walk the whole file — so when they ran before
+  # the cheap shape check they ran for EVERY call/if in App.tsx. The guard moved
+  # together with the write into a later helper took ~10 s on one App.tsx copy
+  # (16–20 s under load); with the cheap check first it takes ~1.2 s, and every
+  # probe gives the same findings as before.
+  # A guard somewhere after the start of a cyclePermission declaration.
+  guard-after-decl:
+    all:
+      - kind: if_statement
+      - matches: shell-guard
+      - matches: after-an-earlier-cycle-decl
+  after-a-later-guard:
+    follows:
+      stopBy: end
+      any:
+        - matches: guard-after-decl
+        - has: { stopBy: end, matches: guard-after-decl }
+  # A raw write after a declaration with no such guard before it (the node or
+  # any ancestor follows the guard).
+  unguarded-later-write:
+    all:
+      - kind: call_expression
+      - matches: raw-shift-tab
+      - matches: after-an-earlier-cycle-decl
+      - not:
+          any:
+            - matches: after-a-later-guard
+            - inside: { stopBy: end, matches: after-a-later-guard }
+  raw-shift-tab:
+    kind: call_expression
+    has: { field: function, regex: "sendInput$" }
+    all:
+      - has:
+          field: arguments
+          pattern:
+            context: "f(sessionId, '\\x1b[Z')"
+            selector: arguments
+rule:
+  any:
+    - kind: program
+      not: { has: { stopBy: end, matches: cycle-decl } }
+    # WHY (review of u8, 2026-09-16): the raw write moved into a helper declared
+    # AFTER cyclePermission, with the guard deleted, left branch (b) nothing to
+    # match — but the retired slice then ran on to that later write and failed
+    # for the missing guard. (c) the FIRST declaration holds neither the raw
+    # write nor the guard.
+    # WHY the extra condition (re-review of u8, 2026-09-16): a later helper that
+    # checks for a shell before writing kept the retired slice green — (c)
+    # fires only when there is no write after the declaration, or the first
+    # one is unguarded.
+    - matches: cycle-decl
+      not:
+        any:
+          - matches: after-an-earlier-cycle-decl
+          - has: { stopBy: end, matches: raw-shift-tab }
+          - has: { stopBy: end, matches: shell-guard }
+      inside:
+        stopBy: end
+        kind: program
+        any:
+          - has: { stopBy: end, matches: unguarded-later-write }
+          - not:
+              has:
+                stopBy: end
+                all:
+                  - matches: raw-shift-tab
+                  - matches: after-an-earlier-cycle-decl
+    - matches: raw-shift-tab
+      inside:
+        stopBy: end
+        matches: cycle-decl
+        not: { matches: after-an-earlier-cycle-decl }
+      not:
+        any:
+          - matches: after-the-guard
+          - inside:
+              stopBy: { matches: cycle-decl }
+              all:
+                - not: { matches: cycle-decl }
+                - matches: after-the-guard

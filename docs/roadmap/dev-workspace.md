@@ -205,6 +205,41 @@ seen-on is always n/a here.
       timing logic behind an injectable clock
       `n/a` `needs-verify` `checked 2026-07-22`
 
+- [ ] The renderer's own copy of the bridge type can drift from the real bridge with every check
+      green: `renderer/hooks/useIpc.ts` hand-writes `window.claude.session` and `.on`, while
+      preload.ts and remote-shim.ts are now checked against `SessionBridge`/`BridgeListeners` in
+      `shared/bridge-types.ts` (Plan B, which retired `shim-parity.test.ts`). A member added to both
+      bridges but not to useIpc.ts is invisible to typed callers, and a member useIpc.ts claims
+      but neither bridge has typechecks and crashes at run time. Fix: build useIpc.ts's
+      `session`/`on` from those shared types (export them again first — they are file-local
+      so knip's unused-export ratchet stays green)
+      `n/a` `confirmed` `checked 2026-09-17`
+
+- [ ] The voice install's "runs no other program" guard does not ban every way to start one. The
+      ast-grep rule `voice-assets-runs-no-other-program` bans `execFile`, `execFileSync`, `spawn`,
+      `spawnSync` and `exec` calls, and oxlint bans importing `child_process`; `execSync` and
+      `fork` were never on the call list (not in the retired test either), and a
+      `require('child_process')` call gets past the import ban. Whether to widen it is Destin's
+      call — a stricter ban may also catch a harmless helper later
+      `n/a` `decision` `checked 2026-09-17`
+
+- [ ] Source-grep sweep, round 2: tests the 2026-09 inventory missed. Plan B converted or deleted
+      its 114 classified files, but 26 more tests still read app source as text and were never
+      classified. (a) Found once the inventory learned to follow a path held in a variable
+      (2026-09-17): buddy-position-source, buddy-title-guard, claude-specialist-default-parity,
+      ipc-error, remote-devices-channels, remote-password-always-required, remote-recovery,
+      remote-setup-flow, remote-status-channel, rocm-prereqs, session-drawer-deleted-toggle,
+      statusline-context-remaining, transcript-page-channel-parity, transcript-reducer,
+      update-install-ipc, voice-service. (b) Added after the classification snapshot:
+      harness-eval-not-shipped, hook-scripts-android-parity, infinite-animation-allowlist,
+      line-budgets, prompt-git-snapshot-precomputed, session-strip-layout-effects-have-deps,
+      visible-intervals, no-bare-disclosure, claude-settings, launch-settings-chores. (c) infinite-animation-allowlist keeps its own
+      exception list (`SMOOTH_OK`) beside the `no-unstepped-infinite-animation` generator's own
+      (`EXEMPT`); `check.sh` does not pair the two, so an exemption added to one can silently disagree
+      with the other. Classify each file (rule, split, keep with a reason, or delete) the way
+      Plan B did; the live list is `node scripts/test-inventory.mjs` section 3
+      `n/a` `confirmed` `checked 2026-09-17`
+
 ## rigs
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit

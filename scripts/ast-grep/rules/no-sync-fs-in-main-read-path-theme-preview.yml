@@ -1,0 +1,55 @@
+id: no-sync-fs-in-main-read-path-theme-preview
+language: typescript
+severity: error
+message: >-
+  buildPreviewHTML must never call a blocking fs.*Sync — Task 2
+  (perf/main-thread-async-reads) converted this path off fs.*Sync so
+  regenerating a theme's preview image after editing its wallpaper/pattern
+  can no longer freeze Electron's main thread.
+note: |
+  Invariant source: tests/main-read-path-no-sync-fs.test.ts (retired by Plan
+  B, 2026-09-16; case 2 of 4 — "theme-preview-generator buildPreviewHTML").
+  Fires two ways at the whole-file (`program`) level: (a) an fs.*Sync call
+  found inside buildPreviewHTML, or (b) buildPreviewHTML is gone entirely —
+  the retired test's own `slice()` helper asserted the start/end markers were
+  found (`toBeGreaterThan(-1)` / `toBeGreaterThan(start)`); a bare
+  `inside:`-scoped rule with no existence branch would silently stop
+  guarding that once the function is renamed or removed.
+  FIX (Plan B close-out, 2026-09-17): the ban used to be
+  `pattern: fs.$METHOD($$$ARGS)` inside a `has:` plus a top-level
+  `constraints: METHOD: Sync$`. ast-grep checks constraints only after the
+  whole rule has matched, and a `has:` stops at the FIRST `fs.X(...)` call it
+  finds — so a harmless `fs.watch(...)` or `fs.createReadStream(...)` ahead
+  of a real `fs.readFileSync(...)` failed the constraint and silenced the
+  WHOLE rule, including its "still exists" branches (found while porting
+  master's hot-path cases: an inverted ipc-handlers.ts did not fire). The
+  ban now matches the call's shape directly (object `fs`, property ending
+  `Sync`) with no constraint, so every call is judged on its own.
+files:
+  - "**/src/main/theme-preview-generator.ts"
+  - "**/fixtures/no-sync-fs-in-main-read-path-theme-preview.ts"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          all:
+            - has: { field: object, regex: "^fs$" }
+            - has: { field: property, regex: "Sync$" }
+        inside:
+          kind: function_declaration
+          stopBy: end
+          has:
+            field: name
+            regex: "^buildPreviewHTML$"
+    - not:
+        has:
+          stopBy: end
+          kind: function_declaration
+          has:
+            field: name
+            regex: "^buildPreviewHTML$"

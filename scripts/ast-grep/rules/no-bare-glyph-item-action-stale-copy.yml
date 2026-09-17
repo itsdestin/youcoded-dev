@@ -1,0 +1,58 @@
+id: no-bare-glyph-item-action-stale-copy
+language: tsx
+severity: error
+message: >-
+  No in-menu copy tells the user to press a control that was removed. Change
+  41 (K6) deleted the ✕ next to each connected device, but the Remote Access
+  explainer still read "Use the ✕ next to a device under Connected Devices to
+  disconnect it." — help text naming a control that no longer exists. Name
+  the button by its label, not by a glyph that may be replaced.
+note: |
+  Invariant source: tests/item-list-authority.test.ts (retired by Plan B,
+  2026-09-16; case 4 of 4 — "no in-menu copy tells the user to press a
+  control that was removed"). Same SCOPING as no-bare-glyph-item-action,
+  including that rule's FIX (review of batch B, 2026-09-16): a single `*`
+  in this ast-grep's `files:` glob crosses `/` (measured empirically), so
+  `ignores:` lists every current components/ subdirectory
+  tests/helpers/guard-scope.ts's inScopeFiles() does NOT walk, plus
+  `**/*.test.tsx`, rather than relying on a bare `components/*.tsx` glob to
+  stay non-recursive.
+  Matches both `jsx_text` (copy rendered directly as JSX children) and
+  `string_fragment`/`template_string` (copy held in a string or template
+  literal constant) with the same regex the retired test used —
+  `/(Use|Tap|Click|Press) the ✕/`.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-bare-glyph-item-action-stale-copy.tsx"
+ignores:
+  - "**/*.test.tsx"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+rule:
+  any:
+    - kind: jsx_text
+      regex: "(Use|Tap|Click|Press) the ✕"
+    - kind: string_fragment
+      regex: "(Use|Tap|Click|Press) the ✕"
+    - kind: template_string
+      regex: "(Use|Tap|Click|Press) the ✕"

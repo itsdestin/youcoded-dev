@@ -1,0 +1,36 @@
+id: no-hardcoded-z-index-or-scrim
+language: tsx
+severity: error
+message: >-
+  ProjectView must render at the shared screen layer (`fixed inset-0
+  bg-canvas z-40`), never a hardcoded band value. Change 26: Marketplace,
+  Library and ProjectView are ONE layer. At the old z-[8000] a
+  Toast/ContextMenu/AnchorTip fired while Projects was open, painted
+  underneath it, and was silently swallowed.
+note: |
+  Invariant source: tests/overlay-layer-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 5 — "ProjectView renders at the shared screen layer,
+  not above overlays"). Fires two ways at the whole-file (`program`) level:
+  (a) z-[8000] present anywhere (banned), or (b) the required class combo is
+  missing. Also matches `template_string` alongside `string_fragment` for
+  the ban, in case a className is ever built with a template literal — a
+  `${…}` substitution inside one can split a class list a flat regex would
+  otherwise have read as one contiguous string.
+files:
+  - "**/src/renderer/components/project-view/ProjectView.tsx"
+  - "**/fixtures/no-hardcoded-z-index-or-scrim.tsx"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        any:
+          - kind: string_fragment
+            regex: "z-\\[8000\\]"
+          - kind: template_string
+            regex: "z-\\[8000\\]"
+    - not:
+        has:
+          stopBy: end
+          kind: string_fragment
+          regex: "fixed inset-0 bg-canvas z-40"

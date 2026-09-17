@@ -1,0 +1,32 @@
+id: run-in-terminal-entry-points-validate-remote
+language: typescript
+severity: error
+message: >-
+  The remote "Run in terminal" message must build its shell session through
+  prepareRunInTerminal(payload?.command ?? payload) — the command arrives in
+  a WebSocket frame a remote browser controls, and the validator is what
+  refuses one carrying a carriage return.
+note: |
+  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; the
+  remote-server.ts half of "both entry points call it"). The retired test
+  asserted remote-server.ts's text contains
+  `prepareRunInTerminal(payload?.command ?? payload)`. Matched as a real call,
+  as in run-in-terminal-entry-points-validate (see its note).
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/run-in-terminal-entry-points-validate-remote.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: call_expression
+      has:
+        field: function
+        regex: "prepareRunInTerminal$"
+      all:
+        - has:
+            field: arguments
+            pattern:
+              context: "f(payload?.command ?? payload)"
+              selector: arguments

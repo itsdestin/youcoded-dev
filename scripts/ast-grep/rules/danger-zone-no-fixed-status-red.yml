@@ -1,0 +1,35 @@
+id: danger-zone-no-fixed-status-red
+language: tsx
+severity: error
+message: >-
+  A settings danger zone never uses the fixed status red `[#DD4444]` — use the
+  `destructive` token, so a theme pack that restyles the toggle also restyles
+  the sentence explaining what it does (change 17).
+note: |
+  Invariant source: tests/status-strip-authority.test.tsx (Plan B,
+  2026-09-16; "no danger-zone consequence rides the fixed status red").
+  Scoped, as the retired case was, to the three danger-zone files only —
+  #DD4444 survives in ~20 other places app-wide (change 17's unfinished
+  business). The retired case tested `\[#DD4444\]` against each file's whole
+  text with comments blanked. `[#DD4444]` is one unbroken run of characters,
+  so it can only sit inside a string or template piece (a className string
+  included), a template, JSX text or a regex body; the rule fires on the
+  smallest such node holding it. A comment never fires.
+files:
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/src/renderer/components/AccountSection.tsx"
+  - "**/src/renderer/components/LocalModelsSection.tsx"
+  - "**/fixtures/danger-zone-no-fixed-status-red.tsx"
+utils:
+  listed:
+    any:
+      - kind: string_fragment
+      - kind: template_string
+      - kind: jsx_text
+      - kind: regex_pattern
+rule:
+  all:
+    - regex: "\\[#DD4444\\]"
+    - matches: listed
+    - not:
+        has: { stopBy: end, matches: listed, regex: "\\[#DD4444\\]" }

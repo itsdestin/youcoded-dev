@@ -1,0 +1,63 @@
+id: section-label-canonical-classes
+language: tsx
+severity: error
+message: >-
+  A section label spells its recipe exactly one way: "text-3xs font-medium
+  text-fg-muted tracking-wider uppercase". Before this, the same four classes
+  shipped in SIX different orders across ~90 sites — Tailwind class order is
+  semantically irrelevant but textually decisive, so a future site typing
+  them in a new order renders identically and only shows up as drift.
+note: |
+  Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 3 — "every section label spells the recipe the same
+  way"). SCOPED TO text-3xs classes carrying uppercase + a tracking-wid* token
+  + text-fg-muted/text-fg-dim, exactly like the retired test's isSectionLabel().
+  EXEMPT (mirrors the retired test's isExempt(), carried here as `not:`
+  branches rather than `ignores:` because the exemption is about the CLASS
+  STRING'S own content, not the file it's in): a string containing
+  `hover:text-fg` (interactive affordance, not a label); a string containing
+  `rounded-full` (a chip, not a heading); a string containing BOTH `bg-inset`
+  AND `border` (a chip with its own surface).
+  SCOPE FIX (review, 2026-09-16 — corrects the batch report's framing):
+  the retired test extracted candidate strings with
+  `src.matchAll(/"([^"\n]*)"/g)` — DOUBLE-QUOTED string literals only. That
+  regex never matches a template literal's interior (verified empirically,
+  scratch probe 2026-09-16: `` `${fullW} text-3xs uppercase tracking-wider
+  text-fg-muted ...` `` in FilesTab.tsx real-world matched the token check
+  but was never in the retired test's scope) AND never matches a
+  SINGLE-quoted string either — both are the same narrowness (the regex's
+  literal `"` delimiters), not two separate concerns. This rule now mirrors
+  it with ONE positive constraint, `inside: { kind: string, regex: "^\"" }`
+  (string_fragment's immediate parent must be a `string` node whose own text
+  starts with `"`) — which excludes template-literal interiors for free
+  (their parent is `template_string`, a different kind) and additionally
+  excludes single-quoted strings, per global.md's "don't be stricter than
+  the test" guidance. The real fired site (SettingsPanel.tsx:679, a JSX
+  `className="..."` attribute) is double-quoted, so this costs nothing
+  there; see section-label-canonical-classes-ts for why its `.ts` twin does
+  NOT carry this same restriction.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/section-label-canonical-classes.tsx"
+ignores:
+  - "**/src/renderer/**/*.test.tsx"
+rule:
+  kind: string_fragment
+  inside:
+    kind: string
+    regex: "^\""
+  all:
+    - regex: "\\btext-3xs\\b"
+    - regex: "\\buppercase\\b"
+    - regex: "tracking-wid"
+    - regex: "text-fg-(muted|dim)"
+    - not:
+        regex: "text-3xs font-medium text-fg-muted tracking-wider uppercase"
+    - not:
+        regex: "hover:text-fg"
+    - not:
+        regex: "(^|\\s)rounded-full(\\s|$)"
+    - not:
+        all:
+          - regex: "(^|\\s)bg-inset(\\s|$)"
+          - regex: "(^|\\s)border(\\s|$)"

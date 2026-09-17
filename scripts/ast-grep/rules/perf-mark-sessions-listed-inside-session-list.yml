@@ -1,0 +1,46 @@
+id: perf-mark-sessions-listed-inside-session-list
+language: tsx
+severity: error
+message: >-
+  App.tsx must mark 'yc:app-mounted' and 'yc:sessions-listed', and the
+  sessions-listed mark must sit inside the MOUNT-time
+  `window.claude.session.list().then(...)` — never inside the
+  onConnectionModeChange reload handler's own session.list() call. App.tsx has
+  two session.list() call sites (mount fetch, and the local<->remote reload);
+  only the first is startup, and the perf-lab rig (youcoded-dev/scripts/perf-lab)
+  needs the mark to stay pinned to that one.
+note: |
+  Invariant source: tests/perf-marks-renderer.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 3 — "App.tsx marks mount and sessions-listed" — and
+  case 3 of 3 — "sessions-listed marks the MOUNT-time session.list, not the
+  connection-mode reload"). The retired test used byte-distance
+  (`mark - listBefore < 400`) and file position (`modeChangeHandler >
+  mark`) as proxies for "same .then() body" and "not the reload's handler";
+  this rule expresses both proxies structurally instead: the sessions-listed
+  mark must be `inside` a call matching
+  `window.claude.session.list().then($CB)` (the proximity proxy), and must
+  NOT be `inside` a call matching `onConnectionModeChange($HANDLER)` (the
+  position proxy — the reload path calls the identical
+  `window.claude.session.list().then(...)` shape, so this second branch is
+  what actually distinguishes the two call sites).
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/perf-mark-sessions-listed-inside-session-list.tsx"
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "performance.mark('yc:app-mounted')" } }
+    - not: { has: { stopBy: end, pattern: "performance.mark('yc:sessions-listed')" } }
+    - has:
+        stopBy: end
+        pattern: "performance.mark('yc:sessions-listed')"
+        inside:
+          stopBy: end
+          pattern: "onConnectionModeChange($HANDLER)"
+    - not:
+        has:
+          stopBy: end
+          pattern: "performance.mark('yc:sessions-listed')"
+          inside:
+            stopBy: end
+            pattern: "window.claude.session.list().then($CB)"

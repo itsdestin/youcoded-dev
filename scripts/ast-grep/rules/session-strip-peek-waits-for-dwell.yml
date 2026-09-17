@@ -1,0 +1,33 @@
+id: session-strip-peek-waits-for-dwell
+language: tsx
+severity: error
+message: >-
+  A hover peek opens only after the hand rests on the dot (PEEK_DWELL_MS =
+  150, setHoveredId(id) last in the enterTimer callback), an already-open
+  peek follows the cursor at once, and handleLeave cancels a pending peek
+  (clearTimeout(enterTimer.current)). A hand drifting after a drop opened
+  the next dot's peek and the row jumped (R8).
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "opens a hover peek only after the hand rests on the dot — never in passing").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-peek-waits-for-dwell.tsx"
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "const PEEK_DWELL_MS = 150" } }
+    - not:
+        has:
+          stopBy: end
+          pattern: "enterTimer.current = setTimeout($CB, PEEK_DWELL_MS)"
+          has:
+            stopBy: end
+            kind: statement_block
+            inside: { kind: arrow_function }
+            has: { nthChild: { position: 1, reverse: true }, pattern: "setHoveredId(id);" }
+    - not: { has: { stopBy: end, pattern: "if (hoveredRef.current !== null) { setHoveredId(id); return; }" } }
+    - not:
+        has:
+          stopBy: end
+          pattern: "const handleLeave = useCallback($CB, $$$DEPS)"
+          has: { stopBy: end, pattern: "clearTimeout(enterTimer.current)" }

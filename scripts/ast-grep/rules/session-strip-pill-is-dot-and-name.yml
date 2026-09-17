@@ -1,0 +1,54 @@
+id: session-strip-pill-is-dot-and-name
+language: tsx
+severity: error
+message: >-
+  A session pill carries only the dot and the name — no runtime badge
+  (session-pill__badge / runtimeBadgeLabel / badgeArmed; Destin: "eliminate
+  the 'youcoded - coder' tags"). The runtime lives in the All Sessions menu
+  (sessionRuntimeLabel(s) + <ProviderIcon icon={rt.icon}>), and the packer
+  budgets exactly the label box (pillMetrics(s.name, measure, font),
+  expandedWidth: metrics.get(s.id)…).
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "puts nothing but the dot and the name on a pill — the runtime lives in the menu").
+  The stylesheet half (no session-pill__badge / badge-in in globals.css) stays a
+  text read in the test.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-pill-is-dot-and-name.tsx"
+utils:
+  # A leaf token of the file as the retired test's `read()` saw it: every
+  # string/template fragment, JSX text, identifier kind and LINE comment.
+  # Block comments are excluded — read() deleted them before matching.
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: jsx_text
+      - kind: identifier
+      - kind: property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+      - all:
+          - kind: comment
+          - not: { regex: "^/\\*" }
+rule:
+  any:
+    - matches: code-leaf
+      regex: "session-pill__badge|runtimeBadgeLabel|badgeArmed"
+      not: { has: { regex: "session-pill__badge|runtimeBadgeLabel|badgeArmed" } }
+    - kind: program
+      any:
+        - not: { has: { stopBy: end, pattern: "sessionRuntimeLabel(s)" } }
+        - not:
+            has:
+              stopBy: end
+              any:
+                - kind: jsx_self_closing_element
+                - kind: jsx_opening_element
+              all:
+                - has: { field: name, regex: "^ProviderIcon$" }
+                - has: { kind: jsx_attribute, regex: "^icon=\\{rt\\.icon\\}$" }
+        - not: { has: { stopBy: end, pattern: "pillMetrics(s.name, measure, font)" } }
+        - not: { has: { stopBy: end, kind: pair, regex: "^expandedWidth: metrics\\.get\\(s\\.id\\)" } }

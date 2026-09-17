@@ -1,0 +1,37 @@
+id: no-hardcoded-z-index-or-scrim-scrim
+language: tsx
+severity: error
+message: >-
+  No renderer component hand-rolls a scrim (bg-black/N in a className).
+  UnsavedChangesDialog's `fixed inset-0 z-50 ... bg-black/40` shipped
+  uncaught (PR #298 review) precisely because the retired test only scanned
+  specific named files before this repo-wide case was added. Use
+  <Scrim layer={1|2|3|4}> from components/overlays/Overlay.tsx (+
+  <OverlayPanel> for the panel) — theme-tinted var(--scrim), never cold
+  bg-black.
+note: |
+  Invariant source: tests/overlay-layer-authority.test.ts (retired by Plan B,
+  2026-09-16; case 4 of 5 — "no renderer component hand-rolls a scrim").
+  Repo-wide recursive scope over the whole renderer tree, `.tsx` files — see
+  no-hardcoded-z-index-or-scrim-scrim-ts for the `.ts` twin (same gap as the
+  9000-band rule's twin: a `tsx`-language rule cannot see `.ts` files, and
+  the retired test's `walk()` read both extensions). Matches
+  `template_string` alongside `string_fragment` for the same reason:
+  appliedClassNames() in the retired test explicitly extracted BOTH
+  `className="..."` and `` className={`...`} `` before regexing, so a class
+  built with a template literal is in scope too.
+  The retired test's own non-vacuity self-checks inside this same `it(...)`
+  block (assertScopeIsPopulated, assertPatternMatches against a known
+  scrim string) are superseded by this rule's fixture pass in check.sh —
+  they were never a separate `it(...)` case, so nothing is dropped by name.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/no-hardcoded-z-index-or-scrim-scrim.tsx"
+ignores:
+  - "**/*.test.tsx"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "bg-black/\\d+"
+    - kind: template_string
+      regex: "bg-black/\\d+"

@@ -57,12 +57,23 @@ for (const f of files) {
 // --- 3. files that read source as text
 const grepRe = [
   /readStripped|helpers\/guard-scope/,
-  /__dirname,\s*'\.\.',?\s*'(\.\.|src|shared|scripts|docs|assets)'/,
+  /__dirname,\s*'\.\.',?\s*'(\.\.|src|shared|scripts|docs|assets|hook-scripts)'/,
   /__dirname,\s*'\.\.\/(\.\.\/)?(src|shared|scripts|docs|assets|package|electron)/,
   /__dirname\}\/\.\.\/(\.\.\/)?(src|shared|scripts|docs)/,
   /electron-builder\.yml/,
   /new URL\('\.\.\/(\.\.\/)?(src|shared|scripts|docs|package|electron)/,
   /(cwd\(\)|resolve)\([^)]*'(\.\.\/)*(src|shared|scripts|docs)\//,
+  // WHY the four below (2026-09-17): the literal patterns above only see a path
+  // spelled out at the read site. The Task 7 review found a dozen tests that
+  // read source through a small helper, where the path arrives as a variable —
+  // `read('../src/x.ts')` over `readFileSync(new URL(rel, import.meta.url))` or
+  // `path.join(__dirname, '..', rel)` — and so were missing from section 3.
+  // Each pattern needs the variable to sit where a SOURCE path goes (under the
+  // desktop root), so tests that read their own temp dirs or fixtures stay out.
+  /readFileSync\(\s*new URL\(\s*[A-Za-z_$]/,            // readFileSync(new URL(rel, import.meta.url))
+  /new URL\(\s*'\.\.\/?'\s*,\s*import\.meta\.url/,       // the desktop root as a URL, then a folder walk
+  /__dirname,\s*'\.\.',\s*(\.\.\.)?[A-Za-z_$]/,          // join(__dirname, '..', rel) / (…, ...parts)
+  /readFileSync\(\s*(path\.)?(join|resolve)\(\s*[A-Z_]*ROOT\s*,/, // readFileSync(join(ROOT, rel))
 ];
 const sourceGrep = files.filter((f) => { const s = fs.readFileSync(f, 'utf8'); return grepRe.some((r) => r.test(s)); }).map(rel);
 

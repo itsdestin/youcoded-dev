@@ -1,0 +1,32 @@
+id: iframe-sandbox-requires-allow-scripts
+language: tsx
+severity: error
+message: >-
+  HtmlView's <iframe> must carry a sandbox attribute that includes
+  allow-scripts. Without a sandbox attribute at all — or one that dropped
+  allow-scripts — the preview either fails to run the page's own scripts
+  (breaking previews) or, worse, is not sandboxed at all.
+note: |
+  Invariant source: tests/html-view-sealed.test.ts (retired by Plan B,
+  2026-09-16). FIX (review of batch A, 2026-09-16): the retired test
+  required the sandbox attribute to (a) be PRESENT and (b) contain
+  allow-scripts, in addition to (c) never containing allow-same-origin.
+  iframe-sandbox-no-allow-same-origin only expresses (c) — it matches a
+  `sandbox` jsx_attribute's value, so it cannot fire when the attribute (or
+  the whole allow-scripts token) is simply absent, because there is then
+  nothing for that rule to match. This whole-file (`kind: program`) rule is
+  (a)+(b): scoped to HtmlView.tsx, it fires when no `<iframe>` anywhere in
+  the file has a `sandbox` attribute whose value contains allow-scripts.
+files:
+  - "**/src/renderer/components/artifact-views/HtmlView.tsx"
+  - "**/fixtures/iframe-sandbox-requires-allow-scripts.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: jsx_attribute
+      has:
+        kind: property_identifier
+        regex: "^sandbox$"
+      regex: "allow-scripts"

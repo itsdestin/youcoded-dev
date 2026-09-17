@@ -1,0 +1,26 @@
+id: read-tool-no-blocking-read
+language: typescript
+severity: error
+message: >-
+  The Read tool (harness/tools/read.ts) must never call fs.readFileSync or
+  fs.readdirSync, nor stat its target with fs.statSync(abs) — it runs on the
+  main process several times per turn. The only sync stat allowed is the one
+  inside the missing-file hint (error path, one stat on a different path).
+note: |
+  Invariant source: tests/main-hot-path-no-sync-fs.test.ts on origin/master
+  (added by the 2026-09-16 smoothness sweep, Batch C, after Plan B had
+  already retired that file on its branch). Ported by the Plan B close-out
+  merge, 2026-09-17 ("merge port" rows in
+  docs/archive/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
+  Case: "the model's file tools — Glob's walk, Read, Edit, Write" — its
+  read.ts half: `not.toMatch(/\bfs\.(readFileSync|readdirSync)\s*\(/)` and
+  `not.toMatch(/\bfs\.statSync\(abs\)/)` over the comment-stripped file.
+  Comments naming readFileSync (read.ts has several) do not fire.
+files:
+  - "**/src/main/harness/tools/read.ts"
+  - "**/fixtures/read-tool-no-blocking-read.ts"
+rule:
+  any:
+    - pattern: fs.readFileSync($$$ARGS)
+    - pattern: fs.readdirSync($$$ARGS)
+    - pattern: fs.statSync(abs)

@@ -19,9 +19,9 @@ verify:
     contains: "mergeClasses"
   - test: youcoded/desktop/src/renderer/components/ui/Button.test.tsx
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
-  - test: youcoded/desktop/tests/overlay-layer-authority.test.ts
+  - path: scripts/ast-grep/rules/no-hardcoded-z-index-or-scrim.yml
   - test: youcoded/desktop/tests/drawer-card-glass.test.ts
-  - test: youcoded/desktop/tests/type-scale-authority.test.ts
+  - path: scripts/ast-grep/rules/no-arbitrary-text-size.yml
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
   - test: youcoded/desktop/tests/workbench-mock-contract.test.ts
@@ -55,7 +55,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Control primitives (`components/ui/`)
 - **Every control goes through its primitive** — never hand-roll `bg-accent text-on-accent`; a caller's `className` REPLACES base tokens per conflict group via `mergeClasses`. Guard `primitive-adoption.test.ts` also fails on a primitive with NO call site.
 - **Padding groups are per-axis** (`px-`/`py-` independent; `p-N` in ALL groups) — an `px-`-only override must NOT drop `py-` · guard: `Button.test.tsx` if you touch `CONFLICT_GROUPS`.
-- **Chrome is unselectable:** `<button>`s + `select-none` areas; content buttons opt in with `select-text` · guard: `unselectable-chrome.test.ts`.
+- **Chrome is unselectable** (`<button>`s/`select-none` roots; content buttons add `select-text`) · guard: ast-grep `chrome-root-select-none-*`/`file-name-button-select-text` (classes), `unselectable-chrome.test.ts` (CSS).
 
 ## Overlays (`components/overlays/Overlay.tsx`)
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.

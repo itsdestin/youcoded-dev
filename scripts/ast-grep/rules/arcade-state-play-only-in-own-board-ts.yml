@@ -1,0 +1,48 @@
+id: arcade-state-play-only-in-own-board-ts
+language: typescript
+severity: error
+message: >-
+  `state.play` is the open game's OWN state, opaque to the shell: only that
+  game's board (ConnectFourBoard.tsx, ChessBoard.tsx) may narrow it. A shell
+  file reaching in collapses the split back into the one shared pot it took
+  the largest piece of work in the project to get out of. (`.ts` twin.)
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "only a game's own board narrows state.play").
+  The retired case matched `\bstate\.play\b` in each game file (comments
+  blanked) and allowed only the two boards. Matched here on a member
+  expression ending in `state.play` (preceded by nothing or a non-word
+  character, so `x.state.play` counts and `gamestate.play` does not) and on
+  any string spelling it.
+  NOTE (review round 2, 2026-09-16): this rule's `files:` glob
+  (`**/game/**/*.ts`) is RECURSIVE, so it scans any subfolder of
+  components/game/ too — stricter than the retired test's `gameFiles()`,
+  a flat `readdirSync` that never descended into one. No subfolder exists
+  under components/game/ today, so this has no observable effect yet; it
+  would if one were ever added.
+files:
+  - "**/src/renderer/components/game/**/*.ts"
+  - "**/fixtures/arcade-state-play-only-in-own-board-ts.ts"
+ignores:
+  - "**/*.test.ts"
+  - "**/components/game/ConnectFourBoard.tsx"
+  - "**/components/game/ChessBoard.tsx"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  any:
+    - kind: member_expression
+      regex: "(^|\\W)state\\.play$"
+    - matches: code-token
+      regex: "\\bstate\\.play\\b"

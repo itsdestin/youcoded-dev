@@ -1,0 +1,42 @@
+id: settings-explainer-no-chrome-props
+language: tsx
+severity: error
+message: >-
+  <SettingsExplainer> takes only its payload (intro, sections). title, onBack
+  and onClose moved to <Dialog> (K12) — the explainer used to hand-roll the
+  header, the scroll body and the Esc handler, the exact three things D1 was
+  built to own. Pass them to the Dialog that hosts the explainer.
+note: |
+  Invariant source: tests/explainer-shell.test.tsx (Plan B, 2026-09-16; "no
+  host passes the explainer chrome props it no longer has" — case 1 of the
+  "explainer hosts" describe block). A host passing them is a type error
+  today; this pins the INTENT, so a future `...rest` spread on the component
+  cannot quietly reintroduce them.
+  SCOPING mirrors the retired test's HOSTS list exactly: ContextPopup.tsx,
+  ThemeScreen.tsx, SettingsPanel.tsx, SyncPanel.tsx.
+  SHAPE: the retired regex was `<SettingsExplainer[\s\S]{0,400}?/>` (a tag
+  whose name starts with SettingsExplainer, up to the first `/>`) followed by
+  `\b(title|onBack|onClose)=` anywhere in that text. This rule matches the
+  tag's own attributes named exactly title/onBack/onClose, on the
+  self-closing form AND on an open tag (the old regex reached an open tag
+  only when some `/>` followed within 400 characters, and then read the
+  children's attributes too — this rule reads only the explainer's own).
+files:
+  - "**/src/renderer/components/ContextPopup.tsx"
+  - "**/src/renderer/components/ThemeScreen.tsx"
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/src/renderer/components/SyncPanel.tsx"
+  - "**/fixtures/settings-explainer-no-chrome-props.tsx"
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  all:
+    - has:
+        field: name
+        regex: "^SettingsExplainer"
+    - has:
+        kind: jsx_attribute
+        has:
+          kind: property_identifier
+          regex: "^(title|onBack|onClose)$"

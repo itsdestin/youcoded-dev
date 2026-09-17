@@ -1,0 +1,87 @@
+id: session-menu-height-capped
+language: tsx
+severity: error
+message: >-
+  SessionStrip.tsx's session menu must give its list the remaining screen
+  height: cap the menu to the space below its trigger (height: undefined +
+  maxHeight: min(680px, <space below>)), publish that same cap as
+  --session-menu-available-height for the New Session form's own scroll
+  region, keep --vvp-offset in the cap so a mobile browser's virtual
+  viewport doesn't hide the bottom, and give the session list itself
+  (twice — the "no results" and populated states) the scroll-fade + flex-1
+  treatment so it flexes and scrolls before the New Session controls are
+  pushed past the bottom edge.
+note: |
+  Invariant source: tests/menu-row-reachability.test.ts (retired by Plan B,
+  2026-09-16; case 5 of 7 — "the session menu gives its list the remaining
+  screen height"). RENAMED (review of batch B, 2026-09-16) from
+  shortcuts-dialog-keeps-scroll-body-session-menu-height — the old name
+  described where this guard lived, not what it guards, and this rule has
+  nothing to do with the shortcuts dialog. Whole-file presence checks (not scoped to one function —
+  the retired test checked the whole file's `strip` text too), each written
+  as its negation over `program` (a "must exist" check is its own absence),
+  same shape as main-registers-all-quit-routes. The `maxHeight` template
+  literal is matched structurally (`context:`/`selector:` on the `pair` node)
+  rather than by regex on `string_fragment`, so the `${belowTrigger}`
+  substitution in its middle cannot break the match the way a flat regex
+  scanning raw text never had to worry about.
+  FIX (review of batch B, 2026-09-16), two changes:
+  (1) the `min(680px, ${…})` branch used to match the bare template
+  ANYWHERE in the file, not the `maxHeight: ` PAIR the retired test's
+  `expect(strip).toMatch(/maxHeight: \`min\(680px, \$\{belowTrigger\}\)\`/)`
+  actually required — the same `context:`/`selector: pair` shape used for
+  the other two object-literal branches now wraps it, so a
+  `min(680px, ${…})` template that DID exist but was no longer assigned to
+  `maxHeight` (e.g. moved to a different key, or interpolated into a
+  className) would correctly still fire this rule as missing.
+  (2) the `--vvp-offset` branch used to require the ENTIRE
+  `'calc(100vh - 8px - var(--vvp-offset, 0px))'` string literal verbatim —
+  stricter than the retired test, whose own assertion was
+  `expect(strip).toMatch(/var\(--vvp-offset, 0px\)/)`, a substring match
+  with no requirement on what calc() it sits inside. Relaxed to the same
+  substring, matched on `string_fragment` OR `template_string` so either
+  spelling still counts.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-menu-height-capped.tsx"
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: "const x = { height: undefined }"
+            selector: pair
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: "const x = { maxHeight: `min(680px, ${$X})` }"
+            selector: pair
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: "const x = { maxHeight: 'var(--session-menu-available-height)' }"
+            selector: pair
+    - not:
+        has:
+          stopBy: end
+          any:
+            - kind: string_fragment
+              regex: "var\\(--vvp-offset, 0px\\)"
+            - kind: template_string
+              regex: "var\\(--vvp-offset, 0px\\)"
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: '<div className="scroll-fade flex-1" />'
+            selector: jsx_attribute
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: '<div className="scroll-fade flex-1 py-1" />'
+            selector: jsx_attribute

@@ -1,0 +1,48 @@
+id: main-web-security-never-disabled
+language: typescript
+severity: error
+message: >-
+  Main-process code must never set `webSecurity: false`. Turning web security off lets
+  any page in the app read any origin — theme assets reach the renderer
+  through the CORS-enabled theme-asset:// scheme instead.
+note: |
+  Invariant source: tests/theme-protocol-cors.test.ts (Plan B, 2026-09-16;
+  "registers the scheme for CORS fetch without disabling web security"). The
+  retired case read main.ts raw and required no match of
+  `webSecurity\s*:\s*false`. The row said `—`, but that half is the only
+  automated guard of a security property, so it became this rule; the
+  case's other half (the theme-asset scheme is registered with
+  supportFetchAPI + corsEnabled) was deleted per the row.
+  Fires on the smallest node holding the text: an object property
+  (`webSecurity: false`), a type member, a string piece, or a regex body.
+  DIFFERENCES:
+  - A comment quoting the text no longer counts — a comment disables nothing
+    (the old read did not blank comments).
+  - WIDENED on purpose (controller decision, review of u10, 2026-09-16): the
+    retired case read only main.ts, but theme-preview-generator.ts also
+    creates a BrowserWindow, and any main-process file could. The rule scans
+    every non-test `.ts` under src/main/ (`*.test.ts` skipped).
+  - WIDENED: a quoted or computed key (`'webSecurity': false`,
+    `["webSecurity"]: false`) fires; the old regex needed the bare name
+    right before the colon, so it missed those.
+  - NARROWER: a destructuring rename (`const { webSecurity: falseFlag } = o`)
+    no longer fires. The old text regex matched it (the new name starts with
+    "false"), but a pattern reads the option — it disables nothing.
+files:
+  - "**/src/main/**/*.ts"
+  - "**/fixtures/main-web-security-never-disabled.ts"
+ignores:
+  - "**/*.test.ts"
+rule:
+  any:
+    - kind: pair
+      regex: "^webSecurity\\s*:\\s*false"
+    # WHY (review of u10): a quoted or computed key is the same option.
+    - kind: pair
+      regex: "^(\\[\\s*)?['\"`]webSecurity['\"`](\\s*\\])?\\s*:\\s*false"
+    - kind: property_signature
+      regex: "^webSecurity\\s*:\\s*false"
+    - kind: string_fragment
+      regex: "webSecurity\\s*:\\s*false"
+    - kind: regex_pattern
+      regex: "webSecurity\\s*:\\s*false"

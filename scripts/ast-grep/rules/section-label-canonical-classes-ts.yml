@@ -1,0 +1,51 @@
+id: section-label-canonical-classes-ts
+language: typescript
+severity: error
+message: >-
+  A section label spells its recipe exactly one way: "text-3xs font-medium
+  text-fg-muted tracking-wider uppercase" — including in a plain .ts constant
+  (e.g. dev/workbench/compare/permission-modes.ts's SECTION_LABEL), not just a
+  className attribute. See section-label-canonical-classes for the full WHY.
+note: |
+  Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
+  2026-09-16). `.ts` twin of section-label-canonical-classes: this ast-grep's
+  `language: tsx` rule never scans a `.ts` file — the retired test's own walk
+  read both `.tsx` and `.ts` (`/\.tsx?$/`).
+  CORRECTION (review, 2026-09-16): the batch report called
+  `permission-modes.ts:75`'s `SECTION_LABEL` constant a real site that
+  "confirms the -ts twin isn't speculative" — true for the class-set check
+  itself, but that constant is SINGLE-quoted
+  (`'text-3xs font-medium ... uppercase mb-2'`), and the retired test's own
+  regex (`/"([^"\n]*)"/g`) only ever matched DOUBLE-quoted strings. Under the
+  retired test's literal scope, this site was never actually inspected.
+  Unlike section-label-canonical-classes (its `.tsx` sibling), this rule does
+  NOT add the double-quote-only restriction, because doing so would leave it
+  with no real site to ever fire on — a `.ts` module constant has no
+  convention forcing double quotes the way a JSX `className="..."`
+  attribute does, and the one known real adopter is single-quoted. Kept
+  broader than the retired test here deliberately, not by oversight.
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/section-label-canonical-classes-ts.ts"
+ignores:
+  - "**/src/renderer/**/*.test.ts"
+rule:
+  kind: string_fragment
+  not:
+    inside:
+      kind: template_string
+  all:
+    - regex: "\\btext-3xs\\b"
+    - regex: "\\buppercase\\b"
+    - regex: "tracking-wid"
+    - regex: "text-fg-(muted|dim)"
+    - not:
+        regex: "text-3xs font-medium text-fg-muted tracking-wider uppercase"
+    - not:
+        regex: "hover:text-fg"
+    - not:
+        regex: "(^|\\s)rounded-full(\\s|$)"
+    - not:
+        all:
+          - regex: "(^|\\s)bg-inset(\\s|$)"
+          - regex: "(^|\\s)border(\\s|$)"

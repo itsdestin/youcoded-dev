@@ -26,6 +26,7 @@ verify:
   - test: youcoded/desktop/tests/tearoff-handoff.test.ts
   - test: youcoded/desktop/tests/session-drag-model.test.ts
   - test: youcoded/desktop/tests/session-strip-htmldrag.test.tsx
+  - path: scripts/ast-grep/rules/preload-no-drag-model-decision.yml
 ---
 
 # Multi-window session detach
@@ -59,8 +60,9 @@ Chromium's LINK-drag helper (`button_drag_utils::SetDragImage`, max width 150),
 which crops to ~138px, rasterises at 1x, offers only copy/link (a target asking
 `'move'` gets no drop, silently) and paints the file's NAME beside a narrow icon.
 Read from v41.10.7 source on 2026-09-04, after a day measuring it as a Wayland
-limit. A page-started drag touches none of it. Guard: `session-drag-model.test.ts`
-pins that preload never exposes `startDrag`.
+limit. A page-started drag touches none of it. Guard: ast-grep
+`preload-no-drag-model-decision` pins that preload never exposes `startDrag` (and
+reports facts, never a drag model).
 
 ## The compositor carries an INVISIBLE picture; the strip draws the pill itself
 

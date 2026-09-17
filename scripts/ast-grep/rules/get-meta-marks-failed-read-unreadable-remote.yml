@@ -1,0 +1,49 @@
+id: get-meta-marks-failed-read-unreadable-remote
+language: typescript
+severity: error
+message: >-
+  remote-server's `case 'session:get-meta':` must answer `unreadable: …` for a
+  failed read, the same as main's handler — never fall through to blank tags and
+  note, which the close prompt shows as "No note" and then writes over the real
+  note with.
+note: |
+  Invariant source: tests/close-prompt-meta-unreadable.test.tsx ›
+  "remote-server's session:get-meta does the same" (retired by Plan B,
+  2026-09-16; error inventory 2026-09-10, false message 12). The retired case
+  sliced remote-server.ts (comments blanked) from `case 'session:get-meta':` to
+  the next `case '` — i.e. this switch case — and required /unreadable:/ in it
+  and no /fall through to empty/ (with comments blanked, only a string could
+  carry that phrase).
+  Branch 1: the case holds no `unreadable:` key — an object pair, or a
+  non-optional property signature (the old regex matched either; the optional
+  `unreadable?:` in a type annotation never matched it).
+  Branch 2: a string inside the case says "fall through to empty".
+  Presence branch: fires when remote-server.ts has no
+  `case 'session:get-meta':` at all (the old test failed on `start >= 0`).
+  Main's twin is get-meta-marks-failed-read-unreadable.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/get-meta-marks-failed-read-unreadable-remote.ts"
+  - "**/fixtures/get-meta-marks-failed-read-unreadable-remote-missing.ts"
+utils:
+  get-meta-case:
+    kind: switch_case
+    has:
+      field: value
+      regex: "^['\"]session:get-meta['\"]$"
+  unreadable-key:
+    any:
+      - kind: pair
+        has: { field: key, regex: "^unreadable$" }
+      - kind: property_signature
+        regex: "^unreadable\\s*:"
+rule:
+  any:
+    - kind: program
+      not:
+        has: { stopBy: end, matches: get-meta-case }
+    - matches: get-meta-case
+      not: { has: { stopBy: end, matches: unreadable-key } }
+    - kind: string_fragment
+      regex: "fall through to empty"
+      inside: { stopBy: end, matches: get-meta-case }

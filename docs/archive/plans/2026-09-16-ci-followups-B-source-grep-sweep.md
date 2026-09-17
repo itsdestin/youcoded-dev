@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # CI follow-ups B — the source-grep test sweep
 

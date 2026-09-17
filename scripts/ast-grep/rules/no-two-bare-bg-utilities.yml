@@ -1,0 +1,70 @@
+id: no-two-bare-bg-utilities
+language: tsx
+severity: error
+message: >-
+  Two unprefixed `bg-*` Tailwind utilities on one element do not blend — only
+  one paints. This is invisible everywhere else: it type-checks, lints,
+  renders, and the component test passes; you get A background, just not the
+  one the code asked for. The chess board shipped `bg-inset bg-accent/[0.07]`
+  meaning "surface with a faint tint"; only bg-inset ever painted, and square
+  contrast landed at 1.05-1.40 where a physical board is nearer 2.5-3 — a
+  bishop's colour was unreadable in three of six themes, missed by two manual
+  reviews. Fix: paint the second color as its own absolutely-positioned layer
+  (`<span className="absolute inset-0" style={{ background: … }} aria-hidden="true" />`),
+  the way move highlights already do. Layers composite; competing utilities do not.
+note: |
+  Invariant source: tests/background-layer-authority.test.ts (retired by Plan B,
+  2026-09-16; 1 of its 3 cases converts — the other 2 tested the retired JS
+  regex helper itself, not the product, and are deleted with it per
+  global.md's non-vacuity rule).
+  `hover:bg-*`, `focus:bg-*`, `disabled:bg-*` and friends are FINE and common —
+  they apply in different states and never compete. The regex requires a bare
+  bg- token (preceded by start-of-string or whitespace, never `:`) to appear
+  TWICE in the same class string.
+  FIX (review of batch A, 2026-09-16): a `.tsx`-only glob and a `.ts` glob
+  under `language: tsx` are not the same thing — ast-grep only parses a file
+  under the language it was configured with, so the old `**/src/renderer/**/*.ts`
+  entry here matched nothing, ever. See no-two-bare-bg-utilities-ts for the
+  real `.ts` twin. Also matches `template_string`: the shipped bug's own
+  shape can be split by a substitution (`` `bg-inset ${x} bg-accent/[0.07]` ``),
+  which a `string_fragment`-only rule cannot see because the template's
+  `${...}` splits it into multiple fragment nodes.
+  This is matched structurally, NOT with a regex over the whole
+  `template_string`'s text: two `string_fragment` children of the SAME
+  template_string, one `follows` (`stopBy: end`) the other. A whole-text
+  regex over `template_string` (tried first, review of batch A, 2026-09-16)
+  false-positives on the extremely common `` `${cond ? 'a bg-x' : 'b bg-y'}` ``
+  ternary shape — the two bg- tokens are MUTUALLY EXCLUSIVE alternatives,
+  never applied together (found live in RuntimeBinding.tsx and a
+  dev-workbench mockup) — AND on a `bg-*` class name merely mentioned inside
+  a `//` comment written INSIDE the template's `${...}` substitution (found
+  live in ProjectHero.tsx's sync-status button, whose substitution's own
+  comment explains a hover fade using backtick-quoted class names): a
+  template_string's raw text includes everything inside its substitutions,
+  comments included, but a comment is never a `string_fragment` node, and a
+  ternary's nested string is never a DIRECT child of the outer
+  template_string (it's nested inside the substitution's own expression) —
+  so the structural version sees neither.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/background-layer-authority.tsx"
+ignores:
+  - "**/*.test.tsx"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "(?:^|\\s)bg-[\\w./\\[\\]%-]+(?:.*\\s)bg-[\\w./\\[\\]%-]+"
+    - kind: string_fragment
+      # A template_string node's text includes its surrounding backticks
+      # (unlike string_fragment, which excludes quotes) — so the leading
+      # boundary must also accept a backtick, the way the retired test's own
+      # BARE_BG regex did (`/(?:^|[\s\`])(bg-...)/`).
+      regex: "(?:^|[\\s`])bg-[\\w./\\[\\]%-]+"
+      inside:
+        kind: template_string
+      follows:
+        stopBy: end
+        kind: string_fragment
+        regex: "(?:^|[\\s`])bg-[\\w./\\[\\]%-]+"
+        inside:
+          kind: template_string

@@ -258,7 +258,8 @@ the mascot. Destin's words: "just bare frame like terminal view".
   proposed as P-4 and **declined 2026-08-28** (it would land in every scrolling panel for one
   dialog's complaint). A dialog must never switch the body off and then overflow: `prompt` +
   `scrollBody={false}` put three keyboard shortcuts beyond reach at every window size (P-7,
-  guarded by `menu-row-reachability.test.ts`). The header never scrolls; nothing is ever clipped
+  guarded by `scripts/ast-grep/rules/shortcuts-dialog-keeps-scroll-body.yml`, retired
+  `menu-row-reachability.test.ts`, Plan B 2026-09-16). The header never scrolls; nothing is ever clipped
   silently. Pick size by content: `prompt` for a question, `panel` for settings,
   `document` for prose/lists longer than ~8 rows.
 - Footer: only when there is a decision to confirm — right-aligned `ghost` Cancel +
