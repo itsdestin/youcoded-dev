@@ -1,0 +1,28 @@
+id: arcade-challenge-game-in-presence-hook
+language: typescript
+severity: error
+message: >-
+  usePresence must carry `gameType` on a challenge — the wire always sent
+  it, and dropping it meant Accept could only ever open Connect 4.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "the challenge carries which game, end to end"). — its usePresence.ts link; the other links are the sibling arcade-challenge-game-* rules.
+files:
+  - "**/src/renderer/hooks/usePresence.ts"
+  - "**/fixtures/arcade-challenge-game-in-presence-hook.ts"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  kind: program
+  not: { has: { stopBy: end, matches: code-token, regex: "gameType" } }

@@ -1,0 +1,35 @@
+id: arcade-challenge-game-not-hardcoded
+language: typescript
+severity: error
+message: >-
+  An outgoing challenge names the game being played — never a hardcoded
+  `lobbyChallenge(target, 'connect-four', …)`.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "the challenge carries which game, end to end"). — its usePartyGame.ts link. The retired check was
+  `!src.includes("lobbyChallenge(target, 'connect-four'")` with comments
+  blanked; a string spelling it counts too.
+files:
+  - "**/src/renderer/hooks/usePartyGame.ts"
+  - "**/fixtures/arcade-challenge-game-not-hardcoded.ts"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has: { field: function, regex: "^lobbyChallenge$" }
+        - has: { field: arguments, regex: "^\\(target, 'connect-four'" }
+    - matches: code-token
+      regex: "lobbyChallenge\\(target, 'connect-four'"

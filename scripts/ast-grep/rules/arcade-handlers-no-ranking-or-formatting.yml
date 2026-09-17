@@ -1,0 +1,44 @@
+id: arcade-handlers-no-ranking-or-formatting
+language: typescript
+severity: error
+message: >-
+  arcade-handlers.ts formats nothing and decides no ranking: no `.sort(`, no
+  `format(`, nothing named `rank`. Ranking is the Worker's, once, so every
+  player sees one board; scores cross every boundary as raw numbers.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "the arcade handler formats
+  nothing and decides no ranking"). The retired case asserted `!src.includes(x)` for
+  '.sort(', 'rank' and 'format(' with comments blanked: any token containing `rank`
+  (ranking, crank…), a call whose callee ends in `format` written straight against its `(`,
+  a `.sort(` call, or a string spelling either. Known limit: a rule cannot fail on the file
+  being deleted (the retired read would have thrown).
+files:
+  - "**/src/main/arcade-handlers.ts"
+  - "**/fixtures/arcade-handlers-no-ranking-or-formatting.ts"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  any:
+    - matches: code-token
+      regex: "rank|\\.sort\\(|format\\("
+      not: { has: { regex: "rank|\\.sort\\(|format\\(" } }
+    - kind: call_expression
+      all:
+        - has: { field: function, regex: "format$" }
+        - regex: "format\\("
+    - kind: call_expression
+      all:
+        - has: { field: function, kind: member_expression, has: { field: property, regex: "^sort$" } }
+        - regex: "\\.sort\\("

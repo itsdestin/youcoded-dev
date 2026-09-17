@@ -154,7 +154,14 @@ fi
 #   session-strip-label-via-pill-label-style (3)
 #   pill-label-reveals-with-motion-tokens (1)
 #   voice-button-level-ring-stepped (2)
-EXPECTED_VIOLATIONS=135
+# 2026-09-16 (review of t6a, I3 + I5 arcade-authority.test.ts): +18 —
+#   arcade-no-forbidden-attention-apis fixture now fires on 5 reference shapes (+4),
+#   its -ts twin on 2 (+1); new arcade-state-play-only-in-own-board (1) + -ts (1),
+#   arcade-shared-state-no-connect4-vocabulary (2), arcade-shared-state-has-seat-vocabulary (1),
+#   arcade-challenge-game-in-presence-hook (1), -in-reducer (1), -in-lobby (1),
+#   -not-hardcoded (1), chatview-yields-keys-to-game-board (1),
+#   arcade-handlers-no-ranking-or-formatting (2), arcade-stop-play-keyed-on-open-game (1).
+EXPECTED_VIOLATIONS=153
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

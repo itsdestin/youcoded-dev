@@ -1,4 +1,5 @@
-// Violation fixture for arcade-no-forbidden-attention-apis-ts.
+// Violation fixture: a .ts game file reading the thinking state.
+declare const status: { isThinkingNow: boolean };
 export function badCheck(): boolean {
-  return isThinking;
+  return status.isThinkingNow;
 }

@@ -2,22 +2,45 @@ id: arcade-no-forbidden-attention-apis-ts
 language: typescript
 severity: error
 message: >-
-  A game file must not react to the assistant finishing a turn — no sound, no
-  attention-summary subscription, no reading whether the assistant is
-  thinking or has session attention (see arcade-no-forbidden-attention-apis
-  for the full rationale; this is its `.ts` twin, for game files that are not
-  `.tsx`).
+  A game file must not react to the assistant finishing a turn — no sound,
+  no attention-summary subscription, no reading whether the assistant is
+  thinking or has session attention. Destin, 2026-08-30: when the assistant
+  finishes, NOTHING happens beyond the existing ready chime and the header
+  status light. Four independently-built game modules could each quietly
+  break this on their own. (`.ts` twin of arcade-no-forbidden-attention-
+  apis.)
 note: |
-  Invariant source: tests/arcade-authority.test.ts (Plan B, 2026-09-16; same
-  five cases as the -tsx base rule). A `language: tsx` rule never scans `.ts`
-  (Task 5 review lesson), and this game directory mixes both (arcade-api.ts,
-  flappy-engine.ts, friends-data.ts, game-registry.ts, head-to-head.ts,
-  local-best.ts, twenty-forty-eight.ts are all `.ts`).
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "the assistant-finishing rule (§7)").
+  The five loop cases "no game file references <symbol>" read each game file
+  through readStripped() and asserted `!src.includes(symbol)` for
+  playSound, useAnyAttentionNeeded, onAttentionSummary, isThinking, sessionAttention.
+  FIX (review of t6a, 2026-09-16): the first draft matched only a bare
+  `identifier` spelled exactly so; `.includes()` also caught a property
+  (`api.playSound`), a shorthand property or destructure, a JSX attribute
+  name, a string, and any LONGER name containing the symbol
+  (`isThinkingNow`). This rule matches the smallest non-comment token
+  containing the symbol. A `language: typescript` rule never scans `.tsx` —
+  hence the twin.
 files:
   - "**/src/renderer/components/game/**/*.ts"
   - "**/fixtures/arcade-no-forbidden-attention-apis-ts.ts"
 ignores:
   - "**/*.test.ts"
+utils:
+  # A non-comment leaf token: the retired guards read files through
+  # readStripped(), which blanks every comment, so a comment never counts.
+  code-token:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
 rule:
-  kind: identifier
-  regex: "^(playSound|useAnyAttentionNeeded|onAttentionSummary|isThinking|sessionAttention)$"
+  matches: code-token
+  regex: "playSound|useAnyAttentionNeeded|onAttentionSummary|isThinking|sessionAttention"
+  not: { has: { regex: "playSound|useAnyAttentionNeeded|onAttentionSummary|isThinking|sessionAttention" } }

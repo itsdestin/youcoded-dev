@@ -1,0 +1,40 @@
+id: arcade-stop-play-keyed-on-open-game
+language: tsx
+severity: error
+message: >-
+  The effect that stops play (`setPlaying(false)`) depends on `[openGame]`
+  alone. It once shared a dep list with applyGameDefaultWidth, whose
+  identity changed when a pane-edge drag was committed — 40 pipes into
+  Flappy, the player let go of the mouse and the run vanished uncounted.
+note: |
+  Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "setPlaying(false) lives in an effect that depends on openGame alone").
+  and "the width helper is not in that effect". Any useEffect whose callback
+  calls setPlaying(false) must have exactly `[openGame]` as its dependency
+  array (which also rules out applyGameDefaultWidth), and one such effect
+  must exist. The first case's "exactly one effect may stop play" stays a
+  text read in the test — a count of matching effects, not a shape.
+files:
+  - "**/src/renderer/components/game/ArcadeShell.tsx"
+  - "**/fixtures/arcade-stop-play-keyed-on-open-game.tsx"
+rule:
+  any:
+    - kind: call_expression
+      all:
+        - has: { field: function, regex: "^useEffect$" }
+        - has:
+            field: arguments
+            has: { nthChild: 1, kind: arrow_function, has: { stopBy: end, pattern: "setPlaying(false)" } }
+        - not:
+            has:
+              field: arguments
+              has: { nthChild: 2, kind: array, regex: "^\\[\\s*openGame\\s*\\]$" }
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: call_expression
+          all:
+            - has: { field: function, regex: "^useEffect$" }
+            - has:
+                field: arguments
+                has: { nthChild: 1, kind: arrow_function, has: { stopBy: end, pattern: "setPlaying(false)" } }

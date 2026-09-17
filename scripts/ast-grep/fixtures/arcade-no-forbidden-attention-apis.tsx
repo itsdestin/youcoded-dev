@@ -1,5 +1,6 @@
-// Violation fixture for arcade-no-forbidden-attention-apis.
-export const Bad = () => {
-  playSound('win');
-  return null;
+// Violation fixture: a game reaching for the attention APIs in several shapes.
+declare const api: { playSound(s: string): void };
+export const Bad = ({ isThinking }: { isThinking: boolean }) => {
+  api.playSound('win');
+  return <div data-x={isThinking} />;
 };
