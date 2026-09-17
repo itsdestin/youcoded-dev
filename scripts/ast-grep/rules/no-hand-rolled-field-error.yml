@@ -25,10 +25,21 @@ note: |
   and components/SkipPermissionsCaption.tsx (the one shared component that
   legitimately writes this markup once, replacing five duplicated captions).
   LIMITATION: the retired test also asserted each exemption's count is
-  EXACTLY 1 (not "0 or more") and that the exemption still matches something
-  — a whole-file `ignores:` cannot express "at most 1 here", so both counted
-  cases are kept as a small text case in the trimmed test file per
-  global.md's "at most N matches" guidance, rather than dropped.
+  EXACTLY 1 (not "0 or more") — a whole-file `ignores:` cannot express "at
+  most 1 here", so that ONE counted case ("an exemption covers exactly the
+  occurrences it was granted for") is kept as a small text case in the
+  trimmed test file per global.md's "at most N matches" guidance. The
+  retired test's OTHER counted case ("every exemption still matches
+  something") is dropped, named, in the trimmed test file's own comment —
+  exemption-relevance bookkeeping a whole-file `ignores:` no longer tracks.
+  FIX (review of batch B, 2026-09-16): `**/*.test.tsx` added to `ignores:` —
+  the retired test's own `walk()` skipped any path ending `.test.tsx` (its
+  filter was `p.endsWith('.tsx') && !p.endsWith('.test.tsx')`). Several
+  component `.test.tsx` files DO live inside `src/renderer/components/`
+  (colocated with the component, e.g. `QueuedMessagesStrip.test.tsx`), so
+  without this ignore a test asserting against the class-pair string as a
+  fixture/expectation value would be a false positive this rule could not
+  tell from a real hand-rolled copy.
   Also matches `template_string` with the same regex: a class string built as
   `` className={`text-2xs text-destructive-fg ${x}`} `` is still a copy, and
   string_fragment alone only reliably covers literal text that isn't split by
@@ -41,6 +52,7 @@ ignores:
   - "**/components/SkipPermissionsCaption.tsx"
   - "**/components/git/GitReviewView.tsx"
   - "**/components/marketplace/UpdateButton.tsx"
+  - "**/*.test.tsx"
 rule:
   # No look-around in ast-grep's regex engine: instead of a negative lookahead
   # blocking a following /, word char or -, require what follows to be
