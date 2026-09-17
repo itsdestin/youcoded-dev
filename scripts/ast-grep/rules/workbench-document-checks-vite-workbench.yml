@@ -13,26 +13,32 @@ note: |
   `export function isWorkbenchDocument` to the first `}` and required the text
   `VITE_WORKBENCH` in that slice (comments included). A missing function also
   failed it.
-  Rule (whole file): no function declaration named isWorkbenchDocument with any
-  descendant whose text contains VITE_WORKBENCH — comments count, as they did.
-  Differences, both minimal: the whole function body counts rather than the
-  text up to its first `}` (today the body has no inner braces, so the two are
-  the same region); and `export` is not required here — useVoiceInput's import
-  of the name already fails the type check if the export is dropped.
-  SCOPING: workbench-mode.ts only plus its fixture.
+  Rule (whole file): no TOP-LEVEL `export function isWorkbenchDocument` with
+  any descendant whose text contains VITE_WORKBENCH — comments count, as they
+  did. The declaration must sit directly in an export statement at the top of
+  the file, as the retired slice's `export function` marker required, so a
+  nested or unexported function of the same name cannot satisfy it (review of
+  u11, 2026-09-16).
+  Difference, minimal: the whole function body counts rather than the text up
+  to its first `}` (today the body has no inner braces, so the two are the
+  same region).
+  SCOPING: workbench-mode.ts only plus its fixtures.
 files:
   - "**/src/renderer/workbench-mode.ts"
   - "**/fixtures/workbench-document-checks-vite-workbench.ts"
+  - "**/fixtures/workbench-document-checks-vite-workbench-nested.ts"
 rule:
   kind: program
   not:
     has:
-      stopBy: end
-      kind: function_declaration
+      # Direct children only: program > export_statement > function_declaration.
+      kind: export_statement
       has:
-        field: name
-        regex: "^isWorkbenchDocument$"
-      all:
-        - has:
-            stopBy: end
-            regex: "VITE_WORKBENCH"
+        kind: function_declaration
+        has:
+          field: name
+          regex: "^isWorkbenchDocument$"
+        all:
+          - has:
+              stopBy: end
+              regex: "VITE_WORKBENCH"

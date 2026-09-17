@@ -356,7 +356,10 @@ fi
 #   function and generator EXPRESSIONS as text nodes; its fixture gains one of each (2).
 # 2026-09-16 (review of u11, fix 2): +2 — voice-mic-gate-uses-workbench-document counts a
 #   `#private` class member as a code leaf; its dev-only fixture gains one declared and read (2).
-EXPECTED_VIOLATIONS=400
+# 2026-09-16 (review of u11, fix 3): +1 — workbench-document-checks-vite-workbench requires a
+#   top-level `export function isWorkbenchDocument`; a new fixture hides the check in a same-name
+#   function nested inside another export (1).
+EXPECTED_VIOLATIONS=401
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
