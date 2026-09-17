@@ -124,7 +124,9 @@ fi
 #   any token spelling the name (its fixture gains a comment line, +1), new -tsx twin (+1),
 #   new -present owner branch (+1), -devtools matches any token spelling userData (its
 #   fixture gains a destructured name, +1).
-EXPECTED_VIOLATIONS=80
+# 2026-09-16 (review of t6a, I2): +2 — no-unstepped-infinite-animation's fixture gains a
+#   string holding an exempt bracket beside an unstepped one, and a bracket split by ${}.
+EXPECTED_VIOLATIONS=82
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
