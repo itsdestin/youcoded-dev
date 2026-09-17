@@ -286,6 +286,11 @@ Filing test: reaching the app from another device — the protocol, the browser 
       runs the desktop's No-folder rewrite)
       `remote` `confirmed` `checked 2026-09-16`
 
+- [ ] Batches 2 (conversation restoration) and 3 (file reading) merged 2026-09-11 without any phone
+      ever using the fixed build — the dev window served a day-old copy all day, so every phone
+      check that day is void. Do a real phone pass (practice now: phone pass before reviewers)
+      `remote` `needs-verify` `checked 2026-09-11`
+
 - [ ] Verify the merged remote-access security fixes on a real phone, and finish the Android
       device-token reuse. Two things wait for a real device: (1) confirm the WebSocket origin
       allow-list accepts the actual Android WebView — it sends an opaque `null` origin, now
