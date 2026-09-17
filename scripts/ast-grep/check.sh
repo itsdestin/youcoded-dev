@@ -347,7 +347,12 @@ fi
 # 2026-09-16 (review of u10, fix 3): +2 — main-web-security-never-disabled scans every
 #   non-test .ts under src/main/ (was main.ts only) and fires on a quoted or computed key;
 #   its fixture gains `'webSecurity': false` and `["webSecurity"]: false` (2).
-EXPECTED_VIOLATIONS=395
+# 2026-09-16 (review of u10, fix 4 — carried from the u8 re-review): +1 —
+#   shell-session-permission-cycle-guarded's branch (c) no longer fires when the guard
+#   moved WITH the write into a later helper; a new fixture moves both but puts the guard
+#   after the write (fires, 1), and a silent fixture moves both guard-first (0 — the
+#   exact count pins its silence).
+EXPECTED_VIOLATIONS=396
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
@@ -461,6 +466,14 @@ fi
 # scans at all (not matched by its `files:`, e.g. App.tsx for the toggle rule) also
 # counts as agreeing. One generic helper; add a pairing with one line.
 #   pairing = rule file | test file (under tests/) | table name
+# Format both sides must keep (the parser is line-based, not a YAML/TS parser):
+#   - rule: the block starts at a `# exemption-table: NAME` comment inside
+#     `ignores:` and ENDS at the next comment line (or the end of the list) —
+#     put the block last, or close it with a comment, or the entries after it
+#     are read as exemptions too;
+#   - test: `const NAME … = {` ends its line (CRLF is fine), its keys are
+#     single-quoted at one indentation, and the table closes with a line
+#     starting `};`.
 EXEMPTION_TABLES=(
     "no-hand-rolled-setting-row-toggle.yml|setting-row-authority.test.tsx|TOGGLES_OUTSIDE_A_ROW"
     "no-centred-status-paragraph.yml|status-strip-authority.test.tsx|CENTRED_STATUS_ELSEWHERE"
@@ -506,7 +519,10 @@ def exemption_block(text, table):
 
 def table_keys(src, table):
     # Top-level `'X.tsx':` keys of `const TABLE ... = {` up to its closing `};`.
-    m = re.search(r'const ' + re.escape(table) + r'\b[^=]*=\s*\{\n', src)
+    # WHY `[ \t]*\r?\n` (re-review of u8, 2026-09-16): open() already turns CRLF
+    # into LF, but the table must not vanish for a file read some other way, or
+    # for trailing spaces after the brace.
+    m = re.search(r'const ' + re.escape(table) + r'\b[^=]*=\s*\{[ \t]*\r?\n', src)
     if not m:
         return None
     end = re.compile(r'^[ \t]*\};', re.M).search(src, m.end())

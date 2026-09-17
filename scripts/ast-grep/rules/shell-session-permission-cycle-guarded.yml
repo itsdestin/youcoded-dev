@@ -19,8 +19,15 @@ note: |
   `(sessionId, '\x1b[Z')` that does not come after the guard statement —
   "after" meaning the call or an ancestor up to the declaration follows a
   sibling that is or holds the guard; (c) the FIRST declaration holds neither
-  that write nor the guard (the write moved to a later helper and the guard
-  went with it — the retired slice ran on to that write and failed).
+  that write nor the guard, and the retired slice would fail: there is no
+  raw write after the declaration at all, or one after it does not come
+  after a guard that is itself after the declaration (the write moved to a
+  later helper and the guard was deleted — the retired slice ran on to that
+  write and failed). When the guard moved WITH the write (the later helper
+  checks for a shell before writing) (c) stays silent, as the retired slice
+  did (review of u8 re-review, 2026-09-16). "After" is document order, via
+  siblings of the node or its ancestors — the same order the text slice
+  used, so once the first later write is guarded every later one is too.
   A first declaration that keeps the guard but writes elsewhere stays silent,
   as the retired slice did.
   DELIBERATE DIFFERENCES: the guard must be a real statement (a comment
@@ -60,6 +67,29 @@ utils:
               - matches: cycle-decl
               - has: { stopBy: end, matches: cycle-decl }
       - inside: { stopBy: end, matches: cycle-decl }
+  # A guard somewhere after the start of a cyclePermission declaration.
+  guard-after-decl:
+    kind: if_statement
+    matches: shell-guard
+    all:
+      - matches: after-an-earlier-cycle-decl
+  after-a-later-guard:
+    follows:
+      stopBy: end
+      any:
+        - matches: guard-after-decl
+        - has: { stopBy: end, matches: guard-after-decl }
+  # A raw write after a declaration with no such guard before it (the node or
+  # any ancestor follows the guard).
+  unguarded-later-write:
+    kind: call_expression
+    matches: raw-shift-tab
+    all:
+      - matches: after-an-earlier-cycle-decl
+      - not:
+          any:
+            - matches: after-a-later-guard
+            - inside: { stopBy: end, matches: after-a-later-guard }
   raw-shift-tab:
     kind: call_expression
     has: { field: function, regex: "sendInput$" }
@@ -78,12 +108,27 @@ rule:
     # match — but the retired slice then ran on to that later write and failed
     # for the missing guard. (c) the FIRST declaration holds neither the raw
     # write nor the guard.
+    # WHY the extra condition (re-review of u8, 2026-09-16): a later helper that
+    # checks for a shell before writing kept the retired slice green — (c)
+    # fires only when there is no write after the declaration, or the first
+    # one is unguarded.
     - matches: cycle-decl
       not:
         any:
           - matches: after-an-earlier-cycle-decl
           - has: { stopBy: end, matches: raw-shift-tab }
           - has: { stopBy: end, matches: shell-guard }
+      inside:
+        stopBy: end
+        kind: program
+        any:
+          - has: { stopBy: end, matches: unguarded-later-write }
+          - not:
+              has:
+                stopBy: end
+                matches: raw-shift-tab
+                all:
+                  - matches: after-an-earlier-cycle-decl
     - matches: raw-shift-tab
       inside:
         stopBy: end
