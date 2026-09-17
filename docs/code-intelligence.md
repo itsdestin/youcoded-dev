@@ -119,6 +119,18 @@ ast-grep's regex is Rust's: no lookahead or lookbehind. A rule that needs "this 
 has no `steps(`" is spelled as a generated complement language — edit its generator in
 `scripts/ast-grep/generators/`, never the generated YAML (2026-09-16).
 
+`constraints:` are checked only after the whole rule matches. A `has:` stops at the first
+node its pattern fits, so a constrained metavariable inside `has:` lets one non-matching
+node (an `fs.watch(…)` ahead of an `fs.readFileSync(…)`) silence the whole rule, including
+its presence branches. Inside `has:`/`inside:`, match the shape directly
+(`has: { field: property, regex: … }`) instead (2026-09-17).
+
+Besides the two directions above, `check.sh` runs three more passes before them:
+**generator drift** (each generated rule equals what its generator prints now), **rule
+paths** (every concrete `files:` path names a file that exists, so renaming a guarded
+file fails loudly), and **exemption tables** (a kept test's counted-exemption list equals
+its rule's `ignores:`).
+
 ### Where it runs
 
 The workspace CI runs the invariant scan; desktop branch verification also invokes it

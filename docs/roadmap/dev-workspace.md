@@ -204,6 +204,24 @@ seen-on is always n/a here.
       timing logic behind an injectable clock
       `n/a` `needs-verify` `checked 2026-07-22`
 
+- [ ] The renderer's own copy of the bridge type can drift from the real bridge with every check
+      green: `renderer/hooks/useIpc.ts` hand-writes `window.claude.session` and `.on`, while
+      preload.ts and remote-shim.ts are now checked against `SessionBridge`/`BridgeListeners` in
+      `shared/types.ts` (Plan B, which retired `shim-parity.test.ts`). A member added to both
+      bridges but not to useIpc.ts is invisible to typed callers, and a member useIpc.ts claims
+      but neither bridge has typechecks and crashes at run time. Fix: build useIpc.ts's
+      `session`/`on` from those shared types (export them again first — they are file-local
+      so knip's unused-export ratchet stays green)
+      `n/a` `confirmed` `checked 2026-09-17`
+
+- [ ] The voice install's "runs no other program" guard does not ban every way to start one. The
+      ast-grep rule `voice-assets-runs-no-other-program` bans `execFile`, `execFileSync`, `spawn`,
+      `spawnSync` and `exec` calls, and oxlint bans importing `child_process`; `execSync` and
+      `fork` were never on the call list (not in the retired test either), and a
+      `require('child_process')` call gets past the import ban. Whether to widen it is Destin's
+      call — a stricter ban may also catch a harmless helper later
+      `n/a` `decision` `checked 2026-09-17`
+
 ## rigs
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
