@@ -1,0 +1,79 @@
+id: tag-empty-state-guarded-on-error
+language: tsx
+severity: error
+message: >-
+  The Resume Browser's tag filter may say "No tags yet" only after checking
+  registry.error. A failed tag read must show "Couldn't load your tags", not
+  an empty state that invites duplicates of tags the person already has
+  (code review 2026-09-11, F5).
+note: |
+  Invariant source: tests/tag-picker-unreadable.test.tsx (Plan B, 2026-09-16;
+  "checks the registry error before saying \"No tags yet\""). The retired case
+  blanked comments in ResumeBrowser.tsx, required the text
+  `message="No tags yet"` to appear, and required `registry.error` somewhere
+  in the 600 characters before its FIRST occurrence.
+  Two branches:
+  - MISSING: the file has no `message="No tags yet"` JSX attribute. Fires on
+    the file.
+  - UNGUARDED: a `message="No tags yet"` attribute with no `registry.error`
+    read before it in the same JSX (an enclosing node that comes after a
+    sibling holding the read, both inside a JSX element or `{…}`), no
+    earlier `if (…registry.error…)` statement beside an enclosing node, and
+    no enclosing branch of such an `if`.
+    This is the structural form of "before it, close by": the ternary
+    condition (today's code), a `registry.error && …` / `!registry.error &&`
+    left side, a sibling `{registry.error && …}`, or an early-return `if`.
+  DIFFERENCES (minimal): the 600-character window becomes "earlier in the
+  same JSX tree, or an earlier if-statement" — an earlier unrelated
+  statement (say a hook call reading registry.error) no longer counts;
+  `registry.error` must be a real member read (`registry.error`, also as
+  the tail of `props.registry.error`), not text in a string; the attribute
+  must be a real JSX attribute, not text in a string; every such attribute
+  is checked, not only the first.
+files:
+  - "**/src/renderer/components/ResumeBrowser.tsx"
+  - "**/fixtures/tag-empty-state-guarded-on-error.tsx"
+  - "**/fixtures/tag-empty-state-guarded-on-error-missing.tsx"
+utils:
+  no-tags-attr:
+    kind: jsx_attribute
+    regex: '^message="No tags yet"$'
+  error-read:
+    kind: member_expression
+    regex: 'registry\.error$'
+  holds-error-read:
+    any:
+      - matches: error-read
+      - has: { stopBy: end, matches: error-read }
+  guarded:
+    inside:
+      stopBy: end
+      any:
+        # In JSX: an ancestor that comes after a sibling holding the read.
+        - all:
+            - follows: { stopBy: end, matches: holds-error-read }
+            - inside:
+                stopBy: end
+                any:
+                  - kind: jsx_expression
+                  - kind: jsx_element
+        # In a function body: an ancestor statement after an `if` whose
+        # condition reads registry.error (an early return).
+        - follows:
+            stopBy: end
+            kind: if_statement
+            has: { field: condition, matches: holds-error-read }
+        # The if's own branches (`if (!registry.error) { … }` and its else):
+        # a direct child of the if that comes after its condition.
+        - all:
+            - inside: { kind: if_statement }
+            - follows: { stopBy: end, matches: holds-error-read }
+rule:
+  any:
+    # MISSING.
+    - kind: program
+      not: { has: { stopBy: end, matches: no-tags-attr } }
+    # UNGUARDED.
+    - all:
+        - matches: no-tags-attr
+        - not: { matches: guarded }

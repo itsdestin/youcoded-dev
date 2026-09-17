@@ -322,7 +322,10 @@ fi
 # 2026-09-16 (review of u8, fix 1): +1 for shell-session-permission-cycle-guarded's
 #   branch (c) — a first cyclePermission holding neither the raw Shift+Tab write (moved
 #   to a helper declared after it) nor the shell guard.
-EXPECTED_VIOLATIONS=357
+# 2026-09-16 (u10, tag-picker-unreadable.test.tsx): +5 for tag-empty-state-guarded-on-error
+#   (no check, a check after the empty state, a check only in a string, an unrelated earlier
+#   read (4); a file with no "No tags yet" empty state (1)).
+EXPECTED_VIOLATIONS=362
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
