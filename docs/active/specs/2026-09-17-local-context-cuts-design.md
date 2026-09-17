@@ -158,7 +158,7 @@ a separate follow-up, not part of this design.
   request and only for the visible chat; the settings button opens Local models.
 
 ## Not in this design
-- Cloud trimming/compaction changes (file a native-harness roadmap item for the same trim flaw).
+- Cloud trimming/compaction changes — tracked in `docs/roadmap/native-harness.md` → "Cloud model context management and cache/token efficiency improvements", which should reuse this spec's pieces.
 - A leaner system prompt for small windows.
 - Letting the user pick a cut policy (LM Studio-style dropdown). The defaults above should be right;
   revisit only if users ask.

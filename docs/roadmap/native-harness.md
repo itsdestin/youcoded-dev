@@ -263,41 +263,67 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       argues against OS sandboxing as a cross-platform promise
       `desktop` `parked` `checked 2026-08-26` `security` → docs/active/investigations/2026-08-09-native-skip-permissions.md
 
-- [ ] The context chip keeps the OLD model's window after a model swap or a resume — swap a
-      1M model for a small local one and the chip can read "97% remaining" on a window the very
-      next message overflows; it only corrects once a turn finishes. The session-context panel's
-      "Context window" row and its small-window warning have the same lag
-      `status-bar` `desktop` `confirmed` `checked 2026-09-16`
-
-- [ ] Reopening a compacted conversation the next day can silently restore the whole
-      pre-compaction history — the saved checkpoint is rejected because the system prompt carries
-      today's date and a live git snapshot, so the conversation is rebuilt from the raw record
-      while the chip still shows the post-compaction figure
-      `desktop` `confirmed` `checked 2026-09-16`
-
 ## cost
-- [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
-      reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
-      and ChatGPT-plan sessions can resend a changed opening prompt after restart instead of keeping
-      the longest reusable prefix. Local models re-read the whole conversation every specialist
-      turn, and long local sessions lose their cache to trimming (the ~50% "Reuse" reading on
-      DeepSeek is NOT a bug — measurement artifact, documented). Improve resumed cloud-session
-      affinity and prefix stability, then measure the first post-resume request rather than trusting
-      historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
-      stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
-      survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
-      shipped in youcoded#461 (2026-09-09). Of the eight remaining breakers, youcoded#464
-      (2026-09-10) shipped six plus the backend half of the seventh: Anthropic caching switched on
-      and OpenRouter sessions pinned, compaction firing before the trimmer on every window,
-      pruning committed only on a prune decision, the summary reusing the conversation's warm
-      prefix and reporting its cost, an `expectedRebuild` flag on every turn, llama.cpp's reuse
-      count recorded per step, and the Task tool pinned byte-identical across catalog reloads.
-      The ChatGPT summary key was dropped on purpose (the summary shares the chat's key now).
-      What is left: the Reuse chip's DISPLAY of expected vs surprise misses (four layouts in the
-      survey, a deck for Destin), and a measurement pass in a dev instance — nothing reads the
-      recorded local reuse count yet, and whether OpenRouter honours the top-level cache field
-      and the session pin is asserted only against a stubbed network
-      `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
+- [ ] Cloud model context management and cache/token efficiency improvements — one item so the
+      fixes below are specced together. Combined 2026-09-17 from three earlier entries (each kept
+      below with its filing date) plus gaps found the same day comparing the app with Claude
+      Code, Hermes Agent and Pi. The local-model fix (spec
+      docs/active/specs/2026-09-17-local-context-cuts-design.md) deliberately leaves cloud
+      behaviour unchanged, but builds pieces this item should reuse rather than rebuild: the
+      pinned request, cutting in the middle of a request, retry on overflow, the cut marker and
+      fading, and tool caps sized to the window. Competitor detail for the cache half:
+      docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md
+      - Cache efficiency (filed 2026-09-10) — cloud and local sessions leave cache hits on the
+        table, especially after reopening a conversation: OpenRouter turns can drift between
+        endpoints, and both OpenRouter and ChatGPT-plan sessions can resend a changed opening
+        prompt after restart instead of keeping the longest reusable prefix. Local models
+        re-read the whole conversation every specialist turn, and long local sessions lose
+        their cache to trimming (the ~50% "Reuse" reading on DeepSeek is NOT a bug —
+        measurement artifact, documented). Improve resumed cloud-session affinity and prefix
+        stability, then measure the first post-resume request rather than trusting historical
+        totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model stops
+        both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
+        survives the gap between messages. Shipped so far: the ChatGPT-only diagnostics and
+        faithful continuation (youcoded#461, 2026-09-09); six of the eight remaining breakers
+        plus the backend half of the seventh (youcoded#464, 2026-09-10) — Anthropic caching
+        switched on and OpenRouter sessions pinned, compaction firing before the trimmer on
+        every window, pruning committed only on a prune decision, the summary reusing the
+        conversation's warm prefix and reporting its cost, an `expectedRebuild` flag on every
+        turn, llama.cpp's reuse count recorded per step, and the Task tool pinned
+        byte-identical across catalog reloads. The ChatGPT summary key was dropped on purpose
+        (the summary shares the chat's key now). Left: the Reuse chip's DISPLAY of expected vs
+        surprise misses (four layouts in the survey, a deck for Destin), and a measurement pass
+        in a dev instance — nothing reads the recorded local reuse count yet, and whether
+        OpenRouter honours the top-level cache field and the session pin is asserted only
+        against a stubbed network
+      - The context chip keeps the OLD model's window after a model swap or a resume (filed
+        2026-09-16) — swap a 1M model for a small local one and the chip can read "97%
+        remaining" on a window the very next message overflows; it only corrects once a turn
+        finishes. The session-context panel's "Context window" row and its small-window warning
+        have the same lag
+      - Reopening a compacted conversation the next day can silently restore the whole
+        pre-compaction history (filed 2026-09-16) — the saved checkpoint is rejected because the
+        system prompt carries today's date and a live git snapshot, so the conversation is
+        rebuilt from the raw record while the chip still shows the post-compaction figure
+      - (2026-09-17) When a provider rejects a request as too long, nothing compacts and
+        retries — the turn just fails
+      - (2026-09-17) A summary can't be made inside a user's first request (it needs two user
+        messages), so the silent per-request trim (`fitToContext`) takes over, and its
+        pair-safe front trim can drop everything back to the newest message — including the
+        user's original request
+      - (2026-09-17) Compaction judges how full the conversation is from the request size after
+        trimming, not before
+      - (2026-09-17) The summary is free-form. Consider fixed sections, updating the previous
+        summary instead of starting over, and a running list of files read and modified (as Pi
+        does)
+      - (2026-09-17) Nothing is restored after compaction; Claude Code re-reads the files the
+        assistant was recently working in
+      - (2026-09-17) No guard against compacting again and again without freeing enough room
+        (Claude Code calls this "thrashing"; Hermes guards it too)
+      - (2026-09-17) Tool output caps are fixed numbers (Read 100k characters, the others 30k)
+        rather than a share of the model's window. The narrower Bash-output item under tools
+        stays separate
+      `desktop` `confirmed` `checked 2026-09-17` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
 - [ ] The per-reply length cap sent to cloud models (fixed 2026-09-05 at a flat 16,000 tokens, so
       OpenRouter stops reserving a frontier model's full 65k+ advertised max against the account
