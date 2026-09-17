@@ -257,10 +257,11 @@ test('a component with no installed deps and a resume both provision nothing', t
 const FAKE_NPM = `#!/bin/sh
 echo "$@" >> "$NPM_LOG"
 spec="$2"; dest="$4"
-case "$spec" in broken@*) exit 1;; esac
+case "$spec" in broken@*|brokenold@*) exit 1;; esac
 name="\${spec%@*}"; version="\${spec##*@}"
 work="$dest/work-$$"; mkdir -p "$work/package"
 printf '{"name":"%s","version":"%s"}\\n' "$name" "$version" > "$work/package/package.json"
+printf 'fetched cli\\n' > "$work/package/cli.js"
 file="$(echo "$name" | sed 's/^@//; s#/#-#')-$version.tgz"
 tar -czf "$dest/$file" -C "$work" package
 rm -rf "$work"
@@ -279,6 +280,18 @@ test('fetches required packages the shared install lacks, into fresh directories
     'node_modules/optdep': { version: '1.0.0', optional: true },
     'node_modules/otheros': { version: '1.0.0', os: [`!${process.platform}`] },
     'node_modules/broken': { version: '1.0.0' },
+    // A native binary for THIS machine: optional, but tagged with its os/cpu.
+    'node_modules/nativebin': { version: '1.0.0', optional: true, os: [process.platform], cpu: [process.arch] },
+    'node_modules/othercpu': { version: '1.0.0', optional: true, os: [process.platform], cpu: [`!${process.arch}`] },
+    // Installed at an older MAJOR: replaced; its nested dependency is kept.
+    'node_modules/majordep': { version: '6.0.3', bin: { majortool: 'cli.js' } },
+    'node_modules/majordep/node_modules/inner': { version: '1.0.0' },
+    // Installed a minor behind: left alone.
+    'node_modules/minordep': { version: '1.5.0' },
+    // Older major, but the download fails: the working old copy stays.
+    'node_modules/brokenold': { version: '2.0.0' },
+    // A fetched package with a command gets its node_modules/.bin link.
+    'node_modules/tooldep': { version: '1.0.0', bin: { tool: 'cli.js' } },
   } };
   fs.mkdirSync(path.join(app.seed, 'desktop'));
   fs.writeFileSync(path.join(app.seed, 'desktop', 'package-lock.json'), JSON.stringify(lock));
@@ -287,6 +300,18 @@ test('fetches required packages the shared install lacks, into fresh directories
   const srcDep = path.join(f.root, 'youcoded', 'desktop', 'node_modules', 'dep');
   fs.mkdirSync(srcDep, { recursive: true });
   fs.writeFileSync(path.join(srcDep, 'package.json'), '{"version":"1.0.0"}\n');
+  const srcModules = path.join(f.root, 'youcoded', 'desktop', 'node_modules');
+  const plant = (rel, version) => {
+    fs.mkdirSync(path.join(srcModules, rel), { recursive: true });
+    fs.writeFileSync(path.join(srcModules, rel, 'package.json'), `{"version":"${version}"}\n`);
+  };
+  plant('majordep', '5.9.3');
+  fs.writeFileSync(path.join(srcModules, 'majordep', 'cli.js'), 'shared old cli\n');
+  plant('majordep/node_modules/inner', '1.0.0');
+  plant('minordep', '1.4.0');
+  plant('brokenold', '1.0.0');
+  fs.mkdirSync(path.join(srcModules, '.bin'));
+  fs.symlinkSync('../majordep/cli.js', path.join(srcModules, '.bin', 'majortool'));
   const bin = path.join(f.dir, 'bin'), log = path.join(f.dir, 'npm.log');
   fs.mkdirSync(bin);
   fs.writeFileSync(path.join(bin, 'npm'), FAKE_NPM, { mode: 0o755 });
@@ -301,12 +326,48 @@ test('fetches required packages the shared install lacks, into fresh directories
     assert.equal(JSON.parse(fs.readFileSync(manifest, 'utf8')).version, version);
     assert.equal(fs.statSync(manifest).nlink, 1); // its own inode — no other checkout sees it
   }
-  // Optional and other-platform entries are never asked for; a failed fetch leaves no empty folder.
-  for (const skipped of ['optdep', 'otheros', 'broken']) assert.equal(fs.existsSync(path.join(modules, skipped)), false);
-  assert.doesNotMatch(fs.readFileSync(log, 'utf8'), /optdep|otheros|\bdep@/);
+  // Untagged optional and other-platform entries are never asked for; a failed fetch leaves no empty folder.
+  for (const skipped of ['optdep', 'otheros', 'othercpu', 'broken']) assert.equal(fs.existsSync(path.join(modules, skipped)), false);
+  const asked = fs.readFileSync(log, 'utf8');
+  assert.doesNotMatch(asked, /optdep|otheros|othercpu|\bdep@|minordep|inner@/);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'nativebin', 'package.json'), 'utf8')).version, '1.0.0');
+
+  // The major-version replacement: new version here, nested dependency carried over,
+  // and the SHARED copy's file untouched (same content, still hardlinked to it).
+  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'majordep', 'package.json'), 'utf8')).version, '6.0.3');
+  assert.equal(fs.readFileSync(path.join(modules, 'majordep', 'cli.js'), 'utf8'), 'fetched cli\n');
+  assert.equal(fs.readFileSync(path.join(srcModules, 'majordep', 'cli.js'), 'utf8'), 'shared old cli\n');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(srcModules, 'majordep', 'package.json'), 'utf8')).version, '5.9.3');
+  assert.equal(fs.existsSync(path.join(modules, 'majordep', 'node_modules', 'inner', 'package.json')), true);
+  assert.deepEqual(fs.readdirSync(modules).filter(n => n.includes('.replaced-')), []);
+  // Minor drift is left as the shared install has it; a failed replacement keeps the old copy.
+  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'minordep', 'package.json'), 'utf8')).version, '1.4.0');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(modules, 'brokenold', 'package.json'), 'utf8')).version, '1.0.0');
+
+  // Commands: the fetched tool gets a link and an executable target; the existing link stays.
+  if (process.platform !== 'win32') {
+    assert.equal(fs.readlinkSync(path.join(modules, '.bin', 'tool')), path.join('..', 'tooldep', 'cli.js'));
+    assert.ok(fs.statSync(path.join(modules, 'tooldep', 'cli.js')).mode & 0o111);
+    assert.equal(fs.readlinkSync(path.join(modules, '.bin', 'majortool')), '../majordep/cli.js');
+    assert.equal(fs.existsSync(path.join(srcModules, '.bin', 'tool')), false);
+  }
+
   const notes = JSON.stringify(out.repositories.youcoded.provisioned);
-  assert.match(notes, /fetched 2 package\(s\) the shared install lacks \(newdep@2\.0\.0, @scope\/scoped@3\.0\.0\)/);
-  assert.match(notes, /could not fetch broken@1\.0\.0/);
+  assert.match(notes, /fetched 4 package\(s\) the shared install lacks \(newdep@2\.0\.0, tooldep@1\.0\.0, nativebin@1\.0\.0, @scope\/scoped@3\.0\.0\)/);
+  assert.match(notes, /replaced 1 package\(s\) the shared install has at an incompatible version \(majordep 5\.9\.3→6\.0\.3\)/);
+  if (process.platform !== 'win32') assert.match(notes, /linked 1 missing command\(s\) \(tool\)/);
+  assert.match(notes, /could not fetch broken@1\.0\.0, brokenold@2\.0\.0/);
+
+  // Resume tops up too: a package master added after creation is fetched on the next start.
+  const lock2 = { ...lock, packages: { ...lock.packages, 'node_modules/latedep': { version: '1.0.0' } } };
+  fs.writeFileSync(path.join(out.repositories.youcoded.path, 'desktop', 'package-lock.json'), JSON.stringify(lock2));
+  const again = spawnSync(process.execPath, [cli, '--root', f.root, '--session', 'alpha', '--json', 'youcoded'],
+    { env: { ...env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, NPM_LOG: log }, encoding: 'utf8' });
+  assert.equal(again.status, 0, again.stderr);
+  const resumed = JSON.parse(again.stdout).repositories.youcoded;
+  assert.equal(resumed.status, 'resumed');
+  assert.match(JSON.stringify(resumed.provisioned), /fetched 1 package\(s\) the shared install lacks \(latedep@1\.0\.0\)/);
+  assert.equal(fs.existsSync(path.join(modules, 'latedep', 'package.json')), true);
 });
 
 test('a held startup lock refuses the call and is not deleted', t => {

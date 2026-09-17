@@ -1,0 +1,32 @@
+{
+  "title": "Settings — new icons for Backup & Sync and Remote Access",
+  "key": "settings-row-icons-review",
+  "out": "settings-row-icons.review.html",
+  "images": "images/settings-row-icons.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "crops": { "syncremote": ["settings-rows", "settings-rows", "320x130+0+355"] },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings → the Backup & Sync and Remote Access rows",
+      "crop": "syncremote",
+      "headline": "Backup & Sync and Remote Access now have icons like every other settings row.",
+      "changed": "Backup & Sync shows a cloud with an upward arrow. Remote Access shows a phone with signal waves. Both are drawn in the same thin grey outline style as Sound, Help and the rest.",
+      "measured": "16 px icons, same line weight (1.8) as the other rows",
+      "notice": "The settings list reads as one matching column of icons, with no coloured dots breaking it up.",
+      "risk": "The status is less eye-catching from a distance now that the dot is small and sits beside the text instead of in the icon spot."
+    },
+    {
+      "id": "S-2",
+      "surface": "Settings",
+      "path": "Settings → the Backup & Sync and Remote Access rows",
+      "crop": "syncremote",
+      "headline": "The status dot now sits on the second line, just left of \"Last synced…\" or \"Connected\".",
+      "changed": "The dot moved from the icon spot down to the start of the grey status line, and got smaller to match that text. Colours are unchanged: green is good, red is a problem, grey is off.",
+      "measured": "Dot shrank from 10 px to 6 px",
+      "notice": "The dot reads as part of the status sentence it describes. The test screen shows red \"Sync Failing\" and grey \"Disabled\"; yours will show green when things are working.",
+      "risk": "When the status text is long and gets cut off with \"…\", the dot still shows, so nothing is lost there. On a phone the rows look the same."
+    }
+  ]
+}

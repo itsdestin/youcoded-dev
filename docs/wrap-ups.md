@@ -582,3 +582,9 @@ recurred — the repetition is the data.
 - Destin: "can I hand these off in parallel?" and "a no-context opus implementer, autonomously, without my input" → applied: plans A ∥ B, C after; the preference recorded in `~/system/me/preferences.md`
 - The full local verify went red after merging master because the worktree's hardlinked deps lack the lint/type binaries master adopted today (`oxlint`, `tsgo`); `workspace-start --session` on resume does NOT top up deps → roadmap: `dev-workspace.md` → rigs
 - deleted/merged: CI's `paths-ignore` filters and the Android job's four-format desktop installer build (13 → 5.6 min); seven stale CI/test roadmap entries closed; the follow-up outline superseded and archived
+## 2026-09-16 — settings row icons, status dot, Assistant settings wording (session/settings-card-icons, youcoded + workspace)
+- `verify.sh` failed `types` and `lint` on every run because the worktree's freshly fetched tsgo/oxlint had no `.bin` links and no platform binaries → roadmap: `dev-workspace.md` (beside the dompurify item)  [~5 calls to find a workaround, 4 misleading FAILs]
+- I declared the dot "centred" from a row profile that blended the whole word; Destin saw it was still 1.5 px low → dropped: fixed by measuring the capital glyph's own rows; one extra review round, no rule would have caught a bad threshold
+- A plan whose `pre` step opens the surface is "identical to baseline" and gets filed unverified → dropped: `sameAsBaseline` is documented in `shot.mjs`; one re-run
+- Destin: dot centred on the capital letters ("center aligned with the D"); Assistant row says what the panel holds → applied: WHY comments in `SettingRow.tsx` (`RowStatus`) and `AssistantSettings.tsx`; answered decks archived
+- deleted/merged: the two hand-rolled status dots became one shared `RowStatus`; `rowSummary` removed from the Assistant row
