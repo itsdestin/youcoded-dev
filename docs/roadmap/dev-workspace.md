@@ -1,5 +1,6 @@
 # dev-workspace — building the app, not the app
 Filing test: it's about building the app, not the app. Could a normal user ever see it? No.
+Not here: a failing or flaky test — fix it on sight (CLAUDE.md → Local build & test).
 seen-on is always n/a here.
 
 ## tests
@@ -106,11 +107,8 @@ seen-on is always n/a here.
       on macOS and `native-session-host.test.ts` on Ubuntu (run 35160811595). With master
       protected on the Linux check (Plan A) this can block a good PR. Same shape as the two
       write-after-teardown races Plan A fixed (engine stopAll, lease destroy): find what still
-      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries.
-      2026-09-17: also on Windows — `native-session-host.test.ts` › "an explicit task_id
-      interrupt must not clobber a specialist whose ledger record already reads completed"
-      (run 35199317453, session/ci-followups-b; the same tests passed on Windows one commit earlier)
-      `n/a` `confirmed` `checked 2026-09-17`
+      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
