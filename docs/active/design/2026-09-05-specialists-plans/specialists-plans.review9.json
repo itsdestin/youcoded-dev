@@ -1,0 +1,238 @@
+{
+  "title": "Plans — round 9: the question box, and the last things you haven't signed off",
+  "key": "specialists-plans-review9",
+  "out": "specialists-plans.review9.html",
+  "images": "images/specialists-plans.review9",
+  "runs": {
+    "today": "runs/final"
+  },
+  "labels": {
+    "today": "Now"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "f-box": [
+      "plans-card-r10",
+      "ask-box-text",
+      "1180x470+16+40"
+    ],
+    "f-line": [
+      "plans-card-r10",
+      "ask-line-text",
+      "1320x460+10+40"
+    ],
+    "f-unknown": [
+      "plans-card-5b",
+      "paused-unknown",
+      "1180x400+16+40"
+    ],
+    "f-cap": [
+      "plans-card-5b",
+      "paused-cap",
+      "1180x400+16+40"
+    ],
+    "f-min": [
+      "plans-card-5b",
+      "add-budget-below-minimum",
+      "1180x400+16+40"
+    ],
+    "f-error": [
+      "plans-card-5b",
+      "error-slot",
+      "1180x400+16+40"
+    ],
+    "f-comment": [
+      "plans-card-5b",
+      "comment-followup",
+      "1420x700+10+40"
+    ],
+    "f-chip": [
+      "plans-card-r9",
+      "chip-popup-plan-asking",
+      "620x580+400+160"
+    ]
+  },
+  "steps": [
+    {
+      "id": "D9-1",
+      "surface": "Chat · plan card",
+      "path": "A paused plan, after pressing Ask the assistant",
+      "crop": "f-box",
+      "headline": "Ask the assistant opens a small box where you can type a question, or leave it blank.",
+      "changed": "Pressing Ask shows a box with Cancel and Send. What you type goes to the assistant with the plan's details.",
+      "notice": "You can ask something specific, as the beta tester expected.",
+      "risk": "One more click than before.",
+      "highlight": {
+        "box": [
+          2,
+          66,
+          96,
+          32
+        ]
+      }
+    },
+    {
+      "id": "D9-2",
+      "surface": "Chat",
+      "path": "The chat after sending a question",
+      "crop": "f-line",
+      "headline": "The chat shows what you asked.",
+      "changed": "The line reads \"You asked the assistant about this plan: …\" with your words, or just the first part if you left the box empty.",
+      "notice": "Your question stays visible in the conversation.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          40,
+          85,
+          60,
+          7
+        ]
+      }
+    },
+    {
+      "id": "D9-3",
+      "surface": "Chat · plan card",
+      "path": "A plan paused because a specialist was cut off while running a command",
+      "crop": "f-unknown",
+      "headline": "Only when a cut-off action may have reached outside your computer does the card ask you, and it warns Continue may repeat it.",
+      "changed": "Cut-off reads and file edits now recover on their own. A command, web request or connected app still pauses, with \"Continue may run it again. Check first whether it already happened.\" plus Ask the assistant.",
+      "notice": "You're only interrupted when repeating an action could matter.",
+      "risk": "The warning still shows when the command was harmless to repeat.",
+      "highlight": {
+        "box": [
+          2,
+          78,
+          96,
+          10
+        ]
+      }
+    },
+    {
+      "id": "D9-4",
+      "surface": "Chat · plan card",
+      "path": "Repeating steps that used all their rounds",
+      "crop": "f-cap",
+      "headline": "A plan whose repeated steps never met their goal offers Ask the assistant and Stop.",
+      "changed": "Continue and Add budget aren't offered because neither would help; the assistant can suggest a revised plan if you ask.",
+      "notice": "One click to get advice on what to do next.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          68,
+          96,
+          11
+        ]
+      }
+    },
+    {
+      "id": "D9-5",
+      "surface": "Chat · plan card",
+      "path": "A plan paused at its limit, with too small an amount typed",
+      "crop": "f-min",
+      "headline": "Add budget starts at the smallest amount that lets the plan finish, and refuses less.",
+      "changed": "The line \"Add at least 12,500 tokens to continue.\" turns red below the minimum and Continue is disabled. Continue adds the budget and restarts the plan in one press.",
+      "notice": "Adding budget can't leave the plan stuck.",
+      "risk": "The minimum can be larger than you expect, because it also covers restarting the specialist.",
+      "highlight": {
+        "box": [
+          2,
+          80,
+          96,
+          10
+        ]
+      }
+    },
+    {
+      "id": "D9-6",
+      "surface": "Chat · plan card",
+      "path": "A plan button the app refused",
+      "crop": "f-error",
+      "headline": "A refused plan button shows the app's standard error with Retry.",
+      "changed": "You asked when this happens: when the plan is running in another YouCoded window, it changed a moment before your click, its model or price changed since you saw it, the app is still starting, or its saved file can't be read.",
+      "notice": "Errors here look and work like everywhere else.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          57,
+          96,
+          8
+        ]
+      }
+    },
+    {
+      "id": "D9-7",
+      "surface": "Chat",
+      "path": "After pressing Comment and sending a note",
+      "crop": "f-comment",
+      "headline": "Your comment appears in the chat with a short plain note asking for a revised plan.",
+      "changed": "The line after your note reads \"(Feedback on your plan: please revise it and propose it again.)\"; the assistant is also told, out of sight, to answer with a new plan card.",
+      "notice": "Plain words in the chat.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          55,
+          85,
+          45,
+          8
+        ]
+      }
+    },
+    {
+      "id": "D9-8",
+      "surface": "Status bar",
+      "path": "Specialists popup while a plan's specialist is asking you something",
+      "crop": "f-chip",
+      "headline": "A plan with a waiting question is listed under Needs you and opens by itself.",
+      "changed": "The plan's card shows \"1 needs you\" and is already open to the specialist's question with Yes and No.",
+      "notice": "You can answer without searching.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          16,
+          96,
+          10
+        ]
+      }
+    },
+    {
+      "id": "Q9-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "A paused plan",
+      "headline": "Is it fine that pausing is free but continuing re-sends each unfinished specialist's instructions?",
+      "today": "A paused plan uses nothing while it waits. When you press Continue, each specialist that hadn't finished starts again from what it saved, which means sending its instructions again; that counts toward the plan's budget.",
+      "problem": "You asked whether pausing and resuming costs anything. The card doesn't say.",
+      "proposal": "Leave it, or add a short line on paused cards.",
+      "options": [
+        {
+          "id": "leave",
+          "label": "Leave it as is",
+          "pros": [
+            "The limit already includes the restart cost.",
+            "Less text on the card."
+          ],
+          "cons": [
+            "You don't see why the minimum Add budget can be larger than expected."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "note",
+          "label": "Add a short line",
+          "pros": [
+            "Explains the restart cost up front."
+          ],
+          "cons": [
+            "One more line on every paused card."
+          ]
+        }
+      ]
+    }
+  ]
+}
