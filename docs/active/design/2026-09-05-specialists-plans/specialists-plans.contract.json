@@ -1,0 +1,380 @@
+{
+ "title": "Specialists plans — contract",
+ "key": "specialists-plans-contract",
+ "out": "specialists-plans.contract.html",
+ "themes": ["midnight"],
+ "branch": "feat/specialists-plans-ui",
+ "sources": {
+  "specialists-plans-questions": "specialists-plans.questions.json",
+  "specialists-plans-review": "specialists-plans.review.json",
+  "specialists-plans-review3": "specialists-plans.review3.json",
+  "specialists-plans-review5": "specialists-plans.review5.json",
+  "specialists-plans-review6": "specialists-plans.review6.json",
+  "specialists-plans-review7": "specialists-plans.review7.json",
+  "specialists-plans-review8": "specialists-plans.review8.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Chat · plan card",
+   "path": "A conversation, after the assistant proposes a plan; the Specialists button; Settings → Specialists",
+   "headline": "This is what done means for plans.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "The assistant can offer a plan on any cloud model and on local models from the 9B class up, never smaller.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-eligibility.test.ts",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "Progress shows on the plan card itself: each step ticks off and its specialists sit inside it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-questions#Q-5"
+    },
+    {
+     "id": "R3",
+     "statement": "A plan that hits its limit pauses in place: finished work stays, the stuck step says why, and Add budget and Stop are offered.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-questions#Q-6"
+    },
+    {
+     "id": "R4",
+     "statement": "One card shows the whole plan before anything is spent: the steps, who does them, the limit, Approve and Comment.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-1"
+    },
+    {
+     "id": "R5",
+     "statement": "A model with no published price shows the limit as an amount of work only, never a made-up dollar figure.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-2"
+    },
+    {
+     "id": "R6",
+     "statement": "Comment opens a note box under the plan; the assistant rewrites the plan and posts a new card.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-3"
+    },
+    {
+     "id": "R7",
+     "statement": "A plan under your limit starts on its own and says so on the card, with the limit still printed.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-6"
+    },
+    {
+     "id": "R8",
+     "statement": "Add budget asks for one number, shows what it is worth in dollars, and continues from where the plan stopped.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-8",
+     "note": "out of curiosity, does pausing/resuming after credit limit is reached itself consume tokens? or is it no-cost pause/resume?"
+    },
+    {
+     "id": "R9",
+     "statement": "After a restart the card returns as interrupted, showing the steps already done, and nothing runs until you press Continue.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-9",
+     "note": "move buttons to right side. also, stop should be to the left of the whie button on this and the previous card."
+    },
+    {
+     "id": "R10",
+     "statement": "A finished plan folds to its step list and one line: how long it took and what it used.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-10"
+    },
+    {
+     "id": "R11",
+     "statement": "After a Comment the old plan greys out and points to the new one below it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-11"
+    },
+    {
+     "id": "R12",
+     "statement": "Settings has a Plans section with 'Run small plans without asking', off by default, showing the limit once on.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-12"
+    },
+    {
+     "id": "R13",
+     "statement": "While the plan is being written the card is exactly one row tall, like every other collapsed card.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review3#S-1"
+    },
+    {
+     "id": "R14",
+     "statement": "Each step is its own bordered container with its specialists inside it, so plan, step and specialist read by shape.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review3#S-2"
+    },
+    {
+     "id": "R15",
+     "statement": "The Add budget field reads 'Allow 9,000 tokens ($0.03)', with no extra words like 'more' or 'about'.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review3#S-4",
+     "note": "same as before, maybe put warning+buttons in container together?"
+    },
+    {
+     "id": "R16",
+     "statement": "The paused plan's sentence and its buttons sit together in one filled, outlined amber pill.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review5#T-1"
+    },
+    {
+     "id": "R17",
+     "statement": "Raising the limit happens inside that same amber pill, with the reason for the pause still readable beside it.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-signed-copy.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review5#T-2"
+    },
+    {
+     "id": "R18",
+     "statement": "An interrupted plan gets the same pill, filled and outlined in neutral grey.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review5#T-3"
+    },
+    {
+     "id": "R19",
+     "statement": "Each specialist inside a plan is the usual specialist card you can open to see its thinking, output and tool calls.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-signed-copy.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review#P-5",
+     "note": "i want to keep our current agent/specialist cards that show thinking, output, and tool calls  for agents within the plan. this should have a clear visual heirarchy of collapsed cards (Plan->Step->Specialist). stop the plan should also have the red theming used for other stop buttons in the ui and sit at the bottom right, not the left"
+    },
+    {
+     "id": "R20",
+     "statement": "Stop the plan uses the app's red stop styling and sits at the right of the card, not the left.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-5"
+    },
+    {
+     "id": "R21",
+     "statement": "The paused message no longer says 'Nothing is spent past the limit you approved', and its Stop is tinted red.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review#P-7",
+     "note": "drop \"nothing is spent past limit you approved. move the add budget/stop buttons to bottom right. make stop red-tint like earlier suggestions"
+    },
+    {
+     "id": "R22",
+     "statement": "Wherever a filled and a light button sit together, the light one is on the left and the filled one on the right.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review6#R6-4",
+     "note": "okay. the approve button should be on the rightmost side, with comment to the left of it. again, our design/style guidelines should note something to the effect of \"when using FILLED/DARK buttons, these should always be either centered and the full width of the card/modal they are attached to or on the righthand side. they should never be left-aligned. when a dark and hollow/light button are placed together, the light button always goes on the left."
+    },
+    {
+     "id": "R23",
+     "statement": "Approve sits at the right edge of a proposed plan, with Comment just to its left.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review7#R7-2",
+     "note": "we can put the buttons in-line with the text on the left. lots of empty space."
+    },
+    {
+     "id": "R24",
+     "statement": "Approve and Comment sit on the same line as the limit text, and drop below it on a narrow window.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r9.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-A"
+    },
+    {
+     "id": "R25",
+     "statement": "An approximate limit shows a ~ before the number ('Up to ~42,000 tokens'), with no extra warning sentence.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review7#R7-1"
+    },
+    {
+     "id": "R26",
+     "statement": "An approximate dollar amount also uses the ~ ('~$0.12'), never 'about $0.12'.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review7#Q7-1"
+    },
+    {
+     "id": "R27",
+     "statement": "A failed plan says what went wrong in one line, with Report bug and Diagnose buttons.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-5b.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review6#R6-2"
+    },
+    {
+     "id": "R28",
+     "statement": "A specialist stopped before it did anything reads 'Not started', muted, with an empty circle.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-5b.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review6#R6-8"
+    },
+    {
+     "id": "R29",
+     "statement": "When a plan's specialist asks you something, the bottom bar's Specialists button shows '1 needs you'.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-5b.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review6#R6-9"
+    },
+    {
+     "id": "R30",
+     "statement": "Clicking that button shows the waiting plan specialist with its question, Yes and No, Note and Stop.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-5b.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review6#R6-10"
+    },
+    {
+     "id": "R31",
+     "statement": "A specialist waiting on your answer, in a plan or not, turns its conversation's dot red.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/specialist-ask-attention.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review7#R7-3"
+    },
+    {
+     "id": "R32",
+     "statement": "A specialist waiting on your answer also plays the app's alert sound, as the assistant's own questions do.",
+     "checkedBy": "live-app",
+     "threshold": "the sound plays in a dev instance",
+     "source": "specialists-plans-review7#R7-3"
+    },
+    {
+     "id": "R33",
+     "statement": "The Specialists button also counts a plan's specialists while they are simply working, grouped under their plan.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review6#Q6-2",
+     "note": "but we need to associate each one with it's plan. maybe we group them with plan card within the specialists chip? idk..."
+    },
+    {
+     "id": "R34",
+     "statement": "The Specialists popup lists each running plan once, saying where it is, such as 'step 1 of 3', like its card.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review7#R7-4"
+    },
+    {
+     "id": "R35",
+     "statement": "In that popup a plan is a 'Plan: …' card as wide as other specialists, with no separate heading, opening onto its specialists.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r9.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-B"
+    },
+    {
+     "id": "R36",
+     "statement": "No 'Note for the assistant' row appears in the chat below a plan card.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-notice-hidden.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-C"
+    },
+    {
+     "id": "R37",
+     "statement": "A paused plan never hands itself to the assistant; it shows 'Ask the assistant' as the light button on the left.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-ask.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-D"
+    },
+    {
+     "id": "R38",
+     "statement": "After you ask, the card greys out and says the assistant is looking now, or will after its current reply.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-ask.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-E"
+    },
+    {
+     "id": "R39",
+     "statement": "The chat shows 'You asked the assistant about this plan.' after you ask.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review8#R8-E"
+    },
+    {
+     "id": "R40",
+     "statement": "If the assistant can't answer, the card gives the real reason with Retry, and its normal buttons come back.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-ask.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-F"
+    },
+    {
+     "id": "R41",
+     "statement": "On a narrow window, step titles wrap and a paused plan's buttons move below its reason, all readable.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-ask.test.tsx",
+     "threshold": "the named test passes",
+     "source": "specialists-plans-review8#R8-H"
+    },
+    {
+     "id": "R42",
+     "statement": "A plan paused for a reason other than its limit offers Stop and Continue instead of Add budget.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review6#Q6-3",
+     "note": "but auto recover where that makes the most sense and we dont actually need user input"
+    },
+    {
+     "id": "R43",
+     "statement": "On the phone, a plan card's buttons are disabled with the note 'Plans aren't available on the phone yet.'",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review6#Q6-4",
+     "note": "this will be planned. eventually, everything supported on desktop should work on mobile."
+    },
+    {
+     "id": "R44",
+     "statement": "A plan button pressed while the app is still starting says 'The assistant isn't available right now.' with Retry.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review6#Q6-5"
+    },
+    {
+     "id": "R45",
+     "statement": "At phone width a step's usage text wraps or shortens, and is never cut off at the screen edge.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-ask.test.tsx",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-ux-review-2.md#U3"
+    },
+    {
+     "id": "R46",
+     "statement": "Limits read '9,000-token limit', never '9,000 tokens limit', in step details and the spending line.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-ux-review-2.md#U5"
+    }
+   ]
+  }
+ ]
+}
