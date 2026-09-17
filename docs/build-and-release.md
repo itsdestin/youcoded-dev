@@ -131,7 +131,11 @@ if the result does not verify against the public key built into the app, and upl
 `youcoded-release.json` + `.sig` as the `youcoded-release-manifest` artifact. A green `sign` job is
 the proof the release key works before a release depends on it. Attach both files to the
 pre-release so its downloads can be checked; the website ignores them, since it picks files by
-extension. Branch dispatches skip the job and produce three artifacts, not four.
+extension. Branch dispatches skip the job and produce three artifacts, not four. The manifest
+covers **desktop installers only** — the Android APK is not in it. Android betas are numbered from
+their own run counter (beta.80 desktop shipped beside APK `1.3.0-beta.26`); say so in the notes.
+The beta.78 and beta.80 Windows installers were built with `skip_windows_tests=true`, so their
+tests never ran on Windows.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "youcoded-release-manifest"} -->
 
 **A pre-release does not touch anyone's installed app.** The in-app update checker reads

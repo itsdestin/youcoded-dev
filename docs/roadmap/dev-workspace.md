@@ -3,6 +3,12 @@ Filing test: it's about building the app, not the app. Could a normal user ever 
 seen-on is always n/a here.
 
 ## tests
+- [ ] `tests/artifacts/import-file.test.ts` — the two `failed copy rollback` cases that use
+      `onCollision: 'replace'` with `disclosedCollisions` (ENOSPC and COPY_INCOMPLETE) sometimes
+      return `{ok: true, skipped: true}` on the Windows CI leg, so the mocked copy failure is never
+      reached. An unchanged re-run of 01a2fa4b went green on all three (2026-09-06); the file and
+      its source were untouched since 2026-07-23. Re-run before bisecting
+      `n/a` `needs-verify` `checked 2026-09-06`
 - [ ] `tests/specialist-run.test.ts` "a background completion is injected as a user-role turn when
       the parent goes idle" timed out once on the Windows CI leg (run 35156247052, 2026-09-16, the
       merged-commit dispatch of session/ci-test-health): the child's ledger status was still
@@ -720,6 +726,11 @@ seen-on is always n/a here.
       the explanation sits about ten screens further down, so someone taps it expecting an App
       Store link
       `n/a` `confirmed` `checked 2026-09-03`
+
+- [ ] The promo film's opening still shows Cotton Candy holding the wand that Destin removed from
+      the site's hero button (2026-09-11 refresh). Not asked yet — his call whether to re-film it;
+      renders need his go-ahead
+      `n/a` `decision` `checked 2026-09-11`
 
 - [ ] Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
       1.2.4 in both manifests; the CHANGELOG carries a `1.3.0-beta` section but no `1.3.0` entry),
