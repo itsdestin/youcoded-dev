@@ -67,11 +67,18 @@ utils:
               - matches: cycle-decl
               - has: { stopBy: end, matches: cycle-decl }
       - inside: { stopBy: end, matches: cycle-decl }
+  # WHY ordered `all:` lists here and below (review of u10, 2026-09-16): a rule
+  # object's fields have no guaranteed order, and the position checks
+  # (after-an-earlier-cycle-decl) walk the whole file — so when they ran before
+  # the cheap shape check they ran for EVERY call/if in App.tsx. The guard moved
+  # together with the write into a later helper took ~10 s on one App.tsx copy
+  # (16–20 s under load); with the cheap check first it takes ~1.2 s, and every
+  # probe gives the same findings as before.
   # A guard somewhere after the start of a cyclePermission declaration.
   guard-after-decl:
-    kind: if_statement
-    matches: shell-guard
     all:
+      - kind: if_statement
+      - matches: shell-guard
       - matches: after-an-earlier-cycle-decl
   after-a-later-guard:
     follows:
@@ -82,9 +89,9 @@ utils:
   # A raw write after a declaration with no such guard before it (the node or
   # any ancestor follows the guard).
   unguarded-later-write:
-    kind: call_expression
-    matches: raw-shift-tab
     all:
+      - kind: call_expression
+      - matches: raw-shift-tab
       - matches: after-an-earlier-cycle-decl
       - not:
           any:
@@ -126,8 +133,8 @@ rule:
           - not:
               has:
                 stopBy: end
-                matches: raw-shift-tab
                 all:
+                  - matches: raw-shift-tab
                   - matches: after-an-earlier-cycle-decl
     - matches: raw-shift-tab
       inside:
