@@ -92,7 +92,9 @@ fi
 #   sandbox attribute IS present and contains allow-same-origin).
 # 2026-09-16 (t5c): +2 for perf-mark-index-order + perf-mark-sessions-listed-inside-session-list
 #   (Plan B).
-EXPECTED_VIOLATIONS=47
+# 2026-09-16 (t5c): +2 for decide-permission-passes-powershell-flag + its
+#   -shell-label twin.
+EXPECTED_VIOLATIONS=49
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
