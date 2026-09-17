@@ -30,8 +30,8 @@ note: |
   whole-file last resort is also skipped when any comment in the file
   quotes the idiom.
   TERNARY MASKING (review of u9): a match spanning a ternary's two strings
-  (`x ? 'saveError || ' : `'boom'``) is seen only by that whole-file last resort, so a
-  real finding elsewhere in the same file masks it — the file still fires,
+  (`x ? 'saveError || ' : 'boom'`) is seen only by that whole-file last
+  resort, so a real finding elsewhere in the same file masks it — the file still fires,
   but with one finding where the retired count saw two.
   SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
   components/*.tsx, components/development/*.tsx, components/ui/*.tsx, no
