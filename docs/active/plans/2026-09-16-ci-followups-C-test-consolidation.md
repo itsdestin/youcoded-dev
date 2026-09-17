@@ -14,7 +14,7 @@ status: active
 ## Global Constraints
 
 - **Start with** `node scripts/workspace-start.mjs --session ci-followups-c youcoded` from `/home/destin/youcoded-dev`. Workspace repo = the worktree root; app repo = `<worktree>/youcoded`.
-- **Prerequisite (not parallelisable with B):** Plan B merged in both repos (`git -C <worktree> log --oneline origin/master | grep -c 'sweep ledger'` prints `1`). Plan B removed or converted most source-grep files; consolidating before it would move files that are about to be deleted.
+- **Prerequisite (not parallelisable with B):** Plan B merged in both repos (`git -C <worktree> log --oneline origin/master | grep -c 'sweep ledger'` prints `1`). Plan B removed or converted most source-grep files; consolidating before it would move files that are about to be deleted. Also confirm `bash scripts/ast-grep/check.sh <worktree>/youcoded/desktop/src` prints OK under both headings on the merged master before Task 1 changes the count.
 - **Regenerate the inventory first** (`node scripts/test-inventory.mjs <worktree>/youcoded/desktop > docs/active/plans/2026-09-16-test-inventory.md`) and work from THAT; the committed one is a snapshot from before Plan B.
 - **Moves change no assertion.** A consolidation commit contains only: whole `describe`/`it` blocks moved, imports merged, duplicated `beforeEach`/helper setup collapsed into one, and comment lines deleted. If a test needs a behaviour change to survive the move, that is a separate commit with its own message, before or after the move.
 - **The count is the contract.** Before each cluster: `npx vitest run <the cluster's files> 2>&1 | grep 'Tests  '`. After: the same command on the target file(s). The passed count must be equal. Write both numbers into the commit message.
@@ -22,6 +22,14 @@ status: active
 - **Stage by explicit path**, never `git add -A`. `// WHY` on any non-trivial edit. Commit messages end with `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>` (or the model in use).
 - **Verify** `bash scripts/verify.sh <worktree>/youcoded` after every cluster; `--full` plus `gh workflow run desktop-ci.yml --ref <branch>` before every PR. Master is protected: read a red check, never re-run it blind.
 - Opening PRs is authorised (Destin, 2026-09-16); merging is not — each PR ends with a chat report and **ready to merge?**. The clusters are independent: while one PR waits, start the next cluster on a fresh branch off `origin/master`.
+
+## Coordination with other in-flight work (added 2026-09-17)
+
+- **Ratchets exist now** (merged 2026-09-16, youcoded#499): `desktop/knip-baseline.json` (unused exports/types ceiling), `desktop/line-budgets.json` (src files only; tests are not budgeted), design lint `--max-warnings`, `tests/visible-intervals.test.ts`, `tests/infinite-animation-allowlist.test.ts`. Deleting or merging tests can orphan a source export used only by that test; the knip ratchet then goes red. Delete the orphaned export in the same commit; never raise the baseline. `npm run knip` prints the offenders.
+- **`EXPECTED_VIOLATIONS` is never a literal.** Read the current value in `scripts/ast-grep/check.sh` (Plan B moves it far past the 14 on master today) and add exactly the number of new fixture matches.
+- **Tree-wide guard tests are the intended exception to "one file per module".** They test the whole tree, not a module: `guard-scope-reader`, `visible-intervals`, `infinite-animation-allowlist`, `line-budgets`, `harness-eval-not-shipped`, `hook-scripts-android-parity`, `ipc-channels`, plus any Plan B keeper whose row says `keep`. Leave them in place; in Task 5 list them as accepted, not as an unfinished merge.
+- **Ordering against the simplification phases** (`docs/active/plans/2026-09-16-simplification-phases.md`, phases 1a/1b/T shipped; 2–5 pending): the `remote-` cluster (Task 4) lands BEFORE simplification phase 4, which rewrites `remote-server.ts` and its tests; Task 2 (the native-session-host test split) lands BEFORE simplification phase 5, which splits the source along the same seams; simplification phase 2 (timers: sync, engine, transcript, subagent, chatsearch, social, remote polls) runs between Task 1's merge and the `sync-`/`engine-` clusters, or after them. Rule: no simplification phase runs concurrently with a Plan C cluster that shares its prefix; whoever starts second checks the other's open PR first.
+- **The committed inventory predates 2026-09-16's merges** (four overlay buddy tests deleted, five guards and `SessionDrawer`-unrelated files added, Plan B's conversions): the regenerate-first constraint above is load-bearing, not optional.
 
 ---
 
