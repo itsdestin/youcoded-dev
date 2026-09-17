@@ -47,8 +47,10 @@ rule:
     # WHY (review of u3, 2026-09-16): a default value in a destructure or a
     # parameter, and a class field, hold the text with no listed child
     # holding it, so without these kinds such a spelling fired nowhere.
+    # (No optional_parameter: `className?=` never parses, and a default value
+    # spelling `className="…"` is an assignment_expression listed above — review
+    # of u6, 2026-09-16.)
     - kind: required_parameter
-    - kind: optional_parameter
     - kind: object_assignment_pattern
     - kind: public_field_definition
   regex: "className=\"[^\"]*fixed bottom-16[^\"]*\""
