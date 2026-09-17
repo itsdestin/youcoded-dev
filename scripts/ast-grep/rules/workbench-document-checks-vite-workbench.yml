@@ -1,0 +1,38 @@
+id: workbench-document-checks-vite-workbench
+language: typescript
+severity: error
+message: >-
+  isWorkbenchDocument() in workbench-mode.ts must check VITE_WORKBENCH — the
+  flag `npm run build:site` sets. Without it the predicate is `false` in the
+  landing page's production build of the workbench, and every safety gate that
+  relies on it (the microphone gate first) disappears there.
+note: |
+  Invariant source: tests/useVoiceInput.test.ts › "isWorkbenchDocument checks
+  VITE_WORKBENCH, which is what the site build sets" (retired by Plan B,
+  2026-09-16). The retired case sliced workbench-mode.ts from
+  `export function isWorkbenchDocument` to the first `}` and required the text
+  `VITE_WORKBENCH` in that slice (comments included). A missing function also
+  failed it.
+  Rule (whole file): no function declaration named isWorkbenchDocument with any
+  descendant whose text contains VITE_WORKBENCH — comments count, as they did.
+  Differences, both minimal: the whole function body counts rather than the
+  text up to its first `}` (today the body has no inner braces, so the two are
+  the same region); and `export` is not required here — useVoiceInput's import
+  of the name already fails the type check if the export is dropped.
+  SCOPING: workbench-mode.ts only plus its fixture.
+files:
+  - "**/src/renderer/workbench-mode.ts"
+  - "**/fixtures/workbench-document-checks-vite-workbench.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: function_declaration
+      has:
+        field: name
+        regex: "^isWorkbenchDocument$"
+      all:
+        - has:
+            stopBy: end
+            regex: "VITE_WORKBENCH"

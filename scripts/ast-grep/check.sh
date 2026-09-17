@@ -331,7 +331,10 @@ fi
 #   chrome-root-select-none-{status-bar,header-bar,input-bar,quick-chips,thinking-line,
 #   empty-chat-hint,tool-card} (7) and for each of chrome-root-select-none-app's two texts (2);
 #   file-name-button-select-text (a button not opted in, a third button, a file with one (3)).
-EXPECTED_VIOLATIONS=378
+# 2026-09-16 (u11, useVoiceInput.test.ts): +4 — voice-mic-gate-uses-workbench-document (a gate
+#   naming no predicate (1); the dev-only predicate as a property and as a string (2)) and
+#   workbench-document-checks-vite-workbench (a predicate checking only DEV (1)).
+EXPECTED_VIOLATIONS=382
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
