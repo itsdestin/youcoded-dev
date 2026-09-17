@@ -1,0 +1,28 @@
+{
+  "title": "Pages — the shell, round 7: Back to chat aligned",
+  "key": "youcoded-pages-shell-r7",
+  "out": "youcoded-pages-shell-r7.review.html",
+  "images": "images/youcoded-pages-shell-r7.review",
+  "runs": {
+    "before": "runs/round6",
+    "after": "runs/after"
+  },
+  "labels": { "before": "Round 6", "after": "Round 7" },
+  "themes": ["midnight", "light", "halftone-dimension", "meadow-mist"],
+  "stage": "review",
+  "crops": {
+    "view-band-right": ["pages-view", "view", "480x60+960+0"]
+  },
+  "steps": [
+    {
+      "id": "S-25",
+      "surface": "A page",
+      "path": "The right end of the band above an open page",
+      "crop": "view-band-right",
+      "headline": "Back to chat and Esc now share one baseline, with a dot between them.",
+      "changed": "The Esc key cap was a smaller piece of text sitting a hair low. All three parts are now the same size on one line: Back to chat · Esc.",
+      "notice": "The pill reads as one label, the way the window buttons read as one group.",
+      "risk": ""
+    }
+  ]
+}

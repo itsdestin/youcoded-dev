@@ -3,7 +3,8 @@ language: tsx
 severity: error
 message: >-
   ProjectView must render at the shared screen layer (`fixed inset-0
-  bg-canvas z-40`), never a hardcoded band value. Change 26: Marketplace,
+  bg-panel z-40`; bg-canvas before 2026-09-17, when it gained the page view's
+  framed pane), never a hardcoded band value. Change 26: Marketplace,
   Library and ProjectView are ONE layer. At the old z-[8000] a
   Toast/ContextMenu/AnchorTip fired while Projects was open, painted
   underneath it, and was silently swallowed.
@@ -33,4 +34,4 @@ rule:
         has:
           stopBy: end
           kind: string_fragment
-          regex: "fixed inset-0 bg-canvas z-40"
+          regex: "fixed inset-0 bg-(canvas|panel) z-40"

@@ -519,16 +519,6 @@ seen-on is always n/a here.
       conversation rather than folding it in
       `n/a` `confirmed` `checked 2026-09-13`
 
-- [ ] `fillMissingPackages` fetches a missing tool package but not what makes it runnable, so
-      `verify.sh` reports `types` and `lint` as FAIL on a correct change. On 2026-09-16 it fetched
-      `@typescript/native-preview` and `oxlint` into a new worktree; both then failed with
-      `tsgo: command not found` / `oxlint: command not found` (no `node_modules/.bin` links are
-      made), and calling their bin scripts directly died with `MODULE_NOT_FOUND` — the loop skips
-      every `optional` lock entry, which is where their per-platform native binaries live. The
-      same two FAILs showed on four verify runs in that session; the only workaround was
-      installing both into a scratch folder and running them from there (both passed)
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] A fresh worktree came up missing a package its own lockfile names (`dompurify`), so the first
       full verify failed 41 test files at import. `workspace-start` already has the fix for this —
       `fillMissingPackages` — and it printed no note; run by hand against the same worktree straight
@@ -542,20 +532,6 @@ seen-on is always n/a here.
       RESUME too, so re-running it with the same key fetches what creation missed. Creation printed
       its `fetched` note correctly on two fresh worktrees that day
       `n/a` `needs-verify` `checked 2026-09-16` `regression`
-
-- [ ] A fresh worktree's hardlinked `node_modules` is the SHARED checkout's, and the shared checkout
-      sits hundreds of commits behind master: on 2026-09-16 it carried TypeScript 5.9 where master's
-      `package.json` wants 6, and `fillMissingPackages` fetched `oxlint` and `oxlint-tsgolint` but
-      not their native platform bindings (`@oxlint/binding-linux-x64-gnu`, `@oxlint-tsgolint/linux-x64`,
-      which are optionalDependencies) nor `.bin` links for them. So `verify.sh` fails its `types`
-      check (`TS5095`) and its `lint` check (`oxlint: command not found`, then "Cannot find native
-      binding") on EVERY new worktree until someone unpacks the tarballs by hand — two sessions did
-      exactly that on 2026-09-16 (this one, and the one that closed the status-bar accounting
-      item, which "ran from the npm cache"). Fix shape: `fillMissingPackages` compares the
-      worktree's lock against what is on disk for the top-level packages that matter to the
-      checks (typescript, oxlint, oxlint-tsgolint) and fetches optionalDependencies for the
-      current platform plus `.bin` links; a `deps:` line names what it replaced
-      `n/a` `confirmed` `checked 2026-09-16` `regression`
 
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
