@@ -13,10 +13,9 @@ note: |
   same shape as appearance-broadcast-handler-registered. The file names are
   matched ONLY at their real in-scope locations, so a same-named file
   elsewhere is not treated as the exemption.
-  LIMITATION: the "still exists (in scope)" half is dropped. A rule scoped to
-  a deleted or moved file matches nothing and stays silent; a stale name in
-  no-hand-rolled-dialog-shell's ignores: then exempts nothing real, which is
-  harmless. Same call as dialog-chrome-authority's exemption bookkeeping.
+  The "still exists (in scope)" half is check.sh's rule-paths pass
+  (2026-09-16): a deleted or moved exempted file leaves a files: glob here
+  that matches nothing, and that fails the check.
   SHAPE: the retired test used `src.includes('<OverlayPanel')` on raw text;
   presence here means a JSX tag whose name starts with OverlayPanel, the same
   shape no-hand-rolled-dialog-shell forbids elsewhere.

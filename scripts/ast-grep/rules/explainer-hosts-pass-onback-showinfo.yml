@@ -20,8 +20,8 @@ note: |
   that has such a tag and has NO `onBack` JSX attribute whose `{…}` value
   holds a non-comment `showInfo` (an identifier, property, shorthand or
   string piece). Formatting-independent, like the old brace balancing.
-  LIMITATION: a host file that is deleted or renamed is out of scope, not a
-  failure (the retired test threw on a missing file).
+  A host file that is deleted or renamed fails check.sh's rule-paths pass
+  (2026-09-16), as the retired test threw on a missing file.
 files:
   - "**/src/renderer/components/ContextPopup.tsx"
   - "**/src/renderer/components/SettingsPanel.tsx"

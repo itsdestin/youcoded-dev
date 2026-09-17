@@ -252,6 +252,63 @@ else
     echo "  SKIP — python3 not found; generated rules were not checked for drift"
 fi
 
+# WHY a dead-path check (review of u2, 2026-09-16): a rule scoped to one named
+# file (`files: - "**/src/main/main.ts"`) matches NOTHING once that file is
+# renamed or deleted — the real-source scan below then reports OK while the
+# rule guards nothing. The retired text-reading tests threw on a missing file;
+# this restores that for every rule at once. A "concrete" glob is one whose only
+# wildcard is the leading `**/`; each must match at least one existing file under
+# SCAN_DIRS. Fixture globs are skipped (the fixture pass covers those), and so is
+# any glob with a wildcard past the leading `**/` (it names a family, not a file).
+# Handles `files:` written as a block list (`  - "a"`) or a flow list (`["a", "b"]`).
+# python3 is a soft dependency, as for the drift check above.
+echo "== rule paths (every named file must exist) =="
+if command -v python3 >/dev/null 2>&1; then
+    if ! python3 - "$HERE/rules" "${SCAN_DIRS[@]}" <<'PY'
+import os, re, sys
+rules_dir, scan_dirs = sys.argv[1], sys.argv[2:]
+
+def files_globs(text):
+    # The `files:` value: either `files: [..]` on one line, or the `- item` lines under it.
+    m = re.search(r'^files:[ \t]*\[(.*?)\]', text, re.M | re.S)
+    if m:
+        items = m.group(1).split(',')
+    else:
+        m = re.search(r'^files:[ \t]*\n((?:[ \t]+-.*\n?)+)', text, re.M)
+        items = [l.split('-', 1)[1] for l in m.group(1).splitlines()] if m else []
+    return [i.split(' #')[0].strip().strip('"\'') for i in items if i.strip()]
+
+existing = []
+for d in scan_dirs:
+    for root, _, names in os.walk(d):
+        existing += [os.path.join(root, n).replace(os.sep, '/') for n in names]
+
+dead = 0
+for name in sorted(os.listdir(rules_dir)):
+    if not name.endswith('.yml'):
+        continue
+    text = open(os.path.join(rules_dir, name), encoding='utf-8').read()
+    rule_id = re.search(r'^id:\s*(\S+)', text, re.M).group(1)
+    for glob in files_globs(text):
+        rest = glob[3:] if glob.startswith('**/') else glob
+        if re.search(r'[*?\[{]', rest) or rest.startswith('fixtures/') or '/fixtures/' in rest:
+            continue
+        if not any(p.endswith('/' + rest) for p in existing):
+            print(f'  FAIL — rule {rule_id}: files: glob "{glob}" matches no file (renamed or deleted?)')
+            dead += 1
+if dead:
+    print('         The rule now guards nothing there. Point the glob at the file\'s new path,')
+    print('         or drop the rule if the thing it guarded is gone on purpose.')
+    sys.exit(1)
+print('  OK — every concrete files: path in rules/ names an existing file')
+PY
+    then
+        fail=1
+    fi
+else
+    echo "  SKIP — python3 not found; rule paths were not checked"
+fi
+
 # WHY a per-rule check and not just the total (2026-09-10): the count alone
 # cannot tell "every rule fired" from "the right NUMBER of findings appeared".
 # A rule added with no fixture — or one whose `files:` globs exclude the fixture

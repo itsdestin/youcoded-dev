@@ -16,8 +16,8 @@ note: |
   `showInfo` anywhere in the comment-stripped text. Here: a `kind: program`
   that has such a tag and no non-comment `showInfo` (an identifier, property,
   shorthand, type name, string or JSX text piece).
-  LIMITATION: a deleted or renamed ThemeScreen.tsx is out of scope, not a
-  failure (the retired test threw on a missing file).
+  A deleted or renamed ThemeScreen.tsx fails check.sh's rule-paths pass
+  (2026-09-16), as the retired test threw on a missing file.
 files:
   - "**/src/renderer/components/ThemeScreen.tsx"
   - "**/fixtures/explainer-hosts-pass-onback-showinfo-lifted.tsx"
