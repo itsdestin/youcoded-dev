@@ -1,0 +1,84 @@
+id: shell-session-permission-cycle-guarded
+language: tsx
+severity: error
+message: >-
+  App.tsx's cyclePermission must refuse a shell session —
+  `if (sessionsRef.current.find((x) => x.id === sessionId)?.provider === 'shell') return;`
+  — BEFORE its raw sendInput(sessionId, '\x1b[Z'). That write bypasses
+  canPtySend, so without the guard a Shift+Tab in a shell session types an
+  escape sequence at the user's own prompt.
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  "the permission cycle refuses a shell session"). The retired case sliced
+  App.tsx from the FIRST `const cyclePermission =` to the first
+  `sendInput(sessionId, '\x1b[Z')` after it and asserted the slice holds the
+  guard line.
+  MATCHED: (a) the file has no `const cyclePermission = …` declaration (the
+  retired slice was then empty); (b) inside the FIRST such declaration, a
+  call whose callee ends in `sendInput` with arguments exactly
+  `(sessionId, '\x1b[Z')` that does not come after the guard statement —
+  "after" meaning the call or an ancestor up to the declaration follows a
+  sibling that is or holds the guard.
+  DELIBERATE DIFFERENCES: the guard must be a real statement (a comment
+  quoting it no longer counts), and a cyclePermission with NO such write
+  inside it does not fire — the retired slice then ran on to a write
+  elsewhere in the file (or to the end), which is not this function's.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/shell-session-permission-cycle-guarded*.tsx"
+utils:
+  cycle-decl:
+    kind: lexical_declaration
+    regex: "^const\\s"
+    has:
+      kind: variable_declarator
+      has: { field: name, regex: "^cyclePermission$" }
+  shell-guard:
+    pattern: "if (sessionsRef.current.find((x) => x.id === sessionId)?.provider === 'shell') return;"
+  after-the-guard:
+    follows:
+      stopBy: end
+      any:
+        - matches: shell-guard
+        - has: { stopBy: end, matches: shell-guard }
+  after-an-earlier-cycle-decl:
+    any:
+      - follows:
+          stopBy: end
+          any:
+            - matches: cycle-decl
+            - has: { stopBy: end, matches: cycle-decl }
+      - inside:
+          stopBy: end
+          follows:
+            stopBy: end
+            any:
+              - matches: cycle-decl
+              - has: { stopBy: end, matches: cycle-decl }
+      - inside: { stopBy: end, matches: cycle-decl }
+  raw-shift-tab:
+    kind: call_expression
+    has: { field: function, regex: "sendInput$" }
+    all:
+      - has:
+          field: arguments
+          pattern:
+            context: "f(sessionId, '\\x1b[Z')"
+            selector: arguments
+rule:
+  any:
+    - kind: program
+      not: { has: { stopBy: end, matches: cycle-decl } }
+    - matches: raw-shift-tab
+      inside:
+        stopBy: end
+        matches: cycle-decl
+        not: { matches: after-an-earlier-cycle-decl }
+      not:
+        any:
+          - matches: after-the-guard
+          - inside:
+              stopBy: { matches: cycle-decl }
+              all:
+                - not: { matches: cycle-decl }
+                - matches: after-the-guard

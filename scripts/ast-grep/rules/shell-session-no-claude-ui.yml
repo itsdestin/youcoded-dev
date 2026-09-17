@@ -1,0 +1,63 @@
+id: shell-session-no-claude-ui
+language: tsx
+severity: error
+message: >-
+  App.tsx must not offer Claude Code UI in a shell session: the bottom chrome
+  (ChatInputBar — composer and Stop — and StatusBar — model chip and picker)
+  sits inside one `{!isShellSession && (<>…</>)}` gate, the model picker
+  cannot open, Preferences' Advanced button (which types /config into the
+  PTY) is hidden, and a Claude Code slash command gets the honest "isn't
+  available in a terminal session" toast.
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  "the whole bottom chrome is skipped for a shell session", "the model
+  picker cannot open for a shell session", "Preferences' Advanced button is
+  Claude Code only", "says the honest thing in the toast for a shell
+  session"). Whole-file presence branches, one fixture file each:
+    - a `{!isShellSession && (<>…</>)}` expression whose fragment holds a
+      <ChatInputBar…> and a <StatusBar…> tag (open or self-closing). The
+      retired case sliced from the FIRST `{!isShellSession && (<>` to the
+      first `</>)}` after it; here ANY such gate holding both counts, and
+      the whole fragment is searched — so a harmless earlier gate, or a
+      nested `(<>…</>)}` inside this one, no longer fails the check.
+    - an `open={modelPickerOpen && !isShellSession}` attribute (any element)
+    - a `showAdvanced={currentSession?.provider !== 'native' &&
+      currentSession?.provider !== 'shell'}` attribute (any element)
+    - a string/template piece or JSX text holding "isn't available in a
+      terminal session — it's a Claude Code command."
+  Structural matches are whitespace-insensitive; a comment mention no longer
+  counts.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/shell-session-no-claude-ui-*.tsx"
+utils:
+  bottom-chrome-gate:
+    kind: jsx_expression
+    has:
+      pattern: "!isShellSession && (<>$$$</>)"
+      all:
+        - has: { stopBy: end, any: [{ kind: jsx_opening_element }, { kind: jsx_self_closing_element }], regex: "^<ChatInputBar" }
+        - has: { stopBy: end, any: [{ kind: jsx_opening_element }, { kind: jsx_self_closing_element }], regex: "^<StatusBar" }
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, matches: bottom-chrome-gate } }
+    - not:
+        has:
+          stopBy: end
+          kind: jsx_attribute
+          has: { kind: property_identifier, regex: "^open$" }
+          all:
+            - has: { kind: jsx_expression, has: { pattern: "modelPickerOpen && !isShellSession" } }
+    - not:
+        has:
+          stopBy: end
+          kind: jsx_attribute
+          has: { kind: property_identifier, regex: "^showAdvanced$" }
+          all:
+            - has: { kind: jsx_expression, has: { pattern: "currentSession?.provider !== 'native' && currentSession?.provider !== 'shell'" } }
+    - not:
+        has:
+          stopBy: end
+          any: [{ kind: string_fragment }, { kind: jsx_text }]
+          regex: "isn't available in a terminal session — it's a Claude Code command\\."

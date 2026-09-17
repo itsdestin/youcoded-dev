@@ -299,7 +299,13 @@ fi
 #   check is wrong and named only in a comment/string — and pty-worker-passthrough-single-write
 #   (a return before the write, a chunked write, a write after a nested return, and a file with
 #   no passthrough branch (4)).
-EXPECTED_VIOLATIONS=321
+# 2026-09-16 (u8, shell-session-renderer.test.ts): +19 — one fixture file per presence
+#   branch for shell-session-view-forced (7), shell-session-no-claude-ui (4),
+#   shell-session-view-toggle-hidden (1) and runtime-union-has-no-shell (1);
+#   shell-session-permission-cycle-guarded (a guard after the raw write, and a file with no
+#   const cyclePermission (2)); session-strip-runtime-never-shell (an untyped runtime state,
+#   and the banned call spelled as a call, a comment and a string (4)).
+EXPECTED_VIOLATIONS=340
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
