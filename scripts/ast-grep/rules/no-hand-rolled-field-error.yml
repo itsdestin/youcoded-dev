@@ -1,0 +1,53 @@
+id: no-hand-rolled-field-error
+language: tsx
+severity: error
+message: >-
+  No file hand-rolls the FieldError primitive's markup (`text-2xs
+  text-destructive-fg` / `text-3xs text-destructive-fg`). Use <FieldError>
+  (components/ui/states.tsx). ROADMAP "Adopt the FieldError primitive" found
+  25 sites across 14 files writing this pair by hand; the copies drifted (the
+  sweep found the app split between text-3xs and text-2xs, which is why the
+  primitive gained a `size` prop instead of six lines silently resizing).
+note: |
+  Invariant source: tests/field-error-adoption.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 3 — "no file hand-rolls the primitive markup").
+  The pattern is deliberately NOT anchored to a tag — a copy is a copy on a
+  <p>, a <span> or a <div> — and excludes the opacity variant
+  (`text-destructive-fg/80`, prose styling, not this primitive): the negative
+  lookahead blocks a following `/`, word char or `-`.
+  EXEMPT (carried as `ignores:` below, from the retired test's EXEMPT table):
+    - components/git/GitReviewView.tsx — a destructive text BUTTON (hover
+      fill, padding, rounded), not an error line.
+    - components/marketplace/UpdateButton.tsx — deliberately role="status"
+      (polite): a failed update check must not interrupt what the user is
+      reading. FieldError is role="alert".
+  Also excluded: components/ui/states.tsx (the primitive's own definition)
+  and components/SkipPermissionsCaption.tsx (the one shared component that
+  legitimately writes this markup once, replacing five duplicated captions).
+  LIMITATION: the retired test also asserted each exemption's count is
+  EXACTLY 1 (not "0 or more") and that the exemption still matches something
+  — a whole-file `ignores:` cannot express "at most 1 here", so both counted
+  cases are kept as a small text case in the trimmed test file per
+  global.md's "at most N matches" guidance, rather than dropped.
+  Also matches `template_string` with the same regex: a class string built as
+  `` className={`text-2xs text-destructive-fg ${x}`} `` is still a copy, and
+  string_fragment alone only reliably covers literal text that isn't split by
+  a `${…}` substitution.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/no-hand-rolled-field-error.tsx"
+ignores:
+  - "**/components/ui/states.tsx"
+  - "**/components/SkipPermissionsCaption.tsx"
+  - "**/components/git/GitReviewView.tsx"
+  - "**/components/marketplace/UpdateButton.tsx"
+rule:
+  # No look-around in ast-grep's regex engine: instead of a negative lookahead
+  # blocking a following /, word char or -, require what follows to be
+  # whitespace or the end of the fragment (equivalent for a space-separated
+  # class list — a real continuation like /80 or -foo never matches either).
+  any:
+    - kind: string_fragment
+      regex: "text-[23]xs text-destructive-fg(?:\\s|$)"
+    - kind: template_string
+      regex: "text-[23]xs text-destructive-fg(?:\\s|$)"

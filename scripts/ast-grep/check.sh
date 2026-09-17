@@ -57,7 +57,8 @@ fi
 # 2026-09-16: +1 for no-two-bare-bg-utilities (Plan B).
 # 2026-09-16: +1 for no-hand-rolled-segmented-control (Plan B).
 # 2026-09-16: +2 for no-hand-rolled-dialog-header + no-hand-rolled-dialog-back-chevron (Plan B).
-EXPECTED_VIOLATIONS=19
+# 2026-09-16: +1 for no-hand-rolled-field-error (Plan B, t5b).
+EXPECTED_VIOLATIONS=20
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
