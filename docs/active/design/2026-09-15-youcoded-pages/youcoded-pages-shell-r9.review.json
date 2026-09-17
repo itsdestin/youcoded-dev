@@ -1,0 +1,112 @@
+{
+  "title": "Pages — the shell, round 9: the Pages button opens the view",
+  "key": "youcoded-pages-shell-r9",
+  "out": "youcoded-pages-shell-r9.review.html",
+  "images": "images/youcoded-pages-shell-r9.review",
+  "runs": {
+    "before": "runs/round8",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Round 8",
+    "after": "Round 9"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "crops": {
+    "view-idle": [
+      "pages-view",
+      "view-idle",
+      "1440x900+0+0"
+    ],
+    "view-band": [
+      "pages-view",
+      "view",
+      "1440x120+0+0"
+    ],
+    "view-panel": [
+      "pages-view",
+      "view",
+      "560x900+0+0"
+    ],
+    "library": [
+      "pages",
+      "library",
+      "1440x400+0+0"
+    ],
+    "projects-header": [
+      "pages-view",
+      "projects-from-pages",
+      "1440x120+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-30",
+      "surface": "Pages",
+      "path": "Top bar → Pages",
+      "crop": "view-idle",
+      "runs": [
+        "after"
+      ],
+      "headline": "The Pages button opens the page view itself: panel on the left, an empty frame saying No page selected.",
+      "changed": "From your note during the first try: no library first. The view opens with the panel pinned open and the frame waiting for a pick; the panel toggle is gone.",
+      "notice": "One click from anywhere lands you among your pages, with the frame ready.",
+      "risk": "There is no way to hide the panel any more; on a phone it will need its own answer later.",
+      "highlight": {
+        "text": "Create a page"
+      }
+    },
+    {
+      "id": "S-31",
+      "surface": "Pages",
+      "path": "The band across the top of the page view",
+      "crop": "view-band",
+      "headline": "The band's left cluster is the app's own three icons: Settings, Pages (lit), Projects.",
+      "changed": "The panel toggle is replaced by the same Settings, Pages and Projects buttons the chat band has, wired to the same places. No chat/terminal toggle, no files, no games.",
+      "notice": "Settings and Projects are reachable without leaving pages; Pages is lit because you are in it.",
+      "risk": ""
+    },
+    {
+      "id": "S-32",
+      "surface": "Pages",
+      "path": "The bottom of the panel",
+      "crop": "view-panel",
+      "headline": "A filled Create a page button with a plus sits above Manage pages.",
+      "changed": "Create a page is the one filled button in the view; Manage pages stays as the outlined pill below it. Both fill the panel's width.",
+      "notice": "Making a page is the first thing the panel offers; managing is second.",
+      "risk": ""
+    },
+    {
+      "id": "S-33",
+      "surface": "Manage pages",
+      "path": "Panel → Manage pages",
+      "crop": "library",
+      "headline": "The old Pages screen is now Manage pages, reached only from the panel, and Back returns to the view.",
+      "changed": "Titled Manage pages. Its back affordance reads Esc · Back and closes onto the page view it came from, not to chat.",
+      "notice": "Cards, pencil and pin work as before; opening a card lands you in the view with that page.",
+      "risk": ""
+    },
+    {
+      "id": "S-34",
+      "surface": "Projects",
+      "path": "Page view → the Projects icon in the band",
+      "crop": "projects-header",
+      "runs": [
+        "after"
+      ],
+      "headline": "Projects replaces the page view in place, and its header gains the Pages button, so the two toggle from the header.",
+      "changed": "From your second note: the Projects icon in the page view's band swaps in Project View; Project View's header now carries the Pages button beside its title; a second press of Pages anywhere returns to chat; the gear in the band opens Settings over the view.",
+      "notice": "Settings, Pages and Projects behave the same in the page view as in chat, and Pages and Projects flip back and forth.",
+      "risk": "Project View is a protected screen; the only change to it is the one button beside its title.",
+      "highlight": {
+        "selector": "[aria-label='Open Pages']"
+      }
+    }
+  ]
+}

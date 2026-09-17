@@ -73,6 +73,23 @@
    "measure": [
     "[aria-label='Exit pages']"
    ]
+  },
+  {
+   "name": "projects-from-pages",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "[aria-label='Open Projects']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[aria-label='Exit projects']",
+   "measure": [
+    "[aria-label='Open Pages']"
+   ]
   }
  ]
 }
