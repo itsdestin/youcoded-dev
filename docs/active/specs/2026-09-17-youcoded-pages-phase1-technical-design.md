@@ -162,7 +162,9 @@ for saved data; never use `localStorage`; keep to the eight named icons.
 prefill (`session-manager.ts`, `InputBar.tsx`), but NOT on `SessionCreateRequest` /
 `SessionCreateArgs` (`shared/session-create-args.ts`), and Android's `session:create` arm
 ignores it; only `dev:open-session-in` reads it everywhere (F5). Phase 1 adds it to both shared
-shapes and the Kotlin arm, the same small change on each. Make a page → `createSession(cwd, false, …, { initialInput: '/page-builder ' })` with `cwd`
+shapes (done). The Kotlin arm is left as is: Phase 1 is desktop plus paired remote, and a remote
+client's `session:create` goes through the desktop's session manager, which honours it. A
+page built from a standalone Android session is later scope, with the rest of Android. Make a page → `createSession(cwd, false, …, { initialInput: '/page-builder ' })` with `cwd`
 the current project (a project page) or the Personal root (a personal page; the skill asks
 which). Edit in chat → the same with `initialInput: '/page-builder edit <folder>'`. The text
 is prefilled, not sent, so the person sees and can add to it. For native sessions the same
