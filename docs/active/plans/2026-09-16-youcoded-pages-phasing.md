@@ -49,13 +49,14 @@ What is in it:
 - **A page style kit.** One stylesheet the page can use so its buttons, fields, cards and text
   match the app. Pictures, drawings and game art keep their own colours.
 - **The creator skill.** A built-in skill, like the theme builder, that turns "make me a page
-  that…" into a page using the style kit. Draft edits stay separate from the working version
-  until applied; the previous working version stays recoverable.
+  that…" into a page using the style kit. An edit goes straight to live; git history is the
+  undo (decided 2026-09-17, see Build decisions below).
 - **Personal and project pages.** A page belongs to you or to a project, and says which.
 
-What is NOT in it: no outside connections, no file access beyond the picker, no model tasks,
-no background work, no marketplace, no permissions screen. A Phase 1 page cannot reach
-anything outside itself, so there is nothing to ask permission for yet.
+What is NOT in it: no connections to services, no file access beyond the picker, no model
+tasks, no background work, no marketplace, no permissions screen. The app does not yet block a
+page from reaching the internet (decided 2026-09-17: no blocking work in Phase 1), so the
+honest wording is "pages have no way to reach your files or accounts yet", not "isolated".
 
 Proving page: something that needs nothing from outside — a timer, a paint page, a notes
 board. Destin's analytics dashboard is Phase 2's proving page, not Phase 1's.
@@ -107,7 +108,8 @@ cards. One note: align "Back to chat" and "Esc" and put a dot between them (appl
   by design (`sync-spaces/guards.ts` DEFAULT_IGNORES, `artifacts/project-manager.ts`), so a page
   there would never leave the machine.
   A page's own saved data lives in its folder and syncs with it (later save wins on a conflict).
-  Pin state rides in the per-device file the Personal space already keeps.
+  Pin state is per device, kept beside the pages (`Personal/Pages/.pins/<deviceId>.json`) rather
+  than inside the device registry, whose schema version older builds reject outright.
 - **Versioning is git.** Both homes are git repositories; "put it back" in chat restores from
   history. No draft state, no previous-copy file: an assistant's edit goes straight to live and
   the open page reloads.
