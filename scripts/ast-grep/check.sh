@@ -217,7 +217,11 @@ fi
 #   ban misses: an indirect string key, a Reflect.get lookup, a bare-call import,
 #   and an aliased import specifier's original name (2 fixture matches on one line
 #   pair, 1 each on the other three).
-EXPECTED_VIOLATIONS=205
+# 2026-09-16 (review of u2, fix 4): +6 for resume-browser-uses-shared-filter-chips —
+#   its single "-absent" fixture (which tripped all six presence branches at once)
+#   is split into six, one per presence branch (+5), and a "Tags labelled twice"
+#   fixture joins the Projects one (+1).
+EXPECTED_VIOLATIONS=211
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
