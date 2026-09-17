@@ -230,7 +230,9 @@ fi
 # 2026-09-16 (u3, project-view-files-tab-stays-mounted.test.tsx): +4 for
 #   filestab-mounted-with-hidden-prop (the conditional mount, its tag lacking `hidden`, an
 #   open/close tag with the wrong `hidden`, and a file with no FilesTab at all).
-EXPECTED_VIOLATIONS=224
+# 2026-09-16 (u4, read-pdf.test.ts): +3 for pdfjs-asset-dirs-no-path-sep (path.sep in the
+#   function, a comment between it and DEFAULT_PDF_PAGES, and a file with the function renamed).
+EXPECTED_VIOLATIONS=227
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
