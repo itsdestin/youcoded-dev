@@ -47,7 +47,7 @@ with real behaviour tests · **X** not a source-text test at all.
 | `tests/app-resume-session-listener.test.ts` | App.tsx resume listener guards detail, exact arg list | B, D | ast-grep | `resume-listener-guards-detail-before-call` | 4/4 |
 | `tests/appearance-buddy-broadcast.test.ts` | APPEARANCE_BROADCAST handler body must reach all windows | D | ast-grep | `appearance-broadcast-reaches-all-windows` | 1/1 |
 | `tests/background-layer-authority.test.ts` | No class string sets two unprefixed bg-* utilities | A, H | ast-grep | `no-two-bare-bg-utilities` | 1/3 |
-| `tests/choice-group-authority.test.ts` | Retired segmented-control class fragments absent; SegmentedTabs has consumers | A, H | ast-grep | `no-hand-rolled-segmented-control` | 2/2 |
+| `tests/choice-group-authority.test.ts` | Retired segmented-control class fragments absent; SegmentedTabs has consumers | A, H | ast-grep | `no-hand-rolled-segmented-control` (+ `.ts` twin) — the consumer-count case is kept as text (cross-file existence count ast-grep cannot express; review of batch A, 2026-09-16, restored its original >=4 threshold and title) | 2/2 |
 | `tests/dialog-chrome-authority.test.ts` | No view paints its own dialog header or back chevron | A | ast-grep | `no-hand-rolled-dialog-header` | 4/4 |
 | `tests/field-error-adoption.test.ts` | Hand-written `text-2xs text-destructive-fg` markup, with counted exemptions | A | ast-grep | `no-hand-rolled-field-error` | 3/3 |
 | `tests/item-list-authority.test.ts` | No bare ✕ glyph as a list-item action across renderer | A, H | ast-grep (keep the non-vacuity case) | `no-bare-glyph-item-action` | 4/4 |
