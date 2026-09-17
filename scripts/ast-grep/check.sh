@@ -244,7 +244,12 @@ fi
 # 2026-09-16 (u5, fix to remote-admin-case-refuses): +1 for its new
 #   whole-file backstop (a retired spelling inside a `new` expression, a kind the innermost
 #   branch does not list).
-EXPECTED_VIOLATIONS=245
+# 2026-09-16 (u5, remote-rate-limit.test.ts): +8 for no-ip-keyed-failure-bucket (a get call, a
+#   comment, a this.…Attempts set call and an untyped method definition (4); an interface
+#   signature caught only by the whole-file backstop (1)) and remote-burst-slows-not-refuses
+#   (one file per presence branch: no threshold constant, a refusal instead of the slow
+#   start, a slow start never awaited (3)).
+EXPECTED_VIOLATIONS=253
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

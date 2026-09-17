@@ -1,0 +1,49 @@
+id: remote-burst-slows-not-refuses
+language: typescript
+severity: error
+message: >-
+  remote-server.ts must answer a burst of failed logins by SLOWING new
+  connections, not refusing them: it keeps HOST_FAILURES_BEFORE_SLOWDOWN, a
+  `const slowStart = this.<check>() ? HOST_SLOWDOWN_MS : 0`, and an
+  `if (slowStart) await new Promise(…)` wait. A refusal looks exactly like the
+  feature being broken, and the person who hits it is usually the owner.
+note: |
+  Invariant source: tests/remote-rate-limit.test.ts (Plan B, 2026-09-16) — "a
+  burst slows new connections instead of refusing them". The absence half of
+  the same file is no-ip-keyed-failure-bucket.
+  The retired checks read the RAW file text:
+    toContain('HOST_FAILURES_BEFORE_SLOWDOWN')
+    toMatch(/const slowStart = this\.\w+\(\) \? HOST_SLOWDOWN_MS : 0;/)
+    toContain('if (slowStart) await new Promise')
+  (deliberately a SHAPE, not the helper's name — a rename that changed no
+  behaviour must not fail it). Here, one whole-file branch each:
+    - the raw text lacks HOST_FAILURES_BEFORE_SLOWDOWN (same as before, a
+      comment still counts — the old check's own spelling);
+    - no `const slowStart = this.$CHECK() ? HOST_SLOWDOWN_MS : 0` declaration
+      (any zero-argument method on `this`);
+    - no `if` whose condition is `(slowStart)` and whose consequence starts
+      with `await new Promise` (braced or not).
+  Deliberate differences, all on the two shapes: whitespace and line breaks
+  are free, and a braced `{ await new Promise… }` consequence counts (the same
+  wait); a comment or string spelling either shape no longer counts
+  (stricter).
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/remote-burst-slows-not-refuses*.ts"
+rule:
+  any:
+    - kind: program
+      not: { regex: "HOST_FAILURES_BEFORE_SLOWDOWN" }
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          pattern: "const slowStart = this.$CHECK() ? HOST_SLOWDOWN_MS : 0"
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: if_statement
+          all:
+            - has: { field: condition, regex: "^\\(\\s*slowStart\\s*\\)$" }
+            - has: { field: consequence, regex: "^(\\{\\s*)?await\\s+new\\s+Promise" }
