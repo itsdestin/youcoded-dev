@@ -1,6 +1,6 @@
 ---
 date: 2026-09-16
-status: active
+status: shipped
 type: plan
 topic: Batch A (the app shell stops redrawing per streamed word; per-word work stops growing with the chat) and Batch C (the main process stops blocking on whole-file reads and git on click paths) — each fix pinned by a count or a source scan, no visible change
 ---

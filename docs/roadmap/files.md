@@ -127,10 +127,11 @@ searched or resumed (chat-data).
       repos and worktrees on 2026-09-10 (9,583 directories under this workspace alone). CAUSE
       FOUND 2026-09-16 (smoothness sweep C9): the "Home" project a fresh install seeds when no
       folder is saved watched the whole home folder six levels deep with no directory cap —
-      Documents, Downloads, Pictures, every non-repo tree. PENDING MERGE OF
-      `perf/main-thread-click-paths`: the home folder itself is watched two levels deep
-      (`watchDepthFor`); deeper files still list and open, they just do not live-refresh while
-      Home is the project. Re-measure the count after it merges, then close
+      Documents, Downloads, Pictures, every non-repo tree. MERGED 2026-09-16 (youcoded#501):
+      the home folder itself is watched two levels deep (`watchDepthFor`); deeper files still
+      list and open, they just do not live-refresh while Home is the project. Re-measure the
+      watch count on a fresh install (or with Home as the project) after the next release,
+      then close
       `desktop` `needs-verify` `checked 2026-09-16` `performance`
 
 - [ ] Spreadsheets in the files pane are look-only: an `.xlsx` or `.csv` opens as a grid you can

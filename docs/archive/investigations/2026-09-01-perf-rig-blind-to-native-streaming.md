@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: The perf rig cannot see native per-token streaming — its workload streams whole turns through the Claude Code transcript path
 ---

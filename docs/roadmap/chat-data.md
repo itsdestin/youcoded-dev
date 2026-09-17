@@ -128,10 +128,10 @@ produced and the panel that shows them (files).
       tracking is never cleaned up. Individually small, all on paths the user waits on.
       Deferred at the time by scope decision; carried over from the cycle-3 handoff when that
       document was archived 2026-09-10, where they existed only inside a shipped entry.
-      2026-09-16 (smoothness sweep C6, PENDING MERGE OF `perf/main-thread-click-paths`): the
-      NATIVE half of the Resume listing — every session file listed and 256 KB of each
-      head-read synchronously — now reads off the main thread; the Claude Code half (the
-      25 MB re-read, no concurrency cap) and the other three are still as described
+      2026-09-16 (smoothness sweep C6, MERGED youcoded#501): the NATIVE half of the Resume
+      listing — every session file listed and 256 KB of each head-read synchronously — now
+      reads off the main thread; the Claude Code half (the 25 MB re-read, no concurrency cap)
+      and the other three are still as described
       `desktop` `confirmed` `checked 2026-09-16` `performance`
 
 - [ ] Every conversation record write and read first lists the whole conversations directory,

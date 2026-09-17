@@ -8,7 +8,7 @@
 // renderer — the shell re-rendering per streamed word, tool cards redrawing, the
 // per-word dedup set growing with the chat — was under-represented by an order of
 // magnitude, and a fix for that class could not be told from noise
-// (docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md).
+// (docs/archive/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md).
 // The reply here comes from the perf-lab fake endpoint (fake-provider.mjs), which
 // streams a fixed number of deltas at a fixed rate with content that is
 // byte-identical between a baseline and a candidate.

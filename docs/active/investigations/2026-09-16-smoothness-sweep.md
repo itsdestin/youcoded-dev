@@ -7,6 +7,13 @@ topic: Where the remaining hiccups and freezes come from — a five-angle code s
 
 # Smoothness sweep — what still makes the app hitch, and what to build next
 
+> **Status 2026-09-16 (late):** Batches A and C shipped (youcoded#501; record in
+> `docs/archive/plans/2026-09-16-smoothness-batches-a-c.md`, with the rig numbers).
+> Still open from this sweep: **Batch B** (background tabs), **D** (theme GPU cost),
+> **E** (file opens), and A5 (streaming-bubble markdown re-parse throttle — a visible
+> change that needs Destin's call on a clip). The rig now has `native-stream` and
+> `native-resume` phases, so the next batch lands with a number in front of it.
+
 Session key `perf-smoothness-20260916`. Read-only sweep of `origin/master` at `18cc8cbc` (workspace) /
 the fetched app master, from five angles: main-process blocking work, renderer click paths, the
 streaming path, styling and GPU, and background churn. Each finding below was reported by one
