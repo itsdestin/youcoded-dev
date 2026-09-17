@@ -310,7 +310,12 @@ fi
 #   only in a comment).
 # 2026-09-16 (u9, specialist-delegation-ledger.test.ts): +2 for ledger-single-mutatejson-call
 #   (a second direct call in another method (1); a ledger with no call at all (1)).
-EXPECTED_VIOLATIONS=343
+# 2026-09-16 (u9, status-strip-authority.test.tsx): +8 for no-hardcoded-error-fallback (a
+#   variable fallback, a template piece, JSX text (3)), no-centred-status-paragraph (a JSX
+#   attribute, a markup string with the colour first (2)), danger-zone-has-danger-callout (a
+#   warn callout with the danger tag only in a string (1)) and danger-zone-no-fixed-status-red
+#   (a className, a template piece (2)).
+EXPECTED_VIOLATIONS=351
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

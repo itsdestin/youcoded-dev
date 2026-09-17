@@ -1,0 +1,101 @@
+id: no-centred-status-paragraph
+language: tsx
+severity: error
+message: >-
+  A status line in the settings family is a <StatusStrip>, never a centred
+  coloured paragraph (`className="text-center … text-red-400"`). A centred
+  banner reads wrong in a column of left-aligned rows and has nowhere to put
+  the action that resolves the state.
+note: |
+  Invariant source: tests/status-strip-authority.test.tsx (Plan B,
+  2026-09-16; "no status line in the settings family is a centred coloured
+  paragraph"). The retired case took each `className="[^"]*text-center[^"]*"`
+  in an in-scope file and counted it when that same quoted span also held
+  `text-(green|amber|red)-\d{3}` or `text-destructive-fg`, requiring 0
+  outside its CENTRED_STATUS_ELSEWHERE list. The regex below is that pair in
+  one (the colour before or after text-center, inside the one quoted span).
+  The listed files (FirstRunView, ShareSheet, ThemeShareSheet) are under
+  ignores: here; their exact per-file counts are still pinned by that case,
+  kept as a source read, because a per-file count is not something a rule
+  can express.
+  MATCHING: the retired case ran its regex over each file's whole text with
+  comments blanked, and its `[^"]*` spans run on from a single-quoted
+  string or a template into whatever follows, up to the next `"`. So the
+  rule fires on the SMALLEST node of these kinds whose text holds a match:
+  the JSX attribute itself, a string or template piece, a whole template (a
+  match across `${…}`), a concatenation, an argument list or array (a match
+  across several strings), JSX text or a JSX element (across a `{…}`), a
+  regex body — and, as a last resort, the whole file (a match spanning any
+  other container). A node is skipped when a smaller listed node already
+  holds the match, or when a comment inside it does (so a comment quoting
+  the class string never fires on its own). DIFFERENCES (minimal): a
+  comment inside the matched span hides it, where the old blanking did not;
+  the whole-file last resort is also skipped when any comment in the file
+  quotes the class string.
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx, components/development/*.tsx, components/ui/*.tsx, no
+  `.test.` files. `*` crosses `/` in this ast-grep, so every OTHER
+  components/ subdirectory (as of 2026-09-16) is listed under ignores:, as
+  are folders nested below development/ and ui/. A NEW components/
+  subdirectory is in scope here until it is added to that list.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-centred-status-paragraph.tsx"
+ignores:
+  - "**/*.test.*"
+  - "**/components/development/*/**"
+  - "**/components/ui/*/**"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+  # CENTRED_STATUS_ELSEWHERE in the test — counted there, not here.
+  - "**/FirstRunView.tsx"
+  - "**/ShareSheet.tsx"
+  - "**/ThemeShareSheet.tsx"
+utils:
+  holds-match:
+    regex: "className=\"[^\"]*(?:text-center[^\"]*(?:text-(?:green|amber|red)-\\d{3}|text-destructive-fg)|(?:text-(?:green|amber|red)-\\d{3}|text-destructive-fg)[^\"]*text-center)[^\"]*\""
+  listed:
+    any:
+      - kind: jsx_attribute
+      - kind: string_fragment
+      - kind: template_string
+      - kind: binary_expression
+      - kind: arguments
+      - kind: array
+      - kind: regex_pattern
+      - kind: jsx_text
+      - kind: jsx_element
+rule:
+  all:
+    - matches: holds-match
+    - any:
+        - matches: listed
+        - kind: program
+    - not:
+        has:
+          stopBy: end
+          all:
+            - matches: holds-match
+            - any:
+                - matches: listed
+                - kind: comment
