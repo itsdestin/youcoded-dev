@@ -241,6 +241,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-17`
 
 ## rigs
+- [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
+      cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
+      catches it. `deck/AUTHORING.md` already warns about it, and on 2026-09-17 it still took three
+      rebuilds (two slides lost their Risk card at 1280 and 1024 wide). Preview should measure
+      each card against its box and print which slide and window size clips
+      `n/a` `confirmed` `checked 2026-09-17`
+
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
       this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,

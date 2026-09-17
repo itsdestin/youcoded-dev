@@ -588,3 +588,9 @@ recurred — the repetition is the data.
 - A plan whose `pre` step opens the surface is "identical to baseline" and gets filed unverified → dropped: `sameAsBaseline` is documented in `shot.mjs`; one re-run
 - Destin: dot centred on the capital letters ("center aligned with the D"); Assistant row says what the panel holds → applied: WHY comments in `SettingRow.tsx` (`RowStatus`) and `AssistantSettings.tsx`; answered decks archived
 - deleted/merged: the two hand-rolled status dots became one shared `RowStatus`; `rowSummary` removed from the Assistant row
+
+## 2026-09-17 — tag chip text colour + per-theme fit (session/resume-tag-chip-color, youcoded#506 + workspace)
+- Deck slides lost their Risk card at 1280/1024 wide on two of four builds even though `deck/AUTHORING.md` warns about crop shape; only the contact sheet showed it → roadmap: `dev-workspace.md` → rigs (preview should report clipped cards)  [3 extra rebuilds]
+- Grepping every task output for `[deck]` returned the stopped round-1 server's link instead of round 2's → dropped: read the named task's output file; one call
+- Destin: tag chips match the status labels, stronger contrast, colours fitted to each theme → applied: design guide G-27, WHY comment in `TagChip.tsx`
+- deleted/merged: none found — looked; the chip was already the single shared component
