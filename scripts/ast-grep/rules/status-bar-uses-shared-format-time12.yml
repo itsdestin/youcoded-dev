@@ -1,0 +1,48 @@
+id: status-bar-uses-shared-format-time12
+language: tsx
+severity: error
+message: >-
+  StatusBar.tsx must import formatTime12 from '../../shared/time-format' and
+  never define its own — the usage chips and the ChatGPT limit card format the
+  reset time with the SAME function, so the two cannot drift (a local copy once
+  called toLocaleTimeString and printed "18:43" beside a card saying 6:43pm).
+note: |
+  Invariant source: tests/chatgpt-oauth.test.ts › "the 5-hour sentence is
+  byte-identical to the approved wording, on every locale" — its source half
+  `expect(bar).toMatch(/import \{[^}]*\bformatTime12\b[^}]*\} from
+  '\.\.\/\.\.\/shared\/time-format'/)` and
+  `expect(bar).not.toMatch(/function formatTime12/)` (retired by Plan B,
+  2026-09-16).
+  Branch 1 (whole file): no import statement from '../../shared/time-format'
+  lists formatTime12 among its specifiers (any other specifiers, any order,
+  `as` aliases all fine — the old regex allowed any list).
+  Branch 2: a function declaration or named function expression called
+  formatTime12, anywhere in the file (nested too), as the old
+  /function formatTime12/ did.
+  WHY a rule and not "tsc already sees it": a local `function formatTime12`
+  with the import deleted compiles fine.
+files:
+  - "**/src/renderer/components/StatusBar.tsx"
+  - "**/fixtures/status-bar-uses-shared-format-time12.tsx"
+rule:
+  any:
+    - kind: program
+      not:
+        has:
+          kind: import_statement
+          all:
+            - has:
+                field: source
+                regex: "^['\"]\\.\\./\\.\\./shared/time-format['\"]$"
+            - has:
+                kind: import_specifier
+                stopBy: end
+                has:
+                  field: name
+                  regex: "^formatTime12$"
+    - any:
+        - kind: function_declaration
+        - kind: function_expression
+      has:
+        field: name
+        regex: "^formatTime12$"
