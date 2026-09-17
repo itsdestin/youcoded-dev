@@ -1,0 +1,59 @@
+id: no-hand-rolled-setting-row
+language: tsx
+severity: error
+message: >-
+  Setting rows go through <SettingRow>. This class string is one of the five
+  hand-rolled row containers K2 retired (Preferences ToggleRow / ModelPicker
+  fast mode, the Preferences permission-mode list, DevelopmentPopup's Row,
+  the Sound preset list, PerformancePopup's power-saving row) — each put the
+  description somewhere different and added its own type size.
+note: |
+  Invariant source: tests/setting-row-authority.test.tsx (Plan B, 2026-09-16;
+  "the retired row recipes are gone"). The retired test ran a raw
+  `.includes(recipe)` over each in-scope file with comments blanked, so this
+  rule matches every node kind that can hold that text contiguously once
+  comments are gone: a string or template piece (string_fragment), JSX text
+  and a regex body. The recipes contain spaces, so no identifier can hold
+  one, and a template substitution splits the text for the raw check too.
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx, components/development/*.tsx, components/ui/*.tsx, no
+  `.test.` files. `*` crosses `/` in this ast-grep, so every OTHER
+  components/ subdirectory (as of 2026-09-16) is listed under ignores:, as
+  are folders nested below development/ and ui/. A NEW components/
+  subdirectory is in scope here until it is added to that list.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-hand-rolled-setting-row.tsx"
+ignores:
+  - "**/*.test.*"
+  - "**/components/development/*/**"
+  - "**/components/ui/*/**"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+rule:
+  any:
+    - kind: string_fragment
+    - kind: jsx_text
+    - kind: regex_pattern
+  # The five retired recipes, verbatim from the retired test's RETIRED list.
+  regex: "flex items-start justify-between gap-3 p-2 rounded hover:bg-inset|flex items-start gap-3 p-2 rounded hover:bg-inset cursor-pointer|w-full flex items-center gap-3 px-3 py-2\\.5 rounded-lg bg-inset/50|flex items-center gap-3 px-3 py-2 rounded-lg bg-inset/50 hover:bg-inset cursor-pointer|w-full text-left flex items-start gap-3 p-3 rounded-lg hover:bg-inset"

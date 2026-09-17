@@ -287,7 +287,13 @@ fi
 # 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
 #   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
 #   with no previewMeta.saveNote editor (1)).
-EXPECTED_VIOLATIONS=298
+# 2026-09-16 (u8, setting-row-authority.test.tsx): +15 for no-hand-rolled-setting-row (a
+#   retired recipe in a className string, a template piece, JSX text and a regex (4)),
+#   no-hand-rolled-setting-row-toggle (a bare self-closing Toggle, an open/close UiToggle, a
+#   Toggle after a closed sibling and after a closed cousin inside control={…}, a markup
+#   string, type arguments and a `<` comparison (7)) and no-button-styled-as-field (an open
+#   and a self-closing <button> with the field surface, a markup string, a split template (4)).
+EXPECTED_VIOLATIONS=313
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

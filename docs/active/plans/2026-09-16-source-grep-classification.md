@@ -103,7 +103,7 @@ carries it; `—` means the source-reading case is deleted outright (nothing els
 | `tests/session-drag-model.test.ts` | Model unit tests; three assert preload lacks drag decisions | M, C | split (model cases stay) | `preload-no-drag-model-decision` | 3/10 |
 | `tests/session-drawer-skips-parent-rerenders.test.tsx` | Render-count test plus App.tsx useMemo/provider-value pin | M (B) | split (keep re-render case) | `artifact-provider-value-memoized` | 1/2 |
 | `tests/session-meta-unreadable.test.tsx` | SessionDrawer guards note editor on previewMeta.unreadable | M, D | split (keep the four hook cases) | `note-editor-guarded-on-unreadable` | 1/5 |
-| `tests/setting-row-authority.test.tsx` | Renders SettingRow; scans for retired row recipes, stray Toggles | M (A) | split (keep 8 render cases) | `no-hand-rolled-setting-row` | 5/13 |
+| `tests/setting-row-authority.test.tsx` | Renders SettingRow; scans for retired row recipes, stray Toggles | M (A) | split (keep 8 render cases; u8: also keep "every exemption still exists and still applies" as a text read — exact per-file counts are not a rule) | `no-hand-rolled-setting-row` (+ `-toggle`, `no-button-styled-as-field`) | 5/13 |
 | `tests/shell-session.test.ts` | Shell spawn behaviour; four grep main files for call shapes | M, B | split (spawn/validator cases stay) | `run-in-terminal-chunked-write` | 4/27 |
 | `tests/shell-session-renderer.test.ts` | App.tsx/HeaderBar contain exact shell-session gating expressions | M, B, D | split (keep label/chip/pty-gate/slash-routing cases) | `shell-session-view-forced` | 13/22 |
 | `tests/sound-preview.test.ts` | Select handler calls playPreview right after setSelectedPresetId | M, B | split (keep the STOCK_PRESETS desc case) | `select-preset-calls-playpreview` | 1/2 |

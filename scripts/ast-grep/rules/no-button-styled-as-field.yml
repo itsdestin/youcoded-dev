@@ -1,0 +1,71 @@
+id: no-button-styled-as-field
+language: tsx
+severity: error
+message: >-
+  A <button> must not wear the field surface (`bg-inset border
+  border-edge-dim`) — it reads as typeable and is not (K7: the project folder
+  picker did exactly this). A value chosen elsewhere — an OS picker, a dialog,
+  another screen — is a value row plus a Change button.
+note: |
+  Invariant source: tests/setting-row-authority.test.tsx (Plan B, 2026-09-16;
+  "no control is styled as a field it is not"). The retired test matched
+  `className="[^"]*\bbg-inset border border-edge-dim\b[^"]*"` (a
+  double-quoted className only) in comment-blanked text and reported it when
+  the nearest `<` before the match started `<button`.
+  MATCHED: (a) such a className attribute directly on a <button> tag, open or
+  self-closing; (b) a string or template piece holding the same text after
+  `<button` with no `<` between (markup written as a string, which the raw
+  scan also saw), or a whole template when a substitution splits that text.
+  DELIBERATE DIFFERENCE: the raw scan's "nearest `<`" was fooled by an
+  earlier attribute holding a `<` (`icon={<X/>}` or `a < b`) and then missed
+  the button; here the attribute's own tag is used.
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(), as in
+  no-hand-rolled-setting-row (see its note for the subdirectory list).
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-button-styled-as-field.tsx"
+ignores:
+  - "**/*.test.*"
+  - "**/components/development/*/**"
+  - "**/components/ui/*/**"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+rule:
+  any:
+    - kind: jsx_attribute
+      regex: "^className=\"[^\"]*\\bbg-inset border border-edge-dim\\b[^\"]*\"$"
+      inside:
+        any:
+          - kind: jsx_opening_element
+          - kind: jsx_self_closing_element
+        regex: "^<button"
+    # a template whose substitution splits the text reports as the whole
+    # template; one that holds a matching piece reports via the piece
+    - regex: "<button[^<]*className=\"[^\"]*\\bbg-inset border border-edge-dim\\b[^\"]*\""
+      any:
+        - kind: string_fragment
+        - kind: template_string
+          not:
+            has:
+              kind: string_fragment
+              regex: "<button[^<]*className=\"[^\"]*\\bbg-inset border border-edge-dim\\b[^\"]*\""
