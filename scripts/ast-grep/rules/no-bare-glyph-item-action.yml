@@ -1,0 +1,43 @@
+id: no-bare-glyph-item-action
+language: tsx
+severity: error
+message: >-
+  No bare ✕ glyph survives as a list-item action or a container dismiss. A
+  list-item action is a labelled <Button size="sm">; a container dismiss is
+  <CloseButton>. Change 41 banned hand-rolled glyph buttons app-wide, but FIVE
+  survived: two genuine item actions (disconnect a remote client, remove a
+  saved device), two container dismisses reimplementing CloseButton at the
+  wrong size with no focus ring, and one already a proper Button primitive.
+note: |
+  Invariant source: tests/item-list-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 4 — "no bare glyph survives...").
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx (flat only), components/development/*.tsx,
+  components/ui/*.tsx — the same non-recursive walk, expressed as explicit
+  file-depth globs rather than "**/components/**/*.tsx" so this rule does not
+  widen scope into marketplace/project-view/game/git/tags/context-menu/buddy/
+  model/etc., which inScopeFiles() never walked either.
+  EXEMPT (carried as `ignores:`): QueuedMessagesStrip.tsx — already a
+  <Button variant="ghost" size="icon"> with a real aria-label and focus ring;
+  the glyph is its visible label, not a hand-rolled button (compact composer
+  strip, not a settings list).
+  LIMITATION: the retired test counted per-file and allowed QueuedMessagesStrip.tsx
+  EXACTLY 1, not "0 or more" — a whole-file `ignores:` cannot express "at most
+  1 here"; that exact-count case is kept as a small text case in the trimmed
+  test file per global.md's "at most N matches" guidance, rather than dropped.
+  A bare glyph is matched as a `jsx_text` node whose entire (trimmed) content
+  is the glyph — this is the AST-node equivalent of the retired regex
+  `/>\s*✕\s*</g` (glyph directly between a `>` and a `<`, i.e. an element's
+  sole text child), regardless of the enclosing tag's name or attributes —
+  the original regex made no such distinction either.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/src/renderer/components/development/*.tsx"
+  - "**/src/renderer/components/ui/*.tsx"
+  - "**/fixtures/no-bare-glyph-item-action.tsx"
+ignores:
+  - "**/QueuedMessagesStrip.tsx"
+rule:
+  kind: jsx_text
+  regex: "^\\s*✕\\s*$"
