@@ -135,13 +135,16 @@ export const PRIMARY = [
   // switching: click -> messages on screen while a reply is streaming, the moment
   // Destin describes as "the app hitches when I change tabs mid-reply".
   'nativeStream.median.switching.switchPaintedMedianMs',
-  // hidden: what a stream costs a window that is not showing it. A per-delta shell
-  // redraw shows here in full, since nothing visible needs to change.
-  'nativeStream.median.hidden.taskMs',
-  // NOT gated: the long-task totals and visible.ipc.totalStallMs (both read 0 on the
-  // first baseline, so ZERO_BASELINE_FLOOR could only produce false REJECTs — reported
-  // by eye, like terminal.median.ipc.totalStallMs) and the commit/layout counters
-  // (mechanism checks, read by validateReport and the summary, not judged).
+  // NOT gated, each for a stated reason:
+  //  - hidden.taskMs (what a stream costs a window not showing it). Gated for one
+  //    day: on 2026-09-16 it read +29 % for Batch A and +43 % for Batch C — and C
+  //    does not touch the renderer. It is ~1 s over a 21 s window and moves ±0.5 s
+  //    with background load; a CPU profile of the same leg showed A running LESS
+  //    code than master in every bucket. Two false REJECTs in one day; read by eye.
+  //  - the long-task totals and visible.ipc.totalStallMs (both read 0 on the first
+  //    baseline, so ZERO_BASELINE_FLOOR could only produce false REJECTs — like
+  //    terminal.median.ipc.totalStallMs) and the commit/layout counters (mechanism
+  //    checks, read by validateReport and the summary, not judged).
 
   // ── The native session journey (native-resume phase, added 2026-09-16) ─────
   // Every step here lands on the MAIN process: listing a hundred native session

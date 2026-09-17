@@ -403,8 +403,12 @@ seen-on is always n/a here.
       OpenAI-compatible endpoint (`scripts/perf-lab/fake-provider.mjs`, reached through the
       app's own custom-provider row) with six sessions open — visible, while switching, and
       hidden — plus a `native-resume` phase (Resume list over 100 seeded native sessions,
-      400-turn native resume, history page, reply, tear-off). Six new PRIMARY paths; every
-      default-run baseline before this date fails closed on them by design.
+      400-turn native resume, history page, reply, tear-off). Five new PRIMARY paths (the
+      hidden-stream busy time is reported, not gated: ±0.5 s of noise on a ~1 s number);
+      every default-run baseline before this date fails closed on them by design. First
+      A/B on it the same day: the shell-redraw branch cut on-screen streaming's main-thread
+      busy time 25 % (KEEP); the click-paths branch cut the native journey's main-process
+      stall 130 → 31 ms, inside master's own spread on that small number.
       `n/a` `confirmed` `checked 2026-09-16` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
 
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two

@@ -395,7 +395,11 @@ describe('compare.mjs PRIMARY contract', () => {
     // paths (the IPC stall summed over the native journey's steps, the Resume list
     // open, the native resume painted). Until then no phase streamed faster than
     // the local model's ~12 deltas/s or opened the Resume list at all.
-    assert.equal(PRIMARY.length, 33, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 33 -> 32 the same day: nativeStream.median.hidden.taskMs left PRIMARY after two
+    // false REJECTs (+29 % on Batch A, +43 % on Batch C, which never touches the
+    // renderer) — a ~1 s number that moves ±0.5 s with background load. Reported by eye.
+    assert.equal(PRIMARY.length, 32, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    assert.ok(!PRIMARY.includes('nativeStream.median.hidden.taskMs'), 'the hidden-stream busy time is too noisy to gate; it stays in the report');
     assert.ok(!PRIMARY.includes('terminal.median.ipc.totalStallMs'), 'a metric whose baseline is 0 ms can only produce false REJECTs under ZERO_BASELINE_FLOOR');
     assert.ok(PRIMARY.includes('terminal.median.switchPaintedMedianMs'), 'the terminal switch clock is the atlas-heal A/B target and must be judged');
     assert.ok(PRIMARY.includes('projects.median.thrash.ipcStallMs'), 'the tab-thrash stall is the reported symptom and must be judged');
@@ -727,7 +731,7 @@ describe('terminal phase wiring', () => {
 describe('native-stream phase wiring', () => {
   it('every nativeStream PRIMARY path is owned by the native-stream phase, which sits before scrollback', () => {
     const paths = PRIMARY.filter((x) => x.startsWith('nativeStream.'));
-    assert.equal(paths.length, 3);
+    assert.equal(paths.length, 2);
     for (const p of paths) assert.equal(phaseOfPath(p), 'native-stream', `${p} is not owned by the native-stream phase`);
     assert.ok(PHASES.includes('native-stream'));
     assert.ok(PHASES.indexOf('native-stream') < PHASES.indexOf('scrollback'));

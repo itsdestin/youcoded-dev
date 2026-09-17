@@ -92,7 +92,7 @@ test('medianRun medians every NUMERIC_PATH, keeps nulls null, and rolls stall ve
 
 test('every nativeStream PRIMARY path is a NUMERIC_PATH of this scenario', () => {
   const mine = PRIMARY.filter((p) => p.startsWith('nativeStream.median.')).map((p) => p.slice('nativeStream.median.'.length));
-  assert.equal(mine.length, 3);
+  assert.equal(mine.length, 2);
   for (const p of mine) assert.ok(NUMERIC_PATHS.includes(p), `${p} is gated but not produced by medianRun`);
 });
 

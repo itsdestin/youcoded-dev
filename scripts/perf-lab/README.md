@@ -451,8 +451,10 @@ model, not the ~12/s the local model manages here:
 | `hidden` | the huge conversation | what the stream costs a window that is not showing it — a per-delta shell redraw shows here in full |
 
 **Look first at `visible.taskMs`** (and its `taskPct`, the share of the window the thread
-was busy), then `switching.switchPaintedMedianMs`, then `hidden.taskMs` — all three are
-PRIMARY. **Busy time, not long tasks, on purpose:** the first shakedown streamed 3,000
+was busy), then `switching.switchPaintedMedianMs` — both PRIMARY — then `hidden.taskMs`,
+which is reported but NOT gated: it is ~1 s over a 21 s window and moved ±0.5 s with
+background load on its first day (+29 % on a branch a CPU profile then showed running
+less code, +43 % on a branch that never touches the renderer). **Busy time, not long tasks, on purpose:** the first shakedown streamed 3,000
 deltas into 1,202 commits at 60 fps with a long-task total of exactly 0 ms, because the
 long-task observer counts only stretches over 50 ms and per-frame work under that never
 registers. The long-task figures stay in the row, read by eye. `visible.commits` beside `framesPerSec`
@@ -477,6 +479,16 @@ generator's realistic markdown, byte-identical between baseline and candidate.
 `firstResponseMs` is the app's send path, not prefill); tool calls, thinking blocks and
 attachments; the buddy window; GPU paint. The local model's own rate is deliberately not
 a factor — this phase is about the renderer.
+
+**Asking WHICH FUNCTIONS a leg's busy time went to.** `PERF_LAB_PROFILE_LEGS=hidden`
+(any of `visible,switching,hidden`) in the rig's environment takes a V8 CPU profile
+over that leg and writes it to `scratch/perf-lab/profiles/`; `PERF_LAB_PROFILE_TAG`
+names the file. Then `node scripts/perf-lab/summarise-profile.mjs <file>` ranks it by
+self time with the same subsystem buckets `profile-open.mjs` uses. A profiled run's
+busy time includes the sampler, so it is a diagnostic and its report carries a warning
+saying so — never a baseline. Built for the first A/B on this phase (2026-09-16), where
+Batch A cut the visible stream's busy time 25 % and raised the hidden stream's 29 %,
+and the counters alone could not say why.
 
 ### `scenario-native-resume.mjs` — the native session journey *(one boot per repeat; added 2026-09-16)*
 The fixture seeds **100 native session files** under `~/.youcoded/sessions/<slug>/`

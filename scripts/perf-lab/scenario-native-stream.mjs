@@ -36,6 +36,9 @@
 //  - GPU paint cost: llvmpipe under Xvfb (report.machine.renderer).
 //
 // Node built-ins only (the workspace root has no package.json and must not gain one).
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { waitFor } from './cdp.mjs';
 import { startFakeProvider } from './fake-provider.mjs';
 import { enablePerformanceDomain, installCommitProbe, readCommitProbe, readCounters, stopCommitProbe, summariseLayoutCost } from './layout-cost.mjs';
@@ -67,6 +70,29 @@ export const LEG_GRACE_MS = 30_000;
 
 const mark = (cdp, label) =>
   cdp.evaluate(`(() => { if (window.__perfProbe) window.__perfProbe.mark(${JSON.stringify(label)}); return true; })()`);
+
+/**
+ * Opt-in CPU profiling of a leg: PERF_LAB_PROFILE_LEGS=visible,hidden writes one
+ * V8 .cpuprofile per named leg under scratch/perf-lab/profiles/ (summarise it with
+ * `node scripts/perf-lab/summarise-profile.mjs <file>`). A profiled leg's busy time
+ * includes the sampler's own cost, so a profiled run is a DIAGNOSTIC, never a
+ * baseline — the report says so in a warning.
+ */
+const PROFILE_LEGS = new Set((process.env.PERF_LAB_PROFILE_LEGS ?? '').split(',').map((s) => s.trim()).filter(Boolean));
+const PROFILE_DIR = join(resolve(fileURLToPath(new URL('.', import.meta.url)), '..', '..'), 'scratch', 'perf-lab', 'profiles');
+async function startProfile(cdp) {
+  await cdp.send('Profiler.enable');
+  await cdp.send('Profiler.setSamplingInterval', { interval: 200 });
+  await cdp.send('Profiler.start');
+}
+async function stopProfile(cdp, leg) {
+  const { profile } = await cdp.send('Profiler.stop');
+  await cdp.send('Profiler.disable');
+  mkdirSync(PROFILE_DIR, { recursive: true });
+  const p = join(PROFILE_DIR, `${(process.env.PERF_LAB_PROFILE_TAG ?? 'native-stream').replace(/[^A-Za-z0-9._-]/g, '-')}-${leg}-${Date.now()}.cpuprofile`);
+  writeFileSync(p, JSON.stringify(profile));
+  return p;
+}
 
 // ---------------------------------------------------------------------------
 // In-page helpers
@@ -291,6 +317,9 @@ async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pi
   if (!attach?.attached) warnings.push(`${label}: no visible .chat-scroll to observe, so its commit and frame counts are UNMEASURED`);
   const before = await readCounters(cdp);
   const busyBefore = await readMainThreadTime(cdp);
+  const leg = label.split(':').pop();
+  const profiling = PROFILE_LEGS.has(leg);
+  if (profiling) await startProfile(cdp);
   const tSend = Date.now();
   const send = await cdp.evaluate(`window.claude.native.send(${JSON.stringify(sessionId)}, ${JSON.stringify(`perf-lab-stream ${label}`)})`);
   if (!send || send.status === 'failed') {
@@ -331,6 +360,11 @@ async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pi
   }
   const after = await readCounters(cdp);
   const busyAfter = await readMainThreadTime(cdp);
+  let profilePath = null;
+  if (profiling) {
+    profilePath = await stopProfile(cdp, leg);
+    warnings.push(`${label}: CPU-PROFILED (${profilePath}) — its busy time includes the sampler, so this run is a diagnostic, not a baseline`);
+  }
   const commit = await readCommitProbe(cdp);
   await stopCommitProbe(cdp);
   let ipcRead;
@@ -344,7 +378,7 @@ async function streamLeg(cdp, fake, { label, sessionId, deltas, perSec, seed, pi
   const layout = summariseLayoutCost(before, after, commit);
   const mainThread = mainThreadDelta(busyBefore, busyAfter, probe?.windowMs ?? null);
   if (mainThread.taskMs === null) warnings.push(`${label}: the renderer's main-thread busy time is UNMEASURED (${busyBefore.error ?? busyAfter.error ?? 'no TaskDuration counter'}) — taskMs is null, not 0`);
-  return summariseLeg({ rec, planned: deltas, perSec, firstResponseMs, turnMs, turnEndSignal, charsShown, layout, probe, ipcRead, pingMs, mainThread });
+  return { ...summariseLeg({ rec, planned: deltas, perSec, firstResponseMs, turnMs, turnEndSignal, charsShown, layout, probe, ipcRead, pingMs, mainThread }), profilePath };
 }
 
 /**
@@ -380,9 +414,24 @@ export async function runNativeStreamScenario(app, fixture, {
     const switchTo = (idx, measure, expected, streaming) =>
       cdp.evaluate(`window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, ${measure}, ${expected === null ? 'null' : expected}, ${streaming})`);
 
+    // The strip draws its pills a beat after session.create resolves. One run
+    // (2026-09-16, Batch C) reached the first switch before any pill existed and
+    // aborted on "no pill"; wait for the strip to catch up (or overflow into its
+    // menu) before touching it.
+    try {
+      await waitFor(cdp, `(() => { const n = window.__perfLab.pills().length; return n >= ${ids.length} || !!(document.querySelector('[data-session-strip] [title="All Sessions"]') || document.querySelector('.session-strip [title="All Sessions"]')); })()`, { timeoutMs: 20_000, everyMs: 100 });
+    } catch {
+      warnings.push(`native-stream: the strip did not show ${ids.length} pills (or an All Sessions menu) within 20 s of creating the sessions`);
+    }
+
     // ── Leg 1: visible ────────────────────────────────────────────────────
     const toNative = await switchTo(natIdx, false, null, false);
-    if (toNative.mode === 'none') throw new Error(`native-stream: could not bring ${names[natIdx]} on screen — ${toNative.reason}`);
+    if (toNative.mode === 'none') {
+      // Say what the strip DID show: a missing pill can mean the session was never
+      // created in the renderer, or that the strip overflowed with no menu.
+      const shown = await cdp.evaluate(`window.__perfLab.pills().map((p) => p.getAttribute('title') || p.textContent.trim())`).catch(() => null);
+      throw new Error(`native-stream: could not bring ${names[natIdx]} on screen — ${toNative.reason}. The app returned ${ids.length} session ids (${names.join(', ')}); the strip shows ${JSON.stringify(shown)}`);
+    }
     await sleep(500);
     const visible = await streamLeg(cdp, fake, { label: 'native-stream:visible', sessionId: nat[0].id, deltas, perSec, seed: 'visible', pingMs, warnings });
     if (typeof visible.charsShown === 'number' && typeof visible.charsStreamed === 'number' && visible.charsShown < visible.charsStreamed * 0.5) {
