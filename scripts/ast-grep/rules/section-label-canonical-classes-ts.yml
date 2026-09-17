@@ -1,0 +1,39 @@
+id: section-label-canonical-classes-ts
+language: typescript
+severity: error
+message: >-
+  A section label spells its recipe exactly one way: "text-3xs font-medium
+  text-fg-muted tracking-wider uppercase" — including in a plain .ts constant
+  (e.g. dev/workbench/compare/permission-modes.ts's SECTION_LABEL), not just a
+  className attribute. See section-label-canonical-classes for the full WHY.
+note: |
+  Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
+  2026-09-16). `.ts` twin of section-label-canonical-classes: this ast-grep's
+  `language: tsx` rule never scans a `.ts` file — the retired test's own walk
+  read both `.tsx` and `.ts` (`/\.tsx?$/`), and a real `.ts` site
+  (permission-modes.ts's SECTION_LABEL constant) is in its scope.
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/section-label-canonical-classes-ts.ts"
+ignores:
+  - "**/src/renderer/**/*.test.ts"
+rule:
+  kind: string_fragment
+  not:
+    inside:
+      kind: template_string
+  all:
+    - regex: "\\btext-3xs\\b"
+    - regex: "\\buppercase\\b"
+    - regex: "tracking-wid"
+    - regex: "text-fg-(muted|dim)"
+    - not:
+        regex: "text-3xs font-medium text-fg-muted tracking-wider uppercase"
+    - not:
+        regex: "hover:text-fg"
+    - not:
+        regex: "\\brounded-full\\b"
+    - not:
+        all:
+          - regex: "\\bbg-inset\\b"
+          - regex: "\\bborder\\b"

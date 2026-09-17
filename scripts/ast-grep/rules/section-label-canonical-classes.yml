@@ -1,0 +1,53 @@
+id: section-label-canonical-classes
+language: tsx
+severity: error
+message: >-
+  A section label spells its recipe exactly one way: "text-3xs font-medium
+  text-fg-muted tracking-wider uppercase". Before this, the same four classes
+  shipped in SIX different orders across ~90 sites — Tailwind class order is
+  semantically irrelevant but textually decisive, so a future site typing
+  them in a new order renders identically and only shows up as drift.
+note: |
+  Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 3 — "every section label spells the recipe the same
+  way"). SCOPED TO text-3xs classes carrying uppercase + a tracking-wid* token
+  + text-fg-muted/text-fg-dim, exactly like the retired test's isSectionLabel().
+  EXEMPT (mirrors the retired test's isExempt(), carried here as `not:`
+  branches rather than `ignores:` because the exemption is about the CLASS
+  STRING'S own content, not the file it's in): a string containing
+  `hover:text-fg` (interactive affordance, not a label); a string containing
+  `rounded-full` (a chip, not a heading); a string containing BOTH `bg-inset`
+  AND `border` (a chip with its own surface).
+  SCOPE FIX: the retired test extracted candidate strings with
+  `src.matchAll(/"([^"\n]*)"/g)` — DOUBLE-QUOTED string literals only, which
+  never matches a template literal's interior. `string_fragment` in this
+  ast-grep is the same node kind for BOTH a quoted string's contents AND a
+  template literal's interior between `${...}` substitutions (verified
+  empirically, scratch probe 2026-09-16: `` `${fullW} text-3xs uppercase
+  tracking-wider text-fg-muted ...` `` in FilesTab.tsx real-world matched the
+  token check but was never in the retired test's scope) — so this rule adds
+  `not: { inside: { kind: template_string } }` to mirror that same narrowness,
+  per global.md's "don't be stricter than the test" guidance.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/section-label-canonical-classes.tsx"
+rule:
+  kind: string_fragment
+  not:
+    inside:
+      kind: template_string
+  all:
+    - regex: "\\btext-3xs\\b"
+    - regex: "\\buppercase\\b"
+    - regex: "tracking-wid"
+    - regex: "text-fg-(muted|dim)"
+    - not:
+        regex: "text-3xs font-medium text-fg-muted tracking-wider uppercase"
+    - not:
+        regex: "hover:text-fg"
+    - not:
+        regex: "\\brounded-full\\b"
+    - not:
+        all:
+          - regex: "\\bbg-inset\\b"
+          - regex: "\\bborder\\b"

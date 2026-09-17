@@ -1,0 +1,30 @@
+id: section-label-no-h4
+language: tsx
+severity: error
+message: >-
+  No <h4> stands in as a section label. The app's section headings are <h3>;
+  <h4> carrying the section-label recipe was arbitrary, not a deliberate
+  outline level.
+note: |
+  Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
+  2026-09-16; case 3 of 3 — "no <h4> stands in as a section label"). Matches
+  a `<h4>` jsx_opening_element whose className string_fragment STARTS WITH
+  the canonical recipe, mirroring the retired test's
+  `src.includes('<h4 className="' + CANONICAL)` (a prefix check, not a full
+  match — the canonical recipe may be followed by more classes).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/section-label-no-h4.tsx"
+rule:
+  kind: jsx_opening_element
+  all:
+    - has:
+        field: name
+        regex: "^h4$"
+    - has:
+        stopBy: end
+        kind: jsx_attribute
+        has:
+          stopBy: end
+          kind: string_fragment
+          regex: "^text-3xs font-medium text-fg-muted tracking-wider uppercase"

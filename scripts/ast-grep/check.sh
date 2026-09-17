@@ -94,7 +94,9 @@ fi
 #   (Plan B).
 # 2026-09-16 (t5c): +2 for decide-permission-passes-powershell-flag + its
 #   -shell-label twin.
-EXPECTED_VIOLATIONS=49
+# 2026-09-16 (t5c): +3 for section-label-canonical-classes + its -ts twin +
+#   section-label-no-h4.
+EXPECTED_VIOLATIONS=52
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
