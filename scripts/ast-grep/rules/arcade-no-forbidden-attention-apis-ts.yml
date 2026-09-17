@@ -21,6 +21,12 @@ note: |
   (`isThinkingNow`). This rule matches the smallest non-comment token
   containing the symbol. A `language: typescript` rule never scans `.tsx` —
   hence the twin.
+  NOTE (review round 2, 2026-09-16): this rule's `files:` glob
+  (`**/game/**/*.ts`) is RECURSIVE, so it scans any subfolder of
+  components/game/ too — stricter than the retired test's `gameFiles()`,
+  a flat `readdirSync` that never descended into one. No subfolder exists
+  under components/game/ today, so this has no observable effect yet; it
+  would if one were ever added.
 files:
   - "**/src/renderer/components/game/**/*.ts"
   - "**/fixtures/arcade-no-forbidden-attention-apis-ts.ts"

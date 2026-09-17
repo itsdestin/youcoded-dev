@@ -13,6 +13,12 @@ note: |
   expression ending in `state.play` (preceded by nothing or a non-word
   character, so `x.state.play` counts and `gamestate.play` does not) and on
   any string spelling it.
+  NOTE (review round 2, 2026-09-16): this rule's `files:` glob
+  (`**/game/**/*.tsx`) is RECURSIVE, so it scans any subfolder of
+  components/game/ too — stricter than the retired test's `gameFiles()`,
+  a flat `readdirSync` that never descended into one. No subfolder exists
+  under components/game/ today, so this has no observable effect yet; it
+  would if one were ever added.
 files:
   - "**/src/renderer/components/game/**/*.tsx"
   - "**/fixtures/arcade-state-play-only-in-own-board.tsx"
