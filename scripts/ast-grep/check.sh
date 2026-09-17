@@ -72,7 +72,11 @@ fi
 #   the whole-file branch that fires when the ipcMain.on(IPC.APPEARANCE_BROADCAST, ...)
 #   registration is deleted entirely (its sibling rule matches the call site itself, so
 #   it has nothing to match once the whole thing is gone).
-EXPECTED_VIOLATIONS=44
+# 2026-09-16 (review of batch A, fix 5): +1 for iframe-sandbox-requires-allow-scripts,
+#   the whole-file branch on HtmlView.tsx that fires when no <iframe> sandbox attribute
+#   containing allow-scripts is present at all (its sibling rule only fires when a
+#   sandbox attribute IS present and contains allow-same-origin).
+EXPECTED_VIOLATIONS=45
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

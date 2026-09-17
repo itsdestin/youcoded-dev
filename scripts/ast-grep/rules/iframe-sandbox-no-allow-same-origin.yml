@@ -8,6 +8,11 @@ message: >-
 note: |
   Invariant source: tests/html-view-sealed.test.ts (retired by Plan B, 2026-09-16).
   Guard: this rule + its fixture. SCOPING: every renderer .tsx and the fixture.
+  FIX (review of batch A, 2026-09-16): this rule only fires when a sandbox
+  attribute is PRESENT and contains allow-same-origin — it says nothing if the
+  sandbox attribute (or allow-scripts within it) is simply missing. See
+  iframe-sandbox-requires-allow-scripts for that half of the retired test's
+  requirement.
 files:
   - "**/src/renderer/**/*.tsx"
   - "**/fixtures/iframe-sandbox.tsx"
