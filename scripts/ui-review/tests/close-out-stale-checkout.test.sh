@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# close-out.sh must judge "a live doc still names the branch" from the workspace's
-# origin default branch, not from a working tree that is behind it.
+# close-out.sh must flag "a live doc still names the branch" only when BOTH the
+# checkout it runs in and the workspace's origin default branch still hold the doc.
 #
 # WHY pinned (2026-09-17): Plan B's close-out ran from the shared checkout, 168
 # commits behind. The merge had already moved the plan to docs/archive/, but the
@@ -59,5 +59,21 @@ grep -q "still name the branch" <<<"$out" && {
   echo "reported a doc that origin/master already archived (read the stale working tree)"; echo "$out"; exit 1; }
 grep -q "no live doc names the branch" <<<"$out" || {
   echo "expected the pass line"; echo "$out"; exit 1; }
+
+# 4. The other direction: a session that archived the doc on its OWN branch, pushed but
+#    not merged, must not be told to fix it again — origin still has the old copy.
+git -C "$TMP/ws" pull -q origin master
+mkdir -p "$TMP/ws/docs/active/plans"
+printf -- '---\nstatus: active\n---\nbranch %s\n' "$BR" > "$TMP/ws/docs/active/plans/q.md"
+git -C "$TMP/ws" add docs && git -C "$TMP/ws" commit -qm plan2 && git -C "$TMP/ws" push -q origin master
+git -C "$TMP/ws" checkout -q -b session/wrapup
+mkdir -p "$TMP/ws/docs/archive/plans"
+git -C "$TMP/ws" mv docs/active/plans/q.md docs/archive/plans/q.md
+git -C "$TMP/ws" commit -qm archive2 && git -C "$TMP/ws" push -q origin session/wrapup
+out=$(run "$BR" youcoded)
+grep -q "still name the branch" <<<"$out" && {
+  echo "told a session to redo a doc fix already on its unmerged branch"; echo "$out"; exit 1; }
+grep -q "not in this checkout" <<<"$out" || {
+  echo "expected the waiting-for-merge note"; echo "$out"; exit 1; }
 
 echo "close-out stale-checkout guard: ok"

@@ -269,20 +269,31 @@ echo "Docs"
 # Scoped to THIS branch. A doc naming a branch that no longer exists holds
 # commands that error instead of answering, and claims that read as current.
 DEAD=""
-# WHY read the workspace's origin default branch, not its working tree (2026-09-17):
-# close-out runs from the shared checkout, which can sit hundreds of commits behind.
-# There it reported Plan B's plan as "still names the branch" after the merge had
-# already moved it to docs/archive/. The fresh working tree is only the fallback when
-# the workspace has no origin ref (a test fixture, an offline clone).
+PENDING=""
+# WHY a doc is flagged only when BOTH this checkout and origin's default branch still
+# name the branch (2026-09-17). Either copy alone misleads:
+#   - this checkout alone: the shared checkout can sit hundreds of commits behind, and
+#     reported Plan B's plan as a TODO after the merge had already archived it;
+#   - origin alone: a session that fixed the doc on its own not-yet-merged branch would
+#     be told to fix it again.
+# A doc fixed here but still on origin is reported as waiting for that merge.
+# Without an origin ref (a test fixture, an offline clone) this checkout decides alone.
 git -C "$WORKSPACE" fetch origin --quiet 2>/dev/null || true
 WS_BASE=$(git -C "$WORKSPACE" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
 if [[ "$MERGED" == yes ]]; then
+  LOCAL=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null | sort || true)
   if git -C "$WORKSPACE" rev-parse --verify -q "$WS_BASE" >/dev/null 2>&1; then
-    DEAD=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active docs/roadmap 2>/dev/null \
-      | sed "s|^$WS_BASE:|$WORKSPACE/|" || true)
+    REMOTE=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active docs/roadmap 2>/dev/null \
+      | sed "s|^$WS_BASE:|$WORKSPACE/|" | sort || true)
+    DEAD=$(comm -12 <(printf '%s\n' "$LOCAL") <(printf '%s\n' "$REMOTE") | sed '/^$/d')
+    PENDING=$(comm -13 <(printf '%s\n' "$LOCAL") <(printf '%s\n' "$REMOTE") | sed '/^$/d')
   else
-    DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null || true)
+    DEAD=$LOCAL
   fi
+fi
+if [[ -n "$PENDING" ]]; then
+  note "still named on $WS_BASE but not in this checkout (fixed on this branch? it lands when the branch merges):"
+  echo "$PENDING" | sed "s|^$WORKSPACE/|       |"
 fi
 if [[ "$MERGED" != yes ]]; then
   note "docs naming this branch are FINE while it is unmerged — check skipped"
