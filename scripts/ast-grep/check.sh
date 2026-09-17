@@ -234,7 +234,10 @@ fi
 #   function, a comment between it and DEFAULT_PDF_PAGES, and a file with the function renamed).
 # 2026-09-16 (u4, remote-appearance-relay.test.ts): +2 for appearance-broadcast-relays-to-remote
 #   (a window relay that never tells phones, and a file with no onAppearanceBroadcast callback).
-EXPECTED_VIOLATIONS=229
+# 2026-09-16 (u4, remote-download.test.ts): +5 for download-route-before-static (a static
+#   call before the route (1); a server callback with no route — the callback and both
+#   fallbacks (3); a file with no http.createServer((req, res) => …) call (1)).
+EXPECTED_VIOLATIONS=234
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
