@@ -45,7 +45,8 @@ ignores:
   # where the switch is defined / rendered (skipped by the retired test)
   - "**/components/ui/Toggle.tsx"
   - "**/components/ui/SettingRow.tsx"
-  # TOGGLES_OUTSIDE_A_ROW — exact counts kept as a text read in the test
+  # exemption-table: TOGGLES_OUTSIDE_A_ROW — exact counts kept as a text read in
+  # tests/setting-row-authority.test.tsx; check.sh fails if this block and that table differ.
   - "**/components/SessionStrip.tsx"
   - "**/components/SettingsPanel.tsx"
   - "**/components/SyncPanel.tsx"

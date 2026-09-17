@@ -426,6 +426,112 @@ else
     echo "  SKIP — python3 not found; rule paths were not checked"
 fi
 
+# WHY an exemption-table check (review of u8 and u9, 2026-09-16): a few kept tests
+# hold an exact per-file count for a short list of files (a count is not something a
+# rule can express), and the matching rule skips those same files under `ignores:`.
+# The two lists live in different repos. A file added to the rule's list but not the
+# test's is silently unguarded — neither side notices. So each pairing below must
+# agree: the rule's `# exemption-table: NAME` block of `ignores:` entries, compared by
+# file name, equals the keys of `const NAME` in the test. A test key the rule never
+# scans at all (not matched by its `files:`, e.g. App.tsx for the toggle rule) also
+# counts as agreeing. One generic helper; add a pairing with one line.
+#   pairing = rule file | test file (under tests/) | table name
+EXEMPTION_TABLES=(
+    "no-hand-rolled-setting-row-toggle.yml|setting-row-authority.test.tsx|TOGGLES_OUTSIDE_A_ROW"
+)
+echo "== exemption tables (a test's counted files = its rule's ignores:) =="
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "  SKIP — python3 not found; exemption tables were not compared"
+elif [[ ! -d "$TESTS_DIR" ]]; then
+    echo "  SKIP — no tests/ beside $SOURCE_DIR; exemption tables were not compared"
+else
+    if ! python3 - "$HERE/rules" "$TESTS_DIR" "$SOURCE_DIR" "${EXEMPTION_TABLES[@]}" <<'PY'
+import fnmatch, os, re, sys
+rules_dir, tests_dir, source_dir, pairings = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4:]
+
+def yaml_list(text, key):
+    # (item, comment lines directly above it) for each `- item` under a top-level `key:`.
+    out, comments = [], []
+    m = re.search(r'^' + key + r':[ \t]*(?:#.*)?$', text, re.M)
+    for line in (text[m.end():].split('\n')[1:] if m else []):
+        if re.match(r'^[ \t]*$', line):
+            continue
+        c = re.match(r'^[ \t]*#(.*)$', line)
+        if c:
+            comments.append(c.group(1).strip())
+            continue
+        item = re.match(r'^[ \t]*-[ \t]*(.*)$', line)
+        if not item:
+            break
+        out.append((item.group(1).split(' #')[0].strip().strip('"\''), comments))
+        comments = []
+    return out
+
+def exemption_block(text, table):
+    # Entries from the `# exemption-table: TABLE` comment up to the next comment.
+    names, inside = [], False
+    for glob, comments in yaml_list(text, 'ignores'):
+        if comments:
+            inside = any(re.match(r'exemption-table:\s*' + re.escape(table) + r'\b', c) for c in comments)
+        if inside:
+            names.append(glob.rsplit('/', 1)[-1])
+    return names
+
+def table_keys(src, table):
+    # Top-level `'X.tsx':` keys of `const TABLE ... = {` up to its closing `};`.
+    m = re.search(r'const ' + re.escape(table) + r'\b[^=]*=\s*\{\n', src)
+    if not m:
+        return None
+    end = re.compile(r'^[ \t]*\};', re.M).search(src, m.end())
+    body = src[m.end():end.start() if end else len(src)]
+    first = re.search(r"^([ \t]*)'", body, re.M)
+    if not first:
+        return []
+    return re.findall(r"^" + first.group(1) + r"'([^']+)'\s*:", body, re.M)
+
+def scanned(path, text):
+    # Does the rule scan this file at all? (`*` crosses `/`, as in ast-grep.)
+    hit = lambda key: any(fnmatch.fnmatchcase(path, g) for g, _ in yaml_list(text, key))
+    return hit('files') and not hit('ignores')
+
+source_files = []
+for root, _, names in os.walk(source_dir):
+    source_files += [os.path.join(root, n).replace(os.sep, '/') for n in names]
+
+bad = 0
+for pairing in pairings:
+    rule_file, test_file, table = pairing.split('|')
+    text = open(os.path.join(rules_dir, rule_file), encoding='utf-8').read()
+    src = open(os.path.join(tests_dir, test_file), encoding='utf-8').read()
+    rule_names = exemption_block(text, table)
+    test_names = table_keys(src, table)
+    where = f'{rule_file} vs {test_file} {table}'
+    if not rule_names:
+        print(f'  FAIL — {where}: the rule has no "# exemption-table: {table}" block under ignores:')
+        bad += 1
+        continue
+    if test_names is None:
+        print(f'  FAIL — {where}: the test has no `const {table} = {{` table')
+        bad += 1
+        continue
+    for name in sorted(set(rule_names) - set(test_names)):
+        print(f'  FAIL — {where}: {name} is in the rule\'s ignores: but not the test\'s table — '
+              'nothing counts it now. Remove it from the rule, or add it to the table.')
+        bad += 1
+    for name in sorted(set(test_names) - set(rule_names)):
+        if any(p.endswith('/' + name) and scanned(p, text) for p in source_files):
+            print(f'  FAIL — {where}: {name} is in the test\'s table but the rule still scans it — '
+                  'add it to the rule\'s exemption-table block, or drop it from the table.')
+            bad += 1
+if bad:
+    sys.exit(1)
+print(f'  OK — {len(pairings)} exemption table(s) match their rules\' ignores:')
+PY
+    then
+        fail=1
+    fi
+fi
+
 # WHY a per-rule check and not just the total (2026-09-10): the count alone
 # cannot tell "every rule fired" from "the right NUMBER of findings appeared".
 # A rule added with no fixture — or one whose `files:` globs exclude the fixture
