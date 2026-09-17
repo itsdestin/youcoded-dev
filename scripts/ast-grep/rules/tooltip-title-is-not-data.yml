@@ -22,6 +22,20 @@ note: |
   (a ternary's `consequence`/`alternative` field, or a `$A && $B`
   expression's `right` field, must ITSELF be the offending tag), not with
   a deep `stopBy: end` search.
+  ALSO CHECKS the same tag wrapped in one extra layer of parens —
+  `{open ? (\n<Dialog/>\n) : null}` / `{open && (\n<Dialog/>\n)}` (review
+  round 2, 2026-09-16), same reasoning and same one-`has:`-level shape as
+  tooltip-wraps-forwarding-element's parenthesized branch.
+  KNOWN STRICTNESS (review round 2, 2026-09-16): same as
+  tooltip-wraps-forwarding-element — `consequence` and `alternative` are
+  checked INDEPENDENTLY, so a violation in either branch fires even if the
+  other, textually-first branch is fine. The retired test's `.match()`
+  only ever returned the first tag it found, so this rule is deliberately
+  BROADER than the retired test there, not a fidelity match.
+  KNOWN GAP: same as tooltip-wraps-forwarding-element — a child produced
+  by `.map()` (e.g. `{items.map(item => <Dialog title={item.t} />)}` as
+  Tooltip's direct child) is NOT covered; only `ternary_expression` and
+  `$A && $B` are matched inside a `jsx_expression`.
 files:
   - "**/src/renderer/**/*.tsx"
   - "**/fixtures/tooltip-title-is-not-data.tsx"
@@ -59,6 +73,15 @@ rule:
                             has:
                               field: open_tag
                               has: *title-is-data-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *title-is-data-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *title-is-data-name
                     - has:
                         field: alternative
                         any:
@@ -68,6 +91,15 @@ rule:
                             has:
                               field: open_tag
                               has: *title-is-data-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *title-is-data-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *title-is-data-name
                 - all:
                     - pattern: "$COND && $CHILD"
                     - has:
@@ -79,3 +111,12 @@ rule:
                             has:
                               field: open_tag
                               has: *title-is-data-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *title-is-data-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *title-is-data-name

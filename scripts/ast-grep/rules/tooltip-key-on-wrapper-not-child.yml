@@ -22,6 +22,23 @@ note: |
   not. Matched STRUCTURALLY (a ternary's `consequence`/`alternative` field,
   or a `$A && $B` expression's `right` field, must ITSELF carry the `key=`),
   not with a deep `stopBy: end` search.
+  ALSO CHECKS the same keyed tag wrapped in one extra layer of parens —
+  `{v && (<div key={i} />)}` (review round 2, 2026-09-16), same reasoning
+  and same one-`has:`-level shape as tooltip-wraps-forwarding-element's
+  parenthesized branch.
+  KNOWN STRICTNESS (review round 2, 2026-09-16): same as
+  tooltip-wraps-forwarding-element — `consequence` and `alternative` are
+  checked INDEPENDENTLY, so a keyed child in either branch fires even if
+  the other, textually-first branch carries no key. The retired test's
+  `.match()`-based scan only ever inspected the first tag it found, so
+  this rule is deliberately BROADER than the retired test there, not a
+  fidelity match.
+  KNOWN GAP: same as tooltip-wraps-forwarding-element — a keyed child
+  produced by a NESTED `.map()` (e.g. `{items.map(item => <div
+  key={item.id} />)}` as Tooltip's direct child, as opposed to the OUTER
+  `.map()` that produces the `<Tooltip>` itself in every fixture here) is
+  NOT covered; only `ternary_expression` and `$A && $B` are matched inside
+  a `jsx_expression`.
 files:
   - "**/src/renderer/**/*.tsx"
   - "**/fixtures/tooltip-key-on-wrapper-not-child.tsx"
@@ -67,6 +84,15 @@ rule:
                             has:
                               field: open_tag
                               has: *carries-key
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *carries-key
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *carries-key
                     - has:
                         field: alternative
                         any:
@@ -76,6 +102,15 @@ rule:
                             has:
                               field: open_tag
                               has: *carries-key
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *carries-key
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *carries-key
                 - all:
                     - pattern: "$COND && $CHILD"
                     - has:
@@ -87,3 +122,12 @@ rule:
                             has:
                               field: open_tag
                               has: *carries-key
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *carries-key
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *carries-key

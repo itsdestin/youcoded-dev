@@ -21,3 +21,14 @@ const BadAnd = () => (
     {show && <SomeWeirdWidget />}
   </Tooltip>
 );
+
+// Same violation, with the `&&`-wrapped child ALSO wrapped in one extra
+// layer of parens — the retired test's textual scan is indifferent to
+// parens too (review round 2, 2026-09-16).
+const BadAndParen = () => (
+  <Tooltip text="Explain this">
+    {show && (
+      <SomeWeirdWidget />
+    )}
+  </Tooltip>
+);

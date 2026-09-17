@@ -21,3 +21,14 @@ const BadAnd = () => (
     {open && <Dialog title="Real heading" />}
   </Tooltip>
 );
+
+// Same violation, with the ternary's consequence ALSO wrapped in one extra
+// layer of parens — the retired test's textual scan is indifferent to
+// parens too (review round 2, 2026-09-16).
+const BadTernaryParen = () => (
+  <Tooltip text="Explain this">
+    {open ? (
+      <Dialog title="Real heading" />
+    ) : null}
+  </Tooltip>
+);

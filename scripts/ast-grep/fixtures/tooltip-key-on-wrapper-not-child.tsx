@@ -34,3 +34,16 @@ const BadAnd = () => (
     ))}
   </>
 );
+
+// Same violation, with the `&&`-wrapped keyed child ALSO wrapped in one
+// extra layer of parens — the retired test's textual scan is indifferent to
+// parens too (review round 2, 2026-09-16).
+const BadAndParen = () => (
+  <>
+    {items.map((item) => (
+      <Tooltip text="Explain this">
+        {item.visible && (<div key={item.id}>{item.label}</div>)}
+      </Tooltip>
+    ))}
+  </>
+);

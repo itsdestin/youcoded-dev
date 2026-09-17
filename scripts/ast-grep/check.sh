@@ -169,7 +169,13 @@ fi
 #   buddy-work-area-only-where-needed, buddy-work-area-reresolved-on-display-change.
 # 2026-09-16 (review of t6a, I6): +2 — no-hand-rolled-callout-tint's fixture gains a
 #   tint and border split across one className attribute, and across one mergeClasses call.
-EXPECTED_VIOLATIONS=161
+# 2026-09-16 (review of t5c batch C, round 2): +3 for the three tooltip rules
+#   (tooltip-wraps-forwarding-element, tooltip-title-is-not-data,
+#   tooltip-key-on-wrapper-not-child) each gaining a ONE-extra-layer-of-parens
+#   fixture line — `{cond ? (\n<X/>\n) : null}` / `{cond && (\n<X/>\n)}` — the
+#   retired test's textual scan was indifferent to parens too, and the round-1
+#   ternary/`&&` fix only matched the tag directly, not through a paren wrapper.
+EXPECTED_VIOLATIONS=164
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

@@ -30,6 +30,28 @@ note: |
   or a `$A && $B` binary expression's `right` field, must ITSELF be the
   offending tag — not a deep search of the whole expression, which would
   also catch an unrelated element nested inside the condition.
+  ALSO CHECKS the same tag wrapped in one extra layer of parens —
+  `{open ? (\n<X/>\n) : null}` / `{open && (\n<X/>\n)}` (review round 2,
+  2026-09-16: the retired textual scan is indifferent to parens too).
+  `parenthesized_expression`'s inner expression is an unlabeled direct
+  child (verified empirically, scratch probe 2026-09-16: `has: {kind:
+  jsx_self_closing_element}` with no `field:` matched it directly) — one
+  `has:` level added inside each `consequence`/`alternative`/`right` branch,
+  not `stopBy: end`, so a tag genuinely nested deeper inside the parens
+  still doesn't fire.
+  KNOWN STRICTNESS (review round 2, 2026-09-16): the ternary branch checks
+  `consequence` and `alternative` INDEPENDENTLY — a violation in EITHER
+  branch fires, even if the other branch is fine and textually comes
+  first. The retired test's `.match()` only ever returned the FIRST tag it
+  found after the `<Tooltip>` wrapper, so a `{cond ? <Button/> :
+  <SomeWeirdWidget/>}` (fine consequence, offending alternative) may not
+  actually have been in the retired test's own scope — this rule is
+  deliberately BROADER than the retired test here, not a fidelity match.
+  KNOWN GAP: a child produced by `.map()` — `{items.map(item =>
+  <SomeWeirdWidget key={item.id} />)}` as Tooltip's direct child — is NOT
+  covered. Only `ternary_expression` and `$A && $B` are matched inside a
+  `jsx_expression`; a `call_expression` (`.map(...)`) is a different
+  shape and falls through uninspected.
 files:
   - "**/src/renderer/**/*.tsx"
   - "**/fixtures/tooltip-wraps-forwarding-element.tsx"
@@ -69,6 +91,15 @@ rule:
                             has:
                               field: open_tag
                               has: *offending-tag-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *offending-tag-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *offending-tag-name
                     - has:
                         field: alternative
                         any:
@@ -78,6 +109,15 @@ rule:
                             has:
                               field: open_tag
                               has: *offending-tag-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *offending-tag-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *offending-tag-name
                 - all:
                     - pattern: "$COND && $CHILD"
                     - has:
@@ -89,3 +129,12 @@ rule:
                             has:
                               field: open_tag
                               has: *offending-tag-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *offending-tag-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *offending-tag-name
