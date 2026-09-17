@@ -34,8 +34,8 @@ verify:
 
 # Writing tests that stay green under load — and on Windows
 
-**A test that fails only sometimes is worse than one that fails always** — it teaches every
-session to disbelieve the suite. Depth: `docs/testing-under-load.md`. **CI runs this suite on
+**A test that fails only sometimes is worse than one that fails always** — it teaches
+sessions to disbelieve the suite. Depth: `docs/testing-under-load.md`. **CI runs this suite on
 Windows and macOS too**: 16 tests were red on Windows for a week (2026-09-10 to 09-16).
 
 ## Windows runs this suite too
@@ -90,9 +90,10 @@ test; use the real regression, not a lookalike. **Why:** three green guards prov
 (2026-09-04). **Guard:** `tests/helpers/guard-scope.ts` (`readStripped()`, `assertPatternMatches()`);
 `scripts/ast-grep/check.sh` fails a rule firing on no fixture. **A new source-text guard needs a
 reason a rule cannot express** (parity across languages, CSS↔TSX coupling). The 2026-09 sweep
-converted or deleted the rest; the list that remains is `node scripts/test-inventory.mjs` section 3.
+converted or deleted the rest of its 114; the kept ones and unswept files are
+`node scripts/test-inventory.mjs` section 3.
 
 ## Before calling a failure "flake"
 Run it alone (passes → load-sensitive) **and** in a pristine `origin/master` worktree (still
 fails → pre-existing). **Then fix it or file it with the cause — an unread red leg is
-not noise, and a filed flake nobody owns is how master stayed red for a week.**
+not noise; an unowned filed flake kept master red for a week.**

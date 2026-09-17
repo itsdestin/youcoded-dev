@@ -222,6 +222,23 @@ seen-on is always n/a here.
       call — a stricter ban may also catch a harmless helper later
       `n/a` `decision` `checked 2026-09-17`
 
+- [ ] Source-grep sweep, round 2: tests the 2026-09 inventory missed. Plan B converted or deleted
+      its 114 classified files, but 24 more tests still read app source as text and were never
+      classified. (a) Found once the inventory learned to follow a path held in a variable
+      (2026-09-17): buddy-position-source, buddy-title-guard, claude-specialist-default-parity,
+      ipc-error, remote-devices-channels, remote-password-always-required, remote-recovery,
+      remote-setup-flow, remote-status-channel, rocm-prereqs, session-drawer-deleted-toggle,
+      statusline-context-remaining, transcript-page-channel-parity, transcript-reducer,
+      update-install-ipc, voice-service. (b) Added after the classification snapshot:
+      harness-eval-not-shipped, hook-scripts-android-parity, infinite-animation-allowlist,
+      line-budgets, prompt-git-snapshot-precomputed, session-strip-layout-effects-have-deps,
+      visible-intervals, no-bare-disclosure. (c) infinite-animation-allowlist keeps its own
+      exception list (`SMOOTH_OK`) beside the `no-unstepped-infinite-animation` generator's own
+      (`EXEMPT`); `check.sh` does not pair the two, so an exemption added to one can silently disagree
+      with the other. Classify each file (rule, split, keep with a reason, or delete) the way
+      Plan B did; the live list is `node scripts/test-inventory.mjs` section 3
+      `n/a` `confirmed` `checked 2026-09-17`
+
 ## rigs
 - [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
       port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
