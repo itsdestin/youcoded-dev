@@ -1,0 +1,61 @@
+id: filestab-mounted-with-hidden-prop
+language: tsx
+severity: error
+message: >-
+  ProjectView must render <FilesTab> unconditionally and pass it
+  `hidden={tab !== 'files'}` — never `tab === 'files' && <FilesTab …>`.
+  Unmounting the Files tab drops the main-process project watcher, and
+  rebuilding it re-walks the whole project tree: eight Files/Conversations
+  clicks cost 7.2–8.0 s of main-process stall (perf-lab, 2026-09-09).
+note: |
+  Invariant source: tests/project-view-files-tab-stays-mounted.test.tsx
+  (Plan B, 2026-09-16) — "ProjectView mounts FilesTab unconditionally and
+  hands it `hidden`". Its jsdom case (FilesTab honours `hidden` without
+  refetching) stays in that file; one half alone passes while the bug is back.
+  Three branches, from the retired checks on ProjectView.tsx's raw text:
+  1. whole file (`kind: program`): no <FilesTab> tag at all (the old
+     "<FilesTab> not found");
+  2. a <FilesTab> tag — self-closing or the opening tag of an open/close
+     pair — without the attribute `hidden={tab !== 'files'}`, spelled exactly
+     as the old `toContain` required;
+  3. the conditional-mount form, the old regex
+     /tab\s*===\s*'files'\s*&&\s*\(?\s*<FilesTab/ on the innermost node that
+     holds it (the `&&` expression, or a comment/string — the old read did
+     not strip comments), reported once.
+  DIFFERENCES, deliberate: the old check read only the FIRST `<FilesTab…/>`
+  in the file and matched the name as a prefix; this rule checks every tag
+  named exactly FilesTab (so a `<FilesTabHeader>` neither satisfies branch 1
+  nor needs the attribute). ProjectView renders exactly one FilesTab today.
+files:
+  - "**/src/renderer/components/project-view/ProjectView.tsx"
+  - "**/fixtures/filestab-mounted-with-hidden-prop*.tsx"
+utils:
+  filestab-tag:
+    any:
+      - kind: jsx_self_closing_element
+      - kind: jsx_opening_element
+    has:
+      field: name
+      regex: "^FilesTab$"
+rule:
+  any:
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          matches: filestab-tag
+    - matches: filestab-tag
+      not:
+        has:
+          kind: jsx_attribute
+          regex: "^hidden=\\{tab !== 'files'\\}$"
+    - any:
+        - kind: binary_expression
+        - kind: comment
+        - kind: string_fragment
+        - kind: template_string
+        - kind: jsx_text
+      regex: "tab\\s*===\\s*'files'\\s*&&\\s*\\(?\\s*<FilesTab"
+      not:
+        has:
+          regex: "tab\\s*===\\s*'files'\\s*&&\\s*\\(?\\s*<FilesTab"

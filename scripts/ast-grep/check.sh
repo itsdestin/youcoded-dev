@@ -227,7 +227,10 @@ fi
 #   attribute and a markup template), its -ts twin (1), no-literal-black-white-wash (2 — a
 #   className and a template beside a substitution), its -ts twin (1) and
 #   toast-auto-dismiss-owned-by-primitive (1).
-EXPECTED_VIOLATIONS=220
+# 2026-09-16 (u3, project-view-files-tab-stays-mounted.test.tsx): +4 for
+#   filestab-mounted-with-hidden-prop (the conditional mount, its tag lacking `hidden`, an
+#   open/close tag with the wrong `hidden`, and a file with no FilesTab at all).
+EXPECTED_VIOLATIONS=224
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
