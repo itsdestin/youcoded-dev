@@ -99,6 +99,24 @@ Round 6 (`youcoded-pages-shell-r6.review.answers.json`): all three approved — 
 to chat pill, the framed panel with a full-width Manage pages, and Edit only on the library
 cards. One note: align "Back to chat" and "Esc" and put a dot between them (applied).
 
+**Build decisions (interview, 2026-09-17):**
+
+- **Sync is built in.** Personal pages live in the Personal sync space (`~/YouCoded/Personal/Pages/<slug>/`);
+  project pages live inside the project (`<project>/.youcoded/pages/<slug>/`) and travel with it.
+  A page's own saved data lives in its folder and syncs with it (later save wins on a conflict).
+  Pin state rides in the per-device file the Personal space already keeps.
+- **Versioning is git.** Both homes are git repositories; "put it back" in chat restores from
+  history. No draft state, no previous-copy file: an assistant's edit goes straight to live and
+  the open page reloads.
+- **No outside-access blocking in Phase 1** ("i dont want to do much backend work"). The
+  honest wording says a page is not stopped from reaching the internet yet.
+- **Rename, delete, icon and description through chat** for now; the library keeps only pin
+  and Edit in chat.
+- **The three sample pages stay workbench demos**; a fresh install starts with the welcome card.
+- **The side panel starts hidden**, everywhere.
+- Switching pages in the panel reloads the page; accepted for Phase 1 since page data is saved
+  as it goes.
+
 **Where the shell stands after round 6:** every screen of Phase 1 is approved (top-bar button
 and pins, library, empty library, page view with its own band and framed panel, phone
 layouts, two fuller sample pages). Still to build in Phase 1: the real backend behind the four
