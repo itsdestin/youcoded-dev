@@ -1,4 +1,4 @@
-// Violation fixture for shortcuts-dialog-keeps-scroll-body-session-menu-height.
+// Violation fixture for session-menu-height-capped.
 // Missing the second scroll-fade treatment (className="scroll-fade flex-1 py-1").
 function SessionMenu() {
   const style = {
