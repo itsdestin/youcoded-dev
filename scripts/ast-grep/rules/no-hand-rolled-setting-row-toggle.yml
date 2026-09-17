@@ -7,6 +7,9 @@ message: >-
   a control slot. If the row genuinely is not a settings row, add its file to
   TOGGLES_OUTSIDE_A_ROW in tests/setting-row-authority.test.tsx with the
   reason and a count, and to this rule's ignores:.
+  If this file sits in a new components/ subfolder, which inScopeFiles()
+  (tests/helpers/guard-scope.ts) does not cover, add the folder to this
+  rule's ignores: instead.
 note: |
   Invariant source: tests/setting-row-authority.test.tsx (Plan B, 2026-09-16;
   "no in-scope file grows a new hand-rolled toggle row"). The retired test

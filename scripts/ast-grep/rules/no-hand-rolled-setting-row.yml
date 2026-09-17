@@ -7,6 +7,9 @@ message: >-
   fast mode, the Preferences permission-mode list, DevelopmentPopup's Row,
   the Sound preset list, PerformancePopup's power-saving row) — each put the
   description somewhere different and added its own type size.
+  If this file sits in a new components/ subfolder, which inScopeFiles()
+  (tests/helpers/guard-scope.ts) does not cover, add the folder to this
+  rule's ignores: instead.
 note: |
   Invariant source: tests/setting-row-authority.test.tsx (Plan B, 2026-09-16;
   "the retired row recipes are gone"). The retired test ran a raw

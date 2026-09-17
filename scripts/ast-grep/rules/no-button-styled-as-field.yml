@@ -6,6 +6,9 @@ message: >-
   border-edge-dim`) — it reads as typeable and is not (K7: the project folder
   picker did exactly this). A value chosen elsewhere — an OS picker, a dialog,
   another screen — is a value row plus a Change button.
+  If this file sits in a new components/ subfolder, which inScopeFiles()
+  (tests/helpers/guard-scope.ts) does not cover, add the folder to this
+  rule's ignores: instead.
 note: |
   Invariant source: tests/setting-row-authority.test.tsx (Plan B, 2026-09-16;
   "no control is styled as a field it is not"). The retired test matched
