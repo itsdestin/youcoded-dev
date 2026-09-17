@@ -194,3 +194,29 @@ never-auto-approve for notice turns, the per-kind action table) stays.
   hook and its `revisionTurnId` stamp are removed. Automatic recovery (§1) is unchanged.
 - An eighth request channel is added; the "exactly seven channels" constraint from the backend
   design is superseded by this decision.
+
+## 7. Revision 5 — the usage limit does not re-count cached tokens (Destin, 2026-09-17)
+
+Destin: "we should not be re-counting cached tokens". Amends backend design §4 for plan children.
+
+- **Counted usage per request** = uncached input + cache-write input + output (cached reads are
+  excluded). Providers that report no cache breakdown count their whole input, as today; local
+  engines use their reported reuse count when present.
+- **Dollars are unchanged:** priced from real usage with the cached-read rate.
+- **Reservation before sending:** if the same specialist's previous request completed within the
+  provider's cache window (conservatively 4 minutes) and the conversation prefix is unchanged,
+  reserve only the new part of the prompt (bound of the bytes added since that request) plus the
+  output cap; otherwise reserve the full certified bound as today. The certified-bound breach check
+  still compares reported TOTAL input against the full bound (a separately stored value), never
+  against the smaller reservation.
+- **A cache miss after a small reservation** is charged at its real counted usage even if that
+  exceeds the reservation; the plan-wide check then pauses before any further request once the
+  limit is passed (same mechanism as the soft ChatGPT limit). This is the only overshoot path on
+  capped routes, bounded by one request's uncached prompt per running specialist.
+- **Ceiling and minimum Add budget:** the plan ceiling stays the approved worst case. The minimum
+  Add budget uses the same reservation rule, so after a short pause it asks for far less.
+- **Card:** unchanged wording; the numbers now track new work.
+- Tests: warm-cache continue reserves and charges only the new part; cold continue reserves the full
+  bound and releases the unused part; a cache miss after a small reservation is charged and pauses
+  the plan before the next request; breach check still uses the full bound; no-cache-breakdown
+  providers count full input; local engine reuse counted.
