@@ -143,6 +143,15 @@ everywhere). Two Settings bugs fixed (scrim order, Esc from inside a page). The 
 spec (`youcoded-pages-shell-r10.review.json`) is written, unbuilt, on his instruction to hold
 decks until asked.
 
+**Phase 1 wrap-up (2026-09-17, later the same day):** Destin's own end-to-end pass in the dev
+window passed. He chose to skip the contract and the round-10 / acceptance decks ("this is
+already built basically, and i have done most of the reviews myself") — so the decisions of
+this phase live in the nine answered decks, the floating-theme choice deck and this plan, not
+in a signed contract. Both branches were brought up to master (255 / 343 commits) and the
+full desktop verification is green on master's toolchain. Left open, filed on the roadmap
+(`docs/roadmap/other-features.md`): the page view at phone width, a page deleted while open,
+and a one-off accent-coloured tint over pages in two wallpaper themes that cleared on its own.
+
 **Build status (2026-09-17):** the contract (24 rows) is written and awaits Destin's signature;
 the technical design is reviewed (12/12 findings folded in); the `wecoded-pages-plugin` skill,
 the store, the watcher, the five-surface bridge, page data and the Make a page / Edit in chat

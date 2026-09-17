@@ -460,6 +460,14 @@ ATTACH_PORT=9299 node scripts/ui-review/shot.mjs scripts/ui-review/plans/electro
 ATTACH_PORT=9299 node scripts/ui-review/shot.mjs scripts/ui-review/plans/electron-live-session.json <out> app
 ```
 
+**A screenshot of a dev window that is BEHIND other windows is stale.** Chromium stops
+painting an occluded window, so `Page.captureScreenshot` over CDP returns the last frame it
+drew and DOM reads lag the clicks that caused them. Measured 2026-09-17: six probes of a
+theme tint in Destin's dev window measured "dark, no tint" while he was looking at the tint,
+because the window sat under the terminal. Computed styles are still trustworthy; pixels and
+"what is on screen now" are not. Bring the window to the front (or use the headless
+workbench) before trusting a pixel.
+
 (The workbench Vite server on :5233 must already be up for the same worktree — the dev
 main process loads the renderer from it.) The isolated `uiaudit` profile keeps this away
 from the live app, but it **shares `~/.claude` and the synced settings**, so the

@@ -31,7 +31,9 @@ UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 ## Short route for small work
 **Invariant:** small changes, features or bug fixes with clear direction may skip every step
 but the UI review deck, his first sight of the work. Ask Destin before skipping. **Why:** "just
-show them to me. this is a simple feature" (2026-09-10). **Guard:** none — candidate.
+show them to me. this is a simple feature" (2026-09-10). "Wait on the deck" holds the DECK,
+not the build: keep building, capture nothing, serve nothing until he asks (2026-09-17, said
+twice). **Guard:** none — candidate.
 
 ## Questions before drawing
 **Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
