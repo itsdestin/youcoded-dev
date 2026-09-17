@@ -13,14 +13,23 @@ message: >-
 note: |
   Invariant source: tests/dialog-chrome-authority.test.ts (retired by Plan B,
   2026-09-16; case 2 of 4 — "no view inside a dialog paints its own header").
-  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
-  components/*.tsx, components/development/*.tsx, components/ui/*.tsx — NOT
-  marketplace, project-view, game, git, tags, context-menu, buddy or the dev
-  workbench, which have their own unrelated instances of this exact recipe and
-  were deliberately never in the original guard's scope (an earlier draft
-  found HowContextWorksPopup.tsx and dev/workbench/compare/registry.tsx match
-  this pattern too; they are real, out-of-scope, pre-existing surfaces, not a
-  regression this rule should catch). Dialog.tsx (where the real header lives)
+  SCOPING is NOT a mirror of tests/helpers/guard-scope.ts's inScopeFiles()
+  (review of batch A, 2026-09-16: that word overclaimed the relationship —
+  inScopeFiles() is a narrow ALLOWLIST of App.tsx + a flat, non-recursive
+  components/*.tsx + components/development/*.tsx + components/ui/*.tsx, so
+  it never saw most renderer subdirectories at all). This rule scans the
+  WHOLE renderer tree recursively and is STRICTER BY DESIGN: only the
+  surfaces listed below are excluded via `ignores:` — marketplace,
+  project-view, game, git, tags, context-menu, buddy and the dev workbench,
+  which have their own unrelated instances of this exact recipe and were
+  deliberately never in the original guard's scope (an earlier draft found
+  HowContextWorksPopup.tsx and dev/workbench/compare/registry.tsx match this
+  pattern too; they are real, out-of-scope, pre-existing surfaces, not a
+  regression this rule should catch). Every OTHER renderer subdirectory the
+  original allowlist never reached (assistant-settings, artifact-views,
+  diff, first-run, guide, header, mascot, model, overlays, permissions,
+  remote, specialists, sync-*, tool-views, …) is now IN scope and clean on
+  the real tree. Dialog.tsx (where the real header lives)
   and SyncSetupWizard.tsx (EXEMPT — its title is derived from state that
   legitimately lives inside it, see the retired test's OWNS_ITS_HEADER
   comment) are excluded. LIMITATION: the retired test also counted per-file
