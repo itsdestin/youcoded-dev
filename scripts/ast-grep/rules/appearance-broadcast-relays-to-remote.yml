@@ -1,0 +1,65 @@
+id: appearance-broadcast-relays-to-remote
+language: typescript
+severity: error
+message: >-
+  main.ts must relay theme changes both ways between the computer and phones:
+  the ipcMain.on(IPC.APPEARANCE_BROADCAST, …) handler must also call
+  remoteServer.broadcast({ type: IPC.APPEARANCE_SYNC, … }), and the
+  RemoteServer must be given an onAppearanceBroadcast callback. Without them a
+  phone keeps an old theme until reloaded, or a phone's change never reaches
+  the computer's windows (Destin, 2026-09-11).
+note: |
+  Invariant source: tests/remote-appearance-relay.test.ts (Plan B, 2026-09-16)
+  — "the window relay also broadcasts appearance:sync to remote clients" and
+  "the remote server is told how to reach the computer's windows". The file's
+  server-side behaviour cases stay; only these two main.ts text reads moved here.
+  Branch 1 (the relay): fires on the ipcMain.on(IPC.APPEARANCE_BROADCAST, …)
+  call when nothing inside its handler is a call whose callee ends in
+  `remoteServer.broadcast` (or `remoteServer?.broadcast`) with a first
+  argument object holding `type: IPC.APPEARANCE_SYNC`. The retired regex
+  `remoteServer\.broadcast\(\{\s*type:\s*IPC\.APPEARANCE_SYNC` also demanded
+  `type` be the object's FIRST key; key order is not the invariant, so any
+  position is accepted here. It read raw text, so a comment spelling the call
+  satisfied it; a real call is required here (deliberately stricter). If the
+  whole registration is deleted, appearance-broadcast-handler-registered fires.
+  Branch 2 (presence): fires on the whole file when no object property named
+  `onAppearanceBroadcast` exists (a `key: value` pair — the retired
+  /onAppearanceBroadcast:/ — or its shorthand/method spellings, which mean the
+  same). A comment or string naming it no longer counts.
+files:
+  - "**/src/main/main.ts"
+  - "**/fixtures/appearance-broadcast-relays-to-remote.ts"
+  - "**/fixtures/appearance-broadcast-relays-to-remote-absent.ts"
+utils:
+  remote-sync-broadcast:
+    kind: call_expression
+    has:
+      field: function
+      regex: "remoteServer\\??\\.broadcast$"
+    all:
+      - has:
+          field: arguments
+          has:
+            nthChild: 1
+            kind: object
+            has:
+              kind: pair
+              all:
+                - has: { field: key, regex: "^type$" }
+                - has: { field: value, regex: "^IPC\\.APPEARANCE_SYNC$" }
+rule:
+  any:
+    - pattern: "ipcMain.on(IPC.APPEARANCE_BROADCAST, $HANDLER)"
+      not:
+        has: { stopBy: end, matches: remote-sync-broadcast }
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          any:
+            - kind: pair
+              has: { field: key, regex: "^onAppearanceBroadcast$" }
+            - kind: shorthand_property_identifier
+              regex: "^onAppearanceBroadcast$"
+            - kind: method_definition
+              has: { field: name, regex: "^onAppearanceBroadcast$" }

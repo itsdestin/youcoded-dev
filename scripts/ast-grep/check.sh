@@ -232,7 +232,9 @@ fi
 #   open/close tag with the wrong `hidden`, and a file with no FilesTab at all).
 # 2026-09-16 (u4, read-pdf.test.ts): +3 for pdfjs-asset-dirs-no-path-sep (path.sep in the
 #   function, a comment between it and DEFAULT_PDF_PAGES, and a file with the function renamed).
-EXPECTED_VIOLATIONS=227
+# 2026-09-16 (u4, remote-appearance-relay.test.ts): +2 for appearance-broadcast-relays-to-remote
+#   (a window relay that never tells phones, and a file with no onAppearanceBroadcast callback).
+EXPECTED_VIOLATIONS=229
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
