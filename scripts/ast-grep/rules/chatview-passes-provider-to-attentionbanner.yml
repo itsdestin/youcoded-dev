@@ -1,0 +1,26 @@
+id: chatview-passes-provider-to-attentionbanner
+language: tsx
+severity: error
+message: >-
+  ChatView's `<AttentionBanner>` must pass `provider={provider}`. Without it,
+  a native session shows the Claude-Code "check Terminal view" pointer even
+  though native sessions have no Terminal view — a dead end the component's
+  own tests cannot catch, since they render AttentionBanner directly and
+  never prove the real caller wires the prop through.
+note: |
+  Invariant source: tests/attention-banner.test.tsx (Plan B, 2026-09-16; "the
+  stuck line" describe block's only source-reading case, "ChatView passes
+  the session provider to the banner" — the other 13 cases render the real
+  component and stay untouched).
+files:
+  - "**/src/renderer/components/ChatView.tsx"
+  - "**/fixtures/chatview-passes-provider-to-attentionbanner.tsx"
+rule:
+  kind: jsx_self_closing_element
+  has:
+    field: name
+    regex: "^AttentionBanner$"
+  not:
+    has:
+      kind: jsx_attribute
+      regex: "^provider=\\{provider\\}"
