@@ -30,8 +30,9 @@ note: |
       five channels fires once per missing channel's branch;
     - a rename/unpair `switch_case` whose own text (label, body and any comment
       inside it) lacks HOST_ADMIN_REFUSAL fires — unless it is an empty
-      fall-through label directly followed by a case that refuses (the 200
-      characters would have reached that case's refusal);
+      fall-through label directly followed (comments between them skipped) by
+      a case that refuses (the 200 characters would have reached that case's
+      refusal);
     - the two banned texts fire on the innermost node holding them — comment,
       string or template piece, regex, or code (a binary, call or member
       expression) — and, so no node kind is missed, the whole file fires when
@@ -59,23 +60,30 @@ utils:
     not: { has: { field: body, pattern: $BODY } }
   # An arm that refuses, or an empty fall-through label (`case 'a': case 'b':
   # { … }`) followed — up to two more empty labels — by one that does.
-  # ast-grep's `precedes` defaults to the immediately following sibling.
+  # ast-grep's `precedes` defaults to the immediately following sibling; a
+  # comment between two labels is a sibling too, so each step instead searches
+  # forward and stops (inclusively) at the first NON-comment sibling.
+  # WHY (review of u5, 2026-09-16): without that, `case 'a': // note` above a
+  # refusing case fired, though the fall-through still refuses.
   # (utils cannot recurse, so the chain is spelled out three labels deep.)
   refusing-case:
     any:
       - matches: refusal-arm
       - matches: empty-label
-        precedes: { matches: refusal-arm }
+        precedes: { stopBy: { not: { kind: comment } }, matches: refusal-arm }
       - matches: empty-label
         precedes:
+          stopBy: { not: { kind: comment } }
           matches: empty-label
-          precedes: { matches: refusal-arm }
+          precedes: { stopBy: { not: { kind: comment } }, matches: refusal-arm }
       - matches: empty-label
         precedes:
+          stopBy: { not: { kind: comment } }
           matches: empty-label
           precedes:
+            stopBy: { not: { kind: comment } }
             matches: empty-label
-            precedes: { matches: refusal-arm }
+            precedes: { stopBy: { not: { kind: comment } }, matches: refusal-arm }
   retired-idiom-hit:
     any:
       - kind: string_fragment

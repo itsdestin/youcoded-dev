@@ -35,3 +35,15 @@ export async function handle(client: any, type: string, id: string, payload: any
     }
   }
 }
+// Review of u5: skipping a comment between an empty label and the next case must
+// not skip past that case — here the next case PERFORMS, so the label fires (1).
+export function handleAgain(type: string, payload: any, self: any) {
+  switch (type) {
+    case 'remote:devices:unpair':
+    // falls through to the next arm
+    case 'remote:devices:drop': {
+      self.unpairDevice(payload.id);
+      break;
+    }
+  }
+}

@@ -265,6 +265,9 @@ fi
 # 2026-09-16 (review of u4, fix 8): count unchanged — download-route-before-static's
 #   presence check is now one whole-file branch ("no server call holds all three"),
 #   so the -missing fixture's first finding moved from the server call to the file.
+# 2026-09-16 (review of u5, fix 10): +1 — remote-admin-case-refuses now skips comments
+#   between an empty fall-through label and the next case; its fixture gains an
+#   empty label, a comment, then a PERFORMING case (the label still fires).
 # 2026-09-16 (u7, runtime-default.test.tsx): +16 — runtime-default-key-single-owner (a
 #   string, a template piece and a regex naming the key in a .ts file (3)), its -tsx twin
 #   (an attribute string, a JSX attribute name and JSX text (3)), its -present branch (an
@@ -284,7 +287,7 @@ fi
 # 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
 #   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
 #   with no previewMeta.saveNote editor (1)).
-EXPECTED_VIOLATIONS=297
+EXPECTED_VIOLATIONS=298
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
