@@ -82,6 +82,13 @@ settings/project panel options"; the panel lists all pages with the pin beside e
 Manage pages button opens the library, the panel collapses from a top-left button, Esc · Back
 to chat stays top-right. The ⋯ menu from round 3 was dropped in favour of that.
 
+Round 4 (`youcoded-pages-shell-r4.review.answers.json`, 2026-09-17): the collapse is approved;
+the rest was polish — "the spacing/dividers/alignments are all kinds of fucked up": no
+divider under the band ("the edge of the frame itself should be the divider"), no divider
+above Manage pages ("just a bare pill button"), no odd margin between panel and pane, a
+better-styled Esc · Back to chat, and Edit in chat as "a separate edit button, with a hover
+tooltip clearly explaining what it is… just in the header", not beside the name.
+
 ## Phase 2 — connections and refresh (open)
 
 **A person can:** make a page that shows information from a service and keeps it current
