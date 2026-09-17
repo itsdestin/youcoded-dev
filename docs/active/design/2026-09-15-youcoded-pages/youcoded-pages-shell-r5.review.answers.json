@@ -1,0 +1,35 @@
+{
+ "deck": "youcoded-pages-shell-r5",
+ "started": "2026-09-17T00:18:01.664Z",
+ "submitted": "2026-09-17T00:22:26Z",
+ "cur": 3,
+ "answers": {
+  "S-18": {
+   "note": "the side panel can go in its own framed container, kinda like games/files in framed chat sessions. i actually think we should just remove the edit option from the page header, and keep it only accessible in the \"manage pages\" view. ",
+   "v": "other",
+   "seconds": 192,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-19": {
+   "note": "make the button wider. within the aforementioned broader container for the side panel",
+   "v": "other",
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-20": {
+   "note": "the back to chat/esc button is still slightly odd. it has an outline, which nothin else has. should match styling of max/min/exit icon.",
+   "v": "other",
+   "seconds": 40,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-21": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
