@@ -1,0 +1,22 @@
+id: no-sync-fs-in-main-read-path
+language: typescript
+severity: error
+message: >-
+  marketplace-file-reader.ts must never call a blocking fs.*Sync anywhere in
+  the file. Task 2 (perf/main-thread-async-reads) converted this
+  user-action read path off fs.*Sync so a slow disk can no longer freeze
+  Electron's main thread — opening a skill/command/agent file in the in-app
+  marketplace viewer used to freeze the whole app for the duration of the
+  disk walk.
+note: |
+  Invariant source: tests/main-read-path-no-sync-fs.test.ts (retired by Plan
+  B, 2026-09-16; case 1 of 4 — "marketplace-file-reader (whole file)").
+  Whole-file scope: the retired test checked the whole file too.
+files:
+  - "**/src/main/marketplace-file-reader.ts"
+  - "**/fixtures/no-sync-fs-in-main-read-path.ts"
+rule:
+  pattern: fs.$METHOD($$$ARGS)
+constraints:
+  METHOD:
+    regex: "Sync$"

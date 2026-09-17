@@ -1,0 +1,20 @@
+id: no-sync-fs-in-main-read-path-transcript-cwd
+language: typescript
+severity: error
+message: >-
+  transcript-cwd.ts must never call a blocking fs.*Sync anywhere in the
+  file — Task 2 (perf/main-thread-async-reads) converted this path (resolving
+  which project a transcript belongs to, called once per project slug on
+  every Resume Browser open) off fs.*Sync.
+note: |
+  Invariant source: tests/main-read-path-no-sync-fs.test.ts (retired by Plan
+  B, 2026-09-16; case 3 of 4 — "transcript-cwd (whole file)"). Whole-file
+  scope: the retired test checked the whole file too.
+files:
+  - "**/src/main/transcript-cwd.ts"
+  - "**/fixtures/no-sync-fs-in-main-read-path-transcript-cwd.ts"
+rule:
+  pattern: fs.$METHOD($$$ARGS)
+constraints:
+  METHOD:
+    regex: "Sync$"
