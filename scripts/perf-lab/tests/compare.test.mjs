@@ -91,6 +91,20 @@ const base = {
     ],
     median: { switchPaintedMedianMs: 140, longtaskMaxMs: 120, ipc: { totalStallMs: 30, pings: 700 } },
   },
+  nativeStream: {
+    runs: [
+      { visible: { taskMs: 6100 }, switching: { switchPaintedMedianMs: 210 }, hidden: { taskMs: 2400 } },
+      { visible: { taskMs: 6300 }, switching: { switchPaintedMedianMs: 220 }, hidden: { taskMs: 2500 } },
+    ],
+    median: { visible: { taskMs: 6100 }, switching: { switchPaintedMedianMs: 210 }, hidden: { taskMs: 2400 } },
+  },
+  nativeResume: {
+    runs: [
+      { ipcSumOfSteps: { totalStallMs: 96 }, browse: { openMs: 350 }, resume: { paintedMs: 900 } },
+      { ipcSumOfSteps: { totalStallMs: 104 }, browse: { openMs: 366 }, resume: { paintedMs: 930 } },
+    ],
+    median: { ipcSumOfSteps: { totalStallMs: 96 }, browse: { openMs: 350 }, resume: { paintedMs: 900 } },
+  },
   errors: { coldStarts: [0, 0, 0], scenarioBoot: 0 },
 };
 const clone = () => JSON.parse(JSON.stringify(base));
@@ -139,7 +153,7 @@ test('the thrash stall is derived for the report written before the field was pr
 });
 
 test('a phase NEITHER report ran is out of scope, but a phase only one ran still fails closed', () => {
-  // `--only projects` on both sides: 25 of the 27 PRIMARY paths belong to phases
+  // `--only projects` on both sides: 30 of the 32 PRIMARY paths belong to phases
   // that were never measured. Refusing on those would print REJECT for reasons
   // that have nothing to do with the change, on every single-phase comparison.
   const onlyProjects = (stall, open) => ({
@@ -151,7 +165,7 @@ test('a phase NEITHER report ran is out of scope, but a phase only one ran still
   });
   const v = verdict(onlyProjects(7101, 192), onlyProjects(0, 161), { target: 'projects.median.thrash.ipcStallMs', screens: {} });
   assert.equal(v.keep, true, v.reasons.join('; '));
-  assert.equal(v.notRun.length, 25);
+  assert.equal(v.notRun.length, 30);
   assert.deepEqual(v.missing, []);
 
   // Asymmetric is the dangerous shape and still rejects: the baseline measured
@@ -187,6 +201,14 @@ test('new error lines reject', () => {
 test('error lines in a per-repeat workload boot reject too (each repeat is its own boot since 2026-08-27)', () => {
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.workloadBoots = [0, 3, 0];
   assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
+});
+test('error lines in a native-stream or native-resume boot reject too (each repeat is its own boot, 2026-09-16)', () => {
+  for (const key of ['nativeStreamBoots', 'nativeResumeBoots']) {
+    const c = clone(); c.startup.median.sessionsListed = 800; c.errors[key] = [0, 1, 0];
+    const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} });
+    assert.equal(v.keep, false, `${key} errors must reject`);
+    assert.ok(v.reasons.some((r) => /error/i.test(r)), v.reasons.join('\n'));
+  }
 });
 test('error lines in a per-repeat terminal boot reject too (each terminal repeat is its own boot since 2026-09-10)', () => {
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.terminalBoots = [0, 0, 1];

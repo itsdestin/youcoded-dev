@@ -396,11 +396,6 @@ seen-on is always n/a here.
       Destin 2026-09-02: retire it — after checking nothing real is lost; reconsider if so
       `n/a` `confirmed` `checked 2026-09-02` `security` → docs/active/investigations/2026-09-01-review-harness-key-leak.md
 
-- [ ] The perf rig cannot see native per-token streaming — its workload streams whole turns
-      through the Claude Code transcript path, so the gate under-represents the exact path
-      cycle 1's fixes target
-      `n/a` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
-
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
       identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%
       first recorded and larger than the 6.38% a real candidate change produced against the same
@@ -498,6 +493,20 @@ seen-on is always n/a here.
       RESUME too, so re-running it with the same key fetches what creation missed. Creation printed
       its `fetched` note correctly on two fresh worktrees that day
       `n/a` `needs-verify` `checked 2026-09-16` `regression`
+
+- [ ] A fresh worktree's hardlinked `node_modules` is the SHARED checkout's, and the shared checkout
+      sits hundreds of commits behind master: on 2026-09-16 it carried TypeScript 5.9 where master's
+      `package.json` wants 6, and `fillMissingPackages` fetched `oxlint` and `oxlint-tsgolint` but
+      not their native platform bindings (`@oxlint/binding-linux-x64-gnu`, `@oxlint-tsgolint/linux-x64`,
+      which are optionalDependencies) nor `.bin` links for them. So `verify.sh` fails its `types`
+      check (`TS5095`) and its `lint` check (`oxlint: command not found`, then "Cannot find native
+      binding") on EVERY new worktree until someone unpacks the tarballs by hand — two sessions did
+      exactly that on 2026-09-16 (this one, and the one that closed the status-bar accounting
+      item, which "ran from the npm cache"). Fix shape: `fillMissingPackages` compares the
+      worktree's lock against what is on disk for the top-level packages that matter to the
+      checks (typescript, oxlint, oxlint-tsgolint) and fetches optionalDependencies for the
+      current platform plus `.bin` links; a `deps:` line names what it replaced
+      `n/a` `confirmed` `checked 2026-09-16` `regression`
 
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore

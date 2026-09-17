@@ -40,6 +40,7 @@ import { buildApp, treeFingerprint } from './build.mjs';
 import { waitFor } from './cdp.mjs';
 import { PRIMARY, get, runsFor } from './compare.mjs';
 import { buildFixture } from './fixture.mjs';
+import { FAKE_PROVIDER_PORT } from './fake-provider.mjs';
 import { formatRendererLine, readRendererInfo } from './gpu.mjs';
 import { formatLayoutCostLine, worstVerdict } from './layout-cost.mjs';
 import { launchApp, resolveXvfbBin, startXvfb } from './launch.mjs';
@@ -68,7 +69,13 @@ const CDP_PORT = 9555;
 // the workload's same six sessions, and resuming the same transcripts twice in one
 // boot is not a configuration the app is built for. It sits before `scrollback`,
 // which runs last on purpose.
-export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'scrollback'];
+// `native-stream` and `native-resume` (added 2026-09-16) take one boot PER REPEAT
+// too. The first streams a native reply at cloud-model speed from the perf-lab fake
+// endpoint with the workload's six sessions open; the second opens the Resume list
+// over a hundred seeded native sessions, resumes a long one and tears it into its
+// own window. Both need fixture options (fakeProvider / nativeSessions) that no other
+// phase's fixture carries, so they cannot share a boot with anything else.
+export const PHASES = ['startup', 'history', 'workload', 'shots', 'stall', 'artifacts', 'projects', 'terminal', 'native-stream', 'native-resume', 'scrollback'];
 
 /**
  * The transcript sizes the `stall` phase measures. Duplicated from
@@ -238,7 +245,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // carries its own answer, and on this machine that answer is llvmpipe: software.
     machine: { cpu: cpus()[0]?.model ?? '', ramGb: Math.round(totalmem() / 2 ** 30), kernel: release(), node: process.version, renderer: null },
     noise: { loadAvgBefore: null, machineBusyPctBefore: null, maxLoadAvgAccepted: null, maxBusyPctAccepted: null, discardedRuns: 0 },
-    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, scrollback: null,
+    startup: null, idle: null, history: null, workload: null, replayStall: null, artifacts: null, projects: null, terminal: null, nativeStream: null, nativeResume: null, scrollback: null,
     // Per-phase "what was actually measured" descriptors, harvested from each
     // scenario's MEASURES export. See scenario-workload.mjs MEASURES for why:
     // three wrong conclusions in this project came from numbers measured in a
@@ -246,7 +253,7 @@ export function emptyReport({ label = '', timestamp = new Date().toISOString() }
     // loudly. The report now carries its own configuration next to its numbers.
     measures: {},
     network: NETWORK_PATHS,
-    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], scrollbackBoot: null },
+    errors: { coldStarts: [], scenarioBoot: null, workloadBoots: [], stallBoot: null, artifactsBoot: null, projectsBoot: null, terminalBoots: [], nativeStreamBoots: [], nativeResumeBoots: [], scrollbackBoot: null },
     screens: null,
     aborted: null,
     incomplete: [],
@@ -268,8 +275,23 @@ export function phaseOfPath(path) {
   if (path.startsWith('artifacts.')) return 'artifacts';
   if (path.startsWith('projects.')) return 'projects';
   if (path.startsWith('terminal.')) return 'terminal';
+  if (path.startsWith('nativeStream.')) return 'native-stream';
+  if (path.startsWith('nativeResume.')) return 'native-resume';
   if (path.startsWith('scrollback.')) return 'scrollback';
   return null;
+}
+
+/**
+ * A one-boot-per-repeat section: the runs, the scenario's own median, the union of
+ * warnings. Shared by the terminal, native-stream and native-resume phases — each
+ * scenario's medianRun already carries the engagement tells validateReport reads.
+ */
+export function buildRepeatedSection(runs, medianRun) {
+  return {
+    runs,
+    median: medianRun(runs),
+    warnings: [...new Set(runs.flatMap((r) => r.warnings ?? []))],
+  };
 }
 
 /**
@@ -398,6 +420,44 @@ export function validateReport(report, only) {
       const pings = report.terminal?.median?.ipc?.pings;
       need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
         'terminal: the IPC responsiveness probe never got a single reply, so terminal.median.ipc.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive');
+    }
+  }
+  if (only.has('native-stream')) {
+    need(report.nativeStream?.runs?.length > 0, 'native-stream: no runs were recorded');
+    if (report.nativeStream?.runs?.length > 0) {
+      const m = report.nativeStream.median ?? {};
+      // README rule 1: the mechanism must have ENGAGED. A stream that never reached
+      // the visible pane leaves every renderer number describing an idle window.
+      const sent = m.visible?.deltasSent;
+      need(typeof sent === 'number' && sent > 0,
+        'native-stream: the fake endpoint sent no deltas on the visible leg, so its long-task and layout numbers describe an idle window, not a stream');
+      const shown = m.visible?.charsShown;
+      need(typeof shown === 'number' && shown > 0,
+        'native-stream: the visible pane did not grow during the visible leg — the reply never reached the screen, so nothing rendered was measured');
+      const pings = m.visible?.ipc?.pings;
+      need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
+        'native-stream: the IPC responsiveness probe never got a single reply on the visible leg, so its stall total is 0 because it is UNMEASURED');
+      // The gated cost is main-thread busy time; a null there means the CDP
+      // Performance domain gave nothing, and nothing must not read as "free".
+      need(typeof m.visible?.taskMs === 'number' && m.visible.taskMs > 0,
+        'native-stream: the renderer\'s main-thread busy time over the visible stream was never read (CDP Performance counters missing), so nativeStream.median.visible.taskMs is UNMEASURED, not zero cost');
+      need(typeof m.switching?.verifiedSwitches === 'number' && m.switching.verifiedSwitches > 0,
+        'native-stream: no switch during the stream was verified (the target conversation never came on screen), so the switching leg measured nothing');
+    }
+  }
+  if (only.has('native-resume')) {
+    need(report.nativeResume?.runs?.length > 0, 'native-resume: no runs were recorded');
+    if (report.nativeResume?.runs?.length > 0) {
+      const m = report.nativeResume.median ?? {};
+      need(typeof m.browse?.rowsFirst === 'number' && m.browse.rowsFirst > 0,
+        'native-resume: the Resume list never showed a row, so browse.openMs measured a dialog that listed nothing');
+      need(typeof m.resume?.entries === 'number' && m.resume.entries > 0,
+        'native-resume: the resumed native session rendered no entries, so resume.paintedMs describes an empty conversation');
+      const pings = m.ipcSumOfSteps?.pings;
+      need(typeof pings === 'number' && Number.isFinite(pings) && pings > 0,
+        'native-resume: the IPC responsiveness probe never got a single reply, so nativeResume.median.ipcSumOfSteps.totalStallMs is 0 because the stall total is UNMEASURED, not because the app stayed responsive');
+      need(typeof m.tearoff?.windows === 'number' && m.tearoff.windows >= 2,
+        'native-resume: no second app window appeared after the tear-off, so tearoff.ms did not measure a tear-off');
     }
   }
   if (only.has('scrollback')) {
@@ -616,6 +676,35 @@ export function renderMarkdown(report, stem) {
     );
   }
 
+  if (report.nativeStream) {
+    const s = report.nativeStream.median ?? {};
+    const runN = report.nativeStream.runs?.length ?? 0;
+    lines.push(
+      // Busy time first: the long-task total reads 0 whenever per-frame work stays
+      // under 50 ms, which a streaming reply's does — see compare.mjs.
+      `| **native-stream.visible: renderer main thread busy while a ${n(s.deltas?.planned, 'delta')} reply streams on screen at ${n(s.deltas?.perSecTarget, '/s')}** (median of ${runN}; achieved ${n(s.visible?.perSecAchieved, '/s')}, ${n(s.visible?.charsShown, 'chars shown')}) | **${n(s.visible?.taskMs, 'ms')} (${n(s.visible?.taskPct, '%')} of the window)**, script ${n(s.visible?.scriptMs, 'ms')}; long tasks ${n(s.visible?.longtaskTotalMs, 'ms')} total / max ${n(s.visible?.longtaskMaxMs, 'ms')}, worst frame gap ${n(s.visible?.frameGapMaxMs, 'ms')}, ${n(s.visible?.framesPerSec, 'fps')}; verdict ${s.visible?.stallVerdict ?? '—'} |`,
+      // Commits beside frames: the batcher should hold commits to about one per frame.
+      `| native-stream.visible commits / layouts over the stream | ${n(s.visible?.commits, 'commits')} (${n(s.visible?.commitsPerFrame, '/frame')}), ${n(s.visible?.layouts, 'layouts')} (${n(s.visible?.layoutsPerFrame, '/frame')}); turn ${n(s.visible?.turnMs, 'ms')} |`,
+      `| native-stream.visible IPC stall | ${n(s.visible?.ipc?.totalStallMs, 'ms')}, max ${n(s.visible?.ipc?.maxMs, 'ms')}, from ${n(s.visible?.ipc?.pings, 'probe replies')} |`,
+      `| **native-stream.switching: click -> messages on screen while it streams** (${n(s.switching?.verifiedSwitches, 'verified')} of ${n(s.switching?.duringStream, 'during the stream')}) | **${n(s.switching?.switchPaintedMedianMs, 'ms')} / ${n(s.switching?.switchPaintedP95Ms, 'ms')} p95**; into huge ${n(s.switching?.intoHugeMedianMs, 'ms')}, into the streaming one ${n(s.switching?.intoStreamingMedianMs, 'ms')}; main thread busy ${n(s.switching?.taskMs, 'ms')} (${n(s.switching?.taskPct, '%')}), long tasks ${n(s.switching?.longtaskTotalMs, 'ms')} |`,
+      `| **native-stream.hidden: the visible window's main thread while the reply streams into a hidden session** | **${n(s.hidden?.taskMs, 'ms')} busy (${n(s.hidden?.taskPct, '%')})**, long tasks ${n(s.hidden?.longtaskTotalMs, 'ms')} / max ${n(s.hidden?.longtaskMaxMs, 'ms')}, ${n(s.hidden?.commits, 'commits in the visible pane')}, IPC stall ${n(s.hidden?.ipc?.totalStallMs, 'ms')} |`,
+    );
+  }
+
+  if (report.nativeResume) {
+    const r = report.nativeResume.median ?? {};
+    const runN = report.nativeResume.runs?.length ?? 0;
+    lines.push(
+      `| **native-resume.browse: Resume list open over ${n(r.nativeSessionsOnDisk, 'native sessions')}** (median of ${runN}) | **${n(r.browse?.openMs, 'ms')}** to ${n(r.browse?.rowsFirst, 'rows')}; revealed ${n(r.reveal?.rows, 'rows')} in ${n(r.reveal?.ms, 'ms')}; IPC max ${n(r.browse?.ipc?.maxMs, 'ms')}; verdict ${r.browse?.stallVerdict ?? '—'} |`,
+      `| **native-resume.resume: 400-turn native session resumed** | **${n(r.resume?.paintedMs, 'ms')}** (pill ${n(r.resume?.pillMs, 'ms')}, ${n(r.resume?.entries, 'entries')}); IPC max ${n(r.resume?.ipc?.maxMs, 'ms')}, stall ${n(r.resume?.ipc?.totalStallMs, 'ms')}; verdict ${r.resume?.stallVerdict ?? '—'} |`,
+      `| native-resume.page-up one history page | ${n(r.pageUp?.ms, 'ms')} (+${n(r.pageUp?.entriesAdded, 'entries')}); IPC max ${n(r.pageUp?.ipc?.maxMs, 'ms')} |`,
+      `| native-resume.turn ${n(r.turn?.deltasSent, 'deltas')} | ${n(r.turn?.turnMs, 'ms')}; IPC max ${n(r.turn?.ipc?.maxMs, 'ms')}, stall ${n(r.turn?.ipc?.totalStallMs, 'ms')}; verdict ${r.turn?.stallVerdict ?? '—'} |`,
+      `| native-resume.tearoff into a new window | ${n(r.tearoff?.ms, 'ms')} (${n(r.tearoff?.windows, 'windows')}); IPC max ${n(r.tearoff?.ipc?.maxMs, 'ms')}, stall ${n(r.tearoff?.ipc?.totalStallMs, 'ms')}; verdict ${r.tearoff?.stallVerdict ?? '—'} |`,
+      `| native-resume.turn into the detached window, this window's IPC | max ${n(r.detachedTurn?.ipc?.maxMs, 'ms')}, stall ${n(r.detachedTurn?.ipc?.totalStallMs, 'ms')} |`,
+      `| **native-resume IPC stall (sum over steps)** | **${n(r.ipcSumOfSteps?.totalStallMs, 'ms')}**, max ${n(r.ipcSumOfSteps?.maxMs, 'ms')}, from ${n(r.ipcSumOfSteps?.pings, 'probe replies')}; ${n(r.ipcSumOfSteps?.readErrors, 'steps lost their reading')} |`,
+    );
+  }
+
   lines.push('');
   lines.push(
     `noise: load ${report.noise?.loadAvgBefore ?? '—'}, busy ${report.noise?.machineBusyPctBefore ?? '—'}%, ` +
@@ -625,7 +714,7 @@ export function renderMarkdown(report, stem) {
   lines.push(
     `errors (desktop.log "level":"ERROR" lines): cold starts ${JSON.stringify(report.errors?.coldStarts ?? [])}, ` +
     `scenario boot ${report.errors?.scenarioBoot ?? '—'}, workload boots ${JSON.stringify(report.errors?.workloadBoots ?? [])}, ` +
-    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, projects boot ${report.errors?.projectsBoot ?? '—'}, terminal boots ${JSON.stringify(report.errors?.terminalBoots ?? [])}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
+    `stall boot ${report.errors?.stallBoot ?? '—'}, artifacts boot ${report.errors?.artifactsBoot ?? '—'}, projects boot ${report.errors?.projectsBoot ?? '—'}, terminal boots ${JSON.stringify(report.errors?.terminalBoots ?? [])}, native-stream boots ${JSON.stringify(report.errors?.nativeStreamBoots ?? [])}, native-resume boots ${JSON.stringify(report.errors?.nativeResumeBoots ?? [])}, scrollback boot ${report.errors?.scrollbackBoot ?? '—'}`,
   );
   lines.push('A boot that logged errors is not a clean measurement — do not rank a phase from one. Full logs: scratch/perf-lab/logs/.');
 
@@ -641,6 +730,8 @@ export function renderMarkdown(report, stem) {
   if (report.artifacts?.warnings?.length) lines.push('', '## Artifact warnings', '', ...report.artifacts.warnings.map((w) => `- ${w}`));
   if (report.projects?.warnings?.length) lines.push('', '## Projects warnings', '', ...report.projects.warnings.map((w) => `- ${w}`));
   if (report.terminal?.warnings?.length) lines.push('', '## Terminal warnings', '', ...report.terminal.warnings.map((w) => `- ${w}`));
+  if (report.nativeStream?.warnings?.length) lines.push('', '## Native-stream warnings', '', ...report.nativeStream.warnings.map((w) => `- ${w}`));
+  if (report.nativeResume?.warnings?.length) lines.push('', '## Native-resume warnings', '', ...report.nativeResume.warnings.map((w) => `- ${w}`));
   if (report.scrollback) {
     const s = report.scrollback.median ?? {};
     const runN = report.scrollback.runs?.length ?? 0;
@@ -710,7 +801,7 @@ export function renderMarkdown(report, stem) {
 
 // ── CLI parsing ──────────────────────────────────────────────────────────────
 
-const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
+const VALUE_FLAGS = ['checkout', 'runs', 'history-repeats', 'workload-repeats', 'stall-repeats', 'artifact-repeats', 'projects-repeats', 'terminal-repeats', 'native-stream-repeats', 'native-resume-repeats', 'scrollback-repeats', 'only', 'label', 'out', 'max-minutes'];
 const BOOL_FLAGS = ['force-build', 'dry-run', 'help'];
 
 export const USAGE = `perf-lab — build the app, measure it, write one report.
@@ -726,6 +817,8 @@ export const USAGE = `perf-lab — build the app, measure it, write one report.
   --artifact-repeats <n>    artifact-panel passes        (default 3)
   --projects-repeats <n>    Projects-view passes         (default 3)
   --terminal-repeats <n>    terminal-view switch passes  (default 3, one boot each)
+  --native-stream-repeats <n>  native reply at cloud speed (default 3, one boot each)
+  --native-resume-repeats <n>  Resume list / resume / tear-off (default 3, one boot each)
   --only a,b,c             phases: ${PHASES.join(', ')}  (default all)
   --force-build             rebuild even if the tree fingerprint is unchanged
   --label <text>            appended to the output filename stem
@@ -779,6 +872,9 @@ export function parseArgs(argv, { root = ROOT } = {}) {
     // 3 like the workload, and for the same reason each is its own boot: the gate
     // needs a run-to-run spread, and one boot cannot resume the same six sessions twice.
     terminalRepeats: posInt('terminal-repeats', 3),
+    // Same rule as terminal: one boot per repeat, three by default for a spread.
+    nativeStreamRepeats: posInt('native-stream-repeats', 3),
+    nativeResumeRepeats: posInt('native-resume-repeats', 3),
     // 3 by default like the other own-boot phases: compare.mjs judges a change
     // against the run-to-run spread, and one sample of a memory ceiling can
     // neither prove nor veto anything. Each repeat is a full scroll-back of three
@@ -1049,6 +1145,20 @@ async function loadTerminal() {
     throw new Error(`perf-lab: the terminal phase needs scripts/perf-lab/scenario-terminal.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
   }
 }
+async function loadNativeStream() {
+  try {
+    return await import('./scenario-native-stream.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the native-stream phase needs scripts/perf-lab/scenario-native-stream.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
+async function loadNativeResume() {
+  try {
+    return await import('./scenario-native-resume.mjs');
+  } catch (e) {
+    throw new Error(`perf-lab: the native-resume phase needs scripts/perf-lab/scenario-native-resume.mjs, which could not be loaded: ${e.message}\nRun with --only startup,history,workload,shots to skip it.`);
+  }
+}
 
 async function loadScrollback() {
   try {
@@ -1112,6 +1222,8 @@ async function main(argv) {
       `  artifacts module  ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-artifacts.mjs')) ? 'present' : 'ABSENT — the artifacts phase would fail'}`,
       `  scrollback module ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-scrollback.mjs')) ? 'present' : 'ABSENT — the scrollback phase would fail'}`,
       `  terminal module   ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-terminal.mjs')) ? 'present' : 'ABSENT — the terminal phase would fail'}`,
+      `  native-stream module ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-native-stream.mjs')) ? 'present' : 'ABSENT — the native-stream phase would fail'}`,
+      `  native-resume module ${existsSync(join(ROOT, 'scripts', 'perf-lab', 'scenario-native-resume.mjs')) ? 'present' : 'ABSENT — the native-resume phase would fail'}`,
       '',
       `  phases            ${PHASES.map((p) => `${p}${cfg.only.has(p) ? '' : ' (skipped)'}`).join(', ')}`,
       `  cold-start boots  ${cfg.only.has('startup') ? cfg.runs : 0}`,
@@ -1119,7 +1231,8 @@ async function main(argv) {
       // while stall and artifacts each take one of their own (see their phase blocks).
       `  scenario boots    ${scenarioBoot ? 1 : 0} shared (history/shots) + ${cfg.only.has('workload') ? cfg.workloadRepeats : 0} workload (one per repeat)` +
         `${cfg.only.has('stall') ? ' + 1 stall' : ''}${cfg.only.has('artifacts') ? ' + 1 artifacts' : ''}${cfg.only.has('projects') ? ' + 1 projects' : ''}` +
-        `${cfg.only.has('terminal') ? ` + ${cfg.terminalRepeats} terminal (one per repeat)` : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
+        `${cfg.only.has('terminal') ? ` + ${cfg.terminalRepeats} terminal (one per repeat)` : ''}` +
+        `${cfg.only.has('native-stream') ? ` + ${cfg.nativeStreamRepeats} native-stream (one per repeat)` : ''}${cfg.only.has('native-resume') ? ` + ${cfg.nativeResumeRepeats} native-resume (one per repeat)` : ''}${cfg.only.has('scrollback') ? ' + 1 scrollback' : ''}`,
       `  history repeats   ${cfg.only.has('history') ? `${cfg.historyRepeats} per size (small, medium, huge)` : '—'}`,
       `  workload passes   ${cfg.only.has('workload') ? `${cfg.workloadRepeats}${cfg.only.has('shots') ? ' + 1 screenshot pass (not in the median)' : ''}` : '—'}`,
       `  screenshots       ${cfg.only.has('shots') ? SCREEN_NAMES.join(', ') : '—'}`,
@@ -1127,6 +1240,8 @@ async function main(argv) {
       `  artifact passes   ${cfg.only.has('artifacts') ? `${cfg.artifactRepeats}, own boot` : '—'}`,
       `  projects passes   ${cfg.only.has('projects') ? `${cfg.projectsRepeats}, own boot` : '—'}`,
       `  terminal passes   ${cfg.only.has('terminal') ? `${cfg.terminalRepeats}, one boot each` : '—'}`,
+      `  native-stream     ${cfg.only.has('native-stream') ? `${cfg.nativeStreamRepeats}, one boot each (fake endpoint on :${FAKE_PROVIDER_PORT})` : '—'}`,
+      `  native-resume     ${cfg.only.has('native-resume') ? `${cfg.nativeResumeRepeats}, one boot each (100 seeded native sessions)` : '—'}`,
       `  scrollback passes ${cfg.only.has('scrollback') ? `${cfg.scrollbackRepeats}, own boot` : '—'}`,
       '',
       `  out dir           ${cfg.out}`,
@@ -1454,6 +1569,48 @@ async function main(argv) {
         // Built after EVERY repeat, not once at the end: a later repeat that throws
         // aborts the run, and the repeats already measured still reach the report.
         report.terminal = buildTerminalSection(truns, terminalMedian);
+      }
+    }
+
+    // ---- Native reply at cloud speed: its OWN boot PER REPEAT ---------------
+    // The fixture carries the fake endpoint row (fakeProvider), which no other
+    // phase's fixture has, so nothing else can share this boot.
+    if (cfg.only.has('native-stream')) {
+      const { runNativeStreamScenario, medianRun: streamMedian, MEASURES: STREAM_MEASURES } = await loadNativeStream();
+      report.measures.nativeStream = STREAM_MEASURES;
+      const sruns = [];
+      for (let i = 0; i < cfg.nativeStreamRepeats; i++) {
+        checkDeadline();
+        await noiseGate(report.noise, deadline);
+        const fixture = buildFixture(SCRATCH, { log, fakeProvider: true });
+        await withBoot(build, fixture, async (app) => {
+          const r = await runNativeStreamScenario(app, fixture);
+          sruns.push(r);
+          log(`native-stream ${i + 1}/${cfg.nativeStreamRepeats}: visible ${r.visible?.deltasSent} deltas at ${r.visible?.perSecAchieved}/s -> long tasks ${r.visible?.longtaskTotalMs}ms total / max ${r.visible?.longtaskMaxMs}ms, ${r.visible?.commits} commits, ${r.visible?.framesPerSec} fps, ipc stall ${r.visible?.ipc?.totalStallMs}ms; switching median ${r.switching?.switchPaintedMedianMs}ms (${r.switching?.verifiedSwitches}/${r.switching?.duringStream} verified during the stream); hidden long tasks ${r.hidden?.longtaskTotalMs}ms`);
+          for (const w of r.warnings ?? []) log(`native-stream warning: ${w}`);
+          report.errors.nativeStreamBoots.push(readErrorLines(fixture, stem, `native-stream-${i + 1}`));
+        });
+        report.nativeStream = buildRepeatedSection(sruns, streamMedian);
+      }
+    }
+
+    // ---- Resume list / native resume / tear-off: its OWN boot PER REPEAT ----
+    if (cfg.only.has('native-resume')) {
+      const { runNativeResumeScenario, medianRun: resumeMedian, MEASURES: RESUME_MEASURES } = await loadNativeResume();
+      report.measures.nativeResume = RESUME_MEASURES;
+      const rruns = [];
+      for (let i = 0; i < cfg.nativeResumeRepeats; i++) {
+        checkDeadline();
+        await noiseGate(report.noise, deadline);
+        const fixture = buildFixture(SCRATCH, { log, fakeProvider: true, nativeSessions: true });
+        await withBoot(build, fixture, async (app) => {
+          const r = await runNativeResumeScenario(app, fixture);
+          rruns.push(r);
+          log(`native-resume ${i + 1}/${cfg.nativeResumeRepeats}: browse ${r.browse?.openMs}ms to ${r.browse?.rowsFirst} rows (revealed ${r.reveal?.rows}), resume ${r.resume?.paintedMs}ms (${r.resume?.entries} entries), page-up ${r.pageUp?.ms}ms, turn ${r.turn?.turnMs}ms, tear-off ${r.tearoff?.ms}ms (${r.tearoff?.windows} windows); ipc stall ${r.ipcSumOfSteps?.totalStallMs}ms max ${r.ipcSumOfSteps?.maxMs}ms from ${r.ipcSumOfSteps?.pings} pings; verdicts ${JSON.stringify(r.stallVerdicts)}`);
+          for (const w of r.warnings ?? []) log(`native-resume warning: ${w}`);
+          report.errors.nativeResumeBoots.push(readErrorLines(fixture, stem, `native-resume-${i + 1}`));
+        });
+        report.nativeResume = buildRepeatedSection(rruns, resumeMedian);
       }
     }
 

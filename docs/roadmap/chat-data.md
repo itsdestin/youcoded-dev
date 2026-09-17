@@ -127,6 +127,27 @@ produced and the panel that shows them (files).
       fetches the same thing several times at once instead of once, and per-session file
       tracking is never cleaned up. Individually small, all on paths the user waits on.
       Deferred at the time by scope decision; carried over from the cycle-3 handoff when that
-      document was archived 2026-09-10, where they existed only inside a shipped entry
-      `desktop` `confirmed` `checked 2026-09-10` `performance`
+      document was archived 2026-09-10, where they existed only inside a shipped entry.
+      2026-09-16 (smoothness sweep C6, MERGED youcoded#501): the NATIVE half of the Resume
+      listing — every session file listed and 256 KB of each head-read synchronously — now
+      reads off the main thread; the Claude Code half (the 25 MB re-read, no concurrency cap)
+      and the other three are still as described
+      `desktop` `confirmed` `checked 2026-09-16` `performance`
+
+- [ ] Every conversation record write and read first lists the whole conversations directory,
+      synchronously (`conversation-store.ts` heal-on-write/read — one `readdirSync` over a file
+      per conversation ever recorded, per turn per live session), and starring, tagging or
+      renaming a chat kicks off a full search-index rebuild three seconds later that lists,
+      stats and chunk-reads every conversation on the main thread (`chatsearch-index`). Neither
+      is on a click path a user waits on directly; both are stalls with no visible cause.
+      Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` is being
+      rewritten on `session/sync-safety-audit-20260908` — convert both after that lands
+      `desktop` `confirmed` `checked 2026-09-16` `performance`
+
+- [ ] The 30-minute conversation reconcile lists every transcript ever written and lstat +
+      tail-reads each one, synchronously — a stall every half hour that grows for as long as
+      the app has been used (`conversations/reconciler.ts`; its own note measured 2.8 s at 600
+      records before the last fix). Found by the 2026-09-16 smoothness sweep (C10), not built:
+      the fix is the same fs.promises recipe the click paths got, with the walk bounded per tick
+      `desktop` `confirmed` `checked 2026-09-16` `performance`
 

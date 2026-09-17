@@ -112,8 +112,18 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       back 4,346 → 1,784 MB, session switch 243 → 112 ms, main-thread blocking 4,882 → 1,703 ms.
       KEEP OPEN until Destin says real use feels better over hours — the investigation's second
       half (every open session stays mounted) is only partly addressed, since views still mount
-      and it is their CONTENT that folds
-      `all` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+      and it is their CONTENT that folds. 2026-09-16 smoothness sweep
+      (docs/active/investigations/2026-09-16-smoothness-sweep.md): Batch A (MERGED
+      2026-09-16, youcoded#501) stops the whole shell re-rendering per streamed word and the
+      per-word reducer work that grew with the chat — measured on the rig's new native-stream
+      phase, a reply streaming on screen costs the window's main thread 25 % less; Batch C
+      (same merge) removes the main-process whole-file reads on click and per-turn paths.
+      Batch B — the per-open-tab cost (hidden terminals never pause, every chat tree rebuilt
+      per shell render, per-session timers in hidden chats) — is the sweep's next build and
+      the rest of this item's second half; Batches D (theme blur/particles) and E (file opens)
+      follow. A5 (throttling the streaming bubble's markdown re-parse) is a visible change
+      that needs a before/after clip and Destin's call
+      `all` `confirmed` `checked 2026-09-16` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not
