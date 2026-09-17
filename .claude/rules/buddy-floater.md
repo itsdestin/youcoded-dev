@@ -37,11 +37,9 @@ verify:
   - test: youcoded/desktop/tests/buddy-bar-visibility.test.ts
   - test: youcoded/desktop/tests/buddy-dock.test.ts
   - test: youcoded/desktop/tests/buddy-edge-clamp.test.ts
-  - test: youcoded/desktop/tests/buddy-strategy.test.ts
-  - test: youcoded/desktop/tests/buddy-overlay-state.test.ts
   - test: youcoded/desktop/tests/sanitize-rig-svg.test.tsx
 ---
-# Buddy Floater (mascot, action bar, chat, overlay)
+# Buddy Floater (mascot, action bar, chat)
 
 Geometry is pure (`shared/buddy-geometry.ts`); windows belong to `BuddyWindowManager`. Guards = frontmatter `verify:`.
 
@@ -62,11 +60,11 @@ Geometry is pure (`shared/buddy-geometry.ts`); windows belong to `BuddyWindowMan
 - **MascotRig indexes the rig DOM by ELEMENT IDENTITY (`ensureParts`), not effect timing** — React can recreate the host div with identical innerHTML without `svgHtml` changing, so a state-keyed effect styles a detached svg and animations die silently.
 - **Theme `companions` is a TOP-LEVEL manifest key, NOT inside `mascot`** — older versions crash in `resolveAllAssetPaths`.
 
-## The dormant overlay
-**`BuddyOverlayManager` is DORMANT** — `chooseBuddyStrategy` returns `windows` everywhere,
-and on Wayland `setIgnoreMouseEvents` is a no-op that would make a screen-sized overlay an
-invisible click-eater. Reachable only via `YOUCODED_BUDDY_STRATEGY=overlay`. Read its rules
-first: `docs/archive/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
+## One implementation
+**Three windows, every platform.** A one-window "overlay" sat dormant behind a chooser that
+never picked it; deleted 2026-09-16. Never rebuild it: Wayland's `setIgnoreMouseEvents` is a
+no-op, so a screen-sized transparent window eats every click —
+`docs/archive/investigations/2026-07-23-buddy-overlay-wayland-presentation.md`.
 
 ## Linux Wayland
 **Counter-intuitive throughout, all measured — never re-derive one; read
