@@ -10,26 +10,38 @@ message: >-
 note: |
   Invariant source: tests/accepted-history-privacy.test.ts (Plan B, 2026-09-16;
   the test's only case, "Reader 6" — the bug-report/diagnostics collector
-  half). The retired test walked every .ts/.tsx file under src/ and asserted
-  the literal string 'private-continuation' appears in exactly
-  ['main/harness/accepted-history-store.ts']. This rule reproduces that as a
-  presence ban on every OTHER .ts file under src/main and src/renderer.
-  Scoped to .ts, not .tsx: this is a main-process filesystem path constant, so
-  only main-process (and its renderer-side .ts, non-JSX helper) code could
-  plausibly reference it; if a .tsx file ever needs to, add a tsx twin then.
-  See private-continuation-dir-single-owner-devtools for the companion
-  'userData' ban — that one is scoped to dev-tools.ts alone, because 'userData'
-  is a common, legitimate literal everywhere else (app.getPath('userData'),
-  NativeHome, …) and cannot share this rule's broad files: glob.
+  half). The retired test walked EVERY .ts/.tsx file under src/ (main,
+  renderer AND shared, test files included) and asserted a raw
+  `.includes('private-continuation')` matched exactly
+  ['main/harness/accepted-history-store.ts'].
+  FIX (review of t6a, 2026-09-16): the first draft scanned only src/main and
+  src/renderer .ts string literals. `.includes()` over raw text also caught a
+  comment or any other token spelling the name, so this rule now matches the
+  SMALLEST node whose text contains the name (a leaf: string/template
+  fragment, comment, any identifier kind, regex) — the `not: has:` keeps a
+  template_string and its own fragment from reporting twice.
+  Companions: -tsx (the same ban for .tsx files — `language: typescript`
+  never scans them), -present (the owner still names it; the retired
+  test's `toEqual([owner])` failed on its absence too) and -devtools
+  (dev-tools.ts never names `userData`).
 files:
-  - "**/src/main/**/*.ts"
-  - "**/src/renderer/**/*.ts"
+  - "**/src/**/*.ts"
   - "**/fixtures/private-continuation-dir-single-owner.ts"
 ignores:
   - "**/src/main/harness/accepted-history-store.ts"
 rule:
+  regex: "private-continuation"
   any:
     - kind: string_fragment
-      regex: "private-continuation"
-    - kind: template_string
+    - kind: comment
+    - kind: identifier
+    - kind: property_identifier
+    - kind: private_property_identifier
+    - kind: shorthand_property_identifier
+    - kind: shorthand_property_identifier_pattern
+    - kind: type_identifier
+    - kind: statement_identifier
+    - kind: regex_pattern
+  not:
+    has:
       regex: "private-continuation"

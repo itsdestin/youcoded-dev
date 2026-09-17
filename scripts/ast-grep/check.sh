@@ -120,7 +120,11 @@ fi
 #   which the retired test's textual scan covered but the first-draft rules
 #   missed (they only checked a direct jsx_self_closing_element/jsx_element
 #   child).
-EXPECTED_VIOLATIONS=76
+# 2026-09-16 (review of t6a, I1): +4 — private-continuation-dir-single-owner now matches
+#   any token spelling the name (its fixture gains a comment line, +1), new -tsx twin (+1),
+#   new -present owner branch (+1), -devtools matches any token spelling userData (its
+#   fixture gains a destructured name, +1).
+EXPECTED_VIOLATIONS=80
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

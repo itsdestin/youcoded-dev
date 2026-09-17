@@ -9,16 +9,31 @@ message: >-
 note: |
   Invariant source: tests/accepted-history-privacy.test.ts (Plan B, 2026-09-16;
   the test's only case, "Reader 6" — devTools half). Scoped to this one file
-  only: 'userData' is a common, legitimate literal elsewhere in the app
+  only: 'userData' is a common, legitimate name elsewhere in the app
   (app.getPath('userData'), NativeHome's constructor, …), so this ban cannot
   share private-continuation-dir-single-owner's broad files: glob without
   false-positiving on every ordinary use.
+  FIX (review of t6a, 2026-09-16): the retired check was a raw
+  `.includes('userData')` on the file, so it caught the name in ANY token —
+  an import (`import { userDataDir }`), a property (`paths.userData`), a
+  destructure, a comment — not only a string literal. Same smallest-node
+  shape as the base rule.
 files:
   - "**/src/main/dev-tools.ts"
   - "**/fixtures/private-continuation-dir-single-owner-devtools.ts"
 rule:
+  regex: "userData|private-continuation"
   any:
     - kind: string_fragment
-      regex: "(userData|private-continuation)"
-    - kind: template_string
-      regex: "(userData|private-continuation)"
+    - kind: comment
+    - kind: identifier
+    - kind: property_identifier
+    - kind: private_property_identifier
+    - kind: shorthand_property_identifier
+    - kind: shorthand_property_identifier_pattern
+    - kind: type_identifier
+    - kind: statement_identifier
+    - kind: regex_pattern
+  not:
+    has:
+      regex: "userData|private-continuation"
