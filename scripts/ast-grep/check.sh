@@ -262,7 +262,11 @@ fi
 #   lazy seed; a second literal outside any close's block; no close; no reset after the
 #   close; the welcome form's literal reset in a nested callback; the welcome form with no
 #   reset after a close statement; its second literal (9)).
-EXPECTED_VIOLATIONS=275
+# 2026-09-16 (u7, session-drag-model.test.ts): +8 for preload-no-drag-model-decision (a
+#   preload naming the model in a string and a comment, importing and naming the decision,
+#   and starting a drag via startDrag and dragHandoff (6); one with no platformFacts object,
+#   one whose platformFacts lost its wayland fact (2)).
+EXPECTED_VIOLATIONS=283
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

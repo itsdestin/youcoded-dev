@@ -1,0 +1,79 @@
+id: preload-no-drag-model-decision
+language: typescript
+severity: error
+message: >-
+  preload.ts reports FACTS about the host (`platformFacts: { …, wayland: … }`)
+  and never a verdict: it must not name a drag model ('html-drag'), call or
+  import chooseTearOffModel, or start a drag from main (startDrag /
+  dragHandoff — Linux startDrag crops the picture and carries only a file).
+  The decision lives in renderer/session-drag-model.ts, where it is testable
+  without a live Electron.
+note: |
+  Invariant source: tests/session-drag-model.test.ts (Plan B, 2026-09-16) —
+  describe "preload reports facts, not a verdict": "exposes the raw facts",
+  "does not name a drag model" and "never starts a drag from main". The file's
+  model cases stay. The retired cases read preload.ts's RAW text (comments
+  included) and asserted:
+    - /platformFacts:\s*\{/ and /wayland:/ somewhere;
+    - no /'html-drag'|"html-drag"/, no /chooseTearOffModel/, no
+      /startDrag|dragHandoff/ anywhere.
+  Here, on the same file:
+    - presence (whole file): no `platformFacts: { … }` pair whose object holds
+      a `wayland: …` pair;
+    - the banned texts on the innermost node holding them. In valid .ts a
+      quoted 'html-drag' is a string (or sits inside a longer string or
+      template piece), a comment or a regex; the two names are identifier
+      leaves of every kind, or sit in a string/template piece, comment or
+      regex. Comments count, as the retired read did not strip them.
+  DIFFERENCES, deliberate: presence needs code — a comment or type annotation
+  spelling `platformFacts: {` no longer counts, and `wayland:` must be a pair
+  in the platformFacts object (the fact the case title says preload exposes),
+  not the text anywhere in the file.
+files:
+  - "**/src/main/preload.ts"
+  - "**/fixtures/preload-no-drag-model-decision*.ts"
+utils:
+  names-model:
+    any:
+      - kind: string
+      - kind: string_fragment
+      - kind: comment
+      - kind: regex_pattern
+    regex: "'html-drag'|\"html-drag\""
+  names-decision:
+    any:
+      - kind: identifier
+      - kind: property_identifier
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: string_fragment
+      - kind: comment
+      - kind: regex_pattern
+    regex: "chooseTearOffModel|startDrag|dragHandoff"
+rule:
+  any:
+    # presence: platformFacts: { …, wayland: … }
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: pair
+          has:
+            field: key
+            regex: "^platformFacts$"
+          # (a second `has:` key is not allowed in one map, hence `all:`)
+          all:
+            - has:
+                field: value
+                kind: object
+                has:
+                  kind: pair
+                  has: { field: key, regex: "^wayland$" }
+    # a named model — innermost holder, reported once
+    - matches: names-model
+      not: { has: { stopBy: end, matches: names-model } }
+    # the decision, or a drag started from main
+    - matches: names-decision
