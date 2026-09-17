@@ -63,7 +63,7 @@ Target: `v1.3`
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 12 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 18 | 6 | 3 | 6 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 16 | 4 | 2 | 6 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 13 | 6 | 0 | 4 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 14 | 6 | 0 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 13 | 1 | 3 | 2 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 3 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
