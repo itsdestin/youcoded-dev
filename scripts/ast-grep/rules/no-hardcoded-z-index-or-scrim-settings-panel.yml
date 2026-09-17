@@ -1,0 +1,21 @@
+id: no-hardcoded-z-index-or-scrim-settings-panel
+language: tsx
+severity: error
+message: >-
+  SettingsPanel.tsx must not hardcode an overlay z-index. Change 30: seven
+  `layer-surface fixed z-[61]` popups became <SettingsPopup>, and two
+  identical `z-[9999]` donate modals became <DonateConfirm>.
+note: |
+  Invariant source: tests/overlay-layer-authority.test.ts (retired by Plan B,
+  2026-09-16; case 5 of 5 — "SettingsPanel has no hand-rolled overlay
+  z-index"). Also matches `template_string` alongside `string_fragment` —
+  see no-hardcoded-z-index-or-scrim's note for why.
+files:
+  - "**/src/renderer/components/SettingsPanel.tsx"
+  - "**/fixtures/no-hardcoded-z-index-or-scrim-settings-panel.tsx"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "z-\\[(61|9999)\\]"
+    - kind: template_string
+      regex: "z-\\[(61|9999)\\]"

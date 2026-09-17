@@ -62,7 +62,8 @@ fi
 # 2026-09-16: +3 for no-sync-fs-in-main-hot-path + its -transcript-mirror and -git-transport extras (Plan B, t5b).
 # 2026-09-16: +4 for no-sync-fs-in-main-read-path + its -theme-preview, -transcript-cwd and -session-browser extras (Plan B, t5b).
 # 2026-09-16: +4 for shortcuts-dialog-keeps-scroll-body + its -session-name, -session-menu-height and -model-picker-upward extras (Plan B, t5b).
-EXPECTED_VIOLATIONS=33
+# 2026-09-16: +7 for no-hardcoded-z-index-or-scrim + its -screen-layer, -9000-band(-ts), -scrim(-ts) and -settings-panel extras (Plan B, t5b).
+EXPECTED_VIOLATIONS=40
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

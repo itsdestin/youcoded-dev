@@ -1,0 +1,25 @@
+id: no-hardcoded-z-index-or-scrim-scrim-ts
+language: typescript
+severity: error
+message: >-
+  No .ts file in the renderer hand-rolls a scrim class string (bg-black/N).
+  Twin of no-hardcoded-z-index-or-scrim-scrim for the `.ts` files a
+  `language: tsx` rule cannot see.
+note: |
+  Invariant source: tests/overlay-layer-authority.test.ts (retired by Plan B,
+  2026-09-16; case 4 of 5, `.ts`-file half). No current renderer `.ts` file
+  matches (verified repo-wide grep) — this rule exists for completeness
+  against the retired test's actual (`.tsx?`) scope, not because a
+  violation is known to exist.
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/no-hardcoded-z-index-or-scrim-scrim-ts.ts"
+ignores:
+  - "**/*.test.ts"
+  - "**/*.d.ts"
+rule:
+  any:
+    - kind: string_fragment
+      regex: "bg-black/\\d+"
+    - kind: template_string
+      regex: "bg-black/\\d+"
