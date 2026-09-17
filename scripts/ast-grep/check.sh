@@ -61,7 +61,21 @@ fi
 # 2026-09-16: +2 for no-bare-glyph-item-action + no-bare-glyph-item-action-stale-copy (Plan B, t5b).
 # 2026-09-16: +3 for no-sync-fs-in-main-hot-path + its -transcript-mirror and -git-transport extras (Plan B, t5b).
 # 2026-09-16: +4 for no-sync-fs-in-main-read-path + its -theme-preview, -transcript-cwd and -session-browser extras (Plan B, t5b).
+# 2026-09-16 (review of batch B): no-sync-fs-in-main-hot-path-transcript-mirror,
+#   no-sync-fs-in-main-read-path (the base rule above) and no-sync-fs-in-main-read-path-
+#   transcript-cwd were byte-for-byte-identical whole-file bans differing only by
+#   `files:` — MERGED into one rule, no-sync-fs-whole-file, with all three source
+#   files and all three (renamed) fixtures. Count unaffected: the two +3/+4 lines
+#   above now overstate their own family by one member each (git-transport stays under
+#   -hot-path; -theme-preview and -session-browser stay under -read-path), but the
+#   total EXPECTED_VIOLATIONS is unchanged — no fixture match was removed, only
+#   consolidated under one id instead of three.
 # 2026-09-16: +4 for shortcuts-dialog-keeps-scroll-body + its -session-name, -session-menu-height and -model-picker-upward extras (Plan B, t5b).
+# 2026-09-16 (review of batch B): the 3 extras above RENAMED for honesty — none of them
+#   guard the shortcuts dialog, so a shortcuts-dialog-keeps-scroll-body-* name was
+#   misleading about what each guards. Now session-name-line-clamp,
+#   session-menu-height-capped and model-picker-opens-upward (ids, rule files and
+#   fixtures all renamed together; count unaffected — still +4 total for this family).
 # 2026-09-16: +7 for no-hardcoded-z-index-or-scrim + its -screen-layer, -9000-band(-ts), -scrim(-ts) and -settings-panel extras (Plan B, t5b).
 # 2026-09-16 (review of batch A, fixes 1+2): +1 for no-two-bare-bg-utilities's new
 #   template_string fixture line (a bare bg- pair split by a substitution, the shipped
