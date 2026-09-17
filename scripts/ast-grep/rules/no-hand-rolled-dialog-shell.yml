@@ -1,0 +1,82 @@
+id: no-hand-rolled-dialog-shell
+language: tsx
+severity: error
+message: >-
+  Centered modals go through <Dialog>. It owns scrim, centering, the width
+  ladder, the header and the scroll body — the last of which two of the old
+  shell's seven callers got wrong, producing dialogs that clipped with no way
+  to scroll. A NEW file rendering <OverlayPanel> directly is a hand-rolled
+  dialog; if the surface genuinely is not a dialog (anchored, docked, no
+  scrim), add it to this rule's ignores: AND to
+  no-hand-rolled-dialog-shell-exemption-still-applies, with evidence from its
+  computed position, not from a class string.
+note: |
+  Invariant source: tests/dialog-shell.test.tsx (Plan B, 2026-09-16; "nothing
+  in scope hand-rolls the shell" — case 2 of the "dialog shell adoption"
+  describe block's 3 cases).
+  SCOPING mirrors tests/helpers/guard-scope.ts's inScopeFiles(): App.tsx,
+  components/*.tsx (flat only — `*` crosses `/` in this ast-grep, so every
+  OTHER components/ subdirectory is listed under ignores:, same list as
+  no-hand-rolled-callout-tint), components/development/*.tsx,
+  components/ui/*.tsx, never *.test.tsx. ui/Dialog.tsx itself is ignored (it
+  IS the shell).
+  EXEMPT (carried as `ignores:`, from the retired test's NOT_DIALOGS table,
+  keyed by file name as the test was): ResumeBrowser.tsx (L1 drawer),
+  ZoomOverlay.tsx (L4 indicator pinned top-right, no scrim), AnchorTip.tsx
+  (tooltip anchored via computed coordinates), Select.tsx (dropdown under its
+  trigger), Toast.tsx (edge-docked notification), ZoomPill.tsx (corner-
+  anchored in-pane control), ViewToggleHint.tsx (coach mark anchored to the
+  view toggle), VoiceButton.tsx (card anchored above the mic), Tooltip.tsx
+  (hover hint anchored to its control). The full evidence for each is in the
+  NOT_DIALOGS comments of tests/dialog-shell.test.tsx's git history.
+  SHAPE: the retired test was `src.includes('<OverlayPanel')` on RAW text, so
+  it matched a JSX tag whose name STARTS with OverlayPanel (open or
+  self-closing). This rule matches exactly that — the element name regex is
+  `^OverlayPanel`, unanchored at the end like the old substring. It does NOT
+  fire on the two shapes the substring also caught by accident: the text in a
+  comment, and a generic type argument such as `useRef<OverlayPanelHandle>`
+  (neither renders a panel). No real in-scope file had either on 2026-09-16.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/src/renderer/components/*.tsx"
+  - "**/fixtures/no-hand-rolled-dialog-shell.tsx"
+ignores:
+  - "**/*.test.tsx"
+  - "**/components/ui/Dialog.tsx"
+  - "**/ResumeBrowser.tsx"
+  - "**/ZoomOverlay.tsx"
+  - "**/AnchorTip.tsx"
+  - "**/Select.tsx"
+  - "**/Toast.tsx"
+  - "**/ZoomPill.tsx"
+  - "**/ViewToggleHint.tsx"
+  - "**/VoiceButton.tsx"
+  - "**/Tooltip.tsx"
+  - "**/components/artifact-views/**"
+  - "**/components/assistant-settings/**"
+  - "**/components/buddy/**"
+  - "**/components/context-menu/**"
+  - "**/components/diff/**"
+  - "**/components/first-run/**"
+  - "**/components/game/**"
+  - "**/components/git/**"
+  - "**/components/guide/**"
+  - "**/components/header/**"
+  - "**/components/library/**"
+  - "**/components/marketplace/**"
+  - "**/components/mascot/**"
+  - "**/components/model/**"
+  - "**/components/overlays/**"
+  - "**/components/permissions/**"
+  - "**/components/project-view/**"
+  - "**/components/remote/**"
+  - "**/components/specialists/**"
+  - "**/components/tags/**"
+  - "**/components/tool-views/**"
+rule:
+  any:
+    - kind: jsx_opening_element
+    - kind: jsx_self_closing_element
+  has:
+    field: name
+    regex: "^OverlayPanel"
