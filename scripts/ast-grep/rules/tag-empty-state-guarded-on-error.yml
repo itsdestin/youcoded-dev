@@ -22,6 +22,10 @@ note: |
     `??` (`registry.error && …`, `!registry.error && …`), the condition of an
     enclosing `if`, or the condition of an `if` that comes before an
     enclosing statement (an early return).
+    It checks that the error read DECIDES whether the empty state renders,
+    not which branch the empty state sits in: `registry.error ? <Empty/> :
+    …` (the empty state on the ERROR branch) passes, as it passed the
+    retired case (review of u10, 2026-09-16).
   DIFFERENCES, deliberate: the 600-character window becomes "a guarding
   condition". An earlier read that guards nothing no longer counts — an
   unrelated statement or attribute (`useLog(registry.error)`,
