@@ -89,6 +89,12 @@ above Manage pages ("just a bare pill button"), no odd margin between panel and 
 better-styled Esc · Back to chat, and Edit in chat as "a separate edit button, with a hover
 tooltip clearly explaining what it is… just in the header", not beside the name.
 
+Round 5 (`youcoded-pages-shell-r5.review.answers.json`): the collapsed frame is approved.
+Changes asked: the side panel "in its own framed container, kinda like games/files in framed
+chat sessions"; Manage pages wider; Back to chat "should match styling of max/min/exit icon"
+(no outline); and "remove the edit option from the page header, and keep it only accessible in
+the manage pages view". Applied in round 6.
+
 ## Phase 2 — connections and refresh (open)
 
 **A person can:** make a page that shows information from a service and keeps it current

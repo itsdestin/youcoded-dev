@@ -26,7 +26,8 @@
    "measure": [
     "[aria-label='Exit pages']",
     "[aria-label='Unpin Focus timer']",
-    "[aria-label='Pin Week planner']"
+    "[aria-label='Pin Week planner']",
+    "[aria-label='Edit Week planner in chat']"
    ]
   },
   {
@@ -55,7 +56,7 @@
    ],
    "expect": "iframe[title='Focus timer']",
    "measure": [
-    "[aria-label='Exit page']"
+    "[aria-label='Back to chat']"
    ]
   },
   {
@@ -86,9 +87,7 @@
    ],
    "expect": "iframe[title='Week planner']",
    "measure": [
-    {
-     "text": "Edit in chat"
-    }
+    "[aria-label='Back to chat']"
    ]
   },
   {
@@ -101,9 +100,7 @@
    ],
    "expect": "iframe[title='Paint studio']",
    "measure": [
-    {
-     "text": "Pinned"
-    }
+    "[aria-label='Back to chat']"
    ]
   }
  ]

@@ -1,0 +1,52 @@
+{
+  "title": "Pages — the shell, round 6: framed panel, quieter Back, Edit in the library",
+  "key": "youcoded-pages-shell-r6",
+  "out": "youcoded-pages-shell-r6.review.html",
+  "images": "images/youcoded-pages-shell-r6.review",
+  "runs": {
+    "before": "runs/round5",
+    "after": "runs/after"
+  },
+  "labels": { "before": "Round 5", "after": "Round 6" },
+  "themes": ["midnight", "light", "halftone-dimension", "meadow-mist"],
+  "stage": "review",
+  "crops": {
+    "view-band-right": ["pages-view", "view", "720x60+720+0"],
+    "view-panel": ["pages-view", "view", "560x900+0+0"],
+    "view-full": ["pages-view", "view", "1440x620+0+0"],
+    "library-cards": ["pages", "library", "1100x400+170+0"]
+  },
+  "steps": [
+    {
+      "id": "S-22",
+      "surface": "A page",
+      "path": "The right end of the band above an open page",
+      "crop": "view-band-right",
+      "headline": "Back to chat now sits in the same quiet inset pill as the window buttons, with no outline; the pencil is gone.",
+      "changed": "The bordered pill became the window buttons' own style: an inset pill, muted text that brightens on hover, the Esc key as small muted text. Edit left the band altogether.",
+      "notice": "Nothing on the band has an outline any more. The band is: panel toggle, page name, Back to chat, window buttons.",
+      "risk": ""
+    },
+    {
+      "id": "S-23",
+      "surface": "A page",
+      "path": "The panel on the left of an open page",
+      "crop": "view-panel",
+      "headline": "The panel sits in its own rounded container, like the files and games pane in a chat, and Manage pages fills its width.",
+      "changed": "The panel is a rounded pane on the chrome, inset by the frame edge like the page pane beside it. Manage pages is a full-width pill at its bottom.",
+      "measured": "240 px wide, 10 px edge",
+      "notice": "Two panes side by side, the same shape; the panel reads as a thing you can hide, not as part of the wall.",
+      "risk": ""
+    },
+    {
+      "id": "S-24",
+      "surface": "Pages",
+      "path": "Top bar → Pages, the top-right corner of each card",
+      "crop": "library-cards",
+      "headline": "Edit in chat lives only on the library cards now, as a pencil beside the pin, with a hover tip.",
+      "changed": "Each card gains a pencil button before its pin. It is the one place a page is edited from; the page view has no edit control.",
+      "notice": "To change a page: Manage pages, then the pencil on its card. To pin it: the pin on the card or in the panel.",
+      "risk": "Editing takes one more step than it did with a button on the page itself."
+    }
+  ]
+}
