@@ -185,7 +185,12 @@ fi
 #   is caught (the retired regex found the call as a substring, indifferent to what
 #   preceded it); the "at least one rafTick call" presence branch now also accepts
 #   the window-prefixed form. Fixture +1.
-EXPECTED_VIOLATIONS=167
+# 2026-09-16 (review of t6a, fix round 2, item 6): +2 —
+#   arcade-challenge-game-not-hardcoded and arcade-stop-play-keyed-on-open-game
+#   now also match member-form calls (`api.lobbyChallenge(...)`,
+#   `React.useEffect(...)`), which `.includes()`-based reads never cared about.
+#   Fixture +1 each.
+EXPECTED_VIOLATIONS=169
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

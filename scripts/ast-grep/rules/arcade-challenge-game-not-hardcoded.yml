@@ -8,6 +8,10 @@ note: |
   Invariant source: tests/arcade-authority.test.ts (Plan B t6a review fix, 2026-09-16; "the challenge carries which game, end to end"). — its usePartyGame.ts link. The retired check was
   `!src.includes("lobbyChallenge(target, 'connect-four'")` with comments
   blanked; a string spelling it counts too.
+  FIX (review round 2, 2026-09-16): `.includes()` also caught a MEMBER-form
+  call (`api.lobbyChallenge(target, 'connect-four', code)`), which the
+  first-draft `^lobbyChallenge$` anchor missed. Now matches a bare identifier
+  OR a member expression ending in `.lobbyChallenge`.
 files:
   - "**/src/renderer/hooks/usePartyGame.ts"
   - "**/fixtures/arcade-challenge-game-not-hardcoded.ts"
@@ -29,7 +33,7 @@ rule:
   any:
     - kind: call_expression
       all:
-        - has: { field: function, regex: "^lobbyChallenge$" }
+        - has: { field: function, regex: "(^|\\.)lobbyChallenge$" }
         - has: { field: arguments, regex: "^\\(target, 'connect-four'" }
     - matches: code-token
       regex: "lobbyChallenge\\(target, 'connect-four'"
