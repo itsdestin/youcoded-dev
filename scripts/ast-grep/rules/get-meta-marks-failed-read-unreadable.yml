@@ -18,7 +18,8 @@ note: |
   Here, searched inside the handler call:
     - an `if (!store)` whose consequence returns an object with an
       `unreadable:` pair (a braced `{ return … }` is accepted too — looser
-      than the old regex, never stricter);
+      than the old regex, never stricter; the object may also be wrapped in
+      `as`/`satisfies`, added 2026-09-16 review round 1 item 2);
     - a catch clause WITH a parameter whose body holds an `unreadable:` pair.
   The old slice also ran past the handler's closing paren to the next
   ipcMain.handle( — today only comments sit there, and an `unreadable` fallback
@@ -41,6 +42,20 @@ utils:
     has:
       field: key
       regex: "^unreadable$"
+  # WHY (2026-09-16, u1 fix round 1 item 2): a bare `kind: object` child missed
+  # `return { …, unreadable: … } as Meta` / `… satisfies Meta` — the return's
+  # argument is an as_expression/satisfies_expression wrapping the object, not
+  # the object itself, so the guard below would false-fire on that valid code.
+  returned-unreadable-object:
+    any:
+      - kind: object
+        has: { matches: unreadable-pair }
+      - any:
+          - kind: as_expression
+          - kind: satisfies_expression
+        has:
+          kind: object
+          has: { matches: unreadable-pair }
   no-store-guard:
     kind: if_statement
     has:
@@ -51,11 +66,11 @@ utils:
           field: consequence
           any:
             - kind: return_statement
-              has: { kind: object, has: { matches: unreadable-pair } }
+              has: { matches: returned-unreadable-object }
             - has:
                 stopBy: end
                 kind: return_statement
-                has: { kind: object, has: { matches: unreadable-pair } }
+                has: { matches: returned-unreadable-object }
   catch-marks-unreadable:
     kind: catch_clause
     has:
