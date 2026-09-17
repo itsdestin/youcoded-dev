@@ -1,0 +1,63 @@
+id: solo-game-uses-run-over-card
+language: tsx
+severity: error
+message: >-
+  Every solo game (components/game/*Game.tsx) must end a run with the shared
+  <RunOverCard> and pass a keyboard retry hint (`retryKeyHint`). Flappy and
+  2048 had each grown their own end overlay and had already drifted — one
+  celebrated a new best, the other silently did not.
+note: |
+  Invariant source: tests/run-over-card.test.tsx (Plan B, 2026-09-16) —
+  "uses the shared card rather than a hand-rolled overlay" and "offers a
+  keyboard retry" (describe "every solo game ends the same way"). Its render
+  cases for RunOverCard itself stay in that file.
+  SCOPE, mirrored from the retired scan: readdirSync of components/game (not
+  recursive), every file whose name ends in `Game.tsx`. `*` crosses `/` in
+  this ast-grep, so `ignores:` drops anything in a subfolder.
+  Two whole-file (`kind: program`) branches, one per retired case:
+  1. no <RunOverCard> (or <x.RunOverCard>) tag — self-closing or the opening
+     tag of an open/close pair — anywhere in the file (the old
+     `toContain('RunOverCard')`);
+  2. no `retryKeyHint` anywhere in the code: a JSX attribute of that name on
+     any element, or an object key / shorthand property of that name (a hint
+     handed over through a spread) (the old `toContain('retryKeyHint')`).
+  DIFFERENCES, deliberate: the old checks were raw substrings, so a comment,
+  a string or (for RunOverCard) an import that is never rendered satisfied
+  them; here only code does — a comment naming the card is not using it.
+  Names are matched whole: a `<RunOverCardLegacy>` tag or a
+  `retryKeyHintText` prop no longer passes as the card or the hint. Branch 2
+  does not require the hint to sit on the RunOverCard tag (the old check did
+  not either). The old "at least two solo games were found" sanity
+  check is gone: it only proved the scan looked in the right folder (Plan B
+  deletes such checks); the `files:` glob was proven to reach FlappyGame.tsx
+  and TwentyFortyEightGame.tsx by inverting both (2026-09-16).
+files:
+  - "**/src/renderer/components/game/*Game.tsx"
+  - "**/fixtures/solo-game-uses-run-over-card*.tsx"
+ignores:
+  - "**/src/renderer/components/game/*/**"
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          any:
+            - kind: jsx_self_closing_element
+            - kind: jsx_opening_element
+          has:
+            field: name
+            # a member name (`<ui.RunOverCard>`) is the same card
+            regex: "(^|\\.)RunOverCard$"
+    - not:
+        has:
+          stopBy: end
+          any:
+            - kind: jsx_attribute
+              regex: "^retryKeyHint\\b"
+            - kind: pair
+              has:
+                field: key
+                regex: "^['\"]?retryKeyHint['\"]?$"
+            - kind: shorthand_property_identifier
+              regex: "^retryKeyHint$"

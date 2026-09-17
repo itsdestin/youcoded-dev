@@ -249,7 +249,12 @@ fi
 #   signature caught only by the whole-file backstop (1)) and remote-burst-slows-not-refuses
 #   (one file per presence branch: no threshold constant, a refusal instead of the slow
 #   start, a slow start never awaited (3)).
-EXPECTED_VIOLATIONS=253
+# 2026-09-16 (u6, run-over-card.test.tsx): +5 for arcade-end-run-keeps-playing (a
+#   setPlaying(false) call and the same text in a comment inside endRun (2); the text where
+#   only the whole-declaration backstop sees it (1); a shell with no onExit prop (1)) and
+#   solo-game-uses-run-over-card (a game that never renders the card, and one whose card
+#   has no retryKeyHint (2)).
+EXPECTED_VIOLATIONS=259
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

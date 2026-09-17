@@ -98,7 +98,7 @@ carries it; `—` means the source-reading case is deleted outright (nothing els
 | `tests/remote-reconnect-reloads.test.tsx` | App.tsx contains two exact reconnect-wiring lines | M, B | split (keep the nine hook behaviour cases) | — | 1/10 |
 | `tests/remote-shim-permission-inflight.test.ts` | Real shim in-flight test; one pins an App.tsx line | M (B) | split (keep shim case, delete App pin) | — | 1/2 |
 | `tests/resume-browser-organize.test.tsx` | Card behaviour; one derives classNames from SessionDrawer source | M, G | split (interaction cases stay) | — | 1/10 |
-| `tests/run-over-card.test.tsx` | Renders RunOverCard; also scans game files and ArcadeShell text | M (A, D) | split (keep render cases) | `solo-game-uses-run-over-card` | 4/12 |
+| `tests/run-over-card.test.tsx` | Renders RunOverCard; also scans game files and ArcadeShell text | M (A, D) | split (keep render cases) | `solo-game-uses-run-over-card` + `arcade-end-run-keeps-playing` (u6 correction: the two ArcadeShell cases are a separate invariant, so a second rule) | 4/12 |
 | `tests/runtime-default.test.tsx` | One file owns the storage key; forms init from defaultRuntime() | M, D | split (keep the four defaultRuntime unit cases) | `runtime-default-key-single-owner` | 2/6 |
 | `tests/session-drag-model.test.ts` | Model unit tests; three assert preload lacks drag decisions | M, C | split (model cases stay) | `preload-no-drag-model-decision` | 3/10 |
 | `tests/session-drawer-skips-parent-rerenders.test.tsx` | Render-count test plus App.tsx useMemo/provider-value pin | M (B) | split (keep re-render case) | `artifact-provider-value-memoized` | 1/2 |
