@@ -18,9 +18,9 @@ note: |
   src/renderer except components/ui/ (the primitives themselves) and
   *.test.* files. The ignore is `components/ui*` because the retired walk
   dropped every path STARTING with components/ui (a startsWith, no slash),
-  and `*` crosses `/` in this ast-grep — so it is the same prefix test. Comments are skipped, as the retired stripComments() pass
-  skipped them (it blanked block comments and every `//` comment, trailing
-  ones included).
+  and `*` crosses `/` in this ast-grep — so it is the same prefix test.
+  Comments are skipped, as the retired stripComments() pass skipped them
+  (it blanked block comments and every `//` comment, trailing ones included).
   The .ts twin of no-hand-rolled-toast (a tsx rule never parses .ts).
 files:
   - "**/src/renderer/**/*.ts"
