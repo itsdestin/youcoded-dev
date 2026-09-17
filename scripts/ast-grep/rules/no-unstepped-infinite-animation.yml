@@ -1,0 +1,55 @@
+id: no-unstepped-infinite-animation
+language: tsx
+severity: error
+message: >-
+  A NEW `infinite` animation in a renderer component — whether an inline
+  `animation: '...'` style or a Tailwind `animate-[name_..._infinite]`
+  arbitrary value — must carry `steps(...)` timing, or it repaints at the
+  display's full refresh rate for as long as it's on screen (measured
+  ~1.5-1.9ms of CPU per frame, ~29% of one core at 180Hz, for a single
+  pulsing dot — 2026-07-30 idle-CPU investigation). `will-change`/layer
+  promotion does NOT fix this (measured 29.8% -> 27.8%, still useless).
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B, 2026-09-16;
+  the two SWEEP cases only — "bans NEW inline infinite animations without
+  steps timing in components" and "bans Tailwind arbitrary-value infinite
+  animations without steps()" — which walked every .tsx under
+  src/renderer/components. The file's other 43 cases are per-file pins (13
+  frame-budget cases kept via readSource in the new
+  tests/animation-css-budget.test.ts) or an unrelated "motion vocabulary"
+  describe block (30 cases — SessionStrip drag/hover/label mechanics, kept
+  in place; see the corrected classification row).
+  EXCEPTIONS mirrors the retired test's ANIMATION_EXCEPTIONS table: character
+  motion and visibility-gated theme-companion animations that are deliberately
+  NOT stepped (steps() reads as juddering for character motion). Today these
+  exceptions are all consumed on the CSS-sweep side (mascot.css's own
+  `animation: rig-breathe …` declarations, guarded by the kept CSS-budget
+  case), not as a Tailwind arbitrary value — kept here anyway so a FUTURE
+  Tailwind-arbitrary-value rig/companion animation doesn't have to re-litigate
+  the exemption.
+files:
+  - "**/src/renderer/components/**/*.tsx"
+  - "**/fixtures/no-unstepped-infinite-animation.tsx"
+ignores:
+  - "**/*.test.tsx"
+rule:
+  any:
+    # Branch A: inline `animation: '...'` style value, 'infinite' present, 'steps(' absent.
+    - kind: string_fragment
+      regex: "infinite"
+      not:
+        regex: "steps\\("
+      inside:
+        stopBy: end
+        kind: pair
+        has:
+          field: key
+          regex: "^animation$"
+    # Branch B: Tailwind arbitrary-value animate-[name_..._infinite], 'steps(' absent,
+    # and the keyframe name is not one of the deliberate character-motion/companion exceptions.
+    - kind: string_fragment
+      regex: "animate-\\[[\\w-]+_[^\\]]*infinite[^\\]]*\\]"
+      not:
+        any:
+          - regex: "steps\\("
+          - regex: "animate-\\[(rig-breathe|rig-bounce-loop|rig-float-loop|rig-sleep-loop|rig-dizzy-sway|comp-twinkle|comp-spin|comp-pulse|comp-bob|mascot-comp-float|buddy-breathe|model-load-sweep)_"

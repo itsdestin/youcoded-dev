@@ -103,7 +103,9 @@ fi
 # 2026-09-16 (t5c): +2 for app-no-switch-view-broadcast + app-no-switch-view-receiver.
 # 2026-09-16 (t6a): +2 for private-continuation-dir-single-owner + its -devtools twin
 #   (accepted-history-privacy.test.ts).
-EXPECTED_VIOLATIONS=62
+# 2026-09-16 (t6a): +2 for no-unstepped-infinite-animation (its fixture fires both
+#   branches — inline style and Tailwind arbitrary value) (animation-frame-budget.test.ts).
+EXPECTED_VIOLATIONS=64
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
