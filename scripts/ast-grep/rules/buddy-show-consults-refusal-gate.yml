@@ -12,12 +12,12 @@ message: >-
   YouCoded is running (design §4).
 note: |
   Invariant source: tests/buddy-consent-gate.test.ts (Plan B, 2026-09-16;
-  "asks the gate, and re-reads the status rather than trusting launch" —
-  the "main.ts wires the gate" describe block's other 5 cases are each a
-  distinct, narrow region of main.ts (handler brevity, refusal-before-show
-  ORDERING, the drag-path cache-only dependency, the conditional
-  work-area-resolver construction, three debounced display-event wires) and
-  are kept as text reads rather than five more bespoke rules).
+  "asks the gate, and re-reads the status rather than trusting launch").
+  The describe block's other cases became buddy-show-refuses-before-creating,
+  buddy-drag-reads-cached-helper-status, buddy-work-area-only-where-needed and
+  buddy-work-area-reresolved-on-display-change (review of t6a, 2026-09-16);
+  its handler-brevity check only proved the old text slice was the handler,
+  and went with the slice.
 files:
   - "**/src/main/main.ts"
   - "**/fixtures/buddy-show-consults-refusal-gate.ts"

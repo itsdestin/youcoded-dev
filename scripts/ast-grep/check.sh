@@ -164,7 +164,10 @@ fi
 # 2026-09-16 (review of t6a, I4): +2 — chatview-passes-provider-to-attentionbanner's
 #   fixture gains the open/close form, and a second fixture fires its whole-file
 #   "no banner rendered" branch.
-EXPECTED_VIOLATIONS=155
+# 2026-09-16 (review of t6a, I5 buddy-consent-gate.test.ts): +4 for
+#   buddy-show-refuses-before-creating, buddy-drag-reads-cached-helper-status,
+#   buddy-work-area-only-where-needed, buddy-work-area-reresolved-on-display-change.
+EXPECTED_VIOLATIONS=159
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
