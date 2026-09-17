@@ -92,5 +92,5 @@ source-text guard** — 112 files already grep source as text; a JSX shape is a 
 
 ## Before calling a failure "flake"
 Run it alone (passes → load-sensitive) **and** in a pristine `origin/master` worktree (still
-fails → pre-existing). **Then fix it or file it with the cause — a red leg you have not read is
-not noise, and a filed flake nobody owns is how master stayed red for a week.**
+fails → pre-existing). **Then fix it now, pre-existing or not — never file it on the
+roadmap (Destin, 2026-09-17): a filed flake nobody owns is how master stayed red for a week.**
