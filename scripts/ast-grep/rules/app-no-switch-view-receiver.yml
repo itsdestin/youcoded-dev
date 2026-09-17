@@ -1,0 +1,29 @@
+id: app-no-switch-view-receiver
+language: tsx
+severity: error
+message: >-
+  App.tsx's uiAction receiver must never apply a 'switch-view' action, and
+  must keep applying '_SESSION_INITIALIZED' — the one uiAction App still
+  applies (remote access batch 2, design §5 T5, contract R4). A received
+  'switch-view' used to change the current session's view mode, so the
+  phone app's toggle moved the desktop and every other client.
+note: |
+  Invariant source: tests/view-switch-stays-local.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 2 — "a switch-view action received over remote
+  changes no view mode"). `kind: program` `any:` of the ban (the old
+  uiAction branch) and the negation of the one relay App still applies —
+  same shape as main-registers-all-quit-routes: fires if EITHER the banned
+  branch is present OR the required one goes missing.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/app-no-switch-view-receiver.tsx"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        pattern: "action.action === 'switch-view'"
+    - not:
+        has:
+          stopBy: end
+          pattern: "action.type === '_SESSION_INITIALIZED'"

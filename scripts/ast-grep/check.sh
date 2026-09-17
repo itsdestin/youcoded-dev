@@ -100,7 +100,8 @@ fi
 #   tooltip-key-on-wrapper-not-child.
 # 2026-09-16 (t5c): +3 for type-scale-named-tokens-declared + no-arbitrary-text-size +
 #   its -ts twin.
-EXPECTED_VIOLATIONS=58
+# 2026-09-16 (t5c): +2 for app-no-switch-view-broadcast + app-no-switch-view-receiver.
+EXPECTED_VIOLATIONS=60
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

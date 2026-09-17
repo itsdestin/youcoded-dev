@@ -1,0 +1,39 @@
+id: app-no-switch-view-broadcast
+language: tsx
+severity: error
+message: >-
+  App.tsx must never broadcast a 'switch-view' action. The chat/terminal
+  switch is each screen's own (remote access batch 2, design §5 T5, contract
+  R4) — until batch 2, App broadcast 'switch-view' from the Android app's
+  toggle, so the phone app's toggle moved the desktop and every other phone.
+note: |
+  Invariant source: tests/view-switch-stays-local.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 2 — "App never broadcasts switch-view"). The retired
+  test's regex (`/broadcastAction\?\.\(\{\s*action:\s*'switch-view'/g`) had
+  no anchor on what precedes `broadcastAction`, so it matches the call
+  through any receiver chain. A `pattern: "broadcastAction?.($ARG)"` rule
+  only matches a BARE call and went silent on the real call site's actual
+  shape, `(window as any).claude?.remote?.broadcastAction?.(...)` (verified
+  empirically, scratch probe 2026-09-16) — narrower than the retired test.
+  Matches the callee via `kind: call_expression`'s `function` field being
+  either a bare `identifier` or a `member_expression` whose `property` is
+  `broadcastAction`, regardless of how deep the receiver chain is.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/app-no-switch-view-broadcast.tsx"
+rule:
+  kind: call_expression
+  all:
+    - has:
+        field: function
+        any:
+          - kind: identifier
+            regex: "^broadcastAction$"
+          - kind: member_expression
+            has:
+              field: property
+              regex: "^broadcastAction$"
+    - has:
+        stopBy: end
+        kind: string_fragment
+        regex: "^switch-view$"
