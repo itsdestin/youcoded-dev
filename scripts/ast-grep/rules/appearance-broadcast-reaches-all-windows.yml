@@ -12,6 +12,10 @@ note: |
   written as the negation: fires on the ipcMain.on(IPC.APPEARANCE_BROADCAST, …)
   call site when it is MISSING either BrowserWindow.getAllWindows() or
   IPC.APPEARANCE_SYNC inside its handler body.
+  FIX (review of batch A, 2026-09-16): this rule matches the call site, so it
+  is silent if the WHOLE handler registration is deleted (nothing left to
+  match). See appearance-broadcast-handler-registered for the whole-file
+  branch that catches that case.
 files:
   - "**/src/main/main.ts"
   - "**/fixtures/appearance-buddy-broadcast.ts"

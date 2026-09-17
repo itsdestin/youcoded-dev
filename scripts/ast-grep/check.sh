@@ -68,7 +68,11 @@ fi
 #   bug's own shape); +1 for its real .ts twin no-two-bare-bg-utilities-ts; +1 for
 #   no-hand-rolled-segmented-control-ts (both rules' old `.ts` glob did nothing under
 #   `language: tsx` — ast-grep only parses a file under the language it's configured with).
-EXPECTED_VIOLATIONS=43
+# 2026-09-16 (review of batch A, fix 3): +1 for appearance-broadcast-handler-registered,
+#   the whole-file branch that fires when the ipcMain.on(IPC.APPEARANCE_BROADCAST, ...)
+#   registration is deleted entirely (its sibling rule matches the call site itself, so
+#   it has nothing to match once the whole thing is gone).
+EXPECTED_VIOLATIONS=44
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
