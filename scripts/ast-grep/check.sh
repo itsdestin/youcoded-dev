@@ -266,7 +266,11 @@ fi
 #   preload naming the model in a string and a comment, importing and naming the decision,
 #   and starting a drag via startDrag and dragHandoff (6); one with no platformFacts object,
 #   one whose platformFacts lost its wayland fact (2)).
-EXPECTED_VIOLATIONS=283
+# 2026-09-16 (u7, session-drawer-skips-parent-rerenders.test.tsx): +5 for
+#   artifact-provider-value-memoized (an inline value object, a self-closing provider
+#   handed another value, a useMemo whose deps miss artifactState (3); an App with no
+#   provider tag, one whose value is not a useMemo (2)).
+EXPECTED_VIOLATIONS=288
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

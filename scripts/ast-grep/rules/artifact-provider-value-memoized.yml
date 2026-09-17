@@ -1,0 +1,74 @@
+id: artifact-provider-value-memoized
+language: tsx
+severity: error
+message: >-
+  App must hand <ArtifactProvider> its memoised value —
+  `value={artifactContextValue}`, declared as
+  `const artifactContextValue = useMemo(…, [artifactState, …])`. An inline
+  object is a new identity on every render (every streamed token), which
+  redraws every ArtifactContext consumer; a useMemo whose dependencies miss
+  artifactState ships a FROZEN context (opening a file, closing the drawer
+  and switching files would stop updating anywhere).
+note: |
+  Invariant source: tests/session-drawer-skips-parent-rerenders.test.tsx
+  (Plan B, 2026-09-16) — "App gives ArtifactContext a memoized value, not a
+  fresh object per render". The file's render-count case stays. The retired
+  case read App.tsx's raw text and asserted:
+    1. the first /<ArtifactProvider[^>]*>/ exists, has no `value={{`, and
+       contains `value={artifactContextValue}`;
+    2. `const artifactContextValue = useMemo(` is in the file;
+    3. the first /\}\),\s*\[([^\]]*)\]/ after it (the dependency array) contains
+       `artifactState`.
+  Here, on the same file:
+    1. every <ArtifactProvider> tag, open or self-closing, whose `value`
+       attribute is not exactly the identifier artifactContextValue (an inline
+       `value={{…}}` is one such); and the whole file when no such tag exists;
+    2. the whole file when no `const artifactContextValue = useMemo(…)`
+       declaration exists;
+    3. an `artifactContextValue = useMemo(…)` declarator whose second argument
+       is not an array whose text contains `artifactState` (a substring, as
+       before — `artifactStateRef` would still count).
+  DIFFERENCES, deliberate: every tag is checked, not only the first; the tag
+  name is matched whole; whitespace inside the braces or around `=` no longer
+  matters; presence needs code (a comment or string spelling the tag or the
+  declaration no longer counts). Rule 3 reads useMemo's own second argument
+  instead of "the first `}), [` after the declaration", which relied on the
+  body being `() => ({…})` and would read an unrelated array if the
+  dependency array went missing.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/artifact-provider-value-memoized*.tsx"
+utils:
+  provider-tag:
+    any:
+      - kind: jsx_opening_element
+      - kind: jsx_self_closing_element
+    has: { field: name, regex: "^ArtifactProvider$" }
+rule:
+  any:
+    # 1. the provider's value is the memoised identifier
+    - matches: provider-tag
+      not:
+        has:
+          kind: jsx_attribute
+          all:
+            - has: { kind: property_identifier, regex: "^value$" }
+            - has:
+                kind: jsx_expression
+                regex: "^\\{\\s*artifactContextValue\\s*\\}$"
+    - kind: program
+      not: { has: { stopBy: end, matches: provider-tag } }
+    # 2. the memoised value is declared
+    - kind: program
+      not: { has: { stopBy: end, pattern: "const artifactContextValue = useMemo($$$ARGS)" } }
+    # 3. its dependencies name artifactState
+    - kind: variable_declarator
+      all:
+        - has: { field: name, regex: "^artifactContextValue$" }
+        - has: { field: value, pattern: "useMemo($$$ARGS)" }
+      not:
+        has:
+          field: value
+          has:
+            field: arguments
+            has: { nthChild: 2, kind: array, regex: "artifactState" }
