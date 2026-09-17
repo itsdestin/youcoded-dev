@@ -1,0 +1,227 @@
+{
+  "title": "Plans — round 10: the last visible changes before sign-off",
+  "key": "specialists-plans-review10",
+  "out": "specialists-plans.review10.html",
+  "images": "images/specialists-plans.review10",
+  "runs": {
+    "today": "runs/r11"
+  },
+  "labels": {
+    "today": "Now"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "g-typed": [
+      "plans-card-r11",
+      "ask-message-typed",
+      "1430x520+5+40"
+    ],
+    "g-blank": [
+      "plans-card-r11",
+      "ask-message-blank",
+      "1430x520+5+40"
+    ],
+    "g-fail-u": [
+      "plans-card-r11",
+      "failed-unknown-reason",
+      "1180x300+16+40"
+    ],
+    "g-fail-k": [
+      "plans-card-r11",
+      "failed-known-reason",
+      "1180x360+16+40"
+    ],
+    "g-settings": [
+      "plans-card-r11",
+      "settings-plans-read-failed",
+      "960x660+300+80"
+    ],
+    "g-preview": [
+      "plans-card-r11",
+      "conversation-preview-plan",
+      "1220x700+40+60"
+    ],
+    "g-orphan": [
+      "plans-card-r11",
+      "paused-progress-not-saved",
+      "1180x420+16+40"
+    ],
+    "g-over": [
+      "plans-card-r11",
+      "paused-usage-over-limit",
+      "1180x380+16+40"
+    ],
+    "g-warm": [
+      "plans-card-r11",
+      "paused-warm-minimum-add-budget",
+      "1180x380+16+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "G-1",
+      "surface": "Chat",
+      "path": "After asking the assistant about a paused plan, with a typed question",
+      "crop": "g-typed",
+      "headline": "Your question to the assistant now appears as your own ordinary message.",
+      "changed": "It uses the same bubble as anything you type; the plan details sent with it stay hidden.",
+      "notice": "Nothing special to learn.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          52,
+          72,
+          48,
+          11
+        ]
+      }
+    },
+    {
+      "id": "G-2",
+      "surface": "Chat",
+      "path": "After asking with the box left empty",
+      "crop": "g-blank",
+      "headline": "With the box left empty, your message reads \"What should I do about this paused plan?\"",
+      "changed": "The same ordinary bubble with a default question.",
+      "notice": "It's clear what you asked, even without typing.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          52,
+          72,
+          48,
+          11
+        ]
+      }
+    },
+    {
+      "id": "G-3",
+      "surface": "Chat · plan card",
+      "path": "A plan the app couldn't create, for an unknown reason",
+      "crop": "g-fail-u",
+      "headline": "When a plan fails for an unknown reason, it says so plainly with Report bug and Diagnose.",
+      "changed": "\"The plan couldn't be created.\" replaces a bare \"failed\"; technical details go to the bug report only.",
+      "notice": "A next step instead of a dead card.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          72,
+          96,
+          14
+        ]
+      }
+    },
+    {
+      "id": "G-4",
+      "surface": "Chat · plan card",
+      "path": "A plan whose saved progress couldn't be read",
+      "crop": "g-fail-k",
+      "headline": "When the reason is known, the card states it, with the same two buttons.",
+      "changed": "The real reason is shown in plain words.",
+      "notice": "You know what went wrong.",
+      "risk": "The reason can be a little technical.",
+      "highlight": {
+        "box": [
+          2,
+          76,
+          96,
+          12
+        ]
+      }
+    },
+    {
+      "id": "G-5",
+      "surface": "Settings",
+      "path": "Assistant settings → Specialists → Plans, when the setting couldn't be read",
+      "crop": "g-settings",
+      "headline": "If the \"Run small plans without asking\" setting can't be read, the row offers Retry and Report bug.",
+      "changed": "Before, the switch just stayed greyed out with \"Please try again.\" and nothing to press.",
+      "notice": "You can fix it without leaving Settings.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          20,
+          66,
+          78,
+          32
+        ]
+      }
+    },
+    {
+      "id": "G-6",
+      "surface": "Projects",
+      "path": "A conversation preview that contains a plan",
+      "crop": "g-preview",
+      "headline": "Plan cards inside a conversation preview are read-only.",
+      "changed": "Previews show the plan as it is, without Approve, Add budget or other buttons.",
+      "notice": "You can't accidentally act on an old plan from a preview.",
+      "risk": "To act on the plan you open the conversation.",
+      "highlight": {
+        "box": [
+          2,
+          27,
+          70,
+          30
+        ]
+      }
+    },
+    {
+      "id": "G-7",
+      "surface": "Chat · plan card",
+      "path": "A plan paused because its progress couldn't be saved",
+      "crop": "g-orphan",
+      "headline": "If a plan's progress couldn't be saved, it pauses with a plain message and Report bug / Diagnose.",
+      "changed": "The card shows \"The plan stopped because its progress couldn't be saved.\" and a \"Something went wrong\" block; the technical error goes to the bug report and to the assistant if you ask it.",
+      "notice": "A rare failure is explained instead of leaving the plan looking like it's running.",
+      "risk": "Report bug and Diagnose sit on the left in that block, unlike the plan's other buttons.",
+      "highlight": {
+        "box": [
+          2,
+          68,
+          96,
+          30
+        ]
+      }
+    },
+    {
+      "id": "G-8",
+      "surface": "Chat · plan card",
+      "path": "A plan that went slightly over its limit",
+      "crop": "g-over",
+      "headline": "A plan can end a little over its limit if a service unexpectedly didn't reuse cached text, and then it pauses.",
+      "changed": "Here it used 40,350 of 40,000 tokens; the pause explains why.",
+      "notice": "The limit stays close to exact, and the plan stops immediately after.",
+      "risk": "The words \"cached request\" may be unfamiliar.",
+      "highlight": {
+        "box": [
+          2,
+          52,
+          96,
+          16
+        ]
+      }
+    },
+    {
+      "id": "G-9",
+      "surface": "Chat · plan card",
+      "path": "A paused plan within a few minutes of its last step, with Add budget open",
+      "crop": "g-warm",
+      "headline": "If you continue within a few minutes, the plan needs only a small top-up.",
+      "changed": "Because re-reading the conversation is almost free while the service still has it cached, the minimum here is 4,200 tokens instead of the full re-send.",
+      "notice": "Short pauses cost little to resume.",
+      "risk": "After about 4 minutes the minimum rises to cover a full re-send.",
+      "highlight": {
+        "box": [
+          2,
+          54,
+          96,
+          14
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+ "deck": "specialists-plans-review10",
+ "started": "2026-09-17T07:34:37.914Z",
+ "submitted": "2026-09-17T07:37:50Z",
+ "cur": 8,
+ "answers": {
+  "G-1": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-3": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-4": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-5": {
+   "note": "this is just dumb. remove this. in what world would a user actually encounter this issue? and why would it be relevant in the settings menu?",
+   "v": "other",
+   "seconds": 49,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-6": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-7": {
+   "note": "why is the entire righthand side empty space? why are the text/buttons stacked like this? why are there two layers of the same warning, and why does one offer to add budget??",
+   "v": "other",
+   "seconds": 62,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-8": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "G-9": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
