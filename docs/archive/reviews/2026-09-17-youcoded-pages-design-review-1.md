@@ -1,8 +1,10 @@
 ---
-status: active
+status: shipped
 date: 2026-09-17
-reviews: docs/active/specs/2026-09-17-youcoded-pages-phase1-technical-design.md
+reviews: docs/archive/specs/2026-09-17-youcoded-pages-phase1-technical-design.md
 ---
+
+> Archived: shipped 2026-09-17 with youcoded#507; all 12 findings were folded in.
 
 # YouCoded Pages Phase 1 design — adversarial review 1
 

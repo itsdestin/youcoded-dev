@@ -1,9 +1,11 @@
 ---
-status: active
+status: shipped
 date: 2026-09-17
-reviewed: docs/active/reviews/2026-09-17-youcoded-pages-design-review-1.md (12 findings, all accepted and folded in below)
-related: docs/active/plans/2026-09-16-youcoded-pages-phasing.md (the phasing and the build decisions), docs/active/design/2026-09-15-youcoded-pages/youcoded-pages-shell.contract.json (what "done" means)
+reviewed: docs/archive/reviews/2026-09-17-youcoded-pages-design-review-1.md (12 findings, all accepted and folded in below)
+related: docs/active/plans/2026-09-16-youcoded-pages-phasing.md (the phasing and the build decisions), docs/active/design/2026-09-15-youcoded-pages/youcoded-pages-shell.contract.skipped.json (24 rows, never signed — skipped on Destin's call)
 ---
+
+> Archived: shipped 2026-09-17 in youcoded#507 (Phase 1 of YouCoded Pages).
 
 # YouCoded Pages, Phase 1 — technical design
 
