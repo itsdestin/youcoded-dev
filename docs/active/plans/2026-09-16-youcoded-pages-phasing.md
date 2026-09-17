@@ -122,6 +122,16 @@ cards. One note: align "Back to chat" and "Esc" and put a dot between them (appl
 - Switching pages in the panel reloads the page; accepted for Phase 1 since page data is saved
   as it goes.
 
+**Build status (2026-09-17):** the contract (24 rows) is written and awaits Destin's signature;
+the technical design is reviewed (12/12 findings folded in); the `wecoded-pages-plugin` skill,
+the store, the watcher, the five-surface bridge, page data and the Make a page / Edit in chat
+opening prompt are built, verified (`scripts/verify.sh` green) and committed on
+`session/youcoded-pages-spec` in the app, workspace and marketplace repos. A read-only real-app
+pass (an isolated dev instance, nothing written) showed the library over the real backend. Not
+yet exercised end to end: the skill building a page in a real conversation, which Destin does
+himself in a dev instance (the plugin is not installed into the live app's `~/.claude`; drop
+`skills/page-builder` into a project's `.claude/skills/` for the try).
+
 **Where the shell stands after round 6:** every screen of Phase 1 is approved (top-bar button
 and pins, library, empty library, page view with its own band and framed panel, phone
 layouts, two fuller sample pages). Still to build in Phase 1: the real backend behind the four

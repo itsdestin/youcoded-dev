@@ -1,0 +1,14 @@
+{
+ "_comment": "Real-app pass for YouCoded Pages: the dev instance (isolated profile, shared ~/.claude and ~/YouCoded read-only) opens the Pages library over the real backend. With no Pages/ folder on disk the welcome card shows; with one, the cards do.",
+ "base": "http://localhost:5233/",
+ "boot": 4500,
+ "shots": [
+  {
+   "name": "e-pages-library",
+   "actions": [
+    { "click": "[aria-label='Open Pages']", "settle": 1200 }
+   ],
+   "expect": "[aria-label='Exit pages']"
+  }
+ ]
+}
