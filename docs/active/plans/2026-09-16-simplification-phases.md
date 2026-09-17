@@ -187,7 +187,7 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 | 1a | merged 2026-09-16 (youcoded#497 `289730cb`) |
 | 1b | merged 2026-09-16 (youcoded#498 `ad2b709b`; rules youcoded-dev#118 `3eb6e5c0`) |
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
-| 2 | built 2026-09-16 on youcoded `session/simplify-phase2` (pushed; one commit per item from c1e238c1). All nine items done; none was already resolved by #501. `verify.sh` fully green — the W2 gate moved to `status-push-gate.ts` so every budgeted file is at or under its ceiling with `line-budgets.json` untouched. Fresh-eyes review's six fixes applied (W11 load nudge, W12 configured→off check + 60 s offline retry, W7 rename re-attach, W18 shim shape, W9 hourly drain). Merge pending. |
+| 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | not started — Batch A/C precondition met (youcoded#501) |
 | 4 | not started |
 | 5 | not started |
