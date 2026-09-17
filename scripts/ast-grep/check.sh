@@ -315,7 +315,11 @@ fi
 #   attribute, a markup string with the colour first (2)), danger-zone-has-danger-callout (a
 #   warn callout with the danger tag only in a string (1)) and danger-zone-no-fixed-status-red
 #   (a className, a template piece (2)).
-EXPECTED_VIOLATIONS=351
+# 2026-09-16 (u9, tag-list-host.test.ts): +5 for tags-list-no-empty-fallback (a `return []`
+#   beside the delegation (1); a handler that never delegates (1)) and its -remote twin (a
+#   `.catch(() => [])` and a `: [];` beside the delegation (2); a case that never
+#   delegates (1)).
+EXPECTED_VIOLATIONS=356
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
