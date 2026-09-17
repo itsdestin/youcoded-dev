@@ -148,3 +148,27 @@ re-running are all unchanged.
 - The assistant can never resume or add budget by itself.
 - Card states: deactivated, recommended (each action), and defaults.
 - Chip grouping and collapse; the dot and sound for ordinary and plan specialist asks.
+
+## 6. Revision 4 — the handoff is on request only (Destin, 2026-09-17)
+
+After review deck 7 ("a lot of messages/cards/responses for a straightforward action"), Destin
+chose: **no automatic handing off. A button instead.** This replaces §2 steps 1–3 as the trigger;
+everything else in §2 (the notice, `recommend_plan_action`, revise path, clears, supersession,
+never-auto-approve for notice turns, the per-kind action table) stays.
+
+- A pause never hands off by itself. Every paused card (all kinds, including the user-stopped and
+  restart-interrupted states) shows its reason and its default buttons from §2 step 7 at once,
+  plus **Ask the assistant** as the light button on the far left.
+- Pressing it calls a new plan action, `plans:ask-assistant` (desktop and remote; Android answers
+  unsupported like the other seven). The service checks the plan is paused/interrupted, has no
+  pending handoff, and the conversation is live with deliveries not held; then the same write
+  records `paused.handoff = pending` and the host queues the notice (§2 steps 3–5). Refusals come
+  back as ordinary action errors with the real reason.
+- The notice turn is shown in the chat as one short line on the user's side:
+  "You asked the assistant about this plan." The notice text itself stays hidden (decision 17).
+- While pending the card is deactivated as before; the §2 clears, backstop and supersession apply
+  unchanged. The button is not offered while a handoff is pending.
+- The routing function's `assistant` outcome now only means "Stop-only / Continue defaults per the
+  table"; nothing is queued at pause time. Automatic recovery (§1) is unchanged.
+- An eighth request channel is added; the "exactly seven channels" constraint from the backend
+  design is superseded by this decision.
