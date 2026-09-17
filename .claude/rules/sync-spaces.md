@@ -100,7 +100,7 @@ verify:
 
 ## Sync Warnings
 - **`~/.claude/.sync-warnings.json` is authoritative; two writers, non-overlapping codes**; push-failure warnings are non-dismissible.
-- **`runHealthCheck`: launch, then 5-min ticks while a window or phone watches and sync is on — a warning must not outlive its cause**.
+- **`runHealthCheck`: launch, then 5-min ticks (60 s while offline) while watched and sync is on — a warning must not outlive its cause**.
 - **Node-killed timeouts have empty stderr — use `extractStderr(e, timeoutMs)`**.
 
 ## GitHub auth (`github-{auth,connect,client}.ts`)
