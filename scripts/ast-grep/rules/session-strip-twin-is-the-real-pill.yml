@@ -13,6 +13,19 @@ note: |
   The twin is the `isBeingDragged && dragLeft !== null && (…)` expression; the
   retired slice ran from its start to its first {pillBody}, this rule covers the
   whole expression (only closing tags follow that point).
+  CONSIDERED loosening (review round 2, 2026-09-16): the retired test's
+  pillBody check was `/\{pillBody\}[\s\S]*\{pillBody\}/` — the SAME body
+  appearing twice ANYWHERE in the file, not specifically once inside the twin
+  block and once outside it. Tried expressing that with `follows`/`stopBy:
+  end`, which only compares SIBLINGS (it does not climb across unrelated
+  subtrees) — since the twin's `{pillBody}` and the in-flow one are not
+  siblings of a shared parent, that formulation reported a FALSE VIOLATION
+  on real source (proven: SessionStrip.tsx has both, ast-grep still fired).
+  KEPT STRICT instead — one `{pillBody}` inside the twin conditional, one
+  outside it — which is also the actual product invariant this rule's own
+  message states ("the same {pillBody} rendered in-flow … and again in the
+  floating twin"): being more precise than the retired test's textual
+  tolerance here is not a regression, it is the real requirement.
 files:
   - "**/src/renderer/components/SessionStrip.tsx"
   - "**/fixtures/session-strip-twin-is-the-real-pill.tsx"
@@ -43,7 +56,8 @@ rule:
       any:
         - not: { has: { stopBy: end, kind: pair, regex: "^visibility: isBeingDragged \\? 'hidden' :" } }
         - not: { has: { stopBy: end, kind: pair, regex: "^pointerEvents: 'none'$" } }
-        # {pillBody} twice: once inside the twin, once outside it.
+        # {pillBody} twice: once inside the twin, once outside it. See the
+        # note above for why this stays strict rather than "anywhere".
         - not:
             has:
               stopBy: end

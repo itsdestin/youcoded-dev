@@ -18,6 +18,13 @@ note: |
   Its exact count of two `overflowChipWidth: OVERFLOW_CHIP_PX` became: every
   packSessions call carries it, and one call inside handlePointerDown plus one
   outside it both exist.
+  FIX (review round 2, 2026-09-16): the retired regex was
+  `/parentElement\?\.clientWidth \?\? bar(El)?\.clientWidth;/` — the FIRST
+  operand (before `.parentElement`) was unconstrained, but the SECOND operand
+  (the fallback) had to be literally `bar` or `barEl`. The first draft banned
+  the fallback for ANY receiver name; restricted back to bar/barEl via the
+  `B` constraint below, so a legitimately different local (e.g. a helper
+  reading some OTHER element's width the same way) no longer counts.
 files:
   - "**/src/renderer/components/SessionStrip.tsx"
   - "**/fixtures/session-strip-packs-real-room.tsx"
@@ -57,3 +64,6 @@ rule:
               has: { field: function, regex: "^packSessions$" }
               not: { inside: { stopBy: end, kind: variable_declarator, has: { field: name, regex: "^handlePointerDown$" } } }
         - not: { has: { stopBy: end, pattern: "Math.max(COLLAPSED_PILL_PX, target.pillBudget)" } }
+constraints:
+  B:
+    regex: "^(bar|barEl)$"
