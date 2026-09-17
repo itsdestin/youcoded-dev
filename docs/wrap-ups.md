@@ -589,6 +589,11 @@ recurred — the repetition is the data.
 - Destin: dot centred on the capital letters ("center aligned with the D"); Assistant row says what the panel holds → applied: WHY comments in `SettingRow.tsx` (`RowStatus`) and `AssistantSettings.tsx`; answered decks archived
 - deleted/merged: the two hand-rolled status dots became one shared `RowStatus`; `rowSummary` removed from the Assistant row
 
+## 2026-09-17 — tag chip text colour + per-theme fit (session/resume-tag-chip-color, youcoded#506 + workspace)
+- Deck slides lost their Risk card at 1280/1024 wide on two of four builds even though `deck/AUTHORING.md` warns about crop shape; only the contact sheet showed it → roadmap: `dev-workspace.md` → rigs (preview should report clipped cards)  [3 extra rebuilds]
+- Grepping every task output for `[deck]` returned the stopped round-1 server's link instead of round 2's → dropped: read the named task's output file; one call
+- Destin: tag chips match the status labels, stronger contrast, colours fitted to each theme → applied: design guide G-27, WHY comment in `TagChip.tsx`
+- deleted/merged: none found — looked; the chip was already the single shared component
 ## 2026-09-17 — YouCoded Pages Phase 1: view-first redirect, pinned focus, create dialog, floating themes, merge with master (session/youcoded-pages-spec, youcoded + workspace + marketplace)
 - Destin's preference "wait on the deck" meant hold the DECK, not the build; I captured for one as soon as the code was green and he had to say it twice → applied: `.claude/rules/feature-flow.md` → "Wait on the deck" invariant  [1 wasted capture run, ~40 shots]
 - Six probes of a theme tint in his dev window measured "no tint" while he was looking at one: the window was behind the terminal, so CDP screenshots were stale frames and DOM reads lagged the clicks → applied: `scripts/ui-review/README.md` → Real-app pass (an occluded window's pixels are stale; computed styles are not)  [~6 probes, the bug never caught; filed needs-repro]
