@@ -296,5 +296,9 @@ if [[ $FAILED -eq 0 ]]; then
   echo "   Not covered: Android (./gradlew test), marketplace worker."
 else
   echo "$FAILED check(s) failed."
+  # WHY: this is the one moment every session is guaranteed to see a failing
+  # test, and running a script loads no path-scoped rule. Destin's standing
+  # rule (2026-09-17): fix failing/flaky tests on sight, never file them.
+  [[ " ${FAILED_KEYS[*]} " == *" tests "* ]] && echo "   A failing or flaky test is fixed now, even if it predates this change — not filed on the roadmap. See CLAUDE.md → Local build & test."
 fi
 exit $(( FAILED > 0 ? 1 : 0 ))
