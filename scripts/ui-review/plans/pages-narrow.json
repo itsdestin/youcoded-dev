@@ -29,6 +29,10 @@
     {
      "click": "js:[...document.querySelectorAll('[role=menuitem]')].find(b=>b.textContent.includes('Pages'))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
     }
    ],
    "expect": "[aria-label='Exit pages']",
@@ -50,7 +54,7 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Focus timer'))",
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Focus timer'))",
      "settle": 1400
     }
    ],

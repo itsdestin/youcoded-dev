@@ -122,6 +122,15 @@ cards. One note: align "Back to chat" and "Esc" and put a dot between them (appl
 - Switching pages in the panel reloads the page; accepted for Phase 1 since page data is saved
   as it goes.
 
+**Redirection during the first dev try (2026-09-17, in chat):** the Pages icon opens straight
+into the page view (panel + framed window, "No page selected" until one is picked); the panel is
+pinned open and its toggle removed; the band carries the app's Settings, Pages and Projects icons
+(not the chat/terminal toggle, files or games); a filled "+ Create a page" sits above Manage
+pages; the old Pages screen is reached only through Manage pages and closes back onto the view.
+Built and committed the same day. Rows R22 (panel starts hidden), R21 (library header "Esc · Back
+to chat") and the round-1 "Pages button opens the library" reading are superseded; the contract
+needs a round-9 deck and a refresh before signing.
+
 **Build status (2026-09-17):** the contract (24 rows) is written and awaits Destin's signature;
 the technical design is reviewed (12/12 findings folded in); the `wecoded-pages-plugin` skill,
 the store, the watcher, the five-surface bridge, page data and the Make a page / Edit in chat

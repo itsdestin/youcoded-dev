@@ -19,6 +19,10 @@
    "actions": [
     {
      "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
      "settle": 900
     }
    ],
@@ -36,6 +40,10 @@
    "actions": [
     {
      "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
      "settle": 900
     }
    ],
@@ -67,6 +75,10 @@
      "settle": 700
     },
     {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    },
+    {
      "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Focus timer'))",
      "settle": 1400
     }
@@ -79,6 +91,10 @@
     {
      "click": "[aria-label='Open Pages']",
      "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
     },
     {
      "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
