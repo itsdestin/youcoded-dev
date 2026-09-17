@@ -4,6 +4,14 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
+- [ ] When `~/.claude/settings.json` could not be read at launch (a stray comma, a half-written
+      save), the app now quietly moves it aside as `settings.json.corrupt-<time>` and writes a
+      fresh one so its hooks keep working — but it only says so in its log. Anything the user had
+      put in that file (their own permissions, a custom status line) is in the backup and nobody
+      is told. Wanted: tell them in the app that a backup was saved at that path, with a button to
+      open it, instead of only a log line (rule decided 2026-09-17, simplification phase 3)
+      `chat` `all` `confirmed` `checked 2026-09-17`
+
 - [ ] In the model picker, Fast mode’s “⚠ Billed Per Token” warning is a one-off hand-built box
       rather than the app’s shared warning box, so it will not follow changes to how warnings
       look. Found by the design check on 2026-09-16; moving it changes its look slightly.
