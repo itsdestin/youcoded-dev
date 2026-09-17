@@ -223,7 +223,7 @@ seen-on is always n/a here.
       `n/a` `decision` `checked 2026-09-17`
 
 - [ ] Source-grep sweep, round 2: tests the 2026-09 inventory missed. Plan B converted or deleted
-      its 114 classified files, but 24 more tests still read app source as text and were never
+      its 114 classified files, but 26 more tests still read app source as text and were never
       classified. (a) Found once the inventory learned to follow a path held in a variable
       (2026-09-17): buddy-position-source, buddy-title-guard, claude-specialist-default-parity,
       ipc-error, remote-devices-channels, remote-password-always-required, remote-recovery,
@@ -232,7 +232,7 @@ seen-on is always n/a here.
       update-install-ipc, voice-service. (b) Added after the classification snapshot:
       harness-eval-not-shipped, hook-scripts-android-parity, infinite-animation-allowlist,
       line-budgets, prompt-git-snapshot-precomputed, session-strip-layout-effects-have-deps,
-      visible-intervals, no-bare-disclosure. (c) infinite-animation-allowlist keeps its own
+      visible-intervals, no-bare-disclosure, claude-settings, launch-settings-chores. (c) infinite-animation-allowlist keeps its own
       exception list (`SMOOTH_OK`) beside the `no-unstepped-infinite-animation` generator's own
       (`EXEMPT`); `check.sh` does not pair the two, so an exemption added to one can silently disagree
       with the other. Classify each file (rule, split, keep with a reason, or delete) the way
