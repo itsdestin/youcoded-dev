@@ -293,7 +293,13 @@ fi
 #   Toggle after a closed sibling and after a closed cousin inside control={…}, a markup
 #   string, type arguments and a `<` comparison (7)) and no-button-styled-as-field (an open
 #   and a self-closing <button> with the field surface, a markup string, a split template (4)).
-EXPECTED_VIOLATIONS=313
+# 2026-09-16 (u8, shell-session.test.ts): +8 for run-in-terminal-entry-points-validate (1),
+#   its -remote twin (1), run-in-terminal-chunked-write (1),
+#   remote-session-create-refuses-shell-provider (1) — each a file whose required call or
+#   check is wrong and named only in a comment/string — and pty-worker-passthrough-single-write
+#   (a return before the write, a chunked write, a write after a nested return, and a file with
+#   no passthrough branch (4)).
+EXPECTED_VIOLATIONS=321
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
