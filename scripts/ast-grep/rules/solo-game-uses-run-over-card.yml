@@ -31,6 +31,11 @@ note: |
   check is gone: it only proved the scan looked in the right folder (Plan B
   deletes such checks); the `files:` glob was proven to reach FlappyGame.tsx
   and TwentyFortyEightGame.tsx by inverting both (2026-09-16).
+  IF THE GAME FOLDER MOVES: this rule's `*Game.tsx` glob then matches nothing
+  and goes quiet (check.sh's dead-path check skips wildcard globs). The loud
+  failure is the sibling rule arcade-end-run-keeps-playing, whose exact path
+  `**/src/renderer/components/game/ArcadeShell.tsx` fails that check — when it
+  does, repoint this rule's globs too.
 files:
   - "**/src/renderer/components/game/*Game.tsx"
   - "**/fixtures/solo-game-uses-run-over-card*.tsx"
