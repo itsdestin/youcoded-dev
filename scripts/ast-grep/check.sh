@@ -258,6 +258,10 @@ fi
 # 2026-09-16 (review of u6, fix 2): -1 — arcade-end-run-keeps-playing's
 #   whole-declaration backstop branch is gone, and its malformed-TS fixture with
 #   it: only unparseable code could reach it, so it guarded nothing real.
+# 2026-09-16 (review of u3, fix 6): +7 — no-hand-rolled-toast's kind list gains
+#   parameters, destructure defaults, class fields and (tsx) jsx_element; its fixture
+#   fires on a parameter default, a destructure default, a class field and JSX text
+#   split by an expression (4), the -ts twin's on the first three (3).
 # 2026-09-16 (u7, runtime-default.test.tsx): +16 — runtime-default-key-single-owner (a
 #   string, a template piece and a regex naming the key in a .ts file (3)), its -tsx twin
 #   (an attribute string, a JSX attribute name and JSX text (3)), its -present branch (an
@@ -277,7 +281,7 @@ fi
 # 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
 #   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
 #   with no previewMeta.saveNote editor (1)).
-EXPECTED_VIOLATIONS=290
+EXPECTED_VIOLATIONS=297
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
