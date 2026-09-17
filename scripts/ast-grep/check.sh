@@ -207,7 +207,12 @@ fi
 # 2026-09-16 (u2, filter-chip.test.tsx): +5 for no-local-filter-chip-recipe (2 — the
 #   active recipe in a string, the base recipe in a template) and its -command-drawer
 #   twin (3 — the Favorites recipe and ml-auto, plus a file with no FilterChip tag).
-EXPECTED_VIOLATIONS=191
+# 2026-09-16 (u2, filter-menu-chip.test.tsx): +9 for resume-browser-uses-shared-filter-chips
+#   (3 — one fixture each for missing primitives, Tags labelled before Projects, and
+#   Projects labelled twice) and resume-browser-no-local-filter-chip-parts (6 — a local
+#   FilterPill, a glyph in JSX text, a glyph in a string, the hand-made check box, a
+#   ', ' join and a "Projects (N)" template).
+EXPECTED_VIOLATIONS=200
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
