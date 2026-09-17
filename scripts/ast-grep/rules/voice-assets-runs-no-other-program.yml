@@ -18,10 +18,17 @@ note: |
     C. text with /* */ and // comments deleted must not contain bzip2, lbzip2,
        pbzip2, tar.exe or System32.
   Each branch reports the DEEPEST node whose text matches (a node that matches
-  while none of its children do), so every node kind the raw-text check could
-  see is covered — an import statement, a call, a function or method declared
-  with that name, a string or template piece, a comment — and a match is
-  reported once, not on every ancestor.
+  while none of its children do), and a match is reported once, not on every
+  ancestor. That only works when the deepest holder's KIND is in `text-node`
+  below: a holder missing from the list is silent, because its listed parent
+  has a matching child. The list covers every holder found by probing
+  (2026-09-16) — an import statement, a call, a function, generator or method
+  declared with that name (as a declaration OR a named function/generator
+  expression), a string or template piece, a comment — not a proof that no
+  other kind exists; add a kind when a probe finds one.
+  Not on the retired list, so not banned here either: execSync, fork and
+  execFile's promisified forms. Banning them would be stricter than the
+  retired case and is Destin's call (noted in the u11 fix report).
   Branch A and B include comments, as the retired case did (it read the file
   unstripped). Branch C excludes comments of both kinds.
   The import half is ALSO oxlint `no-restricted-imports` scoped to this file
@@ -61,6 +68,12 @@ utils:
       - kind: decorator
       - kind: function_declaration
       - kind: generator_function_declaration
+      # 2026-09-16 (review of u11): named function / generator EXPRESSIONS —
+      # `[1].map(function spawn(x) {…})`, `const r = function* exec() {}` —
+      # were silent: their parent (arguments / variable_declarator) is listed
+      # but has a matching child, so nothing reported.
+      - kind: function_expression
+      - kind: generator_function
       - kind: function_signature
       - kind: method_definition
       - kind: method_signature

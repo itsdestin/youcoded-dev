@@ -352,7 +352,9 @@ fi
 #   moved WITH the write into a later helper; a new fixture moves both but puts the guard
 #   after the write (fires, 1), and a silent fixture moves both guard-first (0 — the
 #   exact count pins its silence).
-EXPECTED_VIOLATIONS=396
+# 2026-09-16 (review of u11, fix 1): +2 — voice-assets-runs-no-other-program lists named
+#   function and generator EXPRESSIONS as text nodes; its fixture gains one of each (2).
+EXPECTED_VIOLATIONS=398
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
