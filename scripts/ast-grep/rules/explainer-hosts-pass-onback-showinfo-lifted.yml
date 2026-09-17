@@ -1,0 +1,46 @@
+id: explainer-hosts-pass-onback-showinfo-lifted
+language: tsx
+severity: error
+message: >-
+  ThemeScreen renders <SettingsExplainer> inside a Dialog it does not own, so
+  its showInfo flag must be LIFTED — taken as a prop from SettingsPanel, which
+  wires the Dialog's onBack. Without it, the Appearance explainer is a view you
+  cannot back out of.
+note: |
+  Invariant source: tests/explainer-shell.test.tsx (Plan B, 2026-09-16; "every
+  host drives Dialog onBack from its showInfo flag" — the ThemeScreen branch,
+  "expected a lifted showInfo prop"). The other three hosts are
+  explainer-hosts-pass-onback-showinfo.
+  SHAPE: the retired check applied only when the file still contained
+  `<SettingsExplainer` (a tag whose name starts with it), then required
+  `showInfo` anywhere in the comment-stripped text. Here: a `kind: program`
+  that has such a tag and no non-comment `showInfo` (an identifier, property,
+  shorthand, type name, string or JSX text piece).
+  LIMITATION: a deleted or renamed ThemeScreen.tsx is out of scope, not a
+  failure (the retired test threw on a missing file).
+files:
+  - "**/src/renderer/components/ThemeScreen.tsx"
+  - "**/fixtures/explainer-hosts-pass-onback-showinfo-lifted.tsx"
+rule:
+  kind: program
+  has:
+    stopBy: end
+    any:
+      - kind: jsx_opening_element
+      - kind: jsx_self_closing_element
+    has:
+      field: name
+      regex: "^SettingsExplainer"
+  not:
+    has:
+      stopBy: end
+      any:
+        - kind: identifier
+        - kind: property_identifier
+        - kind: shorthand_property_identifier
+        - kind: shorthand_property_identifier_pattern
+        - kind: type_identifier
+        - kind: string_fragment
+        - kind: template_string
+        - kind: jsx_text
+      regex: "showInfo"

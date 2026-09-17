@@ -201,7 +201,10 @@ fi
 #   (an inlined same-name copy with no import; an inline-string call with the import kept).
 # 2026-09-16 (u2, dialog-shell.test.tsx): +3 for no-hand-rolled-dialog-shell (2 — an
 #   open and a self-closing OverlayPanel tag) and its -exemption-still-applies twin (1).
-EXPECTED_VIOLATIONS=182
+# 2026-09-16 (u2, explainer-shell.test.tsx): +4 for settings-explainer-no-chrome-props
+#   (2 — self-closing with title, open tag with onBack), explainer-hosts-pass-onback-showinfo
+#   (1) and its -lifted twin (1).
+EXPECTED_VIOLATIONS=186
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
