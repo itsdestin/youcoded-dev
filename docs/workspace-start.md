@@ -71,8 +71,11 @@ actual resulting state and is never automatically rolled back over possible conc
 
 Dependencies for a configured component are provisioned automatically at creation as a
 **hardlink farm** (`cp -al`) from the source checkout — currently `youcoded/desktop/node_modules`.
-The startup output lists what was linked as `deps: <path> (hardlinked|copied)`. Resumed sessions
-and components with no installed deps provision nothing. The dependency safety rules in
+The startup output lists what was linked as `deps: <path> (hardlinked|copied)`, then any top-up:
+missing required packages and this machine's native binaries are fetched, packages a major version
+behind the lockfile are replaced (the old directory is renamed away and removed, never written into),
+and missing `node_modules/.bin` commands are linked. A resumed session gets the same top-up of its
+existing `node_modules`; a component with no installed deps provisions nothing. The dependency safety rules in
 `docs/PITFALLS.md` → Worktrees still apply to these hardlinked copies (hardlinks share inodes, so a
 dependency patcher must replace files rather than write in place; do not run `npm ci` /
 `bundleWebUi` against them). No shared source files, staged edits, local commits or untracked files

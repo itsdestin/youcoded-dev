@@ -1,0 +1,239 @@
+{
+  "title": "CI and tests — six decisions after the health review",
+  "key": "ci-test-health-questions",
+  "out": "ci-test-health.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "GitHub checks",
+      "path": "The green tick or red cross on every pull request and on master",
+      "headline": "Should a red check be allowed to block a merge?",
+      "today": "Every change runs the test suite on GitHub, but nothing stops a merge when it fails. Master has had zero passing runs since 10 September, and every merge since had to guess whether its own red was new.",
+      "problem": "When red is normal, a real break looks exactly like the old red. Two betas were shipped with the Windows tests switched off because the leg was red for reasons nobody had fixed.",
+      "proposal": "Turn on GitHub's branch protection so a change cannot merge until its Linux check has passed. A change that only touches documentation would get a tiny always-green check instead of waiting on a run that never starts.",
+      "options": [
+        {
+          "id": "protect",
+          "label": "Yes, require the Linux check",
+          "pros": [
+            "A red check stops the merge, so it gets fixed by whoever caused it, that day.",
+            "Master goes back to meaning 'this works'."
+          ],
+          "cons": [
+            "A genuine flake blocks a merge until it is re-run (one click).",
+            "Docs-only changes need the small always-green check, added with this."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "loud",
+          "label": "No, but make red loud",
+          "pros": [
+            "Nothing ever blocks you.",
+            "The close-out script would refuse to call a branch 'ready to merge' while its check is red."
+          ],
+          "cons": [
+            "A session under pressure can still merge over it.",
+            "Relies on every session reading the script's output."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it as it is",
+          "pros": [
+            "No change to how anything works today."
+          ],
+          "cons": [
+            "The week of red repeats the next time a test assumes Linux.",
+            "The next real break is invisible until a beta."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "GitHub checks",
+      "path": "The three operating-system runs on every change",
+      "headline": "Does every change need Windows and macOS runs, or only master and a nightly?",
+      "today": "Every pull request and every push to master runs the full suite three times: Linux, Windows and macOS, about 12 minutes each. Windows and macOS were added because bugs that only show there used to surface at beta time.",
+      "problem": "The Windows and macOS runs are the ones that go red for machine reasons, they triple the wait per change, and nobody on the project has either machine to check them on. Yet they do catch real Windows bugs (two so far).",
+      "proposal": "Run Linux on every change, and Windows plus macOS on every push to master and once a night. A Windows-only break is caught within hours of merging instead of at beta, and a pull request waits on one run instead of three.",
+      "options": [
+        {
+          "id": "master-nightly",
+          "label": "Linux on PRs, all three on master and nightly",
+          "pros": [
+            "Pull requests get their answer three times sooner.",
+            "A Windows or macOS break is still caught the same day it lands."
+          ],
+          "cons": [
+            "A Windows-only break is found after the merge, not before — someone has to fix it on master."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "all-three",
+          "label": "Keep all three on every change",
+          "pros": [
+            "A Windows break is caught before it merges."
+          ],
+          "cons": [
+            "Three 12-minute runs per change, and the two slow legs are the flaky ones.",
+            "Only worth it once Q-1 makes red block anything."
+          ]
+        },
+        {
+          "id": "release-only",
+          "label": "Linux only; Windows and macOS at beta builds",
+          "pros": [
+            "Cheapest and fastest."
+          ],
+          "cons": [
+            "This is how it was before July, and Windows bugs then surfaced only when a beta was cut."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "GitHub checks",
+      "path": "The Android build on every change",
+      "headline": "Should the Android check stop building the desktop installers it never uses?",
+      "today": "Every change also builds the Android app, about 13 minutes. To bundle the app's web screens into the phone build, its script runs the desktop's full installer build — four Linux installer formats — and then copies out only the web files.",
+      "problem": "Most of those 13 minutes go to installers nobody downloads from that run, and the Android check breaks whenever the desktop packaging does, for reasons that have nothing to do with the phone.",
+      "proposal": "Change the bundling script to build only the web files. The Linux installers are still built and checked by the desktop run.",
+      "options": [
+        {
+          "id": "web-only",
+          "label": "Yes, build only the web files",
+          "pros": [
+            "The Android check gets several minutes faster and stops failing on packaging problems.",
+            "Nothing is lost: the desktop check still builds every installer."
+          ],
+          "cons": [
+            "The Android run no longer doubles as a second proof that Linux packaging works."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Leave it",
+          "pros": [
+            "No change to a build that is currently green."
+          ],
+          "cons": [
+            "Thirteen minutes per change, most of it wasted."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "The test suite itself",
+      "intro": "The first page was about the checks. These three are about the 826 test files behind them."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Test suite",
+      "path": "The 112 test files that read source code as text",
+      "headline": "What should happen to the tests that grep source code instead of running it?",
+      "today": "About one test file in seven does not run the app's code at all. It opens a source file as text and checks that a certain line, import or pattern is present or absent, for example 'this screen uses the shared button'.",
+      "problem": "These break on a reformat, a rename, or a Windows line ending (ten of this week's Windows failures were exactly that), and a pattern that matches nothing passes silently. The workspace already has a proper tool for this kind of rule, which understands code structure and cannot be fooled by whitespace.",
+      "proposal": "Stop writing new ones unless nothing else can express the check, and convert the existing ones to proper rules as sessions touch them. Nothing is deleted outright.",
+      "options": [
+        {
+          "id": "convert-lazily",
+          "label": "Convert as touched, no new ones",
+          "pros": [
+            "The fragile ones disappear over time without a risky one-off rewrite.",
+            "Each conversion is small and verifiable."
+          ],
+          "cons": [
+            "The ones nobody touches stay fragile for a while."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "sweep",
+          "label": "Convert or delete them all in one session",
+          "pros": [
+            "Done once; the whole class is gone."
+          ],
+          "cons": [
+            "A big change to 112 files at once, hard to review, and some checks have no rule equivalent yet."
+          ]
+        },
+        {
+          "id": "keep",
+          "label": "Keep them as they are",
+          "pros": [
+            "They do catch the thing they were written for."
+          ],
+          "cons": [
+            "The next Windows or reformat break is already written."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Test suite",
+      "path": "How new tests are named and where they go",
+      "headline": "Should tests be filed by feature instead of one new file per task?",
+      "today": "Each task adds its own test file, named after the task, with test names that carry dates and review-round numbers. One 36-line piece of code has 24 test files; nine files test one module; 168 files were added last week.",
+      "problem": "Nobody can tell what a feature's tests cover without opening a dozen files, the same setup is copied into each, and the suite grows faster than the app it tests (165k lines of tests for 235k of app).",
+      "proposal": "A rule for every session: a new test goes in the file named for the feature or module, its name describes the behaviour with no dates or ticket numbers, and comments say only why. Existing files are merged as they are touched.",
+      "options": [
+        {
+          "id": "rule-lazy",
+          "label": "Adopt the rule, merge files as touched",
+          "pros": [
+            "Growth stops today; no risky mass rewrite.",
+            "A feature's tests end up in one place you can read."
+          ],
+          "cons": [
+            "The existing sprawl shrinks slowly."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "rule-sprint",
+          "label": "Adopt the rule and consolidate now",
+          "pros": [
+            "The suite is readable immediately."
+          ],
+          "cons": [
+            "Moving hundreds of tests at once is the biggest change this branch could make, with the most room for mistakes."
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it",
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "168 more files next week."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "The app",
+      "path": "The Bash tool's output, and stopping the local engine",
+      "headline": "Should the two real bugs the flaky tests were pointing at be fixed next?",
+      "today": "Two of the 'flaky' tests were right: the Bash tool can drop the last line of a command's output because it settles before the output pipe has drained, and stopping the local engine can return while it is still writing a settings file.",
+      "problem": "Both are filed in the roadmap with their mechanism. Left alone, the first can lose the tail of a command's output in a chat, and the second can corrupt or block an engine restart.",
+      "proposal": "Fix both in a follow-up session, with the two tests as the proof. Yes schedules it; No leaves them filed."
+    }
+  ]
+}

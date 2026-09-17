@@ -7,6 +7,10 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       fixes were made on 2026-09-16; each remaining group needs its own design call.
       `all` `confirmed` `checked 2026-09-16`
 
+- [ ] Two "Show details" style dropdowns in Backup & Sync still use the browser's bare triangle, the look Destin said he
+      hates (2026-09-05). A test now blocks new ones and lists these two as known; restyling them is his call.
+      `settings/sync` `desktop` `decision` `checked 2026-09-16`
+
 - [ ] Phone-width polish the batch 2/3 UX tester found while driving a phone browser over
       remote access (2026-09-10), none of it specific to remote access: "Session Files" and
       "Session in <project>" (a student does not call a chat a session); the "Deliverables"

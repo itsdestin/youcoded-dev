@@ -1,0 +1,26 @@
+id: test-file-url-to-path
+language: typescript
+severity: error
+message: >-
+  Never turn `import.meta.url` into a file path with `.pathname` — use
+  `fileURLToPath(new URL(...))`. On Windows the pathname is `/D:/a/...`, and
+  path.join() makes `D:\D:\a\...`, so every read fails with ENOENT there.
+note: |
+  Invariant source: three test files (create-session-feedback, remote-phone-findings,
+  remote-password-always-required) took the Windows CI leg red on every run from
+  2026-09-10 to 09-16 with exactly this shape, after remote-password-always-required
+  had been filed in the roadmap on 09-11 and not fixed. Guard: this rule +
+  .claude/rules/test-suite-hygiene.md → "Windows runs this suite too".
+
+  SCOPING: the test tree, where `new URL(rel, import.meta.url)` is the idiom for
+  reading a source file as text. Only a URL built FROM import.meta.url is a file
+  path — `new URL(requestUrl).pathname` (engine-manager-slot-count.test.ts) is a
+  route match and stays allowed. `fileURLToPath` on the same expression is the fix.
+files:
+  - "**/tests/**/*.ts"
+  - "**/tests/**/*.tsx"
+  - "**/fixtures/test-url-pathname.ts"
+rule:
+  any:
+    - pattern: new URL($REL, import.meta.url).pathname
+    - pattern: new URL(import.meta.url).pathname
