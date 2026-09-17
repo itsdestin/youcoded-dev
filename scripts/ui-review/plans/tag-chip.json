@@ -1,0 +1,32 @@
+{
+  "_why": "Tag chip text colour (2026-09-17): the chip's word moves to the theme's text colour with a tinted fill, like the session status pill. These capture every place the chip shows: the Resume browser (default + tag-heavy stress rows) and the All Sessions menu.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0",
+  "shots": [
+    {
+      "name": "tag-resume",
+      "actions": [
+        { "click": "[placeholder^='Message']", "settle": 200 },
+        { "type": "/resume" },
+        { "key": "Enter", "settle": 1200 }
+      ],
+      "expect": "[placeholder^='Search sessions']"
+    },
+    {
+      "name": "tag-resume-stress",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+      "actions": [
+        { "click": "[placeholder^='Message']", "settle": 200 },
+        { "type": "/resume" },
+        { "key": "Enter", "settle": 1500 }
+      ],
+      "expect": "[placeholder^='Search sessions']"
+    },
+    {
+      "name": "tag-sessions-menu",
+      "actions": [
+        { "click": "[title='All Sessions']", "settle": 600 }
+      ],
+      "expect": "[title='Close Session']"
+    }
+  ]
+}

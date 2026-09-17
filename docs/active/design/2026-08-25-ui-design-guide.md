@@ -243,7 +243,10 @@ the mascot. Destin's words: "just bare frame like terminal view".
 - **G-27 Tags in a list row**: tags read as the picker's **named chips** (`TagChip`), never
   colour-only dots — capped at three plus a `+N` that names the rest on hover, with the note
   page-mark after them. Destin, 2026-08-28: "tags should not be dots, but full chips with
-  spelled names."
+  spelled names." A chip's **word is the theme's text colour** (like G-26); the tag colour,
+  blended a quarter toward the theme's `--fg` so each theme gets a fitted shade, is the
+  ~24% fill and ~55% border — a step stronger than the status pill, for contrast (approved
+  2026-09-17, deck `docs/archive/design/2026-09-17-tag-chip-text/`).
 
 ### 4.3 Settings drawer + dialogs
 
