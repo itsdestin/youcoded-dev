@@ -1,0 +1,21 @@
+id: no-sync-fs-in-main-hot-path-transcript-mirror
+language: typescript
+severity: error
+message: >-
+  transcript-mirror.ts must never call a blocking fs.*Sync anywhere in the
+  file — it runs on the hot main-process path (mirrors every transcript
+  write) and a blocking fs call there stalls every window's IPC at once.
+note: |
+  Invariant source: tests/main-hot-path-no-sync-fs.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 3 — "transcript mirror (whole file)"). Whole-file
+  scope, not `inside:` a named function — the retired test checked the whole
+  file too, and the file is entirely on the hot path (no off-path helpers to
+  exempt), unlike lease-client.ts.
+files:
+  - "**/src/main/conversations/transcript-mirror.ts"
+  - "**/fixtures/no-sync-fs-in-main-hot-path-transcript-mirror.ts"
+rule:
+  pattern: fs.$METHOD($$$ARGS)
+constraints:
+  METHOD:
+    regex: "Sync$"

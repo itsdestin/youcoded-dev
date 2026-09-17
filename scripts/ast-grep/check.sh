@@ -59,7 +59,8 @@ fi
 # 2026-09-16: +2 for no-hand-rolled-dialog-header + no-hand-rolled-dialog-back-chevron (Plan B).
 # 2026-09-16: +1 for no-hand-rolled-field-error (Plan B, t5b).
 # 2026-09-16: +2 for no-bare-glyph-item-action + no-bare-glyph-item-action-stale-copy (Plan B, t5b).
-EXPECTED_VIOLATIONS=22
+# 2026-09-16: +3 for no-sync-fs-in-main-hot-path + its -transcript-mirror and -git-transport extras (Plan B, t5b).
+EXPECTED_VIOLATIONS=25
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
