@@ -32,6 +32,17 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       handle each one — deck ready to serve, nothing answered. Parked 2026-09-09 to finish the
       session-context panel first
       `desktop` `parked` `checked 2026-09-16` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+- [ ] A local model forgets the user's request halfway through a long first request, goes silent,
+      then answers the next message as if the chat had just started (Destin, 2026-09-16, two Qwen
+      9B chats). The conversation is silently cut to fit the model's memory, and the cut also
+      makes the engine re-read everything every step. Fix, designed 2026-09-17: cut rarely and in
+      one large step, never cut the user's request, cap tool output to the model's size, fade cut
+      messages like /compact does, and show a toast pointing at Local models settings. Local
+      models only; cloud behaviour stays unchanged. The cloud side of the same problem is the
+      "Cloud model context management and cache/token efficiency improvements" item under cost,
+      which should reuse the pieces this fix builds. Related: the skill/rule shortening item just
+      above
+      `chat` `desktop` `confirmed` `checked 2026-09-17` → docs/active/specs/2026-09-17-local-context-cuts-design.md
 
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
@@ -267,7 +278,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Cloud model context management and cache/token efficiency improvements — one item so the
       fixes below are specced together. Combined 2026-09-17 from three earlier entries (each kept
       below with its filing date) plus gaps found the same day comparing the app with Claude
-      Code, Hermes Agent and Pi. The local-model fix (spec
+      Code, Hermes Agent and Pi. The local-model fix (the "A local model forgets the user's
+      request" item under sessions; spec
       docs/active/specs/2026-09-17-local-context-cuts-design.md) deliberately leaves cloud
       behaviour unchanged, but builds pieces this item should reuse rather than rebuild: the
       pinned request, cutting in the middle of a request, retry on overflow, the cut marker and

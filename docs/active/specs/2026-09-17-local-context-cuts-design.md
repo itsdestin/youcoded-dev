@@ -19,6 +19,7 @@ just started. Both transcripts reproduce exactly against today's code:
 - `fitToContext` trims the oldest messages from every outgoing request. Its pair-safe front trim
   drops *every* leading tool step, so inside one long tool-heavy turn the window collapsed to the
   last tool call alone, and on the next turn to the newest user message alone.
+  <!-- claim: {"path": "youcoded/desktop/src/main/harness/harness-session.ts", "contains": "if \\(isOrphanToolResult \\|\\| isToolCallOpener\\) \\{ kept\\.shift\\(\\); continue; \\}"} -->
 - Summarizing cannot run inside a first turn (it needs two user messages), and it measured the
   window from the already-trimmed request, so it believed there was room.
 - One `Read` may return 100,000 characters — more than the whole conversation space of a 32k model.
