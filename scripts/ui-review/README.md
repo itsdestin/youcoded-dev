@@ -420,7 +420,9 @@ raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
 `?student=1` (the student persona's files, project and history),
 `?voice=<phrase>` (dictation without a microphone), `?reply=<name>` (which fixture the
 "model" speaks), `?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
-`?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls).
+`?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls),
+`?screenFrame=cards|sheet|rail|bleed` (how the page view's panel and frame sit on a wallpaper
+in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships).
 
 Failure switches, for review shots of error states (added 2026-09-11):
 `?fail=<ns.method>[,<ns.method>…]` makes those channels REJECT from the very first call —
