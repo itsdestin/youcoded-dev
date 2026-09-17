@@ -19,6 +19,12 @@ note: |
   present, not that teardown actually runs or is idempotent at runtime) —
   the original test carried the same limitation, since main.ts runs Electron
   app setup at import time and cannot be imported into a test.
+  FIX (review of batch A, 2026-09-16): the preventDefault branch used to check
+  `$X.preventDefault()` ANYWHERE in the file, unanchored — main.ts has four
+  other preventDefault() calls for unrelated purposes (page-title-updated,
+  navigation guard, a permission dialog), so removing before-quit's own
+  preventDefault() would never have made this branch fire; it is now anchored
+  to require the call inside the before-quit handler specifically.
 files:
   - "**/src/main/main.ts"
   - "**/fixtures/app-quit-routes.ts"
@@ -37,4 +43,8 @@ rule:
             field: name
             regex: "^shutdownApp$"
     - not: { has: { stopBy: end, pattern: "if (shuttingDown) return shuttingDown;" } }
-    - not: { has: { stopBy: end, pattern: "$X.preventDefault()" } }
+    - not:
+        has:
+          stopBy: end
+          pattern: "app.on('before-quit', $HANDLER)"
+          has: { stopBy: end, pattern: "$X.preventDefault()" }
