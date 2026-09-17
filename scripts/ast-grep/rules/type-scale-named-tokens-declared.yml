@@ -12,13 +12,24 @@ note: |
   in globals.css"). Whole-stylesheet presence check, same shape as
   main-registers-all-quit-routes: fires if ANY of the four required
   declarations is missing or lacks a `px` value.
+  DECIMAL PX (review, 2026-09-16 — corrects the batch report's framing): the
+  retired test's regex here was actually `\d+px`, whole numbers only — the
+  decimal tolerance (`\d+(?:\.\d+)?px`) belonged to this file's OTHER case
+  ("no component sets a font size with an arbitrary text-[Npx]", converted
+  to no-arbitrary-text-size), not this declaration check. Widened here
+  anyway, deliberately going beyond the retired test: this is a
+  MUST-BE-PRESENT check, and a real decimal step (e.g. `--text-4xs: 8.5px`)
+  must not read as "undeclared" just because it isn't a whole number — the
+  four values today (11px/10px/9px/13px) happen to be whole, so this costs
+  nothing on real source and only matters if one is ever changed to a
+  decimal.
 files:
   - "**/src/renderer/styles/globals.css"
   - "**/fixtures/type-scale-named-tokens-declared.css"
 rule:
   kind: stylesheet
   any:
-    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-2xs:\\s*\\d+px" } }
-    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-3xs:\\s*\\d+px" } }
-    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-4xs:\\s*\\d+px" } }
-    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-sm-tight:\\s*\\d+px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-2xs:\\s*\\d+(?:\\.\\d+)?px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-3xs:\\s*\\d+(?:\\.\\d+)?px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-4xs:\\s*\\d+(?:\\.\\d+)?px" } }
+    - not: { has: { stopBy: end, kind: declaration, regex: "^--text-sm-tight:\\s*\\d+(?:\\.\\d+)?px" } }

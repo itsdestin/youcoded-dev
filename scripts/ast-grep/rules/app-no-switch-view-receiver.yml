@@ -14,6 +14,16 @@ note: |
   uiAction branch) and the negation of the one relay App still applies —
   same shape as main-registers-all-quit-routes: fires if EITHER the banned
   branch is present OR the required one goes missing.
+  ALSO CATCHES `$RECEIVER.action.action === 'switch-view'` (review,
+  2026-09-16): the retired test's own check was a plain substring regex
+  (`/action\.action\s*===\s*'switch-view'/g`), which matches that text no
+  matter what precedes it — including `msg.action.action === '...'`. A bare
+  `pattern: "action.action === 'switch-view'"` only matches when the LEFT
+  operand's object is the literal identifier `action` (two AST levels), so
+  a real receiver reading off some parsed `msg`/`payload` variable
+  (`msg.action.action === ...`, three levels) would go undetected — the
+  same "structural pattern is narrower than a textual regex" gap fixed in
+  app-no-switch-view-broadcast. Both shapes are now checked.
 files:
   - "**/src/renderer/App.tsx"
   - "**/fixtures/app-no-switch-view-receiver.tsx"
@@ -23,6 +33,9 @@ rule:
     - has:
         stopBy: end
         pattern: "action.action === 'switch-view'"
+    - has:
+        stopBy: end
+        pattern: "$RECEIVER.action.action === 'switch-view'"
     - not:
         has:
           stopBy: end

@@ -11,7 +11,13 @@ note: |
   a `<h4>` jsx_opening_element whose className string_fragment STARTS WITH
   the canonical recipe, mirroring the retired test's
   `src.includes('<h4 className="' + CANONICAL)` (a prefix check, not a full
-  match — the canonical recipe may be followed by more classes).
+  match — the canonical recipe may be followed by more classes). The
+  attribute must be NAMED `className` (review, 2026-09-16 — the retired
+  test's own string literally required `className="` right after `<h4 `, so
+  a match on some OTHER attribute happening to carry the same string was
+  never in scope); `jsx_attribute`'s name has no `field:` label in this
+  grammar (same finding as tooltip-key-on-wrapper-not-child) — matched via
+  `kind: property_identifier` instead.
 files:
   - "**/src/renderer/**/*.tsx"
   - "**/fixtures/section-label-no-h4.tsx"
@@ -24,7 +30,11 @@ rule:
     - has:
         stopBy: end
         kind: jsx_attribute
-        has:
-          stopBy: end
-          kind: string_fragment
-          regex: "^text-3xs font-medium text-fg-muted tracking-wider uppercase"
+        all:
+          - has:
+              kind: property_identifier
+              regex: "^className$"
+          - has:
+              stopBy: end
+              kind: string_fragment
+              regex: "^text-3xs font-medium text-fg-muted tracking-wider uppercase"

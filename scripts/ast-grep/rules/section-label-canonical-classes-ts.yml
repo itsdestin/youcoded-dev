@@ -10,8 +10,20 @@ note: |
   Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
   2026-09-16). `.ts` twin of section-label-canonical-classes: this ast-grep's
   `language: tsx` rule never scans a `.ts` file — the retired test's own walk
-  read both `.tsx` and `.ts` (`/\.tsx?$/`), and a real `.ts` site
-  (permission-modes.ts's SECTION_LABEL constant) is in its scope.
+  read both `.tsx` and `.ts` (`/\.tsx?$/`).
+  CORRECTION (review, 2026-09-16): the batch report called
+  `permission-modes.ts:75`'s `SECTION_LABEL` constant a real site that
+  "confirms the -ts twin isn't speculative" — true for the class-set check
+  itself, but that constant is SINGLE-quoted
+  (`'text-3xs font-medium ... uppercase mb-2'`), and the retired test's own
+  regex (`/"([^"\n]*)"/g`) only ever matched DOUBLE-quoted strings. Under the
+  retired test's literal scope, this site was never actually inspected.
+  Unlike section-label-canonical-classes (its `.tsx` sibling), this rule does
+  NOT add the double-quote-only restriction, because doing so would leave it
+  with no real site to ever fire on — a `.ts` module constant has no
+  convention forcing double quotes the way a JSX `className="..."`
+  attribute does, and the one known real adopter is single-quoted. Kept
+  broader than the retired test here deliberately, not by oversight.
 files:
   - "**/src/renderer/**/*.ts"
   - "**/fixtures/section-label-canonical-classes-ts.ts"
@@ -32,8 +44,8 @@ rule:
     - not:
         regex: "hover:text-fg"
     - not:
-        regex: "\\brounded-full\\b"
+        regex: "(^|\\s)rounded-full(\\s|$)"
     - not:
         all:
-          - regex: "\\bbg-inset\\b"
-          - regex: "\\bborder\\b"
+          - regex: "(^|\\s)bg-inset(\\s|$)"
+          - regex: "(^|\\s)border(\\s|$)"
