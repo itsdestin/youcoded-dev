@@ -11,7 +11,7 @@ note: |
   (added by the 2026-09-16 smoothness sweep, Batch C, after Plan B had
   already retired that file on its branch). Ported by the Plan B close-out
   merge, 2026-09-17 ("merge port" rows in
-  docs/active/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
+  docs/archive/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
   Cases: "native history reads the IPC handlers use" (readSessionLinesAsync)
   and "the Resume list" (listSessionFilesAsync, readSessionHeadAsync). Fires
   at the `program` level when (a) an fs.*Sync call sits inside one of the

@@ -11,7 +11,7 @@ note: |
   (added by the 2026-09-16 smoothness sweep, Batch C, after Plan B had
   already retired that file on its branch). Ported by the Plan B close-out
   merge, 2026-09-17 ("merge port" rows in
-  docs/active/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
+  docs/archive/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
   Case: "native history reads the IPC handlers use (per scroll-up page, per
   tear-off)". The retired isLive check was a text regex
   /readEvents|getHistory/ over the comment-stripped body, so any identifier,
