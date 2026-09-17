@@ -1,8 +1,10 @@
 {
-  "title": "YouCoded Pages shell — contract",
+  "title": "YouCoded Pages shell \u2014 contract",
   "key": "youcoded-pages-shell-contract",
   "out": "youcoded-pages-shell.contract.html",
-  "themes": ["midnight"],
+  "themes": [
+    "midnight"
+  ],
   "branch": "session/youcoded-pages-spec",
   "sources": {
     "youcoded-pages-questions": "youcoded-pages.questions.json",
@@ -19,7 +21,7 @@
     {
       "id": "C",
       "surface": "Pages",
-      "path": "Top bar → Pages, a pinned page's button, and an open page",
+      "path": "Top bar \u2192 Pages, a pinned page's button, and an open page",
       "headline": "This is what done means for the Pages shell: the button, the library, pinned pages, and an open page.",
       "rows": [
         {
@@ -45,7 +47,7 @@
         },
         {
           "id": "R4",
-          "statement": "On a phone the library is one column of the same cards, with the bordered ✕ in place of Esc · Back.",
+          "statement": "On a phone the library is one column of the same cards, with the bordered \u2715 in place of Esc \u00b7 Back.",
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "youcoded-pages-shell#S-8"
@@ -167,7 +169,7 @@
         },
         {
           "id": "R21",
-          "statement": "The library header is the title left, Make a page and Esc · Back right; cards group under Personal, then each project.",
+          "statement": "The library header is the title left, Make a page and Esc \u00b7 Back right; cards group under Personal, then each project.",
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "youcoded-pages-shell-r8#S-26"
@@ -195,5 +197,6 @@
         }
       ]
     }
-  ]
+  ],
+  "skipped": "2026-09-17 \u2014 Destin: 'we just skip the contract and such. this is already built basically, and i have done most of the reviews myself atp.' The 24 rows stayed as written (rounds 1\u20139 answered; R21/R22 superseded by the view-first redirect, see the phasing plan); never signed, no acceptance deck."
 }
