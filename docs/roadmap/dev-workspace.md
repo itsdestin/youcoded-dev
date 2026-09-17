@@ -207,7 +207,7 @@ seen-on is always n/a here.
 - [ ] The renderer's own copy of the bridge type can drift from the real bridge with every check
       green: `renderer/hooks/useIpc.ts` hand-writes `window.claude.session` and `.on`, while
       preload.ts and remote-shim.ts are now checked against `SessionBridge`/`BridgeListeners` in
-      `shared/types.ts` (Plan B, which retired `shim-parity.test.ts`). A member added to both
+      `shared/bridge-types.ts` (Plan B, which retired `shim-parity.test.ts`). A member added to both
       bridges but not to useIpc.ts is invisible to typed callers, and a member useIpc.ts claims
       but neither bridge has typechecks and crashes at run time. Fix: build useIpc.ts's
       `session`/`on` from those shared types (export them again first — they are file-local
