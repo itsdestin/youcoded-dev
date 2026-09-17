@@ -1,0 +1,38 @@
+id: no-folders-json-outside-service
+language: typescript
+severity: error
+message: >-
+  remote-server.ts must not name youcoded-folders.json. The phone's folder
+  list came from a hand-copied handler here that read only that file, so the
+  new-session picker on a phone never showed synced projects (Destin,
+  2026-09-11). Both transports call src/main/folders-service.ts instead.
+note: |
+  Invariant source: tests/folders-service.test.ts (Plan B, 2026-09-16) —
+  "remote-server.ts no longer reads or writes youcoded-folders.json itself".
+  The retired check was `not.toContain('youcoded-folders.json')` on the RAW
+  file text, comments included, so this rule matches the text wherever it
+  sits: the innermost node whose text holds it (a string, a template, a
+  comment, or code spelling it out) is reported once — a parent whose direct
+  child already holds the text is skipped.
+  SCOPE: remote-server.ts only, as the retired check was (other main-process
+  files legitimately name the path — saved-folders.ts owns it). The sibling
+  presence half is folders-service-called-by-both-transports.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/no-folders-json-outside-service.ts"
+rule:
+  # ast-grep needs a kind list; these are every node the text can sit in
+  # innermost — a string or template piece, a comment, a regex, or code that
+  # spells it out (`youcoded-folders.json` parses as a subtraction).
+  any:
+    - kind: string_fragment
+    - kind: template_string
+    - kind: string
+    - kind: comment
+    - kind: regex_pattern
+    - kind: binary_expression
+    - kind: member_expression
+  regex: "youcoded-folders\\.json"
+  not:
+    has:
+      regex: "youcoded-folders\\.json"

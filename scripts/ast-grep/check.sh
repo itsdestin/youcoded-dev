@@ -221,7 +221,9 @@ fi
 #   its single "-absent" fixture (which tripped all six presence branches at once)
 #   is split into six, one per presence branch (+5), and a "Tags labelled twice"
 #   fixture joins the Projects one (+1).
-EXPECTED_VIOLATIONS=211
+# 2026-09-16 (u3, folders-service.test.ts): +2 for no-folders-json-outside-service (1)
+#   and folders-service-called-by-both-transports (1 — a transport calling four of five).
+EXPECTED_VIOLATIONS=213
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
