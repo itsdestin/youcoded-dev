@@ -204,7 +204,10 @@ fi
 # 2026-09-16 (u2, explainer-shell.test.tsx): +4 for settings-explainer-no-chrome-props
 #   (2 — self-closing with title, open tag with onBack), explainer-hosts-pass-onback-showinfo
 #   (1) and its -lifted twin (1).
-EXPECTED_VIOLATIONS=186
+# 2026-09-16 (u2, filter-chip.test.tsx): +5 for no-local-filter-chip-recipe (2 — the
+#   active recipe in a string, the base recipe in a template) and its -command-drawer
+#   twin (3 — the Favorites recipe and ml-auto, plus a file with no FilterChip tag).
+EXPECTED_VIOLATIONS=191
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
