@@ -5,3 +5,19 @@ const Bad = () => (
     <SessionPreviewPane title="Real heading" />
   </Tooltip>
 );
+
+// Same violation, but the offending child is wrapped in a ternary — the
+// retired test's textual scan found the first tag regardless of a `{...}`
+// wrapper around it, so this shape must fire too (review, 2026-09-16).
+const BadTernary = () => (
+  <Tooltip text="Explain this">
+    {open ? <Dialog title="Real heading" /> : null}
+  </Tooltip>
+);
+
+// Same violation, wrapped in `&&` instead of a ternary.
+const BadAnd = () => (
+  <Tooltip text="Explain this">
+    {open && <Dialog title="Real heading" />}
+  </Tooltip>
+);

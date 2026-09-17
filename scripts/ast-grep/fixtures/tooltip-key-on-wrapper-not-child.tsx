@@ -10,3 +10,27 @@ const Bad = () => (
     ))}
   </>
 );
+
+// Same violation, but the keyed child is wrapped in a ternary — the retired
+// test's textual scan found the key attribute regardless of a `{...}`
+// wrapper around it, so this shape must fire too (review, 2026-09-16).
+const BadTernary = () => (
+  <>
+    {items.map((item) => (
+      <Tooltip text="Explain this">
+        {item.visible ? <div key={item.id}>{item.label}</div> : null}
+      </Tooltip>
+    ))}
+  </>
+);
+
+// Same violation, wrapped in `&&` instead of a ternary.
+const BadAnd = () => (
+  <>
+    {items.map((item) => (
+      <Tooltip text="Explain this">
+        {item.visible && <div key={item.id}>{item.label}</div>}
+      </Tooltip>
+    ))}
+  </>
+);

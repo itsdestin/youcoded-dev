@@ -112,7 +112,15 @@ fi
 # 2026-09-16 (t6a): +1 for buddy-window-move-only-in-place (buddy-caption-channel.test.ts).
 # 2026-09-16 (t6a): +1 for buddy-show-consults-refusal-gate (buddy-consent-gate.test.ts).
 # 2026-09-16 (t6a): +1 for no-hand-rolled-callout-tint (callout-authority.test.tsx).
-EXPECTED_VIOLATIONS=70
+# 2026-09-16 (review of batch C, fix 4): +6 for the three tooltip rules
+#   (tooltip-wraps-forwarding-element, tooltip-title-is-not-data,
+#   tooltip-key-on-wrapper-not-child) each gaining a ternary-wrapped AND an
+#   `&&`-wrapped violation fixture line (+2 each) — the rules now also match
+#   an offending child hidden behind `{cond ? <X/> : <Y/>}` / `{cond && <X/>}`,
+#   which the retired test's textual scan covered but the first-draft rules
+#   missed (they only checked a direct jsx_self_closing_element/jsx_element
+#   child).
+EXPECTED_VIOLATIONS=76
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
