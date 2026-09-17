@@ -180,7 +180,12 @@ fi
 #   attribute of the same JSX tag (e.g. style={{ border: '...' }}), the shape the
 #   retired ±150-char window caught that round 1's className/mergeClasses-only
 #   branches did not. Fixture +2 (open tag + self-closing tag).
-EXPECTED_VIOLATIONS=166
+# 2026-09-16 (review of t6a, fix round 2, item 2): +1 — mascot-rig-raf-only-for-drag's
+#   function-field check drops its `^` anchor so `window.requestAnimationFrame(x)`
+#   is caught (the retired regex found the call as a substring, indifferent to what
+#   preceded it); the "at least one rafTick call" presence branch now also accepts
+#   the window-prefixed form. Fixture +1.
+EXPECTED_VIOLATIONS=167
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
