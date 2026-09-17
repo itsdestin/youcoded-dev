@@ -12,7 +12,8 @@
     "youcoded-pages-shell-r4": "youcoded-pages-shell-r4.review.json",
     "youcoded-pages-shell-r5": "youcoded-pages-shell-r5.review.json",
     "youcoded-pages-shell-r6": "youcoded-pages-shell-r6.review.json",
-    "youcoded-pages-shell-r7": "youcoded-pages-shell-r7.review.json"
+    "youcoded-pages-shell-r7": "youcoded-pages-shell-r7.review.json",
+    "youcoded-pages-shell-r8": "youcoded-pages-shell-r8.review.json"
   },
   "steps": [
     {
@@ -163,6 +164,34 @@
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "youcoded-pages-shell-r7#S-25"
+        },
+        {
+          "id": "R21",
+          "statement": "The library header is the title left, Make a page and Esc · Back right; cards group under Personal, then each project.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r8#S-26"
+        },
+        {
+          "id": "R22",
+          "statement": "The band has no line under it, the page's name sits in the exact centre, and the panel starts hidden.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r8#S-27"
+        },
+        {
+          "id": "R23",
+          "statement": "With the panel shown, panel and page are two rounded panes inset by the same edge on every side.",
+          "checkedBy": "deck",
+          "threshold": "10 px edge on every side; panel 240 px",
+          "source": "youcoded-pages-shell-r8#S-28"
+        },
+        {
+          "id": "R24",
+          "statement": "Clicking a page in the panel opens it in place; the band's name and icon follow.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r8#S-29"
         }
       ]
     }
