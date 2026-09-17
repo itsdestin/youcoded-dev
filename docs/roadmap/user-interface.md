@@ -73,7 +73,9 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] Browser-default hover tooltips look foreign to the app — the whole main chat screen is
       done (`<Tooltip>`, 82 hints); what is left is settings, the marketplace and project
-      view, which Destin deferred until those files are touched anyway
+      view (~148 of 236 real hints), which Destin deferred until those files are touched anyway.
+      Settled: the ~1 s delay stays (he rejected a shorter one) and there is no circled-i — every
+      hint, long ones included, is a hover hint
       `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
 - [ ] Error messages still guess at causes in many places — the app-wide re-audit is done and
