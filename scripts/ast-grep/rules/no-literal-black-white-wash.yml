@@ -1,0 +1,51 @@
+id: no-literal-black-white-wash
+language: tsx
+severity: error
+message: >-
+  No literal black/white hover wash (`hover:bg-black/N`, `hover:bg-white/N`).
+  It ignores the theme — invisible on some themes and harsh on others.
+  Use a theme token; a control that must track something outside the theme
+  uses bg-current (ThemeScreen's swatch button) (tranche 8, change 41).
+note: |
+  Invariant source: tests/primitive-adoption.test.ts (Plan B, 2026-09-16) —
+  "no raw black/white overlay fills remain".
+  The retired regex was /hover:bg-(black|white)\/\d+/ over each file's text;
+  same regex here, on the innermost node that holds it.
+  SCOPE mirrors the retired CONSUMERS list: every .ts/.tsx under
+  src/renderer except components/ui/ (the primitives themselves) and
+  *.test.* files. The ignore is `components/ui*` because the retired walk
+  dropped every path STARTING with components/ui (a startsWith, no slash),
+  and `*` crosses `/` in this ast-grep — so it is the same prefix test. Comments are skipped, as the retired stripComments() pass
+  skipped them (it blanked block comments and every `//` comment, trailing
+  ones included).
+  The .ts twin is no-literal-black-white-wash-ts (a tsx rule never parses .ts).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/no-literal-black-white-wash.tsx"
+ignores:
+  - "**/src/renderer/components/ui*"
+  - "**/*.test.tsx"
+  - "**/*.test.ts"
+rule:
+  # ast-grep needs a kind list; these are every node the text can sit in
+  # innermost — a string or template piece, JSX text or attribute, a regex,
+  # or code that spells it out. A node whose direct child already holds the
+  # text is skipped, so each occurrence reports once.
+  any:
+    - kind: string_fragment
+    - kind: string
+    - kind: template_string
+    - kind: regex_pattern
+    - kind: pair
+    - kind: labeled_statement
+    - kind: binary_expression
+    - kind: assignment_expression
+    - kind: variable_declarator
+    - kind: jsx_text
+    - kind: jsx_attribute
+  regex: "hover:bg-(black|white)/\\d+"
+  not:
+    any:
+      - kind: comment
+      - has:
+          regex: "hover:bg-(black|white)/\\d+"

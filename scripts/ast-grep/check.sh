@@ -223,7 +223,11 @@ fi
 #   fixture joins the Projects one (+1).
 # 2026-09-16 (u3, folders-service.test.ts): +2 for no-folders-json-outside-service (1)
 #   and folders-service-called-by-both-transports (1 — a transport calling four of five).
-EXPECTED_VIOLATIONS=213
+# 2026-09-16 (u3, primitive-adoption.test.ts): +7 for no-hand-rolled-toast (2 — a JSX
+#   attribute and a markup template), its -ts twin (1), no-literal-black-white-wash (2 — a
+#   className and a template beside a substitution), its -ts twin (1) and
+#   toast-auto-dismiss-owned-by-primitive (1).
+EXPECTED_VIOLATIONS=220
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
