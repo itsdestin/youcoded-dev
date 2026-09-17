@@ -1,0 +1,55 @@
+id: session-store-async-reads-stay-async
+language: typescript
+severity: error
+message: >-
+  SessionStore.readEventsAsync must never call a blocking fs.*Sync, and
+  SessionStore.listAsync must never fall back to the sync
+  readSessionHead()/listSessionFiles() — both run from IPC handlers (history
+  pages, tear-offs, every Resume list open) and exist to keep those reads off
+  the main thread.
+note: |
+  Invariant source: tests/main-hot-path-no-sync-fs.test.ts on origin/master
+  (added by the 2026-09-16 smoothness sweep, Batch C, after Plan B had
+  already retired that file on its branch). Ported by the Plan B close-out
+  merge, 2026-09-17 ("merge port" rows in
+  docs/active/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
+  Cases: "native history reads the IPC handlers use" (readEventsAsync) and
+  "the Resume list" (listAsync must not match
+  /readSessionHead\(|listSessionFiles\(/ — a call to the sync form, by bare
+  name or through a receiver; the Async forms have a different name and do
+  not match). Fires at the `program` level on either ban, or when either
+  method is gone (the retired methodBody() presence check).
+files:
+  - "**/src/main/harness/session-store.ts"
+  - "**/fixtures/session-store-async-reads-stay-async.ts"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          all:
+            - has: { field: object, regex: "^fs$" }
+            - has: { field: property, regex: "Sync$" }
+        inside:
+          stopBy: end
+          kind: method_definition
+          has: { field: name, regex: "^readEventsAsync$" }
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          any:
+            - { kind: identifier, regex: "^(readSessionHead|listSessionFiles)$" }
+            - kind: member_expression
+              has: { field: property, regex: "^(readSessionHead|listSessionFiles)$" }
+        inside:
+          stopBy: end
+          kind: method_definition
+          has: { field: name, regex: "^listAsync$" }
+    - not: { has: { stopBy: end, kind: method_definition, has: { field: name, regex: "^readEventsAsync$" } } }
+    - not: { has: { stopBy: end, kind: method_definition, has: { field: name, regex: "^listAsync$" } } }

@@ -362,7 +362,15 @@ fi
 # 2026-09-16: +3 for no-background-throttling-off (bare, no-space and quoted-key spellings).
 # 2026-09-17 (Plan B merge of origin/master): master's no-background-throttling-off (+3 above)
 #   joins this branch's 401 — 401 + 3 = 404.
-EXPECTED_VIOLATIONS=404
+# 2026-09-17 (Plan B merge port): +9 for master's five new hot-path cases, ported from the
+#   retired tests/main-hot-path-no-sync-fs.test.ts — no-sync-fs-in-accepted-history-publish,
+#   no-sync-fs-in-native-home-async-reads, session-store-async-reads-stay-async,
+#   native-host-history-reads-stay-async, no-sync-fs-in-per-session-polls,
+#   no-sync-fs-in-transcript-global-poll, native-session-list-uses-async-form,
+#   no-sync-fs-in-glob-walk, read-tool-no-blocking-read (one fixture match each). Edit/Write/
+#   file-fingerprint joined no-sync-fs-whole-file (+0). The sync-fs family also dropped its
+#   `constraints:` (a non-Sync fs call ahead of a Sync one silenced the whole rule) — +0.
+EXPECTED_VIOLATIONS=413
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

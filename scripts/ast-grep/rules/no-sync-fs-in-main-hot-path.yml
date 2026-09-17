@@ -16,6 +16,16 @@ note: |
   trivially passes). lease-client.ts's OTHER helpers legitimately use
   fs.*Sync (best-effort lease-file cleanup outside the hot acquire/renew
   path) — this rule is scoped to createLeaseClient's body only, on purpose.
+  FIX (Plan B close-out, 2026-09-17): the ban used to be
+  `pattern: fs.$METHOD($$$ARGS)` inside a `has:` plus a top-level
+  `constraints: METHOD: Sync$`. ast-grep checks constraints only after the
+  whole rule has matched, and a `has:` stops at the FIRST `fs.X(...)` call it
+  finds — so a harmless `fs.watch(...)` or `fs.createReadStream(...)` ahead
+  of a real `fs.readFileSync(...)` failed the constraint and silenced the
+  WHOLE rule, including its "still exists" branches (found while porting
+  master's hot-path cases: an inverted ipc-handlers.ts did not fire). The
+  ban now matches the call's shape directly (object `fs`, property ending
+  `Sync`) with no constraint, so every call is judged on its own.
 files:
   - "**/src/main/conversations/lease-client.ts"
   - "**/fixtures/no-sync-fs-in-main-hot-path.ts"
@@ -24,7 +34,13 @@ rule:
   any:
     - has:
         stopBy: end
-        pattern: fs.$METHOD($$$ARGS)
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          all:
+            - has: { field: object, regex: "^fs$" }
+            - has: { field: property, regex: "Sync$" }
         inside:
           kind: function_declaration
           stopBy: end
@@ -38,6 +54,3 @@ rule:
           has:
             field: name
             regex: "^createLeaseClient$"
-constraints:
-  METHOD:
-    regex: "Sync$"

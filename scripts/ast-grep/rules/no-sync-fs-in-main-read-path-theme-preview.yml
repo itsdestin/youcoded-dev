@@ -15,6 +15,16 @@ note: |
   found (`toBeGreaterThan(-1)` / `toBeGreaterThan(start)`); a bare
   `inside:`-scoped rule with no existence branch would silently stop
   guarding that once the function is renamed or removed.
+  FIX (Plan B close-out, 2026-09-17): the ban used to be
+  `pattern: fs.$METHOD($$$ARGS)` inside a `has:` plus a top-level
+  `constraints: METHOD: Sync$`. ast-grep checks constraints only after the
+  whole rule has matched, and a `has:` stops at the FIRST `fs.X(...)` call it
+  finds — so a harmless `fs.watch(...)` or `fs.createReadStream(...)` ahead
+  of a real `fs.readFileSync(...)` failed the constraint and silenced the
+  WHOLE rule, including its "still exists" branches (found while porting
+  master's hot-path cases: an inverted ipc-handlers.ts did not fire). The
+  ban now matches the call's shape directly (object `fs`, property ending
+  `Sync`) with no constraint, so every call is judged on its own.
 files:
   - "**/src/main/theme-preview-generator.ts"
   - "**/fixtures/no-sync-fs-in-main-read-path-theme-preview.ts"
@@ -23,7 +33,13 @@ rule:
   any:
     - has:
         stopBy: end
-        pattern: fs.$METHOD($$$ARGS)
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          all:
+            - has: { field: object, regex: "^fs$" }
+            - has: { field: property, regex: "Sync$" }
         inside:
           kind: function_declaration
           stopBy: end
@@ -37,6 +53,3 @@ rule:
           has:
             field: name
             regex: "^buildPreviewHTML$"
-constraints:
-  METHOD:
-    regex: "Sync$"

@@ -9,7 +9,8 @@ message: >-
   skill/command/agent file in the in-app marketplace viewer, and resolving
   which project a transcript belongs to (once per project slug, every Resume
   Browser open). A blocking fs call in any of them stalls every window's IPC
-  at once.
+  at once. harness/tools/edit.ts, write.ts and file-fingerprint.ts run for
+  the model's file tools, several times per turn (added 2026-09-17).
 note: |
   MERGED (review of batch B, 2026-09-16) from three previously separate,
   byte-for-byte-identical rules that differed only in `files:` and prose —
@@ -29,10 +30,22 @@ note: |
   independently fires this one rule id, so the fixture-match count is the
   same 3 as before (one per fixture file) — see scripts/ast-grep/check.sh's
   dated comment.
+  MERGE PORT (Plan B close-out, 2026-09-17): origin/master added a case to
+  the retired tests/main-hot-path-no-sync-fs.test.ts after this branch had
+  deleted it — "the model's file tools — Glob's walk, Read, Edit, Write" —
+  whose whole-file half (`not.toMatch(SYNC_FS)` over edit.ts, write.ts and
+  file-fingerprint.ts) is this same whole-file ban, so those three files
+  joined `files:` here rather than getting a byte-identical rule of their
+  own. Its Glob half is no-sync-fs-in-glob-walk and its Read half is
+  read-tool-no-blocking-read. No new fixture: the rule already fires on
+  three.
 files:
   - "**/src/main/conversations/transcript-mirror.ts"
   - "**/src/main/marketplace-file-reader.ts"
   - "**/src/main/transcript-cwd.ts"
+  - "**/src/main/harness/tools/edit.ts"
+  - "**/src/main/harness/tools/write.ts"
+  - "**/src/main/harness/tools/file-fingerprint.ts"
   - "**/fixtures/no-sync-fs-whole-file-transcript-mirror.ts"
   - "**/fixtures/no-sync-fs-whole-file-marketplace-file-reader.ts"
   - "**/fixtures/no-sync-fs-whole-file-transcript-cwd.ts"
