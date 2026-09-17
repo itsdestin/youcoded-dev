@@ -1,0 +1,41 @@
+id: perf-mark-index-order
+language: tsx
+severity: error
+message: >-
+  index.tsx must mark 'yc:modules-evaluated' before 'yc:root-render', and both
+  marks must exist. The perf-lab rig (youcoded-dev/scripts/perf-lab) reads them
+  in order to recover the hidden window between page navigation and the app's
+  first render — ESM hoists every import above the module body, so
+  modules-evaluated is written below the imports on purpose (it marks the END
+  of bundle evaluation, not the start).
+note: |
+  Invariant source: tests/perf-marks-renderer.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 3 — "index.tsx marks modules-evaluated and root
+  render, in that order"). The two marks live in different scopes in the real
+  file (modules-evaluated is a top-level statement; root-render is inside the
+  else branch of the top-level if/else that decides workbench vs. normal
+  boot), so the order check matches the ENCLOSING if_statement against
+  `follows` rather than the call itself — ast-grep's `follows`/`precedes`
+  relations only compare true siblings under the same parent, even with
+  `stopBy: end` (verified empirically, scratch probe 2026-09-16: a `follows`
+  check on the nested call itself never fires, correct or wrong order alike).
+files:
+  - "**/src/renderer/index.tsx"
+  - "**/fixtures/perf-mark-index-order.tsx"
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "performance.mark('yc:modules-evaluated')" } }
+    - not: { has: { stopBy: end, pattern: "performance.mark('yc:root-render')" } }
+    - has:
+        stopBy: end
+        kind: if_statement
+        has:
+          stopBy: end
+          pattern: "performance.mark('yc:root-render')"
+        not:
+          follows:
+            stopBy: end
+            kind: expression_statement
+            has:
+              pattern: "performance.mark('yc:modules-evaluated')"

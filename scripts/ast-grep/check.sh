@@ -90,7 +90,9 @@ fi
 #   the whole-file branch on HtmlView.tsx that fires when no <iframe> sandbox attribute
 #   containing allow-scripts is present at all (its sibling rule only fires when a
 #   sandbox attribute IS present and contains allow-same-origin).
-EXPECTED_VIOLATIONS=45
+# 2026-09-16 (t5c): +2 for perf-mark-index-order + perf-mark-sessions-listed-inside-session-list
+#   (Plan B).
+EXPECTED_VIOLATIONS=47
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
