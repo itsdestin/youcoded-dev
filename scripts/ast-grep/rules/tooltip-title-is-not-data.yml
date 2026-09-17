@@ -1,0 +1,41 @@
+id: tooltip-title-is-not-data
+language: tsx
+severity: error
+message: >-
+  <Tooltip> must never wrap <Dialog>, <AgentSection>, <SessionPreviewPane>,
+  <SettingRow>, <Callout>, <ErrorState> or <WizardHeader> — each takes
+  `title` as DATA it renders (a heading, or a string it threads down), not a
+  hover hint. Wrapping one moves a heading into a hover bubble and deletes
+  the real prop — it happened to <SessionPreviewPane>, <AgentSection> and
+  <Dialog> during the 2026-09-10 sweep. Pass the title, do not wrap.
+note: |
+  Invariant source: tests/tooltip-adoption.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 4 — "never wraps a component whose `title` is a
+  heading, not a hint"). TITLE_IS_DATA mirrors the retired test's list
+  exactly. Twin of tooltip-wraps-forwarding-element (checks the DIRECT
+  child only, same reasoning).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/tooltip-title-is-not-data.tsx"
+ignores:
+  - "**/src/renderer/dev/workbench/**"
+rule:
+  kind: jsx_element
+  all:
+    - has:
+        field: open_tag
+        has:
+          field: name
+          regex: "^Tooltip$"
+    - has:
+        any:
+          - kind: jsx_self_closing_element
+            has:
+              field: name
+              regex: "^(Dialog|AgentSection|SessionPreviewPane|SettingRow|Callout|ErrorState|WizardHeader)$"
+          - kind: jsx_element
+            has:
+              field: open_tag
+              has:
+                field: name
+                regex: "^(Dialog|AgentSection|SessionPreviewPane|SettingRow|Callout|ErrorState|WizardHeader)$"

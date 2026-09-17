@@ -1,0 +1,52 @@
+id: tooltip-wraps-forwarding-element
+language: tsx
+severity: error
+message: >-
+  <Tooltip> only wraps an element, or a component that forwards its props and
+  a ref to one (see FORWARDS below) — never any other component. A hint
+  clones its child and injects pointer handlers and a ref, so the child must
+  reach a real DOM node.
+note: |
+  Invariant source: tests/tooltip-adoption.test.ts (retired by Plan B,
+  2026-09-16; case 3 of 4 — "only wraps an element, or a component that
+  forwards to one"). FORWARDS mirrors the retired test's list exactly:
+  Button, CloseButton, IconBtn, IconButton, Toggle. Checks only the DIRECT
+  child (one `jsx_self_closing_element`, or one `jsx_element`'s own
+  `open_tag`) — not `stopBy: end`, on purpose: a forwarding component's own
+  JSX body may legitimately contain other uppercase components deeper down
+  (verified empirically, scratch probe 2026-09-16:
+  `<Tooltip><Button><WeirdIcon /></Button></Tooltip>` must NOT fire), and the
+  retired test itself only inspected the FIRST tag after the `<Tooltip>`
+  wrapper, not every descendant.
+  If a genuinely-forwarding component is added later, add it to FORWARDS here
+  deliberately, having checked it forwards its props and a ref — same as the
+  retired test's own comment.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/tooltip-wraps-forwarding-element.tsx"
+ignores:
+  - "**/src/renderer/dev/workbench/**"
+rule:
+  kind: jsx_element
+  all:
+    - has:
+        field: open_tag
+        has:
+          field: name
+          regex: "^Tooltip$"
+    - has:
+        any:
+          - kind: jsx_self_closing_element
+            has:
+              field: name
+              regex: "^[A-Z]"
+              not:
+                regex: "^(Button|CloseButton|IconBtn|IconButton|Toggle)$"
+          - kind: jsx_element
+            has:
+              field: open_tag
+              has:
+                field: name
+                regex: "^[A-Z]"
+                not:
+                  regex: "^(Button|CloseButton|IconBtn|IconButton|Toggle)$"
