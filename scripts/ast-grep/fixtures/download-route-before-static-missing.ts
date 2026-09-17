@@ -1,6 +1,7 @@
 // Violation fixture for download-route-before-static: the download route was
-// dropped from the server callback (fires three times: on the server call, and
-// on each fallback call, which nothing now precedes).
+// dropped from the server callback (fires three times: on the file, since no
+// server call holds all three, and on each fallback call, which nothing now
+// precedes).
 import http from 'node:http';
 export class Host {
   start(hasStaticBuild: boolean, staticDir: string, viteDevUrl: string) {

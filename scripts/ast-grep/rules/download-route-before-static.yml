@@ -16,8 +16,11 @@ note: |
   required the route call and both fallback calls, with the FIRST of each
   fallback after the FIRST route call.
   Here, on the same file:
-    - whole file: no `http.createServer((req, res) => { … })` call;
-    - that call with no route call, no static call, or no proxy call inside it;
+    - whole file: no `http.createServer((req, res) => { … })` call that holds
+      the route call, the static call AND the proxy call (another server
+      call with none of them — a redirect server, say — is left alone; one
+      holding a static or proxy call with no route before it still fires,
+      through the order branch below);
     - a static or proxy call inside it that the route call does not precede
       in source order. "Precedes" is: the call itself, or one of its ancestors
       inside the server call, comes after a sibling that is or contains the
@@ -52,14 +55,19 @@ utils:
     follows: { stopBy: end, matches: route-or-holder }
 rule:
   any:
+    # WHY one whole-file presence branch (review of u4, 2026-09-16): the old
+    # per-server-call branch fired on ANY createServer lacking one of the three,
+    # so a harmless second server (a redirect, a health check) would have failed
+    # the build. The invariant only needs ONE server callback holding all three.
     - kind: program
-      not: { has: { stopBy: end, matches: server-call } }
-    - all:
-        - matches: server-call
-        - any:
-            - not: { has: { stopBy: end, matches: route-call } }
-            - not: { has: { stopBy: end, matches: static-call } }
-            - not: { has: { stopBy: end, matches: proxy-call } }
+      not:
+        has:
+          stopBy: end
+          all:
+            - matches: server-call
+            - has: { stopBy: end, matches: route-call }
+            - has: { stopBy: end, matches: static-call }
+            - has: { stopBy: end, matches: proxy-call }
     - all:
         - any:
             - matches: static-call

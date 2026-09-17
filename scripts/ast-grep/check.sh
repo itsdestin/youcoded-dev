@@ -262,6 +262,9 @@ fi
 #   parameters, destructure defaults, class fields and (tsx) jsx_element; its fixture
 #   fires on a parameter default, a destructure default, a class field and JSX text
 #   split by an expression (4), the -ts twin's on the first three (3).
+# 2026-09-16 (review of u4, fix 8): count unchanged — download-route-before-static's
+#   presence check is now one whole-file branch ("no server call holds all three"),
+#   so the -missing fixture's first finding moved from the server call to the file.
 # 2026-09-16 (u7, runtime-default.test.tsx): +16 — runtime-default-key-single-owner (a
 #   string, a template piece and a regex naming the key in a .ts file (3)), its -tsx twin
 #   (an attribute string, a JSX attribute name and JSX text (3)), its -present branch (an
