@@ -4,9 +4,26 @@
  "boot": 4500,
  "shots": [
   {
+   "name": "e-pages-view",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[aria-label='Back to chat']"
+  },
+  {
    "name": "e-pages-library",
    "actions": [
-    { "click": "[aria-label='Open Pages']", "settle": 1200 }
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 1000
+    }
    ],
    "expect": "[aria-label='Exit pages']"
   }
