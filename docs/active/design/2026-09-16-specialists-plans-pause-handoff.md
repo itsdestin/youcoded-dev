@@ -156,19 +156,41 @@ chose: **no automatic handing off. A button instead.** This replaces §2 steps 1
 everything else in §2 (the notice, `recommend_plan_action`, revise path, clears, supersession,
 never-auto-approve for notice turns, the per-kind action table) stays.
 
-- A pause never hands off by itself. Every paused card (all kinds, including the user-stopped and
-  restart-interrupted states) shows its reason and its default buttons from §2 step 7 at once,
-  plus **Ask the assistant** as the light button on the far left.
-- Pressing it calls a new plan action, `plans:ask-assistant` (desktop and remote; Android answers
-  unsupported like the other seven). The service checks the plan is paused/interrupted, has no
-  pending handoff, and the conversation is live with deliveries not held; then the same write
-  records `paused.handoff = pending` and the host queues the notice (§2 steps 3–5). Refusals come
-  back as ordinary action errors with the real reason.
-- The notice turn is shown in the chat as one short line on the user's side:
-  "You asked the assistant about this plan." The notice text itself stays hidden (decision 17).
+- A pause never hands off by itself. Every **paused** card (all pause kinds, including the
+  user-stopped state) shows its reason and its default buttons from §2 step 7 at once, plus
+  **Ask the assistant** as the light button on the far left. A restart-**interrupted** card is
+  unchanged (Continue/Stop, no Ask): its journal state has no pause to hold a handoff (review 4-1).
+  The button is hidden when the conversation's model cannot use tools.
+- Pressing it calls a new plan action, `plans:ask-assistant` on all five surfaces (Android's
+  `PlansBridge.kt` id list answers typed `unsupported`; update `PLAN_REQUEST_CHANNELS`,
+  `PlanRequestHost`, preload, remote-shim, remote-server, ipc-handlers, the workbench mock rows,
+  and the "exactly seven" guards in `plans-transport.test.ts` and `ipc-channels.test.ts`).
+- The service registers the handoff in the host's in-memory map first, then checks INSIDE the
+  journal mutation that the plan is paused and has no pending handoff, and records
+  `paused.handoff = pending` in that same write; the host then queues the notice (§2 steps 3–5).
+  A second press (another window, the phone, a double click) is refused by that in-write check;
+  the card also ignores clicks while its request is in flight. Liveness and held deliveries are
+  checked before the write. Refusals are ordinary action errors with the real reason.
+- Asking again after an answered handoff replaces the earlier recommendation and drops its
+  revision link.
+- `resume`, `addBudget` and `stop` read the handoff id to withdraw INSIDE their own start/stop
+  write, not from an earlier read (review 4-2).
+- Restart recovery's stale-handoff clear re-checks inside its mutation, so a handoff registered
+  meanwhile is kept (review 4-4).
+- The notice text is the transcript text, as today. Renderers replace the single hide rule with a
+  render kind — `hide` / `ask-line` — used identically by the chat view, the buddy feed and
+  previews: a plan notice renders as one plain line on the user's side, "You asked the assistant
+  about this plan." (no edit/resend). It appears when the notice is delivered; a withdrawn notice
+  shows no line. No new transcript event and no history-only note.
+- The notice wording becomes "The user asked you about this paused plan." plus the existing facts.
+- If the notice waits behind a reply in progress, the greyed card says "The assistant will look at
+  this after its current reply." If the backstop or a failed notice turn clears it, the card shows
+  an error line with Retry (Retry asks again), per the error standards, instead of silently
+  returning its buttons.
 - While pending the card is deactivated as before; the §2 clears, backstop and supersession apply
   unchanged. The button is not offered while a handoff is pending.
 - The routing function's `assistant` outcome now only means "Stop-only / Continue defaults per the
-  table"; nothing is queued at pause time. Automatic recovery (§1) is unchanged.
+  table"; nothing is queued at pause time — the executor's pause-time `prepare`/`prepareHandoff`
+  hook and its `revisionTurnId` stamp are removed. Automatic recovery (§1) is unchanged.
 - An eighth request channel is added; the "exactly seven channels" constraint from the backend
   design is superseded by this decision.
