@@ -175,7 +175,12 @@ fi
 #   fixture line — `{cond ? (\n<X/>\n) : null}` / `{cond && (\n<X/>\n)}` — the
 #   retired test's textual scan was indifferent to parens too, and the round-1
 #   ternary/`&&` fix only matched the tag directly, not through a paren wrapper.
-EXPECTED_VIOLATIONS=164
+# 2026-09-16 (review of t6a, fix round 2, item 1): +2 — no-hand-rolled-callout-tint
+#   gains a third branch: a tint in className paired with `border` in a DIFFERENT
+#   attribute of the same JSX tag (e.g. style={{ border: '...' }}), the shape the
+#   retired ±150-char window caught that round 1's className/mergeClasses-only
+#   branches did not. Fixture +2 (open tag + self-closing tag).
+EXPECTED_VIOLATIONS=166
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
