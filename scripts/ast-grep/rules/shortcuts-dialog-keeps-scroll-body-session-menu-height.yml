@@ -1,0 +1,62 @@
+id: shortcuts-dialog-keeps-scroll-body-session-menu-height
+language: tsx
+severity: error
+message: >-
+  SessionStrip.tsx's session menu must give its list the remaining screen
+  height: cap the menu to the space below its trigger (height: undefined +
+  maxHeight: min(680px, <space below>)), publish that same cap as
+  --session-menu-available-height for the New Session form's own scroll
+  region, keep --vvp-offset in the cap so a mobile browser's virtual
+  viewport doesn't hide the bottom, and give the session list itself
+  (twice — the "no results" and populated states) the scroll-fade + flex-1
+  treatment so it flexes and scrolls before the New Session controls are
+  pushed past the bottom edge.
+note: |
+  Invariant source: tests/menu-row-reachability.test.ts (retired by Plan B,
+  2026-09-16; case 5 of 7 — "the session menu gives its list the remaining
+  screen height"). Whole-file presence checks (not scoped to one function —
+  the retired test checked the whole file's `strip` text too), each written
+  as its negation over `program` (a "must exist" check is its own absence),
+  same shape as main-registers-all-quit-routes. The `maxHeight` template
+  literal is matched structurally (`context:`/`selector:` on the `pair` node)
+  rather than by regex on `string_fragment`, so the `${belowTrigger}`
+  substitution in its middle cannot break the match the way a flat regex
+  scanning raw text never had to worry about.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/shortcuts-dialog-keeps-scroll-body-session-menu-height.tsx"
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: "const x = { height: undefined }"
+            selector: pair
+    - not:
+        has:
+          stopBy: end
+          pattern: "`min(680px, ${$X})`"
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: "const x = { maxHeight: 'var(--session-menu-available-height)' }"
+            selector: pair
+    - not:
+        has:
+          stopBy: end
+          pattern: "'calc(100vh - 8px - var(--vvp-offset, 0px))'"
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: '<div className="scroll-fade flex-1" />'
+            selector: jsx_attribute
+    - not:
+        has:
+          stopBy: end
+          pattern:
+            context: '<div className="scroll-fade flex-1 py-1" />'
+            selector: jsx_attribute

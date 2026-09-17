@@ -1,0 +1,28 @@
+id: shortcuts-dialog-keeps-scroll-body-model-picker-upward
+language: tsx
+severity: error
+message: >-
+  ModelPicker.tsx must open its panel upward when its trigger lacks room
+  below — a picker sitting at the bottom of an otherwise valid menu (e.g. in
+  New Session) must use the room above rather than render its rows beyond
+  the viewport.
+note: |
+  Invariant source: tests/menu-row-reachability.test.ts (retired by Plan B,
+  2026-09-16; case 7 of 7 — "opens a model panel upward when its trigger
+  lacks room below"). Whole-file presence checks (`not: has:` over
+  `program`) for the two exact expressions the retired test matched by
+  regex.
+files:
+  - "**/src/renderer/components/model/ModelPicker.tsx"
+  - "**/fixtures/shortcuts-dialog-keeps-scroll-body-model-picker-upward.tsx"
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          pattern: "const opensUpward = spaceBelow < 180 && spaceAbove > spaceBelow;"
+    - not:
+        has:
+          stopBy: end
+          pattern: "opensUpward ? { bottom: window.innerHeight - r.top + gap } : { top: r.bottom + gap }"
