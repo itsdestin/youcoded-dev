@@ -27,6 +27,8 @@ note: |
   as a button), AssistantTurnBubble.tsx (the Plan card — not a menu surface),
   SessionContextBanner.tsx / SettingsPanel.tsx / SyncPanel.tsx /
   SpecialistsChip.tsx (K5 status strips or state pills, per NOT_CALLOUTS).
+  scripts/ast-grep/check.sh fails if the marked ignores: block and the
+  NOT_CALLOUTS keys differ (review of u10, 2026-09-16).
   LIMITATION: NOT_CALLOUTS counted per file (e.g. SyncPanel.tsx: exactly 4)
   so a FIFTH tinted block there would have failed the retired test; a
   whole-file `ignores:` cannot express "at most N here". That exact-count
@@ -67,14 +69,6 @@ files:
 ignores:
   - "**/*.test.tsx"
   - "**/Callout.tsx"
-  - "**/Button.tsx"
-  - "**/ModelPickerPopup.tsx"
-  - "**/ThemeShareSheet.tsx"
-  - "**/AssistantTurnBubble.tsx"
-  - "**/SessionContextBanner.tsx"
-  - "**/SettingsPanel.tsx"
-  - "**/SyncPanel.tsx"
-  - "**/SpecialistsChip.tsx"
   - "**/components/artifact-views/**"
   - "**/components/assistant-settings/**"
   - "**/components/buddy/**"
@@ -96,6 +90,16 @@ ignores:
   - "**/components/specialists/**"
   - "**/components/tags/**"
   - "**/components/tool-views/**"
+  # exemption-table: NOT_CALLOUTS — counted in tests/callout-authority.test.tsx,
+  # not here; check.sh fails if this block and that table differ. Keep it last.
+  - "**/Button.tsx"
+  - "**/ModelPickerPopup.tsx"
+  - "**/ThemeShareSheet.tsx"
+  - "**/AssistantTurnBubble.tsx"
+  - "**/SessionContextBanner.tsx"
+  - "**/SettingsPanel.tsx"
+  - "**/SyncPanel.tsx"
+  - "**/SpecialistsChip.tsx"
 utils:
   tint-and-border:
     all:

@@ -456,7 +456,8 @@ else
     echo "  SKIP — python3 not found; rule paths were not checked"
 fi
 
-# WHY an exemption-table check (review of u8 and u9, 2026-09-16): a few kept tests
+# WHY an exemption-table check (review of u8 and u9, 2026-09-16; NOT_CALLOUTS added in the
+# review of u10): a few kept tests
 # hold an exact per-file count for a short list of files (a count is not something a
 # rule can express), and the matching rule skips those same files under `ignores:`.
 # The two lists live in different repos. A file added to the rule's list but not the
@@ -478,6 +479,7 @@ EXEMPTION_TABLES=(
     "no-hand-rolled-setting-row-toggle.yml|setting-row-authority.test.tsx|TOGGLES_OUTSIDE_A_ROW"
     "no-centred-status-paragraph.yml|status-strip-authority.test.tsx|CENTRED_STATUS_ELSEWHERE"
     "no-hardcoded-error-fallback.yml|status-strip-authority.test.tsx|HARDCODED_ERROR_FALLBACK"
+    "no-hand-rolled-callout-tint.yml|callout-authority.test.tsx|NOT_CALLOUTS"
 )
 echo "== exemption tables (a test's counted files = its rule's ignores:) =="
 if ! command -v python3 >/dev/null 2>&1; then
