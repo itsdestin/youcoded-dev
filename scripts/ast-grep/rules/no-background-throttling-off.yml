@@ -1,0 +1,38 @@
+id: no-background-throttling-off
+language: typescript
+severity: error
+message: >-
+  Never set `backgroundThrottling: false`. Electron throttles a hidden or
+  minimised window's timers and requestAnimationFrame to ~1Hz and skips its
+  paints; turning that off makes a minimised YouCoded keep rendering at full
+  rate for nobody. If a feature needs work while the window is hidden, do it in
+  the main process or on an explicit interval — not by un-throttling the renderer.
+note: |
+  Invariant source: Destin's requirement that a minimised app does no
+  unnecessary rendering work (2026-09-16, simplification audit §7). Today no
+  window sets the flag, so every hidden window is throttled by Electron's
+  default; this rule keeps it that way.
+  Guard: this rule (fixture scripts/ast-grep/fixtures/background-throttling.ts).
+
+  WHY a scan and not a comment: the flag is a one-line "fix" for a symptom that
+  looks like a bug — a timer that stops ticking when the window is minimised,
+  a WebSocket keepalive that arrives late — and every one of those symptoms has
+  a correct fix that costs nothing when the window is hidden. The flag is only
+  ever attractive at the moment someone is debugging the symptom, which is
+  exactly when nobody re-reads a rule file.
+
+  SCOPING: BrowserWindow / BrowserView / WebContentsView construction happens
+  only in src/main, so the rule scans src/main only (plus its fixture). All
+  three spellings of the key are covered: bare, and single- or double-quoted.
+files:
+  - "**/src/main/**/*.ts"
+  - "**/fixtures/background-throttling.ts"
+rule:
+  kind: pair
+  all:
+    - has:
+        field: key
+        regex: "^['\"]?backgroundThrottling['\"]?$"
+    - has:
+        field: value
+        kind: "false"
