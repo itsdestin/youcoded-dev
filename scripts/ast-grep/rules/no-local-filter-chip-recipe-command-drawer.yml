@@ -18,8 +18,9 @@ note: |
   border-accent/50` and `ml-auto` anywhere, so any string piece or JSX text
   holding one fires (a substring cannot span a `${…}`, so string pieces cover
   every non-comment place it could match).
-  LIMITATION: `<FilterChip` inside a string or a generic type argument
-  satisfied the old presence check; here only a rendered tag does.
+  STRICTER than the retired check (review of u2, 2026-09-16): a file whose
+  only `<FilterChip` sits in a string or a generic type argument passed the
+  old presence check; here it fires, because only a rendered tag counts.
 files:
   - "**/src/renderer/components/CommandDrawer.tsx"
   - "**/fixtures/no-local-filter-chip-recipe-command-drawer.tsx"
