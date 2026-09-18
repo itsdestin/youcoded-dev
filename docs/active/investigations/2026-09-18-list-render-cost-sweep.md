@@ -12,10 +12,9 @@ freezes/lag heavily for a bit … look for any similar instances … make sure
 everything in the app is handled consistently, and create design rules/project
 guidance/tooling to enforce this in the future."
 
-Read-only sweep: code reading only, **nothing measured yet in this session.**
-Numbers below are from earlier, cited runs. Measure before/after with
-`bash scripts/perf-lab/bg-run.sh --only projects` — `scenario-projects.mjs`
-already times the Conversations tab and the Files↔Conversations thrash.
+The sweep itself was code reading. The "before" numbers were measured afterwards
+(render-cost plan, Task 0) and sit in §1 → *Measured before*; per plan decision D4 the
+perf-lab row is re-taken after Tasks 3, 4 and 5 and added to the same table.
 
 ## 1. Root cause — four stacked costs on one click
 
@@ -36,6 +35,56 @@ Clicking **Conversations** (`youcoded/desktop/src/renderer/components/project-vi
    (`ProjectView.tsx:950`). ProjectView reads `useArtifact()` (`:169`), so every
    tab click, preview open, and every artifact-context dispatch (any session's
    file writes) re-renders the whole hidden file grid — up to 2,000 cards.
+
+### Measured before (2026-09-18, render-cost plan Task 0)
+
+**perf-lab, Projects phase** — fixture project `gamma`: ~1,600 files, 700 one-turn
+conversations, stock theme, Xvfb/llvmpipe (no GPU). Median of 3 passes; the thrash is
+8 rounds per pass.
+
+| stage | build | `conversations.ms` | `thrash.toConversations` median / max | Conversations-tab DOM nodes | report |
+|---|---|---:|---:|---:|---|
+| before | youcoded `950a52c3` | 174.8 ms (passes 191.1 / 174.8 / 163.4) | 181.6 / 198.4 ms | 13,267 (739 rows) | `perf-reports/2026-09-18-0948-950a52c-render-cost-before.md` |
+
+Same run, for context: to-Files median / max 65.3 / 85 ms; thrash long tasks 959 ms
+total, worst frame gap 160 ms, main process unresponsive 0 ms; Projects open 161.6 ms.
+
+What the clock means: `conversations.ms` and each thrash sample start at the tab click
+and stop when Project View's node count first changes, plus two frames
+(`scenario-projects.mjs` `h.tab`). A list that mounted in several commits would be
+under-counted, so read the node count beside it. And note the rig was blind until this
+run: since youcoded `64aa78c2` (2026-09-17) its Project View lookup matched nothing, so
+the phase aborted before measuring (fixed in `7816ff4d`); no Projects numbers exist
+between 2026-09-09 and this row.
+
+Command (later stages change only `--label`):
+
+    bash scripts/perf-lab/bg-run.sh --only projects \
+      --checkout <workspace>/worktrees/sessions/convo-tab-lag/youcoded --label render-cost-before
+
+`--checkout` is required: without it the rig builds `worktrees/perf-lab`, which is not
+this branch (and does not exist in this worktree).
+
+**DOM-size sweep** — `node scripts/ui-review/dom-size-sweep.mjs --port <workbench port>`,
+workbench `scenario=stress&stressRows=2000`, budget 8,000 elements. Red is expected
+before the fixes; this run proves the guard sees all three known-unbounded lists.
+
+| surface | nodes | budget | result |
+|---|---:|---:|---|
+| Resume browser | 2,572 | 8,000 | PASS |
+| Projects → Conversations | 17,516 | 8,000 | **FAIL** |
+| Projects → Files, search "e" | 1,242 | 8,000 | PASS |
+| Marketplace | 58,706 | 8,000 | **FAIL** |
+| Model picker, search "a" | 24,679 | 8,000 | **FAIL** |
+| Conversation preview (opened from Resume) | 2,804 | 8,000 | PASS |
+| Side drawer (Session Files) | 1,083 | 8,000 | PASS |
+
+Two PASSes prove less than they look. The stress scenario does not enlarge a project's
+files (the Files tab searches the ~12-file fixture), and the preview opens a short
+fixture conversation, so neither the Task 5 flat-results case nor the Task 6 long-preview
+case is exercised at scale yet. The preview is opened from Resume on purpose: opened from
+Projects → Conversations, the unbounded list behind it is counted too (17,740 on a trial
+run), which measures the list, not the preview.
 
 Adjacent, on Projects **open** (not tab switch): `project:list-conversations`
 (`main/project-conversations.ts:21`) and the hero counts
