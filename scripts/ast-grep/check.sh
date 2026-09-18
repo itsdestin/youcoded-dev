@@ -372,7 +372,8 @@ fi
 #   `constraints:` (a non-Sync fs call ahead of a Sync one silenced the whole rule) — +0.
 # 2026-09-18: +2 for app-chatview-props-are-stable (an inline arrow on a self-closing
 #   <ChatView>, a function expression on an opening one).
-EXPECTED_VIOLATIONS=415
+# 2026-09-18: +2 for chrome-control-no-glyph-nudge-hover (a className string, a template branch).
+EXPECTED_VIOLATIONS=417
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

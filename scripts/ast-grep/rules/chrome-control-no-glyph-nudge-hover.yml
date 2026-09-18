@@ -1,0 +1,27 @@
+id: chrome-control-no-glyph-nudge-hover
+language: tsx
+severity: error
+message: >-
+  `text-fg-dim hover:text-fg-2` is a hover nobody can see: ~10 levels of grey on
+  a 14px glyph, in every theme. A control inside a `bg-inset` pill cannot fill
+  with `inset` (invisible on itself), which is how this fallback got written
+  seven times. Use ON_INSET_CONTROL from components/header/control-states.ts —
+  it fills `edge` on hover, a step past that on press, and carries the focus ring.
+note: |
+  Destin, 2026-09-18: "the minimize/maximize/exit/games/files buttons all lack
+  good hover sensitivity, but projects view and settings look good." Scoped to
+  the chrome files where the fallback lived (the header, the two view toggles,
+  ScreenBand, the overflow menu); the ladder itself is pinned by
+  youcoded/desktop/tests/hover-press-ladder.test.ts. Elsewhere in the app
+  `hover:text-fg-2` on a text link sitting on a plain surface is a different
+  case and is not this rule's business.
+files:
+  - "**/src/renderer/components/HeaderBar.tsx"
+  - "**/src/renderer/components/NarrowViewToggle.tsx"
+  - "**/src/renderer/components/WideViewToggle.tsx"
+  - "**/src/renderer/components/ScreenBand.tsx"
+  - "**/src/renderer/components/OverflowMenu.tsx"
+  - "**/fixtures/chrome-control-no-glyph-nudge-hover.tsx"
+rule:
+  kind: string_fragment
+  regex: "text-fg-dim hover:text-fg-2"
