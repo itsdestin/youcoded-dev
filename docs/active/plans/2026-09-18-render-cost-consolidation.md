@@ -73,7 +73,8 @@ edit/save path, so a column cap cannot lose data. G-23…G-28 exist; G-29/G-30 a
 | Anywhere in Projects | Lag whenever any session saves a file | Gone (Task 5 — needs the context read moved, not just memo) |
 | Opening Projects / Resume / buddy list | Re-reads every transcript, twice at once on Projects | First open after launch reads each transcript once; after that only changed ones |
 | Conversation preview, buddy chat | Slower the further back you scroll | Stays flat, like the main chat |
-| Collapsed file-change / file-read boxes | Every line drawn, scroll inside the box | **Decision D1 below** |
+| File-change / file-read boxes in chat | Every line of the file drawn even while collapsed | Collapsed: first 15 lines + "Show N more lines". Expanded: a scrolling box that fills in as you scroll, never the whole file at once. Let go of when collapsed or scrolled far away (D1) |
+| Expanded command-output boxes | Grow to the full length of the output | Same scrolling height cap as the file boxes |
 | Marketplace, model search | Whole list drawn | 50 at a time as you scroll |
 | Very wide CSV | Every column | Capped at 100 columns like Excel files, with the existing "showing N" note |
 | Game chat | Grows forever | Last 200 messages |
@@ -88,10 +89,14 @@ not 400px early, so the end of the list can be seen for a moment (Task 4 says wh
 
 - **D0 (Destin, 2026-09-18):** one consolidated build worked through in one session track, not
   separate projects. Commits stay one-per-task so any regression is traceable.
-- **D1 — OWED, collapsed diff/read boxes.** Recommended: collapsed shows the first 15 lines
-  as a real slice, Expand shows the rest (matches `CollapsibleBlock`, ToolBody.tsx:67-72).
-  Alternative: keep scroll-inside and reveal 50 at a time inside the box. **Task 11 does not
-  start until Destin answers.**
+- **D1 — DECIDED (Destin, 2026-09-18), collapsed diff/read boxes:** "fine with something like a, but i
+  dont think i want to expand and show all 5000 lines at once. it should still be scrolling. and
+  should unload when it makes sense." So, three states (Task 11 has the detail):
+  **collapsed** = the first 15 lines as a real slice + "Show N more lines"; **expanded** = a
+  height-capped box that SCROLLS, filled 200 lines at a time as he scrolls it — never the whole
+  file at once; **unloaded** = "Show less" drops back to the 15-line slice, and a box that has
+  scrolled far away in the chat is dropped entirely by the entry folding the chat already has
+  (and that Tasks 6–7 add to the preview and buddy chat) and comes back collapsed.
 - **D2 — technical (Claude):** chunked reveal, not virtualization (rejected 2026-07-31:
   variable-height rows). Entry folding for timelines. No new `content-visibility: auto` on
   anything that can carry a theme glow (retired 2026-04-10).
@@ -149,7 +154,7 @@ not 400px early, so the end of the list can be seen for a moment (Task 4 says wh
 | `desktop/src/renderer/components/marketplace/MarketplaceScreen.tsx`, `MarketplaceCard.tsx` | Reveal + memo card | 8 |
 | `desktop/src/renderer/components/model/ModelPicker.tsx` | Reveal while searching | 9 |
 | `artifact-views/CsvView.tsx`, `game-reducer.ts`, `SubagentTimeline.tsx` (memo row only), `CommandDrawer`'s `SkillCard.tsx` | Small bounded fixes + memo consistency | 10 |
-| `diff/UnifiedDiff.tsx`, `tool-views/ToolBody.tsx` (ReadView) | Collapsed = real slice (D1) | 11 |
+| `diff/UnifiedDiff.tsx`, `tool-views/ToolBody.tsx` (ReadView, CollapsibleBlock) | Collapsed = real slice; expanded = capped scroller filled in chunks (D1) | 11 |
 | `SessionDrawer.tsx` | Memo rows via ref handlers | 12 |
 | `scripts/ui-review/dom-size-sweep.mjs` (new) + the per-surface stress pins | The guard: behaviour, not source text | 13 |
 | `.claude/rules/react-renderer.md`, `youcoded/docs/renderer-chrome.md`, design guide, `code-reviewer.md`, `ux-tester.md`, `scripts/perf-lab/compare.mjs` budget | Guidance + enforcement | 14 |
@@ -158,7 +163,7 @@ not 400px early, so the end of the list can be seen for a moment (Task 4 says wh
 
 ### Task 0: Baseline numbers (no code)
 
-- [ ] **Step 1:** D3 is decided (no decks, no process beyond a final code review) — nothing to confirm. D1 is still owed; it blocks only Task 11.
+- [ ] **Step 1:** D1 and D3 are both decided (see Decisions) — nothing to confirm with Destin before starting.
 - [ ] **Step 2:** `bash scripts/perf-lab/bg-run.sh --only projects --label render-cost-before --dry-run`, then without `--dry-run`. Record `conversations.ms`, `thrash.toConversations.medianMs/maxMs` from the `perf-reports/*.md` it prints.
   The fixture already seeds a 700-conversation project (`scenario-projects.mjs:192`), so these numbers move with Tasks 3–5; per D4 the same command is re-run after each of them.
 - [ ] **Step 2b: make the workbench's big sample reach these screens.** Today the `stress` scenario only enlarges the Resume list and permissions (`dev/workbench/scenarios.ts:261` → `past`, `permissions`); `?stressRows=` does nothing for Project View, Marketplace or the model list. Read `conversationsIn()` (`dev/workbench/mock-shim.ts:~1909`), `fixtures/marketplace/catalog.ts` and the `catalog` store field, and in the `stress` scenario make each honour `stressRowCount()` (conversations for the first project, marketplace entries, catalog models) — generated rows, same shape as the existing fixtures, WHY comment naming this plan. Then `node scripts/workbench-boot-check.mjs` against a serving workbench (required after any mock-shim change). Commit `test(workbench): stress scenario fills Project View, Marketplace and the model list`, push. Without this, Step 3's "before" shots and Task 13's sweep show small lists and prove nothing.
@@ -924,12 +929,25 @@ return (
 - [ ] **SubagentTimeline** — wrap `SubagentToolRow` in `React.memo`; run `rg -l SubagentTimeline desktop/tests` tests; commit. **Leave `style={{ contentVisibility: 'auto' }}` (:210) where it is** (review finding 7): it is a working speed-up on a list this plan gives no other bound, nobody has reported a clipped glow or a jumping row there, and D2 only forbids NEW uses. Removing it is listed under "Deliberately out of scope" with what would justify it.
 - [ ] **SkillCard comparator** — `SkillCard.tsx:99` ignores handler identity, so a skipped render can keep a stale `onToggle`. Switch to the RowMemo pattern: handlers read through a ref inside the card (`const onToggleRef = useRef(onToggle); onToggleRef.current = onToggle;` and call `onToggleRef.current`), and drop the custom comparator in favour of default shallow compare over data props only. Run SkillCard/CommandDrawer tests. Commit `refactor(renderer): memo'd cards call the latest handler`, push.
 
-### Task 11: Collapsed boxes are a real slice — BLOCKED ON D1
+### Task 11: File-change and file-read boxes — slice when collapsed, scroll in chunks when expanded (D1)
 
-**Files:** `diff/UnifiedDiff.tsx:128-143`, `tool-views/ToolBody.tsx` ReadView (~600-640); Tests: the UnifiedDiff and ReadView tests (`rg -l "UnifiedDiff|ReadView" desktop/tests`).
+**Files:** `diff/UnifiedDiff.tsx:~128-160`, `tool-views/ToolBody.tsx` ReadView (`:600-650`) and `CollapsibleBlock` (`:67-80`); Tests: the UnifiedDiff and ReadView tests (`rg -l "UnifiedDiff|ReadView" desktop/tests`).
 
-- [ ] If D1 = recommended: failing test — a 5,000-row diff collapsed renders `DIFF_PREVIEW_LINES` rows and a "Show N more lines" button; expanded renders all. Implement: when `overflow && !open`, map `rows.slice(0, DIFF_PREVIEW_LINES)` with no `maxHeight`/internal scroll; the button text matches `CollapsibleBlock` ("Show N more lines" / "Show less"). Same in ReadView with `READ_PREVIEW_LINES`, and delete its stale comment "All rows always render (no virtualization needed…)". `fill` mode (git review) instead uses `useChunkedReveal(rows, { resetKey: '', rootRef: <host scroller> })`. Commit `perf(diff): collapsed diffs and reads draw only what they show`, push.
-- [ ] If D1 = keep scrolling: collapsed keeps its `maxHeight` box and uses `useChunkedReveal` with the box as root; same tests adjusted.
+**Today:** collapsed is only a `maxHeight` on a box that already holds EVERY row (`UnifiedDiff.tsx` `rows.map`, ReadView the same) — a 5,000-line edit draws 5,000 rows to show 15. Rows wrap (`whitespace-pre-wrap break-all`), so they are variable-height: true windowing (dropping rows off the top behind an exact spacer) is the approach D2 already rejected. The design below needs no row heights.
+
+**The three states (D1):**
+1. **Collapsed** — `rows.slice(0, DIFF_PREVIEW_LINES)`, no `maxHeight`, no inner scroll, button "Show N more lines" (wording matches `CollapsibleBlock`).
+2. **Expanded** — the box becomes a scroller capped at `max-h-[45vh]` (the cap the git timeline already gives a diff — see the `fill` comment at `UnifiedDiff.tsx:~95`; one number, not a new one) and its rows come from `useChunkedReveal(rows, { resetKey: '', rootRef: boxRef, active: open, chunk: 200 })` with the 1px sentinel as the last child. 200, not 50: a line is 3–4 nodes where a card is 15–25, so 200 lines cost about what 50 cards do — say that in the WHY. Button reads "Show less".
+3. **Unloaded** — (a) "Show less" returns to state 1, releasing every revealed row; (b) far away in the chat, the entry folding (`useEntryFolding`, ChatView today, preview + buddy after Tasks 6–7) replaces the whole entry with a spacer, the box unmounts, and it remounts collapsed via `getInitialExpanded()`. **Do not build a second unload mechanism** (an observer that shrinks the window while the box is off screen): it would fight the fold, and shrinking a window the user is scrolled inside loses their place. WHY comment at the hook call names (b) as the unload path so nobody adds one.
+
+Known limit, stated in the closing message: someone who scrolls through all 5,000 lines of ONE box has 5,000 rows drawn until they collapse it or scroll the chat away. That is one box, by choice, and it is released — not every long box on every render, which is today.
+
+- [ ] **Step 1: Failing tests** (firing observer from Task 1): a 5,000-row diff — collapsed draws exactly `DIFF_PREVIEW_LINES` rows and a "Show 4,985 more lines" button; click → 200 rows inside a box whose class list carries the height cap; `fireAll()` → 400; "Show less" → `DIFF_PREVIEW_LINES` again. A 10-row diff draws 10 rows, no button, no sentinel. Same four assertions for ReadView with `READ_PREVIEW_LINES`. Run → FAIL. Break-it proof per test-suite-hygiene: map `rows` instead of the slice once, see red, restore.
+- [ ] **Step 2: Implement** both as above; delete ReadView's stale comment "All rows always render (no virtualization needed…)". Hunk separators use `hunkBoundaries.has(idx)` on the ORIGINAL index — a slice from 0 keeps indices aligned; do not re-index. `useExpandAllToggle` (expand every box at once) now costs 200 rows a box instead of everything — note it in the WHY.
+- [ ] **Step 3: `fill` mode** (git review; the HOST is the scroll surface, `UnifiedDiff.tsx:~95`): no button, no cap; `useChunkedReveal(rows, { resetKey: '', rootRef: noRoot, chunk: 200 })` with a `null` ref → viewport root (UnifiedDiff has no handle on the host's scroller; the viewport fallback still reveals when the sentinel is actually visible, the same trade as Task 4's narrow case).
+- [ ] **Step 4: `CollapsibleBlock` consistency** (command output, written-file content): it already slices when collapsed, and expanded it is ONE `<pre>` — cheap, so no reveal window. But expanded it has no height cap and a 5,000-line output pushes the chat down by 5,000 lines, which is the thing D1 says he does not want. Add the same `max-h-[45vh]` to the expanded `<pre>` (it is already `overflow-auto`). Test: expanded block carries the cap. **This is a visible change to a third kind of box — name it in the closing message.**
+- [ ] **Step 5: find-in-chat.** Read how `ContentFindBar.tsx` matches (it turns folding off while open, which suggests it searches what is DRAWN). If so: today it can hit a line hidden inside a collapsed box; after this it finds only drawn lines (15 collapsed, or what has been revealed). Do not engineer around it — report it in the closing message as a thing he might notice, with the workaround (expand the box, or open the file).
+- [ ] **Step 6:** Commit `perf(diff): file boxes draw 15 lines collapsed and scroll in chunks expanded`, push.
 
 ### Task 12: Side drawer rows memoised
 
@@ -994,7 +1012,7 @@ Why not the `bounded-lists.test.ts` text scanner this task used to be (review fi
 - [ ] perf-lab after-run with the Task 0 command and `--label render-cost-after`; `node scripts/perf-lab/compare.mjs <before> <after>` → KEEP. Record numbers in the investigation doc, completing the D4 table (before · t3 · t4 · t5 · after) — the deck's timing slide is that table in plain words.
 - [ ] `node scripts/ui-review/dom-size-sweep.mjs` against the serving workbench → every surface under budget; paste its table into the closing notes and quote its before/after node counts for Marketplace and model search in the closing message.
 - [ ] Fresh code reviewer (`scripts/ui-review/code-reviewer.md`) over the full diff; address findings in scope.
-- [ ] **Closing chat message to Destin, in place of a deck (D3)** — plain words, no jargon, shortest form that carries it: the D4 timing table as "before → after" per fix; then "things you might notice", each with where to look: the scrollbar on a long list grows as you scroll; a CSV wider than 100 columns shows the first 100 with the existing note; game chat keeps the last 200 messages; collapsed file boxes per D1; on a phone, the next Conversations cards arrive at the end of the list. Anything a test or the sweep could not prove goes in the same message as unverified.
+- [ ] **Closing chat message to Destin, in place of a deck (D3)** — plain words, no jargon, shortest form that carries it: the D4 timing table as "before → after" per fix; then "things you might notice", each with where to look: the scrollbar on a long list grows as you scroll; a CSV wider than 100 columns shows the first 100 with the existing note; game chat keeps the last 200 messages; file boxes: 15 lines collapsed, a scrolling box when expanded, and find-in-chat only sees drawn lines (Task 11 Step 5); expanded command output is now height-capped; on a phone, the next Conversations cards arrive at the end of the list. Anything a test or the sweep could not prove goes in the same message as unverified.
 - [ ] Update `docs/roadmap/user-interface.md:109` with a dated line naming what shipped from this plan (do not close it — Destin closes it after real use). Ask "ready to merge?".
 
 ## Deliberately out of scope
