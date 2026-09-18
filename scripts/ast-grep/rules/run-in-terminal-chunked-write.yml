@@ -8,7 +8,7 @@ message: >-
   trailing carriage return, so on the ordinary input path it could land
   half-typed on the prompt for the user to run.
 note: |
-  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; "the
+  Invariant source: tests/session-manager.test.ts, shell sessions section (Plan B, 2026-09-16; "the
   initial command goes out on the chunked channel, not ordinary input"). The
   retired test asserted session-manager.ts's text contains
   `send({ type: 'input-chunked', data: command })`. Matched as a real call

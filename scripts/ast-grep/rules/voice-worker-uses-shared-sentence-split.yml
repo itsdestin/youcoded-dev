@@ -8,7 +8,7 @@ message: >-
   is how the composer and the phone came to disagree about what is grey — if
   this fires, delete the copy; do not loosen the rule.
 note: |
-  Invariant source: tests/voice-rehear.test.ts › "the worker imports the shared
+  Invariant source: tests/voice-rehear.test.ts (now voice-worker.test.ts) › "the worker imports the shared
   helper and keeps no copy of the rule" (retired by Plan B, 2026-09-16). The
   retired case read voice-worker.ts raw and required
     1. the text `import { splitAtLastSentenceEnd } from '../../shared/voice-types'`
