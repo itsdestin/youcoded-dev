@@ -61,7 +61,7 @@ verify:
   - test: youcoded/desktop/tests/mcp-manager.test.ts
   - test: youcoded/desktop/tests/mcp-tools.test.ts
   - test: youcoded/desktop/tests/mcp-gating.test.ts
-  - test: youcoded/desktop/tests/mcp-projection.test.ts
+  - test: youcoded/desktop/tests/mcp-reconciler.test.ts
   - test: youcoded/desktop/tests/mcp-startup-wiring.test.ts
 ---
 # Native harness tools, web tools, skills/injection & MCP

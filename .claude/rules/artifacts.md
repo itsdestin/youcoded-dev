@@ -18,7 +18,7 @@ verify:
   - path: youcoded/desktop/src/main/artifacts/import-file.ts
     contains: "MOVE_SOURCE_NOT_REMOVED"
   - test: youcoded/desktop/tests/artifacts/import-file.test.ts
-  - test: youcoded/desktop/tests/session-drawer-deleted-toggle.test.tsx
+  - test: youcoded/desktop/tests/SessionDrawer.test.tsx
   - test: youcoded/desktop/tests/project-view-default-selection.test.ts
   - path: youcoded/desktop/src/main/artifacts/cas-write.ts
     contains: "mutateFileUnderLock"
@@ -26,7 +26,6 @@ verify:
     contains: "isAbsoluteRecorded"
   - path: youcoded/desktop/src/shared/artifacts/migrate-relative-externals.ts
   - test: youcoded/desktop/tests/migrate-relative-externals.test.ts
-  - test: youcoded/desktop/tests/session-drawer-session-scoped-labels.test.tsx
   - path: youcoded/desktop/src/shared/artifacts/canonicalize.ts
   - path: youcoded/desktop/src/renderer/components/artifact-views/BinaryContent.tsx
   - test: youcoded/desktop/tests/artifacts/read-binary-access.test.ts
@@ -35,7 +34,6 @@ verify:
   - test: youcoded/desktop/tests/artifacts/cas-write.test.ts
   - test: youcoded/desktop/tests/ipc-channels.test.ts
   - test: youcoded/desktop/tests/missing-artifacts-cache.test.tsx
-  - test: youcoded/desktop/tests/session-drawer-settle-hold.test.tsx
   - path: youcoded/desktop/src/renderer/hooks/useMissingArtifacts.ts
     contains: "NEVER cleared before"
   - test: youcoded/desktop/tests/deliverable-auto-open.test.ts
