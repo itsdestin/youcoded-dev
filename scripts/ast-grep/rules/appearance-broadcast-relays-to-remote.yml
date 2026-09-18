@@ -9,7 +9,7 @@ message: >-
   phone keeps an old theme until reloaded, or a phone's change never reaches
   the computer's windows (Destin, 2026-09-11).
 note: |
-  Invariant source: tests/remote-appearance-relay.test.ts (Plan B, 2026-09-16)
+  Invariant source: tests/remote-server-connections.test.ts (Plan B, 2026-09-16)
   — "the window relay also broadcasts appearance:sync to remote clients" and
   "the remote server is told how to reach the computer's windows". The file's
   server-side behaviour cases stay; only these two main.ts text reads moved here.

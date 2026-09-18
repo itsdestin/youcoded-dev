@@ -9,7 +9,7 @@ message: >-
   ONE bucket for the household: five bad guesses from anybody lock the owner
   out, and nothing may count attempts where two connections can both reach it.
 note: |
-  Invariant source: tests/remote-rate-limit.test.ts (Plan B, 2026-09-16) — "no
+  Invariant source: tests/remote-server-connections.test.ts (Plan B, 2026-09-16) — "no
   failure bucket is keyed by network address" and "no failure budget is
   shared between connections". The file's socket-driving cases stay; the
   presence half ("a burst slows new connections…") is
