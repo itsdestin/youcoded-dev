@@ -62,7 +62,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       with OpenRouter" says "coming in a later update". Design re-checked against current code
       2026-09-18. Part 1 (honest "Connected", chat errors with a fix button, fake keys refused
       at entry) is built and its screens approved, on branch session/openrouter-oauth-spec,
-      not merged; Part 2 (Sign in with OpenRouter + balance) not started
+      not merged; Sign in with OpenRouter built on the same branch (awaiting its review deck
+      and a real sign-in); the balance and the gear's red dot not started
       `settings` `desktop` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
 
 - [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual

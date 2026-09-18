@@ -796,8 +796,20 @@ Built as designed, with three differences:
 - **`classifyProviderError`** lives in `providers/provider-error-code.ts` (not
   harness-session.ts, which is at its line budget).
 
-Part 1 does not include: the gear's red dot, the balance (card and status bar),
-and sign-in (§3.5). Those are Part 2.
+**Sign in with OpenRouter (§3.5) — built on the same branch** (youcoded
+`e3ff7ef6`, `432d8769`), per Destin: one branch, one PR. UI review deck
+`openrouter-signin.review.json`. `verify.sh --full` green. Checked live that
+OpenRouter accepts the exchange request's shape. **Not yet exercised end to end —
+that needs a person to approve in the browser.** Differences from §3.5:
+- **No shared loopback extraction.** `providers/openrouter-oauth.ts` is its own
+  ~250-line machine reusing only `generatePkce`; OpenRouter needs no fixed port,
+  `state` check or refresh, and the shipped ChatGPT sign-in stays untouched.
+- OpenRouter answers a bad code with **400 "Invalid code"**, not the documented
+  403; both map to the same sentence.
+- The card's refused-key state now leads with **Sign in again** (was Replace key
+  in the part 1 deck); remote access keeps Replace key.
+
+Still not built: the gear's red dot and the balance (card and status bar).
 
 ## 9. What changed from the 2026-08-31 draft
 
