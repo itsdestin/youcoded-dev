@@ -1387,3 +1387,24 @@ All seven surfaces under the 8,000-element budget at `stressRows=2000` (Conversa
 Wired as the last step of `scripts/ui-review/run-review.sh` (exit 1 over budget, proven
 with the Marketplace bound removed: 58,435 → exit 1), and named in
 `scripts/ui-review/README.md`. Not in `verify.sh` — it needs a browser and a workbench.
+
+### Task 15 — verify, measure, review (2026-09-18)
+
+- `verify.sh --full` on youcoded `5516a139` and again after the final-review fixes
+  (`9978ac81`): types, test types, full suite, knip, lint, design lint, ast-grep — all PASS.
+  Android not run (no Kotlin changed; the renderer is shared, so the WebView half is
+  unverified on a device).
+- perf-lab after-run `perf-reports/2026-09-18-1246-a346975-render-cost-after.md`;
+  `compare.mjs before after --target projects.median.conversations.ms` → **KEEP**
+  (Conversations 174.8 → 58.4 ms; to-Conversations thrash 181.6 → 65.3 ms; Projects long
+  tasks 1,217 → 0 ms). D4 table complete in the investigation doc §1.
+- Found and fixed beyond the plan: `useEntryFolding` never observed entries present when a
+  list mounted, so they could never fold (8586a4fb — ChatView too); the perf-lab Projects
+  phase had been blind since 2026-09-17 (7816ff4d).
+- Final whole-branch review: one Important (the shared tag store never re-read after its
+  first load, so sync-pulled or startup-failed tags stayed wrong) fixed in b8b52143 —
+  surfaces re-read in the background on open, a generation counter drops late answers, an
+  unchanged list publishes nothing. Minors fixed: CSV/XLSX note names only the limit hit;
+  folder-view sort keeps its place; meta-cache tests moved to session-browser.test.ts.
+- Design-guide renumber G-22 → G-29 (Task 14) conflicts with `docs/roadmap/dev-workspace.md`
+  ("do not renumber a guide Destin has signed off") — left for Destin; revert is one commit.
