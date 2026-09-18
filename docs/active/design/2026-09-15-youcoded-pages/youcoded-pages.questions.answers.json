@@ -1,0 +1,57 @@
+{
+ "deck": "youcoded-pages-questions",
+ "started": "2026-09-15T08:32:16.638Z",
+ "submitted": "2026-09-15T08:41:33Z",
+ "cur": 2,
+ "answers": {
+  "Q-home": {
+   "v": "pick",
+   "pick": "both",
+   "note": "",
+   "seconds": 82,
+   "theme": "meadow-mist"
+  },
+  "Q-chat": {
+   "v": "other",
+   "note": "confused about how a/b differ? cuz i can already kinda preview in the artifact viewer. i think i'd be fine with b/a, with a roadmap goal to build a c that offers a custom chat-alongside preview with drag-reorganize-resize and other useful tools for changing ui elements.",
+   "seconds": 82,
+   "theme": "meadow-mist"
+  },
+  "Q-projects": {
+   "v": "pick",
+   "pick": "protected",
+   "seconds": 82,
+   "theme": "meadow-mist"
+  },
+  "Q-background": {
+   "v": "pick",
+   "pick": "opt-in",
+   "seconds": 82,
+   "theme": "meadow-mist"
+  },
+  "Q-actions": {
+   "note": "confused about how this would work in practice. what kind of permissions would we be granting. how would we determine which are repeat/new/etc? ",
+   "v": "other",
+   "seconds": 82,
+   "theme": "meadow-mist"
+  },
+  "Q-device": {
+   "v": "pick",
+   "pick": "desktop-remote",
+   "seconds": 82,
+   "theme": "meadow-mist"
+  },
+  "Q-sharing": {
+   "v": "pick",
+   "pick": "marketplace",
+   "seconds": 31,
+   "theme": "meadow-mist"
+  },
+  "Q-proof": {
+   "v": "pick",
+   "pick": "dashboard-agent",
+   "seconds": 31,
+   "theme": "meadow-mist"
+  }
+ }
+}

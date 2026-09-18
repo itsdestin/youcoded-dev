@@ -25,7 +25,10 @@
 //   reaches `:focus` inside that frame, so a focus-dependent style reads unfocused.
 //
 //   --size WxH          viewport; repeatable, and the whole probe runs once per size
-//   --wait <js>         poll this expression until truthy before measuring (30s cap)
+//   --wait <js>         poll this expression until truthy before measuring (30s cap).
+//                       It runs BEFORE every --eval, so a page that needs a click first
+//                       (a tab that loads its data on open) must do that click inside the
+//                       --wait expression, guarded by a window flag so it fires once.
 //   --settle <ms>       extra pause after --wait (default 400)
 //   --eval <js>         evaluate and report; repeatable, reported in order
 //   --shot <path>       PNG screenshot. With several --size, {size} in the path is

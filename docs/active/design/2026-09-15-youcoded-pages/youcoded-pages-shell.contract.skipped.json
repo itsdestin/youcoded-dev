@@ -1,0 +1,202 @@
+{
+  "title": "YouCoded Pages shell \u2014 contract",
+  "key": "youcoded-pages-shell-contract",
+  "out": "youcoded-pages-shell.contract.html",
+  "themes": [
+    "midnight"
+  ],
+  "branch": "session/youcoded-pages-spec",
+  "sources": {
+    "youcoded-pages-questions": "youcoded-pages.questions.json",
+    "youcoded-pages-shell": "youcoded-pages-shell.review.json",
+    "youcoded-pages-shell-r2": "youcoded-pages-shell-r2.review.json",
+    "youcoded-pages-shell-r3": "youcoded-pages-shell-r3.review.json",
+    "youcoded-pages-shell-r4": "youcoded-pages-shell-r4.review.json",
+    "youcoded-pages-shell-r5": "youcoded-pages-shell-r5.review.json",
+    "youcoded-pages-shell-r6": "youcoded-pages-shell-r6.review.json",
+    "youcoded-pages-shell-r7": "youcoded-pages-shell-r7.review.json",
+    "youcoded-pages-shell-r8": "youcoded-pages-shell-r8.review.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Pages",
+      "path": "Top bar \u2192 Pages, a pinned page's button, and an open page",
+      "headline": "This is what done means for the Pages shell: the button, the library, pinned pages, and an open page.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "A permanent Pages button sits between Settings and Projects; each page you pin adds its own button after Projects.",
+          "checkedBy": "deck",
+          "threshold": "every button is the same 24 px square as Projects",
+          "source": "youcoded-pages-shell#S-1"
+        },
+        {
+          "id": "R2",
+          "statement": "Up to four pages can be pinned to the top bar.",
+          "checkedBy": "human",
+          "threshold": "four pins at most",
+          "source": "youcoded-pages-shell#Q-1"
+        },
+        {
+          "id": "R3",
+          "statement": "On a phone, Pages is a row in the ||| menu right after Projects; pinned page buttons do not appear there.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell#S-7"
+        },
+        {
+          "id": "R4",
+          "statement": "On a phone the library is one column of the same cards, with the bordered \u2715 in place of Esc \u00b7 Back.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell#S-8"
+        },
+        {
+          "id": "R5",
+          "statement": "Pages come in two kinds: personal pages, and pages that belong to a project.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-questions#Q-home"
+        },
+        {
+          "id": "R6",
+          "statement": "The built-in Projects screen stays protected; making pages never changes it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-questions#Q-projects"
+        },
+        {
+          "id": "R7",
+          "statement": "With no pages yet, the library says what a page is in two sentences and offers one Make a page button.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell#S-3",
+          "note": "we can make this description more interesting. the examples should be things that excite.intrigue the user, like a calendar, a personalized news feed or email browser, or an app to manage their team's timesheets."
+        },
+        {
+          "id": "R8",
+          "statement": "The welcome card names pages worth wanting: a calendar, a news feed, an email browser, a team timesheet.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r2#S-10"
+        },
+        {
+          "id": "R9",
+          "statement": "Each library card carries an upright push-pin, filled in when the page is pinned and an outline when not.",
+          "checkedBy": "deck",
+          "threshold": "16 px pin glyph",
+          "source": "youcoded-pages-shell-r2#S-9"
+        },
+        {
+          "id": "R10",
+          "statement": "Edit in chat is only on the library cards, a pencil beside the pin with a hover tip; the open page has none.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r6#S-24"
+        },
+        {
+          "id": "R11",
+          "statement": "The Week planner sample shows seven day columns, events coloured by kind, done or to do, and a quick add.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r2#S-11"
+        },
+        {
+          "id": "R12",
+          "statement": "Paint studio has tools left, palette and brush settings right, undo and redo; its paper stays white in every theme.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r2#S-12"
+        },
+        {
+          "id": "R13",
+          "statement": "The panel beside an open page lists every page, with its pin beside each one.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r3#C-1"
+        },
+        {
+          "id": "R14",
+          "statement": "Manage pages, at the bottom of the panel, opens the full Pages screen.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r3#C-1"
+        },
+        {
+          "id": "R15",
+          "statement": "Esc, or Back to chat at the top right, leaves the open page.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r3#C-1"
+        },
+        {
+          "id": "R16",
+          "statement": "The panel is its own rounded pane, like the files and games pane in chat; Manage pages fills its width at the bottom.",
+          "checkedBy": "deck",
+          "threshold": "240 px wide panel, 10 px edge",
+          "source": "youcoded-pages-shell-r6#S-23"
+        },
+        {
+          "id": "R17",
+          "statement": "The panel collapses with the button at the top-left of the page view, and the page takes the full width.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r4#S-16",
+          "note": "again this frame is kinda weird with a separate divider layer under the title? the edge of the frame itself should be the divier."
+        },
+        {
+          "id": "R18",
+          "statement": "With the panel collapsed, the page pane keeps the same edge all round instead of touching the window.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r5#S-21"
+        },
+        {
+          "id": "R19",
+          "statement": "The band above a page: panel toggle, page name, Back to chat and window buttons, all in the same quiet inset style.",
+          "checkedBy": "deck",
+          "threshold": "nothing on the band has an outline",
+          "source": "youcoded-pages-shell-r6#S-22",
+          "note": "this looks weird, the back to chat/esc arent aligned. and we should add a dot or something between them"
+        },
+        {
+          "id": "R20",
+          "statement": "Back to chat and Esc share one baseline at the same size, with a dot between them.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r7#S-25"
+        },
+        {
+          "id": "R21",
+          "statement": "The library header is the title left, Make a page and Esc \u00b7 Back right; cards group under Personal, then each project.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r8#S-26"
+        },
+        {
+          "id": "R22",
+          "statement": "The band has no line under it, the page's name sits in the exact centre, and the panel starts hidden.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r8#S-27"
+        },
+        {
+          "id": "R23",
+          "statement": "With the panel shown, panel and page are two rounded panes inset by the same edge on every side.",
+          "checkedBy": "deck",
+          "threshold": "10 px edge on every side; panel 240 px",
+          "source": "youcoded-pages-shell-r8#S-28"
+        },
+        {
+          "id": "R24",
+          "statement": "Clicking a page in the panel opens it in place; the band's name and icon follow.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "youcoded-pages-shell-r8#S-29"
+        }
+      ]
+    }
+  ],
+  "skipped": "2026-09-17 \u2014 Destin: 'we just skip the contract and such. this is already built basically, and i have done most of the reviews myself atp.' The 24 rows stayed as written (rounds 1\u20139 answered; R21/R22 superseded by the view-first redirect, see the phasing plan); never signed, no acceptance deck."
+}

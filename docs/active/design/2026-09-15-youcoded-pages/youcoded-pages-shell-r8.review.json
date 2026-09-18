@@ -1,0 +1,113 @@
+{
+  "title": "Pages — the shell, round 8: four things you saw but never answered",
+  "key": "youcoded-pages-shell-r8",
+  "out": "youcoded-pages-shell-r8.review.html",
+  "images": "images/youcoded-pages-shell-r8.review",
+  "runs": {
+    "after": "runs/after"
+  },
+  "labels": {
+    "after": "As built"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "stage": "design",
+  "crops": {
+    "library-top": [
+      "pages",
+      "library",
+      "1440x400+0+0"
+    ],
+    "view-band": [
+      "pages-view",
+      "view",
+      "1440x120+0+0"
+    ],
+    "view-panel-full": [
+      "pages-view",
+      "view-panel",
+      "1440x620+0+0"
+    ],
+    "view-switched": [
+      "pages-view",
+      "view-switched",
+      "1440x620+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-26",
+      "surface": "Pages",
+      "path": "Top bar → Pages",
+      "crop": "library-top",
+      "runs": [
+        "after"
+      ],
+      "headline": "The library header is the title left, Make a page and Esc · Back right; cards group under Personal, then each project.",
+      "changed": "This is the screen from round 1 with the later fixes applied. The contract writer found that the header and the grouping were only ever seen beside a note, never answered on their own.",
+      "notice": "Same family as Projects: one header, content below it on the plain background.",
+      "risk": "",
+      "highlight": {
+        "selector": "[aria-label='Exit pages']"
+      }
+    },
+    {
+      "id": "S-27",
+      "surface": "A page",
+      "path": "The band across the top of an open page",
+      "crop": "view-band",
+      "runs": [
+        "after"
+      ],
+      "headline": "The band has no line under it, the page's name sits in the exact centre, and the panel starts hidden.",
+      "changed": "From your notes in rounds 4 and 7: the pane's edge is the divider; the name is centred by construction; the panel is hidden until you press the top-left button (your call in the interview: always default to hidden).",
+      "notice": "Opening a page shows the page, not the list.",
+      "risk": "",
+      "highlight": {
+        "selector": "[aria-label='Show pages panel']"
+      }
+    },
+    {
+      "id": "S-28",
+      "surface": "A page",
+      "path": "Top-left button, then the panel",
+      "crop": "view-panel-full",
+      "runs": [
+        "after"
+      ],
+      "headline": "With the panel shown, panel and page are two rounded panes inset by the same edge on every side.",
+      "changed": "The full view with the panel open, as it stands after rounds 5 and 6. Never answered on its own; only its parts were.",
+      "measured": "10 px edge on every side; panel 240 px",
+      "notice": "The window, the panel and the page share one rhythm.",
+      "risk": "",
+      "highlight": {
+        "selector": "[aria-label='Pin Week planner']"
+      }
+    },
+    {
+      "id": "S-29",
+      "surface": "A page",
+      "path": "Click another page in the panel",
+      "crop": "view-switched",
+      "runs": [
+        "after"
+      ],
+      "headline": "Clicking a page in the panel opens it in place; the band's name and icon follow.",
+      "changed": "Round 4 showed this beside a note about a margin, which is since fixed. Nothing else changed.",
+      "notice": "Switching pages is one click, like switching sessions in the strip.",
+      "risk": "Switching reloads the page; anything the page has not saved is lost. Pages save their data as they go, so this is rarely visible.",
+      "highlight": {
+        "box": [
+          0.7,
+          12,
+          16,
+          6
+        ]
+      }
+    }
+  ]
+}

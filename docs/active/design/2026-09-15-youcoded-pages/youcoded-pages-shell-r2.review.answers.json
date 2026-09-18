@@ -1,0 +1,39 @@
+{
+ "deck": "youcoded-pages-shell-r2",
+ "started": "2026-09-16T22:48:01.755Z",
+ "submitted": "2026-09-16T22:51:53Z",
+ "cur": 4,
+ "answers": {
+  "S-9": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-10": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-11": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-12": {
+   "v": "yes",
+   "seconds": 44,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "wrote",
+   "text": "i don't think i want a header in that style. i think i want to hide the pinned/edit tags things. i think i may want pages to be arranged with a side panel instead of a top header? please give me a few different options/styles for how to organize pages windows. framed, frameless, side panel, etc",
+   "seconds": 138,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

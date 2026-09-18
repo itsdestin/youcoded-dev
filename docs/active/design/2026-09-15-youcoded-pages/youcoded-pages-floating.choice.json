@@ -1,0 +1,75 @@
+{
+  "title": "Pages in floating themes \u2014 four ways the list and the frame can sit on the wallpaper",
+  "key": "youcoded-pages-floating",
+  "out": "youcoded-pages-floating.choice.html",
+  "images": "images/youcoded-pages-floating.choice",
+  "runs": {
+    "today": "runs/after"
+  },
+  "themes": [
+    "halftone-dimension"
+  ],
+  "stage": "design",
+  "crops": {
+    "cards": [
+      "pages-floating",
+      "cards-idle",
+      "720x900+0+0"
+    ],
+    "sheet": [
+      "pages-floating",
+      "sheet-idle",
+      "720x900+0+0"
+    ],
+    "rail": [
+      "pages-floating",
+      "rail-idle",
+      "720x900+0+0"
+    ],
+    "bleed": [
+      "pages-floating",
+      "bleed-idle",
+      "720x900+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Pages",
+      "path": "Top bar \u2192 Pages, in Halftone Dimension, no page picked",
+      "headline": "In a floating theme, how should the page list and the frame sit on the wallpaper?",
+      "notice": "The left half of the window, enlarged, so the edges show. Look at three things: is the list its own card, is there a gap or a line between list and frame, and does the frame have gutters and corners or run to the window's edge.",
+      "risk": "An open page paints its own background inside the frame, so these differences show around a page and before one is picked, not inside it.",
+      "variants": [
+        {
+          "id": "cards",
+          "label": "Two cards",
+          "crop": "cards",
+          "summary": "The list and the frame are two glass cards with an 8 px gap between them and 8 px gutters, matching the header pill. Ships today.",
+          "measured": "2 cards, 8 px gap"
+        },
+        {
+          "id": "sheet",
+          "label": "One sheet",
+          "crop": "sheet",
+          "summary": "One glass card holds both; a 1 px line divides list from frame and there is no gap. Reads as a single window.",
+          "measured": "1 card, 0 px gap"
+        },
+        {
+          "id": "rail",
+          "label": "Bare list",
+          "crop": "rail",
+          "summary": "The list has no card at all: its rows sit straight on the wallpaper. Only the frame is a card.",
+          "measured": "1 card, list uncarded"
+        },
+        {
+          "id": "bleed",
+          "label": "Edge to edge",
+          "crop": "bleed",
+          "summary": "The frame runs to the window's left, right and bottom edges with no gutters or corners; the list floats over it as a card with a shadow.",
+          "measured": "0 px gutters, list floats"
+        }
+      ]
+    }
+  ]
+}
