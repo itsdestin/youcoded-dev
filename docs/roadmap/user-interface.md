@@ -26,7 +26,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `files-panel` `all` `parked` `checked 2026-09-18`
 
 - [ ] Some clickable spots still do nothing under the pointer after the 2026-09-18 hover/press sweep
-      (branch session/premium-motion-hover). Left on purpose, each for a stated reason, NOT checked
+      (youcoded#534). Left on purpose, each for a stated reason, NOT checked
       one by one: about twenty clickable non-buttons found by the sweep's inventory that also have
       no keyboard path (CommandDrawer, FirstTimeWarning, LocalModelsSection, ResumeBrowser rows,
       ModelPickerPopup, marketplace UpdateButton, ProjectView, SettingRow) — they need a button
