@@ -48,6 +48,13 @@ conversations, stock theme, Xvfb/llvmpipe (no GPU). Median of 3 passes; the thra
 | t3 — transcript-meta cache | youcoded `b502a0f7` | 174.8 ms | 165.9 / 186.2 ms | not re-read | `perf-reports/2026-09-18-1031-b502a0f-render-cost-t3.md` |
 | t4 — Conversations tab: 50 at a time, memo rows | youcoded `095de495` | **58.6 ms** | **65.1 / 66.2 ms** | not re-read | `perf-reports/2026-09-18-1044-095de49-render-cost-t4.md` |
 | t5 — hidden Files tab memoised, off ArtifactContext; flat results 50 at a time | youcoded `4b206809` | 58.6 ms | 65.2 / 66.7 ms | not re-read | `perf-reports/2026-09-18-1056-4b20680-render-cost-t5.md` |
+| after — all tasks, merged with master | youcoded `a346975e` | **58.4 ms** | **65.3 / 65.7 ms** | 1,508 (sweep, 2,000 rows) | `perf-reports/2026-09-18-1246-a346975-render-cost-after.md` |
+
+after note: `compare.mjs before after --target projects.median.conversations.ms` → **KEEP**
+(conversations 174.8 → 58.4 ms, −66.6%; to-Conversations thrash 181.6 → 65.3 ms, −64%;
+Projects open 161.6 → 123.9 ms; thrash IPC stall 0 → 0). Projects long tasks 1,217 → 0 ms,
+Files filter 100.4 → 65.8 ms (50 cards drawn), first search key 212 → 46 ms. Load 2.59.
+The default gate target (`startup…`) cannot judge a `--only projects` report, hence `--target`.
 
 t3 note: as the plan expected, the tab switch did not move (the 16 ms on the thrash median is
 within this rig's pass-to-pass spread). Projects open also held at 161.6 ms median: the
