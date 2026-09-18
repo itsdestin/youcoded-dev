@@ -56,16 +56,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
-- [ ] Settings says OpenRouter is "Connected" and its Test button comes back green, while every
-      turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
-      dead 2026-08-31). Approved design exists; held by Destin, not yet built
-      `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
+- [ ] OpenRouter's remaining credit isn't shown anywhere in the app, and a refused OpenRouter
+      key doesn't put a warning dot on the Settings gear (only on Assistant settings). Both
+      designed in the connection-trust spec §3.4 (balance from `/credits`, the smaller of
+      account balance and key limit; Rate Limits status-bar chip; gear red-dot third input),
+      left out of youcoded#533
+      `settings` `desktop` `parked` `checked 2026-09-18` → docs/archive/specs/2026-08-31-openrouter-connection-trust-design.md
 
-- [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual
+- [ ] The ChatGPT provider card in Assistant settings → Cloud providers has no manual
       refresh — Destin upgraded his ChatGPT plan and the new models didn't show up until he
-      thought to sign out and back in. A refresh button on each card so a plan or key change
-      is picked up without that workaround
-      `settings` `desktop` `confirmed` `checked 2026-09-07`
+      thought to sign out and back in. A way for a plan change to be picked up without that
+      workaround. (OpenRouter's card re-checks its key every time the page opens since
+      youcoded#533.)
+      `settings` `desktop` `confirmed` `checked 2026-09-18`
 
 - [ ] After a native session recovers from a step that produced only blank whitespace, the
       history the model sees on resume is not byte-identical to what it saw live (leading blank
@@ -166,6 +169,15 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       model is sized by its context window, a poor stand-in for capability. Capability and context
       budget want to be two separate axes
       `desktop` `parked` `checked 2026-09-01`
+
+- [ ] **v1.3.1 release blocker.** The one object that runs a native conversation is 4,756 lines
+      because it also orchestrates the helper agents (specialists), which already have their own
+      home, and hosts the shell sessions. Wanted: the specialist block and the shells moved out
+      along the seam the audit names, with the registry, lifecycle and reserve/bind/release kept
+      on one object — simplification phase 5, D4. Nothing changes on screen. On hold since
+      2026-09-18 (Destin): resumes after the native-session-host test split has merged and
+      phase 4 is done, since phase 4 moves the runtime this touches
+      `desktop` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
 ## tools
 - [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where

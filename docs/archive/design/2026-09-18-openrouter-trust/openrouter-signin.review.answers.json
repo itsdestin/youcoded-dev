@@ -1,0 +1,41 @@
+{
+ "deck": "openrouter-signin-review",
+ "started": "2026-09-18T09:54:00.824Z",
+ "submitted": "2026-09-18T09:56:33Z",
+ "cur": 4,
+ "answers": {
+  "SI-1": {
+   "v": "yes",
+   "note": "i dont like the button at the bottom left. put it directly to the left of \"sign in with openrouter\". just label it \"API Key\"",
+   "seconds": 49,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "SI-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "SI-3": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "SI-4": {
+   "v": "other",
+   "note": "too many buttons, unclear what the differenct between sign in again, use a different key, and my account is. my account doesn't entirely make sense if signed out. and again, no buttons at bottom left",
+   "seconds": 52,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "SI-5": {
+   "v": "other",
+   "note": "these seem like they should be two separate menus in response to whatever is selected on the previous page, not sure why we merged them into one. sign in and api key paste are different flows....",
+   "seconds": 40,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

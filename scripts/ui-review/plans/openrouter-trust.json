@@ -1,0 +1,194 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "boot": 3500,
+ "shots": [
+  {
+   "name": "card-verified",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=verified&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "card-rejected",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=rejected&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "card-expired",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=expired&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "card-wrong-type",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=wrong-type&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "card-unchecked",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=unchecked&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "settings-dot",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=rejected&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    }
+   ],
+   "expect": "js:!!document.querySelector('nav')"
+  },
+  {
+   "name": "modal-fake-key",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=none&planUsage=1",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Connect to OpenRouter')",
+     "settle": 700
+    },
+    {
+     "click": "[aria-label='OpenRouter API key']",
+     "settle": 200
+    },
+    {
+     "type": "sk-or-v1-0000000000000000fake"
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Connect')",
+     "settle": 1500
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "chat-key-rejected",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=verified&providerError=key-rejected",
+   "actions": [
+    {
+     "click": "[data-hint='theme contrast pass']",
+     "settle": 900
+    }
+   ],
+   "expect": "js:!!document.querySelector(\"[class*='ring-[var(--destructive)]']\")"
+  },
+  {
+   "name": "chat-key-expired",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=verified&providerError=key-expired",
+   "actions": [
+    {
+     "click": "[data-hint='theme contrast pass']",
+     "settle": 900
+    }
+   ],
+   "expect": "js:!!document.querySelector(\"[class*='ring-[var(--destructive)]']\")"
+  },
+  {
+   "name": "chat-credit-short",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=verified&providerError=credit-short",
+   "actions": [
+    {
+     "click": "[data-hint='theme contrast pass']",
+     "settle": 900
+    }
+   ],
+   "expect": "js:!!document.querySelector(\"[class*='ring-[var(--destructive)]']\")"
+  },
+  {
+   "name": "chat-request-refused",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&openrouter=verified&providerError=request-refused",
+   "actions": [
+    {
+     "click": "[data-hint='theme contrast pass']",
+     "settle": 900
+    }
+   ],
+   "expect": "js:!!document.querySelector(\"[class*='ring-[var(--destructive)]']\")"
+  }
+ ]
+}

@@ -69,7 +69,7 @@ behaviour.
 
 This is the workbench's main purpose, not a side effect. A channel the design needs but no
 backend serves goes in `mock-shim.ts`'s `MOCK_ONLY` registry with the feature it belongs to.
-`tests/workbench-mock-contract.test.ts` then enforces that every hand-written channel either
+`tests/mock-shim-window.test.ts` (mock contract) then enforces that every hand-written channel either
 mirrors a real one in `preload.ts`/`remote-shim.ts` or is registered as unbuilt — so a fake can
 never quietly ship as real, and the registry becomes the backend to-do list once a design is
 approved.

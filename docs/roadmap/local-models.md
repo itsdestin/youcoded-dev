@@ -121,3 +121,12 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       whole-engine shutdown. The Assistant settings panel it was waiting on exists now
       (2026-09-07); the two values still ride nothing
       `settings/local-models` `desktop` `confirmed` `checked 2026-09-16`
+
+- [ ] **v1.3.1 release blocker.** The file downloader exists three times (model files, the
+      engine, voice assets) and the checksum helper four times, so a fix to one — like the
+      disk-full crash guard added 2026-09-16 — has to be found and repeated in the others.
+      Wanted: one download-and-verify module every caller uses, with one disk-full test covering
+      all three; and the engine manager's three direct calls to the local engine going through
+      the supervisor's tracked path like the rest — simplification phase 5, D7 and D12. Nothing
+      changes on screen. On hold since 2026-09-18 (Destin); resumes with the rest of phase 5
+      `desktop` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md

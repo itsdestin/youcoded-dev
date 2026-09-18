@@ -24,7 +24,7 @@ verify:
   - path: scripts/ast-grep/rules/no-arbitrary-text-size.yml
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
-  - test: youcoded/desktop/tests/workbench-mock-contract.test.ts
+  - test: youcoded/desktop/tests/mock-shim-window.test.ts
 ---
 # React Renderer (shared desktop + Android WebView)
 

@@ -263,6 +263,17 @@ seen-on is always n/a here.
       Plan B did; the live list is `node scripts/test-inventory.mjs` section 3
       `n/a` `confirmed` `checked 2026-09-17`
 
+- [ ] Three growth checks the 2026-09-16 simplification audit named and the tooling-ratchet
+      phase left unscheduled (G7, G10, G12): no bundle-size budget (nothing stops a new library
+      making the app's web bundle a third bigger; four lazy-loaded points in 962 files; PDF,
+      spreadsheet, Word, editor and chess libraries all load up front), no view of how big the
+      messages between the window and the main process are (291 handlers checked for name
+      parity only), and no coverage measurement at all. Wanted, in that order: a size guard on
+      the built bundle with about 10 % headroom, a dev-only trace that logs oversized messages
+      with a nightly top-20 table, and a nightly-only downward coverage ratchet on the harness
+      and renderer state — never a coverage gate on PRs
+      `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
+
 ## rigs
 - [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
       cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
@@ -282,6 +293,16 @@ seen-on is always n/a here.
       tangled imports — could replace knip) and React Doctor (bad React patterns), reported
       before anything is added to the checks. React Doctor sends usage data unless turned off
       `n/a` `needs-verify` `checked 2026-09-16`
+
+- [ ] Two numbers the workspace can measure but never records (2026-09-16 simplification audit
+      G6, G8): the idle-CPU probe has a pass/fail budget flag and nothing calls it, and the
+      app's startup marks are placed and tested but their values are written down nowhere —
+      a hundred hand-run perf reports instead of one nightly line. Both need a same-machine
+      runner (a CI box's software renderer says nothing about a 180 Hz panel): launch a dev
+      instance nightly, run the idle probe at three times its baseline, run the startup marks
+      and append one line per night, with a sanity floor because the rig has twice reported
+      clean while measuring nothing
+      `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
 
 - [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
       remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
@@ -654,8 +675,10 @@ seen-on is always n/a here.
 
 - [ ] Deferred clean-ups from the 2026-07-10 master review that nobody has picked up (xterm WebGL
       detach, sync idle-poll backoff, status-data dedup, folder-list canonicalising, big-file
-      decompositions). Catalog: `docs/active/handoffs/2026-07-10-review-followups.md`
-      `n/a` `parked` `checked 2026-08-12`
+      decompositions). Catalog: `docs/active/handoffs/2026-07-10-review-followups.md`.
+      2026-09-17: simplification phase 2 (youcoded#503) covered the sync idle-poll backoff and
+      the status-data dedup; the other three stand
+      `n/a` `parked` `checked 2026-09-18`
 
 - [ ] youcoded-core's status line and write-guard still reference the deleted usage-fetch script (the
       file itself is gone there, so nothing runs) — clean up, or let the scheduled archive take it

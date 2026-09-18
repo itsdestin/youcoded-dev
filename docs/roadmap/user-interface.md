@@ -281,3 +281,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       thing it is about. Same review, U10. `AnchorTip` placement is shared by every settings
       page; the fix belongs to the primitive
       `settings` `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] **v1.3.1 release blocker.** The settings screen exists twice — a desktop version and a
+      phone version sharing 14 of their 17 rows — so every settings change is made twice and the
+      two can disagree. Wanted: one settings body with two small platform inserts —
+      simplification phase 5, D8. The row order may shift slightly, so it gets a before/after
+      review deck (both platforms, every theme) before it is kept. On hold since 2026-09-18
+      (Destin); resumes with the rest of phase 5
+      `settings` `all` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md

@@ -85,5 +85,7 @@ chat-data).
       sessions that is two synchronous directory listings a second, forever. Found by the
       2026-09-16 smoothness sweep (C10), not built: the directory poll should stop once its
       watcher is attached, and a settled helper's file watch should close with it
-      (`subagent-watcher.ts`)
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
+      (`subagent-watcher.ts`). 2026-09-17: simplification phase 2 (youcoded#503) did the timer
+      half — the prune and directory polls now arm on demand and the safety-net poll runs on
+      Windows only; the per-helper file watches still stay open until the session closes
+      `desktop` `confirmed` `checked 2026-09-18` `performance`

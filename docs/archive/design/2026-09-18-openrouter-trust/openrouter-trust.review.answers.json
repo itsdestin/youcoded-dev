@@ -1,0 +1,57 @@
+{
+ "deck": "openrouter-trust-review",
+ "started": "2026-09-18T09:13:54.422Z",
+ "submitted": "2026-09-18T09:15:21Z",
+ "cur": 7,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-5": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-6": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-8": {
+   "v": "yes",
+   "note": "kinda confused. i thought the point of this work was to add oauth/account sign in. this has all been about keys?",
+   "seconds": 28,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
