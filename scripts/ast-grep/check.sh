@@ -370,7 +370,9 @@ fi
 #   no-sync-fs-in-glob-walk, read-tool-no-blocking-read (one fixture match each). Edit/Write/
 #   file-fingerprint joined no-sync-fs-whole-file (+0). The sync-fs family also dropped its
 #   `constraints:` (a non-Sync fs call ahead of a Sync one silenced the whole rule) — +0.
-EXPECTED_VIOLATIONS=413
+# 2026-09-18: +2 for app-chatview-props-are-stable (an inline arrow on a self-closing
+#   <ChatView>, a function expression on an opening one).
+EXPECTED_VIOLATIONS=415
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
