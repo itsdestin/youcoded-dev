@@ -1,0 +1,24 @@
+id: filestab-no-artifact-context
+language: tsx
+severity: error
+message: >-
+  FilesTab stays mounted while hidden; reading ArtifactContext here re-renders
+  the whole hidden grid on every file any session writes, and React.memo cannot
+  stop it. Take the value as a prop from ProjectView.
+note: |
+  Invariant source: tests/project-view-files-tab-stays-mounted.test.tsx
+  ("hidden FilesTab does not re-render" → "stays still when another session
+  writes a file"). Children that only render while a file is OPEN
+  (ArtifactDetail) live in this file too and may not read it either — pass
+  props. Render-cost consolidation, 2026-09-18.
+  Three branches, one fixture line each: useArtifact(), the non-throwing
+  useArtifactOptional(), and a bare useContext(ArtifactContext) — each is the
+  same subscription under another name.
+files:
+  - "**/src/renderer/components/project-view/tabs/FilesTab.tsx"
+  - "**/fixtures/filestab-no-artifact-context*.tsx"
+rule:
+  any:
+    - pattern: useArtifact()
+    - pattern: useArtifactOptional()
+    - pattern: useContext(ArtifactContext)

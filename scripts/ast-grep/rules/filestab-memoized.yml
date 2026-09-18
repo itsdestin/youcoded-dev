@@ -1,0 +1,25 @@
+id: filestab-memoized
+language: tsx
+severity: error
+message: >-
+  FilesTab must be exported as React.memo(...). It stays mounted while hidden
+  (filestab-mounted-with-hidden-prop), so without memo every Project View
+  render redraws the whole hidden file grid — up to 2,000 cards per tab click
+  (render-cost consolidation, 2026-09-18).
+note: |
+  Invariant source: tests/project-view-files-tab-stays-mounted.test.tsx
+  ("hidden FilesTab does not re-render"). Fires when the file has no
+  `export const FilesTab = React.memo(` / `memo(` declaration.
+  WHY export_statement, not lexical_declaration (as first drafted): in the
+  tsx grammar `export` wraps the declaration, so a lexical_declaration's text
+  never starts with "export" and that regex fired on the real, memoised file.
+files:
+  - "**/src/renderer/components/project-view/tabs/FilesTab.tsx"
+  - "**/fixtures/filestab-memoized*.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: export_statement
+      regex: "^export const FilesTab = (React\\.)?memo\\("
