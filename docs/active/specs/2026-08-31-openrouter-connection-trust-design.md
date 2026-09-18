@@ -108,15 +108,26 @@ when the key has no cap — the common case), `usage*`, `is_free_tier`,
 `GET /api/v1/credits` returns account-wide `total_credits` and `total_usage`;
 balance = the difference.
 
-**Open risk — must be settled first in the build (§8 step 1).** OpenRouter's API
-reference still states (2026-09-18) that `/credits` requires a *management* key. On
-2026-08-31 it returned `200` with full data for a plain inference key. That cannot be
-re-checked without a real key. The design must work either way:
-- `/credits` works → balance from `/credits`.
-- `/credits` refuses → balance from `/key`'s `limit_remaining` **when the key has a
-  cap**; otherwise the balance is *unknown* and no number is shown (never `$0.00`).
-  Validity, expiry and every error path are unaffected — they come from `/key` and
-  from chat turns.
+**Settled 2026-09-18 with a real key** (a fresh inference key Destin made for the
+test: $1 cap, one-day expiry). Despite OpenRouter's API reference saying `/credits`
+needs a *management* key, both endpoints answered `200` to that plain key:
+- `/key` → `is_management_key: false`, `is_provisioning_key: false`, `limit: 1`,
+  `limit_remaining: 1`, `expires_at: "2026-09-19T08:49:40.927Z"`, plus fields the
+  first draft didn't list: `limit_reset`, `include_byok_in_limit`,
+  `free_model_daily_requests`.
+- `/credits` → `total_credits` and `total_usage` for the whole account.
+
+So the balance comes from `/credits`. Because the docs disagree with the behaviour,
+keep a fallback: if `/credits` ever refuses, use `/key`'s `limit_remaining` when the
+key has a cap; otherwise the balance is *unknown* and no number is shown (never
+`$0.00`). Validity, expiry and every error path come from `/key` and chat turns and
+are unaffected either way.
+
+**Which number to show when the key has a cap.** The test key shows why this
+matters: the account had about $9.77 left, but the key could spend only $1. What
+stops work is the **smaller** of the two, so the card and chip show
+`min(account balance, key's limit_remaining)`. The tooltip names which one applies
+("$1.00 left on this key's limit" vs "$9.77 left on your account").
 
 **No purchase API.** Adding credit is a link (`https://openrouter.ai/settings/credits`,
 already on the card's My Account button, `ModelProvidersPopup.tsx:473`).
@@ -469,7 +480,7 @@ absent means "draw nothing", the same as `chatgptUsage` today.
 
 ```
 { id: 'openrouter-balance', label: 'OpenRouter Credit', defaultVisible: true,
-  description: 'How much credit is left on your OpenRouter account.',
+  description: 'How much OpenRouter credit you can still spend — your account balance, or your key\'s own limit if that is lower.',
   bestFor: 'Anyone running models through OpenRouter — credit is prepaid, so this is the number that stops your work.' }
 ```
 
@@ -499,8 +510,8 @@ would draw an OpenRouter balance on a local-model session. The change:
 - The number whenever the widget is on (`$9.21`).
 - `warnStyles` tones (`StatusBar.tsx:463-466`): warn below the low threshold, danger
   at zero.
-- The number is account-wide (`/credits`). In the §2 fallback it is the key's own
-  remaining cap, and the tooltip says "left on this key's limit".
+- The number is the smaller of the account balance and the key's own remaining cap
+  (§2), with the tooltip saying which.
 - Nothing at all when the balance is unknown. That covers `unchecked` with no
   previous reading, and the §2 fallback case of an uncapped key when `/credits`
   refuses.
@@ -743,9 +754,9 @@ on the theory: without a stored date, a 401 reads "didn't accept".
 
 ## 8. Build order
 
-1. **Settle §2's open risk** — with a real, low-limit key Destin provides for the
-   test (never committed, never in the environment of a paid run): does `/credits`
-   answer an inference key, and an OAuth-minted one? And does `/auth` accept
+1. **Mostly settled 2026-09-18** (§2): `/credits` answers a plain inference key.
+   Still to confirm at build time, during the first real sign-in: that an
+   OAuth-minted key behaves the same, and that `/auth` accepts
    `http://127.0.0.1:<port>/or-callback/<nonce>` — an IP and a path, where the docs
    only promise "localhost … any port"? (If not: `localhost` with the nonce in a query
    parameter.) This picks the balance source and callback form before any UI is drawn.
@@ -794,6 +805,7 @@ item: the verdict refresh and Test re-read the key.
   `key_label=YouCoded`, and a 5-min timeout under the 10-min code life. The loopback
   code is extracted and shared with ChatGPT.
 - **First-run stub is a named second entry point.**
-- **§2 `/credits` claim demoted to an open risk** with a fallback. OpenRouter's docs
-  still say it needs a management key.
+- **§2 `/credits` re-confirmed with a real key** despite docs saying it needs a
+  management key; a fallback is kept. The chip and card show the smaller of the
+  account balance and the key's own cap.
 - **Android.** Refusal today; logic kept portable for the rebuild's step 4.
