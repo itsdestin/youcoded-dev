@@ -17,7 +17,8 @@ Four defects, each verified against `master` and the live API on 2026-08-31; all
 
 1. **"Connected" = `enabled && hasKey`.** `youcoded/desktop/src/main/providers/provider-registry.ts:69-79` derives `ready` from whether a secret exists for the provider's `secretRef` — never from any response from OpenRouter.
 2. **The Test button probes a public endpoint.** `testConnection`'s openrouter branch fetches `GET /api/v1/models`, which returns `200` for a fabricated key *and for no key at all*, so Test always says "Connected". The code's own comment says not to present this as key validation; the UI does exactly that.
-<!-- claim: {"path": "youcoded/desktop/src/main/providers/provider-registry.ts", "contains": "CAVEAT: OpenRouter's /models endpoint is PUBLIC"} -->
+<!-- claim: {"path": "youcoded/desktop/src/main/providers/openrouter-health.ts", "contains": "asks /key|/key`"} -->
+(Fixed on branch `session/openrouter-oauth-spec`, 2026-09-18: Test now asks `GET /key`. Until that branch merges, master still has the hollow probe.)
 3. **The Connect modal runs the same hollow test** and flashes green on entry (`ModelProvidersPopup.tsx`).
 4. **A real rejection carries no action.** `AttentionBanner` gates its Open Settings button on the phrase `Settings → Providers`, which only *pre-flight* errors emit, so a 401 from OpenRouter renders as raw jargon in a red pill. The model picker stays full throughout because `model-catalog.ts` reads the same public endpoint unauthenticated.
 
