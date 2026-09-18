@@ -321,8 +321,8 @@ const mark = (cdp, label) =>
  * false, so a wrong selector reads as a failure and not as a fast zero.
  *
  *  - The header's Projects button is `aria-label="Open Projects"` (HeaderBar.tsx:245,
- *    wide layouts; the rig's 1600x1000 Xvfb is wide). Exit is `aria-label="Exit
- *    projects"` (ProjectView.tsx:716).
+ *    wide layouts; the rig's 1600x1000 Xvfb is wide). Exit is the ScreenBand's
+ *    `aria-label="Back to chat"` (ScreenBand.tsx:57), looked up inside the view.
  *  - The Files tab is mounted when its grid/list radiogroup exists
  *    (`[role="radiogroup"][aria-label="File view"]`, FilesTab.tsx:593); while its
  *    data is in flight it shows a <p> starting "Loading files" (:624, noun :224).
@@ -348,7 +348,13 @@ export async function installProjectHelpers(cdp) {
     const all = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
     const txt = (el) => (el && el.textContent ? el.textContent.trim() : '');
     const raf2 = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    const pv = () => { const x = $('button[aria-label="Exit projects"]'); return x ? (x.closest('header') && x.closest('header').parentElement) || x.parentElement : null; };
+    // WHY not "Exit projects" any more (2026-09-18): youcoded 64aa78c2 (2026-09-17)
+    // gave Project View the shared ScreenBand, whose exit is "Back to chat" — a label
+    // the page view's band wears too. That stale selector made pv() null for the whole
+    // run, so the phase aborted at its first pv() check with an open Project View.
+    // The Conversations segment tab exists only in Project View; its .screen-view is
+    // the view's root (ProjectView.tsx:729).
+    const pv = () => { const seg = $('button[aria-label="Conversations"]'); return seg ? seg.closest('.screen-view') : null; };
     const filesMounted = () => !!$('[role="radiogroup"][aria-label="File view"]');
     const loading = () => { const p = pv(); return !!p && all('p', p).some((el) => txt(el).indexOf('Loading files') === 0); };
     const fileCards = () => all('button.layer-surface.h-44').length;
@@ -425,7 +431,9 @@ export async function installProjectHelpers(cdp) {
 
       close: async () => {
         if (!pv()) return { ok: true, ms: 0 };
-        return timed(() => clickAria('Exit projects'), () => !pv(), 20000);
+        // Scoped to the view: "Back to chat" is also the page view's exit.
+        const exit = () => { const b = pv() && $('button[aria-label="Back to chat"]', pv()); if (!b) return { ok: false, reason: 'no "Back to chat" button inside Project View' }; b.click(); return { ok: true }; };
+        return timed(exit, () => !pv(), 20000);
       },
 
       /** Focus the search box. Returns the reason if it is absent. */
@@ -715,9 +723,22 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
     });
     // Leave the popover open for the clear below? No — it overlays the grid and
     // its own Esc handler pops it; press Escape so the scroll measures the grid.
-    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
-    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
-    await sleep(150);
+    // WHY the guards (2026-09-18, render-cost baseline): this step aborted the whole
+    // phase with "Escape closed the whole Project View" while the same clicks in the
+    // workbench leave the popover open until Escape pops it. An Escape sent when the
+    // popover is ALREADY gone is the Project View's own Escape, so it must not be
+    // sent then; and the abort message must say which of the two states it met, so
+    // the next failure is diagnosed from the log instead of re-run blind.
+    const pvBeforeEsc = await call(cdp, '!!h.pv()');
+    const popBeforeEsc = await call(cdp, 'h.popoverOpen()');
+    if (!pvBeforeEsc) throw new Error('projects: the Project View closed during the type-filter step, before any Escape was sent');
+    if (popBeforeEsc) {
+      await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
+      await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
+      await sleep(150);
+    } else {
+      warnings.push('the File filters popover had already closed after the type filter, so no Escape was sent');
+    }
     if (await call(cdp, 'h.popoverOpen()')) warnings.push('the File filters popover stayed open after Escape — the scroll step measured with it overlaid');
     // `!!` — a DOM element cannot cross the protocol by value ("Object reference
     // chain is too long"); only the boolean can.

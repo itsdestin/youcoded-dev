@@ -156,8 +156,16 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       per shell render, per-session timers in hidden chats) — is the sweep's next build and
       the rest of this item's second half; Batches D (theme blur/particles) and E (file opens)
       follow. A5 (throttling the streaming bubble's markdown re-parse) is a visible change
-      that needs a before/after clip and Destin's call
-      `all` `confirmed` `checked 2026-09-16` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+      that needs a before/after clip and Destin's call. 2026-09-18 render-cost consolidation
+      (docs/archive/plans/2026-09-18-render-cost-consolidation.md, youcoded#535): every long list now draws 50 at a time and each card once —
+      Projects → Conversations 174.8 → 58.4 ms and its tab thrash 181.6 → 65.3 ms with long
+      tasks 1,217 → 0 ms; Marketplace 58,706 → 3,281 page elements, model search 24,679 →
+      1,255; the preview and buddy chat fold like the chat, and entries present when a chat
+      opens can now fold too (they never could). Left for later, each measured first: the
+      Resume browser's kept-built previews for Projects; splitting ArtifactContext so no
+      reader redraws on another session's file write; a selector-scoped marketplace store
+      (an install click still redraws the ≤100 visible cards)
+      `all` `confirmed` `checked 2026-09-18` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not
@@ -244,7 +252,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] Two places still open a section with a bare "›" beside a word — the Backup & Sync log
       ("Sync Log") and the system marker in chat. Destin (2026-09-05 review deck): "I HATE the
-      bare dropdowns with a chevron." The rule is now design-guide G-22; the Local Models engine
+      bare dropdowns with a chevron." The rule is now design-guide G-29 (numbered G-22 until 2026-09-18); the Local Models engine
       card, its model rows and its recommended-model card all switched to it on
       `feat/local-engine-upgrades`, these two have not.
       `all` `confirmed` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json

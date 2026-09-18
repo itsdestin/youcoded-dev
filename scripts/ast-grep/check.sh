@@ -374,8 +374,10 @@ fi
 # 2026-09-18: +2 for app-chatview-props-are-stable (an inline arrow on a self-closing
 #   <ChatView>, a function expression on an opening one).
 # 2026-09-18: +2 for chrome-control-no-glyph-nudge-hover (a className string, a template branch).
-#   (Merged with master the same day: 413 + 2 (master) + 4 (this branch) = 419.)
-EXPECTED_VIOLATIONS=419
+# 2026-09-18 (render-cost consolidation): +1 for filestab-memoized (FilesTab exported as a
+#   plain function) and +3 for filestab-no-artifact-context (useArtifact(),
+#   useArtifactOptional() and useContext(ArtifactContext), one fixture line each) — 423 (419 on master + these 4).
+EXPECTED_VIOLATIONS=423
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

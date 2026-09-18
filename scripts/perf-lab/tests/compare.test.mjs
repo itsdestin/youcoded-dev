@@ -78,11 +78,13 @@ const base = {
     median: { ceilingPssMb: 6800, deltaPssMb: 5080, perSize: { huge: { pageMedianMs: 90 } } },
   },
   projects: {
+    // conversations.ms + thrash.toConversations.medianMs joined PRIMARY 2026-09-18
+    // (render-cost plan Task 14): the Conversations tab drew every card at once.
     runs: [
-      { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
-      { thrash: { ipcStallMs: 7300 }, open: { openMs: 2160 } },
+      { thrash: { ipcStallMs: 7900, toConversations: { medianMs: 182 } }, open: { openMs: 2100 }, conversations: { ms: 175 } },
+      { thrash: { ipcStallMs: 7300, toConversations: { medianMs: 210 } }, open: { openMs: 2160 }, conversations: { ms: 191 } },
     ],
-    median: { thrash: { ipcStallMs: 7900 }, open: { openMs: 2100 } },
+    median: { thrash: { ipcStallMs: 7900, toConversations: { medianMs: 182 } }, open: { openMs: 2100 }, conversations: { ms: 175 } },
   },
   terminal: {
     runs: [
@@ -153,13 +155,16 @@ test('the thrash stall is derived for the report written before the field was pr
 });
 
 test('a phase NEITHER report ran is out of scope, but a phase only one ran still fails closed', () => {
-  // `--only projects` on both sides: 30 of the 32 PRIMARY paths belong to phases
+  // `--only projects` on both sides: 30 of the 34 PRIMARY paths belong to phases
   // that were never measured. Refusing on those would print REJECT for reasons
   // that have nothing to do with the change, on every single-phase comparison.
   const onlyProjects = (stall, open) => ({
     projects: {
-      runs: [{ thrash: { ipcStallMs: stall }, open: { openMs: open } }, { thrash: { ipcStallMs: stall + 2 }, open: { openMs: open + 2 } }],
-      median: { thrash: { ipcStallMs: stall }, open: { openMs: open } },
+      runs: [
+        { thrash: { ipcStallMs: stall, toConversations: { medianMs: 65 } }, open: { openMs: open }, conversations: { ms: 58 } },
+        { thrash: { ipcStallMs: stall + 2, toConversations: { medianMs: 66 } }, open: { openMs: open + 2 }, conversations: { ms: 59 } },
+      ],
+      median: { thrash: { ipcStallMs: stall, toConversations: { medianMs: 65 } }, open: { openMs: open }, conversations: { ms: 58 } },
     },
     errors: { coldStarts: [0], scenarioBoot: 0 },
   });

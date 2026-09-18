@@ -98,6 +98,18 @@ export const PRIMARY = [
   // same run; a fix for the thrash that made the first open slower (a bigger
   // warm-up, a pre-walk) would be a bad trade and only this path shows it.
   'projects.median.open.openMs',
+  // Added 2026-09-18 (render-cost plan, Task 14). Clicking the Conversations tab
+  // drew every card of a big project at once: 174.8 ms median before the fix,
+  // 58.6 ms once the tab drew 50 cards at a time (render-cost-before vs -t5).
+  // Neither path above sees it — the stall was in the RENDERER, and the cold open
+  // lands on the Files tab. A change that goes back to drawing the whole list shows
+  // up here first.
+  'projects.median.conversations.ms',
+  // The same cost inside the back-and-forth clicking Destin reported: each switch
+  // TO Conversations in the eight-click thrash, 181.6 -> 65.2 ms median. Judged
+  // beside thrash.ipcStallMs so a fix that quiets the main process while the tab
+  // itself redraws slowly again cannot pass.
+  'projects.median.thrash.toConversations.medianMs',
 
   // ── Terminal view (terminal phase, added 2026-09-10) ───────────────────────
   // Every session switch in terminal view clears the glyph atlas SHARED by every

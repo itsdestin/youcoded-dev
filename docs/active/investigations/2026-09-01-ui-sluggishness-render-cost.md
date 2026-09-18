@@ -22,6 +22,14 @@ the DOM with no virtualization or paging, so opening or switching into a long co
 is 98–99% renderer time (the file read is 0.1–0.3 s).
 <!-- claim: {"path": "youcoded/desktop/src/renderer/components/ChatView.tsx", "contains": "return state\\.timeline\\.map\\(\\(entry, idx\\) =>"} -->
 
+> **Status 2026-09-18 — no longer true as written.** Cycle 2 (paged history, youcoded #349,
+> 2026-08-28) opens a conversation at its last 30 turns and loads more only on scroll-up;
+> cycle 3 (youcoded #398, 2026-09-03) folds entries far off screen into spacers of the height they last had
+> (`hooks/use-entry-folding.ts`). ChatView still maps the *loaded* timeline (the anchor above
+> still holds), but what is loaded is paged and what is far away is folded. The same folding
+> now covers the conversation preview and the buddy chat
+> (`docs/archive/plans/2026-09-18-render-cost-consolidation.md`, Tasks 6–7).
+
 **Cause 2 — one mounted `ChatView` per open session.** Inactive panes are parked with
 `content-visibility: hidden` (deliberately not `display:none`, for resize performance), so
 cost scales with total open sessions — which matches "worse with more sessions" exactly.
