@@ -49,7 +49,8 @@ LF too).
 **Guard:** `scripts/ast-grep/rules/test-file-url-to-path.yml`; the rest — candidate.
 
 ## Never assert on wall-clock time
-**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock. **Guard:** none — candidate.
+**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock.
+**Guard:** none — candidate.
 
 ## Unmount what you render
 **Invariant:** never leave a React tree mounted when a test ends (`tests/setup-dom.ts`
@@ -61,8 +62,8 @@ does it for jsdom files), and clear any timer that outlives it.
 **Invariant:** wait on the thing itself — an event, or `vi.waitFor` on real state — never
 `setTimeout(…, 20)` hoping the work started, and never a REAL `setInterval` (fake it:
 `vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })` + `advanceTimersByTimeAsync`).
-Wait for the positive signal, then settle
-for the negative. **Why:** under load the work hasn't started; ~100 remain.
+Wait for the positive signal, then settle for the negative.
+**Why:** under load the work hasn't started; ~100 remain.
 **Guard:** none — candidate.
 
 ## Budgets are measured, not guessed
@@ -94,8 +95,8 @@ reason a rule cannot express** (parity across languages, CSS↔TSX coupling); ke
 ## A test lives with its feature and is named for its behaviour
 **Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), the file
 named for what it renders or calls — never a new file per task. Titles state behaviour: no
-dates, `§`, task ids or review rounds. Shared setup
-lives in `tests/helpers/`. **Why:** 826 files, 62% in name clusters (2026-09-16).
+dates, `§`, task ids or review rounds. Shared setup lives in
+`tests/helpers/`. **Why:** 826 files, 62% in name clusters (2026-09-16).
 **Guard:** `scripts/ast-grep/rules/test-name-describes-behaviour.yml`.
 
 ## Before calling a failure "flake"
