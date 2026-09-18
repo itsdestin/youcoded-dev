@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-08-31
 updated: 2026-09-18
 tags: [openrouter, providers, native-runtime, settings, error-messages, oauth, status-bar]
@@ -8,6 +8,9 @@ origin: Destin hit `User not found. (provider error 401)` in a live session whil
 ---
 
 # OpenRouter connection trust
+
+> **Shipped 2026-09-18 in youcoded#533** (Part 1 + Sign in with OpenRouter, §8a). Not built:
+> the balance and the gear's red dot (§3.4) — open on the roadmap (`docs/roadmap/native-harness.md`).
 
 Make the app's claim that OpenRouter is "Connected" mean something, give every
 OpenRouter failure a way out, and let a user connect by signing in instead of
@@ -779,7 +782,7 @@ item: the verdict refresh and Test re-read the key.
 
 **Part 1 — "say when the key doesn't work" — built on branch
 `session/openrouter-oauth-spec` (youcoded `38d48d8c`…`647d8754`).** UI approved by
-Destin on the review deck (`docs/active/design/2026-09-18-openrouter-trust/`,
+Destin on the review deck (`docs/archive/design/2026-09-18-openrouter-trust/`,
 8/8 yes). `verify.sh --full` green; checked against live OpenRouter (real key →
 verified with its expiry; fake key → rejected; a fake-key chat turn → the typed
 "didn't accept your API key" error). Not yet run in a dev window.

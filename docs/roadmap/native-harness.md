@@ -56,21 +56,19 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
-- [ ] Settings says OpenRouter is "Connected" and its Test button comes back green, while every
-      turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
-      dead 2026-08-31). Also: a made-up OpenRouter key completes first-run setup, and "Log in
-      with OpenRouter" says "coming in a later update". Design re-checked against current code
-      2026-09-18. Part 1 (honest "Connected", chat errors with a fix button, fake keys refused
-      at entry) is built and its screens approved, on branch session/openrouter-oauth-spec,
-      not merged; Sign in with OpenRouter built on the same branch (awaiting its review deck
-      and a real sign-in); the balance and the gear's red dot not started
-      `settings` `desktop` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
+- [ ] OpenRouter's remaining credit isn't shown anywhere in the app, and a refused OpenRouter
+      key doesn't put a warning dot on the Settings gear (only on Assistant settings). Both
+      designed in the connection-trust spec §3.4 (balance from `/credits`, the smaller of
+      account balance and key limit; Rate Limits status-bar chip; gear red-dot third input),
+      left out of youcoded#533
+      `settings` `desktop` `parked` `checked 2026-09-18` → docs/archive/specs/2026-08-31-openrouter-connection-trust-design.md
 
-- [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual
+- [ ] The ChatGPT provider card in Assistant settings → Cloud providers has no manual
       refresh — Destin upgraded his ChatGPT plan and the new models didn't show up until he
-      thought to sign out and back in. A refresh button on each card so a plan or key change
-      is picked up without that workaround
-      `settings` `desktop` `confirmed` `checked 2026-09-07`
+      thought to sign out and back in. A way for a plan change to be picked up without that
+      workaround. (OpenRouter's card re-checks its key every time the page opens since
+      youcoded#533.)
+      `settings` `desktop` `confirmed` `checked 2026-09-18`
 
 - [ ] After a native session recovers from a step that produced only blank whitespace, the
       history the model sees on resume is not byte-identical to what it saw live (leading blank

@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: Settings says OpenRouter is "Connected" without ever validating the key, and its Test button cannot fail
 ---
@@ -9,7 +9,7 @@ topic: Settings says OpenRouter is "Connected" without ever validating the key, 
 
 **Symptom.** Destin, 2026-08-31, live: every turn failed with a 401 from OpenRouter while Settings → Providers read "Connected" and the Test button came back green.
 
-**Design:** `docs/active/specs/2026-08-31-openrouter-connection-trust-design.md` — re-based 2026-09-18 against `youcoded@e5f8b2d8` (its §9 lists what changed, including a withdrawn key-rotation change and a fifth defect: a made-up key completes first-run). Not yet implemented; the file:line references below are from 2026-09-01 and superseded by the spec's. Desktop only (`provider:*` already refuses honestly on Android, `SessionService.kt`).
+**Design:** `docs/archive/specs/2026-08-31-openrouter-connection-trust-design.md` — re-based 2026-09-18 against `youcoded@e5f8b2d8` (its §9 lists what changed, including a withdrawn key-rotation change and a fifth defect: a made-up key completes first-run). Not yet implemented; the file:line references below are from 2026-09-01 and superseded by the spec's. Desktop only (`provider:*` already refuses honestly on Android, `SessionService.kt`).
 
 ## Mechanism (re-checked against master 2026-09-01)
 
@@ -18,7 +18,7 @@ Four defects, each verified against `master` and the live API on 2026-08-31; all
 1. **"Connected" = `enabled && hasKey`.** `youcoded/desktop/src/main/providers/provider-registry.ts:69-79` derives `ready` from whether a secret exists for the provider's `secretRef` — never from any response from OpenRouter.
 2. **The Test button probes a public endpoint.** `testConnection`'s openrouter branch fetches `GET /api/v1/models`, which returns `200` for a fabricated key *and for no key at all*, so Test always says "Connected". The code's own comment says not to present this as key validation; the UI does exactly that.
 <!-- claim: {"path": "youcoded/desktop/src/main/providers/openrouter-health.ts", "contains": "asks /key|/key`"} -->
-(Fixed on branch `session/openrouter-oauth-spec`, 2026-09-18: Test now asks `GET /key`. Until that branch merges, master still has the hollow probe.)
+(Fixed in youcoded#533, 2026-09-18: Test now asks `GET /key`.)
 3. **The Connect modal runs the same hollow test** and flashes green on entry (`ModelProvidersPopup.tsx`).
 4. **A real rejection carries no action.** `AttentionBanner` gates its Open Settings button on the phrase `Settings → Providers`, which only *pre-flight* errors emit, so a 401 from OpenRouter renders as raw jargon in a red pill. The model picker stays full throughout because `model-catalog.ts` reads the same public endpoint unauthenticated.
 
