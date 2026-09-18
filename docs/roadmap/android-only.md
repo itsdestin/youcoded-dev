@@ -9,7 +9,11 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       device", Claude Code unfrozen or scoped as legacy, updates and notifications that actually
       arrive, sharing into the app, real file access, touch-first input, modern Android polish,
       and a Google Play listing instead of sideloading. Every earlier Android item (19 here plus
-      11 from other areas) was folded into the report's appendix on 2026-09-10. Destin decided
+      11 from other areas) was folded into the report's appendix on 2026-09-10, and on 2026-09-16
+      the "phone is a shrunk desktop" ask joined it: a rethought default for the phone built
+      around quick dispatch and search — quick chips, session switching, resume/history — with
+      the full desktop-narrow UI still reachable rather than removed, design-first (its own
+      workbench mockup round before any build). Destin decided
       the same day (report §8): built-in assistant first, Play prioritized, the full desktop
       file view, remove the old restore wizard, harness before phone basics. Step 2 (honest
       builds: versions, notification permission, clean refusals) and the restore-wizard deletion

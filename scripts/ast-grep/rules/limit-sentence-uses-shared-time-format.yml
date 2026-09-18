@@ -1,0 +1,34 @@
+id: limit-sentence-uses-shared-time-format
+language: typescript
+severity: error
+message: >-
+  shared/chatgpt-types.ts must take its clock and day words from './time-format'
+  (the hand-rolled, locale-proof formatter the 5-hour / weekly chips also use),
+  so the ChatGPT limit card and the chip beside it can never print the reset
+  time two different ways.
+note: |
+  Invariant source: tests/chatgpt-oauth.test.ts › "the 5-hour sentence is
+  byte-identical to the approved wording, on every locale" — its source half
+  `expect(src).toMatch(/from '\.\/time-format'/)` (retired by Plan B,
+  2026-09-16). The behaviour half of that case (the exact sentence, and
+  toLocaleTimeString never called) stays in the test; the "no toLocaleString /
+  toLocaleTimeString / toLocaleDateString in this file" half moved to oxlint (no-restricted-properties, scoped to this
+  file in desktop/.oxlintrc.json).
+  WHY a rule and not "tsc already sees it": the file only fails to compile
+  without the import while it still CALLS formatTime12 & co. — a local
+  re-implementation compiles fine and is exactly the drift the pin prevented.
+  Whole-file branch: fires when no import/export statement in the file names
+  './time-format' as its source (the old regex matched either).
+files:
+  - "**/src/shared/chatgpt-types.ts"
+  - "**/fixtures/limit-sentence-uses-shared-time-format.ts"
+rule:
+  kind: program
+  not:
+    has:
+      any:
+        - kind: import_statement
+        - kind: export_statement
+      has:
+        field: source
+        regex: "^['\"]\\./time-format['\"]$"

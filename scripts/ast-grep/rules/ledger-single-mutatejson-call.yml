@@ -1,0 +1,51 @@
+id: ledger-single-mutatejson-call
+language: typescript
+severity: error
+message: >-
+  delegation-ledger.ts must call `await this.home.mutateJson(…)` exactly once
+  (inside the private mutate() chokepoint). Every write goes through mutate()
+  so the change listener (the live specialists:run-changed push) sees it; a
+  method calling home.mutateJson directly writes without notifying anyone.
+note: |
+  Invariant source: tests/specialist-delegation-ledger.test.ts (Plan B,
+  2026-09-16; "THE GUARD: delegation-ledger.ts calls home.mutateJson exactly
+  once (inside mutate())"). The retired case dropped whole-line comments and
+  asserted the regex `await this\.home\.mutateJson\(` matched exactly ONCE.
+  Two branches, together "count == 1":
+  - EXTRA: an `await this.home.mutateJson(…)` call that comes after another
+    one anywhere in the file. For any two calls, either the later one sits
+    INSIDE the earlier one (a call in its callback), or the later one (or an
+    ancestor of it) is a later sibling of the earlier one (or of an ancestor
+    of it) — so every call but the first fires, "count >= 2".
+  - MISSING: the file holds no such call at all — "count == 0".
+  As in the retired case, only the awaited `this.home.mutateJson(` spelling
+  counts, and nothing checks WHICH method holds the one call. DIFFERENCES
+  (minimal): a comment or string quoting the call is never counted (the old
+  filter dropped only whole-line comments, so a trailing comment or a string
+  could inflate the count or stand in for a deleted call); a call split
+  across lines is counted (the old regex needed it on one line).
+files:
+  - "**/src/main/harness/specialists/delegation-ledger.ts"
+  - "**/fixtures/ledger-single-mutatejson-call*.ts"
+utils:
+  mutate-json-call:
+    pattern: "await this.home.mutateJson($$$)"
+  holds-mutate-json-call:
+    any:
+      - matches: mutate-json-call
+      - has: { stopBy: end, matches: mutate-json-call }
+rule:
+  any:
+    # EXTRA — a second (or later) call.
+    - all:
+        - matches: mutate-json-call
+        - any:
+            - inside: { stopBy: end, matches: mutate-json-call }
+            - follows: { stopBy: end, matches: holds-mutate-json-call }
+            - inside:
+                stopBy: end
+                follows: { stopBy: end, matches: holds-mutate-json-call }
+    # MISSING — no call at all.
+    - kind: program
+      not:
+        has: { stopBy: end, matches: mutate-json-call }

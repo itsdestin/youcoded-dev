@@ -1,0 +1,122 @@
+id: tooltip-title-is-not-data
+language: tsx
+severity: error
+message: >-
+  <Tooltip> must never wrap <Dialog>, <AgentSection>, <SessionPreviewPane>,
+  <SettingRow>, <Callout>, <ErrorState> or <WizardHeader> — each takes
+  `title` as DATA it renders (a heading, or a string it threads down), not a
+  hover hint. Wrapping one moves a heading into a hover bubble and deletes
+  the real prop — it happened to <SessionPreviewPane>, <AgentSection> and
+  <Dialog> during the 2026-09-10 sweep. Pass the title, do not wrap.
+note: |
+  Invariant source: tests/tooltip-adoption.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 4 — "never wraps a component whose `title` is a
+  heading, not a hint"). TITLE_IS_DATA mirrors the retired test's list
+  exactly. Twin of tooltip-wraps-forwarding-element (checks the DIRECT
+  child only, same reasoning, including the JSX-expression-container
+  branch below).
+  ALSO CHECKS a child wrapped in a JSX expression container — `{cond ?
+  <Dialog/> : <Y/>}` or `{cond && <Dialog/>}` (review, 2026-09-16), for the
+  same reason as tooltip-wraps-forwarding-element: the retired test found
+  the first tag textually, `{...}` wrapper or not. Matched STRUCTURALLY
+  (a ternary's `consequence`/`alternative` field, or a `$A && $B`
+  expression's `right` field, must ITSELF be the offending tag), not with
+  a deep `stopBy: end` search.
+  ALSO CHECKS the same tag wrapped in one extra layer of parens —
+  `{open ? (\n<Dialog/>\n) : null}` / `{open && (\n<Dialog/>\n)}` (review
+  round 2, 2026-09-16), same reasoning and same one-`has:`-level shape as
+  tooltip-wraps-forwarding-element's parenthesized branch.
+  KNOWN STRICTNESS (review round 2, 2026-09-16): same as
+  tooltip-wraps-forwarding-element — `consequence` and `alternative` are
+  checked INDEPENDENTLY, so a violation in either branch fires even if the
+  other, textually-first branch is fine. The retired test's `.match()`
+  only ever returned the first tag it found, so this rule is deliberately
+  BROADER than the retired test there, not a fidelity match.
+  KNOWN GAP: same as tooltip-wraps-forwarding-element — a child produced
+  by `.map()` (e.g. `{items.map(item => <Dialog title={item.t} />)}` as
+  Tooltip's direct child) is NOT covered; only `ternary_expression` and
+  `$A && $B` are matched inside a `jsx_expression`.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/tooltip-title-is-not-data.tsx"
+ignores:
+  - "**/src/renderer/dev/workbench/**"
+rule:
+  kind: jsx_element
+  all:
+    - has:
+        field: open_tag
+        has:
+          field: name
+          regex: "^Tooltip$"
+    - has:
+        any:
+          - kind: jsx_self_closing_element
+            has: &title-is-data-name
+              field: name
+              regex: "^(Dialog|AgentSection|SessionPreviewPane|SettingRow|Callout|ErrorState|WizardHeader)$"
+          - kind: jsx_element
+            has:
+              field: open_tag
+              has: *title-is-data-name
+          - kind: jsx_expression
+            has:
+              any:
+                - kind: ternary_expression
+                  any:
+                    - has:
+                        field: consequence
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *title-is-data-name
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *title-is-data-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *title-is-data-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *title-is-data-name
+                    - has:
+                        field: alternative
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *title-is-data-name
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *title-is-data-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *title-is-data-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *title-is-data-name
+                - all:
+                    - pattern: "$COND && $CHILD"
+                    - has:
+                        field: right
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *title-is-data-name
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *title-is-data-name
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *title-is-data-name
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *title-is-data-name

@@ -1,0 +1,28 @@
+id: no-local-filter-chip-recipe
+language: tsx
+severity: error
+message: >-
+  MarketplaceFilterBar must not carry a chip recipe of its own. The app has ONE
+  pick-any filter pill — <FilterChip> (components/ui/FilterChip.tsx), extracted
+  from this bar's old local Chip (UI review P-9 #1, 2026-08-27). If the bar
+  needs chips again, render <FilterChip>; don't paint a second copy.
+note: |
+  Invariant source: tests/filter-chip.test.tsx (Plan B, 2026-09-16; "no longer
+  carries a chip recipe of its own" — case 2 of the "MarketplaceFilterBar
+  after the extraction" describe block).
+  SHAPE: the retired check was `not.toContain` on the comment-stripped file
+  for `bg-accent text-on-accent` and `rounded-full text-sm` — the two halves
+  of the old Chip's active and base class strings. Here: any string piece
+  (including a template literal's text between substitutions) or JSX text
+  holding either. A substring cannot span a `${…}` in the raw text, so string
+  pieces see every place the old substring could match outside comments.
+  The CommandDrawer half of the retired file (different recipe, plus a
+  FilterChip presence check) is no-local-filter-chip-recipe-command-drawer.
+files:
+  - "**/src/renderer/components/marketplace/MarketplaceFilterBar.tsx"
+  - "**/fixtures/no-local-filter-chip-recipe.tsx"
+rule:
+  any:
+    - kind: string_fragment
+    - kind: jsx_text
+  regex: "bg-accent text-on-accent|rounded-full text-sm"

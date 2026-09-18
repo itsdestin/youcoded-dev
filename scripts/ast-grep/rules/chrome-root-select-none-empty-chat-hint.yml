@@ -1,0 +1,37 @@
+id: chrome-root-select-none-empty-chat-hint
+language: tsx
+severity: error
+message: >-
+  ChatView.tsx must keep select-none on the element that holds the
+  "Start a conversation with …" hint. It is a placeholder, not content:
+  Ctrl+A must not paint it (Destin, 2026-09-10).
+note: |
+  Invariant source: tests/unselectable-chrome.test.ts (Plan B, 2026-09-16),
+  the "empty-chat hint" case of "chrome areas carry select-none on their
+  own root". The retired case blanked comments and required the regex
+  `className="[^"]*\bselect-none\b[^"]*"[^>]*>\s*Start a conversation with`
+  somewhere in the file.
+  Fires on the file when no JSX element has both an opening tag whose text
+  matches `className="…select-none…"` followed by no `>` before the tag's
+  own end, and, as the first thing after that tag, text starting (after
+  any whitespace) "Start a conversation with".
+  DIFFERENCES (minimal): a string quoting the markup no longer satisfies
+  it — it must be a real JSX element; a comment holding `>` after the
+  className, inside the tag, hides it (the old read blanked comments).
+files:
+  - "**/src/renderer/components/ChatView.tsx"
+  - "**/fixtures/chrome-root-select-none-empty-chat-hint.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: jsx_element
+      all:
+        - has:
+            field: open_tag
+            regex: 'className="[^"]*\bselect-none\b[^"]*"[^>]*>$'
+        - has:
+            kind: jsx_text
+            regex: '^\s*Start a conversation with'
+            follows: { kind: jsx_opening_element }

@@ -1,0 +1,68 @@
+id: arcade-end-run-keeps-playing
+language: tsx
+severity: error
+message: >-
+  ArcadeShell's endRun must never call setPlaying(false), and the shell must
+  still hand the games an `onExit` prop. The first endRun stopped play, so the
+  game unmounted the instant the bird hit a pipe: the end-of-run card showed
+  for zero frames and the player never saw their score. Leaving is the
+  player's choice, through onExit.
+note: |
+  Invariant source: tests/run-over-card.test.tsx (Plan B, 2026-09-16) —
+  "endRun does not stop the run" and "the games are handed a way out, so
+  leaving is still possible" (describe "the shell lets a finished run finish").
+  Two branches, from the retired checks on ArcadeShell.tsx's raw text:
+  1. the text `setPlaying(false)` (old regex /setPlaying\(false\)/, no comment
+     stripping) on the innermost node holding it — a call, including
+     `x.setPlaying(false)`, a `new` expression, a comment, string, template,
+     regex or JSX text — anywhere inside the `const endRun …` declaration,
+     nested callbacks included; reported once;
+  2. whole file (`kind: program`): no JSX attribute named onExit on any
+     element (the old `toContain('onExit=')`).
+  DIFFERENCES, deliberate: the old check read a 900-character window starting
+  at the first `const endRun`; this rule reads the whole declaration instead
+  (the window was a stand-in for "endRun's body", which is ~1,500 characters
+  today, so the old check watched only its first ~60% and would have read
+  past its end had it shrunk). Every `const endRun` declaration is checked,
+  not only the first, and the name is matched whole (`endRunner` is not it).
+  The old check passed silently when endRun was renamed or deleted (an empty
+  slice), so there is no presence branch for endRun either. For onExit, an
+  `onExit=` in a comment or string no longer counts — only a real prop does,
+  and whitespace around `=` no longer matters.
+files:
+  - "**/src/renderer/components/game/ArcadeShell.tsx"
+  - "**/fixtures/arcade-end-run-keeps-playing*.tsx"
+utils:
+  # The node kinds that can hold the text `setPlaying(false)` whole.
+  holds-stop-play:
+    any:
+      - kind: call_expression
+      - kind: new_expression
+      - kind: comment
+      - kind: string
+      - kind: string_fragment
+      - kind: template_string
+      - kind: jsx_text
+      - kind: regex_pattern
+    regex: "setPlaying\\(false\\)"
+  end-run-declaration:
+    kind: lexical_declaration
+    regex: "^const\\s+endRun\\b"
+rule:
+  any:
+    # 1. innermost holder inside endRun, reported once
+    - matches: holds-stop-play
+      not:
+        has:
+          stopBy: end
+          matches: holds-stop-play
+      inside:
+        stopBy: end
+        matches: end-run-declaration
+    # 2. no onExit prop anywhere in the file
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: jsx_attribute
+          regex: "^onExit\\b"

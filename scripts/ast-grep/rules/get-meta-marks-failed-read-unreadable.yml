@@ -1,0 +1,91 @@
+id: get-meta-marks-failed-read-unreadable
+language: typescript
+severity: error
+message: >-
+  main's session:get-meta handler must answer `unreadable: …` both when the
+  conversation store is missing (`if (!store) return { …, unreadable: … }`) and
+  when the read throws (`catch (e) { … unreadable: … }`). Answering blank tags
+  and note instead makes the close prompt show "No note" for a conversation that
+  has one — and then overwrite that note with the blank.
+note: |
+  Invariant source: tests/close-prompt-meta-unreadable.test.tsx › "main's
+  session:get-meta marks a thrown read or a missing store as unreadable"
+  (retired by Plan B, 2026-09-16; error inventory 2026-09-10, false message 12).
+  The retired case sliced ipc-handlers.ts (comments blanked) from
+  `ipcMain.handle(IPC.SESSION_GET_META` to the next `ipcMain.handle(` and
+  required /if \(!store\) return \{[^}]*unreadable:/ and
+  /catch \(\w+\) \{[^}]*unreadable:/ in that slice.
+  Here, searched inside the handler call:
+    - an `if (!store)` whose consequence returns an object with an
+      `unreadable:` pair (a braced `{ return … }` is accepted too — looser
+      than the old regex, never stricter; the object may also be wrapped in
+      `as`/`satisfies`, added 2026-09-16 review round 1 item 2);
+    - a catch clause WITH a parameter whose body holds an `unreadable:` pair.
+  The old slice also ran past the handler's closing paren to the next
+  ipcMain.handle( — today only comments sit there, and an `unreadable` fallback
+  outside the handler would never reach the prompt, so this rule looks inside
+  the handler only.
+  Presence branch: fires when ipc-handlers.ts registers no
+  ipcMain.handle(IPC.SESSION_GET_META, …) at all (the old test failed on
+  `start >= 0`). The remote host's twin is
+  get-meta-marks-failed-read-unreadable-remote.
+files:
+  - "**/src/main/ipc-handlers.ts"
+  - "**/fixtures/get-meta-marks-failed-read-unreadable.ts"
+  - "**/fixtures/get-meta-marks-failed-read-unreadable-missing.ts"
+utils:
+  get-meta-handler:
+    kind: call_expression
+    pattern: ipcMain.handle(IPC.SESSION_GET_META, $H)
+  unreadable-pair:
+    kind: pair
+    has:
+      field: key
+      regex: "^unreadable$"
+  # WHY (2026-09-16, u1 fix round 1 item 2): a bare `kind: object` child missed
+  # `return { …, unreadable: … } as Meta` / `… satisfies Meta` — the return's
+  # argument is an as_expression/satisfies_expression wrapping the object, not
+  # the object itself, so the guard below would false-fire on that valid code.
+  returned-unreadable-object:
+    any:
+      - kind: object
+        has: { matches: unreadable-pair }
+      - any:
+          - kind: as_expression
+          - kind: satisfies_expression
+        has:
+          kind: object
+          has: { matches: unreadable-pair }
+  no-store-guard:
+    kind: if_statement
+    has:
+      field: condition
+      regex: "^\\(\\s*!\\s*store\\s*\\)$"
+    all:
+      - has:
+          field: consequence
+          any:
+            - kind: return_statement
+              has: { matches: returned-unreadable-object }
+            - has:
+                stopBy: end
+                kind: return_statement
+                has: { matches: returned-unreadable-object }
+  catch-marks-unreadable:
+    kind: catch_clause
+    has:
+      field: parameter
+      kind: identifier
+    all:
+      - has:
+          field: body
+          has: { stopBy: end, matches: unreadable-pair }
+rule:
+  any:
+    - kind: program
+      not:
+        has: { stopBy: end, matches: get-meta-handler }
+    - matches: get-meta-handler
+      any:
+        - not: { has: { stopBy: end, matches: no-store-guard } }
+        - not: { has: { stopBy: end, matches: catch-marks-unreadable } }

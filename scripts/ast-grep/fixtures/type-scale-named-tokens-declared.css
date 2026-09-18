@@ -1,0 +1,7 @@
+/* Violation fixture for type-scale-named-tokens-declared: one named step
+   (--text-sm-tight) is missing from the @theme block. */
+:root {
+  --text-2xs: 11px;
+  --text-3xs: 10px;
+  --text-4xs: 9px;
+}

@@ -32,16 +32,6 @@ has passed ~8 items — graduate it to its own file.
 
 ## buddy
 
-- [ ] **BLOCKS 1.3** — the buddy has only ever been used in a development build (2026-09-06):
-      every test of it, including the live Wayland run Destin signed off, ran against the dev
-      instance. Nobody has opened a real beta build and used the buddy. The specific worry is
-      the Linux helper — its files are handled specially when the app is packaged, and if that
-      handling is wrong, "Add helper" looks like it works and silently does nothing, in the
-      shipped app only, where no test looks. Destin, 2026-09-06: test the buddy in a beta
-      build before 1.3. Cut a beta, install it, and on KDE Wayland add the helper and drag the
-      buddy; elsewhere just check the buddy still opens, drags, docks and remembers where it was
-      `buddy-window` `all` `needs-verify` `checked 2026-09-06` `urgent` `v1.3`
-
 - [ ] The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
       alone, and Destin deferred the TV test on 2026-09-04. On a second monitor the buddy may open
       on the wrong screen, or sit on that screen's taskbar if the app fails to match KDE's name for
@@ -105,12 +95,34 @@ has passed ~8 items — graduate it to its own file.
       meaningful once the Agents & Automations view exists
       `all` `parked` `checked 2026-09-01`
 
-- [ ] YouCoded Pages: a new top-left tab beside Settings and Files for installable, customizable
-      app pages. A page can reorganize existing information or present its own data — for example,
-      projects arranged differently or weather — and can connect to plugins, scripts, app channels,
-      and eventually agents. People should be able to download pages from the marketplace; creators
-      need a skill that teaches an assistant how to build one and connect it safely. Undesigned.
-      `window-chrome` `all` `parked` `checked 2026-09-08`
+- [ ] YouCoded Pages: let people create and install their own native-looking pages, from dashboards
+      and paint studios to specialized assistants, and pin favorites beside Projects. Scope approved:
+      live themes, personal/project pages, marketplace pages and custom services, controlled outside
+      access and optional computer programs; desktop + paired remote first. Phased: the shell
+      (icon, library, pins, isolated themed page, creator skill) is being built first; permissions,
+      connections, model tasks and marketplace follow, each an open question until its phase.
+      Later: chat-alongside visual editing with drag/reorganize/resize, independent Android and durable automation.
+      2026-09-17: Phase 1 (the shell, the page view, pins, the creator skill, page data, floating
+      themes) is built and verified on `session/youcoded-pages-spec`; the contract was skipped on
+      Destin's call. Phases 2–4 remain open questions in the plan.
+      `window-chrome` `all` `in-flight` `checked 2026-09-17` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+
+- [ ] Pages on a phone: the page view opens with the list always beside the page and the same band
+      as on desktop, and nobody has designed what that becomes at phone width — on a narrow remote
+      browser it will be cramped or unusable. Needs its own small round (collapse the list, or hide
+      it behind a button only on phones).
+      `window-chrome` `remote` `decision` `checked 2026-09-17`
+
+- [ ] A page deleted (through chat) while it is open in the page view stays in the frame until
+      another page is picked; it should fall back to "No page selected".
+      `window-chrome` `desktop` `confirmed` `checked 2026-09-17`
+
+- [ ] Pages went accent-coloured once: on Golden Sunbreak "hello timer and snake are both a weird
+      yellow shade instead of the background shade used in project view", and in Halftone the same
+      "with that theme's red"; it cleared on its own ("its fine now. idk what happened"). The page's
+      own body reported the right dark colour while it showed, so the tint is not in the page
+      document; suspected to follow a theme switch with a page open. Not reproduced since.
+      `window-chrome` `desktop` `needs-verify` `checked 2026-09-17` `needs-repro`
 
 - [ ] A plain "Terminal" choice when starting a new session — a bare terminal window as a
       YouCoded session, no assistant attached. Half of it is built: the local engine's "Run in

@@ -1,0 +1,83 @@
+id: perf-mark-index-order
+language: tsx
+severity: error
+message: >-
+  index.tsx must mark 'yc:modules-evaluated' before 'yc:root-render', and both
+  marks must exist. The perf-lab rig (youcoded-dev/scripts/perf-lab) reads them
+  in order to recover the hidden window between page navigation and the app's
+  first render — ESM hoists every import above the module body, so
+  modules-evaluated is written below the imports on purpose (it marks the END
+  of bundle evaluation, not the start).
+note: |
+  Invariant source: tests/perf-marks-renderer.test.ts (retired by Plan B,
+  2026-09-16; case 1 of 3 — "index.tsx marks modules-evaluated and root
+  render, in that order"). The two marks live in different scopes in the real
+  file (modules-evaluated is a top-level statement; root-render is inside the
+  else branch of the top-level if/else that decides workbench vs. normal
+  boot), so the order check matches the ENCLOSING top-level statement against
+  `follows` rather than the call itself — ast-grep's `follows`/`precedes`
+  relations only compare true siblings under the same parent, even with
+  `stopBy: end` (verified empirically, scratch probe 2026-09-16: a `follows`
+  check on the nested call itself never fires, correct or wrong order alike).
+  SHAPE-INDEPENDENT (fixed in review, 2026-09-16): the first draft required
+  the enclosing statement to be `kind: if_statement`, so a root-render mark
+  placed as a BARE top-level statement (no if/else) never tripped the order
+  check at all — a real miss, not just a narrower fixture. The rule now finds
+  whichever direct child of `program` contains each mark (any kind) and
+  checks `follows` between those two children, so an if-wrapped mark and a
+  bare one are both covered by the same branch. This also drops the
+  `kind: expression_statement` requirement on the modules-evaluated side,
+  which was a FALSE POSITIVE source: wrapping that mark in a plain block
+  statement (still correct order) failed the kind-specific match and the
+  `not: follows` fired anyway. Proved on real index.tsx by inverting the
+  order in place (swapping which mark comes first, not renaming either) and
+  restoring afterward.
+  SAME-BLOCK FALSE POSITIVE (fixed in review round 2, 2026-09-16): the
+  top-level-children comparison above assumes the two marks' least common
+  ancestor is `program` — true for the real file (modules-evaluated is a
+  top-level statement; root-render is nested inside the if/else), but not
+  for a fixture where BOTH marks sit in the SAME block (e.g. both inside
+  one `if` body). There, `program` has only ONE relevant child (the whole
+  `if_statement`), so "which top-level child contains modules-evaluated"
+  finds no OTHER child to compare against and `not: follows` fired even in
+  correct order — scratch-probed 2026-09-16. FIX: added a second `all:`
+  condition that suppresses the top-level check whenever root-render's own
+  enclosing `expression_statement` is a TRUE SIBLING (shares an immediate
+  parent, whatever that parent is — `program` or a nested block) that
+  `follows` a node containing modules-evaluated; `follows`/`precedes` only
+  ever match true siblings, so this generic check is silently inert (never
+  matches, changing nothing) whenever the two marks DON'T share an
+  immediate parent — which is exactly the real file's shape. Scratch-probed
+  all four shapes: bare top-level wrong order (fires), same-block correct
+  order (no longer fires), same-block wrong order (still fires), a missing
+  mark (still fires); real index.tsx unaffected (still 0).
+files:
+  - "**/src/renderer/index.tsx"
+  - "**/fixtures/perf-mark-index-order.tsx"
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "performance.mark('yc:modules-evaluated')" } }
+    - not: { has: { stopBy: end, pattern: "performance.mark('yc:root-render')" } }
+    - all:
+        - has:
+            has:
+              stopBy: end
+              pattern: "performance.mark('yc:root-render')"
+            not:
+              follows:
+                stopBy: end
+                has:
+                  stopBy: end
+                  pattern: "performance.mark('yc:modules-evaluated')"
+        - not:
+            has:
+              stopBy: end
+              kind: expression_statement
+              has:
+                pattern: "performance.mark('yc:root-render')"
+              follows:
+                stopBy: end
+                has:
+                  stopBy: end
+                  pattern: "performance.mark('yc:modules-evaluated')"

@@ -1,0 +1,31 @@
+id: runtime-default-key-single-owner-present
+language: tsx
+severity: error
+message: >-
+  components/RuntimeBinding.tsx must still name 'youcoded-runtime-default'
+  outside a comment — it is the key's one reader/writer. If the key moved,
+  the single-owner ban (runtime-default-key-single-owner) now guards a file
+  that owns nothing: move its `ignores:` entry to the new owner instead.
+note: |
+  Invariant source: tests/runtime-default.test.tsx (Plan B, 2026-09-16) —
+  case (e). The retired case asserted the list of files naming the key
+  EQUALED ['/renderer/components/RuntimeBinding.tsx'], so it also failed when
+  the owner stopped naming it. The ban alone goes silent then; this
+  whole-file presence branch does not (same shape as
+  private-continuation-dir-single-owner-present). Comments do not count, as
+  the retired case blanked them first.
+files:
+  - "**/src/renderer/components/RuntimeBinding.tsx"
+  - "**/fixtures/runtime-default-key-single-owner-present.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      regex: "youcoded-runtime-default"
+      any:
+        - kind: string_fragment
+        - kind: regex_pattern
+        - kind: jsx_text
+        - kind: identifier
+        - kind: property_identifier

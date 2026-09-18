@@ -1,0 +1,40 @@
+id: session-strip-peek-survives-press-and-drag
+language: tsx
+severity: error
+message: >-
+  Pressing a pill never shuts its own hover peek: the only
+  setHoveredId(null) in handlePointerDown is guarded by `hoveredRef.current
+  !== sessionId` (it closes ANOTHER pill's peek, R10), and handleLeave
+  returns while a drag is live (`dragIdRef.current !== null`) — hover is
+  released at the drop. Clearing on press made every dot click go open →
+  shut → open, and a mid-drag collapse left the ~150px void of 2026-09-01.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "keeps the hover peek open through pointer-down and the drag").
+  The retired case also counted EXACTLY one clear in handlePointerDown; this
+  rule requires every clear there to be guarded and at least one guarded clear
+  to exist — a second, equally guarded clear (same behaviour) no longer fails.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-peek-survives-press-and-drag.tsx"
+rule:
+  any:
+    - pattern: "setHoveredId(null)"
+      inside: { stopBy: end, kind: variable_declarator, has: { field: name, regex: "^handlePointerDown$" } }
+      not: { inside: { stopBy: end, kind: if_statement, has: { field: condition, has: { stopBy: end, pattern: "hoveredRef.current !== sessionId" } } } }
+    - kind: program
+      any:
+        - not:
+            has:
+              stopBy: end
+              pattern: "setHoveredId(null)"
+              all:
+                - inside: { stopBy: end, kind: if_statement, has: { field: condition, has: { stopBy: end, pattern: "hoveredRef.current !== sessionId" } } }
+                - inside: { stopBy: end, kind: variable_declarator, has: { field: name, regex: "^handlePointerDown$" } }
+        - not:
+            has:
+              stopBy: end
+              kind: if_statement
+              all:
+                - has: { field: condition, regex: "dragIdRef\\.current !== null\\)$" }
+                - has: { field: consequence, kind: return_statement }
+              inside: { stopBy: end, kind: variable_declarator, has: { field: name, regex: "^handleLeave$" } }

@@ -1,0 +1,123 @@
+{
+ "_comment": "YouCoded Pages (Phase 1 shell): the header's Pages button and pinned pages, the library (with pages, and empty), and a page open in the app. The three fixture pages come from desktop/src/renderer/dev/workbench/fixtures/pages.ts.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "header",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[title=Settings]",
+   "measure": [
+    "[aria-label='Open Pages']",
+    "[aria-label='Open Projects']",
+    "[aria-label='Open Focus timer']",
+    "[aria-label='Open Paint studio']"
+   ]
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label='Exit pages']",
+   "measure": [
+    "[aria-label='Exit pages']",
+    "[aria-label='Unpin Focus timer']",
+    "[aria-label='Pin Week planner']",
+    "[aria-label='Edit Week planner in chat']"
+   ]
+  },
+  {
+   "name": "library-empty",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=empty",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label='Exit pages']",
+   "measure": [
+    {
+     "text": "Make a page"
+    }
+   ]
+  },
+  {
+   "name": "page-timer",
+   "actions": [
+    {
+     "click": "[aria-label='Open Focus timer']",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Focus timer']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "page-timer-from-library",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Focus timer'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Focus timer']"
+  },
+  {
+   "name": "page-planner",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=button]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "page-paint",
+   "actions": [
+    {
+     "click": "[aria-label='Open Paint studio']",
+     "settle": 1400
+    }
+   ],
+   "expect": "iframe[title='Paint studio']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  }
+ ]
+}

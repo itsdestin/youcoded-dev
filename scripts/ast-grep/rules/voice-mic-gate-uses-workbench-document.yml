@@ -1,0 +1,61 @@
+id: voice-mic-gate-uses-workbench-document
+language: typescript
+severity: error
+message: >-
+  useVoiceInput's microphone gate must use isWorkbenchDocument(), never
+  isWorkbenchMode(). isWorkbenchMode is dev-only and Vite folds it to `false`
+  in a production build — including the landing page's live demo, which is a
+  production build of the workbench — so the gate would vanish and the
+  marketing page would ask visitors for their microphone.
+note: |
+  Invariant source: tests/useVoiceInput.test.ts › "useVoiceInput gates on
+  isWorkbenchDocument, never isWorkbenchMode" (retired by Plan B, 2026-09-16).
+  The retired case read useVoiceInput.ts and required
+    1. `isWorkbenchDocument` anywhere in the RAW text (comments included), and
+    2. no `isWorkbenchMode` in the text with // and /* */ comments deleted.
+  Branch 1 (whole file): no node whose text contains `isWorkbenchDocument` —
+  the same raw-text presence, comments included, so it is exactly as loose as
+  the old check (a comment-only mention satisfied it too).
+  Branch 2: any leaf token of the comment-stripped text containing
+  `isWorkbenchMode` — the leaf kinds listed in `code-leaf` below (the
+  identifier kinds found by probing, including a `#private` class member,
+  string/template fragments and regex bodies). A leaf kind missing from that
+  list is silent, so add one when a probe finds it. Comments of both kinds are
+  excluded, as the old strip did.
+  One difference, deliberately kept: the old strip regex also deleted a `//…`
+  run INSIDE a string literal (so 'http://x/isWorkbenchMode' passed); this rule
+  sees that string fragment and fires. That spelling does not exist and would
+  still name the dev-only predicate.
+  SCOPING: useVoiceInput.ts only (the file the case read) plus its fixtures.
+files:
+  - "**/src/renderer/hooks/useVoiceInput.ts"
+  - "**/fixtures/voice-mic-gate-missing.ts"
+  - "**/fixtures/voice-mic-gate-dev-only.ts"
+utils:
+  # A leaf token of the comment-stripped file (the retired case deleted both
+  # comment kinds before matching).
+  code-leaf:
+    any:
+      - kind: string_fragment
+      - kind: identifier
+      - kind: property_identifier
+      # 2026-09-16 (review of u11): `#isWorkbenchMode` / `this.#isWorkbenchMode`
+      # is its own leaf kind and was silent.
+      - kind: private_property_identifier
+      - kind: shorthand_property_identifier
+      - kind: shorthand_property_identifier_pattern
+      - kind: type_identifier
+      - kind: statement_identifier
+      - kind: regex_pattern
+rule:
+  any:
+    # Branch 1 — the shipped predicate is not mentioned at all.
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          regex: "isWorkbenchDocument"
+    # Branch 2 — the dev-only predicate appears in code.
+    - matches: code-leaf
+      regex: "isWorkbenchMode"
+      not: { has: { regex: "isWorkbenchMode" } }

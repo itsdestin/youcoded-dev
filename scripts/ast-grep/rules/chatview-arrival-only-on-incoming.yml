@@ -1,0 +1,16 @@
+id: chatview-arrival-only-on-incoming
+language: tsx
+severity: error
+message: >-
+  ChatView animates only the INCOMING conversation: the arrival window is
+  `useOneShotWindow(sessionActive) && sessionActive` — the gate is
+  sessionActive (not `visible`, which also flips on Ctrl+`), and the
+  trailing `&& sessionActive` closes the window on the way out.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "animates the incoming conversation, never the outgoing one").
+files:
+  - "**/src/renderer/components/ChatView.tsx"
+  - "**/fixtures/chatview-arrival-only-on-incoming.tsx"
+rule:
+  kind: program
+  not: { has: { stopBy: end, pattern: "useOneShotWindow(sessionActive) && sessionActive" } }

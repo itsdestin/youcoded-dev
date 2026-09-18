@@ -1,0 +1,133 @@
+id: tooltip-key-on-wrapper-not-child
+language: tsx
+severity: error
+message: >-
+  A `key=` on a Tooltip's wrapped child belongs on <Tooltip> itself. The
+  wrapper is the element in the array now, so a key left on the child names
+  nothing, and React re-renders the wrong rows.
+note: |
+  Invariant source: tests/tooltip-adoption.test.ts (retired by Plan B,
+  2026-09-16; case 4 of 4 — "never leaves a list key on the wrapped
+  child"). Fires when the wrapped child carries `key=` and <Tooltip> itself
+  does not — mirroring the retired test's
+  `/\bkey=/.test(s.head) && !/\bkey=/.test(s.wrapper)`. `jsx_attribute`'s
+  name has no `field:` label in this grammar (verified empirically, scratch
+  probe 2026-09-16: the debug AST shows a bare `property_identifier` child,
+  not a `name:`-labelled one) — matched by `kind: property_identifier`
+  instead of `field: name`.
+  ALSO CHECKS a child wrapped in a JSX expression container — `{cond ?
+  <div key={i}/> : <Y/>}` or `{cond && <div key={i}/>}` (review, 2026-09-16),
+  same reasoning as tooltip-wraps-forwarding-element: the retired test's
+  own `<Tag ...>` scan found the key attribute textually, `{...}` wrapper or
+  not. Matched STRUCTURALLY (a ternary's `consequence`/`alternative` field,
+  or a `$A && $B` expression's `right` field, must ITSELF carry the `key=`),
+  not with a deep `stopBy: end` search.
+  ALSO CHECKS the same keyed tag wrapped in one extra layer of parens —
+  `{v && (<div key={i} />)}` (review round 2, 2026-09-16), same reasoning
+  and same one-`has:`-level shape as tooltip-wraps-forwarding-element's
+  parenthesized branch.
+  KNOWN STRICTNESS (review round 2, 2026-09-16): same as
+  tooltip-wraps-forwarding-element — `consequence` and `alternative` are
+  checked INDEPENDENTLY, so a keyed child in either branch fires even if
+  the other, textually-first branch carries no key. The retired test's
+  `.match()`-based scan only ever inspected the first tag it found, so
+  this rule is deliberately BROADER than the retired test there, not a
+  fidelity match.
+  KNOWN GAP: same as tooltip-wraps-forwarding-element — a keyed child
+  produced by a NESTED `.map()` (e.g. `{items.map(item => <div
+  key={item.id} />)}` as Tooltip's direct child, as opposed to the OUTER
+  `.map()` that produces the `<Tooltip>` itself in every fixture here) is
+  NOT covered; only `ternary_expression` and `$A && $B` are matched inside
+  a `jsx_expression`.
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/tooltip-key-on-wrapper-not-child.tsx"
+ignores:
+  - "**/src/renderer/dev/workbench/**"
+rule:
+  kind: jsx_element
+  all:
+    - has:
+        field: open_tag
+        has:
+          field: name
+          regex: "^Tooltip$"
+        not:
+          has:
+            kind: jsx_attribute
+            has:
+              kind: property_identifier
+              regex: "^key$"
+    - has:
+        any:
+          - kind: jsx_self_closing_element
+            has: &carries-key
+              kind: jsx_attribute
+              has:
+                kind: property_identifier
+                regex: "^key$"
+          - kind: jsx_element
+            has:
+              field: open_tag
+              has: *carries-key
+          - kind: jsx_expression
+            has:
+              any:
+                - kind: ternary_expression
+                  any:
+                    - has:
+                        field: consequence
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *carries-key
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *carries-key
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *carries-key
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *carries-key
+                    - has:
+                        field: alternative
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *carries-key
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *carries-key
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *carries-key
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *carries-key
+                - all:
+                    - pattern: "$COND && $CHILD"
+                    - has:
+                        field: right
+                        any:
+                          - kind: jsx_self_closing_element
+                            has: *carries-key
+                          - kind: jsx_element
+                            has:
+                              field: open_tag
+                              has: *carries-key
+                          - kind: parenthesized_expression
+                            has:
+                              any:
+                                - kind: jsx_self_closing_element
+                                  has: *carries-key
+                                - kind: jsx_element
+                                  has:
+                                    field: open_tag
+                                    has: *carries-key

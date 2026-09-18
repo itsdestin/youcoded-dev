@@ -1,0 +1,30 @@
+id: toast-auto-dismiss-owned-by-primitive
+language: tsx
+severity: error
+message: >-
+  App.tsx must not dismiss the toast with its own timer
+  (`setTimeout(() => setToast(null)…`). The <Toast> primitive owns
+  auto-dismiss; a manual timer here can outlive unmount (tranche 8,
+  change 44 — the timers were where the toast leaks lived).
+note: |
+  Invariant source: tests/primitive-adoption.test.ts (Plan B, 2026-09-16) —
+  the App.tsx half of "the toast is not re-hand-rolled" (its className half
+  is no-hand-rolled-toast). The retired check matched
+  /setTimeout\(\(\) => setToast\(null\)/ on App.tsx's RAW text, comments
+  included, so this rule uses the same regex on the innermost node holding
+  it — the setTimeout call itself (bare or `window.`-prefixed), a comment,
+  or a string — and skips a node whose direct child already holds it.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/toast-auto-dismiss-owned-by-primitive.tsx"
+rule:
+  any:
+    - kind: call_expression
+    - kind: comment
+    - kind: string_fragment
+    - kind: template_string
+    - kind: jsx_text
+  regex: "setTimeout\\(\\(\\) => setToast\\(null\\)"
+  not:
+    has:
+      regex: "setTimeout\\(\\(\\) => setToast\\(null\\)"

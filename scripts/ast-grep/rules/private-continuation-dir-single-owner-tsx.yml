@@ -1,0 +1,33 @@
+id: private-continuation-dir-single-owner-tsx
+language: tsx
+severity: error
+message: >-
+  The private-continuation directory name (the 0600 sidecar holding ChatGPT
+  reasoning ciphertext) must be named in exactly one module,
+  main/harness/accepted-history-store.ts — never in a .tsx file.
+note: |
+  Invariant source: tests/accepted-history-privacy.test.ts (Plan B,
+  2026-09-16). `.tsx` twin of private-continuation-dir-single-owner (see
+  its note): the retired test scanned `.ts` AND `.tsx` under src/, and a
+  `language: typescript` rule never scans `.tsx`. Adds jsx_text to the leaf
+  kinds, since JSX body text is a leaf only in this grammar.
+files:
+  - "**/src/**/*.tsx"
+  - "**/fixtures/private-continuation-dir-single-owner-tsx.tsx"
+rule:
+  regex: "private-continuation"
+  any:
+    - kind: string_fragment
+    - kind: jsx_text
+    - kind: comment
+    - kind: identifier
+    - kind: property_identifier
+    - kind: private_property_identifier
+    - kind: shorthand_property_identifier
+    - kind: shorthand_property_identifier_pattern
+    - kind: type_identifier
+    - kind: statement_identifier
+    - kind: regex_pattern
+  not:
+    has:
+      regex: "private-continuation"

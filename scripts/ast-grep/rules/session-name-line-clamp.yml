@@ -1,0 +1,82 @@
+id: session-name-line-clamp
+language: tsx
+severity: error
+message: >-
+  SessionName must render one truncated line with the full name on hover
+  (`truncate` + `<Tooltip text={name}>`), never the three-line clamp
+  (WebkitLineClamp) that used to make six of ten rows two or three lines
+  tall (70px against 42px) and left the menu's rows visibly uneven (P-8,
+  2026-08-28).
+note: |
+  Invariant source: tests/menu-row-reachability.test.ts (retired by Plan B,
+  2026-09-16; case 4 of 7 — "a session name is one truncated line with the
+  full name on hover"). RENAMED (review of batch B, 2026-09-16) from
+  shortcuts-dialog-keeps-scroll-body-session-name — the old name described
+  where this guard lived (in the same file as the shortcuts dialog's own
+  rule), not what it guards, and this rule has nothing to do with the
+  shortcuts dialog. Same shape as session-menu-height-capped:
+  fires if `truncate` is missing, `<Tooltip text={name}>` is missing,
+  WebkitLineClamp is present (banned), or SessionName itself is gone
+  entirely — the retired test's own `block()` helper asserted its start
+  marker was found. `WebkitLineClamp` is matched both as a
+  `property_identifier` (an unquoted object key, e.g.
+  `style={{ WebkitLineClamp: 3 }}` — how it is written today) and as a
+  `string_fragment` (a quoted key, `style={{ 'WebkitLineClamp': 3 }}`) —
+  FIX (review of batch B, 2026-09-16): the retired regex
+  `/WebkitLineClamp/` matched either spelling; a bare
+  `property_identifier` check alone would go silent if the key were ever
+  requoted.
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-name-line-clamp.tsx"
+rule:
+  kind: program
+  any:
+    - not:
+        has:
+          stopBy: end
+          kind: string_fragment
+          regex: "truncate"
+          inside:
+            kind: function_declaration
+            stopBy: end
+            has:
+              field: name
+              regex: "^SessionName$"
+    - not:
+        has:
+          stopBy: end
+          pattern: "<Tooltip text={name}>"
+          inside:
+            kind: function_declaration
+            stopBy: end
+            has:
+              field: name
+              regex: "^SessionName$"
+    - has:
+        stopBy: end
+        kind: property_identifier
+        regex: "^WebkitLineClamp$"
+        inside:
+          kind: function_declaration
+          stopBy: end
+          has:
+            field: name
+            regex: "^SessionName$"
+    - has:
+        stopBy: end
+        kind: string_fragment
+        regex: "^WebkitLineClamp$"
+        inside:
+          kind: function_declaration
+          stopBy: end
+          has:
+            field: name
+            regex: "^SessionName$"
+    - not:
+        has:
+          stopBy: end
+          kind: function_declaration
+          has:
+            field: name
+            regex: "^SessionName$"

@@ -1,0 +1,27 @@
+id: appearance-broadcast-reaches-all-windows
+language: typescript
+severity: error
+message: >-
+  The IPC.APPEARANCE_BROADCAST handler must relay via BrowserWindow.getAllWindows()
+  and send IPC.APPEARANCE_SYNC to every peer window. Buddy floater windows do not
+  own sessions, so filtering through the session-peer registry instead would leave
+  their independent ThemeProvider permanently on its launch theme.
+note: |
+  Invariant source: tests/appearance-buddy-broadcast.test.ts (retired by Plan B,
+  2026-09-16). ast-grep reports matches, so a "must contain both calls" check is
+  written as the negation: fires on the ipcMain.on(IPC.APPEARANCE_BROADCAST, …)
+  call site when it is MISSING either BrowserWindow.getAllWindows() or
+  IPC.APPEARANCE_SYNC inside its handler body.
+  FIX (review of batch A, 2026-09-16): this rule matches the call site, so it
+  is silent if the WHOLE handler registration is deleted (nothing left to
+  match). See appearance-broadcast-handler-registered for the whole-file
+  branch that catches that case.
+files:
+  - "**/src/main/main.ts"
+  - "**/fixtures/appearance-buddy-broadcast.ts"
+rule:
+  pattern: "ipcMain.on(IPC.APPEARANCE_BROADCAST, $HANDLER)"
+  not:
+    all:
+      - has: { stopBy: end, pattern: "BrowserWindow.getAllWindows()" }
+      - has: { stopBy: end, pattern: "IPC.APPEARANCE_SYNC" }

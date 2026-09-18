@@ -1,17 +1,36 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
-- [ ] Tag or note a conversation from a phone and an open desktop window keeps showing the old tag/note until some
-      unrelated event refreshes it (other phones update fine). Found 2026-08-22.
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-set-tag-no-desktop-notify.md
+- [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
+      them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
+      conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
+      `settings/sync` `all` `decision` `checked 2026-09-16`
 
-- [ ] "Last synced just now" on the Backup & Sync self row and the Settings row while the device has been offline for
-      days — recency ticks every poll whether or not GitHub was reached. From the PR #276 review, 2026-07-30.
-      `settings/sync` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-sync-recency-counts-cycles-not-contact.md
+- [ ] The Personal sync history only grows: 1.7 GB on GitHub and 2.5 GB on the Z13 on 2026-09-16, with a
+      save every few seconds while a conversation is running. GitHub asks repositories to stay under about 1 GB
+      and warns hard near 5 GB, and nothing trims the history yet.
+      `settings/sync` `all` `decision` `checked 2026-09-16`
 
-- [ ] A crash-damaged sync repo on a device that is also offline (or signed out) shows an auth/network error every
-      cycle and never repairs itself until it reconnects, though the repair needs no network. 2026-07-30.
-      `settings/sync` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-corrupt-offline-sync-repo-never-heals.md
+- [ ] A device that falls far behind may never catch up on a slow connection: each upload step is cut off
+      after 5 minutes and retried from the start. Not seen yet — the 2026-09-16 repair sent 280 MB in 44 s.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
+- [ ] If a conversation is over the sync size limit on this device AND another device changes its older
+      copy, sync here may fail every cycle with "Sync merge could not complete". Reasoned in the 2026-09-16
+      code review, not reproduced.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
+- [ ] A dev copy of the app syncs the same Personal folder as the real app at the same time, so the two
+      race each other's sync steps. It let six over-limit files into the unpublished history on 2026-09-07
+      (that case is now blocked at upload); other effects of the race are unverified.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-16`
+
+- [ ] "Last synced" on the Backup & Sync self row is the NEWEST time across all your spaces, so
+      one healthy space and two that cannot reach GitHub still read "just synced". Left as it
+      was when the offline-ticking half shipped 2026-09-16; needs a call on newest vs oldest
+      (or per-space rows). The rule itself lives in one helper (`self-sync-status.ts`) called
+      from two places in main; the panel only picks which source to read
+      `settings/sync` `desktop` `decision` `checked 2026-09-16`
 
 - [ ] With the SyncHub down, force-taking-over a session from a second install leaves the original holder running as
       if nothing happened — no interrupt, no "moved" pill, and the two installs keep rewriting each other's lease file.
@@ -33,15 +52,6 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       whose isolated userData may mean it never connects to the hub at all, so confirm in the
       installed app first
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-03` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
-
-- [ ] Open a conversation and close it again within a second or so, and the app can keep claiming
-      it "in use" — renewing its hold every 30 s until you restart — so your other device is told
-      it is busy. Found by code review of the freeze fixes, 2026-09-10, not seen live: `release()`
-      runs while `acquire()` in `conversations/lease-client.ts` is still waiting for the sync
-      hub's reply, and when the reply lands `acquire()` starts the renew heartbeat for a session
-      that was already released. Existed before the freeze fixes; the lease-client test for this
-      sequence checks only the lease file, never `isHeld()`
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] Star a model as a favourite on one device and the model picker on your other device opens empty, with no hint
       why, until you type. Favourites never leave the device they were set on. From youcoded#279, 2026-07-31.
@@ -97,6 +107,3 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       with an optional Settings → System View dashboard. 2026-07-14.
       `all` `parked` `checked 2026-07-14`
 
-- [ ] In the sync setup wizard the repo-name text box sits inside the radio button's label, so
-      clicking into the box also flips the radio. Bug 1 of the 2026-07-19 input-migration family
-      `settings/sync` `desktop` `needs-verify` `checked 2026-09-01`

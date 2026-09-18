@@ -1,0 +1,22 @@
+id: shell-session-view-toggle-hidden
+language: tsx
+severity: error
+message: >-
+  HeaderBar must hide the chat/terminal toggle for a shell session (and a
+  native one): `const showToggle = activeSessionProvider !== 'native' &&
+  activeSessionProvider !== 'shell'`. A shell session has no chat to switch to.
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  "the header hides the chat/terminal toggle for a shell session"). The
+  retired case asserted HeaderBar.tsx's text contains that exact line; here
+  the declaration is matched structurally (whitespace-insensitive; a comment
+  or string mention no longer counts).
+files:
+  - "**/src/renderer/components/HeaderBar.tsx"
+  - "**/fixtures/shell-session-view-toggle-hidden.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      pattern: "const showToggle = activeSessionProvider !== 'native' && activeSessionProvider !== 'shell'"

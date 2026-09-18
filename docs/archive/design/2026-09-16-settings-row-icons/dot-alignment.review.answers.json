@@ -1,0 +1,15 @@
+{
+ "deck": "settings-dot-alignment-review",
+ "started": "2026-09-16T22:57:41.734Z",
+ "submitted": "2026-09-16T22:58:35Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "other",
+   "note": "still doesnt look properly aligned. text still looks too high relative dto dot. dot should be center aligned with the D basically.",
+   "seconds": 52,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

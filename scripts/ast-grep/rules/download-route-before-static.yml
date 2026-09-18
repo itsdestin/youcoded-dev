@@ -1,0 +1,83 @@
+id: download-route-before-static
+language: typescript
+severity: error
+message: >-
+  In remote-server.ts, the http.createServer((req, res) => { … }) handler must
+  try the download route — this.downloads.handleHttpRequest(req, res) — BEFORE
+  the static handler (this.handleHttpRequest(req, res, staticDir)) and the Vite
+  proxy (this.proxyToVite(req, res, viteDevUrl)). Otherwise the SPA fallback
+  answers an expired download link with index.html and a 200, and in dev the
+  proxy hands it to Vite (remote access batch 3, §10).
+note: |
+  Invariant source: tests/remote-download.test.ts — "the route is matched
+  before the static handler AND before the Vite proxy" (Plan B, 2026-09-16).
+  The retired check (comments stripped) required `http.createServer((req, res)
+  => {` in the file, then, in the text from there to the end of the file,
+  required the route call and both fallback calls, with the FIRST of each
+  fallback after the FIRST route call.
+  Here, on the same file:
+    - whole file: no `http.createServer((req, res) => { … })` call that holds
+      the route call, the static call AND the proxy call (another server
+      call with none of them — a redirect server, say — is left alone; one
+      holding a static or proxy call with no route before it still fires,
+      through the order branch below);
+    - a static or proxy call inside it that the route call does not precede
+      in source order. "Precedes" is: the call itself, or one of its ancestors
+      inside the server call, comes after a sibling that is or contains the
+      route call (or the call sits inside the route call's own arguments) —
+      document order across nesting levels, since ast-grep's follows/precedes
+      only compare siblings (see perf-mark-index-order).
+  Deliberate differences: the three calls must be INSIDE the server callback,
+  not merely later in the file (a fallback moved into a helper method below
+  used to pass however the callback ordered things); a string spelling a call
+  no longer counts (the old stripped text kept strings). Checking every
+  fallback call rather than the first is equivalent: any later one follows the
+  first in source order.
+files:
+  - "**/src/main/remote-server.ts"
+  - "**/fixtures/download-route-before-static.ts"
+  - "**/fixtures/download-route-before-static-missing.ts"
+  - "**/fixtures/download-route-before-static-absent.ts"
+utils:
+  server-call:
+    pattern: "http.createServer((req, res) => { $$$BODY })"
+  route-call:
+    pattern: "this.downloads.handleHttpRequest(req, res)"
+  static-call:
+    pattern: "this.handleHttpRequest(req, res, staticDir)"
+  proxy-call:
+    pattern: "this.proxyToVite(req, res, viteDevUrl)"
+  route-or-holder:
+    any:
+      - matches: route-call
+      - has: { stopBy: end, matches: route-call }
+  after-route:
+    follows: { stopBy: end, matches: route-or-holder }
+rule:
+  any:
+    # WHY one whole-file presence branch (review of u4, 2026-09-16): the old
+    # per-server-call branch fired on ANY createServer lacking one of the three,
+    # so a harmless second server (a redirect, a health check) would have failed
+    # the build. The invariant only needs ONE server callback holding all three.
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          all:
+            - matches: server-call
+            - has: { stopBy: end, matches: route-call }
+            - has: { stopBy: end, matches: static-call }
+            - has: { stopBy: end, matches: proxy-call }
+    - all:
+        - any:
+            - matches: static-call
+            - matches: proxy-call
+        - inside: { stopBy: end, matches: server-call }
+        - not: { inside: { stopBy: end, matches: route-call } }
+        - not: { matches: after-route }
+        - not:
+            inside:
+              stopBy: end
+              all:
+                - matches: after-route
+                - inside: { stopBy: end, matches: server-call }

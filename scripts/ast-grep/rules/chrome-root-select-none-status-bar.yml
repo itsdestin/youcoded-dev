@@ -1,0 +1,29 @@
+id: chrome-root-select-none-status-bar
+language: tsx
+severity: error
+message: >-
+  StatusBar.tsx must keep `className="status-bar … select-none …"` on the
+  status bar's root. The bar is app chrome: without select-none, Ctrl+A and
+  drag-select paint and copy it (Destin, 2026-09-10).
+note: |
+  Invariant source: tests/unselectable-chrome.test.ts (Plan B, 2026-09-16),
+  the "status bar" case of "chrome areas carry select-none on their own
+  root". jsdom applies neither the stylesheet nor Tailwind, so no DOM test
+  sees this. The retired case blanked comments and required the regex
+  `className="status-bar\b[^"]*\bselect-none\b` somewhere in the file.
+  Fires on the file when no JSX attribute's text matches that regex (the
+  class list must still START with `status-bar`).
+  DIFFERENCE (minimal): a string quoting the markup no longer satisfies it —
+  it must be a real JSX attribute.
+  Siblings, one per chrome area: chrome-root-select-none-{header-bar,
+  input-bar, quick-chips, thinking-line, empty-chat-hint, app, tool-card}.
+files:
+  - "**/src/renderer/components/StatusBar.tsx"
+  - "**/fixtures/chrome-root-select-none-status-bar.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      kind: jsx_attribute
+      regex: '^className="status-bar\b[^"]*\bselect-none\b'

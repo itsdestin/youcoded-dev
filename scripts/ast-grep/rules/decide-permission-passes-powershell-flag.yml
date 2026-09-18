@@ -1,0 +1,39 @@
+id: decide-permission-passes-powershell-flag
+language: typescript
+severity: error
+message: >-
+  native-session-host.ts's decidePermission(...) call must pass a
+  `{ powershell: getShell().label === 'PowerShell' }` options object. On
+  Windows without Git Bash, the Bash tool runs PowerShell, which executes code
+  inside arguments — `(…)`, `@{…}` — so wildcard grants must refuse more
+  characters there (subject-glob.ts POWERSHELL_OPERATORS). That only happens
+  if the host passes the shell flag through; nothing else would notice the
+  wiring going missing, because every test machine runs bash.
+note: |
+  Invariant source: tests/permission-shell-context.test.ts (retired by Plan B,
+  2026-09-16; case 2 of 3 — "native-session-host passes the shell to
+  decidePermission"). Case 1 ("the pattern recognises the wiring it is
+  looking for", a self-test of the retired regex) is dropped, not
+  approximated, per global.md's non-vacuity rule — this rule's fixture pass
+  is the non-vacuity check now. The `pattern:` for the powershell property
+  uses a `context:`/`selector: pair` fragment because a bare
+  `key: value` snippet does not parse as a standalone TypeScript statement.
+  No change for a MISPLACED flag (e.g. `{ powershell: ... }` passed as the
+  wrong argument, or spelled with the wrong key) — reviewed, 2026-09-16:
+  `decidePermission`'s options parameter is typed, so `tsc` already rejects
+  a misplaced or misspelled flag; this rule only needs to guard the wiring's
+  PRESENCE, which types can't do (a call can simply omit the object).
+files:
+  - "**/src/main/harness/native-session-host.ts"
+  - "**/fixtures/decide-permission-passes-powershell-flag.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      pattern: "decidePermission($TOOL, $SUBJECT, $$$)"
+      has:
+        stopBy: end
+        pattern:
+          context: "const x = { powershell: getShell().label === 'PowerShell' };"
+          selector: pair

@@ -1,0 +1,44 @@
+{
+  "title": "Tag chips that read like the status labels",
+  "key": "tag-chip-text-review",
+  "out": "tag-chip-text.review.html",
+  "images": "images/tag-chip-text.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/round-1"
+  },
+  "crops": {
+    "resume-tags": [
+      "tag-chip",
+      "tag-resume-stress",
+      "400x50+230+256"
+    ],
+    "menu-tags": [
+      "tag-chip",
+      "tag-sessions-menu",
+      "390x150+525+60"
+    ]
+  },
+  "steps": [
+    {
+      "id": "T-1",
+      "surface": "Resume browser",
+      "path": "Type /resume, then look at the tags under a conversation's name",
+      "crop": "resume-tags",
+      "headline": "Tag names are now written in normal text, with the tag's color as a soft fill behind them.",
+      "changed": "Each tag's word is now the theme's text color. The tag's color moved into a light wash and the outline, like the Working label.",
+      "notice": "Tags are easier to read on the light themes, where colored words looked faint.",
+      "risk": "Similar tag colors, like blue and indigo, are a little harder to tell apart at a glance."
+    },
+    {
+      "id": "T-2",
+      "surface": "Session switcher",
+      "path": "Click the session name at the top, or hold Shift, and look at the tags under the Working label",
+      "crop": "menu-tags",
+      "headline": "The tags in the session switcher change the same way, so they now match the Working label right above them.",
+      "changed": "It is the same tag chip as the resume browser, so it changed here too, and in the tag picker and close-session prompt.",
+      "notice": "Tags now look like siblings of the status label beside them."
+    }
+  ]
+}

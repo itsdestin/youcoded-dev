@@ -40,6 +40,9 @@ verify:
   - test: youcoded/desktop/tests/harness-review-runner.test.ts
   - test: youcoded/desktop/tests/harness-eval-orchestrator.test.ts
   - test: youcoded/desktop/tests/harness-eval-estimate.test.ts
+  - path: youcoded/desktop/electron-builder.yml
+    contains: "!dist/main/harness/eval/[*][*]"
+  - test: youcoded/desktop/tests/harness-eval-not-shipped.test.ts
 ---
 
 # Harness evaluator (`test-engine/harness-eval.mjs`)
@@ -98,6 +101,11 @@ free and needs no key; a real run needs `--key-file`.
 - **`builds` is the code-version axis** — `{id, dist}`, `dist` an ABSOLUTE built `dist/` (no
   default, on purpose), one detached worktree per arm built with `npm run build:main`.
   Worked example: `test-engine/eval-plans/prompt-doctrine.json`.
+
+- **It does not ship.** It lives under `src/main` so each arm's build compiles it, so tsc
+  emits it into `dist/`; `electron-builder.yml` excludes `dist/main/harness/eval/**`
+  (2026-09-16 — it had shipped in every installer). Nothing packaged may import from it, or
+  the exclusion ships a broken `require`. Guard: `harness-eval-not-shipped.test.ts`.
 
 Changing the evaluator itself — grader loading, the three check states, the wrap-up turn:
 `youcoded/docs/harness-evaluator-internals.md`. History:

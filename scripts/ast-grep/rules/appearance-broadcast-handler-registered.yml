@@ -1,0 +1,26 @@
+id: appearance-broadcast-handler-registered
+language: typescript
+severity: error
+message: >-
+  main.ts must register an ipcMain.on(IPC.APPEARANCE_BROADCAST, …) handler.
+  Without it, no window (including Buddy floaters) ever receives a theme /
+  font / reduced-effects change made in another window.
+note: |
+  Invariant source: tests/appearance-buddy-broadcast.test.ts (retired by Plan
+  B, 2026-09-16). FIX (review of batch A, 2026-09-16): the sibling rule
+  appearance-broadcast-reaches-all-windows matches the call site itself
+  (`ipcMain.on(IPC.APPEARANCE_BROADCAST, $HANDLER)`) and negates what must be
+  inside it — but if the WHOLE handler registration is deleted, that pattern
+  no longer exists anywhere to match, so that rule falls silent. This rule
+  is the whole-file (`kind: program`) branch, same shape as
+  main-registers-all-quit-routes: it fires when the registration call is
+  missing from the file entirely, regardless of what would be inside it.
+files:
+  - "**/src/main/main.ts"
+  - "**/fixtures/appearance-broadcast-handler-registered.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      pattern: "ipcMain.on(IPC.APPEARANCE_BROADCAST, $HANDLER)"

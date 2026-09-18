@@ -1,0 +1,82 @@
+id: pty-worker-passthrough-single-write
+language: javascript
+severity: error
+message: >-
+  pty-worker.js's passthrough path (`if (!endsCR) { … }`) must write the text
+  in ONE ptyProcess.write(text) before it returns. Chunking it made a 10 KB
+  terminal paste 179 writes 30 ms apart (5.4 s with the input queue blocked);
+  the one caller that needs chunking without a trailing \r asks for it with
+  the 'input-chunked' message instead.
+note: |
+  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16;
+  "...and ordinary typing and paste keep their single unchunked write" —
+  behaviour pinned in tests/pty-worker-writes.test.ts). The retired test
+  sliced the file from the FIRST `if (!endsCR) {` to the first `return;`
+  after it and asserted the slice contains `ptyProcess.write(text);`.
+  MATCHED: (a) the file has no `if (!endsCR)` statement at all (the retired
+  slice then started at the last character and failed); (b) the FIRST such
+  statement in document order (an `else if` counts) holds no
+  `ptyProcess.write(text)` call that comes before every `return;` inside it —
+  "before" meaning neither the call nor any ancestor up to the if statement
+  follows a sibling that is or holds a bare `return;`.
+  DELIBERATE DIFFERENCES: the call must be a real call (a mention in a
+  comment or string no longer counts), and it must be INSIDE the if
+  statement (its else included, which the slice also reached when the
+  branch had no `return;`) — the retired slice could run on past the whole
+  statement and find the NEXT path's write, which is not the passthrough's.
+files:
+  - "**/src/main/pty-worker.js"
+  - "**/fixtures/pty-worker-passthrough-single-write*.js"
+utils:
+  passthrough-if:
+    kind: if_statement
+    all:
+      - has:
+          field: condition
+          regex: "^\\(\\s*!\\s*endsCR\\s*\\)$"
+      # the retired marker was `if (!endsCR) {` — a braced branch
+      - has: { field: consequence, kind: statement_block }
+  bare-return:
+    kind: return_statement
+    regex: "^return;$"
+  after-a-return:
+    follows:
+      stopBy: end
+      any:
+        - matches: bare-return
+        - has: { stopBy: end, matches: bare-return }
+  after-an-earlier-passthrough-if:
+    any:
+      - follows:
+          stopBy: end
+          any:
+            - matches: passthrough-if
+            - has: { stopBy: end, matches: passthrough-if }
+      - inside:
+          stopBy: end
+          follows:
+            stopBy: end
+            any:
+              - matches: passthrough-if
+              - has: { stopBy: end, matches: passthrough-if }
+      # nested inside an earlier passthrough if (e.g. its else branch)
+      - inside: { stopBy: end, matches: passthrough-if }
+rule:
+  any:
+    - kind: program
+      not: { has: { stopBy: end, matches: passthrough-if } }
+    - matches: passthrough-if
+      not:
+        any:
+          - matches: after-an-earlier-passthrough-if
+          - has:
+              stopBy: end
+              pattern: ptyProcess.write(text)
+              all:
+                - not: { matches: after-a-return }
+                - not:
+                    inside:
+                      stopBy: { matches: passthrough-if }
+                      all:
+                        - not: { matches: passthrough-if }
+                        - matches: after-a-return

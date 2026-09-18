@@ -707,7 +707,7 @@ export const MEASURES = {
  * `mark()` no-ops when the long-task probe is not installed (it checks for
  * window.__perfProbe), so a caller that does not install the probe still works.
  */
-export async function openJourneySessions(cdp, fixture, { ids, warnings = [] } = {}) {
+export async function openJourneySessions(cdp, fixture, { ids, warnings = [], nativeBinding = null } = {}) {
   // ── 4 Claude Code sessions, alternating project folders ──────────────
   await mark(cdp, 'cc-create:start');
 
@@ -772,11 +772,16 @@ export async function openJourneySessions(cdp, fixture, { ids, warnings = [] } =
   // (session-manager.ts:95-96), since there is no PTY for it to affect.
   await mark(cdp, 'native-create:start');
   const nat = [];
+  // `nativeBinding` lets a phase point the two native sessions at another provider
+  // (the native-stream phase binds them to the perf-lab fake endpoint so it can
+  // stream at a chosen rate). Default unchanged: the real local engine, so the
+  // workload's own numbers keep meaning what they always did.
+  const binding = nativeBinding ?? { providerId: 'local', modelId: fixture.modelId };
   for (let i = 0; i < 2; i++) {
     const name = `native-${i}`;
     const r = await createSession(cdp, {
       name, cwd: fixture.projects.alpha, skipPermissions: false,
-      provider: 'native', binding: { providerId: 'local', modelId: fixture.modelId }, preset: 'coder',
+      provider: 'native', binding, preset: 'coder',
     });
     ids.push(r.id); names.push(name); nat.push(r);
     // Labelled, not 'unknown': the per-size table used to show six switches into

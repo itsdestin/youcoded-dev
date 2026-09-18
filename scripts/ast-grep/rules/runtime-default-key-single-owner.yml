@@ -1,0 +1,36 @@
+id: runtime-default-key-single-owner
+language: typescript
+severity: error
+message: >-
+  The install-wide runtime default ('youcoded-runtime-default') has ONE
+  reader/writer pair: defaultRuntime() and persistRuntimeDefault() in
+  components/RuntimeBinding.tsx. Call those; never touch the key directly —
+  a second reader is how a ChatGPT-only install's new-session forms reopened
+  on Claude Code, which cannot start there.
+note: |
+  Invariant source: tests/runtime-default.test.tsx (Plan B, 2026-09-16) —
+  "(e) exactly one file under src mentions youcoded-runtime-default
+  (RuntimeBinding.tsx)". The retired case walked every .ts/.tsx file under
+  src/ except *.test.ts(x), blanked comments, and asserted the files whose
+  text still contained the key EQUALED ['/renderer/components/RuntimeBinding.tsx'].
+  Here: the smallest non-comment node holding the key text, in any .ts file
+  under src/ (test files ignored, as the walk skipped them). The key has
+  hyphens, so in valid .ts it can only sit in a string or template piece
+  (string_fragment — import paths and string/template literal types included)
+  or a regex; comments do not count, as they were blanked before.
+  Companions: -tsx (the same ban for .tsx files — a `language: typescript`
+  rule never scans them) and -present (the owner still names the key; the
+  retired `toEqual([owner])` failed on its absence too).
+  Deliberate difference: the old comment blanker also blanked a `//` run
+  inside a string (e.g. 'a//youcoded-runtime-default'); such a string now
+  counts.
+files:
+  - "**/src/**/*.ts"
+  - "**/fixtures/runtime-default-key-single-owner.ts"
+ignores:
+  - "**/src/**/*.test.ts"
+rule:
+  regex: "youcoded-runtime-default"
+  any:
+    - kind: string_fragment
+    - kind: regex_pattern

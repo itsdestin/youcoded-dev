@@ -1,0 +1,27 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1",
+ "width": 390,
+ "height": 844,
+ "shots": [
+  {
+   "name": "bottom",
+   "boot": 4500,
+   "sameAsBaseline": true,
+   "actions": [
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>/more sessions/.test(b.getAttribute('aria-label')||b.textContent)).click()",
+     "settle": 900
+    },
+    {
+     "eval": "document.querySelector('div[data-session-id=wb-11] [role=button][aria-label=\"specialists demo\"]').click()",
+     "settle": 1500
+    },
+    {
+     "eval": "(()=>{const s=[...document.querySelectorAll('*')].find(e=>e.scrollHeight>e.clientHeight+200&&e.clientHeight>300); if(s) s.scrollTop=s.scrollHeight;})()",
+     "settle": 900
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[data-tool-use-id=task-6]')].some(e=>e.getBoundingClientRect().height>0&&e.offsetParent)&&!document.body.innerText.includes('SESSIONS IN THIS WINDOW')"
+  }
+ ]
+}

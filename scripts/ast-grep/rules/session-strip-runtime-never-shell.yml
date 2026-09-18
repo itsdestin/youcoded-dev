@@ -1,0 +1,43 @@
+id: session-strip-runtime-never-shell
+language: tsx
+severity: error
+message: >-
+  SessionStrip's new-session form must type its runtime state by the Runtime
+  union (`useState<Runtime>(…)`) and never set it to 'shell' — a shell session
+  has no model to derive a runtime from, and comes only from "Run in terminal".
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  the SessionStrip.tsx half of "the form derives its runtime from a MODEL
+  choice, which a shell has none of"). The retired case asserted the raw
+  file text (comments NOT stripped) contains `useState<Runtime>(` and does
+  not contain `setRuntime('shell')`.
+  MATCHED: (a) whole file — no call whose callee ends in `useState` with type
+  arguments exactly `<Runtime>` (a comment mention no longer counts);
+  (b) every node that can spell `setRuntime('shell')` — a call whose callee
+  ends in `setRuntime` (so `x.setRuntime`/`resetRuntime`, as the substring
+  did) with arguments exactly `('shell')`, and a comment, string/template
+  piece, JSX text or regex body holding that text.
+  Companion: runtime-union-has-no-shell (the RuntimeBinding.tsx half).
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-runtime-never-shell*.tsx"
+rule:
+  any:
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: call_expression
+          has: { field: function, regex: "useState$" }
+          all:
+            - has: { field: type_arguments, regex: "^<Runtime>$" }
+    - kind: call_expression
+      has: { field: function, regex: "setRuntime$" }
+      all:
+        - has: { field: arguments, regex: "^\\('shell'\\)$" }
+    - any:
+        - kind: comment
+        - kind: string_fragment
+        - kind: jsx_text
+        - kind: regex_pattern
+      regex: "setRuntime\\('shell'\\)"

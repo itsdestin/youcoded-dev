@@ -1,27 +1,44 @@
 # dev-workspace — building the app, not the app
 Filing test: it's about building the app, not the app. Could a normal user ever see it? No.
+Not here: a failing or flaky test — fix it on sight (CLAUDE.md → Local build & test).
 seen-on is always n/a here.
 
 ## tests
-- [ ] `tests/remote-download.test.ts` "removing a device ends a download that is already streaming"
-      timed out at 15 s once in a run of every remote test on 2026-09-11, while a dev window and
-      builds ran beside it; it passed three times alone right after and in the full verify before.
-      Recurred 2026-09-15 during KWallet recovery verification: after earlier full-suite passes,
-      `ended` remained false at line 804 in the full suite and in isolation. The same isolated
-      command failed on untouched `origin/master` (`1e839c70`) in a separate worktree with its
-      own hardlinked dependencies. Failure predates the KWallet change; cause remains unverified,
-      so do not assume this occurrence is load-only.
-      2026-09-16: a DIFFERENT test in the same file is now the only red on master's Linux CI leg
-      (run 34964572047 at `e1f20a4b`, and PR youcoded#479): "a file replaced between mint and GET
-      (different inode) answers 404" — `expected 200 to be 404`. Every Desktop CI run on master
-      is now red on all three legs, so each merge has to prove its reds are not its own
+- [ ] `tests/artifacts/import-file.test.ts` — the two `failed copy rollback` cases that use
+      `onCollision: 'replace'` with `disclosedCollisions` (ENOSPC and COPY_INCOMPLETE) sometimes
+      return `{ok: true, skipped: true}` on the Windows CI leg, so the mocked copy failure is never
+      reached. An unchanged re-run of 01a2fa4b went green on all three (2026-09-06); the file and
+      its source were untouched since 2026-07-23. Re-run before bisecting
+      `n/a` `needs-verify` `checked 2026-09-06`
+- [ ] `tests/specialist-run.test.ts` "a background completion is injected as a user-role turn when
+      the parent goes idle" timed out once on the Windows CI leg (run 35156247052, 2026-09-16, the
+      merged-commit dispatch of session/ci-test-health): the child's ledger status was still
+      `running` after the 15 s `vi.waitFor` budget — a whole specialist session has to spawn and
+      stream inside that budget on the slowest runner. Green on the seven earlier Windows
+      dispatches; not touched by that branch. One observation, filed as a Windows load timeout;
+      if it recurs, measure the child's real duration on the runner before widening anything
       `n/a` `needs-verify` `checked 2026-09-16`
-- [ ] `tests/lease-client.test.ts` "lapsed renew whose re-acquire is rejected tears down with the
-      new holder attributed" failed once inside a full `verify.sh` run on 2026-09-11 and passed
-      five times in isolation right after; the run's changes touched nothing it imports.
-      Load-sensitive, like the step-guard entry below
-      `n/a` `needs-verify` `checked 2026-09-11`
-
+- [ ] `tests/model-manager.test.ts` "a stored dismissal missing EITHER half is no dismissal" hit the
+      30 s test timeout once on the Windows CI leg (run 35093103929, 2026-09-16, the fifth proof run
+      of session/ci-test-health) after passing the run before with no change to anything it imports.
+      Five sequential settings writes + memory checks on the slow Windows runner; one observation,
+      so filed as a Windows load flake, not fixed. If it recurs, read the log before widening
+      `n/a` `needs-verify` `checked 2026-09-16`
+- [ ] Three more files fail only under full-suite load and pass alone (2026-09-16, `verify.sh --full`,
+      11,550 tests, on a branch touching none of them): `tests/chatgpt-request-diagnostics.test.ts`
+      "evicts inactive fingerprints within 8 MiB…" (30 s timeout), `tests/local-engine-fields-rendered.test.tsx`
+      "§C2: the waiting line CLEARS once the change lands", and `tests/resume-browser-native-picker.test.tsx`
+      "pre-fills each previewed conversation with ITS last model" (a `waitFor` on a button role).
+      All three re-ran green in one isolated run right after. Same family as the entries below —
+      wall-clock waits under load; not re-checked on pristine master
+      `n/a` `needs-verify` `checked 2026-09-16`
+- [ ] `tests/shell-registry.test.ts` fails on this machine in ISOLATION, not only under load —
+      one of its two "still-running marks" cases goes red on every run, alternating between
+      them (4 runs, 2026-09-16). Both assert on wall-clock milliseconds (60 ms / 140 ms marks),
+      which `test-suite-hygiene.md` forbids for exactly this reason; they shipped 2026-09-16
+      in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
+      bigger budget
+      `n/a` `confirmed` `checked 2026-09-16`
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
       pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
@@ -29,74 +46,6 @@ seen-on is always n/a here.
       Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
       is recognised, but the fix is a longer or retried launch in the perf-lab harness
       `n/a` `needs-verify` `checked 2026-09-10`
-- [ ] Desktop CI's Windows leg is red on master (seen 2026-09-10 on three runs in a row) on two
-      native-harness tests — "an unchanged attachment restores its bytes; a changed one
-      invalidates the whole checkpoint" and "publishes references to exact transcript content
-      and restores private metadata without duplicating transcript text" — while macOS and
-      Linux pass. Every merging session has to open the log to learn it is not theirs; two did
-      so on 2026-09-10. Either the tests assume POSIX paths or byte counts, or the feature is
-      broken on Windows; nobody has looked. It also stops the beta build making ANY Windows
-      installer (a failed test step skips packaging) — the installer-icon session needed a
-      throwaway branch for one; `desktop-test-build.yml` now has a `skip_windows_tests` switch.
-      **Much bigger than two tests, and two root causes are now known (2026-09-11, run
-      34658554351 at master `f774891d`): 12 test files / 17 tests fail on Windows** while Linux
-      is fully green (10,871 local) and macOS failed only one unrelated flake
-      (`shell-registry.test.ts`, "expected '' to be 'hello\n'"). (1) `remote-password-always-required.test.ts`
-      builds its scan root as `new URL('..', import.meta.url).pathname`, which on Windows is
-      `/D:/a/…`; joining that yields `D:\D:\a\…` and ENOENT. `fileURLToPath` is the fix, and
-      `remote-phone-findings.test.ts` carries the same pattern. (2) the rest are Windows-only test
-      assumptions, not product bugs on their face: `installer-artifact-names.test.ts` reads
-      `electron-builder.yml` and gets `null` for every value, `managed-workspace-setup.test.ts`
-      compares `C:\Users\runneradmin\…` against the 8.3 short form `C:\Users\RUNNER~1\…`, and
-      `remote-paths.test.ts` expects POSIX separators. A 13th failure that run was
-      `release-manifest-roundtrip.test.ts`, caused by `generate-release-manifest.mjs` comparing
-      `file://` + `process.argv[1]`; fixed in `e82d38a1`. **The important part: no published beta's
-      Windows installer has been tested.** beta.78's Windows log reads `Run tests: skipped`, and
-      beta.80 (2026-09-11) was dispatched the same way to get an installer at all.
-      2026-09-16 (PR youcoded#479, run 35078079286): the Windows list has grown — also
-      `create-session-feedback.test.ts` and `remote-phone-findings.test.ts` (whole files),
-      `folders-service.test.ts` "add dedupes by resolved path", `chatsearch-transcript-reader.test.ts`
-      "containedTranscriptPath", and `app-icons.test.ts` (five electron-builder.yml icon checks).
-      `scripts/ci-red-vs-master.sh` reported the Windows names as "NEW" only because it compared
-      against week-old master Windows runs — read the log, not just the verdict
-      `n/a` `confirmed` `checked 2026-09-16` `regression`
-- [ ] `tests/step-guard-row.test.tsx` "failed write rolls back and Retry persists the same
-      intent" failed twice inside a full `verify.sh` run on 2026-09-09 and passed three times
-      in isolation immediately after — load-sensitive, not a regression from the remote-access
-      work that was running beside it. Likely a fixed sleep or an unawaited signal; see
-      `.claude/rules/test-suite-hygiene.md` → "Never let a fixed sleep stand in for a signal".
-      Fourth sighting 2026-09-10: failed in one `verify.sh` run on a branch touching only Android
-      Kotlin and the remote shim, passed twice alone and once alone on master, green on the
-      next full run (`expected [[50],[50]] to equal [[20],[20]]`, the Retry-persists test)
-      `n/a` `needs-verify` `checked 2026-09-10`
-- [ ] Two always-loaded rule files sit over the 600-word budget and `audit-anchors.mjs`
-      has been red on master for it for weeks: `native-specialists.md` (764 words) and
-      `ipc-bridge.md` (712). Words in `.claude/rules/` are not free — they load into every
-      session, so this is a standing tax on every conversation, and the red audit also
-      hides any NEW drift behind noise a session learns to skim past. The ledger records
-      native-specialists going over four separate times, each noticed and left because it
-      belongs to nobody's current branch. Fix is the one the rules README already
-      prescribes: move the overflow into the lazy doc the rule points at
-      `n/a` `confirmed` `checked 2026-09-10`
-
-- [ ] `use-provider-type.test.tsx` → "invalidation › is triggered by the ChatGPT card on a status
-      transition" failed once in a `verify.sh --full` run on session/cache-competitor-survey
-      (2026-09-10, `expected "vi.fn()" to be called at least once`, 1,224 ms) and passed 14/14 in
-      an isolated re-run. That branch changes no renderer file and no ChatGPT card code, so the
-      likeliest read is the same shape as the step-guard entry below: a timer-dependent
-      assertion under full-suite load
-      `desktop` `needs-verify` `checked 2026-09-10`
-- [ ] The perf rig throws away a finished build when the machine is merely still calming
-      down. Its idle gate polls five times, 30 s apart, then aborts the whole run — but the
-      abort happens AFTER the multi-minute build, and a load average decaying from other
-      work can sit above the threshold for the whole 2.5 minutes while trending down. Hit
-      2026-09-09: five attempts at load 12.1 → 4.4 and abort, with the machine quiet a
-      minute later. Worked around twice with a hand-written waiter that requires three
-      consecutive settled samples before launching. Fix: wait until a deadline rather than a
-      fixed attempt count, require the load to be settled rather than momentarily under the
-      line, and print a "still waiting" line so a queued run is not mistaken for a hung one
-      `n/a` `confirmed` `checked 2026-09-09` `performance`
-
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a
@@ -108,17 +57,6 @@ seen-on is always n/a here.
       other files meanwhile — then the drawer's cost during a reply is a rig number instead
       of a unit-test count
       `n/a` `confirmed` `checked 2026-09-09` `performance`
-
-- [ ] perf-lab's own `screenshots.test.mjs` fails about two runs in three: "each run removes its
-      throwaway Chrome profile" counts `perf-lab-diff-*` directories in the OS temp dir before and
-      after two headless launches and demands the count be unchanged, but the cleanup waits on an
-      async Chrome exit, so a run that finishes teardown late reads as a leak. `/tmp` on this
-      machine held ~160 orphaned profile directories from earlier runs, which is the same fault
-      seen from the other side — some really are left behind. Found 2026-09-09 while gating the
-      Project View watcher fix; reproduced on a pristine tree with the perf work stashed, so it is
-      not that change. Fix: have the test wait on the exit it is asserting about rather than on a
-      count, and sweep the orphans
-      `n/a` `confirmed` `checked 2026-09-09`
 
 - [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
       failed once in a full suite run and passed on the two full runs after it, plus three
@@ -141,54 +79,11 @@ seen-on is always n/a here.
       assertions. It costs a re-run on every branch that trips it.
       FOURTH occurrence 2026-09-10, inside `verify.sh` on session/remote-first-connect (remote
       access batch 2, which touches no step-guard file); 5 of 5 isolated runs green and the
-      re-run green
-      `desktop` `confirmed` `checked 2026-09-10` `regression`
-- [ ] `use-provider-type.test.tsx` -> "is triggered by the ChatGPT card on a status transition"
-      still flakes under full-suite load, now at its SECOND raised budget. It waits on a real
-      one-second `setInterval` and a previous session already lifted the timeout 3s -> 8s with a
-      comment saying why; it went red again on 2026-09-10 with ~710 files in parallel, and passed
-      in isolation (14/14). Raising it a third time is the treadmill — the fix is fake timers, or
-      a signal the card emits, so the test waits on the transition rather than on the clock. Not
-      done here because it is another feature's test and a bad rewrite is worse than a slow one
-      `n/a` `confirmed` `checked 2026-09-10` `needs-repro`
-
-- [ ] Workspace CI has been red on master since the 2026-09-08 startup-reorientation work: the
-      drift-guard test commits into a temporary "component" repo that never had a git identity set,
-      so the runner refuses with "Author identity unknown" (the sibling temp repos do set one). Every
-      workspace PR since inherits the red check
-      `n/a` `confirmed` `checked 2026-09-09` `regression`
-
-- [ ] `engine-manager.test.ts` has failed on the macOS and Windows CI legs since at least
-      2026-09-06 — two `backendOptions` cases, "status() answers immediately without
-      backendOptions, then pushes them" and "an older install with no device list gets both
-      pushes, and ends up complete". Ubuntu and the local suite are green, so it is invisible
-      to `verify.sh` and every merge inherits a red master. Confirmed pre-existing on master at
-      `ccbf4211` (run 34049785765) and unchanged by youcoded#441 (run 34163846462), which is
-      how it was found. Both legs need a machine that can run them — this session could not.
-      Narrowed 2026-09-07 (youcoded#443): "Ubuntu is green" no longer holds — that leg failed
-      too, but on a DIFFERENT and unrelated fault, an ENOTEMPTY removing the
-      engine-model-settings temp root after 9,743 passing tests, now fixed with the retrying
-      remove the test-hygiene rule prescribes. macOS and Windows remain red on the two
-      backendOptions cases, which are the part still needing AMD hardware
-      `n/a` `confirmed` `checked 2026-09-07`
-
-- [ ] The macOS CI leg fails a DIFFERENT process-timing test on roughly half the runs, and each
-      failure withholds the entire beta: a red test step skips packaging, and the `sign` job
-      needs every build leg, so there is no macOS installer AND no signed manifest for any
-      platform. Cutting 1.3.0-beta.80 on 2026-09-11 took three re-runs and still had not
-      produced a Mac build. Each failure was a different case, all of them assertions about
-      output from a spawned process: `shell-registry.test.ts` "start: mints an sh- id, logs
-      from the first byte…" (`expected '' to be 'hello\n'`), then
-      `lease-client.test.ts` "lapsed renew whose re-acquire is rejected…" (`expected true to be
-      false`), then `shell-registry.test.ts` "an adopted run's seeded head is ANSI-stripped…"
-      (`expected 'BOLD head\n' to be 'BOLD head\ntail-part\n'`). **It is the machine, not the
-      code:** the full local suite is green (10,871 tests), both files pass locally in isolation
-      (39 tests), `desktop-ci.yml` passed macOS on the SAME commits (`e82d38a1`, `36858f72`), and
-      it failed macOS on `09b284d6`, which predates the merges under test. Fix shape is the one
-      `.claude/rules/test-suite-hygiene.md` prescribes — wait for the signal rather than a
-      deadline — applied to the spawned-process assertions in these two files
-      `n/a` `confirmed` `checked 2026-09-11` `regression`
-
+      re-run green. The 2026-09-09 sighting of "failed write rolls back and Retry persists the
+      same intent" (twice in one full run, three isolated passes after) is the same family and
+      was filed separately until 2026-09-16; the Retry-persists worry itself was closed on
+      2026-09-16 as the test, not the product (shipped.md)
+      `desktop` `confirmed` `checked 2026-09-16` `regression`
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
       an Android manifest or a workspace file yields "tests: none", and the guard that
@@ -206,8 +101,14 @@ seen-on is always n/a here.
       on a plain re-run of the same commit. The retrying remove the test-suite-hygiene rule
       prescribes IS in place; its budget (10 x 25ms = 250ms) is just too small for a loaded
       3-core runner while fire-and-forget ledger writes are still landing. Not a product bug —
-      but it fails whole runs, which is how a real failure next to it gets ignored
-      `n/a` `confirmed` `checked 2026-09-03`
+      but it fails whole runs, which is how a real failure next to it gets ignored.
+      2026-09-16: now THREE files, same `ENOTEMPTY … /.youcoded/sessions` on teardown —
+      `specialist-run.test.ts` on master's own Ubuntu leg (run 35158812538), `task-tool.test.ts`
+      on macOS and `native-session-host.test.ts` on Ubuntu (run 35160811595). With master
+      protected on the Linux check (Plan A) this can block a good PR. Same shape as the two
+      write-after-teardown races Plan A fixed (engine stopAll, lease destroy): find what still
+      writes under `.youcoded/sessions` after the host is destroyed, rather than raising retries
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] On a Mac, three things can miss a change made in the split second after they start
       watching: a new file may not appear in the Files panel, an edited theme may not
@@ -240,10 +141,11 @@ seen-on is always n/a here.
       budget in any of 27 local runs on 2026-09-02, including two 8-way concurrent sweeps
       `n/a` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-fixed-sleeps-and-mcp-wiring-import.md
 
-- [ ] 57 test files are excluded from the new test typecheck — they hold the 201 type errors it
-      found on the day it was switched on, mostly fixtures built as partial objects. Named one per
-      line in `desktop/tsconfig.tests.json`; verify.sh prints the remaining count every run
-      `n/a` `confirmed` `checked 2026-09-02`
+- [ ] 57 test files are excluded from the test typecheck (58 entries in
+      `desktop/tsconfig.tests.json`, one a duplicate or a non-test) — they hold the 201 type
+      errors it found on the day it was switched on, mostly fixtures built as partial objects.
+      verify.sh prints the remaining count every run
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] The desktop CI job fails while every test passes — 7,971 passed, 0 failed, job exits 1 on
       "EnvironmentTeardownError: Closing rpc while onUserConsoleLog was pending". Console output
@@ -272,8 +174,11 @@ seen-on is always n/a here.
       sessions' cwd was inside the worktree, this one's stayed at the workspace root while its
       edits were four directories below it. Unproven — a session started with cwd inside the
       worktree, editing the same files, would settle it in one run. If that is the cause, every
-      session following `CLAUDE.md`'s "use absolute worktree paths" from the root loses every rule
-      `n/a` `needs-verify` `checked 2026-09-07`
+      session following `CLAUDE.md`'s "use absolute worktree paths" from the root loses every rule.
+      The earlier 2026-09-05 measurement (a Bash-only session got 0 of the 6 rules its edits
+      matched) stands as one confirmed way to lose them; a PostToolUse hook on edit-shaped Bash
+      that names the rule that did not load is still the cheapest instrument for that half
+      `n/a` `needs-verify` `checked 2026-09-16`
 
 - [ ] The lint gate only enables rules already at zero; the deferred list at the bottom of the
       ESLint config still fires — 79 renderer floating promises and 43 exhaustive-deps hits (the
@@ -300,35 +205,72 @@ seen-on is always n/a here.
       timing logic behind an injectable clock
       `n/a` `needs-verify` `checked 2026-07-22`
 
+- [ ] The renderer's own copy of the bridge type can drift from the real bridge with every check
+      green: `renderer/hooks/useIpc.ts` hand-writes `window.claude.session` and `.on`, while
+      preload.ts and remote-shim.ts are now checked against `SessionBridge`/`BridgeListeners` in
+      `shared/bridge-types.ts` (Plan B, which retired `shim-parity.test.ts`). A member added to both
+      bridges but not to useIpc.ts is invisible to typed callers, and a member useIpc.ts claims
+      but neither bridge has typechecks and crashes at run time. Fix: build useIpc.ts's
+      `session`/`on` from those shared types (export them again first — they are file-local
+      so knip's unused-export ratchet stays green)
+      `n/a` `confirmed` `checked 2026-09-17`
+
+- [ ] The voice install's "runs no other program" guard does not ban every way to start one. The
+      ast-grep rule `voice-assets-runs-no-other-program` bans `execFile`, `execFileSync`, `spawn`,
+      `spawnSync` and `exec` calls, and oxlint bans importing `child_process`; `execSync` and
+      `fork` were never on the call list (not in the retired test either), and a
+      `require('child_process')` call gets past the import ban. Whether to widen it is Destin's
+      call — a stricter ban may also catch a harmless helper later
+      `n/a` `decision` `checked 2026-09-17`
+
+- [ ] Source-grep sweep, round 2: tests the 2026-09 inventory missed. Plan B converted or deleted
+      its 114 classified files, but 26 more tests still read app source as text and were never
+      classified. (a) Found once the inventory learned to follow a path held in a variable
+      (2026-09-17): buddy-position-source, buddy-title-guard, claude-specialist-default-parity,
+      ipc-error, remote-devices-channels, remote-password-always-required, remote-recovery,
+      remote-setup-flow, remote-status-channel, rocm-prereqs, session-drawer-deleted-toggle,
+      statusline-context-remaining, transcript-page-channel-parity, transcript-reducer,
+      update-install-ipc, voice-service. (b) Added after the classification snapshot:
+      harness-eval-not-shipped, hook-scripts-android-parity, infinite-animation-allowlist,
+      line-budgets, prompt-git-snapshot-precomputed, session-strip-layout-effects-have-deps,
+      visible-intervals, no-bare-disclosure, claude-settings, launch-settings-chores. (c) infinite-animation-allowlist keeps its own
+      exception list (`SMOOTH_OK`) beside the `no-unstepped-infinite-animation` generator's own
+      (`EXEMPT`); `check.sh` does not pair the two, so an exemption added to one can silently disagree
+      with the other. Classify each file (rule, split, keep with a reason, or delete) the way
+      Plan B did; the live list is `node scripts/test-inventory.mjs` section 3
+      `n/a` `confirmed` `checked 2026-09-17`
+
 ## rigs
+- [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
+      cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
+      catches it. `deck/AUTHORING.md` already warns about it, and on 2026-09-17 it still took three
+      rebuilds (two slides lost their Risk card at 1280 and 1024 wide). Preview should measure
+      each card against its box and print which slide and window size clips
+      `n/a` `confirmed` `checked 2026-09-17`
+
+- [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
+      port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
+      this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
+      the way its Chrome port blocks already do
+      `n/a` `confirmed` `checked 2026-09-16`
+
+- [ ] Destin asked to “optimize tf out of our workspace” (2026-09-14). Oxlint, TypeScript 7 and the
+      design check shipped; still untried: one-off scans with Fallow (dead code, copy-paste,
+      tangled imports — could replace knip) and React Doctor (bad React patterns), reported
+      before anything is added to the checks. React Doctor sends usage data unless turned off
+      `n/a` `needs-verify` `checked 2026-09-16`
+
+- [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
+      remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
+      failing file — the known remote-download inode test, also red on master's Linux run. It
+      seems to take names from the whole workflow run rather than the one job, so its verdict
+      said "read it before merging" for a PR that added no failure (2026-09-16)
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] A dev instance shares the live app's saved theme choice: picking a theme in the dev window,
       or on a phone connected to it, changes the theme the live app opens with next time.
       `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
       `desktop` `confirmed` `checked 2026-09-11`
-
-- [ ] A new worktree's libraries can be older than the ones CI installs, so a green local check may
-      not be the check CI runs. On 2026-09-11 a worktree held fourteen packages at a different
-      version than the lockfile — the React hooks lint plugin a whole major version behind, plus
-      knip, typescript-eslint, zod and the AI SDK. Filling in missing packages at startup does not
-      touch packages that are present but outdated. Found while fixing a missing one, 2026-09-11
-      `n/a` `needs-verify` `checked 2026-09-11`
-
-- [ ] The speed-test comparison can call a change KEEP even though the Projects or long-scrollback
-      boots logged errors: `scripts/perf-lab/compare.mjs`'s `errorTotal` counts error lines from
-      the workload and terminal boots but ignores `projectsBoot` and `scrollbackBoot`. Found while
-      reviewing the new terminal scenario, 2026-09-10
-      `desktop` `confirmed` `checked 2026-09-10`
-
-- [ ] A stale review-deck page can overwrite the answers file. `scripts/ui-review/deck/serve.py`
-      writes `<stem>.answers.json` on every `/answers` POST with no guard, so a deck page left
-      open across a server restart rewrites the file from its own state. That is the bug fixed in
-      `site-copy-editor.py` on 2026-09-10, where it erased a finished set of Destin's site edits —
-      and the deck is the surface he answers EVERY UI review on, so the same accident there loses
-      review answers, not copy. `serve.py` already rotates a *submitted* file aside on re-serve
-      (`rotate_submitted`); this is the in-flight case it does not cover. Fix as that tool now
-      does: refuse a write that would drop answered steps instead of overwriting.
-      `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] The speed-test comparison judges two runs taken at very different machine load as if
       they were alike. On 2026-09-10 two freeze-fix branches both read 16–20% slower than master
@@ -338,31 +280,6 @@ seen-on is always n/a here.
       `compare.mjs` could mark a pair "not comparable" when the runs' load differs by more than
       a set factor, instead of printing REJECT
       `n/a` `confirmed` `checked 2026-09-10` `performance`
-
-- [ ] The Bash tool's zsh does not word-split an unquoted variable, and it has now bitten three
-      sessions despite `~/system/tools/claude-code-bash-shell.md`: `kill $PIDS` signalled nothing
-      while a check loop reported the rig stopped (and an agent was told so), `set -- $r` produced
-      an empty review diff a reviewer was pointed at (both 2026-09-10), `$V boot` in the installer
-      session. `.claude/hooks/glob-guard.py` already stops the zsh glob trap the same way; teach
-      it (with `glob-guard.test.mjs` cases) to refuse `kill $VAR`, `set -- $VAR` and
-      `for x in $VAR` unless wrapped in `bash -c` or written `${=VAR}`.
-      RECURRED 2026-09-11 (site-scroll-motion): `set -- $spot` left a pixel comparison with no
-      arguments, every screenshot failed identically, and the loop printed "0 differing px" for
-      all six spots — a false proof of "identical" that was nearly reported to Destin
-      `n/a` `confirmed` `checked 2026-09-11`
-
-- [ ] Implementation plans keep prescribing tests that cannot fail, because the rule that forbids
-      them never loads while a plan is being written. The 2026-09-10 freeze-fixes plan shipped five
-      such tests (a "hung write" test, a liveness smoke, two burst tests and a no-custom-CSS case)
-      with "Expected: FAIL" lines that were never true; review and mutation proofs caught all
-      five, at the cost of an extra fix wave. `test-suite-hygiene.md` → "A guard you did not break
-      is a guard you did not test" already says it, but its `paths:` cover test files only. Adding
-      `"**/docs/*/plans/**"` is blocked by the checker, not by the idea: `audit-anchors.mjs`'s
-      `globToRegex` turns a leading `**/` into `.*/`, which needs at least one folder in front, so
-      no `**/docs/...` glob can match the workspace's own top-level `docs/` and the audit reports
-      it as "matching nothing". Fix the matcher (`**/` = zero or more folders, with a test that
-      `worktreeBlindGlobs` still flags blind globs), then add the plans glob
-      `n/a` `confirmed` `checked 2026-09-10`
 
 - [ ] **The blank-content instrument measures partly with its own weight, which is the exact
       shape the perf-lab README now forbids.** `late-content.mjs`'s per-frame `sample()` runs
@@ -402,23 +319,6 @@ seen-on is always n/a here.
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
       `desktop` `confirmed` `checked 2026-09-10`
-- [ ] `roadmap-check.mjs --fix` rewrites items the session never touched: on today's master it
-      downgrades two `confirmed` performance items (buddy reflow, remote replay buffer) to
-      `needs-verify` every run. The filing grammar tells every session to run it before
-      committing, so each one either ships another session's silent downgrade or has to spot
-      it and revert by hand. Seen twice on 2026-09-07, once from a stale checkout and once
-      from a freshly merged one. THIRD occurrence 2026-09-09, a different item and a different
-      file: it downgraded the native-harness cache-efficiency item to `needs-verify` while a
-      session was filing an unrelated dev-workspace entry, and rewrote ROADMAP.md's counts to
-      match. Reverting needs THREE steps, because re-running `--fix` to repair the index
-      re-applies the downgrade — revert the area file, revert the index, then hand-correct the
-      one index row. Two sessions have now had to work that out from scratch; the fix wanted is
-      for `--fix` to touch only files the run was asked about. It has now reached master: on
-      2026-09-09 `ROADMAP.md` there said native-harness had 11 needs-verify items while
-      `native-harness.md` said 10 — the index half of a downgrade shipped without the file half,
-      so `roadmap-check` is RED on master until someone matches them
-      `desktop` `confirmed` `checked 2026-09-09`
-
 - [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
       read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
       never created, so the one artefact that says WHICH drag was bad does not exist for the
@@ -449,8 +349,16 @@ seen-on is always n/a here.
       backend now "rocm") while the live app was still running its Vulkan build — it would have
       come up on ROCm at its next restart, with nothing on screen tracing that back to a test
       session. This is the isolation run-dev.sh exists to provide. The file was left alone: what
-      his app runs on is his call, not a session's
-      `desktop` `confirmed` `checked 2026-09-06`
+      his app runs on is his call, not a session's.
+      Sized 2026-09-16 and NOT picked up, because it needs a decision first: `~/.youcoded/` is one
+      folder (`native-home.ts` is its single writer, plus hardcoded readers in `session-browser.ts`,
+      `prerequisite-installer.ts`, `chatsearch-index/`, `slug-repair*.ts`, `specialists/catalog.ts`),
+      and it holds the engine config AND the provider keys, native transcripts, MCP registry and
+      specialists. Pointing a dev instance at its own copy fixes the overwrite but also means a dev
+      window starts with no provider signed in and no past native chats, which every dev-window
+      test so far has relied on; the theme choice was not found in that folder at all (where it
+      lives is still unlocated). Destin decides which files a dev instance shares before any build
+      `desktop` `decision` `checked 2026-09-16`
 
 - [ ] The screenshot drivers behind the review rig and the new UX tester emulate a mouse on a
       1× screen only — no touch, no 1.5× scale — which is how Destin actually uses the app, so a
@@ -524,30 +432,11 @@ seen-on is always n/a here.
       as covered
       `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
 
-- [ ] `chatgpt-auth.test.ts` ("after the callback the poll starts…") fails on the Windows CI
-      runner and passes on a re-run of the same commit, with no code change — seen 2026-09-05 on
-      youcoded PR #430. A suite that fails for reasons that are not yours trains sessions to wave
-      real failures away, which is the exact thing the 2026-08-28 flake sweep set out to end
-      `n/a` `confirmed` `checked 2026-09-05` `regression`
-
-- [ ] Reading and editing files through shell `cat`/`sed`/heredocs loads NO path-scoped rule —
-      rules fire on the file tools only — so a session told to prefer Bash silently works with
-      none of them. Measured 2026-09-05: a session that shipped a renderer feature, a new test
-      and a review deck got 0 of the 6 rules its own edits matched (`~/.claude/instructions-loaded.log`
-      records the misses). A PostToolUse hook on edit-shaped Bash could name the rule that did
-      not load; the observation instrument for it already exists
-      `n/a` `confirmed` `checked 2026-09-05`
-
 - [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
       env scrub does not work); the native evaluator fixed this properly — retire the old script,
       or port the three fixes to it?
       Destin 2026-09-02: retire it — after checking nothing real is lost; reconsider if so
       `n/a` `confirmed` `checked 2026-09-02` `security` → docs/active/investigations/2026-09-01-review-harness-key-leak.md
-
-- [ ] The perf rig cannot see native per-token streaming — its workload streams whole turns
-      through the Claude Code transcript path, so the gate under-represents the exact path
-      cycle 1's fixes target
-      `n/a` `confirmed` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-perf-rig-blind-to-native-streaming.md
 
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
       identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%
@@ -600,10 +489,6 @@ seen-on is always n/a here.
       has not seen it in his own app — check whether a maximized-at-launch window avoids it)
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
-- [ ] The landing mockup's generator still carries the two phrases removed from the live page on
-      2026-09-03 ("self-improving", "does real work"); the next rebuild-and-port reintroduces them
-      `n/a` `confirmed` `checked 2026-09-03`
-
 ## knowledge
 
 - [ ] A product-decisions deck (the questions/serve.py kind, the one used for four-or-more
@@ -653,24 +538,11 @@ seen-on is always n/a here.
       at fresh `origin/master` (whose lock names dompurify) while its `node_modules` was hardlinked
       from the shared checkout (whose lock does not), and the only `deps:` line printed was
       `hardlinked`. This is the FIFTH time this package has cost a session — four on 2026-09-11, all
-      closed as "the recipe works" or "fixed on master"
-      `n/a` `needs-verify` `checked 2026-09-13` `regression`
-
-- [ ] `.claude/rules/react-renderer.md` is over the 600-word rule budget on master itself
-      (`audit-anchors.mjs` reports 612), so every session that touches renderer code pays for the
-      overflow and the mechanical audit reads red for a reason no branch introduced. The rules
-      README says overflow migrates to the lazy doc it points to (`youcoded/docs/renderer-chrome.md`)
-      or becomes a pinning test. Found 2026-09-11 while merging remote batches 2/3.
-      `.claude/rules/worker-backend.md` joined it at 621 on 2026-09-13 (the analytics-dashboard
-      merge), so the mechanical audit now reads red for two rules no branch introduced
-      `n/a` `confirmed` `checked 2026-09-11`
-- [ ] `audit-anchors.mjs` is red on master for two copies of already-archived docs:
-      `docs/active/plans/2026-09-07-permission-prompt-composer-focus.md` and its `-design` spec are
-      byte-identical to their `docs/archive/` copies (checked with `cmp` 2026-09-10; the work shipped
-      as youcoded#449). Three wrap-ups in a row reported it and left it, because deleting another
-      session's records is not a branch's call — so every session now reads a red audit and learns
-      to skim past it. Needs Destin's one-word OK to delete the two `docs/active/` copies
-      `n/a` `decision` `checked 2026-09-10`
+      closed as "the recipe works" or "fixed on master".
+      2026-09-16: cause still unknown, but no longer a dead end — `workspace-start` now tops up on
+      RESUME too, so re-running it with the same key fetches what creation missed. Creation printed
+      its `fetched` note correctly on two fresh worktrees that day
+      `n/a` `needs-verify` `checked 2026-09-16` `regression`
 
 - [ ] The UI design guide has TWO rules numbered G-22 — "Find bar" and "Expandable rows" — and its
       own index at the bottom resolves G-22 to the find bar. Anything that cites "G-22" is therefore
@@ -748,7 +620,12 @@ seen-on is always n/a here.
       finds": committing another session's in-flight WIP under this session's authorship is the
       more dangerous failure. Wanted instead: an exit condition in plan templates, so a plan that
       forbids committing during implementation says when that constraint ENDS
-      `n/a` `confirmed` `checked 2026-09-09`
+      RECURRED 2026-09-16, across machines: a session committed its work on the desktop PC
+      but never pushed (pushing still needed Destin’s OK), then continued on the Z13, where
+      none of it existed; everything was rebuilt from the transcript. The stranded-worktree
+      check only sees the local disk, so it cannot catch this. Destin’s global rule now says
+      push every branch as soon as it has a commit.
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] Two guardrails from the 2026-07-28 retrospective are still unshipped: spec counts are
       neither anchored nor dated (no "specs are snapshots" convention exists), and `run-dev.sh
@@ -758,18 +635,17 @@ seen-on is always n/a here.
 
 - [ ] Workspace friction from the 2026-08-28 session-opening study still open: "review the attached
       document" is the #1 task shape and has no command (`.claude/commands/` still holds only
-      audit.md); plans run 4–6 reads long and are getting longer; worktrees live in four places on
-      disk (`beta/`, `flappy-bird/`, `worktrees/`, `youcoded.wt/` — the last not even registered)
-      `n/a` `needs-verify` `checked 2026-09-01`
+      audit.md); plans run 4–6 reads long and are getting longer; worktrees live in five places on
+      disk (`beta/`, `flappy-bird/`, `worktrees/`, `youcoded.wt/`, `wecoded-marketplace.wt/` — the
+      last two not even registered)
+      `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] Census pass over `youcoded/desktop/docs/` — the last unsorted lifecycle-doc dump (13 entries
-      incl. a superpowers/ subtree) still sits there because desktop/CLAUDE.md and a preload code
-      comment point into it; sorting it means rewriting those pointers first
-      `n/a` `parked` `checked 2026-09-01`
-
-- [ ] Two UI-audit docs and `docs/MAP.md` still cite a coverage file that was deleted
-      (`coverage-second-pass.md`; MAP line 19 still says 103/104)
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] `youcoded/desktop/docs/` is down to two spec files (`theme-spec.md`,
+      `transcript-watcher-spec.md`), but `desktop/CLAUDE.md` still points at the folder as a
+      lifecycle-doc home, and a preload comment points at a `docs/superpowers/specs/…` path that
+      no longer exists (its content lives in the workspace's `docs/archive/plans/`); finish by
+      moving the two specs where the census put everything else and fixing both pointers
+      `n/a` `parked` `checked 2026-09-16`
 
 - [ ] Deferred clean-ups from the 2026-07-10 master review that nobody has picked up (xterm WebGL
       detach, sync idle-poll backoff, status-data dedup, folder-list canonicalising, big-file
@@ -813,7 +689,7 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03` `v1.3.0`
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
-      undifferentiated 2,370 commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
+      undifferentiated 3,200-odd commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
       be cut without dragging in hordes of unreleased features. Goal: keep master as the trunk,
       cut `release/vX.Y.x` branches off the last tag, and ship bug-fix minors by cherry-picking
       fixes onto them — so a minor can go out while the next major is still blocked. Caveats to
@@ -832,31 +708,24 @@ seen-on is always n/a here.
       workbench files in the 1.2.4 asar, none reachable; installer weight, not a blocker
       `n/a` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-asar-ships-tests.md
 
-- [ ] PDF reading needs one smoke test in a packaged build before the next release — the pdf.js
-      worker import is verified under Node but unverified inside app.asar (youcoded#354 added the
-      unpack rules); no release has been cut since
-      `n/a` `needs-verify` `checked 2026-08-28`
+- [ ] PDF reading needs one smoke test in a packaged build — the pdf.js worker import is
+      verified under Node but unverified inside app.asar (youcoded#354 added the unpack rules).
+      Four packaged pre-releases have been cut since (1.3.0-beta.72, .75, .76, .80), so there is
+      an installer to test against now; nobody has
+      `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] Dependency majors that are real work, not bumps — still open on 2026-09-01: TypeScript
-      5.9 → 7.0 (#242), okhttp/mockwebserver 5.4 which forces compileSdk 36 (#235), and the Android
-      toolchain chain below; knip 6, jsdom 30 and vitest 4 landed outside dependabot and their PRs
-      are closed
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] Dependency majors that are real work, not bumps — still open on 2026-09-16: TypeScript
+      5.9 → 7.0 (#242, now 7.0.2), okhttp + mockwebserver 4.12 → 5.5 (#389, #392 — the pair that
+      forces compileSdk 36; #235 was closed and superseded), org.json (#388), and the Android
+      toolchain chain below; knip 6, jsdom 30 and vitest 4 landed outside dependabot and their
+      PRs are closed
+      `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] Android toolchain migration: Kotlin 2.4.10 + Gradle 9.7.1 landed 2026-09-01, but AGP 9.3.1
-      (#237) and compose-bom 2026.06 (#236) are still open and red; they were diagnosed as one
-      coupled chain, so re-run them together now that the Kotlin half is in
-      `n/a` `needs-verify` `checked 2026-09-01`
-
-- [ ] `roadmap-check.mjs --fix` edits the SHARED checkout no matter where you run it, because
-      its root defaults to the script's own location rather than the current directory. Run from
-      a worktree on 2026-09-04 it silently rewrote ROADMAP.md in `/home/destin/youcoded-dev`,
-      where other sessions keep uncommitted work, and left the worktree it was invoked in
-      untouched — the caller cannot tell, because it prints a success line either way. `--root`
-      exists and is the workaround, but nothing makes you pass it. Wanted: default the root to
-      the git toplevel of the working directory, or refuse `--fix` when the resolved root is a
-      different checkout from the one you are standing in
-      `n/a` `confirmed` `checked 2026-09-04`
+- [ ] Android toolchain migration: Kotlin 2.4.10 + Gradle 9.7.1 landed 2026-09-01, but AGP
+      8.7 → 9.4 (#390; #237 closed and superseded) and compose-bom 2024.12 → 2026.08 (#391; #236
+      closed and superseded) are still open and red; they were diagnosed as one coupled chain, so
+      re-run them together now that the Kotlin half is in
+      `n/a` `needs-verify` `checked 2026-09-16`
 
 - [ ] The new site header does not match the two logos nearest it, and both were consciously
       deferred on 2026-09-04 rather than decided. The header is now a glass tile with the robot
@@ -888,17 +757,25 @@ seen-on is always n/a here.
       Store link
       `n/a` `confirmed` `checked 2026-09-03`
 
+- [ ] The promo film's opening still shows Cotton Candy holding the wand that Destin removed from
+      the site's hero button (2026-09-11 refresh). Not asked yet — his call whether to re-film it;
+      renders need his go-ahead
+      `n/a` `decision` `checked 2026-09-11`
+
 - [ ] Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
-      1.2.4), a CHANGELOG 1.3.0 entry, the tag. The one product gate left is the Connected-accounts
-      question filed under sync
-      `n/a` `blocked` `checked 2026-09-01` `v1.3`
+      1.2.4 in both manifests; the CHANGELOG carries a `1.3.0-beta` section but no `1.3.0` entry),
+      the tag. The last product gate (Account → Connected accounts shows an in-app GitHub sign-in)
+      was confirmed 2026-09-02; what blocks it now is the release-method rework and the signing
+      items in this section
+      `n/a` `blocked` `checked 2026-09-16` `v1.3`
 
 - [ ] Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
       the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
       email), the Anthropic-token fix, Android → MIT, the LLC itself (Destin's Adventures, LLC),
-      EIN, DMCA agent, legal pages naming the company (youcoded#416). In the mail: trade name,
-      D-U-N-S. The report's "Status" block is the current state; Destin's values are in the brain
-      `n/a` `in-flight` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      EIN, DMCA agent, legal pages naming the company (youcoded#416). D-U-N-S arrived 2026-09-10;
+      in the mail: trade name. The report's "Status" block is the current state; Destin's values
+      are in the brain
+      `n/a` `in-flight` `checked 2026-09-16` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
       The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
@@ -925,13 +802,6 @@ seen-on is always n/a here.
       the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
-- [ ] The close-out check reports a fully merged, fully pushed branch as "never pushed" when the
-      merge commit's message was written by hand instead of left as git's default, because it looks
-      for the branch's name in that message. Happened on the voice merge 2026-09-05, where the
-      message was rewritten to describe the feature for Destin. Matching the commit rather than the
-      words would fix it; so would always keeping the branch name in the message
-      `n/a` `confirmed` `checked 2026-09-05`
-
 - [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
       orphans its Vite server. Stopping a dev instance the documented way — derive the pid
       from its port, kill it — leaves the renderer's dev server holding port 5223, so the
@@ -941,16 +811,17 @@ seen-on is always n/a here.
       up, would execute; the launcher already knows both ports
       `n/a` `confirmed` `checked 2026-09-10`
 
-- [ ] `workbench-boot-check.mjs` boots only the `scenario=*` / `view=*` routes, so eleven of the
-      eighteen `?switch=` values `mock-shim.ts` reads have never been booted by any check —
-      `planUsage`, `chatgpt`, `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`,
-      `student`, `voice`, `buddyHelper`. `scripts/ui-review/README.md` → Extending has told
+- [ ] `workbench-boot-check.mjs` boots sixteen routes (the `scenario=*` / `view=*` set plus a
+      stalled and a first-run variant), so eleven of the twenty-seven `?switch=` values
+      `mock-shim.ts` reads have never been booted by any check — `planUsage`, `chatgpt`,
+      `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`, `student`, `voice`,
+      `buddyHelper` (counts re-taken 2026-09-16). `scripts/ui-review/README.md` → Extending has told
       every session to add a route for a new switch since the file was written; none of the
       eleven has one. A switch that crashes the mock would surface as a failed screenshot in
       whichever session next used it, not as a red check. Counted 2026-09-09 while adding the
       `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
       same instruction but cannot boot anything
-      `n/a` `confirmed` `checked 2026-09-09`
+      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] `run-dev.sh --offset N` fails with a bare Vite "Port 5233 is already in use" when the offset
       collides with another session's dev instance — after the whole launch sequence has run, and

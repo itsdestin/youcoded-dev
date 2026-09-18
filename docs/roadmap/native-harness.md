@@ -23,22 +23,26 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       and credentials, privacy and safe handoff need design; do not assume offline-only files
       are available to the cloud or treat device/cloud retries as permission to run work twice.
       `all` `parked` `checked 2026-09-08` `v1.4`
-- [ ] Rework how things are cut down to fit a small model. A skill that does not fit is cut
-      mid-sentence and the assistant is told to "ask for the rest" without being told which file
-      that is or who to ask — so on a small model a cut skill is lost, not deferred. Project rules
-      are handled well (every heading survives, the file is named); skills, triggered rules and the
-      model's own skill tool are not, and the skill tool is not window-aware at all. Seven decisions
-      are written up with options and how other tools handle each one — deck ready to serve, nothing
-      answered. Parked 2026-09-09 to finish the session-context panel first
-      `desktop` `parked` `checked 2026-09-09` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
-
-- [ ] Changing the step guard number in Assistant settings may save the OLD number, not the one
-      you picked — its own test says so and has been failing on master since the feature shipped
-      2026-09-08 (`tests/step-guard-row.test.tsx`, "failed write rolls back and Retry persists
-      the same intent": both saves carry 20 after 50 was chosen). Found 2026-09-09 by a
-      `verify.sh` run on an unrelated branch; nobody has checked yet whether it reproduces in
-      the running app or is only true on the failure path the test exercises
-      `settings` `desktop` `needs-verify` `checked 2026-09-09`
+- [ ] Rework how things are cut down to fit a small model. Project rules are handled well (every
+      heading survives, the file is named); skills and triggered rules are still tail-cut. Since
+      2026-09-10 (youcoded `aa6091f1`) a cut skill at least names the file that holds the rest and
+      is cut on a line boundary, and the model's own skill tool is now window-aware — the two
+      correctness fixes; the redesign (how skills and rules should be shortened rather than
+      tail-cut) is what remains. Seven decisions are written up with options and how other tools
+      handle each one — deck ready to serve, nothing answered. Parked 2026-09-09 to finish the
+      session-context panel first
+      `desktop` `parked` `checked 2026-09-16` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
+- [ ] **v1.3.1 release blocker.** A local model forgets the user's request halfway through a long
+      first request, goes silent, then answers the next message as if the chat had just started
+      (Destin, 2026-09-16, two Qwen 9B chats). The conversation is silently cut to fit the model's memory, and the cut also
+      makes the engine re-read everything every step. Fix, designed 2026-09-17: cut rarely and in
+      one large step, never cut the user's request, cap tool output to the model's size, fade cut
+      messages like /compact does, and show a toast pointing at Local models settings. Local
+      models only; cloud behaviour stays unchanged. The cloud side of the same problem is the
+      "Cloud model context management and cache/token efficiency improvements" item under cost,
+      which should reuse the pieces this fix builds. Related: the skill/rule shortening item just
+      above
+      `chat` `desktop` `confirmed` `checked 2026-09-17` `v1.3.1` → docs/active/specs/2026-09-17-local-context-cuts-design.md
 
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
@@ -51,11 +55,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] The assistant should know which tools, instructions and automatic checks are actually
       active in this chat, rather than guessing from setup instructions
       `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
-
-- [ ] Memory the desktop app holds for each session is never let go when the session ends —
-      six small per-session bookkeeping structures survive session exit (found 2026-08-27 while
-      chasing the sidecar crash; not the crash cause, a few hundred bytes each)
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-per-session-maps-never-torn-down.md
 
 - [ ] Settings says OpenRouter is "Connected" and its Test button comes back green, while every
       turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
@@ -118,9 +117,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       context popup into a real surface (per-item token cost, "this rule loaded because…", session
       mutes); one-tap "remember this?" correction capture; work state as a first-class object;
       shareable knowledge packs via the marketplace; provenance + revocation as the gate on sharing.
-      Destin, 2026-09-05: also explain which instructions loaded, why, and what was skipped or
-      shortened, including after reopening a chat or changing its working folder
-      `desktop` `parked` `checked 2026-09-05` → docs/active/investigations/2026-09-05-native-guidance-followups.md
+      Destin's 2026-09-05 ask — explain which instructions loaded, why, and what was skipped or
+      shortened — shipped 2026-09-10 as the "What the assistant was given" panel; the five ideas
+      above are what this item still holds
+      `desktop` `parked` `checked 2026-09-16` → docs/active/investigations/2026-09-05-native-guidance-followups.md
 
 - [ ] Third-party agent CLIs as session providers (Codex first, then OpenCode / Cursor) — cuts
       against the standing "one first-party harness, every model" direction, kept as a deliberate
@@ -141,19 +141,26 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-09-01`
 
 - [ ] The exact request sent to the model each step (system prompt, tool schemas) is never kept, so a
-      resumed session cannot reproduce what produced a turn, and nothing is flushed to disk at turn
-      boundaries
-      `desktop` `needs-verify` `checked 2026-08-26`
+      resumed session cannot reproduce what produced a turn. Since youcoded#461 (2026-09-09) a
+      checkpoint IS written at every turn boundary, but it carries only a fingerprint of the
+      system text and tool names, never the prompt or schemas themselves
+      `desktop` `needs-verify` `checked 2026-09-16`
 
 - [ ] The native agent has no memory of past chats — chat search as a tool it can call, plus a small
       index it maintains and a flush before compaction. Sequenced after the eval CI gate and the
       request log above
       `desktop` `parked` `checked 2026-08-26`
 
-- [ ] A future "Try again" retry that passes the provider as a variable would fail to compile — the
-      send function only accepts the literal provider names. No live caller today; fix when the retry
-      affordance lands
-      `desktop` `parked` `checked 2026-07-23`
+- [ ] When a reply fails, the red error card says to send the message again but offers no
+      Try again button — the button exists but is only ever connected on the "may have stalled"
+      card — and the Stop button is gone too. Needs a decision: here "try again" would mean
+      re-sending the message, not re-running a paused step
+      `chat` `desktop` `confirmed` `checked 2026-09-16`
+
+- [ ] While the assistant is quiet, the amber "Still waiting" card and the "Retrying in 15s…"
+      countdown may flicker back and forth, because an unrelated update resets the chat to
+      "fine" without clearing the stall warning. Reported by a code read, never seen live
+      `chat` `desktop` `needs-verify` `checked 2026-09-16`
 
 - [ ] Every cloud model gets frontier-strength treatment (full tool presentation, parallel calls),
       so a small hosted model chokes the same way a small local one does; and an unknown local
@@ -198,10 +205,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       feature makes easy to install.
       `desktop` `confirmed` `checked 2026-09-05` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
 
-- [ ] Write and Edit refuse a file "modified since you read it" after a plain touch or git checkout
-      that changed nothing, and can miss a real outside edit made in the same second
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-write-edit-mtime-staleness.md
-
 - [ ] After the shell has cd'd elsewhere, Read and Bash can silently open two different files for the
       same relative name — Destin to decide: reject relative paths outright, or keep the hints and live with it
       Destin 2026-09-02: needs more investigation before deciding
@@ -215,16 +218,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       so every long result costs a second call); and the "prefer Read/Grep over cat/grep" wording
       should switch off in full-auto — decide both with the harness evaluator, not by argument
       `desktop` `parked` `checked 2026-09-04` → docs/archive/investigations/2026-08-26-native-tools-vs-other-harnesses.md
-
-- [ ] Warn the model when a background Bash command has been running 5 and 15 minutes
-      ("The (call) has been running for 5 minutes — if this is within expectations, you may
-      ignore this message"), so a model can act on a genuinely stuck call instead of polling.
-      Destin 2026-09-07: hit live — a model ran BashOutput in a 150-call polling loop on a
-      hung background command. Design note: ride the existing shell finished-notice lane
-      (ShellRegistry per-run timers → queueHostNotice → drainDeliveries), which delivers at
-      the next idle boundary, never mid-turn. Anti-poll wording shipped 2026-09-07; this is
-      the remaining proactive half
-      `desktop` `confirmed` `checked 2026-09-07`
 
 - [ ] WebFetch's "page was too thin to extract" thresholds were reasoned defaults, never measured
       against real pages the way the JS-render floor next to them was
@@ -248,29 +241,16 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
-- [ ] An explicitly authorized git push / branch-deletion cleanup was blocked with "user has not
-      responded yet — the request is still pending on their screen" even though no approval prompt
-      existed (paste-attachments merge close-out, 2026-09-15). This stops close-out and falsely tells
-      the user to approve something absent; only claim a pending approval when a real request exists,
-      and let authorized push and deletion commands proceed.
-      Likely cause (2026-09-16, from code + saved transcripts, not reproduced live): that message
-      is only ever sent to a SPECIALIST whose routed ask went unanswered for 5 minutes
-      (`child-ask-router.ts`). The ask renders only inside the helper's Task card — often in an
-      earlier, scrolled-past turn for a background helper — and the red session dot / attention
-      summary count only top-level tools in the active turn (`useSessionAttention.ts`,
-      `ChatView.tsx` awaitingTools), so nothing tells the user it exists; the only signal is the
-      Specialists chip turning amber. Workers hit it on deny-listed `git push --force-with-lease`
-      and `rm -rf` (2026-09-08 sessions). Fix changes what the user sees → options first
-      `tool-cards` `desktop` `confirmed` `checked 2026-09-16`
-
 - [ ] In Auto-edit, a hired specialist runs any shell command that isn't on the always-ask list
       with no prompt, although the main assistant itself would have to ask first — the launch
       "envelope" (`envelopeGranted: true`, `native-session-host.ts` buildSpecialistSession →
       `child-permissions.ts` step 6/7) turns every parent "ask" into "allow", and in Auto-edit
-      no hire card is shown for built-in specialists. Agreed fix (2026-09-16): grant the envelope
-      only when the session was on Ask first at hire time. Blocked on the phantom-approval item
-      above, because it routes more helper asks through that hidden path
-      `desktop` `confirmed` `checked 2026-09-16`
+      no hire card is shown for built-in specialists. Direction discussed 2026-09-16: a helper
+      asks whenever the main assistant would (drop the envelope; always-ask commands unchanged),
+      optionally a "let it work without asking" choice on the hire card later. Unblocked since
+      youcoded#489 (helper requests show at the bottom of the chat and wait with no timeout);
+      Destin chose to leave it for now. Cost: more helper prompts, most in Ask first
+      `desktop` `decision` `checked 2026-09-16`
 
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
@@ -296,40 +276,67 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-08-26` `security` → docs/active/investigations/2026-08-09-native-skip-permissions.md
 
 ## cost
-- [ ] The cost self-check stays silent on a mis-priced cheap model whenever the same session
-      also ran a correctly-priced model for most of its turns — the warning never fires
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-cost-self-check-dilutes-across-model-swap.md
-
-- [ ] The session-cost chip reads low once a long session starts compacting — a step down at
-      every compaction, ~25% low on a chip showing $5 after five of them; the self-check reports nothing
-      `status-bar` `desktop` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-session-cost-chip-low-after-compaction.md
-
-- [ ] Changing models while an answer is still streaming bills that whole turn at the new
-      model's rate and labels it with the new model's name (measured: a turn worth $7 reported as $70)
-      `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-mid-turn-model-swap-reprices-whole-turn.md
-
-- [ ] Cache efficiency — cloud and local sessions leave cache hits on the table, especially after
-      reopening a conversation: OpenRouter turns can drift between endpoints, and both OpenRouter
-      and ChatGPT-plan sessions can resend a changed opening prompt after restart instead of keeping
-      the longest reusable prefix. Local models re-read the whole conversation every specialist
-      turn, and long local sessions lose their cache to trimming (the ~50% "Reuse" reading on
-      DeepSeek is NOT a bug — measurement artifact, documented). Improve resumed cloud-session
-      affinity and prefix stability, then measure the first post-resume request rather than trusting
-      historical totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model
-      stops both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
-      survives the gap between messages. The ChatGPT-only diagnostics and faithful continuation
-      shipped in youcoded#461 (2026-09-09). Of the eight remaining breakers, youcoded#464
-      (2026-09-10) shipped six plus the backend half of the seventh: Anthropic caching switched on
-      and OpenRouter sessions pinned, compaction firing before the trimmer on every window,
-      pruning committed only on a prune decision, the summary reusing the conversation's warm
-      prefix and reporting its cost, an `expectedRebuild` flag on every turn, llama.cpp's reuse
-      count recorded per step, and the Task tool pinned byte-identical across catalog reloads.
-      The ChatGPT summary key was dropped on purpose (the summary shares the chat's key now).
-      What is left: the Reuse chip's DISPLAY of expected vs surprise misses (four layouts in the
-      survey, a deck for Destin), and a measurement pass in a dev instance — nothing reads the
-      recorded local reuse count yet, and whether OpenRouter honours the top-level cache field
-      and the session pin is asserted only against a stubbed network
-      `desktop` `confirmed` `checked 2026-09-10` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
+- [ ] Cloud model context management and cache/token efficiency improvements — one item so the
+      fixes below are specced together. Combined 2026-09-17 from three earlier entries (each kept
+      below with its filing date) plus gaps found the same day comparing the app with Claude
+      Code, Hermes Agent and Pi. The local-model fix (the "A local model forgets the user's
+      request" item under sessions; spec
+      docs/active/specs/2026-09-17-local-context-cuts-design.md) deliberately leaves cloud
+      behaviour unchanged, but builds pieces this item should reuse rather than rebuild: the
+      pinned request, cutting in the middle of a request, retry on overflow, the cut marker and
+      fading, and tool caps sized to the window. Competitor detail for the cache half:
+      docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md
+      - Cache efficiency (filed 2026-09-10) — cloud and local sessions leave cache hits on the
+        table, especially after reopening a conversation: OpenRouter turns can drift between
+        endpoints, and both OpenRouter and ChatGPT-plan sessions can resend a changed opening
+        prompt after restart instead of keeping the longest reusable prefix. Local models
+        re-read the whole conversation every specialist turn, and long local sessions lose
+        their cache to trimming (the ~50% "Reuse" reading on DeepSeek is NOT a bug —
+        measurement artifact, documented). Improve resumed cloud-session affinity and prefix
+        stability, then measure the first post-resume request rather than trusting historical
+        totals. The idle-shutdown half is answered: turning on "Keep loaded" for a model stops
+        both the per-model auto-sleep and the whole-engine idle shutdown, so that model's cache
+        survives the gap between messages. Shipped so far: the ChatGPT-only diagnostics and
+        faithful continuation (youcoded#461, 2026-09-09); six of the eight remaining breakers
+        plus the backend half of the seventh (youcoded#464, 2026-09-10) — Anthropic caching
+        switched on and OpenRouter sessions pinned, compaction firing before the trimmer on
+        every window, pruning committed only on a prune decision, the summary reusing the
+        conversation's warm prefix and reporting its cost, an `expectedRebuild` flag on every
+        turn, llama.cpp's reuse count recorded per step, and the Task tool pinned
+        byte-identical across catalog reloads. The ChatGPT summary key was dropped on purpose
+        (the summary shares the chat's key now). Left: the Reuse chip's DISPLAY of expected vs
+        surprise misses (four layouts in the survey, a deck for Destin), and a measurement pass
+        in a dev instance — nothing reads the recorded local reuse count yet, and whether
+        OpenRouter honours the top-level cache field and the session pin is asserted only
+        against a stubbed network
+      - The context chip keeps the OLD model's window after a model swap or a resume (filed
+        2026-09-16) — swap a 1M model for a small local one and the chip can read "97%
+        remaining" on a window the very next message overflows; it only corrects once a turn
+        finishes. The session-context panel's "Context window" row and its small-window warning
+        have the same lag
+      - Reopening a compacted conversation the next day can silently restore the whole
+        pre-compaction history (filed 2026-09-16) — the saved checkpoint is rejected because the
+        system prompt carries today's date and a live git snapshot, so the conversation is
+        rebuilt from the raw record while the chip still shows the post-compaction figure
+      - (2026-09-17) When a provider rejects a request as too long, nothing compacts and
+        retries — the turn just fails
+      - (2026-09-17) A summary can't be made inside a user's first request (it needs two user
+        messages), so the silent per-request trim (`fitToContext`) takes over, and its
+        pair-safe front trim can drop everything back to the newest message — including the
+        user's original request
+      - (2026-09-17) Compaction judges how full the conversation is from the request size after
+        trimming, not before
+      - (2026-09-17) The summary is free-form. Consider fixed sections, updating the previous
+        summary instead of starting over, and a running list of files read and modified (as Pi
+        does)
+      - (2026-09-17) Nothing is restored after compaction; Claude Code re-reads the files the
+        assistant was recently working in
+      - (2026-09-17) No guard against compacting again and again without freeing enough room
+        (Claude Code calls this "thrashing"; Hermes guards it too)
+      - (2026-09-17) Tool output caps are fixed numbers (Read 100k characters, the others 30k)
+        rather than a share of the model's window. The narrower Bash-output item under tools
+        stays separate
+      `desktop` `confirmed` `checked 2026-09-17` → docs/active/handoffs/2026-09-09-cache-efficiency-followups-START-HERE.md
 
 - [ ] Conversations on Claude (direct or through OpenRouter) show a cost that is too high: the part
       of each request Claude saves for reuse is charged twice, once at the normal rate and once at

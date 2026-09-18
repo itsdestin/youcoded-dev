@@ -1,0 +1,29 @@
+id: private-continuation-dir-single-owner-present
+language: typescript
+severity: error
+message: >-
+  main/harness/accepted-history-store.ts must still name the
+  private-continuation directory. If the name moved, the single-owner ban
+  (private-continuation-dir-single-owner) now guards a file that no longer
+  owns anything — move its `ignores:` entry to the new owner instead.
+note: |
+  Invariant source: tests/accepted-history-privacy.test.ts (Plan B,
+  2026-09-16). FIX (review of t6a, 2026-09-16): the retired test asserted
+  the list of files naming the directory EQUALS
+  ['main/harness/accepted-history-store.ts'], so it also failed when the
+  owner stopped naming it (renamed, moved or deleted). The ban alone goes
+  silent in that case; this whole-file presence branch does not (same shape
+  as appearance-broadcast-handler-registered).
+files:
+  - "**/src/main/harness/accepted-history-store.ts"
+  - "**/fixtures/private-continuation-dir-single-owner-present.ts"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      regex: "private-continuation"
+      any:
+        - kind: string_fragment
+        - kind: comment
+        - kind: identifier

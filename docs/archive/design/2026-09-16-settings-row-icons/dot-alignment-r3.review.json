@@ -1,0 +1,33 @@
+{
+  "title": "Settings \u2014 status dot centred on the capital letters",
+  "key": "settings-dot-alignment-r3-review",
+  "out": "dot-alignment-r3.review.html",
+  "images": "images/dot-alignment-r3.review",
+  "runs": {
+    "before": "runs/round2",
+    "after": "runs/after"
+  },
+  "crops": {
+    "dotrows": [
+      "settings-rows",
+      "settings-rows",
+      "200x110+55+370"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "Settings \u2192 the Backup & Sync and Remote Access rows",
+      "crop": "dotrows",
+      "headline": "The dot's middle now lines up with the middle of the capital letter beside it \u2014 the S in Sync, the D in Disabled.",
+      "changed": "Last round's dot still sat about 1.5 px below the middle of the D. It is now positioned from the height of the capital letters themselves, so it stays centred on them whatever font you pick.",
+      "measured": "Dot raised 1 px in Meadow Mist; its centre now sits within 0.5 px of the D's centre",
+      "notice": "The dot and the D line up. Use the zoom buttons on the page to compare Before and After closely.",
+      "risk": "Themes with a different font (Light, Dark, Midnight, Cr\u00e8me) already lined up last round, so nothing moves there. The change is about a pixel, so zoom in to see it.",
+      "themes": [
+        "meadow-mist"
+      ]
+    }
+  ]
+}

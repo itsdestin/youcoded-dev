@@ -1,0 +1,20 @@
+id: session-strip-label-via-pill-label-style
+language: tsx
+severity: error
+message: >-
+  The session pill label is styled through pillLabelStyle(…) — never the old
+  inline `maxWidth: showName …` / `'max-width 200ms ease, opacity 150ms
+  ease'` pair it replaced.
+note: |
+  Invariant source: tests/animation-frame-budget.test.ts (Plan B t6a review fix, 2026-09-16; the TSX half of "routes the session pill label through pillLabelStyle").
+files:
+  - "**/src/renderer/components/SessionStrip.tsx"
+  - "**/fixtures/session-strip-label-via-pill-label-style.tsx"
+rule:
+  any:
+    - kind: pair
+      regex: "^maxWidth:\\s*showName"
+    - kind: string
+      regex: "^'max-width 200ms ease, opacity 150ms ease'$"
+    - kind: program
+      not: { has: { stopBy: end, pattern: "pillLabelStyle($$$)" } }

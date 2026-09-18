@@ -1,0 +1,25 @@
+id: runtime-union-has-no-shell
+language: tsx
+severity: error
+message: >-
+  RuntimeBinding's Runtime union must stay `'claude' | 'native'`. The
+  new-session forms type their runtime state by it, which is what makes a
+  shell runtime unrepresentable there — shell sessions come only from
+  "Run in terminal".
+note: |
+  Invariant source: tests/shell-session-renderer.test.ts (Plan B, 2026-09-16;
+  the RuntimeBinding.tsx half of "the form derives its runtime from a MODEL
+  choice, which a shell has none of"). The retired case asserted the file's
+  text contains `export type Runtime = 'claude' | 'native';`; matched here
+  structurally (whitespace-insensitive, same members in the same order; a
+  comment mention no longer counts). Companion:
+  session-strip-runtime-never-shell (the SessionStrip.tsx half).
+files:
+  - "**/src/renderer/components/RuntimeBinding.tsx"
+  - "**/fixtures/runtime-union-has-no-shell.tsx"
+rule:
+  kind: program
+  not:
+    has:
+      stopBy: end
+      pattern: "export type Runtime = 'claude' | 'native'"

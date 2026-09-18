@@ -1,0 +1,24 @@
+id: no-hand-rolled-segmented-control-ts
+language: typescript
+severity: error
+message: >-
+  Pick-one-of-N goes through <SegmentedTabs>, never a hand-rolled button
+  pair. Twin of no-hand-rolled-segmented-control for the `.ts` files a
+  `language: tsx` rule cannot see.
+note: |
+  Invariant source: tests/choice-group-authority.test.ts (retired by Plan B,
+  2026-09-16, case 1 of 2). FIX (review of batch A, 2026-09-16): the retired
+  test's `walk()` matched `/\.tsx?$/` across the whole renderer tree; a
+  tsx-language rule's `.ts` glob entry cannot see `.ts` files at all. No
+  current renderer `.ts` file matches (checked repo-wide) — this rule exists
+  for completeness against the retired test's actual scope, not because a
+  violation is known to exist.
+files:
+  - "**/src/renderer/**/*.ts"
+  - "**/fixtures/no-hand-rolled-segmented-control-ts.ts"
+ignores:
+  - "**/*.test.ts"
+  - "**/*.d.ts"
+rule:
+  kind: string_fragment
+  regex: "(flex-1 px-1\\.5 py-1 rounded-sm|flex-1 px-1\\.5 py-1\\.5 rounded-sm|flex-1 py-1\\.5 px-3 text-sm rounded|px-2 py-1 rounded text-3xs)"

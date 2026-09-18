@@ -126,6 +126,21 @@ else
   # after landing.
   MERGE_COMMIT=$(git -C "$REPO_DIR" log "$BASE" --merges --grep="(^|[[:space:]/'])$BRANCH([[:space:]']|\$)" \
                  --extended-regexp --format=%h -1 2>/dev/null || true)
+  # WHY a second lookup by BRANCH rather than by words (2026-09-16): the grep above
+  # only ever finds a merge whose subject still names the branch. A message rewritten
+  # by hand to describe the feature for Destin (the voice merge, 2026-09-05) drops the
+  # name, and the script then called a fully merged, fully pushed branch "never pushed".
+  # GitHub keeps the branch → PR → merge commit link regardless of wording, and `gh`
+  # answers it in one call; it fails fast (no network needed) on a repo whose origin
+  # is not on GitHub, which is what the test fixtures use. The merge commit it names
+  # must still be an ancestor of $BASE, or it is somebody else's history.
+  if [[ -z "$MERGE_COMMIT" ]] && command -v gh >/dev/null 2>&1; then
+    PR_SHA=$(cd "$REPO_DIR" && gh pr list --state merged --head "$BRANCH" --limit 1 \
+             --json mergeCommit --jq '.[0].mergeCommit.oid // empty' 2>/dev/null || true)
+    if [[ -n "$PR_SHA" ]] && git -C "$REPO_DIR" merge-base --is-ancestor "$PR_SHA" "$BASE" 2>/dev/null; then
+      MERGE_COMMIT=$(git -C "$REPO_DIR" rev-parse --short "$PR_SHA")
+    fi
+  fi
   if [[ -n "$MERGE_COMMIT" ]]; then
     pass "no ref left, and $BASE carries the merge commit $MERGE_COMMIT for it — the work landed"
     MERGED=yes
@@ -254,7 +269,36 @@ echo "Docs"
 # Scoped to THIS branch. A doc naming a branch that no longer exists holds
 # commands that error instead of answering, and claims that read as current.
 DEAD=""
-[[ "$MERGED" == yes ]] && DEAD=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null || true)
+PENDING=""
+# WHY a doc is flagged only when BOTH this checkout and origin's default branch still
+# name the branch (2026-09-17). Either copy alone misleads:
+#   - this checkout alone: the shared checkout can sit hundreds of commits behind, and
+#     reported Plan B's plan as a TODO after the merge had already archived it;
+#   - origin alone: a session that fixed the doc on its own not-yet-merged branch would
+#     be told to fix it again.
+# A doc fixed here but still on origin is reported as waiting for that merge.
+# Without an origin ref (a test fixture, an offline clone) this checkout decides alone.
+git -C "$WORKSPACE" fetch origin --quiet 2>/dev/null || true
+WS_BASE=$(git -C "$WORKSPACE" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
+if [[ "$MERGED" == yes ]]; then
+  # git grep, not rg: the CI runner has no ripgrep, and an empty LOCAL there made
+  # every doc read as "fixed in this checkout" (caught by this file's own guard,
+  # 2026-09-18). --untracked so a doc written but not yet committed still counts.
+  LOCAL=$(git -C "$WORKSPACE" grep -l --untracked -F "$BRANCH" -- docs/active docs/roadmap 2>/dev/null \
+    | sed "s|^|$WORKSPACE/|" | sort || true)
+  if git -C "$WORKSPACE" rev-parse --verify -q "$WS_BASE" >/dev/null 2>&1; then
+    REMOTE=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active docs/roadmap 2>/dev/null \
+      | sed "s|^$WS_BASE:|$WORKSPACE/|" | sort || true)
+    DEAD=$(comm -12 <(printf '%s\n' "$LOCAL") <(printf '%s\n' "$REMOTE") | sed '/^$/d')
+    PENDING=$(comm -13 <(printf '%s\n' "$LOCAL") <(printf '%s\n' "$REMOTE") | sed '/^$/d')
+  else
+    DEAD=$LOCAL
+  fi
+fi
+if [[ -n "$PENDING" ]]; then
+  note "still named on $WS_BASE but not in this checkout (fixed on this branch? it lands when the branch merges):"
+  echo "$PENDING" | sed "s|^$WORKSPACE/|       |"
+fi
 if [[ "$MERGED" != yes ]]; then
   note "docs naming this branch are FINE while it is unmerged — check skipped"
 fi

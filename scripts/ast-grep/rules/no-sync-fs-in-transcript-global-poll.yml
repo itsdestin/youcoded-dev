@@ -1,0 +1,37 @@
+id: no-sync-fs-in-transcript-global-poll
+language: typescript
+severity: error
+message: >-
+  TranscriptWatcher.ensureGlobalPoll must never call a blocking fs.*Sync —
+  its safety poll runs every 2 s for every watched transcript, on the main
+  process.
+note: |
+  Invariant source: tests/main-hot-path-no-sync-fs.test.ts on origin/master
+  (added by the 2026-09-16 smoothness sweep, Batch C, after Plan B had
+  already retired that file on its branch). Ported by the Plan B close-out
+  merge, 2026-09-17 ("merge port" rows in
+  docs/archive/plans/2026-09-16-sweep-ledger.md); the file stays deleted.
+  Case: "the three per-session polls" — its transcript-watcher.ts half (the
+  ipc-handlers.ts half is no-sync-fs-in-per-session-polls). Fires at the
+  `program` level on an fs.*Sync call inside ensureGlobalPoll, or when that
+  method is gone. Other TranscriptWatcher methods are not scanned, as before.
+files:
+  - "**/src/main/transcript-watcher.ts"
+  - "**/fixtures/no-sync-fs-in-transcript-global-poll.ts"
+rule:
+  kind: program
+  any:
+    - has:
+        stopBy: end
+        kind: call_expression
+        has:
+          field: function
+          kind: member_expression
+          all:
+            - has: { field: object, regex: "^fs$" }
+            - has: { field: property, regex: "Sync$" }
+        inside:
+          stopBy: end
+          kind: method_definition
+          has: { field: name, regex: "^ensureGlobalPoll$" }
+    - not: { has: { stopBy: end, kind: method_definition, has: { field: name, regex: "^ensureGlobalPoll$" } } }

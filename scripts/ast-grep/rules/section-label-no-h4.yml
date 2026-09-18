@@ -1,0 +1,56 @@
+id: section-label-no-h4
+language: tsx
+severity: error
+message: >-
+  No <h4> stands in as a section label. The app's section headings are <h3>;
+  <h4> carrying the section-label recipe was arbitrary, not a deliberate
+  outline level.
+note: |
+  Invariant source: tests/section-label-authority.test.ts (retired by Plan B,
+  2026-09-16; case 3 of 3 — "no <h4> stands in as a section label"). Matches
+  a `<h4>` jsx_opening_element whose className string_fragment STARTS WITH
+  the canonical recipe, mirroring the retired test's
+  `src.includes('<h4 className="' + CANONICAL)` (a prefix check, not a full
+  match — the canonical recipe may be followed by more classes). The
+  attribute must be NAMED `className` (review, 2026-09-16 — the retired
+  test's own string literally required `className="` right after `<h4 `, so
+  a match on some OTHER attribute happening to carry the same string was
+  never in scope); `jsx_attribute`'s name has no `field:` label in this
+  grammar (same finding as tooltip-key-on-wrapper-not-child) — matched via
+  `kind: property_identifier` instead.
+  SCOPE (review round 2, 2026-09-16): the retired test's `walk()` matched
+  `/\.tsx?$/` and excluded `/\.test\.tsx?$/`, so it also skipped
+  `*.test.tsx` files. This rule's `files:` glob had no matching `ignores:`,
+  so it was broader than the retired test there. Added
+  `ignores: ["**/src/renderer/**/*.test.tsx"]` to match
+  section-label-canonical-classes' own scoping exactly.
+  NO `.ts` TWIN: the retired walk's regex also covered plain `.ts` files
+  (not just `.tsx`), but `<h4 ...>` is JSX syntax and cannot appear as real
+  markup in a `.ts` file (JSX isn't parsed there) — confirmed empirically,
+  `rg -n '<h4' --glob '*.ts' --glob '!*.tsx'` under
+  `desktop/src/renderer` finds zero hits across all 224 non-test `.ts`
+  files. There is no meaningful `.ts` target to guard, unlike
+  section-label-canonical-classes-ts (a plain string constant, which DOES
+  appear in `.ts` files).
+files:
+  - "**/src/renderer/**/*.tsx"
+  - "**/fixtures/section-label-no-h4.tsx"
+ignores:
+  - "**/src/renderer/**/*.test.tsx"
+rule:
+  kind: jsx_opening_element
+  all:
+    - has:
+        field: name
+        regex: "^h4$"
+    - has:
+        stopBy: end
+        kind: jsx_attribute
+        all:
+          - has:
+              kind: property_identifier
+              regex: "^className$"
+          - has:
+              stopBy: end
+              kind: string_fragment
+              regex: "^text-3xs font-medium text-fg-muted tracking-wider uppercase"
