@@ -1,0 +1,20 @@
+{
+ "deck": "specialists-plans-review11",
+ "started": "2026-09-17T08:00:27.935Z",
+ "submitted": "2026-09-17T08:01:01Z",
+ "cur": 1,
+ "answers": {
+  "H-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q11-1": {
+   "v": "yes",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

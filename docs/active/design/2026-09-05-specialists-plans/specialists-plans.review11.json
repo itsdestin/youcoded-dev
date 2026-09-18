@@ -1,0 +1,53 @@
+{
+  "title": "Plans — round 11: the one-line pause and the pause headings",
+  "key": "specialists-plans-review11",
+  "out": "specialists-plans.review11.html",
+  "images": "images/specialists-plans.review11",
+  "runs": {
+    "today": "runs/r11b"
+  },
+  "labels": {
+    "today": "Now"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "h-orphan": [
+      "plans-card-r11",
+      "paused-progress-not-saved",
+      "1180x300+16+40"
+    ]
+  },
+  "steps": [
+    {
+      "id": "H-1",
+      "surface": "Chat · plan card",
+      "path": "A plan paused because its progress couldn't be saved",
+      "crop": "h-orphan",
+      "headline": "That pause is now one line: the message on the left, Report bug, Ask the assistant, Stop and Continue on the right.",
+      "changed": "The separate warning block and the Add budget button are gone, and the card's heading now reads \"paused — something went wrong\".",
+      "notice": "One clear message and the buttons that can actually help.",
+      "risk": "None visible.",
+      "highlight": {
+        "box": [
+          2,
+          76,
+          96,
+          14
+        ]
+      }
+    },
+    {
+      "id": "Q11-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "The heading at the top of a paused plan card",
+      "headline": "Do these headings for a paused plan read right?",
+      "today": "The heading at the top of a paused plan used to say \"paused — reached its limit\" for almost every pause, even ones that had nothing to do with the limit.",
+      "problem": "A wrong heading makes you look for the wrong fix.",
+      "proposal": "The heading now follows the reason: \"paused — reached its limit\" (out of budget), \"paused — needs a revised plan\" (repeated steps never met their goal), \"paused — a specialist was stopped\" (you stopped one), \"paused — something went wrong\" (errors), and just \"paused\" for older plans. Yes keeps these; Other lets you reword any of them."
+    }
+  ]
+}
