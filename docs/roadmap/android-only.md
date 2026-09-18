@@ -18,8 +18,12 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       file view, remove the old restore wizard, harness before phone basics. Step 2 (honest
       builds: versions, notification permission, clean refusals) and the restore-wizard deletion
       merged 2026-09-10 (youcoded#468); next is step 4, the harness runtime on the phone —
-      start at docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md
-      `android` `in-flight` `checked 2026-09-10` → docs/active/investigations/2026-09-10-android-parity-audit.md
+      start at docs/active/handoffs/2026-09-10-android-rebuild-START-HERE.md. The ~3,150 lines
+      of Kotlin that re-implement desktop logic (the 2026-09-16 simplification audit's D9:
+      transcript watcher, skill provider, plugin installer, config store, session browser) fold
+      into this rebuild, and simplification phase 4 (one channel table for the desktop window
+      and the phone) goes before it, not inside it — decided 2026-09-18
+      `android` `in-flight` `checked 2026-09-18` → docs/active/investigations/2026-09-10-android-parity-audit.md
 
 - [ ] The phone still reads long conversations over the desktop bridge rather than paging them
       on the device, so opening a big conversation on Android pays for the whole thing instead
