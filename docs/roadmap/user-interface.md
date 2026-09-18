@@ -157,8 +157,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       the rest of this item's second half; Batches D (theme blur/particles) and E (file opens)
       follow. A5 (throttling the streaming bubble's markdown re-parse) is a visible change
       that needs a before/after clip and Destin's call. 2026-09-18 render-cost consolidation
-      (docs/active/plans/2026-09-18-render-cost-consolidation.md, branch
-      `session/convo-tab-lag`): every long list now draws 50 at a time and each card once —
+      (docs/archive/plans/2026-09-18-render-cost-consolidation.md, youcoded#535): every long list now draws 50 at a time and each card once —
       Projects → Conversations 174.8 → 58.4 ms and its tab thrash 181.6 → 65.3 ms with long
       tasks 1,217 → 0 ms; Marketplace 58,706 → 3,281 page elements, model search 24,679 →
       1,255; the preview and buddy chat fold like the chat, and entries present when a chat
