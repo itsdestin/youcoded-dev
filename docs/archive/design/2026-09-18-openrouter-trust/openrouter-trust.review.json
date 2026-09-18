@@ -1,0 +1,139 @@
+{
+ "title": "OpenRouter — say when the key doesn't work",
+ "key": "openrouter-trust-review",
+ "out": "openrouter-trust.review.html",
+ "images": "images/openrouter-trust.review",
+ "stage": "review",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "With this change"
+ },
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "card-rejected": [
+   "openrouter-trust",
+   "card-rejected",
+   "630x112+480+532"
+  ],
+  "card-expired": [
+   "openrouter-trust",
+   "card-expired",
+   "630x112+480+532"
+  ],
+  "card-unchecked": [
+   "openrouter-trust",
+   "card-unchecked",
+   "630x112+480+532"
+  ],
+  "modal": [
+   "openrouter-trust",
+   "modal-fake-key",
+   "820x470+310+260"
+  ],
+  "dot": [
+   "openrouter-trust",
+   "settings-dot",
+   "800x170+0+125"
+  ],
+  "chat-rejected": [
+   "openrouter-trust",
+   "chat-key-rejected",
+   "1100x80+0+365"
+  ],
+  "chat-credit": [
+   "openrouter-trust",
+   "chat-credit-short",
+   "1440x90+0+362"
+  ],
+  "chat-refused": [
+   "openrouter-trust",
+   "chat-request-refused",
+   "1100x80+0+365"
+  ]
+ },
+ "steps": [
+  {
+   "id": "S-1",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "card-rejected",
+   "headline": "When OpenRouter refuses your key, its card now says so and makes Replace key the main button.",
+   "changed": "The card used to say Connected whenever any key was saved. It now shows what OpenRouter last answered: here, that it didn't accept the key, in red, with what to do.",
+   "notice": "The card stops agreeing with a key that doesn't work. This is the exact screen that said Connected while every message was failing on 2026-08-31.",
+   "risk": "The app checks the key with OpenRouter now and then (built next). Until a check has run, the card says Checking…"
+  },
+  {
+   "id": "S-2",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "card-expired",
+   "headline": "A key past its expiry date says it expired and on which day, instead of Connected.",
+   "changed": "When OpenRouter reports an expiry date that has passed, the card names the day and says to make a new key.",
+   "notice": "Only keys you gave an end date to can expire, so most people will never see this one."
+  },
+  {
+   "id": "S-3",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "card-unchecked",
+   "headline": "When OpenRouter can't be reached, the card says the key isn't checked yet, not that it is broken.",
+   "changed": "Offline, or with OpenRouter down, nobody can tell whether the key works, so the card says that plainly in grey rather than claiming Connected or showing a red error.",
+   "notice": "No red warning appears just because you are offline, and the card corrects itself once OpenRouter answers."
+  },
+  {
+   "id": "S-4",
+   "surface": "Settings",
+   "path": "Cloud providers → OpenRouter → Connect to OpenRouter → paste a made-up key",
+   "crop": "modal",
+   "headline": "A made-up key pasted into Connect is now refused on the spot instead of being saved as Connected.",
+   "changed": "Today a fake key is saved, flashes Connected and the window closes. Now the key is checked first; if OpenRouter refuses it, nothing is saved and the window says why.",
+   "notice": "Replacing a working key with a mistyped one no longer breaks it: a refused key is never saved. The first-time setup screen's Use an API key gets the same check.",
+   "risk": "If OpenRouter can't be reached, the key is still saved and the window says it couldn't be checked."
+  },
+  {
+   "id": "S-5",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings (and its Cloud providers page)",
+   "crop": "dot",
+   "headline": "A refused OpenRouter key puts a red dot on Assistant settings and on its Cloud providers page.",
+   "changed": "The same red dot a blocked ChatGPT plan already gets now also appears for a refused OpenRouter key.",
+   "notice": "You can find the problem from Settings without first hitting an error in a chat. The dot clears as soon as a working key is saved.",
+   "risk": "The gear's own dot comes in part two."
+  },
+  {
+   "id": "S-6",
+   "surface": "Chat",
+   "path": "A chat on an OpenRouter model, when OpenRouter refuses the key",
+   "crop": "chat-rejected",
+   "headline": "The chat error now says in plain words that OpenRouter didn't accept your key, with Open Settings beside it.",
+   "changed": "Today the chat shows OpenRouter's raw reply, User not found (provider error 401), and no button. Now it names the problem and offers the one button that fixes it.",
+   "notice": "One click lands on the Cloud providers page with the OpenRouter card. An expired key reads Your OpenRouter key has expired, with the same button."
+  },
+  {
+   "id": "S-7",
+   "surface": "Chat",
+   "path": "A chat on an OpenRouter model, when the credit runs short",
+   "crop": "chat-credit",
+   "headline": "Running short of credit now says so plainly and offers an Add credit button that opens OpenRouter.",
+   "changed": "Today OpenRouter's long technical sentence shows with no button. Now it's one plain line, plus Add credit, which opens OpenRouter's credit page in your browser.",
+   "notice": "It says \"for this reply\", not \"you're out of credit\": OpenRouter also refuses when some money is left but less than a long reply might cost.",
+   "risk": "There is no Try again button on this card; after adding credit you send the message again."
+  },
+  {
+   "id": "S-8",
+   "surface": "Chat",
+   "path": "A chat on an OpenRouter model, when OpenRouter's filter blocks a message",
+   "crop": "chat-refused",
+   "headline": "When OpenRouter blocks a message, the chat shows its reason and no longer suggests your key is at fault.",
+   "changed": "The card leads with OpenRouter refused this request and then quotes OpenRouter's own reason. It deliberately has no Settings button, because the key is fine.",
+   "notice": "A blocked message never marks your key as broken or puts a red dot in Settings."
+  }
+ ]
+}

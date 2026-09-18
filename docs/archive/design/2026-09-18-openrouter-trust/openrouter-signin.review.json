@@ -1,0 +1,95 @@
+{
+ "title": "Sign in with OpenRouter",
+ "key": "openrouter-signin-review",
+ "out": "openrouter-signin.review.html",
+ "images": "images/openrouter-signin.review",
+ "stage": "review",
+ "runs": {
+  "before": "runs/si-before",
+  "after": "runs/si-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "With this change"
+ },
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "nc": [
+   "openrouter-signin",
+   "si-not-connected",
+   "640x112+480+530"
+  ],
+  "wait": [
+   "openrouter-signin",
+   "si-waiting",
+   "640x112+480+530"
+  ],
+  "fail": [
+   "openrouter-signin",
+   "si-failed",
+   "640x112+480+530"
+  ],
+  "broken": [
+   "openrouter-signin",
+   "si-broken",
+   "640x125+480+530"
+  ],
+  "modal": [
+   "openrouter-signin",
+   "si-modal",
+   "520x330+460+300"
+  ]
+ },
+ "steps": [
+  {
+   "id": "SI-1",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "nc",
+   "headline": "OpenRouter's card now leads with Sign in with OpenRouter; pasting a key is one click away.",
+   "changed": "The main button signs you in through your browser: approve there and the app gets a key, with nothing to copy. The old paste box is still there under Use an API key instead.",
+   "notice": "Connecting OpenRouter becomes one click and one approval. The setup screen's Log in with OpenRouter button, which today says coming in a later update, does the same.",
+   "risk": "Each sign-in makes a key named YouCoded in your OpenRouter account; signing in again leaves the old one listed there. The (i) explains this."
+  },
+  {
+   "id": "SI-2",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "wait",
+   "headline": "While you approve in the browser, the card says it's waiting and offers Cancel.",
+   "changed": "Between clicking Sign in and approving on OpenRouter, the card shows a spinner with Waiting for the browser and a Cancel button, like the ChatGPT card.",
+   "notice": "If you close the browser tab instead of approving, Cancel puts the card straight back. Otherwise it gives up on its own after 5 minutes."
+  },
+  {
+   "id": "SI-3",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "fail",
+   "headline": "If sign-in doesn't finish, the card says why in red and offers the button again.",
+   "changed": "A sign-in that times out or that OpenRouter refuses leaves a plain red sentence under the card, with Sign in with OpenRouter ready to try again.",
+   "notice": "A failed attempt never leaves the card stuck or half-connected, and nothing is saved."
+  },
+  {
+   "id": "SI-4",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "broken",
+   "headline": "A refused key now offers Sign in again as its main button, with a different key one click away.",
+   "changed": "This changes the refused-key card you approved on the last deck: the main button was Replace key; now it's Sign in again, and the red text names that button.",
+   "notice": "Fixing a dead key no longer means going to OpenRouter to make and copy a new one.",
+   "risk": "Over remote access from a phone, sign-in can't open a browser here, so there the card keeps Replace key."
+  },
+  {
+   "id": "SI-5",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "modal",
+   "headline": "Replace key's window now leads with Sign in with OpenRouter, above the paste box.",
+   "changed": "The window that opens from Replace key or Use an API key instead puts the sign-in button first, then \"or paste an API key\" and the familiar steps.",
+   "notice": "Someone who came to paste a key is offered the easier way first, and pasting still works exactly as before."
+  }
+ ]
+}
