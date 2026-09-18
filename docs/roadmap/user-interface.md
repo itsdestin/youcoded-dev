@@ -7,6 +7,20 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       fixes were made on 2026-09-16; each remaining group needs its own design call.
       `all` `confirmed` `checked 2026-09-16`
 
+- [ ] Some clickable spots still do nothing under the pointer after the 2026-09-18 hover/press sweep
+      (branch session/premium-motion-hover). Left on purpose, each for a stated reason, NOT checked
+      one by one: about twenty clickable non-buttons found by the sweep's inventory that also have
+      no keyboard path (CommandDrawer, FirstTimeWarning, LocalModelsSection, ResumeBrowser rows,
+      ModelPickerPopup, marketplace UpdateButton, ProjectView, SettingRow) — they need a button
+      role as well as a hover, which is a bigger change than a class; the spreadsheet viewer's
+      sheet tabs (a fixed light palette set inline, so a shared class cannot reach them); six
+      buddy-window buttons styled entirely inline. Deliberately unchanged: chess squares (their own
+      move shading would fight a hover wash) and the crash screen's button (it must render even
+      when the stylesheet has not). The inventory counted 43 of 331 buttons without hover; an
+      unknown share of the rest are false alarms where the parent row carries the hover, as the
+      session menu's rows turned out to
+      `all` `needs-verify` `checked 2026-09-18`
+
 - [ ] Two "Show details" style dropdowns in Backup & Sync still use the browser's bare triangle, the look Destin said he
       hates (2026-09-05). A test now blocks new ones and lists these two as known; restyling them is his call.
       `settings/sync` `desktop` `decision` `checked 2026-09-16`
