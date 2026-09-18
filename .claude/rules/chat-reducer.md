@@ -34,7 +34,7 @@ verify:
   - test: youcoded/desktop/tests/history-paging-reducer.test.ts
   - test: youcoded/desktop/tests/chatview-history-sentinel.test.tsx
   - test: youcoded/desktop/tests/chatview-prepend-scroll-anchor.test.tsx
-  - test: youcoded/desktop/tests/attention-classifier-parity.test.ts
+  - test: youcoded/desktop/tests/attention-classifier.test.ts
   - test: youcoded/desktop/tests/raw-byte-listener-contract.test.ts
   - path: scripts/ast-grep/rules/toolcalls-never-cleared.yml
   - path: scripts/ast-grep/rules/spinner-re-anchored.yml
