@@ -222,7 +222,7 @@ installer, skipping drafts. Highest-version rather than newest-published means r
 tag cannot walk anyone backwards, and — because `compareVersions` already sorts `1.3.0` above every
 `1.3.0-beta.N` — the full release ends a beta run with no special case.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "selectRelease"} -->
-<!-- verify: {"test": "youcoded/desktop/tests/update-beta-channel.test.ts"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/update-release-status.test.ts"} -->
 
 **The channel is opt-in, and "never chosen" is not the same as "off"** (`update-settings.ts`,
 `~/.youcoded/config.json` → `updates.betaChannel`). An install that has never been asked inherits
