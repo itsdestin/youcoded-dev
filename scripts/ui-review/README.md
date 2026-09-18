@@ -46,6 +46,19 @@ Failed shots go to `_unverified/` (never into a sheet) and `coverage.md` lists t
 the reason. **A review must quote `coverage.md` and call unverified surfaces "unreviewed"
 — silence is not a pass.**
 
+**The last step is the DOM-size sweep** (`dom-size-sweep.mjs`). It opens the long-list
+surfaces (Resume browser, Projects → Conversations and Files search, Marketplace, model
+search, conversation preview, side drawer) in the workbench's `stress` scenario with 2,000
+rows each, and counts the elements each one builds. Any surface over its `NODE_BUDGET`
+(8,000), or not proven open, prints `FAIL` in the table (kept as `dom-size.md`, with the
+raw log in `dom-size.log`) and makes `run-review.sh` exit 1 **after** the gallery and
+coverage are written. A red row means a list is drawing every item instead of the ones near
+the screen. Fix that list; do not raise the budget. Before the render-cost fixes
+(2026-09-18) Conversations was 17,516, Marketplace 58,706 and model search 24,679; after
+them every surface is under 3,300. It needs a serving workbench, so it is not in
+`scripts/verify.sh` (no browser there). Run it alone against any workbench with
+`node scripts/ui-review/dom-size-sweep.mjs --port <vite port> [--only conv,market]`.
+
 ## Pieces
 
 **Two sweeps at once:** each run takes its own block of CDP ports (`cdp-ports.sh`: a 400-port block starting at `30000 + offset`, chosen by the run's pid, every port probed by `probe-ports.sh`, the next block tried if one is busy, a loud refusal naming the busy ports after six). Two sessions sweeping at the default offset no longer touch each other's Chromes — the old "keep offsets ≥ 100 apart" advice was wrong anyway once a full six-theme sweep grew to 312 jobs. `YOUCODED_PORT_OFFSET` still matters for the **workbench**: two sweeps of *different* worktrees need different offsets or the second hits the wrong-worktree refusal above. `bash scripts/ui-review/run-review.sh --dry-run <worktree>` prints the workbench port, the job list and the exact CDP ports a run would take, without launching anything.

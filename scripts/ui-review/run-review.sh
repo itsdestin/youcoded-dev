@@ -161,4 +161,20 @@ python3 "$HERE/make-gallery.py" "$OUT/sheets" "$OUT/gallery.html" >/dev/null
 echo "[ui-review] done → $OUT/gallery.html"
 head -3 "$OUT/coverage.md"
 (grep -c MISSED "$OUT/coverage.md" || true) | xargs -I{} echo "[ui-review] {} surfaces MISSED — read $OUT/coverage.md before writing any finding"
+# 4. DOM-size sweep (last, so a red budget never hides the gallery above). It opens the
+# long-list surfaces in the workbench's `stress` scenario and fails any that builds more
+# than NODE_BUDGET elements — the behaviour guard for "a long list draws only what is near
+# the screen" (render-cost consolidation, 2026-09-18). It needs this sweep's serving
+# workbench, which is why it lives here and not in verify.sh. Skipped by --reports-only
+# (no workbench). The table is kept as $OUT/dom-size.md; over budget exits 1.
+if [[ "$REPORTS_ONLY" == 0 ]]; then
+  echo "[ui-review] DOM-size sweep (scenario=stress)"
+  DOM_RC=0
+  node "$HERE/dom-size-sweep.mjs" --port "$VITE_PORT" > "$OUT/dom-size.log" 2>&1 || DOM_RC=$?
+  sed -n '/^| surface/,$p' "$OUT/dom-size.log" | tee "$OUT/dom-size.md"
+  if [[ "$DOM_RC" != 0 ]]; then
+    echo "[ui-review] DOM-size sweep FAILED (exit $DOM_RC) — a surface is over budget or could not be proven open; see $OUT/dom-size.log"
+    exit "$DOM_RC"
+  fi
+fi
 # (the workbench this sweep started is stopped by the EXIT trap above, on every exit path)

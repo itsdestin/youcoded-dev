@@ -9,9 +9,16 @@
 // and fails any surface whose element count is over NODE_BUDGET.
 //
 // A surface that could not be PROVEN open is a FAIL, never skipped — the same stance
-// as coverage.md ("a surface not proven open is unreviewed, not fine"). A red run is
-// the point before the fixes land: Conversations, Marketplace and model search MUST
-// fail today, which is what proves the guard can see them.
+// as coverage.md ("a surface not proven open is unreviewed, not fine"). Proof the guard
+// can see an unbounded list: before the fixes it was red on Conversations (17,516),
+// Files search (11,242), Marketplace (58,706) and model search (24,679); after them all
+// seven surfaces sit between ~900 and ~3,300 (investigation doc §1, "after" table).
+//
+// WHERE IT RUNS: as the last step of scripts/ui-review/run-review.sh, which already
+// serves a workbench and runs without a human; over budget fails that run. It is NOT
+// in scripts/verify.sh ON PURPOSE: verify.sh has no browser and no workbench, and this
+// guard measures what a real renderer draws. Do not move it there — the per-surface
+// stress pins (vitest) are verify.sh's half of this guard.
 //
 // HOW IT OPENS SURFACES: the same way the review sweep does (shot.mjs + plans/*.json):
 // a throw-away headless Chrome from cdp-helpers.mjs, the app URL with `child=1`, and
