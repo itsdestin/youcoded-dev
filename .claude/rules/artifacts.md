@@ -19,7 +19,7 @@ verify:
     contains: "MOVE_SOURCE_NOT_REMOVED"
   - test: youcoded/desktop/tests/artifacts/import-file.test.ts
   - test: youcoded/desktop/tests/session-drawer-deleted-toggle.test.tsx
-  - test: youcoded/desktop/tests/project-view-default-selection.test.ts
+  - test: youcoded/desktop/tests/ProjectView.test.ts
   - path: youcoded/desktop/src/main/artifacts/cas-write.ts
     contains: "mutateFileUnderLock"
   - path: youcoded/desktop/src/main/artifacts/write-authorization.ts
