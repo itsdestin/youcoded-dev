@@ -180,6 +180,12 @@ and after. **Before raising any loop's ceiling, check whether it can exit early.
 
 ## Windows: two real product bugs, not test bugs
 
+Two test-side facts the rule no longer spells out: `vitest.config.ts` exports the realpath
+spelling of the temp dir (`TMP_REAL`), so a Windows `RUNNER~1` short name never reaches a path
+comparison; and a client response you never `resume()` never closes, so a test waiting on its
+`end` hangs until the budget fires. A 1,000ms wall-clock budget read 1,339ms under load; 16
+tests were red on Windows from 2026-09-10 to 09-16.
+
 Both shipped. Both were visible only on the CI leg being ignored.
 
 **PDF reads failed outright.** `pdfjsAssetDirs()` appended `path.sep`. pdf.js validates
