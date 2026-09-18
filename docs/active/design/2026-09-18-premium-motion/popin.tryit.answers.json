@@ -1,0 +1,18 @@
+{
+ "deck": "premium-motion-popin-tryit",
+ "started": "2026-09-18T09:50:08.386Z",
+ "submitted": "2026-09-18T09:50:36Z",
+ "cur": 0,
+ "answers": {
+  "T-1": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist"
+  },
+  "T-2": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist"
+  }
+ }
+}

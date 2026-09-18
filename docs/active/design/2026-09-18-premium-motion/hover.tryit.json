@@ -1,0 +1,80 @@
+{
+  "title": "Hover and press — does everything respond now?",
+  "key": "premium-motion-hover-tryit",
+  "out": "hover.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "H-1",
+      "surface": "Header bar",
+      "path": "The top bar of the dev window: minimize, maximize, close, Files, Games, and the chat/terminal toggle",
+      "headline": "Hover then press each header button. Do minimize, maximize, Files and Games now respond as clearly as Settings and Projects?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch",
+        "offset": 140,
+        "profile": "premiummotion"
+      },
+      "changed": "These buttons sit inside a small tinted pill, and the app's normal hover tint is that same colour, so it was invisible and they only nudged their icon colour. They now fill with the next shade along, the icon brightens fully, and holding the mouse down deepens the fill one more step. Close keeps its red and gets a deeper red while pressed.",
+      "notice": "A clear fill appears under the pointer on every one of them, and it visibly deepens while the mouse button is held. It should feel like the same family as Settings and Projects, not louder. Try it in a light theme and a dark one.",
+      "risk": "If the fill looks too strong or too faint in one of your themes, name the theme in the note; the strength is one number.",
+      "yes": "Yes, clear",
+      "no": "No, still weak"
+    },
+    {
+      "words": true,
+      "id": "H-2",
+      "surface": "Whole app, pressing buttons",
+      "path": "Anywhere: a Settings row, a dialog's buttons, a menu item, the send button",
+      "headline": "Hold the mouse down on ordinary buttons around the app. Does each one visibly press?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch",
+        "offset": 140,
+        "profile": "premiummotion"
+      },
+      "changed": "Almost nothing in the app reacted to being pressed; two press effects existed in total. Now every shared button style has one, and one rule gives a press state to every control that already tinted on hover, several hundred of them. It is always the hover pushed one step further, never a different colour and nothing moves.",
+      "notice": "A button looks one shade deeper while held and returns when released. Filled buttons (Send, primary actions) go slightly more see-through; outlined and plain ones fill a step darker.",
+      "risk": "A press state on hundreds of controls at once: if any button looks wrong while held, such as a flash of an odd colour, say which.",
+      "yes": "Yes, they press",
+      "no": "No, some don't"
+    },
+    {
+      "words": true,
+      "id": "H-3",
+      "surface": "Whole app, keyboard",
+      "path": "Click the header background, then press Tab several times",
+      "headline": "Tab through the header. Does a focus ring now show on Settings, Projects, Files, Games and the window buttons?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch",
+        "offset": 140,
+        "profile": "premiummotion"
+      },
+      "changed": "None of the header buttons showed where keyboard focus was. They now use the same accent ring the app's other buttons already use, the look you kept on 2026-07-16.",
+      "notice": "An accent-coloured ring around whichever header button has focus, only when you arrive by keyboard. Clicking with the mouse must NOT leave a ring behind.",
+      "risk": "If a ring lingers after a mouse click, or is clipped by the pill it sits in, say so.",
+      "yes": "Yes, rings show",
+      "no": "No"
+    },
+    {
+      "words": true,
+      "id": "H-4",
+      "surface": "Dead spots around the app",
+      "path": "A permission card's 'allow for…' choices; the 'What the assistant was given' panel's expander; Settings, Status bar widgets list; a model or folder dropdown",
+      "headline": "Hover a few spots that used to do nothing under the pointer. Do they answer now, without looking out of place?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch",
+        "offset": 140,
+        "profile": "premiummotion"
+      },
+      "changed": "About twenty clickable spots had no hover at all. Rows and expanders get a faint wash of the text colour, which works on any background in any theme. Dropdown boxes brighten their border, like a text field does. Text links in the sync wizard underline and change colour. The tag colour dot gets a ring. The buddy's frosted pills get a thin outline, because changing their fill would break the glass.",
+      "notice": "Each one reacts, and the reaction looks like it belongs to that surface. Some spots were deliberately left: chess squares, which have their own move shading, and about twenty clickable areas that are not real buttons yet and need more than a hover. Those are written on the roadmap.",
+      "risk": "The wash is relative to the text colour, so on a busy wallpaper theme it may read differently; name the theme if it looks off.",
+      "yes": "Yes, they fit",
+      "no": "No"
+    }
+  ]
+}

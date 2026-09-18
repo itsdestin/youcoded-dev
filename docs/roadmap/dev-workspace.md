@@ -39,6 +39,29 @@ seen-on is always n/a here.
       in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
+- [ ] Three small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
+      whole cycle: (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
+      sign they are its children — have it say so from the process's ancestry, instead of a doc
+      asking sessions to remember; (2) a fresh session worktree has no `scratch/perf-lab/assets`,
+      so `fixture.mjs --ensure-assets` re-downloads ~490 MB and a slow link times the whole run
+      out after the 3-minute build and the quiet-machine wait — copy or hardlink from the shared
+      checkout's `scratch/perf-lab/assets` when it is there; (3) `verify.sh` found six separate
+      line-budget overruns of one to thirteen lines, each only at the END of a full run — run
+      `tests/line-budgets.test.ts` first, it takes under a second
+      `n/a` `confirmed` `checked 2026-09-18`
+
+- [ ] The perf lab's new "blank on arrival" count has never been shown to FAIL. It was added
+      2026-09-18 (`scenario-workload.mjs` → `switchBlank`) because the painted clock counts entry
+      wrappers, which a blanked-out message keeps, so tab switches that arrived as empty columns
+      read as healthy. One run on the fixed build gave 0 of 40 switches blank
+      (`perf-reports/2026-09-18-0825-4aaa066-popin-after.json`, single repeat, so stamped
+      incomplete). The matching run on the code BEFORE the fix (youcoded `e5f8b2d8`) never
+      happened: other sessions kept the machine loaded all day and the lab refuses to measure a
+      busy machine. Until that run shows a non-zero count, a zero proves nothing — the detector
+      could simply be blind. Run `bg-run.sh --checkout <a worktree at e5f8b2d8> --only workload
+      --workload-repeats 1` on a quiet machine; expect blank frames on most switches
+      `n/a` `needs-verify` `checked 2026-09-18`
+
 - [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
       never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
       pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
