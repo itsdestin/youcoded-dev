@@ -1023,3 +1023,367 @@ Why not the `bounded-lists.test.ts` text scanner this task used to be (review fi
 - ContextTab, Library, CommandDrawer, ChatsearchFindCard — small by nature (tens of rows); no bound, no stress pin. If the Task 13 sweep ever shows one over budget, that is the evidence to revisit.
 - **`SubagentTimeline`'s `content-visibility: auto`** (`:210`). Retired for chat entries because it clipped theme glows, but here it is a working speed-up with no reported symptom. Remove it only with (a) a screenshot of a clipped glow or jumping row in a theme that has glows, and (b) a replacement bound (a reveal window) measured no slower on a 300-row subagent run. File under the sluggishness roadmap entry if either turns up.
 - **Splitting `ArtifactContext`** so no reader re-renders on unrelated file writes (a selector store like `state/chat-context.ts`). Task 5 takes FilesTab off it; `ProjectView` itself and every other reader (`rg -n "useArtifact\(\)" desktop/src/renderer`) still re-render per write. Worth its own measured plan; note it on the same roadmap entry in Task 15.
+
+## Closing notes
+
+### Pin proofs (Task 13, 2026-09-18)
+
+Every stress pin was broken at its own bound and run alone (`-t`) against app
+`6f61394e` plus the two pin rewrites below; every one went red, then the source was
+restored (`git diff` empty after each). All eighteen runs below were made fresh in
+Task 13 rather than copied from the task reports, so they prove the pins as they stand
+after all later tasks. Earlier red runs recorded in the task reports agree:
+Conversations (Task 4, `expected 1000 to be 50`, plus the comparator/tag breaks),
+Files hidden tab (Task 5, re-adding `useArtifact()` → red), preview and buddy folds
+(Tasks 6/7), fold hook (7b), Marketplace (Task 8 and its fix round), model search
+(Task 9), CSV and game chat (Task 10), diff/read (Task 11 and its fix round), drawer
+(Task 12). The hook's Task 1 red was "module not found", not a bound break, so it
+did not count.
+
+**Two pins stayed green when broken, and were rewritten, not kept:**
+
+1. **Resume browser had no pin.** With `visibleItems.map` changed to `items.map`, all
+   seven `tests/resume-browser-*` suites stayed green (64/64). Added
+   `tests/resume-browser-kept-conversations.test.tsx` → "opens 1,000 conversations as
+   one chunk of cards and draws more on scroll" (firing observer stub; ≤ one chunk,
+   then grows).
+2. **Files flat results were pinned on list view only.** Breaking the grid's draw site
+   (`flatVisible.map(renderFileCard)` → `flatResults.map(...)`) left
+   `files-tab-list-view.test.tsx` green, and grid is the default view. The test now
+   runs for both views (`it.each(['list', 'grid'])`); both go red on their own break.
+
+| Surface | Pin (desktop/) | Break | Red |
+|---|---|---|---|
+| Reveal hook | `src/renderer/hooks/use-chunked-reveal.test.tsx` | `visible = items` | 2000 ≠ 50 |
+| Resume browser | `tests/resume-browser-kept-conversations.test.tsx` (new) | `items.map` | 1000 > 50 |
+| Projects → Conversations | `tests/ConversationsTab.test.tsx` | `rows.map` | 1000 ≠ 50 |
+| Files, hidden tab | `tests/project-view-files-tab-stays-mounted.test.tsx` | memo removed | 5 renders ≠ 3 |
+| Files, flat (list) | `tests/files-tab-list-view.test.tsx` | `flatResults.map(renderFileRow)` | 120 ≠ 50 |
+| Files, flat (grid) | same (rewritten) | `flatResults.map(renderFileCard)` | 120 ≠ 50 |
+| Preview fold | `tests/session-preview-pane.test.tsx` | `folded = false` | '' ≠ '240px' |
+| Buddy fold | `tests/BubbleFeed.test.tsx` | `folded = false` | '' ≠ '240px' |
+| Fold hook at mount | `src/renderer/hooks/use-entry-folding.test.ts` | mount-time observe loop removed | not folded |
+| Marketplace | `tests/MarketplaceScreen.test.tsx` | `exploreItems.map` | 300 ≠ 50 |
+| Model search | `tests/model-picker-selectable-first.test.tsx` | `rows.map(row)` | 400 ≠ 50 |
+| CSV columns | `tests/CsvView.test.tsx` | `MAX_COLS = 100000` | 300 ≠ 100 |
+| Game chat | `tests/game-reducer.test.ts` | `.slice(-GAME_CHAT_LIMIT)` removed | 250 ≠ 200 |
+| Diff, collapsed / expanded | `tests/unified-diff-fill.test.tsx` | slice removed / `rows` for `reveal.visible` | 5000 ≠ 15 / 5000 ≠ 200 |
+| Read, collapsed / expanded | `tests/tool-body.test.tsx` | same two | 5000 ≠ 15 / 5000 ≠ 200 |
+| Side drawer rows | `tests/session-drawer-skips-parent-rerenders.test.tsx` | `ArtifactListItem` memo removed | 2 redraws ≠ 0 |
+
+The red runs, verbatim (break, command, failure, restore):
+
+**The reveal hook**
+
+```
+### break: src/renderer/hooks/use-chunked-reveal.ts
+-  const visible = hasMore ? items.slice(0, count) : items;
++  const visible = items;
+$ npx vitest run src/renderer/hooks/use-chunked-reveal.test.tsx -t "draws one chunk of a long list"
+     × draws one chunk of a long list 67ms
+ FAIL  src/renderer/hooks/use-chunked-reveal.test.tsx > useChunkedReveal > draws one chunk of a long list
+AssertionError: expected 2000 to be 50 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+--- restored; after:
+      Tests  1 passed | 8 skipped (9)
+(src diff empty)
+```
+
+**Resume browser**
+
+```
+### break: src/renderer/components/ResumeBrowser.tsx
+-                  {visibleItems.map((item) => (
++                  {items.map((item) => (
+$ npx vitest run tests/resume-browser-kept-conversations.test.tsx -t "opens 1,000 conversations as one chunk"
+     × opens 1,000 conversations as one chunk of cards and draws more on scroll 1323ms
+ FAIL  tests/resume-browser-kept-conversations.test.tsx > Resume browser — a long history draws one chunk at a time > opens 1,000 conversations as one chunk of cards and draws more on scroll
+AssertionError: expected 1000 to be less than or equal to 50
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+--- restored; after:
+      Tests  1 passed | 5 skipped (6)
+(src diff empty)
+```
+
+**Projects → Conversations**
+
+```
+### break: src/renderer/components/project-view/tabs/ConversationsTab.tsx
+-          {visible.map((c) => (
++          {rows.map((c) => (
+$ npx vitest run tests/ConversationsTab.test.tsx -t "draws one chunk of cards for 1,000"
+     × draws one chunk of cards for 1,000 conversations and another on scroll 184ms
+ FAIL  tests/ConversationsTab.test.tsx > ConversationsTab > draws one chunk of cards for 1,000 conversations and another on scroll
+AssertionError: expected 1000 to be 50 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 skipped (4)
+--- restored; after:
+      Tests  1 passed | 3 skipped (4)
+(src diff empty)
+```
+
+**Projects → Files, hidden tab stays still**
+
+```
+### break: src/renderer/components/project-view/tabs/FilesTab.tsx
+-export const FilesTab = React.memo(FilesTabImpl);
++export const FilesTab = FilesTabImpl;
+$ npx vitest run tests/project-view-files-tab-stays-mounted.test.tsx -t "stays still while other tabs are clicked"
+     × stays still while other tabs are clicked 136ms
+ FAIL  tests/project-view-files-tab-stays-mounted.test.tsx > hidden FilesTab does not re-render > stays still while other tabs are clicked
+AssertionError: expected 5 to be 3 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+--- restored; after:
+      Tests  1 passed | 2 skipped (3)
+(src diff empty)
+```
+
+**Projects → Files, flat results (list view)**
+
+```
+### break: src/renderer/components/project-view/tabs/FilesTab.tsx
+-                ? <div className={fullW}><ListBox>{flatVisible.map(renderFileRow)}</ListBox></div>
++                ? <div className={fullW}><ListBox>{flatResults.map(renderFileRow)}</ListBox></div>
+$ npx vitest run tests/files-tab-list-view.test.tsx -t "draw a chunk at a time"
+     × draw a chunk at a time and the rest as you scroll 74ms
+ FAIL  tests/files-tab-list-view.test.tsx > flat search results > draw a chunk at a time and the rest as you scroll
+AssertionError: expected 120 to be 50 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+--- restored; after:
+      Tests  1 passed | 8 skipped (9)
+(src diff empty)
+```
+
+**Projects → Files, flat results (grid view)**
+
+```
+### break: src/renderer/components/project-view/tabs/FilesTab.tsx
+-                : flatVisible.map(renderFileCard)}
++                : flatResults.map(renderFileCard)}
+$ npx vitest run tests/files-tab-list-view.test.tsx -t "grid view"
+     × draw a chunk at a time and the rest as you scroll (grid view) 44ms
+ FAIL  tests/files-tab-list-view.test.tsx > flat search results > draw a chunk at a time and the rest as you scroll (grid view)
+AssertionError: expected 120 to be 50 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed | 8 skipped (10)
+--- restored; after:
+      Tests  2 passed | 8 skipped (10)
+(src diff empty)
+```
+
+**Conversation preview (fold)**
+
+```
+### break: src/renderer/components/PreviewTimeline.tsx
+-        const folded = folding?.isFolded(key) ?? false;
++        const folded = false;
+$ npx vitest run tests/session-preview-pane.test.tsx -t "folds an entry the observer reports"
+     × folds an entry the observer reports out of view into a same-height, contentless spacer, while an intersecting entry keeps its content 102ms
+ FAIL  tests/session-preview-pane.test.tsx > PreviewTimeline folding > folds an entry the observer reports out of view into a same-height, contentless spacer, while an intersecting entry keeps its content
+AssertionError: expected '' to be '240px' // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 11 skipped (12)
+--- restored; after:
+      Tests  1 passed | 11 skipped (12)
+(src diff empty)
+```
+
+**Buddy chat (fold)**
+
+```
+### break: src/renderer/components/buddy/BubbleFeed.tsx
+-              const folded = folding.isFolded(key!);
++              const folded = false;
+$ npx vitest run tests/BubbleFeed.test.tsx -t "folds an entry the observer reports"
+     × folds an entry the observer reports out of view into a same-height, contentless spacer, while an intersecting entry keeps its content 23ms
+ FAIL  tests/BubbleFeed.test.tsx > BubbleFeed folding > folds an entry the observer reports out of view into a same-height, contentless spacer, while an intersecting entry keeps its content
+AssertionError: expected '' to be '240px' // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 skipped (2)
+--- restored; after:
+      Tests  1 passed | 1 skipped (2)
+(src diff empty)
+```
+
+**Fold hook, entries present at mount**
+
+```
+### break: src/renderer/hooks/use-entry-folding.ts
+-    for (const el of elements.current.values()) io.observe(el);
++
+$ npx vitest run src/renderer/hooks/use-entry-folding.test.ts -t "already present when the list mounted"
+     × folds an entry that was already present when the list mounted 15ms
+ FAIL  src/renderer/hooks/use-entry-folding.test.ts > useEntryFolding > folds an entry that was already present when the list mounted
+AssertionError: expected [] to include <div data-entry-key="pre"></div>
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 skipped (13)
+--- restored; after:
+      Tests  1 passed | 12 skipped (13)
+(src diff empty)
+```
+
+**Marketplace**
+
+```
+### break: src/renderer/components/marketplace/MarketplaceScreen.tsx
+-                  {explore.visible.map((item) => (
++                  {exploreItems.map((item) => (
+$ npx vitest run tests/MarketplaceScreen.test.tsx -t "draws one chunk of the Explore-everything"
+     × draws one chunk of the Explore-everything grid for 300 entries, and another on scroll 235ms
+ FAIL  tests/MarketplaceScreen.test.tsx > MarketplaceScreen > draws one chunk of the Explore-everything grid for 300 entries, and another on scroll
+AssertionError: expected 300 to be 50 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 skipped (2)
+--- restored; after:
+      Tests  1 passed | 1 skipped (2)
+(src diff empty)
+```
+
+**Model search**
+
+```
+### break: src/renderer/components/model/ModelPicker.tsx
+-                  {visibleRows.map(row)}
++                  {rows.map(row)}
+$ npx vitest run tests/model-picker-selectable-first.test.tsx -t "draws one chunk of a 400-model"
+     × draws one chunk of a 400-model search result and grows it on scroll 15340ms
+ FAIL  tests/model-picker-selectable-first.test.tsx > ModelPicker search results reveal > draws one chunk of a 400-model search result and grows it on scroll
+AssertionError: expected 400 to be 50 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 skipped (4)
+--- restored; after:
+      Tests  1 passed | 3 skipped (4)
+(src diff empty)
+```
+
+**CSV columns**
+
+```
+### break: src/renderer/components/artifact-views/CsvView.tsx
+-const MAX_COLS = 100;
++const MAX_COLS = 100000;
+$ npx vitest run tests/CsvView.test.tsx -t "renders at most 100 columns"
+     × renders at most 100 columns for a 300-column CSV 1620ms
+ FAIL  tests/CsvView.test.tsx > CsvView — column cap (Task 10) > renders at most 100 columns for a 300-column CSV
+AssertionError: expected 300 to be 100 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+--- restored; after:
+      Tests  1 passed | 2 skipped (3)
+(src diff empty)
+```
+
+**Game chat**
+
+```
+### break: src/renderer/state/game-reducer.ts
+-        ].slice(-GAME_CHAT_LIMIT),
++        ],
+$ npx vitest run tests/game-reducer.test.ts -t "keeps the last 200"
+     × keeps the last 200 of 250 messages, dropping the oldest 4ms
+ FAIL  tests/game-reducer.test.ts > gameReducer — CHAT_MESSAGE (Task 10 cap) > keeps the last 200 of 250 messages, dropping the oldest
+AssertionError: expected [ { from: 'Alice', …(2) }, …(249) ] to have a length of 200 but got 250
+ Test Files  1 failed (1)
+      Tests  1 failed | 26 skipped (27)
+--- restored; after:
+      Tests  1 passed | 26 skipped (27)
+(src diff empty)
+```
+
+**Diff box, collapsed slice**
+
+```
+### break: src/renderer/components/diff/UnifiedDiff.tsx
+-  const drawn = fill || expanded ? reveal.visible : overflow ? rows.slice(0, DIFF_PREVIEW_LINES) : rows;
++  const drawn = fill || expanded ? reveal.visible : rows;
+$ npx vitest run tests/unified-diff-fill.test.tsx -t "collapsed draws only the first 15 rows"
+     × collapsed draws only the first 15 rows; expanded fills a capped scroller 200 rows at a time; Show less drops back 407ms
+ FAIL  tests/unified-diff-fill.test.tsx > UnifiedDiff long diffs draw a slice, then scroll in chunks > collapsed draws only the first 15 rows; expanded fills a capped scroller 200 rows at a time; Show less drops back
+AssertionError: expected 5000 to be 15 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+--- restored; after:
+      Tests  1 passed | 6 skipped (7)
+(src diff empty)
+```
+
+**Diff box, expanded chunks**
+
+```
+### break: src/renderer/components/diff/UnifiedDiff.tsx
+-  const drawn = fill || expanded ? reveal.visible : overflow ? rows.slice(0, DIFF_PREVIEW_LINES) : rows;
++  const drawn = fill || expanded ? rows : overflow ? rows.slice(0, DIFF_PREVIEW_LINES) : rows;
+$ npx vitest run tests/unified-diff-fill.test.tsx -t "collapsed draws only the first 15 rows"
+     × collapsed draws only the first 15 rows; expanded fills a capped scroller 200 rows at a time; Show less drops back 892ms
+ FAIL  tests/unified-diff-fill.test.tsx > UnifiedDiff long diffs draw a slice, then scroll in chunks > collapsed draws only the first 15 rows; expanded fills a capped scroller 200 rows at a time; Show less drops back
+AssertionError: expected 5000 to be 200 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 skipped (7)
+--- restored; after:
+      Tests  1 passed | 6 skipped (7)
+(src diff empty)
+```
+
+**Read box, collapsed slice**
+
+```
+### break: src/renderer/components/tool-views/ToolBody.tsx
+-  const drawn = expanded ? reveal.visible : overflow ? rows.slice(0, READ_PREVIEW_LINES) : rows;
++  const drawn = expanded ? reveal.visible : rows;
+$ npx vitest run tests/tool-body.test.tsx -t "collapsed draws 15 lines"
+     × collapsed draws 15 lines; expanded fills a capped scroller 200 at a time; Show less drops back 286ms
+ FAIL  tests/tool-body.test.tsx > Read box draws a slice collapsed and scrolls in chunks expanded > collapsed draws 15 lines; expanded fills a capped scroller 200 at a time; Show less drops back
+AssertionError: expected 5000 to be 15 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+--- restored; after:
+      Tests  1 passed | 2 skipped (3)
+(src diff empty)
+```
+
+**Read box, expanded chunks**
+
+```
+### break: src/renderer/components/tool-views/ToolBody.tsx
+-  const drawn = expanded ? reveal.visible : overflow ? rows.slice(0, READ_PREVIEW_LINES) : rows;
++  const drawn = expanded ? rows : overflow ? rows.slice(0, READ_PREVIEW_LINES) : rows;
+$ npx vitest run tests/tool-body.test.tsx -t "collapsed draws 15 lines"
+     × collapsed draws 15 lines; expanded fills a capped scroller 200 at a time; Show less drops back 694ms
+ FAIL  tests/tool-body.test.tsx > Read box draws a slice collapsed and scrolls in chunks expanded > collapsed draws 15 lines; expanded fills a capped scroller 200 at a time; Show less drops back
+AssertionError: expected 5000 to be 200 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+--- restored; after:
+      Tests  1 passed | 2 skipped (3)
+(src diff empty)
+```
+
+**Side drawer rows**
+
+```
+### break: src/renderer/components/SessionDrawer.tsx
+-const ArtifactListItem = React.memo(ArtifactListItemImpl);
++const ArtifactListItem = ArtifactListItemImpl;
+$ npx vitest run tests/session-drawer-skips-parent-rerenders.test.tsx -t "typing in the drawer search re-renders only rows"
+     × typing in the drawer search re-renders only rows whose visibility changed 37ms
+ FAIL  tests/session-drawer-skips-parent-rerenders.test.tsx > row memoisation (Task 12) > typing in the drawer search re-renders only rows whose visibility changed
+AssertionError: expected 2 to be +0 // Object.is equality
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+--- restored; after:
+      Tests  1 passed | 2 skipped (3)
+(src diff empty)
+```
+
+### DOM-size sweep (Task 13)
+
+All seven surfaces under the 8,000-element budget at `stressRows=2000` (Conversations
+17,546 → 1,508; Files search 11,242 → 1,278; Marketplace 58,706 → 3,281; model search
+24,679 → 1,255). Before/after table: investigation doc §1, "DOM-size sweep, after".
+Wired as the last step of `scripts/ui-review/run-review.sh` (exit 1 over budget, proven
+with the Marketplace bound removed: 58,435 → exit 1), and named in
+`scripts/ui-review/README.md`. Not in `verify.sh` — it needs a browser and a workbench.

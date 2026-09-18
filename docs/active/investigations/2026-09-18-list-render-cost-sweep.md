@@ -124,6 +124,24 @@ turn text is unchanged). This surface is not what Task 6 (preview entry folding)
 that's about the render weight of what's already in one page, not how many pages exist —
 so it staying green here says nothing about whether Task 6 is needed.
 
+**DOM-size sweep, after** (2026-09-18, render-cost plan Task 13, app `6f61394e` — all
+list fixes, Tasks 1–12). Same command, same workbench scenario (`stress`,
+`stressRows=2000`), same budget. Every surface passes and the script exits 0:
+
+| surface | before | after | budget | result |
+|---|---:|---:|---:|---|
+| Resume browser | 2,572 | 2,427 | 8,000 | PASS |
+| Projects → Conversations | 17,546 | 1,508 | 8,000 | PASS (was FAIL) |
+| Projects → Files, search "e" | 11,242 | 1,278 | 8,000 | PASS (was FAIL) |
+| Marketplace | 58,706 | 3,281 | 8,000 | PASS (was FAIL) |
+| Model picker, search "a" | 24,679 | 1,255 | 8,000 | PASS (was FAIL) |
+| Conversation preview (opened from Resume) | 2,812 | 2,637 | 8,000 | PASS |
+| Side drawer (Session Files) | 1,083 | 938 | 8,000 | PASS |
+
+The sweep is now the last step of `scripts/ui-review/run-review.sh` (table kept as
+`dom-size.md`; over budget exits 1). It was proven to fail there: a review run with the
+Marketplace bound temporarily removed ended `exit 1` with Marketplace at 58,435.
+
 Adjacent, on Projects **open** (not tab switch): `project:list-conversations`
 (`main/project-conversations.ts:21`) and the hero counts
 (`main/artifacts/projects-index.ts:133`) each run the global
