@@ -1,0 +1,105 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1",
+ "boot": 3500,
+ "shots": [
+  {
+   "name": "si-not-connected",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=none",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "si-waiting",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=none&openrouterSignIn=waiting",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "si-failed",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=none&openrouterSignIn=failed",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "si-broken",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=rejected",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
+  },
+  {
+   "name": "si-modal",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=verified",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Replace key')",
+     "settle": 700
+    }
+   ],
+   "expect": "[aria-label='OpenRouter API key']"
+  }
+ ]
+}
