@@ -1,0 +1,142 @@
+{
+  "title": "Pages — the shell, round 10: pinned focus, the create dialog, one band for Pages and Projects",
+  "key": "youcoded-pages-shell-r10",
+  "out": "youcoded-pages-shell-r10.review.html",
+  "images": "images/youcoded-pages-shell-r10.review",
+  "runs": {
+    "before": "runs/round9",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Round 9",
+    "after": "Round 10"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "crops": {
+    "view-band": [
+      "pages-view",
+      "view-idle",
+      "1440x120+0+0"
+    ],
+    "view-focus": [
+      "pages-view",
+      "view-focus",
+      "1440x900+0+0"
+    ],
+    "view-unfocus": [
+      "pages-view",
+      "view-focus-unfocus",
+      "1440x900+0+0"
+    ],
+    "create-dialog": [
+      "pages-view",
+      "create-dialog",
+      "1440x900+0+0"
+    ],
+    "edit-dialog": [
+      "pages-view",
+      "edit-dialog",
+      "1440x900+0+0"
+    ],
+    "projects": [
+      "pages-view",
+      "projects-from-pages",
+      "1440x900+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-35",
+      "surface": "Pages",
+      "path": "Top bar → a pinned page's button",
+      "crop": "view-focus",
+      "runs": [
+        "after"
+      ],
+      "headline": "A pinned button opens its page edge to edge: no panel, the button lit, the Pages icon quiet.",
+      "changed": "From your note: a pinned page shows full screen, framed, with no side bar. Its button in the band reads as the selected one; a second press returns to chat. While any page view is open the chat's keyboard shortcuts (Shift+Space, Shift+Tab, Ctrl+`, the Shift-hold switcher, arrow scrolling) no longer fire; Esc and zoom still do.",
+      "notice": "The page gets the whole width; the band still offers Settings, Pages, Projects and the other pinned pages.",
+      "risk": "Keys typed inside the page never reached the app before either; the change is only for keys pressed with the page view up but nothing inside it focused.",
+      "highlight": {
+        "selector": "[aria-label='Open Focus timer']"
+      }
+    },
+    {
+      "id": "S-36",
+      "surface": "Pages",
+      "path": "A focused page → the Pages icon",
+      "crop": "view-unfocus",
+      "runs": [
+        "after"
+      ],
+      "headline": "From a focused page, the Pages icon brings the panel back with that page still open.",
+      "changed": "Pages is lit again, the pinned button goes quiet, and the panel returns beside the page — no reload, the page keeps whatever it was doing.",
+      "notice": "Pages and the pinned buttons are two ways to hold the same page: with the list, or without.",
+      "risk": "",
+      "highlight": {
+        "selector": "[aria-label='Open Pages']"
+      }
+    },
+    {
+      "id": "S-37",
+      "surface": "Pages",
+      "path": "The band across the top of the page view",
+      "crop": "view-band",
+      "headline": "The pinned pages sit in the band after Projects, as they do in the chat's header.",
+      "changed": "Kept in the header (your call) and added to the page view's band, so the band's left cluster is now the same set the chat shows: Settings, Pages, Projects, then the pinned pages.",
+      "notice": "The band no longer loses the pinned shortcuts when you are among your pages.",
+      "risk": "Up to four pinned pages; the cluster grows by one icon each."
+    },
+    {
+      "id": "S-38",
+      "surface": "Pages",
+      "path": "Panel → Create a page",
+      "crop": "create-dialog",
+      "runs": [
+        "after"
+      ],
+      "headline": "Create a page opens the new-conversation dialog: project folder, model, skip permissions.",
+      "changed": "From your note: instead of starting a conversation straight away, a popup with the app's own new-session form. Create Session starts the conversation with the page-builder command already typed in, and leaves the page view.",
+      "notice": "The same form the session menu and the welcome screen use, in the app's dialog shell; Manage projects… in the folder list goes to Projects.",
+      "risk": "The command waits in the composer, not sent, so you add what the page should do and press Enter.",
+      "highlight": {
+        "selector": "[role='dialog']"
+      }
+    },
+    {
+      "id": "S-39",
+      "surface": "Manage pages",
+      "path": "Manage pages → the pencil on a card",
+      "crop": "edit-dialog",
+      "runs": [
+        "after"
+      ],
+      "headline": "Editing a page opens the same dialog, titled for the page, starting in the page's own project.",
+      "changed": "Edit used to jump straight into a conversation; now it asks the same folder-and-model question. A project page starts in its project so the builder finds the page's folder; a personal page starts in the saved default.",
+      "notice": "One dialog for creating and for editing; only the title and the pre-typed command differ.",
+      "risk": "",
+      "highlight": {
+        "selector": "[role='dialog']"
+      }
+    },
+    {
+      "id": "S-40",
+      "surface": "Projects",
+      "path": "Top bar → Projects",
+      "crop": "projects",
+      "headline": "Projects wears the same band and framed pane as the page view; the two screens now match.",
+      "changed": "From your note: the same band — Settings, Pages, Projects (lit), the pinned pages on the left; the title centred; Back to chat · Esc and the window buttons on the right — and the content in a rounded, inset pane. Projects' old title row with its own Pages button and Esc · Back to chat is gone; nothing inside the pane changed.",
+      "notice": "Switching between Pages and Projects keeps the band in place; only the pane and the lit icon change.",
+      "risk": "On a phone the pane's inset costs ten pixels a side; the narrow behaviour of the band is still the open question from round 9.",
+      "highlight": {
+        "selector": "[aria-label='Open Projects']"
+      }
+    }
+  ]
+}

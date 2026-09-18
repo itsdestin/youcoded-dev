@@ -1,0 +1,86 @@
+{
+  "title": "Pages — the shell, round 5: the page view, tidied",
+  "key": "youcoded-pages-shell-r5",
+  "out": "youcoded-pages-shell-r5.review.html",
+  "images": "images/youcoded-pages-shell-r5.review",
+  "runs": {
+    "before": "runs/round4",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Round 4",
+    "after": "Round 5"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "stage": "review",
+  "crops": {
+    "view-band": [
+      "pages-view",
+      "view",
+      "1440x120+0+0"
+    ],
+    "view-panel": [
+      "pages-view",
+      "view",
+      "560x900+0+0"
+    ],
+    "view-full": [
+      "pages-view",
+      "view",
+      "1440x620+0+0"
+    ],
+    "view-collapsed": [
+      "pages-view",
+      "view-collapsed",
+      "1440x620+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-18",
+      "surface": "A page",
+      "path": "The band across the top of an open page",
+      "crop": "view-band",
+      "headline": "The band loses its divider; the name is centred; Edit is a pencil; Back to chat is a pill with its Esc key.",
+      "changed": "No line under the band any more: the page pane's own edge separates them. The name sits in the exact middle. Edit in chat became a pencil button with a hover tip, in the right cluster, not beside the name. Back to chat is a bordered pill with a small Esc key cap.",
+      "notice": "The band reads like the app's own: icon button left, name centre, actions and window buttons right, nothing else.",
+      "risk": "The pencil is only a pencil; its meaning is in the hover tip. On a phone there is no hover, so the tip never shows there."
+    },
+    {
+      "id": "S-19",
+      "surface": "A page",
+      "path": "The panel on the left of an open page",
+      "crop": "view-panel",
+      "headline": "The panel is bare chrome: no border on its right, no line above Manage pages, and the rows are rounded pills.",
+      "changed": "The right border and the bottom divider are gone. Manage pages is a bare pill, centred. Each page is a rounded row, the current one filled.",
+      "notice": "The panel and the band are one surface; only the page pane is a separate thing.",
+      "risk": ""
+    },
+    {
+      "id": "S-20",
+      "surface": "A page",
+      "path": "The whole page view",
+      "crop": "view-full",
+      "headline": "The page pane is inset from the panel and the window by the same edge on every side, like the chat pane.",
+      "changed": "The odd gap between the panel and the page is now the frame edge, the same 10 px as the gap to the window's sides and bottom. The pane's rounded corners sit inside that edge.",
+      "measured": "10 px edge on every side",
+      "notice": "Panel, band and pane line up; nothing touches the window edge but the band.",
+      "risk": ""
+    },
+    {
+      "id": "S-21",
+      "surface": "A page",
+      "path": "The page view with the panel collapsed",
+      "crop": "view-collapsed",
+      "headline": "Collapsed, the pane keeps the same edge all round instead of touching the window.",
+      "changed": "With the panel hidden the pane widens to the window, less the same 10 px edge on the left, right and bottom.",
+      "notice": "Collapsing the panel never changes the frame, only how much page you see.",
+      "risk": ""
+    }
+  ]
+}

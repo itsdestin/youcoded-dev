@@ -1,0 +1,214 @@
+{
+ "_comment": "YouCoded Pages in FLOATING chrome (Halftone Dimension): the four ways the page view's panel and frame, and Project View's pane, can sit on the wallpaper under the floating header pill. `screenFrame` is the workbench variant switch (workbench-mode.ts). Capture with themes halftone-dimension only; other themes ignore the switch.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "cards-idle",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=cards",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Back to chat']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "cards-page",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=cards",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Week planner']"
+  },
+  {
+   "name": "cards-projects",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=cards",
+   "actions": [
+    {
+     "click": "[aria-label='Open Projects']",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Open Projects'][aria-pressed='true']"
+  },
+  {
+   "name": "sheet-idle",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=sheet",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Back to chat']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "sheet-page",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=sheet",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Week planner']"
+  },
+  {
+   "name": "sheet-projects",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=sheet",
+   "actions": [
+    {
+     "click": "[aria-label='Open Projects']",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Open Projects'][aria-pressed='true']"
+  },
+  {
+   "name": "rail-idle",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=rail",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Back to chat']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "rail-page",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=rail",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Week planner']"
+  },
+  {
+   "name": "rail-projects",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=rail",
+   "actions": [
+    {
+     "click": "[aria-label='Open Projects']",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Open Projects'][aria-pressed='true']"
+  },
+  {
+   "name": "bleed-idle",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=bleed",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Back to chat']",
+   "measure": [
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "bleed-page",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=bleed",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Week planner']"
+  },
+  {
+   "name": "bleed-projects",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&screenFrame=bleed",
+   "actions": [
+    {
+     "click": "[aria-label='Open Projects']",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Open Projects'][aria-pressed='true']"
+  }
+ ]
+}

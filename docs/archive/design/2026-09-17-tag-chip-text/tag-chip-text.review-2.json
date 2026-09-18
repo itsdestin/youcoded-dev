@@ -1,0 +1,49 @@
+{
+  "title": "Tag chips — stronger contrast, colors fitted to each theme",
+  "key": "tag-chip-text-review-2",
+  "out": "tag-chip-text.review-2.html",
+  "images": "images/tag-chip-text.review-2",
+  "stage": "review",
+  "runs": {
+    "before": "runs/round-1",
+    "after": "runs/round-2"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "crops": {
+    "resume-tags": [
+      "tag-chip",
+      "tag-resume-stress",
+      "400x50+230+256"
+    ],
+    "menu-tags": [
+      "tag-chip",
+      "tag-sessions-menu",
+      "390x150+525+60"
+    ]
+  },
+  "steps": [
+    {
+      "id": "T-3",
+      "surface": "Resume browser",
+      "path": "Type /resume, then look at the tags under a conversation's name",
+      "crop": "resume-tags",
+      "headline": "Tags stand out more: bolder word, stronger color wash and a clearer outline.",
+      "changed": "The word uses the theme's main text color instead of the softer one, and the fill and outline are about twice as strong as round 1.",
+      "measured": "Fill 15% to 24%, outline 30% to 55%",
+      "notice": "Tags pop off the card on every theme, including the pale ones where round 1 looked washed out.",
+      "risk": "Tags are now a little louder than the Working label next to them."
+    },
+    {
+      "id": "T-4",
+      "surface": "Session switcher",
+      "path": "Click the session name at the top, or hold Shift, and look at the tags under the Working label",
+      "crop": "menu-tags",
+      "headline": "Each tag color is now tuned to the theme: lighter on dark themes, deeper on light ones.",
+      "changed": "Every tag color is blended a quarter of the way toward the theme's text color, so it adapts on its own, community themes included.",
+      "notice": "Colors sit more naturally in each theme instead of one fixed set everywhere."
+    }
+  ]
+}

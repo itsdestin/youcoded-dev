@@ -1,0 +1,250 @@
+{
+  "title": "Pages — the shell: the button, the library, pinned pages, a page open",
+  "key": "youcoded-pages-shell",
+  "out": "youcoded-pages-shell.review.html",
+  "images": "images/youcoded-pages-shell.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "With Pages"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "halftone-dimension",
+    "meadow-mist"
+  ],
+  "stage": "design",
+  "crops": {
+    "pages-header": [
+      "pages",
+      "header",
+      "480x40+0+0"
+    ],
+    "pages-library": [
+      "pages",
+      "library",
+      "1100x400+170+0"
+    ],
+    "pages-library-empty": [
+      "pages",
+      "library-empty",
+      "1100x420+170+0"
+    ],
+    "pages-page-timer": [
+      "pages",
+      "page-timer",
+      "1440x600+0+0"
+    ],
+    "pages-page-notes": [
+      "pages",
+      "page-notes",
+      "1440x340+0+0"
+    ],
+    "pages-page-paint": [
+      "pages",
+      "page-paint",
+      "1440x300+0+0"
+    ],
+    "pages-narrow-menu": [
+      "pages-narrow",
+      "menu",
+      "390x260+0+0"
+    ],
+    "pages-narrow-library": [
+      "pages-narrow",
+      "library",
+      "390x340+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Top bar",
+      "path": "The left cluster: gear, Pages, folder, then your pinned pages",
+      "crop": "pages-header",
+      "headline": "A permanent Pages button sits between Settings and Projects, and pinned pages get their own buttons after Projects.",
+      "changed": "One new button (a stack of pages) between the gear and the folder, always there. Each page you pin adds a small button of its own after the folder, up to four.",
+      "measured": "4 pinned pages at most; every button is the same 24 px square as Projects",
+      "notice": "Your favourite pages are one click away from anywhere, like Projects. Hover shows the page's name.",
+      "risk": "With four pins the left cluster is about 130 px wider, which leaves less room for the session strip on small windows."
+    },
+    {
+      "id": "S-2",
+      "surface": "Pages",
+      "path": "Top bar → Pages",
+      "crop": "pages-library",
+      "runs": [
+        "after"
+      ],
+      "headline": "The library lists your pages as cards, grouped by where they live: Personal first, then each project by name.",
+      "changed": "A full screen in the same family as Projects: title on the left, Make a page and Esc · Back to chat on the right. Each card shows the page's icon, name, a one-line description, where it lives, when it last changed, and its pin.",
+      "notice": "Click a card to open the page. Click the pin to pin or unpin it without opening it. The pin fills in when the page is pinned.",
+      "risk": "Make a page and Edit in chat currently start an ordinary new conversation; the skill that turns that conversation into a page is the next piece of this phase.",
+      "highlight": {
+        "box": [
+          1.5,
+          23,
+          32,
+          29
+        ]
+      }
+    },
+    {
+      "id": "S-3",
+      "surface": "Pages",
+      "path": "Top bar → Pages, before you have any",
+      "crop": "pages-library-empty",
+      "runs": [
+        "after"
+      ],
+      "headline": "With no pages yet, the library explains what a page is in two sentences and offers one thing to do.",
+      "changed": "The same card style as the empty Projects screen: an icon, a plain title, two sentences, and one Make a page button as wide as the words.",
+      "notice": "You are never looking at an empty grid. The words say what a page is and that pinning gives it a top-bar button.",
+      "risk": "",
+      "highlight": {
+        "text": "Make a page"
+      }
+    },
+    {
+      "id": "S-4",
+      "surface": "A page",
+      "path": "Top bar → the timer's pinned button, or Pages → Focus timer",
+      "crop": "pages-page-timer",
+      "runs": [
+        "after"
+      ],
+      "headline": "A page opens full screen under a thin header: its name, where it lives, Pin, Edit in chat, and Esc · Back.",
+      "changed": "The page itself runs in its own isolated frame below the header, in the current theme's colours, fonts and corner shapes. Switch themes with the timer running and it keeps counting.",
+      "measured": "48 px header; the page gets the rest of the window",
+      "notice": "Buttons, cards and text inside the page match the rest of YouCoded. Back returns you to wherever you came from: the library, or chat if you used a pinned button.",
+      "risk": "A page cannot reach anything outside itself yet — no files, no internet, no models. That is Phase 1 by design; Phase 2 opens connections.",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          8
+        ]
+      }
+    },
+    {
+      "id": "S-5",
+      "surface": "A page",
+      "path": "Pages → Notes board",
+      "crop": "pages-page-notes",
+      "runs": [
+        "after"
+      ],
+      "headline": "A second sample page, notes you can add and edit, shows the same style kit on fields and cards.",
+      "changed": "Text fields, cards and the New note button use the shared page style, so a page built by the assistant reads as part of the app without copying the app's code.",
+      "notice": "Typing in a note and then switching themes keeps what you typed.",
+      "risk": "The style kit covers buttons, fields, cards, chips, tables and text. A page that needs a control outside that set gets a plain browser control until the kit grows.",
+      "highlight": {
+        "text": "Edit in chat"
+      }
+    },
+    {
+      "id": "S-6",
+      "surface": "A page",
+      "path": "Top bar → the Paint pinned button",
+      "crop": "pages-page-paint",
+      "runs": [
+        "after"
+      ],
+      "headline": "Paint keeps its own colours: the toolbar follows the theme, the drawing surface stays white.",
+      "changed": "Only the page's own controls take the theme. Pictures, drawings and game art keep the colours the page chose, as the scope requires.",
+      "notice": "Six fixed colours and a size slider on a themed bar over a white canvas, in every theme.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          36.5,
+          18,
+          13.5,
+          11
+        ]
+      }
+    },
+    {
+      "id": "S-7",
+      "surface": "Phone width",
+      "path": "The ||| menu at the top left",
+      "crop": "pages-narrow-menu",
+      "headline": "On a phone, Pages is a row in the ||| menu, right after Projects.",
+      "changed": "One new row in the collapsed menu. Pinned page buttons do not appear on a phone; those pages are reached through the library.",
+      "notice": "Nothing is lost on a narrow screen; Pages takes one extra tap.",
+      "risk": "A pinned page is two taps away on a phone rather than one.",
+      "highlight": {
+        "box": [
+          3,
+          48,
+          52,
+          15
+        ]
+      }
+    },
+    {
+      "id": "S-8",
+      "surface": "Phone width",
+      "path": "||| → Pages",
+      "crop": "pages-narrow-library",
+      "runs": [
+        "after"
+      ],
+      "headline": "The library becomes one column on a phone, with the bordered ✕ instead of Esc · Back.",
+      "changed": "Cards stack in one column; the header keeps Make a page and swaps the keyboard hint for a close button.",
+      "notice": "Same cards, same pin, one per row.",
+      "risk": "",
+      "highlight": {
+        "text": "Make a page"
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Top bar",
+      "path": "The pinned page buttons after Projects",
+      "headline": "How many pages may be pinned to the top bar?",
+      "today": "The shell caps pins at four. A fifth page's pin is greyed with a note saying up to four pinned pages.",
+      "problem": "Too many pins crowd the session strip on small windows; too few and the feature feels stingy for someone with several daily pages.",
+      "proposal": "Pick the cap. The library always lists every page regardless.",
+      "options": [
+        {
+          "id": "four",
+          "label": "Four pins",
+          "pros": [
+            "Fits beside the session strip on a 1280 px window",
+            "Enough for a daily set"
+          ],
+          "cons": [
+            "A fifth favourite has to be swapped in"
+          ],
+          "recommended": true
+        },
+        {
+          "id": "six",
+          "label": "Six pins",
+          "pros": [
+            "Room for a wider daily set"
+          ],
+          "cons": [
+            "Eats into the session strip on laptop-sized windows"
+          ]
+        },
+        {
+          "id": "none",
+          "label": "No cap",
+          "pros": [
+            "Pin whatever you like"
+          ],
+          "cons": [
+            "The bar needs an overflow menu once pins run out of room, which is more to build and to learn"
+          ]
+        }
+      ]
+    }
+  ]
+}

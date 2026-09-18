@@ -1,0 +1,203 @@
+{
+ "_comment": "YouCoded Pages: the page view (opened by the Pages button) \u2014 band with the app's icons and the pinned pages, the panel always open with Create a page + Manage pages, the frame idle then with a page; a pinned button focuses its page (no panel); Create a page opens the new-session dialog; Projects under the same band.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "view-idle",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 900
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Back to chat']",
+   "measure": [
+    "[aria-label='Back to chat']",
+    {
+     "text": "Create a page"
+    },
+    {
+     "text": "Manage pages"
+    }
+   ]
+  },
+  {
+   "name": "view",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Week planner']",
+   "measure": [
+    "[aria-label='Back to chat']",
+    "[aria-label='Pin Week planner']"
+   ]
+  },
+  {
+   "name": "view-switched",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))",
+     "settle": 1200
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Paint studio'))",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Paint studio']"
+  },
+  {
+   "name": "library-over-view",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Exit pages']",
+   "measure": [
+    "[aria-label='Exit pages']"
+   ]
+  },
+  {
+   "name": "projects-from-pages",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "[aria-label='Open Projects']",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[aria-label='Open Projects'][aria-pressed='true']",
+   "measure": [
+    "[aria-label='Open Pages']",
+    "[aria-label='Open Projects']",
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "view-focus",
+   "actions": [
+    {
+     "click": "[aria-label='Open Focus timer']",
+     "settle": 1400
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Focus timer']",
+   "measure": [
+    "[aria-label='Open Focus timer']",
+    "[aria-label='Open Pages']",
+    "[aria-label='Back to chat']"
+   ]
+  },
+  {
+   "name": "view-focus-unfocus",
+   "actions": [
+    {
+     "click": "[aria-label='Open Focus timer']",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll(\"[aria-label='Open Pages']\")].pop()",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-rail-page]",
+   "measure": [
+    "[aria-label='Open Pages']"
+   ]
+  },
+  {
+   "name": "create-dialog",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Create a page'))",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[role='dialog']",
+   "measure": [
+    "[role='dialog']"
+   ]
+  },
+  {
+   "name": "edit-dialog",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='Edit Week planner in chat']",
+     "settle": 1200
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[role='dialog']",
+   "measure": [
+    "[role='dialog']"
+   ]
+  }
+ ]
+}

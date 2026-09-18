@@ -1,0 +1,68 @@
+{
+ "deck": "youcoded-pages-shell",
+ "started": "2026-09-16T22:29:20.127Z",
+ "submitted": "2026-09-16T22:33:40Z",
+ "cur": 8,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "other",
+   "note": "the icon in the top right of each card looks a little odd.",
+   "seconds": 27,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "note": "we can make this description more interesting. the examples should be things that excite.intrigue the user, like a calendar, a personalized news feed or email browser, or an app to manage their team's timesheets.",
+   "seconds": 81,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "other",
+   "note": "may want to come back to this layout.",
+   "seconds": 46,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-5": {
+   "note": "this page is just kinda ugly/basic.",
+   "v": "other",
+   "seconds": 43,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-6": {
+   "note": "also way too ugly/basic for what i had envisioned.",
+   "v": "other",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-8": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "four",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

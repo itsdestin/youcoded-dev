@@ -1,0 +1,44 @@
+{
+ "deck": "youcoded-pages-shell-r4",
+ "started": "2026-09-17T00:01:31.993Z",
+ "submitted": "2026-09-17T00:05:14Z",
+ "cur": 4,
+ "answers": {
+  "S-14": {
+   "note": "this still looks janky as fuck the spacing/dividers/alignements are all kinds of fucked up. please self-review and fix this. the edit in chat button is in a weird place. i want to improve the styling of esc/back to chat.",
+   "v": "other",
+   "seconds": 83,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-15": {
+   "note": "this shouldn't have a divider separating it from the rest of the panel. it should just be a bare pill button thing",
+   "v": "other",
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-16": {
+   "v": "yes",
+   "note": "again this frame is kinda weird with a separate divider layer under the title? the edge of the frame itself should be the divier.",
+   "seconds": 38,
+   "theme": "light",
+   "zoom": 1
+  },
+  "S-17": {
+   "note": "weird margin between side panel and window/page edge?",
+   "v": "other",
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "band",
+   "note": "but not bare text. this should be a separate edit button, with a hover tooltip clearly explaining what it is. and not right beside the name, but just in the header",
+   "seconds": 54,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

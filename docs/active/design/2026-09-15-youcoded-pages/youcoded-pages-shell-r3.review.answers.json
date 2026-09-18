@@ -1,0 +1,22 @@
+{
+ "deck": "youcoded-pages-shell-r3",
+ "started": "2026-09-16T23:40:41.290Z",
+ "submitted": "2026-09-16T23:49:01Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "note": "i think i like rail. but i want to workshop/refine it a bit. i think the rail should list all pages, with the pin icon next to them. a centered \"manage pages\" button at the bottom of this panel will open the full page managmet screen/view. esc/back to chat should still be its own option at the top right.  the rail should be collapsible with a button at the top left. i still think i want this framed, but not with the full chat view app frame. i want a similar style, but a unique frame built for page view. keep exit/maximize/minimize, but put the \"back to chat\" option where the games/files panels would be, a page name where the session browser would be, and the new side panel instead of the settings/project panel options. ",
+   "v": "other",
+   "seconds": 483,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "S-13": {
+   "v": "other",
+   "note": "rebase on prior description of what i want",
+   "seconds": 16,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}
