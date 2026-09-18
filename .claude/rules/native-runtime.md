@@ -73,7 +73,7 @@ verify:
 - **An ask PAUSES the turn, not ends it** — no re-`send()` while open. **Carve-out: a HUMAN dismissal (broker `dismissed`) ENDS it.**
 - **Permission precedence is two-tier:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it.
 
-## M2 conversations/sync — guards: `session-meta-parity`/`holder-takeover`
+## M2 conversations/sync — guards: `ipc-handlers`/`holder-takeover`
 - **Native sessions are real Conversation Store rows** — see rule `conversations.md`.
 - **`quiesce(id)` is STRONGER teardown than `interrupt()`** — cross-device takeover only, never Stop.
 

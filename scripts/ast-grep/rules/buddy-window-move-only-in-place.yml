@@ -10,7 +10,7 @@ message: >-
   that channel silently, since Wayland gives no readback to notice the move
   failed (design §3).
 note: |
-  Invariant source: tests/buddy-caption-channel.test.ts (Plan B, 2026-09-16;
+  Invariant source: tests/buddy-window-manager.test.ts, caption-channel section (Plan B, 2026-09-16;
   "no window-moving API is called outside place()" + "setTitle is called in
   exactly one place, inside place()" — the two `!l.trimStart().startsWith('//')`
   line-scans over buddy-window-manager.ts). setBounds/setContentBounds are
