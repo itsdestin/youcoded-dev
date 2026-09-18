@@ -7,7 +7,7 @@ message: >-
   carrying a carriage return (which would run itself at the user's prompt)
   and mints the token createSession demands.
 note: |
-  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; the
+  Invariant source: tests/session-manager.test.ts, shell sessions section (Plan B, 2026-09-16; the
   ipc-handlers.ts half of "both entry points call it"). The retired test
   asserted ipc-handlers.ts's text contains `prepareRunInTerminal(command)`.
   Matched as a real call (bare, member or optional-chained callee), whatever
