@@ -75,7 +75,7 @@ Conversation fixtures end with `turn_complete` or they render frozen mid-turn.
 Switches: `?seed=none&scenario=site` (empty chat — site scenario only), `?title=`, `?model=`, `?platform=android`,
 `?signedIn=1` (fake friend for Connect Four), `?latency=` (0 for the live embed).
 **Guard:** `workbench-reply-script.test.ts` (`splitTurns`, `isControl`),
-`workbench-fixture-actions.test.ts`, `workbench-mock-contract.test.ts` (HAND_WRITTEN).
+`workbench-fixture-actions.test.ts`, `mock-shim-window.test.ts` (HAND_WRITTEN).
 
 ## Restart the workbench after editing a fixture or the mock shim
 **Invariant:** the filming workbench runs with `VITE_NO_WATCH=1` on port 5473
