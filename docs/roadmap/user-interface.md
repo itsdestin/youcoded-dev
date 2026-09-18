@@ -7,6 +7,24 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       fixes were made on 2026-09-16; each remaining group needs its own design call.
       `all` `confirmed` `checked 2026-09-16`
 
+- [ ] The Files and Games panels still pop open and shut. Destin, 2026-09-18: "add animations for
+      opening the files/games panels so they feel less poppy", then "i want the animation to
+      smoothly handle open/close and switching between differently sized game/file panels" — and
+      later the same day: "maybe we just drop the panel animations for now and put them as a
+      roadmap follow up". A full build is PARKED, not lost: youcoded branch
+      `followup/right-pane-motion` (3 commits, 271f0ab8 on top). It glides the panel's edge open,
+      shut and between the two widths, reverses on a second click, keeps the Files panel's
+      contents while it leaves (closing wipes them in the same action), covers terminal view, and
+      re-wraps the chat once per action rather than per frame; 27 tests, verify.sh green.
+      **Destin never reviewed it and nobody has seen it run** — it was dropped before its first
+      look. It avoids a transform slide on purpose (that is the Windows paint bug shipped twice in
+      this pane) and its riskiest spot is the frosted frame's cut-out staying in step. Its try-it
+      deck spec is in workspace history at 9b0f5f7c. Start from that branch, rebase it, and put it
+      in front of him in a dev window before anything else. The same follow-up owns the list he
+      was promised and never got: other places worth animating — menus, dropdowns and tooltips
+      animate IN and vanish instantly; dialogs and the Projects / Resume screens were not surveyed
+      `files-panel` `all` `parked` `checked 2026-09-18`
+
 - [ ] Some clickable spots still do nothing under the pointer after the 2026-09-18 hover/press sweep
       (branch session/premium-motion-hover). Left on purpose, each for a stated reason, NOT checked
       one by one: about twenty clickable non-buttons found by the sweep's inventory that also have
