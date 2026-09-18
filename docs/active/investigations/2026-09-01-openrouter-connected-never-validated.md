@@ -9,7 +9,7 @@ topic: Settings says OpenRouter is "Connected" without ever validating the key, 
 
 **Symptom.** Destin, 2026-08-31, live: every turn failed with a 401 from OpenRouter while Settings → Providers read "Connected" and the Test button came back green.
 
-**Design already approved and behaviour-complete:** `docs/active/specs/2026-08-31-openrouter-connection-trust-design.md`. Not yet planned or implemented — Destin's call to hold. Desktop only (`provider:*` already refuses honestly on Android, `SessionService.kt`).
+**Design:** `docs/active/specs/2026-08-31-openrouter-connection-trust-design.md` — re-based 2026-09-18 against `youcoded@e5f8b2d8` (its §9 lists what changed, including a withdrawn key-rotation change and a fifth defect: a made-up key completes first-run). Not yet implemented; the file:line references below are from 2026-09-01 and superseded by the spec's. Desktop only (`provider:*` already refuses honestly on Android, `SessionService.kt`).
 
 ## Mechanism (re-checked against master 2026-09-01)
 

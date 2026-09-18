@@ -58,8 +58,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] Settings says OpenRouter is "Connected" and its Test button comes back green, while every
       turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
-      dead 2026-08-31). Approved design exists; held by Destin, not yet built
-      `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
+      dead 2026-08-31). Also: a made-up OpenRouter key completes first-run setup, and "Log in
+      with OpenRouter" says "coming in a later update". Design re-checked against current code
+      2026-09-18 and ready for its UI review; not yet built
+      `settings` `desktop` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
 
 - [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual
       refresh — Destin upgraded his ChatGPT plan and the new models didn't show up until he
