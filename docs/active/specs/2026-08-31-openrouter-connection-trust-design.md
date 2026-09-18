@@ -775,6 +775,30 @@ item: the verdict refresh and Test re-read the key.
 
 ---
 
+## 8a. Build status (2026-09-18)
+
+**Part 1 — "say when the key doesn't work" — built on branch
+`session/openrouter-oauth-spec` (youcoded `38d48d8c`…`647d8754`).** UI approved by
+Destin on the review deck (`docs/active/design/2026-09-18-openrouter-trust/`,
+8/8 yes). `verify.sh --full` green; checked against live OpenRouter (real key →
+verified with its expiry; fake key → rejected; a fake-key chat turn → the typed
+"didn't accept your API key" error). Not yet run in a dev window.
+
+Built as designed, with three differences:
+- **The key is checked before it is saved.** The Connect dialog and first-run
+  call `testConnection(id, candidateKey)`; a refused key is never saved, so a
+  typo can't replace a working key. `setKey` then *adopts* that fresh check
+  (`OpenRouterHealth.adoptOrClear`, 60 s window) instead of only clearing, so the
+  card doesn't fall back to "Checking…" after a good save.
+- **Re-check cadence:** 5 s after launch, then every 5 minutes while OpenRouter
+  is on with a key (`ipc-handlers.ts`). The per-reply debounced refresh and the
+  status-bar payload are Part 2, where the balance needs them.
+- **`classifyProviderError`** lives in `providers/provider-error-code.ts` (not
+  harness-session.ts, which is at its line budget).
+
+Part 1 does not include: the gear's red dot, the balance (card and status bar),
+and sign-in (§3.5). Those are Part 2.
+
 ## 9. What changed from the 2026-08-31 draft
 
 - Every file:line re-pinned. The popup is now Cloud providers cards; D1's source is

@@ -60,7 +60,9 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       turn is being rejected with a 401 — Destin hit it live 2026-08-31 (key created 2026-07-15,
       dead 2026-08-31). Also: a made-up OpenRouter key completes first-run setup, and "Log in
       with OpenRouter" says "coming in a later update". Design re-checked against current code
-      2026-09-18 and ready for its UI review; not yet built
+      2026-09-18. Part 1 (honest "Connected", chat errors with a fix button, fake keys refused
+      at entry) is built and its screens approved, on branch session/openrouter-oauth-spec,
+      not merged; Part 2 (Sign in with OpenRouter + balance) not started
       `settings` `desktop` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-01-openrouter-connected-never-validated.md
 
 - [ ] The ChatGPT and OpenRouter provider cards in Model Providers settings have no manual
