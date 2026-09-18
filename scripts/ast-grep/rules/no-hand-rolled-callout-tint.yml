@@ -21,6 +21,11 @@ note: |
   components/development/*.tsx, components/ui/*.tsx — Callout.tsx itself is
   ignored (where the three tones are defined).
   EXEMPT (carried as `ignores:`, from the retired test's NOT_CALLOUTS table):
+  StatusStrip.tsx (K5's OWN opt-in tinted surface — the same standing as
+  Callout.tsx above: this is where the K5 tones are defined, not a block that
+  hand-rolls one. It borrows K4's ok/warn colours so the app keeps one colour
+  vocabulary, and the rule's own text says a tinted block carrying a button IS
+  a K5 status strip — which is this component by definition),
   Button.tsx (danger-outline's hover fill — a control's own state),
   ModelPickerPopup.tsx (Fast mode's warning box — a hand-rolled warning
   callout, follow-up filed separately), ThemeShareSheet.tsx (an <a> styled
@@ -92,6 +97,7 @@ ignores:
   - "**/components/tool-views/**"
   # exemption-table: NOT_CALLOUTS — counted in tests/callout-authority.test.tsx,
   # not here; check.sh fails if this block and that table differ. Keep it last.
+  - "**/StatusStrip.tsx"
   - "**/Button.tsx"
   - "**/ModelPickerPopup.tsx"
   - "**/ThemeShareSheet.tsx"
