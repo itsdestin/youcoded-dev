@@ -1,0 +1,33 @@
+{
+ "deck": "openrouter-signin-review-2",
+ "started": "2026-09-18T10:11:04.726Z",
+ "submitted": "2026-09-18T10:11:46Z",
+ "cur": 3,
+ "answers": {
+  "R2-1": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-2": {
+   "v": "yes",
+   "note": "that warning seems like it could fit on a single line, its wrapping very early.",
+   "seconds": 20,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R2-4": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
