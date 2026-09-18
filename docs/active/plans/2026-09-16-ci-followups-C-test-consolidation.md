@@ -176,6 +176,11 @@ Each moved describe keeps its body byte-for-byte; the new file wraps them in one
 - Modify (workspace): `docs/MAP.md` row for the session drawer; any rule naming one of the eight
 
 **Interfaces:**
+- **Done 2026-09-18 (branch `session/plan-c-session-drawer`): eight files → TWO, 31 → 31.** Three lessons every later cluster applies:
+  1. **A file-wide `vi.mock` splits the target.** Files that mock a module and files that use the real one cannot share a file — `SessionDrawer.test.tsx` (real ArtifactContext) + `SessionDrawer-scripted-state.test.tsx` (mocked). Several different fakes of the SAME module may merge into one fake only if it is a superset of each; re-prove any guard whose fake changed by inverting it.
+  2. **Module-level state no longer resets between old files.** Each old file got a fresh module graph; in one file, caches and singletons carry across sections. Reset them in a shared `afterEach` (here `__resetMissingArtifactsCache`). Colliding top-level names (`SESSION`, `ROOT`, `baseState`) move inside their describe, or the section is wrapped in one.
+  3. **`tsconfig.tests.json` excludes some old files from type-checking.** A merged file is checked whole, so an excluded source file's type errors surface; fix them (behaviour-neutral: e.g. `cwd=""` where the component only tests truthiness) and delete its exclude line — never add the merged file to the exclude list, which would un-check its other sections.
+  **Search for old names with `rg --hidden --no-ignore`** — plain `rg` skips `.claude/` (hidden) and `youcoded/` (gitignored in the workspace), and missed seven references here that the anchor audit then caught. Also compare leaf titles, not only the count: `--reporter=json` before and after, `diff` of sorted `status title` lines.
 - Produces: the procedure every later cluster repeats. The target file is named for **what the tests render or call** — read each file's `render(<X` or the function it invokes; the inventory's module column lists the contexts a test wraps itself in first, and a context is not the subject.
 
 - [ ] **Step 1: Read the eight, decide the subject of each**
