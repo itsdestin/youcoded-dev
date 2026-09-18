@@ -32,7 +32,7 @@ finding and every earlier Android bug: `docs/active/investigations/2026-09-10-an
 - Unknown bridge channels refuse as `unsupported` (the shim rejects and shows a plain notice
   worded "on the phone"); `transcript:page` and `syncspaces:status` are refused quietly.
 - The restore-from-backup backend is deleted. Guards: `desktop/tests/android-honest-build.test.ts`,
-  `desktop/tests/remote-shim-phone-refusals.test.ts`.
+  `desktop/tests/remote-shim-refusals.test.ts`.
 
 ## Next: step 4 — run the desktop's harness as a Node child on the phone
 

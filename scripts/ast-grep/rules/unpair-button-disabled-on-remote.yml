@@ -8,7 +8,7 @@ message: >-
   The host refuses Unpair from a phone; a live button there only offers a
   press whose one outcome is an error.
 note: |
-  Invariant source: tests/remote-host-admin-desktop-only.test.ts (Plan B,
+  Invariant source: tests/remote-shim.test.ts (Plan B,
   2026-09-16) — the SettingsPanel half of "a phone cannot unpair a device".
   The server half is remote-admin-case-refuses.
   The retired checks were two regexes over the RAW file text:
