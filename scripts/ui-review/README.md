@@ -54,7 +54,7 @@ rows each, and counts the elements each one builds. Any surface over its `NODE_B
 raw log in `dom-size.log`) and makes `run-review.sh` exit 1 **after** the gallery and
 coverage are written. A red row means a list is drawing every item instead of the ones near
 the screen. Fix that list; do not raise the budget. Before the render-cost fixes
-(2026-09-18) Conversations was 17,516, Marketplace 58,706 and model search 24,679; after
+(2026-09-18) Conversations was 17,546, Marketplace 58,706 and model search 24,679; after
 them every surface is under 3,300. It needs a serving workbench, so it is not in
 `scripts/verify.sh` (no browser there). Run it alone against any workbench with
 `node scripts/ui-review/dom-size-sweep.mjs --port <vite port> [--only conv,market]`.
