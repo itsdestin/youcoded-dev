@@ -29,6 +29,7 @@ status: active
 - **`EXPECTED_VIOLATIONS` is never a literal.** Read the current value in `scripts/ast-grep/check.sh` (Plan B moves it far past the 14 on master today) and add exactly the number of new fixture matches.
 - **Tree-wide guard tests are the intended exception to "one file per module".** They test the whole tree, not a module: `guard-scope-reader`, `visible-intervals`, `infinite-animation-allowlist`, `line-budgets`, `harness-eval-not-shipped`, `hook-scripts-android-parity`, `ipc-channels`, plus any Plan B keeper whose row says `keep`. Leave them in place; in Task 5 list them as accepted, not as an unfinished merge.
 - **Ordering against the simplification phases** (`docs/active/plans/2026-09-16-simplification-phases.md`, phases 1a/1b/T shipped; 2–5 pending): the `remote-` cluster (Task 4) lands BEFORE simplification phase 4, which rewrites `remote-server.ts` and its tests; Task 2 (the native-session-host test split) lands BEFORE simplification phase 5, which splits the source along the same seams; simplification phase 2 (timers: sync, engine, transcript, subagent, chatsearch, social, remote polls) runs between Task 1's merge and the `sync-`/`engine-` clusters, or after them. Rule: no simplification phase runs concurrently with a Plan C cluster that shares its prefix; whoever starts second checks the other's open PR first.
+- **`feat/specialists-plans-ui` is unmerged and overlaps (added 2026-09-18, Destin: "account for the specialist branch work … i want this and the other branch to combine into master well").** Measured at its tip `4fba3584`: it adds ~50 ticket-shaped titles Task 1's guard rejects, +1,061 lines to `native-session-host.test.ts` (Task 2), edits `specialist-*`, `harness-*`, `remote-shim-plans`, `ipc-channels`, `native-home`, and adds a new `plan-`/`plan-card-` cluster of ~27 files (several task-named: `-review-r7`, `-r9`, `-5b`). That branch belongs to another session — never commit to it. Rules: (1) Task 1's renames change only the title text on its line, so its three overlapping files merge line-by-line. (2) Clusters the branch does not touch go first. (3) For each overlapping target, re-check whether the branch has merged: if yes, do it on master and fold the `plan-` cluster in; if not, build an **integration branch** `session/specialists-plans-ui-plan-c` off the branch tip that merges current master and resolves forward — renames its new titles, ports its test additions into the split/merged files byte-for-byte, consolidates its `plan-` cluster — with the count contract (branch tip's passed count = integration count). Push it and hand its owner one step: merge it into `feat/specialists-plans-ui`. Refresh it whenever either side moves.
 - **The committed inventory predates 2026-09-16's merges** (four overlay buddy tests deleted, five guards and `SessionDrawer`-unrelated files added, Plan B's conversions): the regenerate-first constraint above is load-bearing, not optional.
 
 ---
@@ -41,9 +42,10 @@ status: active
 - Modify (app): every test whose `it(`/`describe(`/`test(` title matches the rule (213 titles as of 2026-09-16 — 170 in .ts files, 43 in .tsx — measured with these exact rules; the checker prints the list)
 
 **Interfaces:**
+- **Done 2026-09-18 (branch `session/ci-followups-c`).** 213 titles in 77 files renamed as measured. The regex was then widened — `[Ff]inding [0-9]`, `\bTask [0-9]+[a-z]?\b` (bare `Task 3:`), `review fix`, `fix pass [0-9]`, `\bplan 1[a-z]\b` — which caught 37 more real ticket titles on master (9 more files); all renamed. Every change is the title text on its own line. Full suite green; inverted with `(T99)` (.ts) and a date (.tsx), both fired.
 - Produces: two ast-grep rules that fire on a test title containing a date (`2026-09-10`), a section sign (`§`), a task or review reference (`(T18)`, `R3-5`, `review round 8`, `re-review`, `finding 4`). Task 3 onward relies on the checker being green, so every rename is done here.
 
-- [ ] **Step 1: Write the rules and fixtures**
+- [x] **Step 1: Write the rules and fixtures**
 
 `scripts/ast-grep/rules/test-name-describes-behaviour.yml`:
 ```yaml
@@ -84,11 +86,11 @@ it('the poll starts after the callback (2026-09-05 review round 3)', () => {});
 ```
 `fixtures/test-names.tsx`: the same three lines (a `.tsx` file may contain no JSX).
 
-- [ ] **Step 2: Bump the count, run the checker, read the offender list**
+- [x] **Step 2: Bump the count, run the checker, read the offender list**
 
 In `check.sh`: `# <today's date>: +2 for test-name-describes-behaviour (+ its tsx twin), Plan C.` and `EXPECTED_VIOLATIONS` += 2. Run `bash scripts/ast-grep/check.sh <worktree>/youcoded/desktop/src`. Expected: fixtures `OK — N/N`, real source `FAIL — <about 247> invariant violation(s)` followed by the list. Save it: `npx --yes --package @ast-grep/cli ast-grep scan -c scripts/ast-grep/sgconfig.yml --json youcoded/desktop/tests | jq -r '.[] | "\(.file):\(.range.start.line)  \(.text)"' > /tmp/test-names-todo.txt`.
 
-- [ ] **Step 3: Rename every offender**
+- [x] **Step 3: Rename every offender**
 
 For each line in `/tmp/test-names-todo.txt`: open the file at that line and rewrite the title so it says what the test proves, in the present tense, no dates or references. The reference moves into a `// WHY` comment on the line above ONLY if the incident is not already told by the test body. Examples of the transformation:
 
@@ -101,7 +103,7 @@ For each line in `/tmp/test-names-todo.txt`: open the file at that line and rewr
 
 Work file by file; after each file run `npx vitest run tests/<file>` (a title is also a `-t` filter some scripts use — `rg -n "\-t '" scripts docs .claude` in the workspace must be checked for the old title and updated). Commit every ten files: `test: behaviour-stated titles in <n> files (Plan C task 1)`.
 
-- [ ] **Step 4: Prove the guard, write the rule**
+- [x] **Step 4: Prove the guard, write the rule**
 
 Run the checker: expected `OK` under both headings. Invert: put `(T99)` into one real title, run, see it fire, restore. Then in `.claude/rules/test-suite-hygiene.md` add a section (trim elsewhere to keep the body ≤ 600 words — `node scripts/audit-anchors.mjs --no-diff` reports the count; overflow moves to `docs/testing-under-load.md`):
 

@@ -29,6 +29,7 @@ verify:
     contains: "TMP_REAL"
   - path: scripts/ast-grep/rules/test-file-url-to-path.yml
   - path: scripts/ast-grep/rules/iframe-sandbox-no-allow-same-origin.yml
+  - path: scripts/ast-grep/rules/test-name-describes-behaviour.yml
 
 ---
 
@@ -36,7 +37,7 @@ verify:
 
 **A test that fails only sometimes is worse than one that fails always** — it teaches
 sessions to disbelieve the suite. Depth: `docs/testing-under-load.md`. **CI runs this suite on
-Windows and macOS too**: 16 tests were red on Windows for a week (2026-09-10 to 09-16).
+Windows and macOS too.**
 
 ## Windows runs this suite too
 **Invariant:** a file path from `import.meta.url` is `fileURLToPath(new URL(…))`, never
@@ -44,13 +45,11 @@ Windows and macOS too**: 16 tests were red on Windows for a week (2026-09-10 to 
 literal `/a`. `mode & 0o077` is asserted only off `win32`. A file name with `"` or `\r\n` is
 created only on POSIX. Text reads strip `\r` before `split('\n')` (`.gitattributes` checks out
 LF too).
-**Why:** each shape failed a week of Windows runs. `vitest.config.ts` exports the realpath
-spelling of the temp dir (`TMP_REAL`), so `RUNNER~1` short names never reach a comparison.
+**Why:** each shape failed a week of Windows runs.
 **Guard:** `scripts/ast-grep/rules/test-file-url-to-path.yml`; the rest — candidate.
 
 ## Never assert on wall-clock time
-**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock
-(a 1,000ms budget read 1,339ms under load). **Guard:** none — candidate.
+**Invariant:** budget assertions measure CPU time (`process.cpuUsage()`), never wall clock. **Guard:** none — candidate.
 
 ## Unmount what you render
 **Invariant:** never leave a React tree mounted when a test ends (`tests/setup-dom.ts`
@@ -62,14 +61,14 @@ does it for jsdom files), and clear any timer that outlives it.
 **Invariant:** wait on the thing itself — an event, or `vi.waitFor` on real state — never
 `setTimeout(…, 20)` hoping the work started, and never a REAL `setInterval` (fake it:
 `vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })` + `advanceTimersByTimeAsync`).
-A client response you never `resume()` never closes. Wait for the positive signal, then settle
+Wait for the positive signal, then settle
 for the negative. **Why:** under load the work hasn't started; ~100 remain.
 **Guard:** none — candidate.
 
 ## Budgets are measured, not guessed
 **Invariant:** suite-wide is 30s; **`vi.waitFor` is a SEPARATE 15s budget** (`tests/setup-waitfor.ts`).
 More needs a named constant with its measurement; a budget raised twice is a treadmill — wait
-on a signal. **Why:** a timeout looks like a logic bug; it cost three sessions.
+on a signal. **Why:** a timeout looks like a logic bug.
 **Guard:** none — candidate.
 
 ## Real output goes to a temp dir, and its teardown retries
@@ -89,9 +88,15 @@ Run only the test you are proving (`-t "<name>"`); confirm the break landed at t
 test; use the real regression, not a lookalike. **Why:** three green guards proved nothing
 (2026-09-04). **Guard:** `tests/helpers/guard-scope.ts` (`readStripped()`, `assertPatternMatches()`);
 `scripts/ast-grep/check.sh` fails a rule firing on no fixture. **A new source-text guard needs a
-reason a rule cannot express** (parity across languages, CSS↔TSX coupling). The 2026-09 sweep
-converted or deleted the rest of its 114; kept and unswept files are
+reason a rule cannot express** (parity across languages, CSS↔TSX coupling); keepers are
 `test-inventory.mjs` section 3.
+
+## A test lives with its feature and is named for its behaviour
+**Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), the file
+named for what it renders or calls — never a new file per task. Titles state behaviour: no
+dates, `§`, task ids or review rounds. Shared setup
+lives in `tests/helpers/`. **Why:** 826 files, 62% in name clusters (2026-09-16).
+**Guard:** `scripts/ast-grep/rules/test-name-describes-behaviour.yml`.
 
 ## Before calling a failure "flake"
 Run it alone (passes → load-sensitive) **and** in a pristine `origin/master` worktree (still
