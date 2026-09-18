@@ -8,7 +8,7 @@ message: >-
   `if (slowStart) await new Promise(…)` wait. A refusal looks exactly like the
   feature being broken, and the person who hits it is usually the owner.
 note: |
-  Invariant source: tests/remote-rate-limit.test.ts (Plan B, 2026-09-16) — "a
+  Invariant source: tests/remote-server-connections.test.ts (Plan B, 2026-09-16) — "a
   burst slows new connections instead of refusing them". The absence half of
   the same file is no-ip-keyed-failure-bucket.
   The retired checks read the RAW file text:

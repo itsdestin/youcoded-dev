@@ -12,7 +12,7 @@ message: >-
   phone change the host password; a performed Unpair left the device with full
   access while its row vanished.
 note: |
-  Invariant source: tests/remote-host-admin-desktop-only.test.ts (Plan B,
+  Invariant source: tests/remote-shim.test.ts (Plan B,
   2026-09-16) — "refuses the administration channels, and not by comparing an
   address", the server half of "a phone cannot unpair a device", and the
   source half of "reading the configuration is still allowed". The file's

@@ -8,7 +8,7 @@ message: >-
   the one caller that needs chunking without a trailing \r asks for it with
   the 'input-chunked' message instead.
 note: |
-  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16;
+  Invariant source: tests/session-manager.test.ts, shell sessions section (Plan B, 2026-09-16;
   "...and ordinary typing and paste keep their single unchunked write" —
   behaviour pinned in tests/pty-worker-writes.test.ts). The retired test
   sliced the file from the FIRST `if (!endsCR) {` to the first `return;`

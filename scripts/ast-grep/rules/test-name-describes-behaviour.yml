@@ -1,0 +1,26 @@
+id: test-name-describes-behaviour
+language: typescript
+severity: error
+message: >-
+  A test title states the behaviour it pins, in words a reader of the failure can
+  act on — never a date, a section sign, a task id, a plan phase or a review round/fix. Those live
+  in git history and the roadmap; in a title they tell the next session nothing.
+note: |
+  Invariant source: the 2026-09-16 CI/test health review (213 titles
+  carried dates, §, (T<n>) or R<n>-<n>). Guard: this rule + fixtures/test-names.ts.
+  The tsx twin covers .tsx files (tree-sitter needs the tsx grammar there).
+files:
+  - "**/tests/**/*.ts"
+  - "**/fixtures/test-names.ts"
+rule:
+  any:
+    - pattern: it($NAME, $$$)
+    - pattern: test($NAME, $$$)
+    - pattern: describe($NAME, $$$)
+    - pattern: it.skipIf($$$C)($NAME, $$$)
+    - pattern: describe.skipIf($$$C)($NAME, $$$)
+    - pattern: it.each($$$E)($NAME, $$$)
+    - pattern: describe.each($$$E)($NAME, $$$)
+constraints:
+  NAME:
+    regex: "20[0-9]{2}-[0-9]{2}-[0-9]{2}|§|\\(T[0-9]+\\)|\\bR[0-9]+-[0-9]+\\b|review round|re-review|[Ff]inding [0-9]|\\bTask [0-9]+[a-z]?\\b|review fix|fix pass [0-9]|\\bplan 1[a-z]\\b"

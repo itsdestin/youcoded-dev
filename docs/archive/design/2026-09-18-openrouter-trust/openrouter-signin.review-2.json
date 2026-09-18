@@ -1,0 +1,81 @@
+{
+ "title": "Sign in with OpenRouter — round 2",
+ "key": "openrouter-signin-review-2",
+ "out": "openrouter-signin.review-2.html",
+ "images": "images/openrouter-signin.review-2",
+ "stage": "review",
+ "runs": {
+  "before": "runs/si-round1",
+  "after": "runs/si-round2"
+ },
+ "labels": {
+  "before": "Round 1",
+  "after": "Round 2"
+ },
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "nc": [
+   "openrouter-signin",
+   "si-not-connected",
+   "640x112+480+525"
+  ],
+  "broken": [
+   "openrouter-signin",
+   "si-broken",
+   "640x125+480+525"
+  ],
+  "conn": [
+   "openrouter-signin",
+   "si-connected",
+   "640x112+480+525"
+  ],
+  "apikey": [
+   "openrouter-signin",
+   "si-apikey",
+   "520x330+460+300"
+  ]
+ },
+ "steps": [
+  {
+   "id": "R2-1",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "nc",
+   "headline": "API Key now sits directly left of Sign in with OpenRouter; nothing is left in the bottom-left.",
+   "changed": "Round 1 had Use an API key instead as a separate button under the card. It's now a button labelled API Key, beside Sign in, as you asked.",
+   "notice": "Both ways in are side by side in one row, and the card is one line shorter."
+  },
+  {
+   "id": "R2-2",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "broken",
+   "headline": "A refused key now shows the same two buttons as not connected, and no My Account.",
+   "changed": "Round 1 showed My Account, Sign in again, Test and Use a different key. Now it's API Key and Sign in with OpenRouter, and the red line says: Sign in again, or paste a new API key.",
+   "notice": "One question, two answers, the same two buttons wherever you need to connect. My Account only appears when the key works.",
+   "risk": "On a phone, the card keeps Replace key."
+  },
+  {
+   "id": "R2-3",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "conn",
+   "headline": "A working key's card drops the Test button; opening the page checks the key instead.",
+   "changed": "Test sat in the bottom-left. It's gone. Instead, every time you open this page the app asks OpenRouter about the key and shows the answer.",
+   "notice": "The card is always current when you look at it, with nothing to press. My Account and Replace key stay.",
+   "risk": "Opening the page sends OpenRouter one small request. It costs no credit."
+  },
+  {
+   "id": "R2-4",
+   "surface": "Settings",
+   "path": "Settings → Assistant settings → Cloud providers → OpenRouter card",
+   "crop": "apikey",
+   "headline": "API Key opens a window that only asks for a key; signing in is only the card's own button.",
+   "changed": "Round 1 put a Sign in button inside the paste window. The two are now separate flows: Sign in goes straight to your browser, API Key opens this window.",
+   "notice": "Each button does one thing, and the paste window is back to exactly how it looked before this work."
+  }
+ ]
+}

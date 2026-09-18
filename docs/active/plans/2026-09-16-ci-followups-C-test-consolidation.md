@@ -29,7 +29,22 @@ status: active
 - **`EXPECTED_VIOLATIONS` is never a literal.** Read the current value in `scripts/ast-grep/check.sh` (Plan B moves it far past the 14 on master today) and add exactly the number of new fixture matches.
 - **Tree-wide guard tests are the intended exception to "one file per module".** They test the whole tree, not a module: `guard-scope-reader`, `visible-intervals`, `infinite-animation-allowlist`, `line-budgets`, `harness-eval-not-shipped`, `hook-scripts-android-parity`, `ipc-channels`, plus any Plan B keeper whose row says `keep`. Leave them in place; in Task 5 list them as accepted, not as an unfinished merge.
 - **Ordering against the simplification phases** (`docs/active/plans/2026-09-16-simplification-phases.md`, phases 1a/1b/T shipped; 2–5 pending): the `remote-` cluster (Task 4) lands BEFORE simplification phase 4, which rewrites `remote-server.ts` and its tests; Task 2 (the native-session-host test split) lands BEFORE simplification phase 5, which splits the source along the same seams; simplification phase 2 (timers: sync, engine, transcript, subagent, chatsearch, social, remote polls) runs between Task 1's merge and the `sync-`/`engine-` clusters, or after them. Rule: no simplification phase runs concurrently with a Plan C cluster that shares its prefix; whoever starts second checks the other's open PR first.
+- **`feat/specialists-plans-ui` is unmerged and overlaps (added 2026-09-18, Destin: "account for the specialist branch work … i want this and the other branch to combine into master well").** Measured at its tip `4fba3584`: it adds ~50 ticket-shaped titles Task 1's guard rejects, +1,061 lines to `native-session-host.test.ts` (Task 2), edits `specialist-*`, `harness-*`, `remote-shim-plans`, `ipc-channels`, `native-home`, and adds a new `plan-`/`plan-card-` cluster of ~27 files (several task-named: `-review-r7`, `-r9`, `-5b`). That branch belongs to another session — never commit to it. Rules: (1) Task 1's renames change only the title text on its line, so its three overlapping files merge line-by-line. (2) Clusters the branch does not touch go first. (3) For each overlapping target, re-check whether the branch has merged: if yes, do it on master and fold the `plan-` cluster in; if not, build an **integration branch** `session/specialists-plans-ui-plan-c` off the branch tip that merges current master and resolves forward — renames its new titles, ports its test additions into the split/merged files byte-for-byte, consolidates its `plan-` cluster — with the count contract (branch tip's passed count = integration count). Push it and hand its owner one step: merge it into `feat/specialists-plans-ui`. Refresh it whenever either side moves.
 - **The committed inventory predates 2026-09-16's merges** (four overlay buddy tests deleted, five guards and `SessionDrawer`-unrelated files added, Plan B's conversions): the regenerate-first constraint above is load-bearing, not optional.
+
+## Progress and what waits on what (2026-09-18)
+
+**Merged 2026-09-18** (merge commits; app #509–#529, #531, #532; workspace #134–#148). #530 was closed unmerged: #518 moved its test into `engine-manager-router.test.ts` and carries the identical clock fix. Flakes fixed on the way: `chatgpt-request-diagnostics` (injected budget), `claude-settings` (#529, test waited on a real 3s lock clock), `model-manager` (#531, 8 GB sparse file slow on Windows), `project-watcher` (#532, macOS FSEvents start-up gap), `engine-model-settings` stopAll (#530 → in #518).
+Combined master verified: `verify.sh --full` OK; **test files 892 → 783; cases 11,533 → 11,533** (11,490 passed, 43 skipped); `tsconfig.tests.json` excludes 57 → 47; anchors 467/467.
+Lesson for the remaining merges: `tsconfig.tests.json` conflicts are deletions on both sides — keep an entry only if BOTH sides kept it, comparing without the trailing comma (the last list entry has none, and a naive line compare dropped a still-excluded file once).
+
+**Still to do (each on a fresh branch off master):**
+- After `feat/specialists-plans-ui` merges: Task 2 (split `native-session-host.test.ts`, now with its +1,061 lines), the `harness-`, `native-`, `specialist-` clusters, its new `plan-`/`plan-card-` cluster, and the files it touches in otherwise-done clusters (`status-strip-authority`, `first-page-live-replay`, `chatgpt-auth`, `workbench-fixture-actions`, `tool-effects`, `remote-shim-plans` → `remote-shim*.test.ts`, `native-home`, `known-models`). Its ~50 ticket-shaped titles now fail the naming guard the first time it merges master — its owner renames them then (the checker prints the list).
+- Now (`ToolCard.test.tsx` is on master): `tool-body-shell`, `tool-card-answered-elsewhere`, `-external-ask`, `-full-auto-stop`, `-grant-width`, `-preparing`, `-budget-gate`, `tool-body-malformed-input` join it.
+- Now: `chat-reducer-shell`, `chat-reducer-specialists`, `chat-order-sender-matches-receiver`, `attention-reducer`, `transcript-reducer`, `permission-expired-wording`, `permission-resolved-elsewhere` → `chat-reducer.test.ts` (check each for file-wide mocks); `mcp-startup-wiring`, `transcript-page-locator` → `ipc-handlers*.test.ts`.
+- Now: `chatview-empty-response-gate`, `chatview-history-sentinel`, `chatview-prepend-scroll-anchor` → `ChatView-<facet>.test.tsx` (each has a conflicting file-wide mock, so renames, not merges).
+- Now: the EngineCard remnant left in `local-engine-fields-rendered.test.tsx` (16 cases) → `EngineCard.test.tsx`.
+- Small: `tests/ipc-channels.test.ts` keeps one comment naming the retired `remote-shim-voice-gate.test.ts`; `theme-marketplace-provider.test.ts` tests a copy of the provider's logic pasted into the test, not the provider (rewrite against the real module — a behaviour change, own commit).
 
 ---
 
@@ -41,9 +56,10 @@ status: active
 - Modify (app): every test whose `it(`/`describe(`/`test(` title matches the rule (213 titles as of 2026-09-16 — 170 in .ts files, 43 in .tsx — measured with these exact rules; the checker prints the list)
 
 **Interfaces:**
+- **Done and merged 2026-09-18 (youcoded#509, youcoded-dev#134).** 213 titles in 77 files renamed as measured. The regex was then widened — `[Ff]inding [0-9]`, `\bTask [0-9]+[a-z]?\b` (bare `Task 3:`), `review fix`, `fix pass [0-9]`, `\bplan 1[a-z]\b` — which caught 37 more real ticket titles on master (9 more files); all renamed. Every change is the title text on its own line. Full suite green; inverted with `(T99)` (.ts) and a date (.tsx), both fired.
 - Produces: two ast-grep rules that fire on a test title containing a date (`2026-09-10`), a section sign (`§`), a task or review reference (`(T18)`, `R3-5`, `review round 8`, `re-review`, `finding 4`). Task 3 onward relies on the checker being green, so every rename is done here.
 
-- [ ] **Step 1: Write the rules and fixtures**
+- [x] **Step 1: Write the rules and fixtures**
 
 `scripts/ast-grep/rules/test-name-describes-behaviour.yml`:
 ```yaml
@@ -84,11 +100,11 @@ it('the poll starts after the callback (2026-09-05 review round 3)', () => {});
 ```
 `fixtures/test-names.tsx`: the same three lines (a `.tsx` file may contain no JSX).
 
-- [ ] **Step 2: Bump the count, run the checker, read the offender list**
+- [x] **Step 2: Bump the count, run the checker, read the offender list**
 
 In `check.sh`: `# <today's date>: +2 for test-name-describes-behaviour (+ its tsx twin), Plan C.` and `EXPECTED_VIOLATIONS` += 2. Run `bash scripts/ast-grep/check.sh <worktree>/youcoded/desktop/src`. Expected: fixtures `OK — N/N`, real source `FAIL — <about 247> invariant violation(s)` followed by the list. Save it: `npx --yes --package @ast-grep/cli ast-grep scan -c scripts/ast-grep/sgconfig.yml --json youcoded/desktop/tests | jq -r '.[] | "\(.file):\(.range.start.line)  \(.text)"' > /tmp/test-names-todo.txt`.
 
-- [ ] **Step 3: Rename every offender**
+- [x] **Step 3: Rename every offender**
 
 For each line in `/tmp/test-names-todo.txt`: open the file at that line and rewrite the title so it says what the test proves, in the present tense, no dates or references. The reference moves into a `// WHY` comment on the line above ONLY if the incident is not already told by the test body. Examples of the transformation:
 
@@ -101,7 +117,7 @@ For each line in `/tmp/test-names-todo.txt`: open the file at that line and rewr
 
 Work file by file; after each file run `npx vitest run tests/<file>` (a title is also a `-t` filter some scripts use — `rg -n "\-t '" scripts docs .claude` in the workspace must be checked for the old title and updated). Commit every ten files: `test: behaviour-stated titles in <n> files (Plan C task 1)`.
 
-- [ ] **Step 4: Prove the guard, write the rule**
+- [x] **Step 4: Prove the guard, write the rule**
 
 Run the checker: expected `OK` under both headings. Invert: put `(T99)` into one real title, run, see it fire, restore. Then in `.claude/rules/test-suite-hygiene.md` add a section (trim elsewhere to keep the body ≤ 600 words — `node scripts/audit-anchors.mjs --no-diff` reports the count; overflow moves to `docs/testing-under-load.md`):
 
@@ -115,7 +131,7 @@ one 36-line module (2026-09-16). **Guard:** `scripts/ast-grep/rules/test-name-de
 ```
 Add `- path: scripts/ast-grep/rules/test-name-describes-behaviour.yml` to the rule's `verify:` list.
 
-- [ ] **Step 5: Verify, commit, push, PR**
+- [x] **Step 5: Verify, commit, push, PR**
 
 `bash scripts/verify.sh <worktree>/youcoded --full` → `OK`. Commit the workspace changes (`ci: test titles state behaviour — ast-grep guard + hygiene rule`) and push both repos; dispatch Desktop CI on the app branch; open the two PRs (title: `test: every title states its behaviour; guard against dates and ticket ids in titles`). Report and ask **ready to merge?**. Continue with Task 2 on a fresh branch.
 
@@ -160,25 +176,30 @@ Each moved describe keeps its body byte-for-byte; the new file wraps them in one
 - Modify (workspace): `docs/MAP.md` row for the session drawer; any rule naming one of the eight
 
 **Interfaces:**
+- **Done and merged 2026-09-18 (youcoded#510, youcoded-dev#135): eight files → TWO, 31 → 31.** Three lessons every later cluster applies:
+  1. **A file-wide `vi.mock` splits the target.** Files that mock a module and files that use the real one cannot share a file — `SessionDrawer.test.tsx` (real ArtifactContext) + `SessionDrawer-scripted-state.test.tsx` (mocked). Several different fakes of the SAME module may merge into one fake only if it is a superset of each; re-prove any guard whose fake changed by inverting it.
+  2. **Module-level state no longer resets between old files.** Each old file got a fresh module graph; in one file, caches and singletons carry across sections. Reset them in a shared `afterEach` (here `__resetMissingArtifactsCache`). Colliding top-level names (`SESSION`, `ROOT`, `baseState`) move inside their describe, or the section is wrapped in one.
+  3. **`tsconfig.tests.json` excludes some old files from type-checking.** A merged file is checked whole, so an excluded source file's type errors surface; fix them (behaviour-neutral: e.g. `cwd=""` where the component only tests truthiness) and delete its exclude line — never add the merged file to the exclude list, which would un-check its other sections.
+  **Search for old names with `rg --hidden --no-ignore`** — plain `rg` skips `.claude/` (hidden) and `youcoded/` (gitignored in the workspace), and missed seven references here that the anchor audit then caught. Also compare leaf titles, not only the count: `--reporter=json` before and after, `diff` of sorted `status title` lines.
 - Produces: the procedure every later cluster repeats. The target file is named for **what the tests render or call** — read each file's `render(<X` or the function it invokes; the inventory's module column lists the contexts a test wraps itself in first, and a context is not the subject.
 
-- [ ] **Step 1: Read the eight, decide the subject of each**
+- [x] **Step 1: Read the eight, decide the subject of each**
 
 `rg -n "render\(<|renderHook\(" tests/session-drawer-*.test.tsx`. Expected on 2026-09-16: seven render `<SessionDrawer …>` (subject: SessionDrawer); `session-drawer-preview-header` renders the drawer's preview header (subject: SessionDrawer too — it is a region of the same component); `session-drawer-deleted-toggle` has no src import at all — open it: if it tests a pure function copied into the test, delete it and name it in the commit; if it renders something, it has a subject.
 
-- [ ] **Step 2: Count before**
+- [x] **Step 2: Count before**
 
 `npx vitest run tests/session-drawer-*.test.tsx 2>&1 | grep 'Tests  '` → note the number (33 on 2026-09-16).
 
-- [ ] **Step 3: Create the target with the merged setup**
+- [x] **Step 3: Create the target with the merged setup**
 
 `tests/SessionDrawer.test.tsx` starts with `// @vitest-environment jsdom`, the UNION of the eight files' imports (deduplicated), and ONE `beforeEach`/`afterEach` if theirs are identical — if they differ, keep each describe's own setup inside that describe. Then, for each source file in inventory order, append its top-level `describe(` blocks unchanged (a file with bare `it(` at top level gets a `describe('<old file name without prefix, as words>', …)` wrapper). Comment lines that narrate an incident or restate the test title are deleted while pasting; a `// WHY` that explains a non-obvious assertion stays.
 
-- [ ] **Step 4: Delete the eight, count after, fix names**
+- [x] **Step 4: Delete the eight, count after, fix names**
 
 `git rm -q tests/session-drawer-*.test.tsx`; `npx vitest run tests/SessionDrawer.test.tsx 2>&1 | grep 'Tests  '` — the same number as Step 2 (minus any deletion named in Step 1). `rg -n 'session-drawer-(deleted-toggle|delivered-label|lists-on-open|pill-pending|preview-header|session-scoped-labels|settle-hold|skips-parent-rerenders)' <worktree> --glob '!docs/archive/**' --glob '!docs/roadmap/**' --glob '!docs/wrap-ups.md'` — update every hit (MAP guard lists, rule `verify:` blocks, docs). `node scripts/audit-anchors.mjs --no-diff` → no `missing:` for those names.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 `bash scripts/verify.sh <worktree>/youcoded` → `OK`. Commit (app): `test: SessionDrawer — eight task files become one (33 → 33 cases)`; commit (workspace): the MAP/rule updates. Push both.
 

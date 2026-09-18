@@ -7,7 +7,7 @@ message: >-
   classifier reports "thinking" on static text.
 note: |
   Invariant source: .claude/rules/chat-reducer.md → "Spinner classifier".
-  Guard: youcoded/desktop/tests/attention-classifier-parity.test.ts
+  Guard: youcoded/desktop/tests/attention-classifier.test.ts (parity-fixtures section)
          + youcoded/shared-fixtures/attention-classifier/
 files:
   - "**/renderer/state/attention-classifier.ts"
