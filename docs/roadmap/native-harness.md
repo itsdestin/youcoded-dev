@@ -170,6 +170,15 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       budget want to be two separate axes
       `desktop` `parked` `checked 2026-09-01`
 
+- [ ] **v1.3.1 release blocker.** The one object that runs a native conversation is 4,756 lines
+      because it also orchestrates the helper agents (specialists), which already have their own
+      home, and hosts the shell sessions. Wanted: the specialist block and the shells moved out
+      along the seam the audit names, with the registry, lifecycle and reserve/bind/release kept
+      on one object — simplification phase 5, D4. Nothing changes on screen. On hold since
+      2026-09-18 (Destin): resumes after the native-session-host test split has merged and
+      phase 4 is done, since phase 4 moves the runtime this touches
+      `desktop` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+
 ## tools
 - [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where
       are the model settings" it guesses. Wanted (Destin, 2026-09-10 guide deck): a line in the
