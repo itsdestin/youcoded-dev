@@ -78,7 +78,7 @@ edit/save path, so a column cap cannot lose data. G-23…G-28 exist; G-29/G-30 a
 | Very wide CSV | Every column | Capped at 100 columns like Excel files, with the existing "showing N" note |
 | Game chat | Grows forever | Last 200 messages |
 
-Side effects that are expected and must be named in the review deck: the scrollbar on a long
+Side effects that are expected and must be named in the closing chat message to Destin (D3 — there is no deck): the scrollbar on a long
 list is sized to what has been drawn so far (the Resume browser already does this); Ctrl+F
 cannot find a card not yet drawn (no surface touched here has an in-page find); on a phone
 (below 640px) the next 50 Conversations cards arrive when the end of the list is reached,
@@ -95,16 +95,20 @@ not 400px early, so the end of the list can be seen for a moment (Task 4 says wh
 - **D2 — technical (Claude):** chunked reveal, not virtualization (rejected 2026-07-31:
   variable-height rows). Entry folding for timelines. No new `content-visibility: auto` on
   anything that can carry a theme glow (retired 2026-04-10).
-- **D3 — route.** This is mostly invisible performance work, so the feature-flow questions deck,
-  UX tester and contract are proposed to be SKIPPED; the Before/After review deck (Task 15) is
-  the first thing Destin sees. **Ask Destin to confirm the skip before Task 1** (CLAUDE.md →
-  "Small changes … Ask him before skipping").
+- **D3 — route. DECIDED (Destin, 2026-09-18): "we can skip all of the decks and process … just want a
+  final code review. dont even need a before/after deck really if the changes aren't visible."**
+  So: no questions deck, no UX tester, no contract, no grader, NO Before/After review deck and no
+  screenshots for one. What stays: the tests, `verify.sh`, the perf-lab numbers, the DOM-size sweep,
+  and ONE fresh code reviewer over the full diff at the end (Task 15). The few changes he CAN see
+  (scrollbar sized to what is drawn; CSV capped at 100 columns; game chat keeps the last 200;
+  collapsed boxes per D1) are told to him in plain words in the closing chat message, each with
+  where to look — never silently shipped.
 - **D4 — measure per stage (review, 2026-09-18).** The investigation names four stacked
   causes and measured none. Re-run the Task 0 perf-lab command after **Task 3**, **Task 4**
   and **Task 5** (labels `render-cost-t3`, `-t4`, `-t5`) and add each row to the
-  investigation's §1 table. The deck shows what each fix bought. Tasks 8 and 9 stay in
+  investigation's §1 table. The closing message reports what each fix bought. Tasks 8 and 9 stay in
   (Destin asked for every list to be handled the same way) but their DOM-node before/after
-  from Task 13's sweep goes in the deck beside the scrollbar side effect, so the trade is
+  from Task 13's sweep is reported in the closing message beside the scrollbar side effect, so the trade is
   visible. A stage that makes a judged metric WORSE stops the track until explained.
 
 ## Global constraints
@@ -149,18 +153,17 @@ not 400px early, so the end of the list can be seen for a moment (Task 4 says wh
 | `SessionDrawer.tsx` | Memo rows via ref handlers | 12 |
 | `scripts/ui-review/dom-size-sweep.mjs` (new) + the per-surface stress pins | The guard: behaviour, not source text | 13 |
 | `.claude/rules/react-renderer.md`, `youcoded/docs/renderer-chrome.md`, design guide, `code-reviewer.md`, `ux-tester.md`, `scripts/perf-lab/compare.mjs` budget | Guidance + enforcement | 14 |
-| `docs/active/design/2026-09-18-render-cost/` (new) | Before/After review deck | 15 |
 
 ---
 
 ### Task 0: Baseline numbers (no code)
 
-- [ ] **Step 1:** Confirm D3 with Destin (skip questions deck/UX tester/contract).
+- [ ] **Step 1:** D3 is decided (no decks, no process beyond a final code review) — nothing to confirm. D1 is still owed; it blocks only Task 11.
 - [ ] **Step 2:** `bash scripts/perf-lab/bg-run.sh --only projects --label render-cost-before --dry-run`, then without `--dry-run`. Record `conversations.ms`, `thrash.toConversations.medianMs/maxMs` from the `perf-reports/*.md` it prints.
   The fixture already seeds a 700-conversation project (`scenario-projects.mjs:192`), so these numbers move with Tasks 3–5; per D4 the same command is re-run after each of them.
 - [ ] **Step 2b: make the workbench's big sample reach these screens.** Today the `stress` scenario only enlarges the Resume list and permissions (`dev/workbench/scenarios.ts:261` → `past`, `permissions`); `?stressRows=` does nothing for Project View, Marketplace or the model list. Read `conversationsIn()` (`dev/workbench/mock-shim.ts:~1909`), `fixtures/marketplace/catalog.ts` and the `catalog` store field, and in the `stress` scenario make each honour `stressRowCount()` (conversations for the first project, marketplace entries, catalog models) — generated rows, same shape as the existing fixtures, WHY comment naming this plan. Then `node scripts/workbench-boot-check.mjs` against a serving workbench (required after any mock-shim change). Commit `test(workbench): stress scenario fills Project View, Marketplace and the model list`, push. Without this, Step 3's "before" shots and Task 13's sweep show small lists and prove nothing.
 - [ ] **Step 2c: write the DOM-size sweep and record "before".** Create `scripts/ui-review/dom-size-sweep.mjs`. Read `scripts/ui-review/README.md` and one file under `scripts/ui-review/scenes/` first and REUSE how the review sweep opens a surface (`cdp-helpers.mjs`, the scene definitions) — do not hand-roll click paths. For each of: Resume browser, Projects → Conversations, Projects → Files with a one-letter search, Marketplace, model picker with "a" typed, a conversation preview, the side drawer — open it in `?mode=workbench&scenario=stress&stressRows=2000` and read the node count INSIDE the app frame: `document.querySelector('iframe').contentDocument.querySelectorAll('*').length` (the workbench frames the app — `scripts/ui-probe.mjs` header, 2026-09-10 trap). Print a table `surface · nodes · budget · PASS/FAIL`; exit 1 on any FAIL; a surface that could not be PROVEN open is FAIL, never skipped (same stance as `coverage.md`). `const NODE_BUDGET = 8000; // WHY: the Resume browser at 1,642 rows is 1,585 nodes bounded and 37,920 unbounded (f8ca631b) — 8,000 sits far above any bounded screen plus app chrome and far below any unbounded one`. Run it now: it MUST fail on Conversations, Marketplace and model search — that red run is what proves the guard works. Save the table into the investigation doc beside the Step 2 numbers. If a known-unbounded surface PASSES, Step 2b did not reach it — fix the sample, not the budget.
-- [ ] **Step 3:** Workbench before-shots for the deck: `bash scripts/run-workbench.sh /home/destin/youcoded-dev/worktrees/sessions/convo-tab-lag/youcoded`, open `?mode=workbench&scenario=stress&stressRows=1000`, capture Project View → Conversations, a collapsed long diff, Marketplace, per `scripts/ui-review/README.md`. Save under `docs/active/design/2026-09-18-render-cost/images/`.
+- [ ] **Step 3:** ~~Workbench before-shots~~ — dropped with the deck (D3). The Step 2 timings and Step 2c node counts ARE the "before".
 - [ ] **Step 4:** Paste the numbers into the investigation doc §1 (replacing "nothing measured yet"), commit the doc + images, push.
 
 ---
@@ -985,14 +988,13 @@ Why not the `bounded-lists.test.ts` text scanner this task used to be (review fi
 - [ ] Fix the stale claims the sweep found: `docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md` (ChatView "no paging" — add a dated status line pointing at cycles 2/3); stale `globals.css:801-806` citations in `docs/active/investigations/2026-08-27-perf-defect-classes.md:178` → `:897-905`.
 - [ ] `node scripts/audit-anchors.mjs` → clean. Commit workspace docs and app docs separately (app docs → youcoded repo), push both.
 
-### Task 15: Verify, measure, review deck
+### Task 15: Verify, measure, final code review
 
 - [ ] `bash scripts/verify.sh --full /home/destin/youcoded-dev/worktrees/sessions/convo-tab-lag/youcoded` → green (paste the summary into the plan's closing notes).
 - [ ] perf-lab after-run with the Task 0 command and `--label render-cost-after`; `node scripts/perf-lab/compare.mjs <before> <after>` → KEEP. Record numbers in the investigation doc, completing the D4 table (before · t3 · t4 · t5 · after) — the deck's timing slide is that table in plain words.
-- [ ] `node scripts/ui-review/dom-size-sweep.mjs` against the serving workbench → every surface under budget; paste its table into the closing notes and use its before/after node counts on the Marketplace and model-search deck slides.
-- [ ] Workbench after-shots, same surfaces/themes as Task 0 (midnight, light, halftone-dimension, meadow-mist × desktop and 390px).
+- [ ] `node scripts/ui-review/dom-size-sweep.mjs` against the serving workbench → every surface under budget; paste its table into the closing notes and quote its before/after node counts for Marketplace and model search in the closing message.
 - [ ] Fresh code reviewer (`scripts/ui-review/code-reviewer.md`) over the full diff; address findings in scope.
-- [ ] Review deck in `docs/active/design/2026-09-18-render-cost/` from `scripts/ui-review/templates/` per `.claude/rules/review-deck.md`: Before/After for Conversations tab (with timing), tags no longer popping in, collapsed diff (D1), Marketplace scroll, and a "things you might notice" slide (scrollbar sized to what is drawn). `preview`, read the contact sheet, then `serve` in the background; the printed link is the last line of that turn.
+- [ ] **Closing chat message to Destin, in place of a deck (D3)** — plain words, no jargon, shortest form that carries it: the D4 timing table as "before → after" per fix; then "things you might notice", each with where to look: the scrollbar on a long list grows as you scroll; a CSV wider than 100 columns shows the first 100 with the existing note; game chat keeps the last 200 messages; collapsed file boxes per D1; on a phone, the next Conversations cards arrive at the end of the list. Anything a test or the sweep could not prove goes in the same message as unverified.
 - [ ] Update `docs/roadmap/user-interface.md:109` with a dated line naming what shipped from this plan (do not close it — Destin closes it after real use). Ask "ready to merge?".
 
 ## Deliberately out of scope
