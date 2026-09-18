@@ -398,7 +398,11 @@ describe('compare.mjs PRIMARY contract', () => {
     // 33 -> 32 the same day: nativeStream.median.hidden.taskMs left PRIMARY after two
     // false REJECTs (+29 % on Batch A, +43 % on Batch C, which never touches the
     // renderer) — a ~1 s number that moves ±0.5 s with background load. Reported by eye.
-    assert.equal(PRIMARY.length, 32, 'PRIMARY changed size — re-check that run.mjs still produces every path');
+    // 32 -> 34 on 2026-09-18 (render-cost plan, Task 14): projects.median.conversations.ms
+    // and projects.median.thrash.toConversations.medianMs. The Conversations tab drew every
+    // card of a big project on each click (174.8 / 181.6 ms median before, 58.6 / 65.2 after
+    // it drew 50 at a time); neither the thrash stall nor the cold open measured it.
+    assert.equal(PRIMARY.length, 34, 'PRIMARY changed size — re-check that run.mjs still produces every path');
     assert.ok(!PRIMARY.includes('nativeStream.median.hidden.taskMs'), 'the hidden-stream busy time is too noisy to gate; it stays in the report');
     assert.ok(!PRIMARY.includes('terminal.median.ipc.totalStallMs'), 'a metric whose baseline is 0 ms can only produce false REJECTs under ZERO_BASELINE_FLOOR');
     assert.ok(PRIMARY.includes('terminal.median.switchPaintedMedianMs'), 'the terminal switch clock is the atlas-heal A/B target and must be judged');

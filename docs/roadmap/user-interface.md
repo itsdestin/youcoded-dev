@@ -212,7 +212,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
 
 - [ ] Two places still open a section with a bare "›" beside a word — the Backup & Sync log
       ("Sync Log") and the system marker in chat. Destin (2026-09-05 review deck): "I HATE the
-      bare dropdowns with a chevron." The rule is now design-guide G-22; the Local Models engine
+      bare dropdowns with a chevron." The rule is now design-guide G-29 (numbered G-22 until 2026-09-18); the Local Models engine
       card, its model rows and its recommended-model card all switched to it on
       `feat/local-engine-upgrades`, these two have not.
       `all` `confirmed` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.review.answers.json

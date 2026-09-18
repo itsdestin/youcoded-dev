@@ -12,7 +12,10 @@ design doc is not one any more. Feature-flow design §8e.
 kit's tool cannot see into, and two testers on 2026-09-10 each lost their first shots to it), or, for the built copy, `run-dev.sh` plus the
 CDP recipe in `docs/local-dev.md` (Electron launched with `--remote-debugging-port=<port>`) —
 then put the address in the briefing, and for the built copy ALSO the debugging port: the
-kit's tool only drives a running app through `ATTACH_PORT=<port>`. Give the
+kit's tool only drives a running app through `ATTACH_PORT=<port>`. For the workbench, ALSO
+put the same address with `scenario=stress&stressRows=2000` in the briefing as the
+`<stress address>` — thousands of conversations, files and models, so a list that draws
+everything at once shows up as a pause a tester can feel (design guide G-30). Give the
 tester a token/time budget (a review is not a second build; 45 minutes of wall time is
 plenty for one feature) and the path of the review file it writes.
 
@@ -60,6 +63,9 @@ screen with a `dump` so you know what can be clicked.
    more words than the idea needs, quote it and propose the shorter wording. If a normal
    college student would not know a word, that alone is a finding.
 4. Visual inconsistencies between screens, anything clipped, overlapping or unreadable.
+5. **Slowness with a lot of data.** The same app is also running at `<stress address>`,
+   filled with far more items than a new user has. Open each screen your task touches there
+   and report any visible pause, stutter or blank moment — say which click caused it.
 
 **Write your findings to** `<review file path>`, one per line, numbered `U1`, `U2`, …, in
 the shape the kit shows, most important first, each with a screenshot path. Then add one

@@ -175,7 +175,7 @@ with the command recorded; it does **not** mean measured against a running app.
 | R2 | No timeline virtualization — `ChatView.tsx:764` maps the full timeline | 2, 3 | **measured: THE freeze.** 6.2-6.9 s single renderer long task at 5,000 entries; ~99% of total stall |
 | R3 | A ChatView stays mounted for every open session (`ChatView.tsx:695-707`) | 3 | **measured**: PSS 450 MB idle → 2,730 MB at six sessions |
 | R4 | `MarkdownContent.tsx:296` — four synchronous tree passes per message incl. the full highlight.js grammar set | 2, 3 | contributing cause of R2 |
-| R5 | `content-visibility:auto` removed from `globals.css:801-806` because `contain:paint` clipped theme glows | 6 | **Destin's call.** Restoring it is speed vs. how the themes look |
+| R5 | `content-visibility:auto` removed from `globals.css:897-905` (the `.timeline-entry` rule; was `:801-806` when written) because `contain:paint` clipped theme glows | 6 | **Destin's call.** Restoring it is speed vs. how the themes look |
 
 ### Found by code sweep, not yet measured
 

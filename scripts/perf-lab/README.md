@@ -390,17 +390,21 @@ probes over every step.
 
 **Look first at `open.openMs` versus `open.countsMs`** ("when do I see cards" versus
 "when do the numbers land"), then `filter.codeMs` beside `filter.fileCards` (the cost of
-mounting every matching file as a card — there is no virtualization), then
+mounting the matching files as cards — since 2026-09-18 the flat grid draws 50 at a time as
+you scroll, so `fileCards` reads 50, not every match), then
 `scrollFlat.longtaskTotalMs` (the per-card preview fetch + render as cards scroll in),
 then `search.keystroke.p95Ms` (the per-keystroke re-filter/re-sort). A step whose
-`stall.verdict` is `main` is the backend fan-out, not the renderer.
+`stall.verdict` is `main` is the backend fan-out, not the renderer. Judged in `PRIMARY`:
+`thrash.ipcStallMs`, `open.openMs`, and since 2026-09-18 `conversations.ms` and
+`thrash.toConversations.medianMs` — the Conversations tab drew all 700 seeded cards per
+click (174.8 / 181.6 ms median) until it drew 50 at a time (58.6 / 65.2 ms).
 
 **Blind to, by construction:** the per-card `backdrop-filter` blur that wallpaper themes
 put on every `.layer-surface` card — the fixture boots the stock theme (no wallpaper), and
 under llvmpipe a blur is software-rasterised anyway. That cost is real on Destin's
 display and this scenario says nothing about it. Also blind to a project over the
-2,000-file discovery cap and to a conversation-heavy project (the transcript project has
-three).
+2,000-file discovery cap. (The big project carries 700 one-turn conversations, so the
+Conversations tab IS measured at Destin's scale; the transcript project has three.)
 
 ### `scenario-terminal.mjs` — switching sessions in terminal view *(one boot per repeat; added 2026-09-10)*
 Opens the workload's same six sessions, puts the four Claude Code sessions into

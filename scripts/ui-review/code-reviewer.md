@@ -25,6 +25,11 @@ was meant to do. Feature-flow design §8e.
 4. **"Weird."** Something that works but should have been done differently: a hand-rolled
    version of an existing primitive, an invariant the rules state that the branch sidesteps,
    a name that lies, a WHY comment that does not match the code under it.
+5. **Render cost.** A list/grid/timeline of user data drawn whole, a hidden-but-mounted
+   component that is not memoised, or a fetch-on-mount inside a list (see
+   `.claude/rules/renderer-lists.md`). Also: a memoised row handed a fresh object or closure
+   every render, and a new list of the user's own things with no stress pin (1,000+ items in,
+   at most one chunk drawn).
 
 Not your job: taste, formatting, anything a linter already enforces, or re-designing the
 feature. If you disagree with the approved design, say so in one line at the end and move on.

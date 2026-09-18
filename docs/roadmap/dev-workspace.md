@@ -531,7 +531,10 @@ seen-on is always n/a here.
       ambiguous, and a review deck or roadmap item naming it can point a reader at the wrong rule.
       Do not renumber a guide Destin has signed off; the fix is his call (rename one, or add a
       suffix). Found 2026-09-06 while shrinking the expandable-rows item.
-      `n/a` `confirmed` `checked 2026-09-06`
+      2026-09-18: renumbered on `session/convo-tab-lag` (render-cost plan Task 14, which Destin's
+      plan approval covered): Expandable rows is now G-29, the find bar keeps G-22, the index and
+      the one code citation (`RuntimeBinding.tsx`) follow. Close this when that branch merges.
+      `n/a` `confirmed` `checked 2026-09-18`
 
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
       then recommend deleting its worktree; it should notice unfinished edits before declaring success

@@ -310,7 +310,8 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   P-9 2026-08-27; the 12 px drawer pills were rejected as the smallest text in the app). *Action chip* = `md` radius `secondary sm` (quick
   chips). *Tag/badge* = `sm` radius, dot + neutral text (session tags, counts). Tabs are
   never chips — they are `SegmentedTabs`.
-- **G-22 Expandable rows** (2026-09-05): a section that opens below its row is a `SettingRow`
+- **G-29 Expandable rows** (2026-09-05; numbered G-22 until 2026-09-18, which the find bar
+  already used): a section that opens below its row is a `SettingRow`
   with `onClick` + `expanded` — the same right-hand chevron every navigating row has, turned to
   point down while open. Never a leading “›” glyph beside a word, never a bare text toggle.
   Filed in `docs/roadmap/user-interface.md` for the two places that still do it (Sync log,
@@ -328,6 +329,12 @@ then a card grid; empty → `EmptyState` centred in the sheet.
   `edge` border, rows of icon · label · right-aligned shortcut, `text-xs`, 28px rows,
   destructive items last and in `destructive-fg`. The context-menu host already does
   this; every new popover copies it rather than inventing a list.
+- **G-30 Fast at any size** (2026-09-18): a list, grid or timeline of the user's own things
+  draws only what can be seen: cards 50 at a time as you scroll, a conversation folds what is
+  far off screen, a collapsed box draws only the lines it shows. The scrollbar tracks what is
+  drawn, so on a long list it grows as you scroll. Guard: each surface's stress test, and the
+  DOM-size sweep of the `stress` scenario (`scripts/ui-review/dom-size-sweep.mjs`). How it is
+  built: `.claude/rules/renderer-lists.md`.
 
 ### 4.7 States
 
@@ -401,7 +408,7 @@ the validator (`theme-validator.ts` + vendored `contrast-rules.js`) enforces:
 6. Counts per G-19, chips per G-14, empty/loading/error per §4.7.
 7. Screenshot sheet: `default`, `empty`, `stress` scenarios × **midnight, light,
    halftone-dimension, meadow-mist** × desktop and 390px. If it survives Halftone and
-   Meadow it survives.
+   Meadow it survives. The `stress` scenario opens without a visible pause (G-30).
 8. Run `bash scripts/verify.sh`; then hand the sheet to Destin with numbered changes.
 
 ---
@@ -414,4 +421,5 @@ G-9 button vocabulary (§3) · G-10 dialog header · G-11 dialog body/scroll · 
 field · G-13 welcome screen · G-14 chips · G-15 status bar · G-16 full-screen header ·
 G-17 list rows · G-18 empty states · G-19 counts · G-20 tool-card header · G-21 menus · G-22 find-bar
 lane · G-23 attachment card · G-24 terminal backing floor · G-25 session row · G-26 session
-status pill · G-27 tags in a list row · G-28 button placement (full width or right).
+status pill · G-27 tags in a list row · G-28 button placement (full width or right) ·
+G-29 expandable rows · G-30 fast at any size.
