@@ -1,0 +1,40 @@
+{
+  "title": "Switching tabs — do messages still pop in?",
+  "key": "premium-motion-popin-tryit",
+  "out": "popin.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "T-1",
+      "surface": "Chat, switching tabs",
+      "path": "Open three or four conversations in the dev window, then click between their tabs in the header",
+      "headline": "Click between tabs, fast and slow. Do the messages rise in WITH the animation, not after it?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch"
+      },
+      "changed": "A separate test copy of the app running this branch. When you leave a tab, its last few screens of messages now stay built for five minutes instead of being blanked after 0.8 seconds, and when you come back the scroll, the messages and the frosted glass are all in place before the first frame shows. The rise-and-settle animation also plays to its end now; it used to be cut off two thirds of the way through.",
+      "notice": "The conversation fades and lifts in as ONE piece with its messages already there, and settles softly at the end. No blank column first, no messages appearing a beat later, no small jump at the end of the lift. Try it right after leaving a tab, and again after waiting ten seconds or more, which is when it used to be worst.",
+      "risk": "On a very long conversation the click may respond a beat later than before, because messages are now built before the switch shows; note it if you feel it.",
+      "yes": "Yes, smooth",
+      "no": "No, still pops"
+    },
+    {
+      "words": true,
+      "id": "T-2",
+      "surface": "Chat, switching tabs",
+      "path": "In one conversation scroll a long way up, switch to another tab, then switch back",
+      "headline": "Scroll up in a chat, leave, come back. Does it land at the bottom cleanly, with no visible jump?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch"
+      },
+      "changed": "Coming back to a tab has always taken you to the newest message. Before, the chat appeared for one frame where you had left it and then jumped to the bottom. Now the move to the bottom happens before anything is shown.",
+      "notice": "You arrive at the newest message with the normal rise-in animation and never glimpse the old scroll position. Landing at the bottom itself is unchanged from today; if you would rather come back to where you were reading, say so in the note and I will bring it as its own question.",
+      "risk": "None beyond the second window.",
+      "yes": "Yes, clean",
+      "no": "No, it jumps"
+    }
+  ]
+}

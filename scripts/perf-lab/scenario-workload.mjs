@@ -274,6 +274,58 @@ export async function installPageHelpers(cdp) {
     const visiblePane = () => { const i = visiblePaneIdx(); return i < 0 ? null : panes()[i]; };
     const nextFrame2 = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
+    // ── Blank on arrival (2026-09-18) ──────────────────────────────────────
+    //
+    // WHY THIS EXISTS. The painted clock below counts .timeline-entry WRAPPERS,
+    // and a folded entry keeps its wrapper — so a pane that arrived as a column
+    // of blank spacers and filled in 150 ms later read as "painted" on its first
+    // frame. Destin saw it as "messages often appear to pop-in instead of
+    // animating in smoothly" (2026-09-18); this rig had been reporting switches
+    // as healthy the whole time. late-content.mjs has the same invariant for
+    // SCROLLING and deliberately never looks at a switch.
+    //
+    // THE INVARIANT is absolute, as it is there: from the first frame the new
+    // pane is visible, no entry inside its viewport may be a spacer. The passing
+    // value is zero frames.
+    //
+    // COST: walked from the END of the pane and abandoned at the first entry
+    // above the viewport, because a switch lands at the bottom. That is a
+    // screenful of rect reads per frame however long the conversation is — it
+    // has to be, because it rides along inside the switch clocks (see "A probe
+    // that reads layout charges the app for its own cost" in the README).
+    const isSpacer = (el) => el.childElementCount === 0 && !el.textContent.trim();
+    const blankInView = (pane) => {
+      const view = pane.getBoundingClientRect();
+      const entries = pane.querySelectorAll('.timeline-entry');
+      let blank = 0;
+      for (let i = entries.length - 1; i >= 0; i--) {
+        const r = entries[i].getBoundingClientRect();
+        if (r.top >= view.bottom) continue;
+        if (r.bottom <= view.top) break;
+        if (r.height > 0 && isSpacer(entries[i])) blank++;
+      }
+      return blank;
+    };
+    const BLANK_WATCH_FRAMES = 30;
+    /** Watches the visible pane for BLANK_WATCH_FRAMES frames. \`fromIdx\` is the
+     *  pane that was showing before the click: frames still showing it are the
+     *  old conversation, not a blank new one, and are not counted either way. */
+    const watchBlankOnArrival = (fromIdx) => new Promise((resolve) => {
+      const t0 = performance.now();
+      let frames = 0, arrivedFrames = 0, blankFrames = 0, maxBlank = 0, blankUntilMs = null;
+      const tick = () => {
+        const idx = visiblePaneIdx();
+        if (idx >= 0 && idx !== fromIdx) {
+          arrivedFrames++;
+          const n = blankInView(panes()[idx]);
+          if (n > 0) { blankFrames++; maxBlank = Math.max(maxBlank, n); blankUntilMs = Math.round(performance.now() - t0); }
+        }
+        if (++frames >= BLANK_WATCH_FRAMES) resolve({ arrivedFrames, blankFrames, maxBlank, blankUntilMs });
+        else requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+
     window.__perfLab = {
       strip, pills, panes, visiblePane, visiblePaneIdx, nextFrame2,
       paneCount: () => panes().length,
@@ -321,6 +373,9 @@ export async function installPageHelpers(cdp) {
           }
         }
         el.click();
+        // Runs ALONGSIDE the two clocks below, not after them: the blank frames
+        // are the first ones, and both clocks have moved on by then.
+        const blankWatch = watchBlankOnArrival(paneBefore);
         await nextFrame2();
         const paneAfter = visiblePaneIdx();
         const paneMs = Math.round((performance.now() - t0) * 10) / 10;
@@ -388,8 +443,13 @@ export async function installPageHelpers(cdp) {
         // A switch we chose not to measure reports null, never 0: a zero here
         // would be averaged in as an instantaneous switch.
         const painted = measurePainted;
+        const blank = await blankWatch;
         return {
           ms: paneMs,
+          // Blank on arrival — see watchBlankOnArrival. Every switch reports it,
+          // measured-painted or not: it costs a fixed half second at most.
+          blankFrames: blank.blankFrames, blankMaxEntries: blank.maxBlank,
+          blankUntilMs: blank.blankUntilMs, arrivedFrames: blank.arrivedFrames,
           measuredPainted: !!painted,
           // Click through to the messages actually being on screen. This is the
           // number a user would recognise as "how long the switch took".
@@ -996,6 +1056,7 @@ export async function runWorkloadScenario(app, fixture, {
         i, idx, name: names[idx], size, streaming, mode: r.mode, ok: r.ok, ms: r.ms,
         paintedMs: r.paintedMs, entries: r.entries, expected: r.expectedEntries,
         settled: r.settled, short: r.short, over: r.over,
+        blankFrames: r.blankFrames, blankMaxEntries: r.blankMaxEntries, blankUntilMs: r.blankUntilMs,
       });
       // Painted timings are kept for EVERY real switch regardless of pill-vs-menu:
       // the menu path pays extra for opening a dropdown, but the content cost we
@@ -1114,6 +1175,25 @@ export async function runWorkloadScenario(app, fixture, {
       // so the report itself shows whether they agree — see switchTo's comment.
       switchPaintedMedianMs: median(paintedMs),
       switchPaintedP95Ms: p95(paintedMs),
+      // ── Blank on arrival (added 2026-09-18) ────────────────────────────────
+      // The painted clock counts entry WRAPPERS, which a folded entry keeps, so
+      // it cannot see a pane that arrives blank and fills in. These can. The
+      // passing value for all three is 0 / null — see watchBlankOnArrival.
+      switchBlank: (() => {
+        const real = switches.filter((s) => s.ok && typeof s.blankFrames === 'number');
+        const hit = real.filter((s) => s.blankFrames > 0);
+        return {
+          switches: real.length,
+          switchesWithBlank: hit.length,
+          blankFramesTotal: hit.reduce((n, s) => n + s.blankFrames, 0),
+          // How long after the click the LAST blank frame was seen, worst case.
+          blankUntilMaxMs: hit.length ? Math.max(...hit.map((s) => s.blankUntilMs ?? 0)) : null,
+          bySize: Object.fromEntries([...new Set(real.map((s) => s.size))].map((k) => [k, {
+            switches: real.filter((s) => s.size === k).length,
+            withBlank: hit.filter((s) => s.size === k).length,
+          }])),
+        };
+      })(),
       // Switch cost bucketed by the size of the conversation switched INTO.
       // `empty` is the control. If empty and huge cost the same, conversation
       // size is not the driver and the hypothesis is wrong.
