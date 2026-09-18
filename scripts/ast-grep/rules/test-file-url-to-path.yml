@@ -14,7 +14,7 @@ note: |
 
   SCOPING: the test tree, where `new URL(rel, import.meta.url)` is the idiom for
   reading a source file as text. Only a URL built FROM import.meta.url is a file
-  path — `new URL(requestUrl).pathname` (engine-manager-slot-count.test.ts) is a
+  path — `new URL(requestUrl).pathname` (engine-manager-router.test.ts) is a
   route match and stays allowed. `fileURLToPath` on the same expression is the fix.
 files:
   - "**/tests/**/*.ts"
