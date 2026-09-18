@@ -47,6 +47,7 @@ conversations, stock theme, Xvfb/llvmpipe (no GPU). Median of 3 passes; the thra
 | before | youcoded `950a52c3` | 174.8 ms (passes 191.1 / 174.8 / 163.4) | 181.6 / 198.4 ms | 13,267 (739 rows) | `perf-reports/2026-09-18-0948-950a52c-render-cost-before.md` |
 | t3 — transcript-meta cache | youcoded `b502a0f7` | 174.8 ms | 165.9 / 186.2 ms | not re-read | `perf-reports/2026-09-18-1031-b502a0f-render-cost-t3.md` |
 | t4 — Conversations tab: 50 at a time, memo rows | youcoded `095de495` | **58.6 ms** | **65.1 / 66.2 ms** | not re-read | `perf-reports/2026-09-18-1044-095de49-render-cost-t4.md` |
+| t5 — hidden Files tab memoised, off ArtifactContext; flat results 50 at a time | youcoded `4b206809` | 58.6 ms | 65.2 / 66.7 ms | not re-read | `perf-reports/2026-09-18-1056-4b20680-render-cost-t5.md` |
 
 t3 note: as the plan expected, the tab switch did not move (the 16 ms on the thrash median is
 within this rig's pass-to-pass spread). Projects open also held at 161.6 ms median: the
@@ -59,6 +60,13 @@ t4 note: this is the stage that moved the tab. Opening Conversations went 174.8 
 (−66%), and the rapid Files ↔ Conversations thrash went 181.6 → 65.1 ms median, with thrash
 long tasks 959 → 0 ms and worst frame gap 160 → 0 ms. Projects long tasks in total went
 1,217 → 51 ms. Load 3.91.
+
+t5 note: the tab switch was already down to about one frame pair after t4, so the thrash did
+not move further (65.1 → 65.2 ms). What t5 moved is the Files side: the "Code & configs"
+filter 100.4 → 64.7 ms (831 cards / 4,301 nodes → 50 cards / 397 nodes drawn), the first
+search keystroke 212 → 86 ms, small → big project switch 300.3 → 164.5 ms, and Projects long
+tasks in total 51 → 0 ms. Judged metrics: open 161.6 → 161.1 ms, thrash IPC stall 0 → 0.
+Load 3.
 
 Same run, for context: to-Files median / max 65.3 / 85 ms; thrash long tasks 959 ms
 total, worst frame gap 160 ms, main process unresponsive 0 ms; Projects open 161.6 ms.
