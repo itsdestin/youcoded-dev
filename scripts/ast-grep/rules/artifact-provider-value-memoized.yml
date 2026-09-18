@@ -10,7 +10,7 @@ message: >-
   artifactState ships a FROZEN context (opening a file, closing the drawer
   and switching files would stop updating anywhere).
 note: |
-  Invariant source: tests/session-drawer-skips-parent-rerenders.test.tsx
+  Invariant source: tests/SessionDrawer-scripted-state.test.tsx ("the file pane and a streaming reply")
   (Plan B, 2026-09-16) — "App gives ArtifactContext a memoized value, not a
   fresh object per render". The file's render-count case stays. The retired
   case read App.tsx's raw text and asserted:
