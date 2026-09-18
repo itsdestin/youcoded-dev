@@ -29,7 +29,7 @@ verify:
   - test: youcoded/desktop/tests/conversation-reconciler.test.ts
   - test: youcoded/desktop/tests/slug-path-resolution.test.ts
   - test: youcoded/desktop/tests/holder-takeover.test.ts
-  - test: youcoded/desktop/tests/session-meta-parity.test.ts
+  - test: youcoded/desktop/tests/ipc-handlers.test.ts
   - test: youcoded/desktop/tests/takeover-dialog-copy.test.ts
 ---
 # Conversation store, leases & Resume Browser identity
