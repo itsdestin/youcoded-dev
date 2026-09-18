@@ -66,7 +66,7 @@ that bail past the grip, and never put the attribute on a pill.
 a vertical list drag could never land — the grip was inert from the day it was drawn until
 2026-09-07. Widening the bail would kill the menu's tear-off on Windows/macOS; the
 attribute in a pill would silently kill every pill drag.
-**Guard:** `session-menu-reorder.test.tsx` (12 tests, incl. "the pill bar carries no grip").
+**Guard:** `SessionStrip.test.tsx` → "All Sessions menu reordering" (12 tests, incl. "the pill bar carries no grip").
 
 ## Verify motion with the sweep, not one drag
 **Invariant:** before calling a release change done, run `scripts/ui-review/drag-fuzz.mjs`
