@@ -83,7 +83,7 @@ Session lifecycle: `native-runtime.md`. **Depth + why for every bullet: `youcode
 - **Search keys are `safeStorage`-encrypted; `search-providers.json` holds only `secretRef`s**; `search:*` has 5-surface parity; `search:test` never throws (guards: `search-key-store`/`ipc-channels`).
 - **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw bricks the session). **A human dismissal ENDS the turn** — guards: `native-permission-broker`/`ask-user-question-tool`.
 
-## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`project-instruction-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
+## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
 - **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a prompt change discards the KV cache prefix.
 - **Injected content is bounded by the profile; truncation announces itself** (budgets from the REAL window; unmeasured = small).
 - **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives; the notice states what happened; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
