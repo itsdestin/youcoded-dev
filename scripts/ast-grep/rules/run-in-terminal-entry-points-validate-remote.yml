@@ -7,7 +7,7 @@ message: >-
   a WebSocket frame a remote browser controls, and the validator is what
   refuses one carrying a carriage return.
 note: |
-  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; the
+  Invariant source: tests/session-manager.test.ts, shell sessions section (Plan B, 2026-09-16; the
   remote-server.ts half of "both entry points call it"). The retired test
   asserted remote-server.ts's text contains
   `prepareRunInTerminal(payload?.command ?? payload)`. Matched as a real call,

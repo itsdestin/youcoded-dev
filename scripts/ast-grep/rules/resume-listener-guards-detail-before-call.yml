@@ -23,7 +23,7 @@ note: |
   a live-mount test — it proves the listener is wired correctly, not that
   clicking Resume in a running app ends in a new tab. App.tsx cannot be mounted
   in a unit test (full renderer boot sequence); the CustomEvent's own payload is
-  proven separately by tests/session-drawer-preview-header.test.tsx.
+  proven separately by tests/SessionDrawer.test.tsx ("SessionDrawer previewing a past conversation").
   NOTE: the guard-clause-before-call branch's pattern also requires the
   leading `void` on the call (`void handleResumeSession(...)`), not just the
   argument list — a bare `handleResumeSession(...)` without `void` would not
