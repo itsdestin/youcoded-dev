@@ -17,7 +17,7 @@
 // Re-introducing the `on[A-Z]` registrar bug (a Promise where React expects an
 // effect cleanup) does NOT fail this script, because a Promise-as-cleanup only
 // throws when something UNMOUNTS and a static page load never does. That class
-// is covered by tests/workbench-shim-semantics.test.ts instead. Treat the two
+// is covered by tests/mock-shim.test.ts (proxy semantics) instead. Treat the two
 // as complementary: unit tests pin channel SHAPES, this pins that the real app
 // can mount against them at all.
 //

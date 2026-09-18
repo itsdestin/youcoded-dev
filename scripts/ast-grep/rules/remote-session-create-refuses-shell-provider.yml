@@ -6,7 +6,7 @@ message: >-
   in the session:create case — a remote client may not open a plain shell
   session directly; shells come only from the validated Run in terminal path.
 note: |
-  Invariant source: tests/shell-session.test.ts (Plan B, 2026-09-16; "the
+  Invariant source: tests/session-manager.test.ts, shell sessions section (Plan B, 2026-09-16; "the
   remote session:create case refuses a client-supplied shell provider" —
   behaviour pinned in tests/remote-server.test.ts). The retired test
   asserted the file's text contains `if (payload?.provider === 'shell')`;
