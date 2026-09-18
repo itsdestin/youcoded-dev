@@ -67,24 +67,40 @@ this branch (and does not exist in this worktree).
 
 **DOM-size sweep** — `node scripts/ui-review/dom-size-sweep.mjs --port <workbench port>`,
 workbench `scenario=stress&stressRows=2000`, budget 8,000 elements. Red is expected
-before the fixes; this run proves the guard sees all three known-unbounded lists.
+before the fixes; this run proves the guard sees all known-unbounded lists.
+
+Rerun 2026-09-18 (fix round 1, review findings on Task 0): the Files surface's `expect`
+used to only check the search box's *value*, not that results were on screen, and the
+stress scenario didn't scale a project's file count or the preview's timeline. Both are
+fixed (`mock-shim.ts` `stressFiles`/`filesIn`, and `TOTAL` in `chatsearch.read`) — see
+`youcoded/.superpowers/sdd/task-0-report.md` → "Fix round 1" for what changed and why.
 
 | surface | nodes | budget | result |
 |---|---:|---:|---|
 | Resume browser | 2,572 | 8,000 | PASS |
-| Projects → Conversations | 17,516 | 8,000 | **FAIL** |
-| Projects → Files, search "e" | 1,242 | 8,000 | PASS |
+| Projects → Conversations | 17,546 | 8,000 | **FAIL** |
+| Projects → Files, search "e" | 11,242 | 8,000 | **FAIL** |
 | Marketplace | 58,706 | 8,000 | **FAIL** |
 | Model picker, search "a" | 24,679 | 8,000 | **FAIL** |
-| Conversation preview (opened from Resume) | 2,804 | 8,000 | PASS |
+| Conversation preview (opened from Resume) | 2,812 | 8,000 | PASS |
 | Side drawer (Session Files) | 1,083 | 8,000 | PASS |
 
-Two PASSes prove less than they look. The stress scenario does not enlarge a project's
-files (the Files tab searches the ~12-file fixture), and the preview opens a short
-fixture conversation, so neither the Task 5 flat-results case nor the Task 6 long-preview
-case is exercised at scale yet. The preview is opened from Resume on purpose: opened from
-Projects → Conversations, the unbounded list behind it is counted too (17,740 on a trial
-run), which measures the list, not the preview.
+Files now reds too, proven the same way as every other surface: at least 20 rendered
+result cards matching the stress fixture's filenames were found on screen before the
+count was read (previously the check only proved the search box held "e", which a
+broken results list could still satisfy). With the project's file listing stress-scaled
+to `?stressRows=` rows, an unfiltered one-letter search draws all of them — FilesTab has
+no cap on the flat-results path (Task 5 fixes that).
+
+The preview stays PASS honestly, not by omission: `chatsearch:read`'s fake conversation
+is now `stressRows` turns long in `stress` (was a fixed 24), but `SessionPreviewPane.tsx`
+reads and mounts ONE PAGE (10 turns) per call and only requests another when the reader
+scrolls up past the sentinel — by design, never "load everything". The sweep opens the
+preview and reads the count without scrolling, so a longer backing conversation doesn't
+change what's on screen at open time; the node count barely moved (2,804 → 2,812, the
+turn text is unchanged). This surface is not what Task 6 (preview entry folding) fixes —
+that's about the render weight of what's already in one page, not how many pages exist —
+so it staying green here says nothing about whether Task 6 is needed.
 
 Adjacent, on Projects **open** (not tab switch): `project:list-conversations`
 (`main/project-conversations.ts:21`) and the hero counts

@@ -52,6 +52,14 @@ const vis = (e) => `(${e})&&(${e}).offsetParent!==null`;
 const btnText = (re) => `js:[...document.querySelectorAll('button')].find(b=>b.offsetParent!==null&&${re}.test(b.textContent))`;
 // Stress rows are named "session N" or "refactor the transcript watcher … (N)" (scenarios.ts stressPast).
 const STRESS_ROW = '/^\\s*(session \\d+|refactor the transcript watcher)/';
+// Stress files are named "stress-file-e-N.md" (mock-shim.ts stressFiles, fix round 1) —
+// review finding: the Files surface's old expect only checked the search box's VALUE,
+// which proves nothing about what's on screen. This proves flat-result cards/rows
+// actually rendered, the same way every other surface's expect proves its list is open.
+// Not anchored to the start: the card's ArtifactThumbnail (a "MD" placeholder badge)
+// renders BEFORE the filename in DOM order, so a card's own textContent is "MD" +
+// filename + folder, not the filename first (found via debug probe, fix round 1).
+const STRESS_FILE = '/stress-file-e-\\d+\\.md/';
 
 const openProjects = [{ click: '[title=Projects]', settle: 900 }];
 const openConversations = [...openProjects, { click: '[aria-label=Conversations]', settle: 600 }];
@@ -74,7 +82,10 @@ const SURFACES = [
   {
     name: 'Projects → Files, search "e"',
     actions: [...openProjects, { click: "input[placeholder^='Search files']", settle: 200 }, { type: 'e', settle: 800 }],
-    expect: `js:(document.querySelector("input[placeholder^='Search files']")||{}).value==='e'`,
+    // Proves the flat search RESULTS are on screen, not just that the box holds
+    // 'e' (review finding, fix round 1) — at least 20 rendered result cards/rows
+    // whose filename matches the stress fixture naming (mock-shim.ts stressFiles).
+    expect: `js:(document.querySelector("input[placeholder^='Search files']")||{}).value==='e' && [...document.querySelectorAll('button')].filter(b=>b.offsetParent!==null&&${STRESS_FILE}.test(b.textContent)).length >= 20`,
   },
   {
     name: 'Marketplace',
