@@ -125,6 +125,20 @@ node (an `fs.watch(…)` ahead of an `fs.readFileSync(…)`) silence the whole r
 its presence branches. Inside `has:`/`inside:`, match the shape directly
 (`has: { field: property, regex: … }`) instead (2026-09-17).
 
+Traps that made a rule quietly weaker than the test it replaced (Plan B, 2026-09-16/17 —
+each was found by a reviewer probing a scratch copy, not by the fixture pass):
+
+- `language: tsx` never scans `.ts` files; a `**/*.ts` glob in its `files:` matches nothing.
+  Cover `.ts` with a `language: typescript` twin (`<id>-ts`) and its own fixture.
+- `*` in `files:`/`ignores:` crosses `/`, so `components/*.tsx` reaches every subfolder.
+- A class string split by `${…}` is two `string_fragment`s; also match the `template_string`.
+- "Forbidden X inside Y" goes silent when Y is deleted or renamed. Add a whole-file
+  `kind: program` + `not: has:` presence branch.
+- `follows`/`precedes` compare siblings only; `nthChild` counts comments unless excluded.
+- A "find this text anywhere" rule sees only the node kinds it lists; probe identifiers,
+  property names, shorthand patterns, JSX text, regex bodies and named function expressions.
+- One fixture line per branch, or a broken branch hides behind a sibling that still fires.
+
 Besides the two directions above, `check.sh` runs three more passes before them:
 **generator drift** (each generated rule equals what its generator prints now), **rule
 paths** (every concrete `files:` path names a file that exists, so renaming a guarded
