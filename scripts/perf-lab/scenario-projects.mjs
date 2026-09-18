@@ -715,9 +715,22 @@ export async function runProjectsScenario(app, fixture, seeded, { typed = 'handl
     });
     // Leave the popover open for the clear below? No — it overlays the grid and
     // its own Esc handler pops it; press Escape so the scroll measures the grid.
-    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
-    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
-    await sleep(150);
+    // WHY the guards (2026-09-18, render-cost baseline): this step aborted the whole
+    // phase with "Escape closed the whole Project View" while the same clicks in the
+    // workbench leave the popover open until Escape pops it. An Escape sent when the
+    // popover is ALREADY gone is the Project View's own Escape, so it must not be
+    // sent then; and the abort message must say which of the two states it met, so
+    // the next failure is diagnosed from the log instead of re-run blind.
+    const pvBeforeEsc = await call(cdp, '!!h.pv()');
+    const popBeforeEsc = await call(cdp, 'h.popoverOpen()');
+    if (!pvBeforeEsc) throw new Error('projects: the Project View closed during the type-filter step, before any Escape was sent');
+    if (popBeforeEsc) {
+      await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
+      await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27, nativeVirtualKeyCode: 27 });
+      await sleep(150);
+    } else {
+      warnings.push('the File filters popover had already closed after the type filter, so no Escape was sent');
+    }
     if (await call(cdp, 'h.popoverOpen()')) warnings.push('the File filters popover stayed open after Escape — the scroll step measured with it overlaid');
     // `!!` — a DOM element cannot cross the protocol by value ("Object reference
     // chain is too long"); only the boolean can.
