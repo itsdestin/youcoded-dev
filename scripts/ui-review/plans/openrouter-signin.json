@@ -100,6 +100,48 @@
     }
    ],
    "expect": "[aria-label='OpenRouter API key']"
+  },
+  {
+   "name": "si-apikey",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=none",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>['API Key','Use an API key instead'].includes(b.textContent.trim()))",
+     "settle": 700
+    }
+   ],
+   "expect": "[aria-label='OpenRouter API key']"
+  },
+  {
+   "name": "si-connected",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1&openrouter=verified",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim().startsWith('Cloud providers'))",
+     "settle": 1000
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] p')].some(p=>p.textContent.trim().startsWith('OpenRouter'))"
   }
  ]
 }
