@@ -281,7 +281,11 @@ PENDING=""
 git -C "$WORKSPACE" fetch origin --quiet 2>/dev/null || true
 WS_BASE=$(git -C "$WORKSPACE" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/master)
 if [[ "$MERGED" == yes ]]; then
-  LOCAL=$(rg -l --glob '!docs/archive/**' -F "$BRANCH" "$WORKSPACE/docs/active" "$WORKSPACE/docs/roadmap" 2>/dev/null | sort || true)
+  # git grep, not rg: the CI runner has no ripgrep, and an empty LOCAL there made
+  # every doc read as "fixed in this checkout" (caught by this file's own guard,
+  # 2026-09-18). --untracked so a doc written but not yet committed still counts.
+  LOCAL=$(git -C "$WORKSPACE" grep -l --untracked -F "$BRANCH" -- docs/active docs/roadmap 2>/dev/null \
+    | sed "s|^|$WORKSPACE/|" | sort || true)
   if git -C "$WORKSPACE" rev-parse --verify -q "$WS_BASE" >/dev/null 2>&1; then
     REMOTE=$(git -C "$WORKSPACE" grep -l -F "$BRANCH" "$WS_BASE" -- docs/active docs/roadmap 2>/dev/null \
       | sed "s|^$WS_BASE:|$WORKSPACE/|" | sort || true)

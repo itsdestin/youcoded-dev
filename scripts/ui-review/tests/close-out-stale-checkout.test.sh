@@ -38,7 +38,13 @@ mkdir -p "$TMP/ws/docs/active/plans" "$TMP/ws/docs/roadmap"
 printf -- '---\nstatus: active\n---\nbranch %s\n' "$BR" > "$TMP/ws/docs/active/plans/p.md"
 git -C "$TMP/ws" add docs && git -C "$TMP/ws" commit -qm plan && git -C "$TMP/ws" push -q origin master
 
-run() { bash "$TMP/ws/scripts/close-out.sh" "$@" 2>&1 || true; }
+# WHY the stubbed rg (2026-09-18): the workspace CI runner has no ripgrep. The first
+# version of this check read the local side with rg, so on CI it saw NOTHING locally
+# and reported every doc as "fixed in this checkout" — this guard went red before the
+# branch merged. Every assertion below runs with rg unusable, the CI shape.
+mkdir -p "$TMP/bin"
+printf '#!/bin/sh\nexit 127\n' > "$TMP/bin/rg"; chmod +x "$TMP/bin/rg"
+run() { PATH="$TMP/bin:$PATH" bash "$TMP/ws/scripts/close-out.sh" "$@" 2>&1 || true; }
 
 # 1. Control: while origin/master still has the doc, it is reported.
 out=$(run "$BR" youcoded)
