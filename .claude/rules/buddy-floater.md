@@ -36,7 +36,7 @@ verify:
   - test: youcoded/desktop/tests/buddy-bar-geometry.test.ts
   - test: youcoded/desktop/tests/buddy-bar-visibility.test.ts
   - test: youcoded/desktop/tests/buddy-dock.test.ts
-  - test: youcoded/desktop/tests/buddy-edge-clamp.test.ts
+  - test: youcoded/desktop/tests/buddy-window-manager.test.ts
   - test: youcoded/desktop/tests/sanitize-rig-svg.test.tsx
 ---
 # Buddy Floater (mascot, action bar, chat)
@@ -76,5 +76,5 @@ panel strut comes from plasmashell).
 window `YC:<role>@<x>,<y>` and an opt-in KWin script sets the geometry. So **only `place()`
 may write a buddy title**, and **the window never knows where it is** — `getBounds()` returns
 its birth position forever; `rectOf()` remembers. Both are guarded by source-scanning tests
-(`buddy-title-guard`, `buddy-position-source`). X11 gates out entirely. Depth:
+(`buddy-title-guard`, `buddy-window-manager`). X11 gates out entirely. Depth:
 `docs/archive/design/2026-09-04-linux-buddy-helper/technical-design.md`.

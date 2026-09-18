@@ -34,7 +34,7 @@ verify:
     contains: "extractStderr"
   - path: youcoded/desktop/src/main/sync-service.ts
     contains: "HEALTH_POLL_INTERVAL_MS"
-  - test: youcoded/desktop/tests/sync-warning-self-clear.test.ts
+  - test: youcoded/desktop/tests/sync-service.test.ts
   - path: youcoded/desktop/src/main/snapshot-retention.ts
   - path: youcoded/desktop/src/main/conversations/symlink-sweep.ts
   - path: youcoded/desktop/src/main/sync-spaces/gc-policy.ts

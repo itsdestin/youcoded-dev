@@ -25,7 +25,7 @@ verify:
     contains: "markInheritedByTransfer"
   - test: youcoded/desktop/tests/tearoff-handoff.test.ts
   - test: youcoded/desktop/tests/session-drag-model.test.ts
-  - test: youcoded/desktop/tests/session-strip-htmldrag.test.tsx
+  - test: youcoded/desktop/tests/SessionStrip.test.tsx
   - path: scripts/ast-grep/rules/preload-no-drag-model-decision.yml
 ---
 
@@ -51,7 +51,7 @@ pointer path, so #404's motion is intact. A finger never becomes a browser drag
 on Linux (measured, with and without `--touch-drag-drop`): touch reorders on the
 pointer path and moves sessions between windows through the pill's right-click /
 long-press menu. **Do not add a mid-gesture handoff back** — the only API for it
-is the wrong tool (next section). Guard: `session-strip-htmldrag.test.tsx`.
+is the wrong tool (next section). Guard: `SessionStrip.test.tsx` → "html-drag tear-off".
 
 ## `webContents.startDrag` on Linux crops the picture to ~138px and carries only a file
 
@@ -80,7 +80,7 @@ chose the desktop drop: a drag nothing accepted opens a new window, as on
 Windows/macOS — so Escape does too, and cancelling is dragging back into the
 strip. A window's only session goes back instead. The chat area is a second,
 labelled route (`SessionDropZone`: "Open in a new window" / "Move here").
-Guard: `session-strip-htmldrag.test.tsx`.
+Guard: `SessionStrip.test.tsx` → "html-drag tear-off".
 
 ## `webContents.send` into a window that has not mounted is DROPPED
 
