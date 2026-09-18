@@ -43,7 +43,7 @@ found.` is OpenRouter's own wording for a key it does not recognise, forwarded b
 ### Five defects (all present on `e5f8b2d8`)
 
 **D1 — "Connected" means "a key exists on disk."** The Cloud providers card
-`OpenRouterBlock` (`renderer/components/ModelProvidersPopup.tsx:417-495` — the file
+`OpenRouterBlock` (`renderer/components/ModelProvidersPopup.tsx:417-511` — the file
 keeps its old name but now only exports cards) computes
 `connected = openrouter?.hasKey === true` (`:434`) and prints Connected / Not
 connected (`:472`). It is weaker than the registry's own `ready`
@@ -60,7 +60,7 @@ all probe endpoints that require the credential; OpenRouter is the only hollow o
 
 **D3 — a bad key is congratulated at every entry point.** Three places run that
 hollow test and report success:
-- the paste-a-key modal `ConnectOpenRouterModal` (`ModelProvidersPopup.tsx:517-620`;
+- the paste-a-key modal `ConnectOpenRouterModal` (`ModelProvidersPopup.tsx:517-612`;
   `save()` at `:530-547` saves, tests, flashes "Connected.", closes after 700 ms);
 - the card's **Test** button (`runTest`, `:437-445`);
 - **first-run "Use an API key"** — `FirstRunManager.handleNativeApiKey`
@@ -144,7 +144,24 @@ already on the card's My Account button, `ModelProvidersPopup.tsx:473`).
 ### 3.1 A remembered verdict about the key this copy actually holds
 
 A new main-process module, `main/providers/openrouter-health.ts`, owns a persisted
-**verdict** about OpenRouter's key.
+**verdict** about OpenRouter's key. It is built as
+`new OpenRouterHealth({ dir: app.getPath('userData'), fetch, now, onChange })` beside
+`secretsStore` (`ipc-handlers.ts:2589`) — that runs after the profile override
+(`main.ts:342-350`), so the path is per-profile — and passed to `ProviderRegistry` as a
+new constructor parameter (`provider-registry.ts:70-78`, built once at
+`ipc-handlers.ts:2609`). `setKey`'s clear and the fetch wrapper both use it.
+
+**Change signals.** The registry emits none today; it gains an `onChange` hook fired
+by `upsert`, `setKey` and `remove`. Health uses it to start or stop its poll (§3.4)
+and to schedule a check after a new key. `setKey` itself does **not** run the check
+synchronously; it clears the record and asks for a check on the §3.4 debounce, so a
+caller that runs Test straight after (the modal, first-run, sign-in) doesn't cause a
+second request, and a key set over remote (`remote-server.ts:1954`) is still checked
+within a minute.
+
+**Custom base URL.** `/key` and `/credits` are requested against `p.baseUrl`, as
+`testConnection` does today. A proxy that doesn't serve `/key` (404, non-JSON) is
+`unchecked`, never `rejected`.
 
 **Where it lives: a per-profile file, `userData/provider-health.json`, next to
 `native-secrets.json`.** Not a field on the `providers.json` entry. Reasons, each
@@ -167,11 +184,14 @@ Record (one per `secretRef`):
   expiresAt?, checkedAt }
 ```
 
-`keyFingerprint` is the first 16 hex chars of SHA-256 of the key, computed at write
-time. A record whose fingerprint does not match the key now stored under that ref is
-ignored and rewritten on the next check. `setKey` also clears the record in the same
-profile. Either alone would work; both make "a verdict about a key you no longer
-have" impossible.
+`keyFingerprint` is the first 16 hex chars of SHA-256 of the key. It is computed and
+compared **only when a check runs** (the check decrypts the key anyway); a record
+whose fingerprint doesn't match is discarded and rewritten. It is **never** compared
+on read: `list()` today calls only the synchronous `secrets.has()`, and adding a
+decrypt to every `provider:list`, catalog read and launch check could throw, and on
+Linux could prompt the keychain. Within one profile the key only changes through
+`setKey`, which clears the record synchronously, so reads stay correct without the
+comparison.
 
 | Verdict | Meaning | Carries |
 |---|---|---|
@@ -192,9 +212,16 @@ wrong and is fixed in the same edit.
 |---|---|---|
 | `openrouter-key-rejected` | `401` | check and turn |
 | `openrouter-key-expired` | `401` and a stored `expiresAt` in the past | check and turn |
-| `openrouter-credit-short` | `402` | turn (and check, if `/key` ever answers 402) |
-| `openrouter-forbidden` | `403` | check and turn |
+| `openrouter-forbidden` | `403` from `/key` | check only |
 | `openrouter-wrong-key-type` | `is_management_key` or `is_provisioning_key` | check only |
+
+Two **per-request** codes are produced by chat turns but **never change the verdict**,
+because they say nothing about the key:
+
+| Code | From |
+|---|---|
+| `openrouter-credit-short` | `402` on a chat request (see §3.3 — can happen with money in the account) |
+| `openrouter-request-refused` | `403` on a chat request — OpenRouter's documented 403 there is a moderation flag on the input, not a key problem |
 
 **Four write points:**
 1. Key saved (paste, first-run, or sign-in — §3.5).
@@ -208,13 +235,21 @@ wrong and is fixed in the same edit.
    (`chatgpt-auth.ts:1018-1064`, wired at `provider-registry.ts:439`). The wrapper
    knows `p.secretRef` at the moment of the request, sees the real status, and covers
    specialist (helper) sessions for free. Their `session-error` is never forwarded to
-   the parent (`native-session-host.ts:130-145`), so a hook at the emit site would
-   miss them. On `401/402/403` it records the verdict and throws a typed
+   the parent (`main/harness/native-session-host.ts:130-145`), so a hook at the emit site would
+   miss them. On a **401** it writes `rejected` (reason `key-rejected` or
+   `key-expired`); on a **402 or 403** it writes nothing. In all three cases it reads
+   OpenRouter's sentence from `res.clone()` and throws a typed
    `ProviderAccountError { errorCode, message, providerMessage }` (the ChatGPT
    `expiredError()` pattern). §3.3 reads it.
 
-   A `402` records `openrouter-credit-short` but does **not** flip the verdict to
-   `rejected` (see §3.3 — a 402 is about this request, not the key).
+   Verified path (`ai@7.0.84`): the SDK passes a non-`TypeError` thrown from `fetch`
+   through unchanged, `consumeStep` rethrows it (`harness-session.ts:3371-3393`), and it
+   lands at the emit (`:2913`). If an earlier attempt in the same step hit a retryable
+   5xx/429, the SDK wraps it in `RetryError` with the typed error in `lastError` —
+   hence `classifyProviderError` unwraps `lastError`. **`ProviderAccountError` must not
+   carry `statusCode`, `status` or `code`**: `describeProviderError` would append
+   "(provider error N)" and `withRetry` would inspect it (same reasoning as
+   `chatgpt-oauth.ts:570-578`).
 
 **`ready` does not change.** `ready` (`provider-registry.ts:129-138`) still means
 "enabled and a key is stored". It feeds the app-launch gate (`hasUsableProvider`,
@@ -228,8 +263,15 @@ the actionable one from §3.3.
 
 **How the renderer sees it:** `provider:list` rows gain a read-only `health` field.
 `list()` merges the record in, and `upsert` ignores any `health` it is sent. The
-remote server serves `provider:list` itself (`remote-server.ts:1919-1972`), so the
-field reaches it for free. No new channel is needed for reading.
+enable toggle (`ProvidersSection.tsx:276`) strips `health` along with `builtIn`,
+`hasKey` and `ready` before calling `upsert`. The remote server serves
+`provider:list` itself (`remote-server.ts:1919-1972`), so the field reaches it for
+free. No new channel is needed for reading.
+
+**Two readers, one fact.** The card and the Assistant settings attention dot read
+`health` from `provider:list`; the gear dot and the status-bar chip read
+`status:data.openrouterAccount` (§3.4). Both come from the same record, but they may
+disagree for up to 10 s after a change. That is accepted.
 
 ### 3.2 Real validation
 
@@ -242,16 +284,22 @@ writes the verdict (write points 1-2) and returns the balance, so Test can say
 "Connected — $9.21 left" rather than "Connected." The `CAVEAT` comment is deleted in
 the same edit.
 
-Every existing caller picks this up with no change of its own: `ipc-handlers.ts:3383`,
+**Return shape widens, additively:** `{ ok, message, verdict?, balanceUsd? }`. Only
+the OpenRouter branch fills the new fields. `ok` keeps its meaning (true only for
+`verified`), so every existing caller keeps working unchanged: `ipc-handlers.ts:3383`,
 `remote-server.ts:1947`, first-run (`first-run.ts:572,599`), the card
-(`ModelProvidersPopup.tsx:440,538`), and `ProvidersSection.tsx:89`.
+(`ModelProvidersPopup.tsx:440,538`), `ProvidersSection.tsx:89`. The card reads
+`balanceUsd` to say "Connected — $9.21 left".
 
-**First-run consequence (fixes D3's worst case):** `handleNativeApiKey` stops
-treating any non-throwing result as success.
-- `rejected` → stay on the key page with the reason sentence.
-- `unchecked` (offline) → continue setup, but the card and badge show "Not checked
-  yet". Blocking setup on a network blip would strand an offline first run.
-- `verified` → continue as today.
+**First-run (fixes D3's worst case).** `handleNativeApiKey` already stays on the key
+page when `ok` is false (`first-run.ts:572-576`); a fake key only passes today because
+`/models` answers 200. Switching the probe to `/key` alone fixes it. There is no
+first-run change for a rejected key. One behaviour is deliberately new: for OpenRouter,
+`verdict: 'unchecked'` (unreachable) continues setup instead of blocking, and the card
+then reads "Not checked yet". Anthropic, OpenAI and Google keep today's behaviour of
+blocking when offline (out of scope). The same rule applies after an OpenRouter
+sign-in (§3.5): `rejected` stays on the sign-in card with the reason; `unchecked`
+continues.
 
 The Anthropic/OpenAI/Google branches are unchanged.
 
@@ -282,9 +330,12 @@ A new `classifyProviderError(err) → errorCode | undefined` sits beside
 
 **The path, hop by hop** (all verified; the field must be carried or cleared at each):
 
+0. Type — the `session-error` data type in `shared/types.ts` (`TranscriptEvent.data`,
+   `:242+`) gains `errorCode?: string`.
 1. Emit — `harness-session.ts:2913` (turn failures) and `ipc-handlers.ts:846-858`
-   (`emitNativeSessionError`, start/resume failures).
-2. Host forward — `native-session-host.ts:3022-3024`. The session store drops
+   (`emitNativeSessionError(text)` at `:850` gains an optional `errorCode` parameter —
+   start/resume failures).
+2. Host forward — `main/harness/native-session-host.ts:3022-3024`. The session store drops
    session-errors, so nothing is persisted (`harness/session-store.ts:150-153`).
 3. Hub — `ipc-handlers.ts:2969-2973` sends to the window and broadcasts to remote.
 4. Remote — `renderer/remote-shim.ts:1009-1010,1997` pass the payload through.
@@ -293,11 +344,14 @@ A new `classifyProviderError(err) → errorCode | undefined` sits beside
 6. Action — `renderer/state/chat-types.ts:538-552` (`NATIVE_SESSION_ERROR`).
 7. Reducer — `renderer/state/chat-reducer.ts:1113-1134` sets it. It is cleared
    wherever `errorMessage` is cleared: `:441`, `:991`, `:1994`, `:2246-2254`.
-8. State field — `chat-types.ts:274-279`.
+8. State field — `chat-types.ts:274-279`, with its initial value at `:435`. The
+   workbench fixture dispatcher named at `chat-types.ts:545-547` passes it too.
 9. Serialization for a reconnecting phone — `chat-types.ts:967,1038,1077-1079`.
 10. View — `ChatView.tsx:1342-1352` → `AttentionBanner`. The Open Settings deep link
     is `App.tsx:3705`, which opens Assistant settings on the Cloud providers page
-    (`SettingsPanel.tsx:3042-3044`, `AssistantSettings.tsx:149`).
+    (`SettingsPanel.tsx:3042-3044`, `AssistantSettings.tsx:149`). **Add credit** is a
+    new callback, plumbed App → ChatView → AttentionBanner beside `onUpgradePlan`, that
+    opens `https://openrouter.ai/settings/credits` externally.
 
 **Copy and actions** (checked against `docs/error-message-standards.md`):
 
@@ -305,16 +359,22 @@ A new `classifyProviderError(err) → errorCode | undefined` sits beside
 |---|---|---|
 | `openrouter-key-rejected` | "OpenRouter didn't accept your API key." | Open Settings |
 | `openrouter-key-expired` | "Your OpenRouter key has expired." | Open Settings |
-| `openrouter-credit-short` | "OpenRouter doesn't have enough credit for this request." + OpenRouter's own sentence as detail | Add credit (opens openrouter.ai) · Try again |
-| `openrouter-forbidden` | "OpenRouter refused this request." + OpenRouter's own sentence | Open Settings |
+| `openrouter-credit-short` | "OpenRouter doesn't have enough credit for this request." + OpenRouter's own sentence as detail | Add credit (opens openrouter.ai) |
+| `openrouter-request-refused` | "OpenRouter refused this request." + OpenRouter's own sentence (e.g. its moderation reason) | none beyond today's — it is not a settings problem |
 | `chatgpt-signin-expired` | existing ChatGPT sentence, reworded to name Cloud providers | Open Settings |
 | none | **unchanged from today** | unchanged |
 
 Why each row reads the way it does:
+- **No "Try again" on the 402 row.** The banner's `onRetry` is only wired for a
+  stalled turn (`ChatView.tsx:1359-1361`) and a general retry is error-inventory row
+  #29's job. The user resends after adding credit.
+- **The 403 row has no Open Settings.** On chat requests OpenRouter's 403 means the
+  input was flagged, and sending the user to their key would invent a cause.
 - **The 402 row says "for this request," not "you're out of credit."** OpenRouter
   also answers 402 when the account has money but the reply size it reserves up front
-  exceeds it. Commit `a4a3c1e7` capped reply length for exactly this, and 402s remain
-  possible (`harness-session.ts:3379`). Claiming an empty wallet would be an invented
+  exceeds it. Commit `a4a3c1e7` capped reply length at 16,000 tokens for exactly this
+  (the incident is recorded in the comment at `harness-session.ts:3379`); the cap makes
+  it rarer, not impossible, since a low balance can still fall under the reservation. Claiming an empty wallet would be an invented
   cause. For the same reason a 402 does not flip the verdict to `rejected`.
 - **"Expired" is used only when a stored `expiresAt` has passed.** A 401 alone cannot
   tell expired from deleted. Without a stored date the same 401 reads as "didn't
@@ -330,10 +390,15 @@ Why each row reads the way it does:
   (`renderer/components/ui/states.tsx:91-121`), and migrating the banner is row #29's
   job.
 
-**Phrase fallback repaired.** The registry's pre-flight messages
-(`provider-registry.ts:272,293,356,402,407,412,519`) and the decrypt message change
-"Settings → Providers" / "Settings → Model Providers" to "Assistant settings → Cloud
-providers". `isProviderConfigError` matches the new phrase and both old ones, so an
+**Phrase fallback repaired.** The registry's cloud pre-flight messages
+(`provider-registry.ts:272,356,402,407,412,519`), the decrypt message
+(`secret-storage-errors.ts`) and both ChatGPT sentences — `CHATGPT_SIGN_IN_REQUIRED_MESSAGE`
+and the expired one (`chatgpt-oauth.ts:57-62`) — change "Settings → Providers" /
+"Settings → Model Providers" to "Assistant settings → Cloud providers". The
+local-model message at `provider-registry.ts:293` is **not** reworded to Cloud
+providers — its destination is the Local models page; it becomes "Assistant settings →
+Local models" and stays outside the Open Settings match (which deep-links to `'cloud'`,
+`SettingsPanel.tsx:3043`). `isProviderConfigError` matches the new phrase and both old ones, so an
 event from an older main process still gets its button.
 
 `withRetry` (`harness-session.ts:3704-3717`) already retries only 429/5xx/network, so
@@ -345,8 +410,8 @@ the typed errors are never retried. Nothing changes there.
 `USAGE_POLL_MS` 5 min `:92`, per-reply refresh debounced to `USAGE_DEBOUNCE_MS` 60 s
 `:94`, `startPoll`/`stopPoll` `:1146-1160`, `schedulePollSoon` `:1162`). The
 first draft's 30-minute timer is dropped in favour of the shipped pattern:
-- It runs only while OpenRouter is enabled and a key is stored. It checks once at
-  launch, then every 5 minutes.
+- It runs only while OpenRouter is enabled and a key is stored, started and stopped by
+  the registry's `onChange` (§3.1). It checks once at launch, then every 5 minutes.
 - After each OpenRouter reply it asks for a refresh, debounced to at most one a
   minute, so the balance follows real use ("a ten-step turn costs one poll").
 - Each refresh is two small GETs (`/key`, `/credits`) and writes the verdict.
@@ -358,10 +423,15 @@ drops unchanged payloads, and `statusPush.push()` sends immediately.
 `openrouterHealth.forStatus()` adds `openrouterAccount: { verdict, reason?,
 balanceUsd?, expiresAt?, checkedAt }`. The status build only *reads* the saved
 record; it never calls OpenRouter. Every write point calls `statusPush.push()`.
+Because `push()` joins an in-flight build (`buildStatusDataShared`,
+`ipc-handlers.ts:2402-2407`), a push that lands mid-build can deliver the old record;
+the change then arrives on the next 10 s tick. That lag is accepted (ChatGPT usage
+never pushes at all and rides the tick). Only the gear dot and chip wait on it — the
+card reads `provider:list` directly.
 Renderer plumbing, one hop each: the App handler (`App.tsx:1722-1750`),
-`StatusDataState` (`App.tsx:170`), and `StatusFeed` / `useStatusBarData`
-(`renderer/hooks/useStatusBarProps.ts:17-38`). Remote browsers get it through
-`broadcastStatusData` (`remote-server.ts:1975-1979`). Android sends no such field;
+`StatusDataState` (`App.tsx:170`) and its default (`App.tsx:290`), and the `StatusFeed`
+interface field plus `useStatusBarData` (`renderer/hooks/useStatusBarProps.ts:17-38`). Remote browsers get it through
+`broadcastStatusData` (`remote-server.ts:734`). Android sends no such field;
 absent means "draw nothing", the same as `chatgptUsage` today.
 
 **Surfaces:**
@@ -372,8 +442,10 @@ absent means "draw nothing", the same as `chatgptUsage` today.
    Test result currently borrows the detail line; which wins is a deck item.
 2. **The Assistant settings attention dot** — `useAttention`
    (`renderer/components/assistant-settings/AssistantSettings.tsx:64-110`) already
-   marks the Cloud providers page for a blocked ChatGPT plan or a failed local engine.
-   `rejected` becomes a third cause, and the comment at `:65-69` is replaced. Test:
+   marks the Cloud providers page for a blocked ChatGPT plan (a failed local engine
+   marks the separate Local models page, `:106`). `rejected` becomes a second cause for
+   Cloud providers, and the comment at `:65-69` is replaced. It reads `health` from
+   `provider:list` on its existing 4 s poll. Test:
    `tests/assistant-settings-attention.test.tsx`.
 3. **The gear's red dot** — `settingsDangerBadge` (`App.tsx:2452-2455`) is already an
    OR of two sources (GitHub sync `spacesFailing`, `:2433-2448`, and danger-level
@@ -397,7 +469,7 @@ absent means "draw nothing", the same as `chatgptUsage` today.
 
 ```
 { id: 'openrouter-balance', label: 'OpenRouter Credit', defaultVisible: true,
-  description: 'How much OpenRouter credit is left for the key this session uses.',
+  description: 'How much credit is left on your OpenRouter account.',
   bestFor: 'Anyone running models through OpenRouter — credit is prepaid, so this is the number that stops your work.' }
 ```
 
@@ -417,11 +489,18 @@ would draw an OpenRouter balance on a local-model session. The change:
 - Make `widgetApplies` take `RelevanceContext`, and fold the existing ChatGPT
   exception into it, so the bar and menu share one input.
 - The unavailable reason reads **"OpenRouter sessions only."**
+- **Order matters.** `widgetUnavailableReason` returns `null` for
+  `runtime === 'claude'` before any other check (`status-widgets.ts:69`), and
+  `widgetApplies` returns true for every id on a Claude Code session. The
+  provider-gated rule must run **before** those shortcuts, or a Claude Code session
+  will offer and draw the balance chip.
 
 **What the chip shows:**
 - The number whenever the widget is on (`$9.21`).
 - `warnStyles` tones (`StatusBar.tsx:463-466`): warn below the low threshold, danger
   at zero.
+- The number is account-wide (`/credits`). In the §2 fallback it is the key's own
+  remaining cap, and the tooltip says "left on this key's limit".
 - Nothing at all when the balance is unknown. That covers `unchecked` with no
   previous reading, and the §2 fallback case of an uncapped key when `/credits`
   refuses.
@@ -480,8 +559,9 @@ unchanged, through the extraction.
 - `shared/types.ts` constants;
 - `preload.ts` (wrapped in `unwrapInvokeError`, `:466-476`);
 - handlers in `ipc-handlers.ts` beside `:3393-3396`;
-- `remote-server.ts` cases like `:1986-2015` (sign-in answers `false`, as ChatGPT's
-  does at `:1995-1997`);
+- `remote-server.ts` cases like `:1986-2015`: sign-in answers `false` (as ChatGPT's
+  does at `:1995-1997`); status and cancel read from the OpenRouter sign-in object
+  exposed on `nativeRuntime`, the way ChatGPT's use `nativeRuntime.chatgptAuth`;
 - `remote-shim.ts` with `supported: false`;
 - a refusal entry in `SessionService.kt` near `:4207`, not a real branch.
 
@@ -574,7 +654,10 @@ Everything above is behaviour. Per `.claude/rules/feature-flow.md`, the visible
 parts are built in the UI workbench (`bash scripts/run-workbench.sh`, with a fake
 `openrouter` backend in `renderer/dev/workbench/mock-shim.ts` beside the ChatGPT one
 at `:1005-1030`, forced states via a `?openrouter=` param, rows in `MOCK_ONLY`
-(`renderer/dev/workbench/mock-only.ts:96`) until the backend lands) and shown to
+(`renderer/dev/workbench/mock-only.ts:96`) until the backend lands; the mock also needs
+`health` on its provider rows (`mock-shim.ts:1075`), an `openrouterAccount` on its
+`on.statusData` (`:2691`), and a `NATIVE_SESSION_ERROR` fixture carrying each
+`errorCode`) and shown to
 Destin as Before/After review decks before any of it is final. The visible parts are:
 the card, the sign-in and waiting states, the chat error cards, the badges, and the
 chip. Standard: `docs/active/design/2026-08-25-ui-design-guide.md`.
@@ -620,11 +703,14 @@ on the theory: without a stored date, a 401 reads "didn't accept".
   (never `/models`); management and provisioning keys each give
   `openrouter-wrong-key-type`; a `/credits` refusal leaves the test passing with a
   capped-key or unknown balance; a decrypt failure is not reported as "could not
-  reach"; the fetch wrapper records `rejected` on 401/403 and `credit-short` without
-  `rejected` on 402; `upsert` ignores a `health` field sent to it. (No
+  reach"; the fetch wrapper writes `rejected` on 401 and nothing on 402/403, and its
+  thrown error carries no `status`/`statusCode`/`code`; a custom base URL without
+  `/key` is `unchecked`; `upsert` ignores a `health` field sent to it; the widened
+  return keeps `ok` false for everything but `verified`. (No
   `testConnection` coverage exists for key-based providers today.)
-- New `tests/openrouter-health.test.ts` — the three verdicts; a record whose
-  fingerprint doesn't match the stored key is ignored; `setKey` clears the record;
+- New `tests/openrouter-health.test.ts` — the three verdicts; a check that finds a
+  mismatched fingerprint discards the record; `setKey` clears the record; `list()`
+  never decrypts;
   401 with a past `expiresAt` → expired, without → rejected; the refresh runs only
   while enabled with a key; the status payload reads without calling OpenRouter.
 - New `tests/openrouter-oauth.test.ts` — S256 over the verifier actually sent; JSON
@@ -634,6 +720,7 @@ on the theory: without a stored date, a 401 reads "didn't accept".
 - `tests/chatgpt-auth.test.ts`, `tests/chatgpt-oauth.test.ts` — green, unmodified,
   after the loopback extraction.
 - First-run — rewrite the stub pins in `tests/first-run-chatgpt.test.ts:12,131-132,200-205,494-503`
+  and `tests/describe-step.test.ts:109-115`
   (or move them to a new `first-run-openrouter.test.ts`); add `handleNativeApiKey`
   cases (rejected stays, unchecked continues) — none exist today.
 - `tests/attention-banner.test.tsx` — each `errorCode` renders its action; no code
@@ -644,7 +731,8 @@ on the theory: without a stored date, a 401 reads "didn't accept".
   `widgetApplies` takes `RelevanceContext`; a provider-gating agreement table (not
   only the Cost one at `:220`) proves bar and menu agree for Claude, ChatGPT,
   OpenRouter and local sessions; the ChatGPT chips still pass after the fold-in; an
-  unknown balance draws no chip.
+  unknown balance draws no chip; a Claude Code session neither offers nor draws the
+  balance chip.
 - `tests/ipc-channels.test.ts` — an `openrouter:*` parity block copied from
   `:1857-1935`.
 - Workbench — `tests/workbench-mock-contract.test.ts` and
@@ -657,8 +745,10 @@ on the theory: without a stored date, a 401 reads "didn't accept".
 
 1. **Settle §2's open risk** — with a real, low-limit key Destin provides for the
    test (never committed, never in the environment of a paid run): does `/credits`
-   answer an inference key, and an OAuth-minted one? This picks the balance source
-   before any UI is drawn.
+   answer an inference key, and an OAuth-minted one? And does `/auth` accept
+   `http://127.0.0.1:<port>/or-callback/<nonce>` — an IP and a path, where the docs
+   only promise "localhost … any port"? (If not: `localhost` with the nonce in a query
+   parameter.) This picks the balance source and callback form before any UI is drawn.
 2. **UI first** (§5): workbench mockups → UX tester → review deck(s) → contract, per
    feature-flow. Destin chooses the full or short route.
 3. Health module + real `testConnection` + first-run key check (§3.1-3.2).
@@ -686,8 +776,9 @@ item: the verdict refresh and Test re-read the key.
   let a dev copy break the live app. The per-profile verdict covers the original harm.
 - **Write point 4 is a `fetch` wrapper** in the registry, not a hook at the emit site,
   which would miss specialists and lacks the key's ref.
-- **402 copy corrected.** "For this request," not "out of credit"; a 402 doesn't mark
-  the key rejected.
+- **402 copy corrected.** "For this request," not "out of credit".
+- **Only a 401 changes the verdict.** A chat 402 or 403 is about that request (low
+  reservation headroom, moderation flag) and never marks a good key rejected.
 - **The "anything else → Open Settings" row was dropped.** It violated the error
   standards.
 - **The ChatGPT expired dead end is folded in.** The "Settings → Providers" phrase is
