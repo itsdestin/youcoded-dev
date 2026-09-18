@@ -135,10 +135,23 @@ rule — the validator does not check it (P-16, decided 2026-08-25: no new pack 
   flat-token rule catches, so check it on the sheet.
 - Shadows only on floating layers (dialogs, popovers, toasts) — `Overlay.tsx` owns the
   layer and z-index; nothing else sets `z-`.
-- Motion: 150ms ease for hover/press, 200ms for drawers and sheets; all of it behind
-  `prefers-reduced-motion` and the app's *Reduce Visual Effects* toggle. Hover effects are
-  behind `@media (hover: hover)` (the `.hover-lift`/`.card-interactive` guard) so a tap
-  never sticks.
+- Motion: durations and curves are the `--dur-*` / `--ease-*` tokens in `globals.css`
+  (hover 180ms, reveal 260ms, switch 380ms) — never a hand-typed number; spatial motion sits
+  behind `prefers-reduced-motion` and the app's *Reduce Visual Effects* toggle, colour fades
+  (state feedback) do not. Hover effects are behind `@media (hover: hover)` so a tap never
+  sticks; **press is not**, so a finger gets it too.
+- **Every clickable thing answers hover, press and keyboard focus** (Destin, 2026-09-18 —
+  minimize/maximize/Games/Files "lack good hover sensitivity"). The fill moves ONE step along
+  the depth ladder on hover and one more on press, from wherever the control sits: on
+  `canvas`/`panel` → `inset` → `edge`; **inside an `inset` pill → `edge` → a step past it**
+  (`ON_INSET_CONTROL`), because `inset` on `inset` is invisible — the trap that produced seven
+  dead header buttons. A glyph-colour nudge alone is not a hover. When a control cannot know
+  its surface use `.state-layer` (a wash of `--fg`); a text-only control `.link-control`; a
+  frosted `.layer-surface` pill `.ring-state`; a field that is a button answers with its
+  border (`FIELD_TRIGGER_STATES`). All of it: `styles/motion.css`,
+  `components/header/control-states.ts`; guards `tests/hover-press-ladder.test.ts` + ast-grep
+  `chrome-control-no-glyph-nudge-hover`. Press is always "the hover, one step further" —
+  he chose a darker fill over a squish (nothing moves, so nothing can jitter).
 
 ---
 

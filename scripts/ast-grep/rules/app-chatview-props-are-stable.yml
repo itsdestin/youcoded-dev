@@ -1,0 +1,36 @@
+id: app-chatview-props-are-stable
+language: tsx
+severity: error
+message: >-
+  A prop on <ChatView> in App.tsx is an inline function. ChatView is memoised so
+  that a session switch re-renders only the two conversations involved; an
+  inline arrow is a new value every App render, so EVERY open conversation
+  re-walks its whole timeline inside the click, ahead of the switch's first
+  frame. Add it to hooks/use-chatview-handlers.ts and pass the stable reference.
+note: |
+  Destin, 2026-09-18: "the switch still lags a second behind me clicking a
+  different session name. and clicking a bunch back-and-forth seems to freeze up
+  a smidge". Three inline arrows on this element were the cause. The behavioural
+  half is youcoded/desktop/tests/chatview-skips-uninvolved-sessions.test.tsx,
+  which shows one inline arrow dragging a bystander conversation back into the
+  render; this rule is the half that test cannot reach, because it cannot mount
+  App. Scoped to ChatView on purpose: it is the one element App renders once per
+  open session with a body whose cost grows with the conversation.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/app-chatview-props-are-stable.tsx"
+rule:
+  any:
+    - kind: arrow_function
+    - kind: function_expression
+  inside:
+    kind: jsx_expression
+    inside:
+      kind: jsx_attribute
+      inside:
+        any:
+          - kind: jsx_self_closing_element
+          - kind: jsx_opening_element
+        has:
+          field: name
+          regex: "^ChatView$"

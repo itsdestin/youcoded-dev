@@ -41,6 +41,15 @@ still yours the same day. Never re-run a red job hoping it goes green without re
 merging, `gh workflow run desktop-ci.yml --ref <branch>` (a dispatch runs all three; a PR runs Linux
 only). `--log-failed` is EMPTY while a run is still in progress — wait for it to finish.
 
+**A workspace PR that adds an ast-grep rule goes RED until the app PR that satisfies it is on
+master — merge the app PR first.** The workspace's "Anchors and invariants" job scans the app's
+`master`, not your app branch, so a rule and the fix it guards, opened as a pair, fail with
+exactly the violations the fix removes (youcoded-dev#152 / youcoded#534, 2026-09-18: 11
+"violations", all already fixed on the app branch). Merge the app PR, re-run the workspace job,
+then merge. Prove a new rule against a real file with `bash scripts/ast-grep/prove-rule.sh
+<rule-id> <file>` — by hand it failed silently twice in one session (wrong binary name; a
+relative path never matches a `files:` glob).
+
 **Never chain a merge behind a check, or cleanup behind `gh pr merge`, in one command.** Run the
 check, read its output, then merge; read the merge result, then clean up. A guard like
 `rg -n 'budget'` matches the FAIL line too and exits 0 — that merged a red audit (youcoded-dev#15,

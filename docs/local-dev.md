@@ -70,6 +70,21 @@ bash scripts/run-dev.sh feat/my-branch  --offset 100 --profile dev2 --label "My 
 
 Each profile gets its own `%APPDATA%/youcoded-<profile>/` userData dir; each offset gets its own Vite/remote ports. **Collisions are not graceful:** two instances on the same offset fight over the port, and two sharing a `--profile` fight over the Local Storage leveldb lock — either way one window gets SIGKILLed shortly after it renders. If a launch dies ~10s in, check for a port/profile clash with another running instance (`--list` shows registered worktrees; `ss -ltn` shows busy ports). The `--profile` value is freeform (`dev`, `dev2`, `feature-x`); the only reserved value is empty/unset, which means "this is the built app" and re-enables `install-hooks.js`.
 
+**`--stop` also ends the dev window's OWN Claude sessions, and its output names them like
+anyone's.** A dev window starts `claude` processes for its chats (one appears within seconds of
+launch, before anyone touches it), they inherit the debugger port, and `run-dev.sh --stop` ends
+every pid on that port — printing `stopping pid … (/home/…/.local/bin/claude
+--dangerously-skip-permissions …)`. That line looks exactly like one of Destin's real sessions
+and cost eight calls to clear on 2026-09-18; it is the dev window's child. Tell Destin before
+stopping or restarting a dev window he has chats open in: they end with it.
+
+**After editing the renderer's ENTRY file, restart the dev window before anyone judges it.**
+Hot reload re-runs `index.tsx` and calls `createRoot()` on a container that already has a root
+(`You are calling ReactDOMClient.createRoot() on a container that has already been passed…` in
+the launcher's log), stacking a second app in the window; one such reload threw
+`NotFoundError: removeChild` into `RootErrorBoundary` (2026-09-18). A large merge of master
+into the branch does the same. Glitches seen in that window may not be real.
+
 The equivalent env-var form still works (`YOUCODED_PROFILE=dev2 YOUCODED_PORT_OFFSET=100 bash scripts/run-dev.sh`), but the flags are clearer and add `--label`.
 
 ### Why dev doesn't install hooks
