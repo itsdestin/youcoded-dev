@@ -114,6 +114,13 @@ blocks); `hidden` for whole inactive views.
 
 ## 6. Proposed enforcement
 
+> **Superseded in part, 2026-09-18 (plan review).** The `bounded-lists.test.ts` source
+> scanner below was dropped: run against the unfixed tree it passed FilesTab,
+> MarketplaceScreen and ToolBody and never saw SessionDrawer, CsvView or
+> SubagentTimeline. The plan's Task 13 uses per-surface stress tests plus a DOM-size
+> sweep instead. Also corrected there: cause 4 in §1 is two causes — FilesTab reads
+> `ArtifactContext` itself (`FilesTab.tsx:234`), which `React.memo` cannot stop.
+
 - **Design guide G-29 "Fast at any size"** (+ fix the duplicate G-22) — the
   user-facing promise, citing the guards.
 - **`react-renderer.md`** Perf line rewritten to the standard above (fixes the
