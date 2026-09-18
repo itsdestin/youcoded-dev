@@ -2,7 +2,9 @@
  "title": "Specialists plans — contract",
  "key": "specialists-plans-contract",
  "out": "specialists-plans.contract.html",
- "themes": ["midnight"],
+ "themes": [
+  "midnight"
+ ],
  "branch": "feat/specialists-plans-ui",
  "sources": {
   "specialists-plans-questions": "specialists-plans.questions.json",
@@ -11,7 +13,10 @@
   "specialists-plans-review5": "specialists-plans.review5.json",
   "specialists-plans-review6": "specialists-plans.review6.json",
   "specialists-plans-review7": "specialists-plans.review7.json",
-  "specialists-plans-review8": "specialists-plans.review8.json"
+  "specialists-plans-review8": "specialists-plans.review8.json",
+  "specialists-plans-review9": "specialists-plans.review9.json",
+  "specialists-plans-review10": "specialists-plans.review10.json",
+  "specialists-plans-review11": "specialists-plans.review11.json"
  },
  "steps": [
   {
@@ -31,14 +36,16 @@
     {
      "id": "R2",
      "statement": "Progress shows on the plan card itself: each step ticks off and its specialists sit inside it.",
-     "checkedBy": "human",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-signed-copy.test.tsx",
      "threshold": "pass/fail",
      "source": "specialists-plans-questions#Q-5"
     },
     {
      "id": "R3",
-     "statement": "A plan that hits its limit pauses in place: finished work stays, the stuck step says why, and Add budget and Stop are offered.",
-     "checkedBy": "human",
+     "statement": "A plan that hits its limit pauses in place: finished work stays, the stuck step says why, Add budget or Stop.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-signed-copy.test.tsx",
      "threshold": "pass/fail",
      "source": "specialists-plans-questions#Q-6"
     },
@@ -75,16 +82,14 @@
      "statement": "Add budget asks for one number, shows what it is worth in dollars, and continues from where the plan stopped.",
      "checkedBy": "deck",
      "threshold": "pass/fail",
-     "source": "specialists-plans-review#P-8",
-     "note": "out of curiosity, does pausing/resuming after credit limit is reached itself consume tokens? or is it no-cost pause/resume?"
+     "source": "specialists-plans-review#P-8"
     },
     {
      "id": "R9",
      "statement": "After a restart the card returns as interrupted, showing the steps already done, and nothing runs until you press Continue.",
      "checkedBy": "deck",
      "threshold": "pass/fail",
-     "source": "specialists-plans-review#P-9",
-     "note": "move buttons to right side. also, stop should be to the left of the whie button on this and the previous card."
+     "source": "specialists-plans-review#P-9"
     },
     {
      "id": "R10",
@@ -126,8 +131,7 @@
      "statement": "The Add budget field reads 'Allow 9,000 tokens ($0.03)', with no extra words like 'more' or 'about'.",
      "checkedBy": "deck",
      "threshold": "pass/fail",
-     "source": "specialists-plans-review3#S-4",
-     "note": "same as before, maybe put warning+buttons in container together?"
+     "source": "specialists-plans-review3#S-4"
     },
     {
      "id": "R16",
@@ -190,8 +194,7 @@
      "checkedBy": "mechanical",
      "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
      "threshold": "the named test passes",
-     "source": "specialists-plans-review7#R7-2",
-     "note": "we can put the buttons in-line with the text on the left. lots of empty space."
+     "source": "specialists-plans-review7#R7-2"
     },
     {
      "id": "R24",
@@ -216,14 +219,6 @@
      "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
      "threshold": "the named test passes",
      "source": "specialists-plans-review7#Q7-1"
-    },
-    {
-     "id": "R27",
-     "statement": "A failed plan says what went wrong in one line, with Report bug and Diagnose buttons.",
-     "checkedBy": "mechanical",
-     "guard": "youcoded/desktop/tests/plan-card-review-5b.test.tsx",
-     "threshold": "the named test passes",
-     "source": "specialists-plans-review6#R6-2"
     },
     {
      "id": "R28",
@@ -314,13 +309,6 @@
      "source": "specialists-plans-review8#R8-E"
     },
     {
-     "id": "R39",
-     "statement": "The chat shows 'You asked the assistant about this plan.' after you ask.",
-     "checkedBy": "human",
-     "threshold": "pass/fail",
-     "source": "specialists-plans-review8#R8-E"
-    },
-    {
      "id": "R40",
      "statement": "If the assistant can't answer, the card gives the real reason with Retry, and its normal buttons come back.",
      "checkedBy": "mechanical",
@@ -339,7 +327,8 @@
     {
      "id": "R42",
      "statement": "A plan paused for a reason other than its limit offers Stop and Continue instead of Add budget.",
-     "checkedBy": "human",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-handoff.test.ts",
      "threshold": "pass/fail",
      "source": "specialists-plans-review6#Q6-3",
      "note": "but auto recover where that makes the most sense and we dont actually need user input"
@@ -355,7 +344,8 @@
     {
      "id": "R44",
      "statement": "A plan button pressed while the app is still starting says 'The assistant isn't available right now.' with Retry.",
-     "checkedBy": "human",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plans-transport.test.ts",
      "threshold": "pass/fail",
      "source": "specialists-plans-review6#Q6-5"
     },
@@ -370,9 +360,304 @@
     {
      "id": "R46",
      "statement": "Limits read '9,000-token limit', never '9,000 tokens limit', in step details and the spending line.",
-     "checkedBy": "human",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-review-r7.test.tsx",
      "threshold": "pass/fail",
      "source": "review:../../reviews/2026-09-17-specialists-plans-ux-review-2.md#U5"
+    },
+    {
+     "id": "R47",
+     "statement": "Ask the assistant opens a small box where you can type a question or leave it blank, with Cancel and Send.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-1"
+    },
+    {
+     "id": "R48",
+     "statement": "Cut-off reads and file edits recover on their own; only a command or web action pauses, warning Continue may repeat it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-3"
+    },
+    {
+     "id": "R49",
+     "statement": "When repeated steps use all their rounds without meeting their goal, the plan offers only Ask the assistant and Stop.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-4"
+    },
+    {
+     "id": "R50",
+     "statement": "Add budget starts at the smallest amount that lets the plan finish, refuses less, and Continue restarts it in one press.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-5"
+    },
+    {
+     "id": "R51",
+     "statement": "A plan button the app refuses shows the app's standard error with Retry, as errors do everywhere else.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-6"
+    },
+    {
+     "id": "R52",
+     "statement": "Your comment appears in the chat with the plain note '(Feedback on your plan: please revise it and propose it again.)'",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-7"
+    },
+    {
+     "id": "R53",
+     "statement": "A plan whose specialist is waiting is listed under Needs you and opens by itself in the Specialists popup.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#D9-8"
+    },
+    {
+     "id": "R54",
+     "statement": "A paused plan uses nothing while it waits, and its card carries no extra line about the cost of continuing.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review9#Q9-1"
+    },
+    {
+     "id": "R55",
+     "statement": "Your question to the assistant appears as your own ordinary message; the plan details sent with it stay hidden.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-1"
+    },
+    {
+     "id": "R56",
+     "statement": "With the box left empty, your message reads 'What should I do about this paused plan?'",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-2"
+    },
+    {
+     "id": "R57",
+     "statement": "A plan that failed for an unknown reason says 'The plan couldn't be created.' with Report bug and Diagnose.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-3"
+    },
+    {
+     "id": "R58",
+     "statement": "When the reason a plan failed is known, the card states it in plain words, with the same two buttons.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-4"
+    },
+    {
+     "id": "R59",
+     "statement": "Settings shows no error, Retry or Report bug for the 'Run small plans without asking' setting; that state is gone.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-5",
+     "note": "this is just dumb. remove this. in what world would a user actually encounter this issue? and why would it be relevant in the settings menu?"
+    },
+    {
+     "id": "R60",
+     "statement": "Plan cards inside a conversation preview are read-only, with no Approve, Add budget or other buttons.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-6"
+    },
+    {
+     "id": "R61",
+     "statement": "A plan can end a little over its limit when a service didn't reuse cached text, and then it pauses and says why.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-8"
+    },
+    {
+     "id": "R62",
+     "statement": "Continuing within a few minutes needs only a small top-up, because re-reading the conversation is still almost free.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review10#G-9"
+    },
+    {
+     "id": "R63",
+     "statement": "A plan whose progress couldn't be saved pauses on one line: the message left, Report bug, Ask, Stop and Continue right.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review11#H-1"
+    },
+    {
+     "id": "R64",
+     "statement": "A paused plan's heading names the reason: reached its limit, needs a revised plan, a specialist was stopped, something went wrong.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "specialists-plans-review11#Q11-1"
+    },
+    {
+     "id": "R65",
+     "statement": "Add budget adds your amount once: a Retry or a second press never raises the limit twice.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-service.test.ts",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F1"
+    },
+    {
+     "id": "R66",
+     "statement": "A plan never sits saying it is running with nothing behind it; Continue or a restart gets it moving again.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-host-bridge.test.ts",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F2"
+    },
+    {
+     "id": "R67",
+     "statement": "With small plans set to run without asking, one turn cannot start plan after plan, each spending without a click.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-service.test.ts",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F3"
+    },
+    {
+     "id": "R68",
+     "statement": "When Continue would run a specialist's whole task again from the start, the pause says so before you press it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F4"
+    },
+    {
+     "id": "R69",
+     "statement": "A plan button pressed while the phone is reconnecting is never carried out after the card said it failed.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/remote-shim-plans.test.ts",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F5"
+    },
+    {
+     "id": "R70",
+     "statement": "Plan cards stop being disabled once the phone is connected to a desktop that can run plans.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F9"
+    },
+    {
+     "id": "R71",
+     "statement": "A plan card never gives a developer sentence naming an internal channel as its reason for being unavailable.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F10"
+    },
+    {
+     "id": "R72",
+     "statement": "A plan card and the Settings row never show a raw system error such as 'EACCES' as the reason.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F11"
+    },
+    {
+     "id": "R73",
+     "statement": "Editing the amount and then clicking the switch in Settings saves both, with no lost click and no overwritten value.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F13"
+    },
+    {
+     "id": "R74",
+     "statement": "Retry sends what is on screen now, not the note, question or amount you had before you edited it.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F14"
+    },
+    {
+     "id": "R75",
+     "statement": "A finished plan never keeps a leftover error whose Retry would send the action again.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F15"
+    },
+    {
+     "id": "R76",
+     "statement": "The Add budget field and the Ask box never reopen by themselves, holding an old value, at a later pause.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F16"
+    },
+    {
+     "id": "R77",
+     "statement": "The 'writing the plan' card counts the time it has really been writing, instead of always showing 0s.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F18"
+    },
+    {
+     "id": "R78",
+     "statement": "Only a model running on your computer says a plan can take a few minutes to write; cloud models don't.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F19"
+    },
+    {
+     "id": "R79",
+     "statement": "A writing, failed or stopped card shows what the plan is for, never the placeholder words 'a plan'.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F20"
+    },
+    {
+     "id": "R80",
+     "statement": "A proposal you interrupted never reads 'stopped — 0 of 0 steps done' over an empty card.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F21"
+    },
+    {
+     "id": "R81",
+     "statement": "Prices never read 'about less than a cent' or '~less than a cent'.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F22"
+    },
+    {
+     "id": "R82",
+     "statement": "A step's 'up to' figures include its start-up work, so the steps add up to the plan's own limit.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F24"
+    },
+    {
+     "id": "R83",
+     "statement": "Counts read '0 of 1 reviewer done', never '0 of 1 reviewers done'.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F26"
+    },
+    {
+     "id": "R84",
+     "statement": "Larger local models the app hasn't measured are refused a plan for now, and that limit is written down, not silent.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F28"
+    },
+    {
+     "id": "R85",
+     "statement": "The Settings description says 'limit', the same word the plan card uses, never 'ceiling'.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/plan-card-final-review.test.tsx",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-17-specialists-plans-code-review.md#F33"
     }
    ]
   }
