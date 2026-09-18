@@ -141,6 +141,10 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 **Must run alone.** Nothing else edits `main/ipc-handlers.ts` or `main/remote-server.ts` while Phase 4 is in flight. Coordinator checks open branches before starting each run.
 
+The D3 event-translator merge is desktop-only and may be split off into phase 5 if phase 4's remote half stays parked.
+
+**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/active/investigations/2026-09-10-android-parity-audit.md`, D9) would serve over a local socket, and remote access already ships and pays the drift daily. On hold as a 1.3.1 release blocker since 2026-09-18 (Destin); roadmap items: `docs/roadmap/remote-access.md` (phase 4) and the phase 5 items in native-harness, user-interface, local-models and chat-data.
+
 **Order and files.**
 1. **D2** (one run): hoist runtime construction out of `ipc-handlers.ts:2669, 3074` into `main/create-runtime.ts`, called from `main.ts`; each handler group becomes `main/ipc/<group>.ts` exporting `register(ctx)`. Pure move; keep the two ordering assumptions the audit names. Gate: `verify.sh`, IPC parity tests unchanged, `rg -n "new NativeSessionHost|new .*Supervisor" main/ipc-handlers.ts` empty.
 2. **D1** (one run per channel group; 36 banner-separated groups today — merge trivially small adjacent groups only when the reviewer agrees): a channel table `{name, handler(payload, ctx)}` registered once; both transports iterate it. Normalise on the object first (preload passes positional args, the shim one object). Files: `main/ipc-handlers.ts:346-5192`, `main/remote-server.ts:1670-3765`, `preload.ts`, `renderer/remote-shim.ts`; rule `.claude/rules/ipc-bridge.md`. Gate per run: `verify.sh`; the two parity tests; a per-group test that desktop and phone call the same body; the run's report lists every phone behaviour that changed.
@@ -189,5 +193,5 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
-| 4 | not started |
-| 5 | not started |
+| 4 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after Plan C's `remote-` cluster has merged |
+| 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition) |
