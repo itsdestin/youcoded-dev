@@ -46,6 +46,7 @@ conversations, stock theme, Xvfb/llvmpipe (no GPU). Median of 3 passes; the thra
 |---|---|---:|---:|---:|---|
 | before | youcoded `950a52c3` | 174.8 ms (passes 191.1 / 174.8 / 163.4) | 181.6 / 198.4 ms | 13,267 (739 rows) | `perf-reports/2026-09-18-0948-950a52c-render-cost-before.md` |
 | t3 — transcript-meta cache | youcoded `b502a0f7` | 174.8 ms | 165.9 / 186.2 ms | not re-read | `perf-reports/2026-09-18-1031-b502a0f-render-cost-t3.md` |
+| t4 — Conversations tab: 50 at a time, memo rows | youcoded `095de495` | **58.6 ms** | **65.1 / 66.2 ms** | not re-read | `perf-reports/2026-09-18-1044-095de49-render-cost-t4.md` |
 
 t3 note: as the plan expected, the tab switch did not move (the 16 ms on the thrash median is
 within this rig's pass-to-pass spread). Projects open also held at 161.6 ms median: the
@@ -53,6 +54,11 @@ fixture's 700 one-turn transcripts are cheap to read, so the cache's saving is b
 this fixture can show. The first (cold) pass opened in 763 ms, the warm passes in ~161 ms.
 No judged metric got worse (`compare.mjs`: open 161.6 → 161.6, thrash IPC stall 0 → 0).
 Load was 3.94 for this run against 2.77 for "before".
+
+t4 note: this is the stage that moved the tab. Opening Conversations went 174.8 → 58.6 ms
+(−66%), and the rapid Files ↔ Conversations thrash went 181.6 → 65.1 ms median, with thrash
+long tasks 959 → 0 ms and worst frame gap 160 → 0 ms. Projects long tasks in total went
+1,217 → 51 ms. Load 3.91.
 
 Same run, for context: to-Files median / max 65.3 / 85 ms; thrash long tasks 959 ms
 total, worst frame gap 160 ms, main process unresponsive 0 ms; Projects open 161.6 ms.
