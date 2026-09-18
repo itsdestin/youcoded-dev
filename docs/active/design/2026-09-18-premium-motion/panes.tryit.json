@@ -1,0 +1,44 @@
+{
+  "title": "Files and Games panels — do they still pop open?",
+  "key": "premium-motion-panes-tryit",
+  "out": "panes.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "P-1",
+      "surface": "Files and Games panels, chat view",
+      "path": "In chat view, click the Files button in the header, close it, then click Games",
+      "headline": "Open Files, then Games, a few times. Does each panel glide open instead of popping?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch",
+        "offset": 140,
+        "profile": "premiummotion"
+      },
+      "changed": "Opening either panel used to show it whole in a single frame. It now fades in while wiping open from the right edge, over about a quarter of a second. The chat narrows once, straight away, and the panel glides into the space it frees; the chat is deliberately not squeezed smoothly, because that re-wraps every message on every frame and stutters on long chats.",
+      "notice": "A soft, quick reveal from the right. The chat text should jump to its narrower width once and then hold still, never wobble. Closing is NOT animated yet; that is the next step and needs a bigger change.",
+      "risk": "If the reveal looks like a wipe rather than a glide, or the chat's single jump bothers you, say so in the note; both are tunable.",
+      "yes": "Yes, smooth",
+      "no": "No, still pops"
+    },
+    {
+      "words": true,
+      "id": "P-2",
+      "surface": "Files and Games panels, chat view",
+      "path": "Leave a panel open, then switch to another tab and back, and press Ctrl+` to flip to terminal view and back",
+      "headline": "With a panel already open, switch tabs and flip views. Does the panel stay put, without re-playing its opening?",
+      "dev": {
+        "worktree": "session/premium-motion-hover",
+        "label": "Premium motion 1 - tab switch",
+        "offset": 140,
+        "profile": "premiummotion"
+      },
+      "changed": "The app rebuilds the panel whenever you switch tabs or flip between chat and terminal view. The opening animation is tied to the act of opening, so a panel that was already open should simply be there.",
+      "notice": "The panel appears with the rest of the conversation and never wipes in a second time. In terminal view the panel opens instantly, exactly as it does today; it gets the animation together with closing.",
+      "risk": "None beyond the second window.",
+      "yes": "Yes, stays put",
+      "no": "No, it replays"
+    }
+  ]
+}
