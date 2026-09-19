@@ -131,7 +131,7 @@ Read `docs/PITFALLS.md` before non-trivial changes. It holds cross-repo invarian
 
 On "wrap up," "close out," "we're done," or a substantial session's end, follow `.claude/skills/wrap-up/SKILL.md`. Invoke it if available; otherwise read the procedure directly. Apply findings, file dated roadmap items, or explicitly drop them with reasons—never leave an unactioned list. Respect authorization and the no-merge boundary even if a procedure says otherwise.
 
-**Wrap-up is not merge permission.** Destin decides when work is ready. A new-session handoff prompt goes in plain chat, not a file. Run the checks yourself; do not give him commands to type. Detailed close-out procedure: `docs/workspace-workflows.md` → Ending a Session.
+**Wrap-up is not merge permission.** Destin decides when work is ready. A new-session handoff prompt goes in plain chat, not a file, and carries only the task's own facts (see Where Knowledge Lives). Run the checks yourself; do not give him commands to type. Detailed close-out procedure: `docs/workspace-workflows.md` → Ending a Session.
 
 ## Keeping Documentation Accurate
 
@@ -149,7 +149,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 | Invariant / lesson | Knowledge ladder above; cross-repo only in `docs/PITFALLS.md` |
 | Doc contradicting code | Fix verified drift within authorized editing scope; otherwise report it. Deferred work goes in `docs/roadmap/dev-workspace.md` → knowledge |
 | Claude Code dependency watch | `youcoded/docs/cc-dependencies.md` |
-| In-flight specs/plans/handoffs | `docs/active/{specs,plans,handoffs,investigations,prototypes}/`, with `status: draft` or `active` |
+| In-flight specs/plans/handoffs | `docs/active/{specs,plans,handoffs,investigations,prototypes}/`, with `status: draft` or `active`. Task facts only: never restate workspace guidance — every session already loads CLAUDE.md and the rules |
 | Shipped/superseded records | `docs/archive/`, with corresponding status |
 | Personal preferences | Available personal guidance/memory mechanism, last resort; never product planning |
 
