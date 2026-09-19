@@ -248,3 +248,38 @@ verify/combine only) and at run time genuinely receives nothing from earlier ste
 never show a complete flow and must not imply one. Every link names exactly one earlier step, so the
 structure is always a tree — which is why words carry it and no diagram is needed. Flow labels
 therefore appear ONLY where the source is not the row directly above.
+
+## Decision 34 — no per-step budgets; spending is watched, not rationed (2026-09-19)
+
+Destin's symptom: *"almost immediately every single one of the assistants, even for simple tasks
+like … a couple of web searches … hit their budget limit almost immediately. and then adding
+budget, it just kept re hitting that same limit."* His ruling, after the research below:
+
+1. **No limit by default.** Approve / Continue just starts the plan — "no limits, no cost
+   expectations".
+2. **Keep live spending in dollars with a Stop button.**
+3. **Drop per-step budgets entirely** — *"they're confusing … it forces the model to try and
+   predict how much each step is gonna cost, and that just doesn't make sense."* `budget_tokens`
+   leaves the grammar.
+4. **One optional whole-plan limit**, set by the user per plan, *"hidden behind an additional
+   button that says set budget or set limit"*.
+5. **An estimate, never a limit**, from his own past specialist runs by type and model.
+6. Spending math must match and reuse the rest of the app's cost figures.
+
+Evidence (2026-09-19, read-only):
+- 297 of his past specialist runs: median ≈222k billed-equivalent tokens (≈$0.60 at list);
+  workers median ≈517k (≈$2.26), p90 ≈2.3M. The old per-step maximum was 30,000 — a typical
+  worker needed ~17× that. Model choice moves cost ~100×; specialist type ~3–5×. Re-run with
+  `docs/active/investigations/2026-09-19-specialist-usage.py`; data lives in
+  `~/.youcoded/sessions/<folder>/<childId>.jsonl` (`turn-complete` usage lines).
+- Other tools: Claude Code, Codex and Hermes all have spending caps OFF by default; the defaults
+  are generous step/iteration caps, and hitting a cap returns partial work rather than pausing.
+- Spending-math audit: a reported request is priced by the same `costForUsage` (pricing.ts) as
+  the chat's cost chip — correct. The divergences are all in the pessimism: stops/errors/missing
+  usage charge the whole remaining allowance at the top rate as "spent"; inputs are reserved at
+  one token per byte (≈3–4× real); images are refused in plan specialists only because they
+  can't be bounded in advance. The `resolveManifest` setup probe (suspected Add budget freeze,
+  Continue re-measure complaint) exists only to measure `setupTokens` and becomes unnecessary.
+  Roughly 1,500–2,000 source lines of reservation/tranche/adapter machinery go with it.
+
+Open details went to a questions deck: `specialists-plans.spending.questions.json`.

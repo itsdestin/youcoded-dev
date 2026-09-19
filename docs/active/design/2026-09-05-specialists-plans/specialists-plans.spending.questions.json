@@ -1,0 +1,216 @@
+{
+  "_comment": "Decision 34 (2026-09-19): no per-step budgets, no limit by default, live dollars + Stop, an optional whole-plan limit behind its own button. These are the open details, asked before anything is drawn. Evidence: 297 of Destin's past specialist runs (median ~222k billed-equivalent tokens, ~$0.60 at list; workers ~$2.26) and the spending-math audit of 2026-09-19.",
+  "title": "Plans — spending without per-step budgets",
+  "key": "specialists-plans-spending-questions",
+  "out": "specialists-plans.spending.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "Any plan, from approval to finished",
+      "headline": "Plans start with no limit. The card shows what has been spent so far, in dollars, beside a Stop button.",
+      "changed": "Every step loses its own spending allowance, and the assistant no longer guesses what each step will cost. Approve (or Continue) just starts the plan. While it runs, the card shows real spending in dollars, updated after each specialist reply, the same figure the conversation's cost chip adds up.",
+      "notice": "No more pausing to ask for budget partway through. Stop is always there. A stopped or failed request counts only what the provider actually billed, instead of today's pessimistic guess.",
+      "yes": "That's right",
+      "no": "Not quite"
+    },
+    {
+      "id": "P-1",
+      "page": "The optional limit",
+      "intro": "You decided a plan can have ONE spending limit, set only if you want one, behind its own button. These settle how that works."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "The Set limit button on a plan waiting for approval",
+      "headline": "What should a plan's limit be measured in?",
+      "today": "Limits are counted in tokens (pieces of words), with a dollar figure worked out from them.",
+      "problem": "Dollars are what you care about, but some plans have no dollar price: ChatGPT sign-in (paid by subscription) and models on your own computer cost nothing per word.",
+      "proposal": "Pick how you type the limit in.",
+      "options": [
+        {
+          "id": "dollars-fallback",
+          "label": "Dollars, tokens if no price",
+          "pros": ["You type the number you actually care about.", "Still works for subscription and on-computer plans."],
+          "cons": ["The box asks for a different unit depending on the plan's models."],
+          "recommended": true
+        },
+        {
+          "id": "either",
+          "label": "You choose each time",
+          "pros": ["Full control."],
+          "cons": ["An extra choice every time you set a limit, for a rarely used feature."]
+        },
+        {
+          "id": "tokens",
+          "label": "Tokens only",
+          "pros": ["One unit for every plan."],
+          "cons": ["Tokens mean little to most people; you'd have to convert in your head."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "A running plan that reaches the limit you set",
+      "headline": "What should happen when a plan reaches your limit?",
+      "today": "A step that runs out pauses on its own and asks you to add budget, often again and again.",
+      "problem": "With one limit for the whole plan this happens at most once, but a plan cut off mid-work can waste what the specialists had already done.",
+      "proposal": "Pick what happens at the limit. In every case a request already under way finishes, so the limit can be passed by up to one reply per running specialist.",
+      "options": [
+        {
+          "id": "wrap-then-pause",
+          "label": "Wrap up, then pause",
+          "pros": ["Near the limit (about 90%) specialists are told to finish and report, so most work comes back usable.", "At the limit it pauses with Continue (and a new limit) or Stop — your call."],
+          "cons": ["Specialists told to wrap up may cut corners on the last bit."],
+          "recommended": true
+        },
+        {
+          "id": "pause",
+          "label": "Just pause",
+          "pros": ["Simplest; nothing changes how specialists work."],
+          "cons": ["Work in progress is cut mid-thought; Continue picks it up but costs more to restart."]
+        },
+        {
+          "id": "stop",
+          "label": "Stop for good",
+          "pros": ["The limit is final: no further decision needed."],
+          "cons": ["Unfinished work is lost; you'd need a new plan to finish."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "The Set limit button",
+      "headline": "Can a limit be set or changed after the plan has started?",
+      "today": "Budget is fixed at approval and only grows through Add budget when a step pauses.",
+      "problem": "You may only realise a plan is getting expensive once you watch the spending climb.",
+      "proposal": "Pick when the button is available.",
+      "options": [
+        {
+          "id": "anytime",
+          "label": "Before and while running",
+          "pros": ["You can rein in a plan the moment it looks pricey, without stopping it."],
+          "cons": ["One more small button on a running card, beside Stop."],
+          "recommended": true
+        },
+        {
+          "id": "before",
+          "label": "Only before approving",
+          "pros": ["Running card stays as simple as possible."],
+          "cons": ["Your only option once running is Stop."]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "The estimate",
+      "intro": "You asked for a rough cost estimate from your own history — shown as a guide, never as a limit."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "A plan waiting for approval",
+      "headline": "How should the card show what a plan will probably cost?",
+      "today": "The card shows a worst-case ceiling, which is far from what a plan really costs.",
+      "problem": "Your past 297 specialist runs vary widely: a typical one costs about $0.60, a typical builder about $2.30, and the model chosen changes cost about 100 times more than the kind of specialist does.",
+      "proposal": "Each plan gets an estimate from the median and heavy (90th percentile) runs of that kind of specialist, priced at the plan's actual models, updating as you run more.",
+      "options": [
+        {
+          "id": "range",
+          "label": "A range: usually $0.40–$2",
+          "pros": ["Honest that it's a guess.", "The high end warns you about heavy plans."],
+          "cons": ["A wide range can look vague."],
+          "recommended": true
+        },
+        {
+          "id": "single",
+          "label": "One number: about $0.90",
+          "pros": ["Quickest to read."],
+          "cons": ["Looks more certain than it is; heavy plans can cost several times more."]
+        },
+        {
+          "id": "none",
+          "label": "No estimate",
+          "pros": ["Nothing that can be wrong."],
+          "cons": ["No sense of cost before you press Approve."]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chat · plan card",
+      "path": "A plan run with ChatGPT sign-in or a model on your computer",
+      "headline": "What should the card show when a plan's models aren't charged per word?",
+      "today": "Such plans show only a count of tokens used, with no dollar figure.",
+      "problem": "A dollar figure would be made up, but a subscription still has usage caps, so size still matters.",
+      "proposal": "Pick what these plans show, both the estimate and the running total.",
+      "options": [
+        {
+          "id": "tokens-note",
+          "label": "Tokens, labelled",
+          "summary": "e.g. \"about 300k tokens · included in your ChatGPT plan\"",
+          "pros": ["Tells you it costs nothing extra, and still how big it is."],
+          "cons": ["Slightly longer line."],
+          "recommended": true
+        },
+        {
+          "id": "tokens-bare",
+          "label": "Tokens only",
+          "pros": ["Short."],
+          "cons": ["Doesn't say whether money is involved."]
+        },
+        {
+          "id": "nothing",
+          "label": "Nothing",
+          "pros": ["Cleanest card."],
+          "cons": ["No sense of size against your subscription's caps."]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Starting plans automatically",
+      "intro": "One setting depended on the old limit and needs a new meaning."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Settings · Specialists",
+      "path": "The setting that starts plans without asking",
+      "headline": "What should \"start plans automatically\" mean now that plans have no built-in limit?",
+      "today": "Plans start without asking when their worst-case ceiling is under a number of tokens you choose (off by default).",
+      "problem": "Without per-step budgets there is no ceiling to compare against, so this setting has nothing to check.",
+      "proposal": "Pick its new rule.",
+      "options": [
+        {
+          "id": "estimate-under",
+          "label": "When estimate is under $X",
+          "pros": ["Small plans just go; bigger ones still ask.", "Uses the same estimate the card shows."],
+          "cons": ["An estimate can be wrong — an auto-started plan could cost more than $X (you can still Stop it)."],
+          "recommended": true
+        },
+        {
+          "id": "estimate-limit",
+          "label": "Under $X, with $X as limit",
+          "pros": ["An auto-started plan can never pass $X without asking."],
+          "cons": ["Big auto-started plans pause at $X and wait for you."]
+        },
+        {
+          "id": "remove",
+          "label": "Remove the setting",
+          "pros": ["Every plan waits for you. One less setting."],
+          "cons": ["You press Approve every time, even for tiny plans."]
+        }
+      ]
+    }
+  ]
+}
