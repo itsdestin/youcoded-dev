@@ -1,0 +1,28 @@
+{
+ "deck": "premium-motion-hover-tryit",
+ "started": "2026-09-18T10:07:44.662Z",
+ "submitted": "2026-09-18T10:08:06Z",
+ "cur": 0,
+ "answers": {
+  "H-1": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist"
+  },
+  "H-2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist"
+  },
+  "H-3": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist"
+  },
+  "H-4": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist"
+  }
+ }
+}

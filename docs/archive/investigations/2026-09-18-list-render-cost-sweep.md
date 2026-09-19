@@ -1,6 +1,6 @@
 ---
 date: 2026-09-18
-status: active
+status: shipped
 type: investigation
 topic: Why switching to Project View's Conversations tab freezes, every other surface with the same shape, the app's prior art for each, and a proposed standard + enforcement so it stays fixed
 ---

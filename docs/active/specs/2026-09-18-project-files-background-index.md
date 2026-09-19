@@ -5,7 +5,7 @@ type: spec
 topic: Project View Files — every folder just works at any size. Direct folder browsing from disk, backed by a shared, recoverable background index for search and counts. No "large folder" gate, no "first batch" note, no silently missing files.
 origin: Destin, 2026-09-18 — "i just want everything to work, even if it requires a smidge more backend work"
 revision: 2 — rewritten after an independent review of revision 1 (corrections folded in; see "What changed from revision 1")
-related: docs/active/plans/2026-09-18-render-cost-consolidation.md, docs/active/investigations/2026-09-18-list-render-cost-sweep.md, .claude/rules/renderer-lists.md
+related: docs/archive/plans/2026-09-18-render-cost-consolidation.md, docs/archive/investigations/2026-09-18-list-render-cost-sweep.md, .claude/rules/renderer-lists.md
 ---
 
 # Project Files at any size — revised design (build brief)

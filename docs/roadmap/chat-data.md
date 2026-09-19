@@ -121,7 +121,7 @@ produced and the panel that shows them (files).
       up to search older ones"
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
-- [ ] Four smaller reads left over from cycle 2 still do more work than they need to: listing
+- [ ] **v1.3.1 release blocker.** Four smaller reads left over from cycle 2 still do more work than they need to: listing
       past conversations re-reads about 25 MB every time the list opens and runs without a
       concurrency cap, two more reads take whole files where the tail would do, the catalog
       fetches the same thing several times at once instead of once, and per-session file
@@ -131,8 +131,19 @@ produced and the panel that shows them (files).
       2026-09-16 (smoothness sweep C6, MERGED youcoded#501): the NATIVE half of the Resume
       listing — every session file listed and 256 KB of each head-read synchronously — now
       reads off the main thread; the Claude Code half (the 25 MB re-read, no concurrency cap)
-      and the other three are still as described
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
+      and the other three are still as described. The 2026-09-16 simplification audit measured
+      the same Resume scan (W1): every open re-reads every conversation file — about 260 MB on
+      this machine — with nothing cached, and Project View pays the same scan just to count
+      files per folder; a folder's nickname-to-path lookup is redone on every browse and, when
+      nothing matches, reads every conversation in the folder in full (W6); and a history-replay
+      path that reads a whole conversation into memory (a 112 MB file becomes a 224 MB string)
+      is still wired up with nothing calling it (W5). Wanted: a size-and-date cache in front of
+      the per-file reader so an unchanged history opens without reading a file, the lookup
+      remembered and its fallback capped, the dead replay path deleted, and the replayed-turn
+      record's type made unambiguous (D11) — simplification phase 5's chat-data share. Resume
+      opens faster on a big history; nothing else changes. On hold since 2026-09-18 (Destin):
+      resumes after phase 4, with the rest of phase 5
+      `desktop` `blocked` `checked 2026-09-18` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
 - [ ] Every conversation record write and read first lists the whole conversations directory,
       synchronously (`conversation-store.ts` heal-on-write/read — one `readdirSync` over a file

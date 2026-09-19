@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // DOM-size sweep — how many elements each list-heavy surface builds at scale.
 //
-// WHY THIS EXISTS (render-cost plan, docs/active/investigations/2026-09-18-list-render-cost-sweep.md):
+// WHY THIS EXISTS (render-cost plan, docs/archive/investigations/2026-09-18-list-render-cost-sweep.md):
 // the Conversations-tab freeze came from drawing every row of a long list at once.
 // The node count of an open surface is the behaviour that proves a list is bounded —
 // a source-text scanner was tried and missed 6 of 11 offenders (plan §"Revised" #2).

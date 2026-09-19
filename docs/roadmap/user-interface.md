@@ -7,6 +7,38 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       fixes were made on 2026-09-16; each remaining group needs its own design call.
       `all` `confirmed` `checked 2026-09-16`
 
+- [ ] The Files and Games panels still pop open and shut. Destin, 2026-09-18: "add animations for
+      opening the files/games panels so they feel less poppy", then "i want the animation to
+      smoothly handle open/close and switching between differently sized game/file panels" — and
+      later the same day: "maybe we just drop the panel animations for now and put them as a
+      roadmap follow up". A full build is PARKED, not lost: youcoded branch
+      `followup/right-pane-motion` (3 commits, 271f0ab8 on top). It glides the panel's edge open,
+      shut and between the two widths, reverses on a second click, keeps the Files panel's
+      contents while it leaves (closing wipes them in the same action), covers terminal view, and
+      re-wraps the chat once per action rather than per frame; 27 tests, verify.sh green.
+      **Destin never reviewed it and nobody has seen it run** — it was dropped before its first
+      look. It avoids a transform slide on purpose (that is the Windows paint bug shipped twice in
+      this pane) and its riskiest spot is the frosted frame's cut-out staying in step. Its try-it
+      deck spec is in workspace history at 9b0f5f7c. Start from that branch, rebase it, and put it
+      in front of him in a dev window before anything else. The same follow-up owns the list he
+      was promised and never got: other places worth animating — menus, dropdowns and tooltips
+      animate IN and vanish instantly; dialogs and the Projects / Resume screens were not surveyed
+      `files-panel` `all` `parked` `checked 2026-09-18`
+
+- [ ] Some clickable spots still do nothing under the pointer after the 2026-09-18 hover/press sweep
+      (youcoded#534). Left on purpose, each for a stated reason, NOT checked
+      one by one: about twenty clickable non-buttons found by the sweep's inventory that also have
+      no keyboard path (CommandDrawer, FirstTimeWarning, LocalModelsSection, ResumeBrowser rows,
+      ModelPickerPopup, marketplace UpdateButton, ProjectView, SettingRow) — they need a button
+      role as well as a hover, which is a bigger change than a class; the spreadsheet viewer's
+      sheet tabs (a fixed light palette set inline, so a shared class cannot reach them); six
+      buddy-window buttons styled entirely inline. Deliberately unchanged: chess squares (their own
+      move shading would fight a hover wash) and the crash screen's button (it must render even
+      when the stylesheet has not). The inventory counted 43 of 331 buttons without hover; an
+      unknown share of the rest are false alarms where the parent row carries the hover, as the
+      session menu's rows turned out to
+      `all` `needs-verify` `checked 2026-09-18`
+
 - [ ] Two "Show details" style dropdowns in Backup & Sync still use the browser's bare triangle, the look Destin said he
       hates (2026-09-05). A test now blocks new ones and lists these two as known; restyling them is his call.
       `settings/sync` `desktop` `decision` `checked 2026-09-16`
@@ -125,8 +157,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       the rest of this item's second half; Batches D (theme blur/particles) and E (file opens)
       follow. A5 (throttling the streaming bubble's markdown re-parse) is a visible change
       that needs a before/after clip and Destin's call. 2026-09-18 render-cost consolidation
-      (docs/active/plans/2026-09-18-render-cost-consolidation.md, branch
-      `session/convo-tab-lag`): every long list now draws 50 at a time and each card once —
+      (docs/archive/plans/2026-09-18-render-cost-consolidation.md, youcoded#535): every long list now draws 50 at a time and each card once —
       Projects → Conversations 174.8 → 58.4 ms and its tab thrash 181.6 → 65.3 ms with long
       tasks 1,217 → 0 ms; Marketplace 58,706 → 3,281 page elements, model search 24,679 →
       1,255; the preview and buddy chat fold like the chat, and entries present when a chat
@@ -258,3 +289,11 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       thing it is about. Same review, U10. `AnchorTip` placement is shared by every settings
       page; the fix belongs to the primitive
       `settings` `desktop` `confirmed` `checked 2026-09-10`
+
+- [ ] **v1.3.1 release blocker.** The settings screen exists twice — a desktop version and a
+      phone version sharing 14 of their 17 rows — so every settings change is made twice and the
+      two can disagree. Wanted: one settings body with two small platform inserts —
+      simplification phase 5, D8. The row order may shift slightly, so it gets a before/after
+      review deck (both platforms, every theme) before it is kept. On hold since 2026-09-18
+      (Destin); resumes with the rest of phase 5
+      `settings` `all` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md

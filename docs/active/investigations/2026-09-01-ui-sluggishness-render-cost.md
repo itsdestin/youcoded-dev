@@ -28,7 +28,7 @@ is 98–99% renderer time (the file read is 0.1–0.3 s).
 > (`hooks/use-entry-folding.ts`). ChatView still maps the *loaded* timeline (the anchor above
 > still holds), but what is loaded is paged and what is far away is folded. The same folding
 > now covers the conversation preview and the buddy chat
-> (`docs/active/plans/2026-09-18-render-cost-consolidation.md`, Tasks 6–7).
+> (`docs/archive/plans/2026-09-18-render-cost-consolidation.md`, Tasks 6–7).
 
 **Cause 2 — one mounted `ChatView` per open session.** Inactive panes are parked with
 `content-visibility: hidden` (deliberately not `display:none`, for resize performance), so

@@ -300,3 +300,15 @@ Filing test: reaching the app from another device — the protocol, the browser 
       security hole; design ready in the private security record). Destin 2026-09-11: do this
       in the Android rebuild's testing phase — a lot of device testing happens there anyway.
       `remote` `parked` `checked 2026-09-11` `security`
+
+- [ ] **v1.3.1 release blocker.** 182 features are hand-written twice, once for the desktop
+      window and once for a phone or browser connecting remotely, because one 4,846-line function
+      both registers every feature and constructs the assistant runtime; the copies drift (the
+      phone's Resume list showed already-open sessions until 2026-09-16, patched by a one-liner
+      that the real fix deletes). Wanted: the runtime hoisted out, one channel table both doors
+      read, and the three transcript-event translators merged — simplification phase 4, the
+      largest phase, about 5–6k lines removed. Where the phone had drifted it will match the
+      desktop afterwards, listed per group. On hold since 2026-09-18 (Destin): runs after Plan
+      C's `remote-` test cluster merges, alone — nothing else may edit the two door files the
+      plan names while it runs. Goes before the Android rebuild, not inside it
+      `remote` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md

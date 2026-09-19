@@ -1,6 +1,6 @@
 ---
 date: 2026-09-18
-status: draft
+status: shipped
 type: plan
 topic: One consolidated build — stop drawing what nobody can see (Conversations-tab freeze + every list with the same shape), merge the duplicated pieces, and add the rules/guards that keep it that way
 investigation: docs/active/investigations/2026-09-18-list-render-cost-sweep.md
