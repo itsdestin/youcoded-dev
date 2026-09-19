@@ -170,6 +170,10 @@ and provisional counts while the first index runs.
 
 ## Build stages (each shippable and measurable on its own)
 
+**Status:** Stages 0–1 shipped 2026-09-18 (youcoded#536; review deck and code review in
+`docs/archive/design/2026-09-18-project-files-any-size/` and `docs/archive/reviews/`). Stages 2–3
+are open in `docs/roadmap/files.md` as v1.3.1 release blockers.
+
 **Stage 0 — measure first (no product code).** On a large real project, the home folder and a
 whole drive: time and memory of a full walk (Node walk vs `rg --files`); first index vs warm
 re-check; watcher cost and inotify headroom at those sizes; chunked reveal vs virtualization for
