@@ -20,7 +20,7 @@
    ],
    "expect": "[data-page-approval]",
    "measure": [
-    "[data-page-approval] [data-page-connection]"
+    "[data-saved-key-offer]"
    ]
   },
   {
@@ -39,9 +39,34 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-approval] input",
+   "expect": "[data-page-approval='what']",
    "measure": [
     "[data-page-approval] [data-page-connection]"
+   ]
+  },
+  {
+   "name": "approve-key-step",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Task board'))",
+     "settle": 1300
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-page-approval] button')].find(b=>b.textContent.trim()==='Continue')",
+     "settle": 700
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-key-step]",
+   "measure": [
+    "[data-page-key-step]"
    ]
   },
   {
@@ -83,7 +108,7 @@
    ],
    "expect": "[data-page-approval]",
    "measure": [
-    "[data-page-approval] [data-page-connection]"
+    "[data-open-internet-means]"
    ]
   },
   {
@@ -105,7 +130,7 @@
    ],
    "expect": "[data-page-approval]",
    "measure": [
-    "[data-page-approval] [data-page-connection]"
+    "[data-finish-on-computer]"
    ]
   },
   {
@@ -126,9 +151,7 @@
    ],
    "expect": "[data-page-freshness='ok']",
    "measure": [
-    {
-     "text": "Updated 2 min ago"
-    }
+    "[data-page-freshness]"
    ]
   },
   {
@@ -149,9 +172,7 @@
    ],
    "expect": "[data-page-freshness='failed']",
    "measure": [
-    {
-     "text": "Couldn't update"
-    }
+    "[data-page-freshness]"
    ]
   },
   {
@@ -215,11 +236,9 @@
      "settle": 900
     }
    ],
-   "expect": "[data-page-connection]",
+   "expect": "[data-connect]",
    "measure": [
-    {
-     "text": "Waiting for your OK"
-    }
+    "[data-connect]"
    ]
   },
   {
@@ -259,7 +278,7 @@
      "settle": 900
     },
     {
-     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Connected accounts'))",
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Connected services'))",
      "settle": 900
     }
    ],

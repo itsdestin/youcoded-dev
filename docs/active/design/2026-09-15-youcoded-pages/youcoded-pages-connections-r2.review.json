@@ -1,0 +1,201 @@
+{
+ "title": "Pages that connect \u2014 the screens, round 2",
+ "key": "youcoded-pages-connections-r2",
+ "out": "youcoded-pages-connections-r2.review.html",
+ "images": "images/youcoded-pages-connections-r2.review",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "labels": {
+  "before": "Round 1",
+  "after": "Round 2"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "stage": "review",
+ "crops": {
+  "c-newkey": [
+   "pages-connections",
+   "approve-new-key-full",
+   "620x460+535+232"
+  ],
+  "c-savedkey": [
+   "pages-connections",
+   "approve-saved-key",
+   "620x460+535+232"
+  ],
+  "c-change": [
+   "pages-connections",
+   "approve-change",
+   "620x460+535+232"
+  ],
+  "c-open": [
+   "pages-connections",
+   "approve-open-internet",
+   "620x460+535+232"
+  ],
+  "c-phone": [
+   "pages-connections",
+   "approve-on-phone",
+   "620x460+535+232"
+  ],
+  "c-fresh": [
+   "pages-connections",
+   "connected-fresh",
+   "1440x240+0+0"
+  ],
+  "c-failed": [
+   "pages-connections",
+   "connected-failed",
+   "1440x240+0+0"
+  ],
+  "c-cards": [
+   "pages-connections",
+   "library-cards",
+   "1180x300+140+55"
+  ],
+  "c-dialog": [
+   "pages-connections",
+   "card-connections",
+   "460x380+490+245"
+  ],
+  "c-remove": [
+   "pages-connections",
+   "card-connections-remove",
+   "460x420+490+245"
+  ],
+  "c-settings": [
+   "pages-connections",
+   "settings-saved-keys",
+   "460x340+490+285"
+  ],
+  "c-keystep": [
+   "pages-connections",
+   "approve-key-step",
+   "1100x450+300+240"
+  ]
+ },
+ "steps": [
+  {
+   "id": "D-1",
+   "surface": "Pages",
+   "path": "Pages \u2192 Task board, the first time it opens",
+   "crop": "c-newkey",
+   "headline": "Step 1 is now only what the page may do, with a Continue button. No key symbol, no key box, no \"everything else\" line.",
+   "changed": "From your note: the permission and the key entry are separate things. The card holds the sentence alone; Continue leads to the key. A page that needs no new key still says Allow and open here.",
+   "notice": "The first card is shorter and reads the same for every kind of page.",
+   "risk": "One more press for pages that need a key."
+  },
+  {
+   "id": "D-2",
+   "surface": "Pages",
+   "path": "Task board \u2192 Continue",
+   "crop": "c-keystep",
+   "runs": [
+    "after"
+   ],
+   "highlight": {
+    "selector": "[data-page-key-step]"
+   },
+   "headline": "Step 2 is the key: where to find it, the box, one plain line, then Allow and open.",
+   "changed": "New. The three instructions come with the page, written by whoever made it, and are labelled as the author's words. A page without instructions shows a general pointer: sign in on the service's website and look for API, Developer or Integrations. Under the box is one line only: \"YouCoded keeps your key. The page never sees it.\"",
+   "notice": "A non-technical person is told where to click, not just asked for a key.",
+   "risk": "The instructions are the author's, so a bad page could write misleading ones. The label says whose words they are; marketplace review will need to read them."
+  },
+  {
+   "id": "D-3",
+   "surface": "Pages",
+   "path": "Pages \u2192 Weather, the first time it opens",
+   "crop": "c-savedkey",
+   "headline": "The saved-key line now has a proper small button, \"Use a different key\", and the symbol and last line are gone.",
+   "changed": "The button uses the app's standard small outlined style. Pressing it changes the line to \"You'll paste a different OpenWeather key next\" and the main button to Continue.",
+   "notice": "It looks like something you can press.",
+   "risk": ""
+  },
+  {
+   "id": "D-4",
+   "surface": "Pages",
+   "path": "Pages \u2192 Headlines, after an edit added a second feed",
+   "crop": "c-change",
+   "headline": "The re-ask heading now reads \"Headlines wants additional permissions\".",
+   "changed": "Your wording replaces \"wants one more thing\". Symbols and the \"everything else\" line removed here too.",
+   "notice": "The heading says plainly that this is about permissions, in the app's usual word for it.",
+   "risk": ""
+  },
+  {
+   "id": "D-5",
+   "surface": "Pages",
+   "path": "Pages \u2192 Link reader, the first time it opens",
+   "crop": "c-open",
+   "headline": "The whole-internet card now spells out what that means in practice, in three short lines.",
+   "changed": "Under the sentence: it can load from and send to any site with no fixed list; anything you type or paste could be sent somewhere you did not choose; it still cannot see your files, your other pages, or your saved keys and sign-ins.",
+   "notice": "The risk and the limit are both stated, so it is neither vague nor frightening.",
+   "risk": "The third line stays true only while an open-internet page can never hold a key or sign-in, which you decided. If file access arrives in a later phase, that line must be revisited."
+  },
+  {
+   "id": "D-6",
+   "surface": "Pages over remote access",
+   "path": "The Task board card, opened from your phone",
+   "crop": "c-phone",
+   "headline": "On the phone, a greyed \"Finish on your computer\" button sits where Allow would be, with the reason under it.",
+   "changed": "Under the button: \"Adding a key isn't supported on the phone yet. Open this page on your computer to set it up.\"",
+   "notice": "It reads as a step you cannot take here, not as something broken.",
+   "risk": ""
+  },
+  {
+   "id": "D-7",
+   "surface": "Pages",
+   "path": "Pages \u2192 YouCoded analytics",
+   "crop": "c-fresh",
+   "headline": "The band now shows a bare \"2m\" and the refresh button.",
+   "changed": "\"Updated\" and \"ago\" are gone. It reads now, 2m, 3h, 4d.",
+   "notice": "The band is as quiet as it was before connections existed.",
+   "risk": "A bare \"2m\" with no label may not be understood by someone seeing it for the first time; hovering the button says \"Update now\"."
+  },
+  {
+   "id": "D-8",
+   "surface": "Pages",
+   "path": "Pages \u2192 Trip board, after an update failed",
+   "crop": "c-failed",
+   "headline": "The failed state follows the same short format: \"Couldn't update \u00b7 3h\".",
+   "changed": "You approved this slide as it was; I shortened \"last 3 h ago\" to \"3h\" only so the two states match. Say no to keep the longer wording here.",
+   "notice": "Both states of the band read the same way: a short age, then the button.",
+   "risk": ""
+  },
+  {
+   "id": "D-9",
+   "surface": "Manage pages",
+   "path": "Manage pages \u2192 a card's \"2 connections\" link",
+   "crop": "c-dialog",
+   "headline": "A connection not yet agreed to shows a Connect button at its bottom right, not a \"waiting\" label.",
+   "changed": "Connect closes the library and opens that page on its approval card, the one place a connection is agreed to. Approved lines keep Remove in the same spot.",
+   "notice": "Every line ends in one button, bottom right.",
+   "risk": "Connect takes you out of Manage pages rather than approving on the spot."
+  },
+  {
+   "id": "D-10",
+   "surface": "Manage pages",
+   "path": "A page's connections \u2192 Remove",
+   "crop": "c-remove",
+   "headline": "The confirm buttons are right-aligned, with Remove to the right of Never mind.",
+   "changed": "As you asked.",
+   "notice": "The button you are more likely to want first sits on the left; the destructive one is last.",
+   "risk": ""
+  },
+  {
+   "id": "D-11",
+   "surface": "Settings",
+   "path": "Settings \u2192 Account \u2192 Connected services",
+   "crop": "c-settings",
+   "headline": "\"Connected accounts\" is now \"Connected services\", on the Settings row and the page title.",
+   "changed": "The rename applies to the whole existing page, not only the new keys section, so GitHub now sits under Connected services too.",
+   "notice": "The name fits now that it holds keys for services as well as a GitHub sign-in.",
+   "risk": "Anything written elsewhere that says \"Connected accounts\" (help text, the docs) needs the same rename before this ships."
+  }
+ ]
+}
