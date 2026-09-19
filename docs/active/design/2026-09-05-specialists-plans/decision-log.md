@@ -314,3 +314,13 @@ Open details went to a questions deck: `specialists-plans.spending.questions.jso
    in the `propose_plan` description (its only plan-writing guidance today is the `summary`
    sentence and the no-single-run rule — tools/propose-plan.ts:67–79). This reverses part of
    decision 33's "a split step never receives input" fact.
+4. (chat 2026-09-19, answers the two follow-ups) **Models default to each specialist type's
+   existing default.** The assistant changes a step's model ONLY when the user explicitly asks it
+   to; the user can change any step's model themselves (plan settings). Changing models while a
+   plan runs: not yet answered.
+5. (same chat) **The goal, in his words:** *"fully autonomous workflows of different agents with
+   different context settings, different instructions … provide a task at the beginning and get a
+   fully complete output at the end … build a new feature, and then … different types of
+   reviewers … builders … UX beta testers … and then a final consolidated PR reviewer … any kind of
+   research task."* He floated an explorer step that hands back to the primary assistant to write
+   the remaining steps' prompts, or a coordinator step that amends later steps. Under discussion.
