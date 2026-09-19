@@ -418,6 +418,16 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       about a different chip
       `tool-cards` `desktop` `confirmed` `checked 2026-09-05`
 
+- [ ] Idea (Destin, 2026-09-18): build and edit a plan yourself, without the assistant — "i think
+      I want to eventually build mechanisms to fully build and edit plans manually as a user
+      without the assistant". Today a proposed plan is read-only: Comment is the only lever, and
+      the assistant does the rewriting. Manual authoring/editing collides with the consent model
+      stage two just locked down — an approved plan is frozen to exact models, prices and limits,
+      and every guard assumes what runs is what was approved — so an edit has to re-validate,
+      re-cost and re-freeze through the same path a specialist tier change now uses, plus a way to
+      edit long instructions inside a chat card. Needs design
+      `tool-cards` `desktop` `parked` `checked 2026-09-18`
+
 - [ ] Specialists — six follow-on ideas from plan 1c, named but not designed: promote a
       foreground helper to background mid-run; open a helper's own transcript in a viewer; a
       project-level native specialists folder; per-helper token/cost on its own card; a strict
