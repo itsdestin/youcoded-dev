@@ -1,0 +1,26 @@
+{
+ "deck": "youcoded-pages-connections-questions-2",
+ "started": "2026-09-19T07:46:19.210Z",
+ "submitted": "2026-09-19T07:47:18Z",
+ "cur": 0,
+ "answers": {
+  "Q-open": {
+   "v": "pick",
+   "pick": "open-allowed",
+   "seconds": 20,
+   "theme": "devils-garden"
+  },
+  "Q-open-mix": {
+   "v": "pick",
+   "pick": "mix-never",
+   "seconds": 20,
+   "theme": "devils-garden"
+  },
+  "Q-browser": {
+   "v": "pick",
+   "pick": "browser-later",
+   "seconds": 20,
+   "theme": "devils-garden"
+  }
+ }
+}

@@ -103,9 +103,17 @@ has passed ~8 items — graduate it to its own file.
       connections, model tasks and marketplace follow, each an open question until its phase.
       Later: chat-alongside visual editing with drag/reorganize/resize, independent Android and durable automation.
       2026-09-17: Phase 1 (the shell, the page view, pins, the creator skill, page data, floating
-      themes) is built and verified on `session/youcoded-pages-spec`; the contract was skipped on
-      Destin's call. Phases 2–4 remain open questions in the plan.
-      `window-chrome` `all` `in-flight` `checked 2026-09-17` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+      themes) shipped to master; the contract was skipped on Destin's call.
+      2026-09-19: Phase 2 (connections and refresh) decided on two questions decks and is being
+      designed on `session/youcoded-pages-phase2`. Phases 3–4 remain open questions in the plan.
+      `window-chrome` `all` `in-flight` `checked 2026-09-19` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+
+- [ ] A web browser as a page: "what if i want to create a basic web browser or something within
+      youcoded?" An open-internet page can fetch from anywhere, but most large sites refuse to be
+      shown inside another page, so a real browser needs the app to supply pages a website view
+      (back/forward, its own approval wording, an answer for the phone where it likely cannot
+      work). Deferred to its own round on the Phase 2 follow-up deck (2026-09-19).
+      `window-chrome` `desktop` `decision` `checked 2026-09-19`
 
 - [ ] Pages on a phone: the page view opens with the list always beside the page and the same band
       as on desktop, and nobody has designed what that becomes at phone width — on a narrow remote
