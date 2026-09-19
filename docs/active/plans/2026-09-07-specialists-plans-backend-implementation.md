@@ -10,6 +10,18 @@ design: docs/active/design/2026-09-07-specialists-plans-backend-design.md
 
 # Specialists plans backend — implementation plan
 
+> **Status, 2026-09-19 — all seven tasks are BUILT.** This document is the plan as written on
+> 2026-09-07; it is kept as the record of what was specified, not as a description of what exists.
+> For where the work actually stands, what is open and how to run it, start at
+> **`docs/active/handoffs/2026-09-19-specialists-plans-START-HERE.md`**.
+>
+> Two decisions here have since been superseded by live testing, and the handoff and
+> `docs/active/design/2026-09-05-specialists-plans/decision-log.md` (decisions 25–33) carry the
+> current rulings: the grammar now REQUIRES a plain `summary` on every step and refuses a plan
+> whose whole worst case is one specialist run, and a repeat is projected as ONE card row carrying
+> its body rather than being flattened. Two things are open and unfixed: Add budget freezes the
+> window, and Continue re-measures every specialist merely to check whether the model changed.
+
 ## Global constraints
 
 - The signed 18-row contract is fixed. Contradiction requires a reopen deck, never a silent UI change.

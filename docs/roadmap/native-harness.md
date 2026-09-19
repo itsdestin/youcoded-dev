@@ -392,11 +392,43 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       up and not below) — results in youcoded `docs/engine-dependencies.md` → "Stage-two probes".
       Gating decisions ruled 2026-09-05; card UI signed 2026-09-06; backend design reviewed and
       split into seven tasks 2026-09-08 (`docs/active/plans/2026-09-07-specialists-plans-backend-implementation.md`).
-      Task 1 (schema, validator, eligibility, `propose_plan`) is built on `feat/specialists-plans-ui`;
-      the build session stopped before its final review. Resumed 2026-09-16: branch brought up to
-      date with master; Tasks 2-7 remain. The Claude Code bridge (`youcoded agent run`) is unbuilt
-      from the same spec
-      `desktop` `in-flight` `checked 2026-09-16` → docs/active/plans/2026-09-07-specialists-plans-backend-implementation.md
+      All seven tasks are BUILT on `feat/specialists-plans-ui`, each audited by a separate reviewer.
+      Live testing 2026-09-18/19 produced five engine fixes, three rounds of card work (two
+      redesigns rejected; the third kept the shipped card) and a grammar tightening: a plain
+      sentence is required on every step, and a plan that is one specialist doing one thing is
+      refused. Two things remain open and are filed separately below. Unsigned: the 83-row
+      contract, the grader pass and the acceptance deck are deferred at the owner's word until he
+      finishes testing. The Claude Code bridge (`youcoded agent run`) is unbuilt from the same
+      spec. **A fresh session starts at the handoff, not here:**
+      `docs/active/handoffs/2026-09-19-specialists-plans-START-HERE.md`
+      `desktop` `in-flight` `checked 2026-09-19` → docs/active/plans/2026-09-07-specialists-plans-backend-implementation.md
+
+- [ ] Bug (Destin, 2026-09-19): pressing Add budget on a paused plan freezes the whole window —
+      "when i press add budget, the whole window enters a 'not responding' state and freezes for a
+      few seconds to minutes". NOT diagnosed. Two fixes landed nearby are NOT this bug: the card
+      staying disabled and silent through the slow half (`3bb875300`), and the workbench fake
+      answering with a running plan so the app's real two-call path was untested there
+      (`2b1802df4`). Ruled out by measurement: git snapshots (9 ms), token counting (no real
+      tokenizer in that path). Suspected and unproven: `resolveManifest` builds a probe session per
+      specialist on the main process; "not responding" means a blocked thread, and the dev
+      instance's own debugger endpoint took 2.5 s to answer during the episode. Next step is timing
+      instrumentation per stage, which needs a dev restart
+      `tool-cards` `desktop` `needs-verify` `checked 2026-09-19` `needs-repro`
+
+- [ ] Continue re-measures every specialist just to ask whether the model changed (Destin,
+      2026-09-19: "why do we 'begin a new session' just to check the model? this seems broken or
+      janky at the least"). `reconcile()` calls `resolveManifest()` on every Approve AND every
+      Continue, and that opens a probe session per distinct specialist to measure setup cost. On
+      Continue the question is identity — which model, which provider, are credentials still good
+      — not measurement. Proposed: compare identity cheaply and reuse the frozen measurements when
+      nothing moved, probing only when identity really changed. Probably also fixes the freeze above
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-19` `performance`
+
+- [ ] Decision owed (Destin, 2026-09-19): a repeat row's specialist count is its worst case across
+      rounds — 2 items × 3 rounds reads "6 workers" — which asks the reader to multiply. Per-round
+      counts would need progress re-derived per round, a projection change carrying its own pricing
+      risk, so it was flagged rather than changed silently
+      `tool-cards` `desktop` `decision` `checked 2026-09-19`
 
 - [ ] "Assistants" made of "Duties" — the unit of organisation for the future Autonomous Assistants
       view. Ruled 2026-09-05: an assistant groups duties and the first version is the coordinator
