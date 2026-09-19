@@ -18,7 +18,10 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-approval]"
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-page-approval] [data-page-connection]"
+   ]
   },
   {
    "name": "approve-new-key-full",
@@ -36,7 +39,10 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-approval] input"
+   "expect": "[data-page-approval] input",
+   "measure": [
+    "[data-page-approval] [data-page-connection]"
+   ]
   },
   {
    "name": "approve-change",
@@ -54,7 +60,10 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-approval]"
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-page-approval] [data-page-connection]"
+   ]
   },
   {
    "name": "approve-open-internet",
@@ -72,7 +81,10 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-approval]"
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-page-approval] [data-page-connection]"
+   ]
   },
   {
    "name": "approve-on-phone",
@@ -91,7 +103,10 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-approval]"
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-page-approval] [data-page-connection]"
+   ]
   },
   {
    "name": "connected-fresh",
@@ -109,7 +124,12 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-freshness='ok']"
+   "expect": "[data-page-freshness='ok']",
+   "measure": [
+    {
+     "text": "Updated 2 min ago"
+    }
+   ]
   },
   {
    "name": "connected-failed",
@@ -127,7 +147,12 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-freshness='failed']"
+   "expect": "[data-page-freshness='failed']",
+   "measure": [
+    {
+     "text": "Couldn't update"
+    }
+   ]
   },
   {
    "name": "after-allow",
@@ -167,7 +192,12 @@
      "settle": 400
     }
    ],
-   "expect": "[data-page-connections-link]"
+   "expect": "[data-page-connections-link]",
+   "measure": [
+    {
+     "text": "1 connection"
+    }
+   ]
   },
   {
    "name": "card-connections",
@@ -185,7 +215,12 @@
      "settle": 900
     }
    ],
-   "expect": "[data-page-connection]"
+   "expect": "[data-page-connection]",
+   "measure": [
+    {
+     "text": "Waiting for your OK"
+    }
+   ]
   },
   {
    "name": "card-connections-remove",
@@ -207,7 +242,10 @@
      "settle": 600
     }
    ],
-   "expect": "[data-page-connection]"
+   "expect": "[data-page-connection]",
+   "measure": [
+    "[data-remove-confirm]"
+   ]
   },
   {
    "name": "settings-saved-keys",
@@ -225,7 +263,12 @@
      "settle": 900
     }
    ],
-   "expect": "[data-saved-page-keys]"
+   "expect": "[data-saved-page-keys]",
+   "measure": [
+    {
+     "text": "Keys saved for pages"
+    }
+   ]
   }
  ]
 }
