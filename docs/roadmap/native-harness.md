@@ -4,11 +4,25 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
-- [ ] A "Home" folder every install starts with, holding overarching assistant settings that
-      apply everywhere (Destin's note on the first-run guide's review deck, 2026-09-10). The
-      zero-context "No folder" choice on the new-session form shipped 2026-09-11 as the first
-      half; this is the fuller idea
-      `all` `decision` `checked 2026-09-11`
+- [ ] **v1.3.1 release blocker.** The "No folder" choice on the new-session form (shipped
+      2026-09-11) was never tested and not thought through (Destin, 2026-09-19: "we didn't
+      really like think that through… I didn't test it at all"). Test that it works, then turn
+      it into an incognito mode rather than just "no project folder". What incognito keeps and
+      leaves out needs deciding. Goes with the "Your Assistant" project item below
+      `all` `needs-verify` `checked 2026-09-19` `v1.3.1`
+
+- [ ] **v1.3.1 release blocker.** Every install should come with a built-in project, "Your
+      Assistant" (name not final), in the Projects list and managed by YouCoded. Destin,
+      2026-09-19: the assistant itself is a project — "the rules it follows and the ways it
+      behaves and the things it knows about you… is something that you get to build and design
+      and change your way. It'll work fine if you don't change anything." It is the home folder
+      for miscellaneous requests, and where the user's big-picture preferences, memory about
+      them and global instruction files live and are edited. The first-run tour changes to
+      point at it and frame it that way. Later it is the main assistant that takes a request
+      from the phone ("hey, do this thing") and hands it to the right project — see YouCoded
+      Mesh below. Replaces the 2026-09-10 "Home folder" idea from the first-run guide's review
+      deck
+      `projects` `all` `decision` `checked 2026-09-19` `v1.3.1`
 
 - [ ] Idea (Destin, 2026-09-08): "YouCoded Mesh" automatically chooses an available, suitable
       device of yours for remote requests and scheduled/autonomous duties, without making you
