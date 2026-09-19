@@ -283,3 +283,34 @@ Evidence (2026-09-19, read-only):
   Roughly 1,500–2,000 source lines of reservation/tranche/adapter machinery go with it.
 
 Open details went to a questions deck: `specialists-plans.spending.questions.json`.
+
+### Decision 34 — deck answers (`specialists-plans.spending.questions.answers.json`, 2026-09-19)
+- S-1 yes: no default limit; live dollars (after each specialist reply) + Stop.
+- Q-1 limit is in **dollars**, tokens only for plans with no price (subscription / on-computer).
+- Q-2 at the limit it **just pauses** (Continue with a new limit · Stop); no wrap-up warning.
+  His note: *"why would it cost more to restart? seems like this should be a clean same-cost
+  resume?"* Answer: a paused specialist resumes from its saved conversation — no work is redone.
+  The only extra is re-sending that conversation once; within the provider's short cache window
+  that is ~a tenth of the price, after it the first request pays full price once.
+- Q-3 the limit can be set or changed **before and while running**.
+- Q-4 the estimate is a **range** ("usually $0.40–$2").
+- Q-5 unpriced plans show **tokens, labelled** ("about 300k tokens · included in your ChatGPT plan").
+- Q-6 auto-start becomes **"when the estimate is under $X"** (no limit implied).
+
+## Decision 35 — plan settings, per-step models, research first (chat 2026-09-19)
+
+1. **Any step's model can be changed** by the user — *"I want to be able to change the model used
+   for any specialist in a plan really."*
+2. **A plan settings screen**: a settings button on the plan card opens one place to set the
+   plan's total limit and each step's model. (Supersedes the bare "Set limit" button of 34.)
+3. **Shared background is gathered first, cheaply.** *"if a plan sends out a bunch of agents, and
+   we know those agents are all gonna need some type of shared context or background. We should
+   do the back first as part of the plan with a cheap model"* — e.g. a dozen builders trying a
+   dozen approaches start from ONE explorer's brief, not a dozen separate explorations.
+   **Grammar blocker (verified):** a `map` (split) step cannot declare `of` (schema.ts:73–74 allow
+   it on verify/combine only), so "explore → fan out with the explorer's report" cannot be written
+   today. Needs: `of` allowed on `map`, each item's specialist receiving that report as shared
+   background (executor `dependencyReports` already does this for verify/combine), plus guidance
+   in the `propose_plan` description (its only plan-writing guidance today is the `summary`
+   sentence and the no-single-run rule — tools/propose-plan.ts:67–79). This reverses part of
+   decision 33's "a split step never receives input" fact.

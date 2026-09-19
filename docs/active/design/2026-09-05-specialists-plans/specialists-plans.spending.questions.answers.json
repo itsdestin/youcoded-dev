@@ -1,0 +1,51 @@
+{
+ "deck": "specialists-plans-spending-questions",
+ "started": "2026-09-19T09:32:45.831Z",
+ "submitted": "2026-09-19T09:36:41Z",
+ "cur": 3,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "devils-garden"
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "dollars-fallback",
+   "seconds": 50,
+   "theme": "devils-garden"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "pause",
+   "note": "why would it cost more to restart? seems like this should be a clean same-cost resume? ",
+   "seconds": 50,
+   "theme": "devils-garden"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "anytime",
+   "note": "",
+   "seconds": 50,
+   "theme": "devils-garden"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "range",
+   "seconds": 31,
+   "theme": "devils-garden"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "tokens-note",
+   "seconds": 31,
+   "theme": "devils-garden"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "estimate-under",
+   "seconds": 12,
+   "theme": "devils-garden"
+  }
+ }
+}
