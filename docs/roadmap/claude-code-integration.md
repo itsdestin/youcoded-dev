@@ -12,6 +12,14 @@ chat-data).
       open it, instead of only a log line (rule decided 2026-09-17, simplification phase 3)
       `chat` `all` `confirmed` `checked 2026-09-17`
 
+- [ ] A launch-time change to `~/.claude/settings.json` (the hooks the app plants) is silently
+      skipped when another writer holds the file's lock for more than 3 s (`LOCK_MAX_WAIT_MS`,
+      `src/main/artifacts/cas-write.ts`): the call returns `refused: 'locked'` and only logs. Seen
+      only on an overloaded Windows CI runner (one write took 1–3 s there; youcoded#529 fixed the
+      TEST, not this). Open question for Destin: leave it, raise the wait to ~10 s (slower start
+      if a lock is truly stuck), or say so in the app. Measure a real slow Windows disk first
+      `settings` `desktop` `decision` `checked 2026-09-19`
+
 - [ ] In the model picker, Fast mode’s “⚠ Billed Per Token” warning is a one-off hand-built box
       rather than the app’s shared warning box, so it will not follow changes to how warnings
       look. Found by the design check on 2026-09-16; moving it changes its look slightly.
