@@ -95,6 +95,15 @@ const SURFACES = [
     expect: `js:(document.querySelector("input[placeholder^='Search files']")||{}).value==='e' && [...document.querySelectorAll('button')].filter(b=>b.offsetParent!==null&&${STRESS_FILE}.test(b.textContent)).length >= 20`,
   },
   {
+    // Project Files at any size, Stage 1 (2026-09-18): the folder view reads one
+    // folder from disk a page at a time and draws it in chunks. The stress
+    // fixture's files all sit in ONE folder, so opening it is the huge-folder
+    // case — before Stage 1 the folder view drew every entry at once.
+    name: 'Projects → Files, a huge folder',
+    actions: [...openProjects, { click: "[title='stress-files']", settle: 900 }],
+    expect: `js:[...document.querySelectorAll('button')].filter(b=>b.offsetParent!==null&&${STRESS_FILE}.test(b.textContent)).length >= 20`,
+  },
+  {
     name: 'Marketplace',
     actions: openMarketplace,
     expect: `js:${vis(textExpr('Explore everything'))} && /Commit message \\d+/.test(document.body.textContent)`,

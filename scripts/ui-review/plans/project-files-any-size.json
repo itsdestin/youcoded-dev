@@ -1,0 +1,45 @@
+{
+  "_why": "Project Files at any size, Stage 1 (2026-09-18): the Files tab reads one folder at a time from disk. Captured Before (master) and After (session/project-files-any-size) for Destin's review deck.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "shots": [
+    {
+      "name": "files-root",
+      "actions": [
+        {
+          "click": "[title=Projects]",
+          "settle": 1200
+        }
+      ],
+      "expect": "[title=docs]"
+    },
+    {
+      "name": "files-docs",
+      "actions": [
+        {
+          "click": "[title=Projects]",
+          "settle": 1200
+        },
+        {
+          "click": "[title=docs]",
+          "settle": 1000
+        }
+      ],
+      "expect": "js:/Project Files\\s*\\/\\s*docs/.test(document.body.textContent)"
+    },
+    {
+      "name": "files-locked",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&filesLocked=1",
+      "actions": [
+        {
+          "click": "[title=Projects]",
+          "settle": 1200
+        },
+        {
+          "click": "[title=Locked]",
+          "settle": 1000
+        }
+      ],
+      "expect": "js:/permission denied/.test(document.body.textContent)"
+    }
+  ]
+}
