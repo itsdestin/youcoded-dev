@@ -170,6 +170,10 @@ and provisional counts while the first index runs.
 
 ## Build stages (each shippable and measurable on its own)
 
+**Status:** Stages 0–1 shipped 2026-09-18 (youcoded#536; review deck and code review in
+`docs/archive/design/2026-09-18-project-files-any-size/` and `docs/archive/reviews/`). Stages 2–3
+are open in `docs/roadmap/files.md` as v1.3.1 release blockers.
+
 **Stage 0 — measure first (no product code).** On a large real project, the home folder and a
 whole drive: time and memory of a full walk (Node walk vs `rg --files`); first index vs warm
 re-check; watcher cost and inotify headroom at those sizes; chunked reveal vs virtualization for
@@ -190,6 +194,35 @@ remaining caps.
 
 **Stage 3 — progressive content search.** Cancellable, streamed, paged ripgrep content hits in
 the same box; progress line; no silent "no results".
+
+## Stage 0 results (measured 2026-09-18, Destin's Z13, Linux, warm disk cache)
+
+Script: a Node walk (`readdir` with file types, no stats) and `rg --files`, run from a
+throwaway script; one-folder figures from synthetic flat folders. Warm cache only — a cold
+first walk will be slower, and was not measured (it needs dropping the OS cache as root).
+
+| What | Result |
+|---|---|
+| Whole walk, `youcoded-dev`, today's skip rules | 142,737 files, 24,931 folders, 14 levels, **0.4 s**, ~85 MB |
+| Same, nothing skipped | 813,505 files, 106,693 folders, 23 levels, 1.4 s |
+| Whole walk, home folder, skip rules | 258,055 files, 53,089 folders, 15 levels, **1.2 s**, ~140 MB |
+| Same, nothing skipped | 2,674,154 files, 319,353 folders, 24 levels, 5.6 s |
+| `rg --files --hidden`, home folder | 1,580,562 files, **111 s** — obeys .gitignore, so it is also the wrong list |
+| `rg --files --hidden`, `youcoded-dev` | 6,480 files, 17 ms — .gitignore hides the worktrees |
+| One folder of 10,000 files: readdir / sort by name / stat all | 8 ms / 8 ms / 128 ms |
+| One folder of 100,000 files: readdir / sort by name / stat all | 67 ms / 24 ms / **1.2 s** (and ~500 MB when all stats run at once) |
+| Linux watch limit (`fs.inotify.max_user_watches`) | 1,048,576 |
+
+What they decided:
+- **Walker for Stage 2: Node, not ripgrep.** ripgrep's file list follows .gitignore (so it
+  is not "every file") and was ~90× slower on the home folder.
+- **Stage 1 needs no index.** Reading one folder is milliseconds even at 100,000 entries; only
+  "newest first" needs every file's time (~1.2 s at 100,000), so stats run 64 at a time.
+- **Paging:** 200 entries per page from disk, drawn 50 at a time (the existing chunked
+  reveal). The DOM-size sweep's new huge-folder case (2,000 files in one folder) draws
+  ~1,230 elements, against the 8,000 budget.
+- **Left for Stage 2:** chunked reveal vs true virtualization for very long scrolls (revealed
+  rows stay mounted); `utilityProcess` vs `worker_threads`; cold-cache and watcher cost.
 
 ## Guards (per `.claude/rules/renderer-lists.md` and test-suite-hygiene)
 

@@ -8,7 +8,7 @@ paths:
   - "**/desktop/src/renderer/state/artifact-tool-use-tracker.ts"
   - "**/desktop/src/renderer/state/ArtifactContext.tsx"
   - "**/desktop/src/shared/artifacts/**"
-last_verified: 2026-09-01
+last_verified: 2026-09-18
 verify:
   - test: youcoded/desktop/tests/artifacts/artifact-tool-use-tracker.test.ts
   - path: youcoded/desktop/src/main/artifacts/artifact-store.ts
@@ -46,6 +46,9 @@ verify:
   - test: youcoded/desktop/tests/project-file-discovery.test.ts
   - test: youcoded/desktop/tests/artifacts/editable-path-policy.test.ts
   - test: youcoded/desktop/tests/artifacts/write-authorization.test.ts
+  - path: youcoded/desktop/src/main/artifacts/folder-listing.ts
+    contains: "listFolderPage"
+  - test: youcoded/desktop/tests/artifacts/folder-listing.test.ts
 ---
 # Artifact Viewer (Session Drawer + Project View)
 
@@ -56,7 +59,8 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **`LIST_ALL_FILES` is NOT pure discovery** — `projectAllFiles()` UNIONS tracked internal artifacts discovery missed. Keep the union; no allowlist.
 - **`trackedArtifacts()` is the SOLE tracked-visibility decider.** Order: INCLUDED → EXCLUDED hidden → internal with ≥1 non-`read` version; externals hidden unless pinned. Include/exclude paths are canonical ABSOLUTE — canonicalize BOTH sides.
 - **`+ Add file` IMPORTS (Move/Copy), it does not pin.** It reuses `authorizeArtifactWrite` **without** `confirmed`; `.youcoded-import-*.part` temps are filtered from discovery AND sync `DEFAULT_IGNORES`.
-- **Discovery stops at nested git repos**, is bounded (caps + 1.5s, 10s cache), and never persists `discovered:true` — skip those in `checkExistence`.
+- **Discovery** (search/filter/counts only) stops at nested repos, is bounded, never persists `discovered:true`.
+- **Browsing is `artifacts:list-folder`**: one folder, paged, uncapped; unreadable → `<ErrorState>`.
 
 ## Recorded paths
 - **A RELATIVE recorded path is INTERNAL** (`resolveTrackedPath` step 3; `..` stays external). `absolutePath` is contractually ABSOLUTE — `isAbsoluteRecorded` guards **five** sites: `get`, `save`, `check-existence`, `countArtifacts`, `renameArtifact`.
@@ -83,4 +87,4 @@ Per-project sidecars + a central index track every file Claude touches; I/O is m
 - **Drawer state is per-session keyed by `sessionId`**, labels SESSION-scoped; layout-level, not an overlay. Status glyphs (`●◐○`) BANNED. `.youcoded/` auto-gitignored.
 - **`showDeletedArtifacts` is SESSION-DRAWER-ONLY — deliberate** (a tombstone, not a recovery path). Cross-device-SYNCED — don't delete the "unused" flag.
 - **`EXCLUDE` has NO renderer caller** (legacy round-trip only); in-folder files can't be excluded.
-- **Android `get`/`save`/`read-binary` are REAL (SessionService.kt), NOT stubs — mirror any new desktop guard in Kotlin.** List/project/import-file/search-content/watch-project return `not-implemented-on-mobile`; `check-existence` stubs "nothing missing"; `project:*` is desktop-only.
+- **Android `get`/`save`/`read-binary` are REAL (SessionService.kt), NOT stubs — mirror any new desktop guard in Kotlin.** List/list-folder/project/import-file/search-content/watch-project return `not-implemented-on-mobile`; `check-existence` stubs "nothing missing"; `project:*` is desktop-only.

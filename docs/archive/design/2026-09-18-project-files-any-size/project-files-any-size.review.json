@@ -1,0 +1,41 @@
+{
+  "title": "Project Files — folders open at any size",
+  "key": "project-files-any-size-review",
+  "out": "project-files-any-size.review.html",
+  "images": "images/project-files-any-size.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "crops": {
+    "files-docs": ["project-files-any-size", "files-docs", "1100x420+170+390"],
+    "files-locked": ["project-files-any-size", "files-locked", "1100x160+170+390"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Projects",
+      "path": "Projects → Files, inside any folder",
+      "crop": "files-docs",
+      "headline": "Every folder opens straight from your disk, at any size and any depth — no \"Browse anyway\" screen.",
+      "changed": "The Files tab now reads just the folder you open, a page at a time, instead of scanning the whole project first. Folder cards count what is directly inside (\"1 item\") rather than everything beneath (\"1 file\").",
+      "measured": "A 2,000-file folder draws 1,230 page elements, down from 11,124",
+      "notice": "Your home folder and whole drives open like any other project. Folders more than 6 levels deep, hidden folders like .git, node_modules and projects inside projects now appear and open. Huge folders load more as you scroll.",
+      "risk": "Code projects now show folders they used to hide (.git, node_modules), so the top level looks busier. Search still stops at 2,000 files with its note until the next stage."
+    },
+    {
+      "id": "S-2",
+      "surface": "Projects",
+      "path": "Projects → Files, a folder your computer won't let the app read",
+      "crop": "files-locked",
+      "runs": ["after"],
+      "labels": {"after": "Now"},
+      "highlight": {"box": [29, 33, 42, 44]},
+      "headline": "A folder your computer blocks now says so, with Retry, instead of looking empty.",
+      "changed": "When the system refuses to open a folder, or a drive is unplugged, the Files tab shows the real reason and a Retry button. Before, such a folder simply showed nothing.",
+      "notice": "The breadcrumb stays above it, so one click on Project Files takes you back out.",
+      "risk": ""
+    }
+  ]
+}

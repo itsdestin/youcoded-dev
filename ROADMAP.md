@@ -59,7 +59,7 @@ Target: `v1.3`
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 9 | 1 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 8 | 2 | 2 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 22 | 6 | 0 | 9 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 6 | 0 | 9 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 12 | 1 | 4 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 19 | 5 | 3 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 18 | 6 | 3 | 6 |

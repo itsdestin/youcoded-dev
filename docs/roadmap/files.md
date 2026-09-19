@@ -4,6 +4,26 @@ git surface, and the per-chat record of which files a session produced. Not here
 workspace guidance doc (dev-workspace); the transcript itself, or how it is titled, tagged,
 searched or resumed (chat-data).
 
+- [ ] **v1.3.1 release blocker.** Searching a big project's files still stops at the first
+      2,000 files and says "This folder is large — showing the first batch of files", and the
+      file counts read "2,000+" (Destin, 2026-09-18: "i just want everything to work, even if
+      it requires a smidge more backend work"). Browsing any folder at any depth was fixed
+      first (Stages 0–1 of the spec); this is Stage 2: one shared background helper, off the
+      app's main thread, that keeps a saved, disposable list of every file per project, kept
+      fresh by watching for changes plus periodic re-checks, so name/type search and counts
+      cover the whole project, fill in progressively, and show rough-then-exact counts. Four
+      questions for Destin come first (spec "Open questions" 2–4: can excluded folders be
+      searched, wording for "still looking" and rough counts, whether a home folder is
+      indexed in the background by default)
+      `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
+
+- [ ] **v1.3.1 release blocker.** Searching inside files' text in a project stops at 200
+      matches (20 per file, 5 seconds) and shows "200+", with no way to see the rest.
+      Stage 3 of the same spec: make that search cancellable and progressive — matches stream
+      in, more load as you scroll, and an unfinished search says it is still looking instead
+      of "no results". Builds on the Stage 2 item just above
+      `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
+
 - [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
       but still a visible pause. What is left is the sheer number of elements syntax
       highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576

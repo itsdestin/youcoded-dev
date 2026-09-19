@@ -1,0 +1,164 @@
+[
+  {
+    "theme": "dark",
+    "name": "files-root",
+    "run": "1789776133695",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "Chat",
+        "ratio": 1.19,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(17, 17, 17)",
+        "bg": "rgb(34,34,34)",
+        "path": "div.flex.items-center.gap-1 > div.relative.flex.bg-inset > button.relative.z-10.px-1.5 > span.wide-view-toggle-label.text-xs.font-medium",
+        "x": 204,
+        "y": 12,
+        "w": 29,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.15,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(28,28,28)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 432,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(34,34,34)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 528,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "·",
+        "ratio": 2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(34,34,34)",
+        "path": "div.flex.items-center.justify-end > div.flex.bg-inset.rounded-md > button.px-2.py-1.rounded-sm > span.hidden.sm:inline.text-fg-faint",
+        "x": 1277,
+        "y": 14,
+        "w": 7,
+        "h": 12
+      }
+    ],
+    "rmseVsBaseline": 0.237589,
+    "dump": [],
+    "file": "docs/active/design/2026-09-18-project-files-any-size/runs/before/shots-project-files-any-size/dark/files-root.png"
+  },
+  {
+    "theme": "dark",
+    "name": "files-docs",
+    "run": "1789776133695",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "Chat",
+        "ratio": 1.19,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(17, 17, 17)",
+        "bg": "rgb(34,34,34)",
+        "path": "div.flex.items-center.gap-1 > div.relative.flex.bg-inset > button.relative.z-10.px-1.5 > span.wide-view-toggle-label.text-xs.font-medium",
+        "x": 204,
+        "y": 12,
+        "w": 29,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.15,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(28,28,28)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 432,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(34,34,34)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 528,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "·",
+        "ratio": 2,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(34,34,34)",
+        "path": "div.flex.items-center.justify-end > div.flex.bg-inset.rounded-md > button.px-2.py-1.rounded-sm > span.hidden.sm:inline.text-fg-faint",
+        "x": 1277,
+        "y": 14,
+        "w": 7,
+        "h": 12
+      },
+      {
+        "text": "/",
+        "ratio": 2.38,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(81, 81, 81)",
+        "bg": "rgb(17,17,17)",
+        "path": "div.relative.flex.flex-col > div.flex.items-center.justify-between > div.flex.items-center.gap-1 > span.text-fg-faint",
+        "x": 284,
+        "y": 400,
+        "w": 7,
+        "h": 16
+      }
+    ],
+    "rmseVsBaseline": 0.241872,
+    "dump": [],
+    "file": "docs/active/design/2026-09-18-project-files-any-size/runs/before/shots-project-files-any-size/dark/files-docs.png"
+  },
+  {
+    "theme": "dark",
+    "name": "files-locked",
+    "run": "1789776133695",
+    "verified": false,
+    "reasons": [
+      "measure missing: text:permission denied",
+      "MISSING \"[title=Locked]\"",
+      "expect failed: js:/permission denied/.test(document.body.textContent)"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "measures": {
+      "text:permission denied": null
+    },
+    "rmseVsBaseline": 0.237589,
+    "dump": [],
+    "file": "docs/active/design/2026-09-18-project-files-any-size/runs/before/shots-project-files-any-size/dark/_unverified/files-locked.png"
+  }
+]
