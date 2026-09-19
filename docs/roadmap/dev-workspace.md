@@ -4,6 +4,17 @@ Not here: a failing or flaky test — fix it on sight (CLAUDE.md → Local build
 seen-on is always n/a here.
 
 ## tests
+- [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
+      → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
+      the tool-card, chat-reducer, ipc-handlers, chatview and EngineCard-remnant follow-ups listed
+      there (each a few files, same method as the merged clusters; the Task 3 lessons apply).
+      **Blocked until `feat/specialists-plans-ui` merges** (unmerged, no PR as of 2026-09-19):
+      Task 2 (split `native-session-host.test.ts`), the `harness-`, `native-`, `specialist-` clusters,
+      that branch's new `plan-`/`plan-card-` files, then Task 5 (regenerate the inventory, reconcile the
+      count, archive the plan). Start the blocked half by checking
+      `git merge-base --is-ancestor origin/feat/specialists-plans-ui origin/master`.
+      Merged so far: test files 892 → 783, cases 11,533 → 11,533 (youcoded#509–#532)
+      `n/a` `confirmed` `checked 2026-09-19`
 - [ ] `tests/artifacts/import-file.test.ts` — the two `failed copy rollback` cases that use
       `onCollision: 'replace'` with `disclosedCollisions` (ENOSPC and COPY_INCOMPLETE) sometimes
       return `{ok: true, skipped: true}` on the Windows CI leg, so the mocked copy failure is never
@@ -18,20 +29,14 @@ seen-on is always n/a here.
       dispatches; not touched by that branch. One observation, filed as a Windows load timeout;
       if it recurs, measure the child's real duration on the runner before widening anything
       `n/a` `needs-verify` `checked 2026-09-16`
-- [ ] `tests/model-manager.test.ts` "a stored dismissal missing EITHER half is no dismissal" hit the
-      30 s test timeout once on the Windows CI leg (run 35093103929, 2026-09-16, the fifth proof run
-      of session/ci-test-health) after passing the run before with no change to anything it imports.
-      Five sequential settings writes + memory checks on the slow Windows runner; one observation,
-      so filed as a Windows load flake, not fixed. If it recurs, read the log before widening
-      `n/a` `needs-verify` `checked 2026-09-16`
-- [ ] Three more files fail only under full-suite load and pass alone (2026-09-16, `verify.sh --full`,
-      11,550 tests, on a branch touching none of them): `tests/chatgpt-request-diagnostics.test.ts`
-      "evicts inactive fingerprints within 8 MiB…" (30 s timeout), `tests/local-engine-fields-rendered.test.tsx`
-      "§C2: the waiting line CLEARS once the change lands", and `tests/resume-browser-native-picker.test.tsx`
-      "pre-fills each previewed conversation with ITS last model" (a `waitFor` on a button role).
-      All three re-ran green in one isolated run right after. Same family as the entries below —
-      wall-clock waits under load; not re-checked on pristine master
-      `n/a` `needs-verify` `checked 2026-09-16`
+- [ ] Two cases failed only under full-suite load and passed alone (2026-09-16, `verify.sh --full`,
+      11,550 tests, on a branch touching neither): "the waiting line CLEARS once the change lands"
+      (then in `local-engine-fields-rendered.test.tsx`; after Plan C its EngineCard sections are
+      in that file's remnant, due to move into `EngineCard.test.tsx`) and "pre-fills each previewed
+      conversation with ITS last model" (now `tests/ResumeBrowser.test.tsx`; a `waitFor` on a button
+      role). Both re-ran green in one isolated run right after. Wall-clock waits under load; not
+      re-checked on pristine master. (The third, chatgpt-request-diagnostics, was fixed 2026-09-18.)
+      `n/a` `needs-verify` `checked 2026-09-19`
 - [ ] `tests/shell-registry.test.ts` fails on this machine in ISOLATION, not only under load —
       one of its two "still-running marks" cases goes red on every run, alternating between
       them (4 runs, 2026-09-16). Both assert on wall-clock milliseconds (60 ms / 140 ms marks),
@@ -178,12 +183,13 @@ seen-on is always n/a here.
       exits 1 — so "re-run it" is the only response anyone can give today
       `n/a` `confirmed` `checked 2026-09-03` `regression`
 
-- [ ] subagent-view, mcp-startup-wiring and project-watcher were filed as the suites that flake
-      under parallel load, but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to
-      4 cores, 2 x 8 concurrent) never failed any of the three — the four that DID fail at 8-way
-      concurrency were different files and are fixed. Either these three need a different trigger
-      (the project-watcher hit was Ubuntu CI, not local) or they are already fixed
-      `n/a` `needs-verify` `checked 2026-09-02`
+- [ ] subagent-view and mcp-startup-wiring were filed as suites that flake under parallel load,
+      but 27 full local runs on 2026-09-02 (1 alone, 6 concurrent, 4 pinned to 4 cores, 2 x 8
+      concurrent) never failed either — the four that DID fail at 8-way concurrency were different
+      files and are fixed. Either they need a different trigger or they are already fixed.
+      (project-watcher, the third, had a real cause — a fixed 1.2 s sleep against macOS FSEvents'
+      start-up gap — fixed 2026-09-18, youcoded#532)
+      `n/a` `needs-verify` `checked 2026-09-19`
 
 - [ ] A whole session edited files that a path-scoped rule covers and the rule never loaded.
       First seen 2026-09-03, blamed on the session working entirely through Bash (cat/sed/python
