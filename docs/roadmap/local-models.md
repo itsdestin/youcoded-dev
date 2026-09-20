@@ -33,7 +33,7 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
 
 - [ ] Gemma models download with no licence notice, and Google's Gemma terms require passing their
       use restrictions on to the user; Qwen and GPT-OSS are Apache-licensed and need nothing
-      `local-models-screen` `all` `confirmed` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      `local-models-screen` `all` `confirmed` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Three faster engine builds upstream ships that we still do not offer: Intel SYCL, a newer
       CUDA than the one we pin, and Android. ROCm is available on AMD Linux and Windows, but as an

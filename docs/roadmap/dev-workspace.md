@@ -719,11 +719,12 @@ seen-on is always n/a here.
       33921417200 was dispatched for that on 2026-09-04
       `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
-- [ ] REVERT WHEN 1.3.0 SHIPS: youcoded.ai's download buttons now hand out the newest release
-      INCLUDING pre-releases, so visitors get the 1.3.0-beta build instead of v1.2.4 from May.
-      Deliberate and temporary (Destin, 2026-09-03). On 1.3.0: put the buttons back on
-      stable-only, and delete the 1.3.0-beta pre-release so it stops being what the site serves
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3.0`
+- [ ] REVERT WHEN 1.3.1 SHIPS: youcoded.ai's download buttons now hand out the newest release
+      INCLUDING pre-releases, so visitors get the 1.3.1-beta build instead of v1.2.4 from May.
+      Deliberate and temporary (Destin, 2026-09-03). 1.3.0 is skipped as a release
+      (Destin, 2026-09-19), so this waits for 1.3.1: put the buttons back on stable-only, and
+      delete the beta pre-releases so they stop being what the site serves
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1`
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
       undifferentiated 3,200-odd commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
@@ -734,7 +735,7 @@ seen-on is always n/a here.
       one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
       versionCode bump and ships a paired Android build (no bare desktop-only hotfixes). Promoted to a
       1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3`
+      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1`
 
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
@@ -799,32 +800,33 @@ seen-on is always n/a here.
       renders need his go-ahead
       `n/a` `decision` `checked 2026-09-11`
 
-- [ ] Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
-      1.2.4 in both manifests; the CHANGELOG carries a `1.3.0-beta` section but no `1.3.0` entry),
+- [ ] Ship v1.3.1 — the release mechanics: an `/audit` run, version bumps on both platforms (still
+      1.2.4 in both manifests; the CHANGELOG carries a `1.3.0-beta` section and 1.3.0 is skipped as
+      a release, so the entry to write is `1.3.1`),
       the tag. The last product gate (Account → Connected accounts shows an in-app GitHub sign-in)
       was confirmed 2026-09-02; what blocks it now is the release-method rework and the signing
       items in this section
-      `n/a` `blocked` `checked 2026-09-16` `v1.3`
+      `n/a` `blocked` `checked 2026-09-16` `v1.3.1`
 
-- [ ] Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
+- [ ] Public-launch formalization is the 1.3.1 gate: signed macOS/Windows installers, a Play listing,
       the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
       email), the Anthropic-token fix, Android → MIT, the LLC itself (Destin's Adventures, LLC),
       EIN, DMCA agent, legal pages naming the company (youcoded#416). D-U-N-S arrived 2026-09-10;
       in the mail: trade name. The report's "Status" block is the current state; Destin's values
       are in the brain
-      `n/a` `in-flight` `checked 2026-09-16` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      `n/a` `in-flight` `checked 2026-09-16` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
       The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
       after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
-      `n/a` `blocked` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      `n/a` `blocked` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
       data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
       priority for the rebuilt app (deck Q-3)
-      `android` `confirmed` `checked 2026-09-10` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      `android` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view

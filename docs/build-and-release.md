@@ -87,8 +87,8 @@ AppImage was testable pre-v1.3.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "\\*\\.pacman"} -->
 
 ```bash
-# No number to type: the build stamps <base>.<run number> itself, e.g. 1.3.0-beta.71.
-# `base` defaults to 1.3.0-beta and only needs passing when the release line moves —
+# No number to type: the build stamps <base>.<run number> itself, e.g. 1.3.1-beta.87.
+# `base` defaults to 1.3.1-beta and only needs passing when the release line moves —
 # and it MUST still sort above the latest release (see the trap below).
 gh workflow run desktop-test-build.yml --repo itsdestin/youcoded --ref <branch>
 
@@ -142,7 +142,16 @@ tests never ran on Windows.
 `/releases/latest`, which by definition returns the newest *stable* release and skips
 pre-releases — verified still returning `v1.2.4` after publishing. The same fact is why the
 website had to move OFF `/releases/latest` to see betas at all (`docs/index.html` now reads
-the `/releases` list; revert when 1.3.0 ships — `docs/roadmap/dev-workspace.md`).
+the `/releases` list; revert when 1.3.1 ships — `docs/roadmap/dev-workspace.md`).
+
+**Only an official release reaches an install that is not ON the beta channel, and no
+published build had that channel until `1.3.0-beta.86` (2026-09-19).** The channel shipped
+on 2026-09-13, after `1.3.0-beta.80` was built, so every published build before .86 asks
+`/releases/latest` and can never be offered a beta — the beta testers on .72–.80 have to
+reinstall from youcoded.ai once, and a pre-release cannot deliver a fix to them. **This is
+why 1.3.0 is skipped as a release (Destin, 2026-09-19): the next official release is 1.3.1,
+and it is the only thing that moves v1.2.4 users and those testers forward.** Betas run on
+the `1.3.1-beta` line until then.
 <!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
@@ -158,7 +167,7 @@ until [ "$(gh api repos/itsdestin/youcoded/actions/runs/<id>/artifacts \
 `.releasetest` package suffix — wrong for a public download. Dispatch `android-release.yml`
 instead: it builds a properly signed release APK, and its "Create GitHub Release" step is
 guarded by `if: startsWith(github.ref, 'refs/tags/')`, so a manual dispatch publishes nothing.
-Give it the `base` input (default `1.3.0-beta`) and it stamps `<base>.<run_number>` into the APK,
+Give it the `base` input (default `1.3.1-beta`) and it stamps `<base>.<run_number>` into the APK,
 the way `desktop-test-build.yml` does; the outputs are named after the version.
 <!-- verify: {"path": "youcoded/.github/workflows/android-release.yml", "contains": "refs/tags/"} -->
 
@@ -193,7 +202,7 @@ over the same LevelDB.
 <!-- verify: {"path": "youcoded/desktop/electron-builder.yml", "contains": "appId: com.youcoded.desktop"} -->
 
 **Betas number themselves (2026-08-15).** The workflow appends its own GitHub run counter to the
-`base` prefix (`1.3.0-beta` → `1.3.0-beta.71`, `.72`, …), so every beta sorts above the previous one
+`base` prefix (`1.3.1-beta` → `1.3.1-beta.87`, `.88`, …), so every beta sorts above the previous one
 and maps straight back to its run in the Actions tab; the free-text `version` box that let two builds
 share a name — or a hand-typed number sort *below* the installed one — is gone.
 
@@ -238,7 +247,8 @@ answer computed against the other channel.
 <!-- verify: {"path": "youcoded/desktop/src/main/update-settings.ts", "contains": "resolveBetaChannel"} -->
 
 **The `base` prefix is still load-bearing — read this before changing it.** A beta must sort above
-the release it is ahead of. `1.3.0-beta` does; `1.2.4-beta.N` sorts *below* a released `1.2.4`, so it
+the release it is ahead of. `1.3.1-beta` does (and sorts above every `1.3.0-beta.N` already
+published); `1.2.4-beta.N` sorts *below* a released `1.2.4`, so it
 would show "update available" and offer to downgrade itself to the release it is meant to be ahead
 of. **Bump the minor and suffix**, never patch-suffix the current version.
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "Stamp beta version"} -->

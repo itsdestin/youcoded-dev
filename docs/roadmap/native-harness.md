@@ -205,7 +205,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       already does the job. Wanted: a tool it can call to search plugins and integrations, so
       "check what we already have" comes before "build something new". Destin, 2026-09-05: a 1.3
       blocker, and the partner to the new "assume you can do it, find a way" rule in the prompt
-      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3`
+      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3.1`
 
 - [ ] The assistant's standing instructions grew about five times on 2026-09-05 (youcoded #423) and
       what that did to a small model is still unknown. Measured twice on 2026-09-05 at one run per
@@ -439,13 +439,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       unbuilt 2026-09-01)
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
-- [ ] **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+- [ ] **v1.3.1 release blocker — native-only users need a YouCoded-owned skills home.** Today the
       only project-skill convention is Claude Code's `.claude/skills/`, so a person using only
       YouCoded has no obvious place to put a personal or project workflow. Make `~/.youcoded/`
       and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
       as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
       is Claude Code parity only and must be superseded or expanded before implementation.
-      `all` `blocked` `checked 2026-09-05` `v1.3`
+      `all` `blocked` `checked 2026-09-05` `v1.3.1`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a
       slash command and the text vanishes; the common `/home/…` shape was fixed 2026-08-10. Destin
