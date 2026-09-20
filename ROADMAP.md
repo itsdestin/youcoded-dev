@@ -42,6 +42,8 @@ harness and the local engine.
 Target: `v1.3.1`
 - chat-data: Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
 - chat-data: **v1.3.1 release blocker.** Four smaller reads left over from cycle 2 still do more work than they need to: listing
+- dev-workspace: Destin, 2026-09-20: "just fixing a few minor test issues and such has seemingly eaten over
+- dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password
 - dev-workspace: Strip every youcoded-core step out of the release skill (`youcoded-admin`
 - dev-workspace: Re-work the release method: releases tag master directly, so every release ships the
 - dev-workspace: Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
@@ -73,7 +75,7 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 105 | 32 | 6 | 10 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 108 | 33 | 6 | 10 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 12 | 5 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 9 | 1 | 4 |
