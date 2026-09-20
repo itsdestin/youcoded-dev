@@ -148,10 +148,11 @@ the `/releases` list; revert when 1.3.1 ships — `docs/roadmap/dev-workspace.md
 published build had that channel until `1.3.0-beta.86` (2026-09-19).** The channel shipped
 on 2026-09-13, after `1.3.0-beta.80` was built, so every published build before .86 asks
 `/releases/latest` and can never be offered a beta — the beta testers on .72–.80 have to
-reinstall from youcoded.ai once, and a pre-release cannot deliver a fix to them. **This is
-why 1.3.0 is skipped as a release (Destin, 2026-09-19): the next official release is 1.3.1,
-and it is the only thing that moves v1.2.4 users and those testers forward.** Betas run on
-the `1.3.1-beta` line until then.
+reinstall from youcoded.ai once, and a pre-release cannot deliver a fix to them. **That is
+what an official release is for, and 1.3.0 (2026-09-20) is the one that moves v1.2.4 users
+and those testers forward.** Betas run on the `1.3.1-beta` line from here: the beta line is
+always one patch AHEAD of the last release, so a beta is never offered a downgrade and the
+next release ends the run.
 <!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
