@@ -34,22 +34,41 @@ wrapped the wizard; the replacement itself is still parked).
 
 **Platforms.** Windows, macOS and Linux desktop, Android with an on-device runtime, and any
 browser through remote access; sync, backup and restore on all of them. Blocking for
-`v1.3`: the release mechanics — the last product gate (Connected accounts shows an in-app
+`v1.3.1`: the release mechanics — the last product gate (Connected accounts shows an in-app
 GitHub sign-in) was confirmed 2026-09-02; Android still lacks tags, notes, the native
 harness and the local engine.
 
 ## Next release
-Target: `v1.3`
+Target: `v1.3.1`
+- chat-data: Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
+- chat-data: **v1.3.1 release blocker.** Four smaller reads left over from cycle 2 still do more work than they need to: listing
+- dev-workspace: REVERT WHEN 1.3.1 SHIPS: youcoded.ai's download buttons now hand out the newest release
 - dev-workspace: Re-work the release method: releases tag master directly, so every release ships the
-- dev-workspace: Ship v1.3 — the release mechanics: an `/audit` run, version bumps on both platforms (still
-- dev-workspace: Public-launch formalization is the 1.3 gate: signed macOS/Windows installers, a Play listing,
+- dev-workspace: Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
+- dev-workspace: Ship v1.3.1 — the release mechanics: an `/audit` run, version bumps on both platforms (still
+- dev-workspace: Public-launch formalization is the 1.3.1 gate: signed macOS/Windows installers, a Play listing,
 - dev-workspace: Windows and macOS installers still hit the security wall — nothing is signed or notarized.
 - dev-workspace: No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
+- files: **v1.3.1 release blocker.** Searching a big project's files still stops at the first
+- files: **v1.3.1 release blocker.** Searching inside files' text in a project stops at 200
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their
+- local-models: **v1.3.1 release blocker.** The file downloader exists three times (model files, the
 - marketplace: A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
 - marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
+- native-harness: **v1.3.1 release blocker.** The "No folder" choice on the new-session form (shipped
+- native-harness: **v1.3.1 release blocker.** Every install should come with a built-in project, "Your
+- native-harness: **v1.3.1 release blocker.** A local model forgets the user's request halfway through a long
+- native-harness: Native Runtime Parity Program — everything that still separates a native session from a Claude
+- native-harness: **v1.3.1 release blocker.** The one object that runs a native conversation is 4,756 lines
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does
-- native-harness: **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+- native-harness: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
+- native-harness: Helper (specialist) transcripts pile up in the sessions folder forever — there is no way
+- native-harness: **v1.3.1 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+- other-features: The Linux buddy has never been tried on two screens — every probe ran on the laptop panel
+- remote-access: **v1.3.1 release blocker.** 182 features are hand-written twice, once for the desktop
+- user-interface: Browser-default hover tooltips look foreign to the app — the whole main chat screen is
+- user-interface: Error messages still guess at causes in many places — the app-wide re-audit is done and
+- user-interface: **v1.3.1 release blocker.** The settings screen exists twice — a desktop version and a
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |

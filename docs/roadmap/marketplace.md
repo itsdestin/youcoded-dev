@@ -55,7 +55,7 @@ them. Not here: the theme renders wrong (themes).
       listings (three `netsuite-*`, one `42crunch`) were stamped "Likely safe" having read nothing;
       the false verdicts were cleared by hand 2026-08-31 and the 13 netsuite rows now read
       "Not checked" — and will forever, until the scan follows the branch the listing names.
-      `all` `needs-verify` `checked 2026-09-03` `security` `v1.3` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
+      `all` `needs-verify` `checked 2026-09-03` `security` `v1.3.1` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
 
 - [ ] Every marketplace refresh re-downloads the whole catalog (~1 MB on the wire, ~5,000 rows)
       even when one listing changed. Wanted: send only what changed since the client's last version,
@@ -85,7 +85,7 @@ them. Not here: the theme renders wrong (themes).
 - [ ] The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
       and file shapes; a public product cannot imply a check that never happened. Wording is
       Destin's call — candidate "No leaked secrets found"
-      `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
       to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to
