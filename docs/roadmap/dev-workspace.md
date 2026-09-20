@@ -883,3 +883,18 @@ seen-on is always n/a here.
       three ports the offset resolves to, names the worktree holding one, and suggests the next
       free offset would turn a cryptic late failure into a one-line answer
       `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] A finished session's worktree manifest is never removed, so its session key is permanently
+      poisoned and the manifests pile up. `workspace-start` records each worktree in
+      `.git/youcoded-sessions/<key>.json` and `validateWorktree` refuses a recorded-but-missing
+      path with "Missing recorded worktree: … Restore it or use a new session key; it will not be
+      recreated automatically." Nothing deletes the file: `close-out.sh` lists the worktree, local
+      branch and remote branch as mechanical TODOs but never mentions the manifest, and no script
+      greps for `youcoded-sessions` to unlink one. Counted 2026-09-20 while closing out
+      `shared-component-sync-context`: 20 of 33 manifests pointed at worktrees that no longer
+      exist. Harmless until someone reuses a natural key — "analytics-dashboard" and
+      "paste-attachments" are exactly the names a later session would pick again — and then it
+      fails at startup with advice to invent a different key rather than "that session is over,
+      I cleaned it up". Either `close-out.sh` should list the manifest beside the other three
+      cleanup items, or removing the last worktree it records should drop it
+      `n/a` `confirmed` `checked 2026-09-20`
