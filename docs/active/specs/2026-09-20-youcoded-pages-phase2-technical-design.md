@@ -62,6 +62,11 @@ An `address` is also shown to a person, and `api.openweathermap.org.evil.example
 hostname that reads as OpenWeather at a glance (finding 6). The approval screen therefore names
 the real website — the registrable part, emphasised — with the rest dim.
 
+That split uses a short built-in list of two-label registry endings, not the full public suffix
+list: bundling the PSL for one line of a screen is a dependency this does not justify. An ending
+the list does not know emphasises two labels rather than fewer, so it errs towards showing MORE
+of the address, never less.
+
 ## 3 · Where approvals and keys live
 
 `<userData>/page-connections.json`, per install, **never synced** — the same reasoning as
@@ -153,7 +158,7 @@ the time comes from the app's own record of the last request.
 
 Built by `prepareHostedDocument` from the page's connection kinds:
 
-- no connections: `default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; form-action 'none'; base-uri 'none'`
+- no connections: `default-src 'none'; connect-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; form-action 'none'; base-uri 'none'; frame-src 'none'`. `connect-src` is written out rather than left to the `default-src` fallback: the promise "the page's only door is `youcoded.fetch`" should not rest on a reader knowing the fallback rules.
 - any connection: the same (the door is `youcoded.fetch`, not the browser's own network).
 - an `open` page additionally gets `img-src https: data: blob:; media-src https:; font-src https: data:`, so a reader page can show pictures. `connect-src` stays `'none'` everywhere.
 - every page also gets `webrtc 'block'` and a `x-dns-prefetch-control: off` meta, because ICE
