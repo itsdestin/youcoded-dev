@@ -16,6 +16,9 @@ function git(root, ...args) {
   }
 }
 function exists(p) { try { fs.lstatSync(p); return true; } catch (e) { if (e.code === 'ENOENT') return false; throw e; } }
+function gitOk(root, ...args) {
+  try { execFileSync('git', ['-C', root, ...args], { stdio: 'ignore' }); return true; } catch { return false; }
+}
 function realDirectory(p) {
   if (!exists(p) || !fs.lstatSync(p).isDirectory() || fs.realpathSync(p) !== p) {
     throw new Error(`Expected a real directory, not a symlink or missing path: ${p}`);
@@ -270,6 +273,57 @@ function topUpNodeModules(name, destination) {
   }
   return notes;
 }
+// WHY (2026-09-20): a shared component checkout is not only a git object source.
+// Analytics reads built-in themes and the analytics salt straight off its WORKING TREE,
+// and it is the hardlink source for every new node_modules. Nothing ever moved its
+// branch, so on 2026-09-20 the shared app checkout was found 511 commits behind with
+// those readers quietly consuming stale files.
+//
+// A strict fast-forward of a clean, on-branch, strictly-behind checkout is the one
+// update that cannot lose work: it writes no merge commit, replays nothing, and refuses
+// the instant a local commit exists. Every other shape -- diverged, dirty, mid-rebase,
+// detached, or parked on another branch -- is a human decision and is only reported.
+// Linked worktrees are untouched either way: they sit on their own session branches.
+export function refreshComponentCheckout(source, branchName, hooks) {
+  const fetchRef = `+refs/heads/${branchName}:refs/remotes/origin/${branchName}`;
+  // WHY core.hooksPath: ref updates here must not run repository-configured hooks,
+  // matching the isolation the rest of startup already uses.
+  const iso = ['-c', `core.hooksPath=${hooks}`];
+  try { git(source, ...iso, 'fetch', '--no-tags', 'origin', fetchRef); }
+  catch (error) { return { status: 'skipped', detail: `fetch failed: ${error.message}` }; }
+
+  const target = git(source, 'rev-parse', `refs/remotes/origin/${branchName}`);
+
+  let head;
+  try { head = git(source, 'rev-parse', '--abbrev-ref', 'HEAD'); }
+  catch { return { status: 'skipped', detail: 'HEAD is unreadable' }; }
+  if (head === 'HEAD') return { status: 'skipped', detail: 'detached HEAD' };
+  if (head !== branchName) return { status: 'skipped', detail: `on ${head}, not ${branchName}` };
+
+  // An interrupted git operation owns the index and the branch; never move it underneath.
+  const gitDir = git(source, 'rev-parse', '--absolute-git-dir');
+  for (const marker of ['MERGE_HEAD', 'CHERRY_PICK_HEAD', 'REVERT_HEAD', 'BISECT_LOG', 'rebase-merge', 'rebase-apply']) {
+    if (exists(path.join(gitDir, marker))) return { status: 'skipped', detail: `git operation in progress (${marker})` };
+  }
+
+  const current = git(source, 'rev-parse', 'HEAD');
+  if (current === target) return { status: 'current' };
+
+  // Strictly behind, or nothing doing. This is what refuses the 2026-09-14 stranded
+  // commit rather than discarding it: patch-equivalence is not authority to rewrite.
+  if (!gitOk(source, 'merge-base', '--is-ancestor', current, target)) {
+    const [local, remote] = git(source, 'rev-list', '--left-right', '--count', `${current}...${target}`).split(/\s+/);
+    return { status: 'diverged', detail: `${local} local-only, ${remote} incoming — reconcile by hand`, local: Number(local), incoming: Number(remote) };
+  }
+
+  // Dirty is checked LAST so a behind-and-dirty checkout still reports the real reason.
+  if (git(source, 'status', '--porcelain')) return { status: 'skipped', detail: 'working tree has uncommitted changes' };
+
+  try { git(source, ...iso, 'merge', '--ff-only', target); }
+  catch (error) { return { status: 'skipped', detail: `fast-forward refused: ${error.message}` }; }
+  return { status: 'fast-forwarded', from: current.slice(0, 8), to: target.slice(0, 8) };
+}
+
 function validateDestinationAncestors(root, destination) {
   const relative = path.relative(root, destination);
   if (!relative || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
@@ -356,6 +410,12 @@ export function startWorkspace({ root, session, repos = [] }) {
       for (const name of names) {
         const source = name === 'workspace' ? root : path.join(root, name);
         const destination = name === 'workspace' ? workspace : path.join(workspace, name);
+        // Refresh the SHARED checkout before create-or-resume: a resumed session's
+        // readers depend on it being current just as much as a new one's do.
+        let refreshed = null;
+        if (name !== 'workspace') {
+          refreshed = refreshComponentCheckout(source, inventory[name].branch, path.join(synced.report.evidence.directory, 'disabled-hooks'));
+        }
         const entry = state.repositories[name];
         if (entry) {
           // WHY top up on resume (2026-09-16): a resumed worktree that merged
@@ -363,7 +423,7 @@ export function startWorkspace({ root, session, repos = [] }) {
           // the same gaps creation fills. Only an existing node_modules is
           // touched; a component that never had one is left alone.
           const toppedUp = topUpNodeModules(name, destination);
-          result.repositories[name] = { path: destination, branch, status: 'resumed', ...(toppedUp.length ? { provisioned: toppedUp } : {}) };
+          result.repositories[name] = { path: destination, branch, status: 'resumed', ...(toppedUp.length ? { provisioned: toppedUp } : {}), ...(refreshed ? { shared: refreshed } : {}) };
           continue;
         }
         let base;
@@ -390,7 +450,7 @@ export function startWorkspace({ root, session, repos = [] }) {
         // After the manifest is saved: dependency provisioning is a convenience on
         // top of a committed worktree, so its failures must not roll the worktree back.
         const provisioned = provisionNodeModules(name, source, destination);
-        result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}) };
+        result.repositories[name] = { path: destination, branch, status: 'created', ...(provisioned.length ? { provisioned } : {}), ...(refreshed ? { shared: refreshed } : {}) };
       }
       return result;
     } catch (error) {
@@ -425,6 +485,10 @@ function main(args) {
     for (const [name, repo] of Object.entries(result.repositories)) {
       console.log(`${name} (${repo.status}): ${repo.path}`);
       for (const note of repo.provisioned ?? []) console.log(`  deps: ${note}`);
+      const shared = repo.shared;
+      if (shared && shared.status === 'fast-forwarded') console.log(`  shared checkout: fast-forwarded ${shared.from} -> ${shared.to}`);
+      else if (shared && shared.status === 'diverged') console.log(`  shared checkout: DIVERGED — ${shared.detail}`);
+      else if (shared && shared.status === 'skipped') console.log(`  shared checkout: left alone — ${shared.detail}`);
     }
     console.log(`\nRead instructions and run scripts from ${result.workspace}.\nUse these absolute paths for file tools; this command cannot change their root or your shell's directory.\nUnfinished work is preserved. No worktrees are automatically removed. This is not a sandbox.`);
   }

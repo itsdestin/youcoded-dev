@@ -22,6 +22,20 @@
   REPOS=()
   while IFS= read -r entry; do REPOS+=("$entry"); done <<< "$repo_list"
 
+  # Git does not carry hooks between clones, so the guard is (re)installed from the
+  # tracked copy on every run -- which also restores it if someone deletes it.
+  install_commit_guard() {
+    local target="$1" src="$ROOT/scripts/git-hooks/pre-commit" dst
+    [ -f "$src" ] || return 0
+    dst="$(git -C "$target" rev-parse --path-format=absolute --git-common-dir)/hooks/pre-commit"
+    if [ ! -f "$dst" ] || ! cmp -s "$src" "$dst"; then
+      mkdir -p "$(dirname "$dst")"
+      cp "$src" "$dst"
+      chmod +x "$dst"
+      echo "  Installed the commit guard in $(basename "$target") (commits belong in a worktree)."
+    fi
+  }
+
   for entry in "${REPOS[@]}"; do
     repo="${entry%%:*}"
     branch="${entry##*:}"
@@ -30,11 +44,22 @@
     if [ -d "$name/.git" ]; then
       echo "Updating $name..."
       git -C "$name" fetch origin
-      git -C "$name" pull origin "$branch"
+      # NOT a plain `git pull`. On a diverged component checkout that silently builds a
+      # merge commit on the shared branch instead of stopping -- compounding exactly the
+      # state we are trying to avoid. --ff-only refuses instead, and a refusal here is
+      # information, not a failure: the clone is a mirror, so anything that cannot
+      # fast-forward is a local commit someone must look at. Never abort the whole run
+      # for it; the other repos still need syncing.
+      if ! git -C "$name" pull --ff-only origin "$branch"; then
+        echo "  WARNING: $name did not fast-forward — it has local commits or is mid-operation."
+        echo "  Nothing was merged or discarded. Inspect it with:"
+        echo "    git -C \"$ROOT/$name\" status && git -C \"$ROOT/$name\" log --oneline origin/$branch..$branch"
+      fi
     else
       echo "Cloning $name..."
       git clone --branch "$branch" "https://github.com/$repo.git" "$name"
     fi
+    install_commit_guard "$ROOT/$name"
   done
 
   # --- the workspace repo (youcoded-dev) itself ---
@@ -46,16 +71,7 @@
   # The guard that stops this checkout diverging in the first place. Git does not
   # carry hooks between clones, so it is (re)installed from the tracked copy on
   # every run -- that also restores it if someone deletes it.
-  hook_src="$ROOT/scripts/git-hooks/pre-commit"
-  hook_dst="$(git rev-parse --git-common-dir)/hooks/pre-commit"
-  if [ -f "$hook_src" ]; then
-    if [ ! -f "$hook_dst" ] || ! cmp -s "$hook_src" "$hook_dst"; then
-      mkdir -p "$(dirname "$hook_dst")"
-      cp "$hook_src" "$hook_dst"
-      chmod +x "$hook_dst"
-      echo "Installed the commit guard (commits belong in a worktree, not here)."
-    fi
-  fi
+  install_commit_guard "$ROOT"
 
   # NOT `git pull --ff-only`. That reports the state honestly but can only ever
   # refuse, and its advice was `git pull --rebase --autostash` -- which is the one
