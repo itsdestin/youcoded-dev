@@ -1,0 +1,155 @@
+{
+  "title": "Pages that connect — four things the security review turned up",
+  "key": "youcoded-pages-connections-questions-3",
+  "out": "youcoded-pages-connections-3.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Four things the review turned up",
+      "intro": "Before building the machinery, a reviewer attacked the plan with the real code in front of it and found 18 problems. I have fixed 15 of them outright. Three change wording you already approved, and one is a choice only you can make, so they are here."
+    },
+    {
+      "id": "Q-lookup",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval screen, on a look-up only connection",
+      "headline": "\"Cannot send changes\" is not the whole truth. What should it say instead?",
+      "today": "A look-up only connection says, for example: \"Look things up on api.openweathermap.org using your OpenWeather key. Cannot send changes.\" The app really does hold it to look-ups, so the page cannot change anything at that service.",
+      "problem": "A look-up still carries whatever the page chooses to put in the address it looks up. If the approved address belongs to whoever made the page, the page can put anything you typed into it into that address and read it off their end. So the sentence reads as \"nothing leaves\" when what it means is \"nothing is changed there\".",
+      "proposal": "Keep the first sentence and replace the second. All three options keep the app's actual limit; they differ in how plainly the limit is described.",
+      "options": [
+        {
+          "id": "only-address",
+          "label": "\"Only this address.\"",
+          "summary": "\"Look things up on api.openweathermap.org using your OpenWeather key. Only this address.\"",
+          "pros": [
+            "Short, and true of every connection.",
+            "Says the thing that actually protects you: the page is held to one place."
+          ],
+          "cons": [
+            "Loses the useful fact that the page cannot change your account at that service."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both facts, two short lines",
+          "summary": "\"Cannot change anything there. What it sends to that address is up to the page.\"",
+          "pros": [
+            "Keeps the reassurance and adds the caveat, so nothing is overstated.",
+            "Reads as a sober description rather than a warning."
+          ],
+          "cons": [
+            "The approval card gets a line longer on every keyed connection."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep \"Cannot send changes.\"",
+          "pros": [
+            "Shortest, and already approved."
+          ],
+          "cons": [
+            "A person who reads it as \"nothing about me leaves\" has been misled by us, not by the page."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-home-network",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval screen for a page that wants the whole internet",
+      "headline": "Should the whole-internet card also mention the other devices on your home network?",
+      "today": "It says three things: the page can load from and send to any site; anything you type could be sent somewhere you did not choose; it still cannot see your files, your other pages, or your saved keys and sign-ins.",
+      "problem": "The app blocks a page from reaching addresses on your own network, such as your Pi, your router or Home Assistant. That protection is real but not perfect: a website can answer with your network's own address a moment after the check, and win the race. Nothing on the card mentions your home network at all.",
+      "proposal": "Add a fourth line. The protection stays either way; this is only about whether the card says so.",
+      "options": [
+        {
+          "id": "add-line",
+          "label": "Add a fourth line",
+          "summary": "\"YouCoded blocks it from reaching your router, your Pi and anything else on your home network.\"",
+          "pros": [
+            "Names a worry someone might otherwise have, and answers it.",
+            "The card is where it belongs: this is the one page kind where it matters."
+          ],
+          "cons": [
+            "Four lines is a lot to read.",
+            "It mentions a risk many people had not thought of."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "no-line",
+          "label": "Leave it at three",
+          "pros": [
+            "The card stays short."
+          ],
+          "cons": [
+            "Someone running a home server has no way to know whether a page can see it."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-code-change",
+      "words": true,
+      "surface": "Pages",
+      "path": "A connected page after the assistant rewrites it",
+      "headline": "When a page's code changes but its connections don't, should it ask again?",
+      "today": "You approved a page to reach one address. Asking the assistant to restyle it, fix it or add a feature rewrites the page's code; the approval carries on, because what the page may reach has not changed.",
+      "problem": "A page approved for one address can be rewritten to do something different with that same address. It stays inside what you allowed, so the protection holds, but what the page does with it may be nothing like what you approved. Pages also arrive from sync and from a project folder, so \"rewritten\" is not always you.",
+      "proposal": "The app now records a fingerprint of the page's code when you approve it, so it can tell. The question is what to do when it differs.",
+      "options": [
+        {
+          "id": "say-nothing",
+          "label": "Nothing; the connection is what was approved",
+          "pros": [
+            "Editing your own page in chat never interrupts you.",
+            "Simplest to understand: you approved a place, not a version."
+          ],
+          "cons": [
+            "A page installed from someone else could change behaviour quietly on an update."
+          ]
+        },
+        {
+          "id": "quiet-note",
+          "label": "A quiet note in the band",
+          "summary": "The page opens as usual, with \"Code changed since you allowed this\" beside its name until you dismiss it.",
+          "pros": [
+            "You are told, and nothing is blocked.",
+            "Your own edits cost you one glance, not a press."
+          ],
+          "cons": [
+            "One more thing in a band you have worked to keep quiet.",
+            "A note people learn to ignore is worth little."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "re-ask",
+          "label": "Ask again, every time",
+          "pros": [
+            "Nothing changes behind your back."
+          ],
+          "cons": [
+            "Every edit to your own page means approving it again, which is how people learn to press Allow without reading."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-popups",
+      "words": true,
+      "surface": "Pages",
+      "path": "Any page, when you click something in it",
+      "headline": "A page can open your web browser at an address of its choosing when you click in it, and no approval covers that.",
+      "changed": "Stated, not asked: pages are allowed to open links, which is how a news page opens an article. The app cannot tell a link you meant to follow from one the page chose. Your browser opening is at least visible; nothing silent happens.",
+      "notice": "Everything else is now blocked: a page cannot fetch, connect, submit a form, load a remote script or picture, use video calling machinery, or move its own frame to another website. This one path stays open because it is how links work.",
+      "yes": "Acceptable",
+      "no": "Needs work"
+    }
+  ]
+}
