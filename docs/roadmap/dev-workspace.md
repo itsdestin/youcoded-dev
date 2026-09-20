@@ -695,6 +695,31 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] Destin, 2026-09-20: "just fixing a few minor test issues and such has seemingly eaten over
+      an hour of our time today just waiting around on runs. is there any way we could improve
+      this in the future for better/faster iteration and fixes?" Two answers he liked, neither
+      built yet. (1) A NIGHTLY rehearsal build: dispatch `desktop-test-build.yml` from master on
+      a schedule, publish nothing, and notify on failure — today's broken launch check had been
+      broken since 2026-09-16 and surfaced only when a release needed it, because that check runs
+      in NO other workflow. (2) A way to run ONE test file on ONE OS: every proof of a one-test
+      fix cost a full ~15-minute three-OS matrix, four times over
+      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
+
+- [ ] A one-line change to `announcements.txt` runs the full Linux build — ~20 minutes before an
+      announcement can merge, and the repo has auto-merge disabled so a session has to sit on it.
+      `desktop-ci.yml`'s `changes` gate skips the matrix only when EVERY changed file is under
+      `docs/`, and the announcement file sits at the repo root. Widen the gate to the files no
+      build step reads (`announcements.txt`, `README.md`, `CHANGELOG.md`), keeping the skipped-
+      but-completed check master requires
+      `n/a` `confirmed` `checked 2026-09-20`
+
+- [ ] The Linux package update path has never run on real hardware: `pkexec` raising the password
+      dialog, `pacman -U` over a running /opt install, and the relaunch. A dev build reports its
+      install kind as `unknown` by design, so only a packaged beta can prove it. Ask Destin to
+      click Update on his Arch install once a beta carrying youcoded#546 ships; the macOS halves
+      (Rosetta detection, the removed any-dmg fallback) have no machine here at all
+      `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
+
 - [ ] Strip every youcoded-core step out of the release skill (`youcoded-admin`
       `skills/release/SKILL.md`, 56 references). The repo was archived 2026-09-20, so a commit,
       push, tag or `gh release create` against it now FAILS — the skill would die mid-release at
