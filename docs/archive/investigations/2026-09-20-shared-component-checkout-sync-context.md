@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 created: 2026-09-20
-scope: context gathered; decision taken and implemented 2026-09-20 (see Decision below)
+scope: context gathered, decision taken, implemented and shipped 2026-09-20 (youcoded-dev#165, youcoded-admin#11)
 ---
 
 # Shared component checkout sync — context for a future decision
