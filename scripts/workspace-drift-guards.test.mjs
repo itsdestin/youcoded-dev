@@ -377,3 +377,178 @@ test('an untracked file identical to the one upstream adds is preserved for revi
   assert.equal(readFileSync(join(p.local, 'newdoc.md'), 'utf8'), 'the doc\n');
   rmSync(p.root, { recursive: true, force: true });
 });
+
+// ---------------------------------------------------------------------------
+// refreshComponentCheckout: the third guard, added 2026-09-20.
+//
+// The shared component checkout is read as DATA (analytics reads built-in themes
+// and the analytics salt off its working tree) and is the node_modules hardlink
+// source, yet nothing ever moved its branch -- it was found 511 commits behind.
+// These pin the one update that cannot lose work, and the refusals around it.
+// ---------------------------------------------------------------------------
+
+const { refreshComponentCheckout } = await import(join(REPO, 'scripts/workspace-start.mjs'));
+
+/** An empty hooks dir, mirroring the isolation real startup passes in. */
+function hooksDir(root) {
+  const d = join(root, 'disabled-hooks');
+  mkdirSync(d, { recursive: true });
+  return d;
+}
+const refresh = p => refreshComponentCheckout(p.local, 'master', hooksDir(p.root));
+const head = p => git(p.local, 'rev-parse', 'HEAD').trim();
+
+/** The whole point: a clean checkout that is merely behind comes forward. */
+test('a clean checkout strictly behind origin is fast-forwarded', () => {
+  const p = makePair();
+  remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+  const before = head(p);
+
+  const r = refresh(p);
+  assert.equal(r.status, 'fast-forwarded', JSON.stringify(r));
+  assert.notEqual(head(p), before);
+  assert.equal(head(p), git(p.local, 'rev-parse', 'refs/remotes/origin/master').trim());
+  assert.equal(readFileSync(join(p.local, 'c.txt'), 'utf8'), 'see\n',
+    'the working tree must actually carry the new file, since readers consume it');
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** No work, no noise. */
+test('a checkout already at origin reports current and does not move', () => {
+  const p = makePair();
+  const before = head(p);
+  const r = refresh(p);
+  assert.equal(r.status, 'current', JSON.stringify(r));
+  assert.equal(head(p), before);
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** The 2026-09-14 shape. Patch-equivalence is evidence, never authority to rewrite. */
+test('a local-only commit is reported as diverged and is never discarded', () => {
+  const p = makePair();
+  remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+  writeFileSync(join(p.local, 'local.txt'), 'only here\n');
+  git(p.local, 'add', 'local.txt');
+  git(p.local, 'commit', '-qm', 'a commit made in the shared checkout');
+  const before = head(p);
+
+  const r = refresh(p);
+  assert.equal(r.status, 'diverged', JSON.stringify(r));
+  assert.equal(r.local, 1);
+  assert.equal(r.incoming, 1);
+  assert.match(r.detail, /reconcile by hand/);
+  assert.equal(head(p), before, 'the local commit must survive untouched');
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** Another session's uncommitted work outranks freshness. */
+test('uncommitted changes block the fast-forward and are preserved', () => {
+  const p = makePair();
+  remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+  writeFileSync(join(p.local, 'a.txt'), 'someone is mid-edit\n');
+  const before = head(p);
+
+  const r = refresh(p);
+  assert.equal(r.status, 'skipped', JSON.stringify(r));
+  assert.match(r.detail, /uncommitted/);
+  assert.equal(head(p), before);
+  assert.equal(readFileSync(join(p.local, 'a.txt'), 'utf8'), 'someone is mid-edit\n');
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** Behind AND dirty must name divergence-vs-dirt honestly, not the first check that trips. */
+test('a diverged checkout reports divergence even when it is also dirty', () => {
+  const p = makePair();
+  remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+  writeFileSync(join(p.local, 'local.txt'), 'only here\n');
+  git(p.local, 'add', 'local.txt');
+  git(p.local, 'commit', '-qm', 'local commit');
+  writeFileSync(join(p.local, 'a.txt'), 'and an unsaved edit\n');
+
+  const r = refresh(p);
+  assert.equal(r.status, 'diverged', JSON.stringify(r));
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** Parked on another branch, or detached: not ours to move. */
+test('a checkout on another branch or detached is left alone', () => {
+  for (const park of ['branch', 'detach']) {
+    const p = makePair();
+    remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+    if (park === 'branch') git(p.local, 'checkout', '-q', '-b', 'someones-feature');
+    else git(p.local, 'checkout', '-q', '--detach', 'HEAD');
+    const before = head(p);
+
+    const r = refresh(p);
+    assert.equal(r.status, 'skipped', `${park}: ${JSON.stringify(r)}`);
+    assert.match(r.detail, park === 'branch' ? /not master/ : /detached/);
+    assert.equal(head(p), before);
+    rmSync(p.root, { recursive: true, force: true });
+  }
+});
+
+/** An interrupted git operation owns the branch; never move it underneath. */
+test('an in-progress git operation blocks the fast-forward', () => {
+  const p = makePair();
+  remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+  const gitDir = git(p.local, 'rev-parse', '--absolute-git-dir').trim();
+  writeFileSync(join(gitDir, 'MERGE_HEAD'), `${head(p)}\n`);
+  const before = head(p);
+
+  const r = refresh(p);
+  assert.equal(r.status, 'skipped', JSON.stringify(r));
+  assert.match(r.detail, /in progress/);
+  assert.equal(head(p), before);
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** Session worktrees hang off this repo; moving master must not disturb them. */
+test('a linked session worktree is untouched by the fast-forward', () => {
+  const p = makePair();
+  const wt = join(p.root, 'session-worktree');
+  git(p.local, 'worktree', 'add', '-q', '-b', 'session/thing', wt);
+  const sessionHead = git(wt, 'rev-parse', 'HEAD').trim();
+  remoteCommit(p, 'c.txt', 'see\n', 'upstream moves on');
+
+  const r = refresh(p);
+  assert.equal(r.status, 'fast-forwarded', JSON.stringify(r));
+  assert.equal(git(wt, 'rev-parse', 'HEAD').trim(), sessionHead,
+    'the session worktree must stay on its own commit');
+  assert.equal(git(wt, 'rev-parse', '--abbrev-ref', 'HEAD').trim(), 'session/thing');
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/**
+ * The guard now protects component clones too, so its refusal must say WHICH clone
+ * refused and hand back a start command that names that component.
+ */
+test('guard: a component checkout is refused by name, with a component start command', () => {
+  const p = makePair();
+  const component = join(p.root, 'youcoded');
+  execFileSync('git', ['clone', '-q', p.remote, component]);
+  git(component, 'config', 'user.email', 't@t'); git(component, 'config', 'user.name', 'T');
+  installHook(component);
+  appendFileSync(join(component, 'a.txt'), 'edit\n');
+
+  const r = tryCommit(component);
+  assert.notEqual(r.code, 0, 'commit in a shared component clone must fail');
+  assert.match(r.out, /Refusing to commit in the shared youcoded checkout/);
+  assert.match(r.out, /workspace-start\.mjs --session <stable-key> youcoded/,
+    'the recipe must name the component, or the reader cannot act on it');
+  assert.match(git(component, 'status', '--porcelain'), /a\.txt/, 'the edit must survive');
+  rmSync(p.root, { recursive: true, force: true });
+});
+
+/** The sanctioned commit-and-push-together skills must still get through. */
+test('guard: the override still works in a component checkout', () => {
+  const p = makePair();
+  const component = join(p.root, 'wecoded-marketplace');
+  execFileSync('git', ['clone', '-q', p.remote, component]);
+  git(component, 'config', 'user.email', 't@t'); git(component, 'config', 'user.name', 'T');
+  installHook(component);
+  appendFileSync(join(component, 'a.txt'), 'edit\n');
+
+  const r = tryCommit(component, { YOUCODED_ALLOW_MAIN_COMMIT: '1' });
+  assert.equal(r.code, 0, `override must allow the commit:\n${r.out}`);
+  rmSync(p.root, { recursive: true, force: true });
+});
