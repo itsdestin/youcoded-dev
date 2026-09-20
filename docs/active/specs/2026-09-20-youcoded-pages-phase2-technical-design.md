@@ -52,9 +52,10 @@ wildcard or userinfo), or a duplicate `id` is dropped. Caps: 8 connections, `ser
 `github`** (deck Q-open-mix): if it does, the whole list is dropped and the page reaches nothing
 — refusing is safe, guessing which half the author meant is not.
 
-A connection's **fingerprint** is `kind|service|address|access`, plus a hash of `keyHelp` when
-there is one (finding 16: those steps are author text shown at the moment a key is pasted). It is
-what an approval is recorded against, so widening access, changing an address or rewriting the
+A connection's **fingerprint** is `kind|service|address|access`, plus the key's placement when it
+is not the default header (moving a key into the URL re-asks). It does NOT include `keyHelp`:
+hashing displayed text would pause every copy of a page over a typo fix, and those steps are only
+shown while a key is being entered, before any approval exists to lapse. It is what an approval is recorded against, so widening access, changing an address or rewriting the
 key instructions lapses that approval and the page asks again (deck S-change); a renamed `id`
 alone does not.
 

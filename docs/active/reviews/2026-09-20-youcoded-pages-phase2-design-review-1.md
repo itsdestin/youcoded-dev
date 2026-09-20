@@ -27,12 +27,20 @@ design doc is amended where a finding is accepted; the amendments are the record
 | 13 | `pages:approve` is a remote channel; "no keys on the phone" was renderer-only | **accepted** — main refuses key material from a remote caller |
 | 14 | "Cannot send changes" describes a two-way channel as one-way | **accepted, needs Destin** — the wording is approved copy, so it changes on a deck, not here |
 | 15 | The whole-internet bullets omit the home network; DNS rebinding beats the guard | **accepted** — pin the validated address for this path; the fourth bullet is deck wording |
-| 16 | `keyHelp` is author text shown at the key box and outside the fingerprint | **accepted** — hashed into the fingerprint |
+| 16 | `keyHelp` is author text shown at the key box and outside the fingerprint | **reversed on build** — see below |
 | 17 | The approval gate reads the list summary, not the loaded document | **accepted** — gate on the loaded page |
 | 18 | Absolute-URL requirement, `accept` header combining, popups | **accepted** — stated and handled |
 
-Nothing was rejected. Two items (14, 15's wording) and one question (5's re-ask) go to Destin on
-a deck, because they change copy he has already approved.
+**Finding 16 was accepted and then reversed while building**, which is why the code and this
+table disagreed for a day. Hashing the key instructions into the fingerprint means an author
+fixing a typo in them pauses every installed copy of that page — a re-ask nobody can act on,
+which is exactly how people learn to press Allow without reading. The instructions are also only
+ever shown while a key is being entered, which is before any approval exists to lapse. The
+narrower fix stands instead: the steps are labelled as the author's words, and the key placement
+(header or query parameter) IS in the fingerprint, so moving a key into the URL does re-ask.
+
+Nothing else was rejected. Two items (14, 15's wording) and one question (5's re-ask) go to
+Destin on a deck, because they change copy he has already approved.
 
 Confirmed sound, so not re-litigated: the host side of the postMessage bridge (`e.source`
 identity, so a previewed HTML artifact cannot impersonate a page); `URL.hostname` handling of
