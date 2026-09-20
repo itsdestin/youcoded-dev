@@ -19,14 +19,14 @@ The app serves students, professionals and everyday AI users—not just develope
 | `youcoded/` | itsdestin/youcoded | Main app: Electron desktop and Android |
 | `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill registry and Cloudflare Worker |
 | `wecoded-themes/` | itsdestin/wecoded-themes | Community theme registry |
-| `youcoded-core/` | itsdestin/youcoded-core | Legacy plugin, mid-deprecation |
+| `youcoded-core/` | itsdestin/youcoded-core | Legacy plugin, ARCHIVED 2026-09-20 — read-only |
 | `youcoded-admin/` | itsdestin/youcoded-admin | Owner-only release and announcement skills |
 
 ## Cross-Repo Relationships
 
 Planning and versioning belong to the workspace; `ROADMAP.md` indexes area backlogs. Single-repo implementation depth belongs in that repo's `docs/`.
 
-Registries are fetched at runtime. Bundled plugin definitions must agree across desktop and Android. The legacy `youcoded-core` retirement is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`: until the relevant release ships, hook fixes must land in the legacy copy AND the app's bundled copies. Release coordination belongs to `youcoded-admin`.
+Registries are fetched at runtime. Bundled plugin definitions must agree across desktop and Android. **`youcoded-core` was ARCHIVED on GitHub 2026-09-20 (Destin): it is read-only, so a push, a release or a "mirror the fix into the legacy copy too" step now FAILS — hook fixes land in the app's bundled copies only (`desktop/hook-scripts/`, `app/src/main/assets/`, byte-identical, pinned by `write-guard-contract.test.ts`). Its clone URL still works, so v1.2.4 installs are unaffected.** The remaining retirement work — deleting the app's dead `youcoded-core`-aware branches, shipping in 1.3.1 — is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. Release coordination belongs to `youcoded-admin`.
 
 ## Working Rules
 

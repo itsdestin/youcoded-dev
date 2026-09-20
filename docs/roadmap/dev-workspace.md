@@ -695,6 +695,17 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] Strip every youcoded-core step out of the release skill (`youcoded-admin`
+      `skills/release/SKILL.md`, 56 references). The repo was archived 2026-09-20, so a commit,
+      push, tag or `gh release create` against it now FAILS — the skill would die mid-release at
+      Phase 4 Step 6. A header note at the top currently says "skip every youcoded-core step",
+      which holds the next release together but leaves the two-repo flow written out below it:
+      Repository Details, Phase 1 Steps 1–7, the review-mandates and review-update-compat agents,
+      the two-CHANGELOG generation, the YOUCODED-CORE release block, Steps 8a–8c and the error
+      table. Also drop the youcoded-core rows from `setup.sh`/`workspace-start.mjs` if nothing
+      needs the checkout any more
+      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
+
 - [ ] Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from
       brand-new accounts, copies Reddit bug reports and ideas into real roadmap entries, and
       flips posts to Fixed or Planned himself. Set up automation for the repetitive parts, such as
