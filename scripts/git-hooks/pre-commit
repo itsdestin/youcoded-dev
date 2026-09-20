@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
-# Refuse commits made directly in the SHARED youcoded-dev checkout.
+# Refuse commits made directly in ANY shared workspace checkout -- the youcoded-dev
+# workspace itself and every component clone beside it.
 #
-# WHY: on 2026-09-03 this checkout was found 110 commits behind origin/master
-# with no session ever told. The reason it could not self-heal was that seven
-# commits had been made HERE instead of in a throwaway worktree, which put the
-# branch in git's "diverged" state -- and `git pull` refuses a diverged branch
-# outright, before it even looks at your files. Six of those seven turned out to
-# be duplicates another session had already copied upstream by hand; the seventh
-# held five of Destin's product ideas and existed nowhere else on earth.
+# WHY: on 2026-09-03 the youcoded-dev checkout was found 110 commits behind
+# origin/master with no session ever told. The reason it could not self-heal was
+# that seven commits had been made HERE instead of in a throwaway worktree, which
+# put the branch in git's "diverged" state -- and `git pull` refuses a diverged
+# branch outright, before it even looks at your files. Six of those seven turned
+# out to be duplicates another session had already copied upstream by hand; the
+# seventh held five of Destin's product ideas and existed nowhere else on earth.
+#
+# WHY components too (2026-09-20): the same thing then happened to the shared
+# youcoded clone. The announce skill committed d87b3657 there while the identical
+# patch was published from a session worktree as 1e839c70, so the branch held a
+# commit that was patch-equivalent to -- but not an ancestor of -- origin/master.
+# It sat 511 commits behind, and because analytics reads themes and the analytics
+# salt straight off that working tree, stale files were being read as current.
 #
 # CLAUDE.md has said "push from a temp worktree, the shared checkout is dirty and
 # belongs to other sessions" for weeks. This turns that sentence into something
@@ -18,6 +26,8 @@
 set -euo pipefail
 
 # An explicit, deliberate override -- not a mistake anyone makes by accident.
+# Owner-only skills that commit and push in the same breath use it on purpose:
+# a commit created and pushed together never strands the branch.
 if [ -n "${YOUCODED_ALLOW_MAIN_COMMIT:-}" ]; then
     exit 0
 fi
@@ -31,17 +41,27 @@ if [ "$git_dir" != "$common_dir" ]; then
     exit 0
 fi
 
-cat >&2 <<'MSG'
+# Name the repo actually being committed to: this same hook guards several clones,
+# and "the shared checkout" is useless when you cannot tell which one refused.
+repo_name=$(basename "$(git rev-parse --show-toplevel)")
+if [ "$repo_name" = "youcoded-dev" ]; then
+    start_cmd="node scripts/workspace-start.mjs --session <stable-key>"
+else
+    start_cmd="node scripts/workspace-start.mjs --session <stable-key> ${repo_name}"
+fi
 
-  ✗ Refusing to commit in the shared youcoded-dev checkout.
+cat >&2 <<MSG
+
+  ✗ Refusing to commit in the shared ${repo_name} checkout.
 
   This folder is shared by every running session, so it is normally dirty and
-  behind. Committing here is what put it 110 commits behind on 2026-09-03 and
-  nearly lost five of Destin's product ideas.
+  behind. Committing here is what put youcoded-dev 110 commits behind on
+  2026-09-03 and nearly lost five of Destin's product ideas, and what left the
+  youcoded clone 511 commits behind on 2026-09-20.
 
   Start an isolated workspace BEFORE editing, then commit from its returned path:
 
-      node scripts/workspace-start.mjs --session <stable-key>
+      ${start_cmd}
 
   If you already edited here, reapply only your intended changes in that workspace.
   Do not copy whole shared files over newer versions. Stage explicit paths.

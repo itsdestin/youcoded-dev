@@ -30,9 +30,15 @@ worktrees. Default root is the workspace containing the script, not the shell's 
 - Creates `worktrees/sessions/<key>` for workspace docs and tooling, on `session/<key>`, from
   the immutable fetched commit. A fresh session stops if current workspace guidance could not
   be fetched, even if a cached remote ref exists.
-- Nests selected component worktrees at their familiar names inside that workspace. Component
-  repositories keep their existing behavior: a newly requested component is fetched and
-  created from its configured default, while recorded components resume without a fetch.
+- Nests selected component worktrees at their familiar names inside that workspace. A newly
+  requested component is fetched and created from its configured default; a recorded component
+  resumes on its own branch, untouched.
+- Refreshes each requested component's **shared** checkout (`~/youcoded-dev/<name>`), on both
+  creation and resume. The shared clone is fetched, and its checked-out branch is fast-forwarded
+  only when it is on the configured branch, clean, free of an in-progress Git operation, and a
+  strict ancestor of the fetched remote. Anything else — local commits, a dirty tree, a detached
+  or foreign branch — is reported and left alone. This never touches session worktrees, which sit
+  on their own branches.
 - Uses `scripts/workspace-repos.json` for names/defaults, shared with `setup.sh`.
 - Records each successful worktree in `<git-common-dir>/youcoded-sessions/<key>.json` and reuses
   it without pulling, resetting or changing its branch, index or files. Workspace reorientation
@@ -53,8 +59,15 @@ adopt this tool.
 
 ## Automatic and review-only actions
 
-Only the shared `youcoded-dev` checkout is eligible for reorientation updates; component
-checkouts and resumed sessions are not. When shared `master` is behind fetched `origin/master`,
+The shared `youcoded-dev` checkout is eligible for the full reorientation update described
+below; resumed session worktrees are never touched. Shared **component** checkouts get the
+narrower refresh above — a strict fast-forward or nothing, with no candidate, snapshot or
+conflict machinery.
+
+A component's shared checkout is not merely a cache. Its working tree is read as data (the
+analytics skill reads built-in themes and `analytics-salt.ts` straight off it) and it is the
+hardlink source for every new `node_modules`, so letting it sit stale silently serves old files.
+On 2026-09-20 the shared `youcoded` clone was found 511 commits behind for exactly this reason. When shared `master` is behind fetched `origin/master`,
 startup automatically fast-forwards only if preflight, private snapshot and final recheck prove
 that the checkout is clean or that unrelated dirty contents, modes and staged/unstaged state
 remain preserved. Repository hooks are disabled through a private hooks directory for workspace
