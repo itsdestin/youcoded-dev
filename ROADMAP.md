@@ -42,10 +42,9 @@ harness and the local engine.
 Target: `v1.3.1`
 - chat-data: Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
 - chat-data: **v1.3.1 release blocker.** Four smaller reads left over from cycle 2 still do more work than they need to: listing
-- dev-workspace: REVERT WHEN 1.3.1 SHIPS: youcoded.ai's download buttons now hand out the newest release
 - dev-workspace: Re-work the release method: releases tag master directly, so every release ships the
 - dev-workspace: Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
-- dev-workspace: Ship v1.3.1 — the release mechanics: an `/audit` run, version bumps on both platforms (still
+- dev-workspace: Ship v1.3.1 — the release mechanics, now that v1.3.0 has been cut (2026-09-20: version
 - dev-workspace: Public-launch formalization is the 1.3.1 gate: signed macOS/Windows installers, a Play listing,
 - dev-workspace: Windows and macOS installers still hit the security wall — nothing is signed or notarized.
 - dev-workspace: No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires

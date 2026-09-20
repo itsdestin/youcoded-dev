@@ -719,12 +719,13 @@ seen-on is always n/a here.
       33921417200 was dispatched for that on 2026-09-04
       `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
-- [ ] REVERT WHEN 1.3.1 SHIPS: youcoded.ai's download buttons now hand out the newest release
-      INCLUDING pre-releases, so visitors get the 1.3.1-beta build instead of v1.2.4 from May.
-      Deliberate and temporary (Destin, 2026-09-03). 1.3.0 is skipped as a release
-      (Destin, 2026-09-19), so this waits for 1.3.1: put the buttons back on stable-only, and
-      delete the beta pre-releases so they stop being what the site serves
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1`
+- [ ] REVERT NOW THAT 1.3.0 HAS SHIPPED: youcoded.ai's download buttons hand out the newest
+      release INCLUDING pre-releases, so visitors get a beta instead of a release. Deliberate
+      and temporary while v1.2.4 (May) was the only release (Destin, 2026-09-03). 1.3.0 shipped
+      2026-09-20, so the reason is gone: put the buttons back on stable-only. The beta
+      pre-releases can STAY published — the in-app beta channel (shipped 2026-09-13) is how a
+      tester gets them now, and deleting them would strand anyone already on one
+      `n/a` `confirmed` `checked 2026-09-20` `v1.3.0`
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
       undifferentiated 3,200-odd commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
@@ -800,13 +801,12 @@ seen-on is always n/a here.
       renders need his go-ahead
       `n/a` `decision` `checked 2026-09-11`
 
-- [ ] Ship v1.3.1 — the release mechanics: an `/audit` run, version bumps on both platforms (still
-      1.2.4 in both manifests; the CHANGELOG carries a `1.3.0-beta` section and 1.3.0 is skipped as
-      a release, so the entry to write is `1.3.1`),
-      the tag. The last product gate (Account → Connected accounts shows an in-app GitHub sign-in)
-      was confirmed 2026-09-02; what blocks it now is the release-method rework and the signing
-      items in this section
-      `n/a` `blocked` `checked 2026-09-16` `v1.3.1`
+- [ ] Ship v1.3.1 — the release mechanics, now that v1.3.0 has been cut (2026-09-20: version
+      bumps on both platforms, the `1.3.0` CHANGELOG entry, the `v1.3.0` tag, both platform
+      workflows). 1.3.1 is Release N+1 of the youcoded-core retirement and carries the items
+      tagged `v1.3.1`; what still blocks it is the release-method rework and the signing items
+      in this section
+      `n/a` `blocked` `checked 2026-09-20` `v1.3.1`
 
 - [ ] Public-launch formalization is the 1.3.1 gate: signed macOS/Windows installers, a Play listing,
       the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
