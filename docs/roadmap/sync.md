@@ -37,6 +37,39 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       Seen in the M2 dev repro, 2026-07-23 (CC and native alike).
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
 
+- [ ] Two devices can resume the same conversation and both end up writing at once even when the
+      SyncHub is healthy. Claiming is not one atomic step today: a resume that sees the lease free
+      still syncs, opens the session, and only then asks to acquire — another device can take it in
+      between, the loser's "no" is only logged, and the session stays open anyway. Two resumes
+      started together can both pass the same gate for the same reason. Lease records also expire
+      silently after 300 s without renewals, so a device that sleeps long enough can come back
+      writing while another already holds the lease with no warning on either side. Found in the
+      lease/handoff audit, 2026-09-21 (H1, H4, H5, plus the acknowledge half of H3).
+      `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
+- [ ] A forced takeover or a failed final push can leave the resuming device starting from an older
+      copy of the conversation: the new owner is in and working before the old device has finished
+      sending its last turns, and those turns only show up later as a conflict copy. Nothing is
+      lost permanently, but the person who resumed starts stale with no sign anything is missing.
+      Needs an agreed meaning for "handoff finished" — either the resuming device waits for the old
+      device's last push, or it says "final changes still arriving" and catches up afterwards.
+      Same audit (H2, H3).
+      `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
+- [ ] Backup & Sync transparency pass on lease handoffs: the (i) popup says nothing about what
+      happens when two devices have the same conversation open, and the takeover dialog's wording
+      promises more than the system can know — "didn't answer" when really it "couldn't confirm the
+      handoff". The first confirmation also doesn't say the old device ends up with its own separate
+      copy unless you hover, and the conflict notice disappears. Destin asked for this directly
+      (2026-09-21). Same audit (F1/F4 hub-down warning, F3, F7, M1).
+      `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
+- [ ] The sync worker accepts whatever device id a lease message claims without checking it against
+      the signed-in connection that sent it, so a client in your account could act as another of
+      your devices — acquiring, renewing or releasing its lease. Needs the lease to be bound to the
+      authenticated connection plus a test that a forged device id is refused. Same audit (M2).
+      `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
 - [ ] You can open a conversation your OTHER machine is actively working in, and nothing warns you —
       no dialog, no pill, no note. Destin, 2026-09-03, resuming from a dev window while the same
       sessions ran on his laptop. Mechanism is understood and is the ACQUIRER half of the item
