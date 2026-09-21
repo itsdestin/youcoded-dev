@@ -84,6 +84,18 @@ non-blocking pill with an action button. Leaning pill-with-action: a modal on wa
 old device grabs back automatically — a pill that waits for a human is fine. Second reviewer
 may overrule.
 
+**RESOLVED 2026-09-21 (build): no new UI is needed.** The existing MovedGate pill IS the
+affordance, non-blocking by construction: renew-discovery tears down (Q-3's yield-by-default)
+and the session's pill re-renders as the Moved gate ("This session was taken over on <device>")
+whose **"Resume on this device"** button now runs the NEW claim-first gate: claim → denied
+(holder is the other device) → Try again → still held → falls through to the takeover dialog
+(confirm → hand-off → force). That is the reverse handoff this section described — the holder
+releases, the waking device re-acquires, the conversation continues here — with no third
+surface to design, and the deny-first gate guarantees nothing is created before ownership is
+settled. Pinned by `resume-lease-gate.test.ts` "Try again + still denied falls through to the
+takeover gate" and its decline-release companion. The pill-vs-dialog open question therefore
+dissolves: the pill is the entry, the takeover dialog (Q-2's module) is the ask.
+
 ## Tests to add (pinning the decisions)
 
 - `resume-lease-gate.test.ts`: claim-before-open — `session:create` is NOT called when acquire
