@@ -110,6 +110,26 @@ them. Not here: the theme renders wrong (themes).
 
 ## install
 
+- [ ] **The registry's version-bump check is not enforced, so plugin content changes reach
+      nobody who already has the plugin.** `bundled-version-bump` in
+      `wecoded-marketplace/.github/workflows/validate-plugin-pr.yml` detects a plugin whose
+      files changed without its `plugin.json` version rising. It is correct — and powerless:
+      `master` has no branch protection, so a red check does not block a merge. Confirmed by
+      replaying it on real history: PR #87 (2026-09-09) changed theme-builder's
+      `reference/mascots.md` at version 1.0.1, the check ran and **failed**
+      (`bundled-version-bump -> completed failure`), and the PR merged anyway. That commit is
+      live in the repo and inert on every machine that already had the plugin — which is how
+      this was found. Two further historical instances of the same shape, found by replaying
+      the widened check over `3ce02de..88a360a`: `youcoded-inbox` (74 insertions across four
+      provider docs, version 1.0.0 unchanged) and `youcoded-messaging` (deleted 487 lines of
+      the imessages MCP server and rewrote `plugin.json`'s description and `provides`, version
+      1.0.0 unchanged). Fix applied: the check's scope widened from three hardcoded ids to
+      every top-level dir holding `plugin.json` (a newly bundled plugin would otherwise be
+      silently exempt), and CONTRIBUTING.md now states the rule. **Still open: branch
+      protection on `master` requiring the check.** Until then it is a comment, not a gate.
+      Destin 2026-09-20: any change to skill/plugin content must force a version bump
+      `n/a` `confirmed` `checked 2026-09-20`
+
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows
       "Open source" instead of "Get". The app supports MCP servers fully; the installer just has
       no way to acquire a container image, and it would need Docker on the user's machine.

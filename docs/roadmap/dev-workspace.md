@@ -541,6 +541,18 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] **`docs/PITFALLS.md` sits at exactly its 2500-word budget, so a new cross-repo invariant has
+      nowhere to go.** Measured 2026-09-20: 2500 words against a 2500 limit — zero headroom. The
+      budget check in `audit-anchors.mjs` fails any addition, so the file can only grow by evicting
+      an existing invariant. Hit while adding the plugin-version-bump invariant; the entry was
+      reverted rather than delete someone else's rule to make room, which means the invariant is
+      currently unrecorded. Wanted: either raise the budget (a limit that forbids all additions is
+      a limit that stops being maintained), or move the oldest single-repo entries to the
+      path-scoped rules that already cover their subsystems and keep PITFALLS for what is genuinely
+      cross-repo. The second is the real fix — PITFALLS' own header says single-repo invariants
+      belong in rules, and some entries there no longer are
+      `n/a` `confirmed` `checked 2026-09-20`
+
 - [ ] A Worker setting the code reads can exist only as a test value with nothing loading it into
       the live Worker, and every check stays green: the admin-device filter sat that way until
       2026-09-13 even though the 2026-09-01 audit named it, so every admin analytics number counted
