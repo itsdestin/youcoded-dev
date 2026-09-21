@@ -886,6 +886,17 @@ seen-on is always n/a here.
       up, would execute; the launcher already knows both ports
       `n/a` `confirmed` `checked 2026-09-10`
 
+- [ ] RECURRENCE, 2026-09-20, with the mechanism the entry above was missing. `run-dev.sh --stop`
+      killed the Electron pair, printed "offset 50's ports are free" and was RIGHT about 5223/9950/9272 —
+      but `npm run dev:renderer` and its Vite child were still alive, orphaned to init (ppid 1673), with
+      **Vite listening on 5173: its own default, which the offset never moves.** The stop path finds
+      leftovers by scanning the offset's three ports, so a socket the offset does not control is invisible
+      to it, and the next launch dies with a bind error naming Vite rather than the orphan. Detected only
+      because the backgrounded launcher reported `exit=1` after 1h49m and the port was checked by hand;
+      found with `ss -ltnp`, killed by exact pid (never a name match — the live app runs node too).
+      Whatever fixes this should scan the process tree the launcher started, not a port list
+      `n/a` `confirmed` `checked 2026-09-20`
+
 - [ ] `workbench-boot-check.mjs` boots sixteen routes (the `scenario=*` / `view=*` set plus a
       stalled and a first-run variant), so eleven of the twenty-seven `?switch=` values
       `mock-shim.ts` reads have never been booted by any check — `planUsage`, `chatgpt`,
