@@ -923,3 +923,20 @@ seen-on is always n/a here.
       I cleaned it up". Either `close-out.sh` should list the manifest beside the other three
       cleanup items, or removing the last worktree it records should drop it
       `n/a` `confirmed` `checked 2026-09-20`
+
+- [ ] A session worktree disappeared mid-session and took the only copy of the work with it,
+      and nothing in the workspace noticed — no warning before, none after. Destin asked for a
+      one-line buddy cursor fix; it was made, tested and verified in `worktrees/sessions/buddy-cursor`;
+      the next turn found the directory, its git admin dir, the `session/buddy-cursor` branch AND its
+      manifest all gone together. A `kwin_wayland` coredump at 19:16:02 killed his desktop session
+      (no reboot — uptime ran continuously from 14:23), so a crash was the first suspect, but a crash
+      does not un-register a worktree and delete a branch: `git worktree prune` had nothing to prune.
+      Nothing in `scripts/` or the app removes one (the dev-dashboard is clipboard-only by design);
+      what actually issued it is NOT established. The work was rebuilt and shipped, so the cost was
+      one re-do — the durable gap is that uncommitted work has no second copy, a branch with zero
+      commits preserves nothing, and re-running the same `--session` key silently created a fresh
+      worktree at master rather than hinting anything was lost. Full timeline and the searches that
+      ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
+      Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
+      worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
+      `n/a` `needs-verify` `checked 2026-09-20`
