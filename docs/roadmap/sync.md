@@ -44,7 +44,12 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       started together can both pass the same gate for the same reason. Lease records also expire
       silently after 300 s without renewals, so a device that sleeps long enough can come back
       writing while another already holds the lease with no warning on either side. Found in the
-      lease/handoff audit, 2026-09-21 (H1, H4, H5, plus the acknowledge half of H3).
+      lease/handoff audit, 2026-09-21 (H1, H4, H5, plus the acknowledge half of H3). Decided the
+      same day (deck Q-1/Q-2/Q-3): claim BEFORE opening, with two riders — measure the real claim
+      round-trip first and put an escape hatch in so a claim that can't run (offline, slow) never
+      blocks opening a conversation. A losing device gets a message and a Try again button, not the
+      other copy opened for it. A waking device yields to the device that kept working, with a
+      take-over-on-this-device affordance that runs the existing takeover in reverse.
       `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] A forced takeover or a failed final push can leave the resuming device starting from an older
@@ -53,7 +58,8 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       lost permanently, but the person who resumed starts stale with no sign anything is missing.
       Needs an agreed meaning for "handoff finished" — either the resuming device waits for the old
       device's last push, or it says "final changes still arriving" and catches up afterwards.
-      Same audit (H2, H3).
+      Same audit (H2, H3). Decided 2026-09-21 (deck Q-8): not the pill as proposed — Destin's
+      wording for the state: "Still syncing recent messages, this may take a moment."
       `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] Backup & Sync transparency pass on lease handoffs: the (i) popup says nothing about what
@@ -61,13 +67,21 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       promises more than the system can know — "didn't answer" when really it "couldn't confirm the
       handoff". The first confirmation also doesn't say the old device ends up with its own separate
       copy unless you hover, and the conflict notice disappears. Destin asked for this directly
-      (2026-09-21). Same audit (F1/F4 hub-down warning, F3, F7, M1).
+      (2026-09-21). Same audit (F1/F4 hub-down warning, F3, F7, M1). Decided the same day
+      (deck Q-4/Q-5/Q-6/Q-7): NO hub-down warning — keep today's silence; the (i) popup gets a short
+      paragraph (2-3 sentences), not a full section; the separate-copy line in the first dialog was
+      NOT decided — Destin asked how the "second copy" interacts with git sync first (answered in
+      chat 2026-09-21: git merges cleanly unless both devices changed the same part, in which case
+      the other device's version keeps the filename and the local one becomes the "(from …)" copy);
+      re-ask before building it. The timeout wording becomes "couldn't confirm the handoff".
       `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] The sync worker accepts whatever device id a lease message claims without checking it against
       the signed-in connection that sent it, so a client in your account could act as another of
       your devices — acquiring, renewing or releasing its lease. Needs the lease to be bound to the
       authenticated connection plus a test that a forged device id is refused. Same audit (M2).
+      Decided 2026-09-21 (deck Q-10): NOT now — file it as a potential issue needing further
+      exploration rather than fix it in this feature (this item is that filing; revisit on its own).
       `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] You can open a conversation your OTHER machine is actively working in, and nothing warns you —

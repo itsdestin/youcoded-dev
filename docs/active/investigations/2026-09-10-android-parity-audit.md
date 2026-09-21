@@ -421,7 +421,9 @@ dev-workspace).
   A paired phone driving the desktop remotely is different — the desktop stays the holder and its
   remote server supports the lease RPCs. Decide Android's place in "cross-device" before calling
   the feature that: explicitly exclude it in copy, or add parity in the rebuild. Lease/handoff
-  audit finding H6.
+  audit finding H6. **Decided 2026-09-21 (lease-handoff deck Q-9): copy says so** — the (i) popup
+  and the dialog state plainly that live handoffs work between desktops, and the phone joins when
+  its rebuild lands; no new scope on the rebuild.
   `n/a` `needs-verify` `checked 2026-09-21` →
   docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
