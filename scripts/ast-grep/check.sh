@@ -379,7 +379,13 @@ fi
 #   useArtifactOptional() and useContext(ArtifactContext), one fixture line each) — 423 (419 on master + these 4).
 # 2026-09-23 (perf, many tabs): +1 — no-sync-fs-whole-file gains conversations/reconciler.ts
 #   and a second pattern for the `fs.xSync.native(...)` shape; its new reconciler fixture fires once.
-EXPECTED_VIOLATIONS=424
+# 2026-09-23 (perf, main-process guard): -17 — the fourteen per-file "no sync fs in the main
+#   process" rules (no-sync-fs-*, *-stays-async, read-tool-no-blocking-read,
+#   native-session-list-uses-async-form, …) and their 17 fixture matches are RETIRED in favour of
+#   ONE class-wide ratchet: youcoded/desktop/tests/main-blocking-calls.test.ts (every blocking call
+#   in src/main is on a reviewed allowlist; its PROTECTED table carries every retired rule's ban
+#   and "must still exist" check). 424 - 17 = 407.
+EXPECTED_VIOLATIONS=407
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

@@ -124,7 +124,7 @@ documented theme-author API.
    Provable with render-count tests like the file-pane work, and the rig's workload phase
    (long tasks, frame gaps) is the gate.
 2. **Batch C, items C1–C5** — the remaining "everything freezes at once" moments on paths a click
-   reaches. Each is one function; the `main-hot-path-no-sync-fs` guard test extends to cover them.
+   reaches. Each is one function; the main-process sync-fs guard (now `tests/main-blocking-calls.test.ts`, 2026-09-23) covers them.
    C9 is one line (cap the Home watcher) and answers a roadmap mystery.
 3. **Batch B** — the per-tab tax. B1 (pause hidden terminals) is probably the single biggest GPU
    win for a user with several sessions running.
