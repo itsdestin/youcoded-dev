@@ -1,0 +1,28 @@
+{
+ "deck": "morning-rounds-mascot-refine-2",
+ "started": "2026-09-23T01:59:14.381Z",
+ "submitted": "2026-09-23T02:01:21Z",
+ "cur": 2,
+ "answers": {
+  "R2-1": {
+   "v": "other",
+   "note": "closer, but not quite, i think the scrubs/v should meet a bit higher up near the dogs mouth. we can drop the triangle beige shape under the mouth and add a simple darker line dividing the two halves of the scrubs. also want the sleeves on the arms to come down a bit further",
+   "seconds": 101,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-2": {
+   "note": "remove the weird beige squear finger thing",
+   "v": "other",
+   "seconds": 18,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R2-3": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,77 @@
+{
+ "deck": "youcoded-pages-connections-r2",
+ "started": "2026-09-19T09:25:59.231Z",
+ "submitted": "2026-09-19T09:29:08Z",
+ "cur": 10,
+ "answers": {
+  "D-1": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "yes",
+   "note": "its still unclear what \"page never sees it\" mean. for a non-technical user, they are solely putting this token in so the page *can* see it. maybe it would be better just to say something like \"All API keys are stored securely on your device and are not backed up or accessible to outside services\". something like that",
+   "seconds": 84,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-3": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-4": {
+   "v": "yes",
+   "note": "can we put the alread allowed stuff in the same box/container as the new permssion.",
+   "seconds": 21,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-5": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-6": {
+   "v": "yes",
+   "note": "put all of that \"adding not supported\" text inside the white button thing. ",
+   "seconds": 32,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-7": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-8": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-9": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-10": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-11": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -5,7 +5,7 @@ Fixture prose. The tool never touches this section.
 
 ## Next release
 Target: `v1.3`
-- sync: Sync dead-ends on any machine without gh — the setup screen shows a spinner
+- sync: Sync dead-ends on any machine without gh
 
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |

@@ -322,7 +322,9 @@ fi
 ALL_SHIPPED=$(rg -l '^status: shipped' "$WORKSPACE/docs/active" 2>/dev/null | wc -l)
 [[ "$ALL_SHIPPED" -gt 0 ]] && note "($ALL_SHIPPED doc(s) marked shipped are still in docs/active/ overall — not necessarily yours)"
 
-note "roadmap: close the item for this work in the SAME session — delete it from docs/roadmap/<area>.md, one line in docs/roadmap/shipped.md, then node scripts/roadmap-check.mjs --fix (CLAUDE.md)"
+# WHY single quotes around the inner placeholder: nested double quotes ended the string early,
+# so bash read `<commit or PR>` as a redirect from a file named "commit" and never printed the note.
+note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index)"
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
 

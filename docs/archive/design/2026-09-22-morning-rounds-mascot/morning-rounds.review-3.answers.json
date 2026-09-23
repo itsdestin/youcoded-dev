@@ -1,0 +1,29 @@
+{
+ "deck": "morning-rounds-mascot-refine-3",
+ "started": "2026-09-23T03:09:57.500Z",
+ "submitted": "2026-09-23T03:11:52Z",
+ "cur": 2,
+ "answers": {
+  "R3-1": {
+   "note": "make the divider line for the scrubs off-center and angled a bit. add the hospital + thinng on the right side. then this looks good!",
+   "v": "yes",
+   "seconds": 43,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-2": {
+   "v": "other",
+   "note": "angle clipboard about 45 degrees and place above the hand",
+   "seconds": 41,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R3-3": {
+   "v": "yes",
+   "seconds": 30,
+   "theme": "light",
+   "zoom": 1,
+   "note": "we should also add red sleeve things to the tops of the legs"
+  }
+ }
+}

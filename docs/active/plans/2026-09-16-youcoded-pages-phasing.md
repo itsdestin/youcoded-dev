@@ -19,8 +19,8 @@ producing the new functionalities"; the permissions infrastructure is "an open q
 
 | Phase | What a person gets | What it proves | Status |
 |---|---|---|---|
-| 1 · The shell | A Pages icon, a library of pages, pinned page icons, a page open inside the app in the live theme, a first page built in chat | The tab, the library, isolation, theming, the creator | **pinned — building** |
-| 2 · Connections and refresh | A page that shows live information from a service and refreshes while the app is open | The permission model's first real test | open |
+| 1 · The shell | A Pages icon, a library of pages, pinned page icons, a page open inside the app in the live theme, a first page built in chat | The tab, the library, isolation, theming, the creator | **shipped 2026-09-17** |
+| 2 · Connections and refresh | A page that shows live information from a service and refreshes while the app is open | The permission model's first real test | **shipped 2026-09-23** (app; skill held for the release) |
 | 3 · Files and assistant tasks | A page that opens a file and asks a model to do something with it | Page-owned conversations, file access | open |
 | 4 · Marketplace | Publish a page, install someone else's, updates that re-ask when they need more | Packaging, review, trust on update | open |
 | Later | Sign-in style custom services, computer programs, a visual editor, standalone Android | — | open |
@@ -167,7 +167,7 @@ and pins, library, empty library, page view with its own band and framed panel, 
 layouts, two fuller sample pages). Still to build in Phase 1: the real backend behind the four
 workbench-only channels, the creator skill behind Make a page / Edit in chat, and draft/apply.
 
-## Phase 2 — connections and refresh (open)
+## Phase 2 — connections and refresh (shipped 2026-09-23)
 
 **A person can:** make a page that shows information from a service and keeps it current
 while the app is open. Proving page: the analytics dashboard.
@@ -176,16 +176,70 @@ Direction: a page's manifest lists what it wants to reach; the app asks once, at
 first open, and again only when the list changes. The app holds credentials; page code never
 sees them.
 
-Open questions (for that phase's questions deck):
+**Decided on two questions decks (2026-09-19)** —
+`youcoded-pages-connections.questions.answers.json` and
+`youcoded-pages-connections-2.questions.answers.json`, both in the design folder:
 
-- How coarse are the levels a person sees? The 2026-09-16 review proposed three ("just a page",
-  "connected", "computer") over the scope's eight kinds; Destin has not decided.
-- Which connections ship first? Proposed: YouCoded's own analytics, plus "paste a key" for
-  services that take a key. Sign-in style services (Google and the like) are later.
-- What honest wording goes on the approval screen, and what can we truthfully promise about
-  "read-only"?
-- Refresh: a per-page interval while the app is open, with a visible last-updated time. Is
-  anything beyond that needed in this phase?
+- **Everything unapproved is blocked.** The app becomes a page's only way out; libraries, fonts
+  and pictures are saved inside the page folder by the creator skill. This reverses Phase 1's
+  "no blocking work".
+- **A page may ask for the whole internet** as its own blunt approval ("Can reach any website.
+  Anything shown in this page, or typed into it, could be sent anywhere."). Destin: "what if i
+  want to create a basic web browser". **Never combined** with a key or sign-in on the same
+  page; the creator skill splits such a request into two pages.
+- **A true browser page is later**, as its own item: most large sites refuse to be shown inside
+  another page, so it needs an app-supplied website view with its own design.
+- **Access is described as a plain list**, one sentence per thing reached; no levels or badges.
+- **Always ask once, including for pages made in the person's own chats.** An edit that adds a
+  connection or changes an address asks again, showing only the new line; removing never asks.
+- **All four kinds of connection:** the YouCoded sign-in (the marketplace session the app already
+  holds is accepted by the worker's `/admin/analytics/*` endpoints), a pasted key, public
+  information with no key, and the GitHub sign-in (blunt wording: it can change repositories).
+  Sign-in with Google and the like stays later. "i kinda want all of the above".
+- **Two kinds of keyed connection: look-up only (enforced by the app) or full.** The words
+  "read-only" and "safe" are never used for an outside service.
+- **A key is typed only into the app's approval screen**, kept where model-provider keys live;
+  a second page is offered the saved key and still asks.
+- **Refresh on opening and while open**, per-page interval with a one-minute floor; no
+  background refresh for pinned pages in this phase.
+- **"Updated 2 min ago" and the refresh button belong to the app**, in the band beside the page
+  name, connected pages only; a failed update shows there while the page keeps its last numbers.
+- **Managing lives in two places:** a Connections line on the page's library card, and saved
+  keys (with the pages using each) under Settings › Connected accounts. Remove says "stops
+  future use".
+- **Phone:** may use and approve pages; a new key is entered on the computer only ("Finish
+  setting this up on your computer").
+
+Foundations found 2026-09-19 (read-only sweep): no content-security policy or request filter
+exists anywhere in the app; `page.json` reads only name/description/icon and ignores the rest;
+keys live in `main/providers/secrets-store.ts` (safeStorage, refs only on disk); the outbound
+primitive to build on is `main/harness/tools/net-guard.ts` (`guardedFetch`); there is no
+fetch-on-behalf channel; approval vocabulary to match is `marketplace/CapabilityList.tsx` and
+`ui/Dialog.tsx`; `ConnectedAccounts.tsx` is the Settings home; the `useVisibleInterval` hook the
+guard test names does not exist yet.
+
+**Security review and deck 3 (2026-09-20 → 23).** A reviewer found 18 problems in the design;
+17 were fixed and one reversed on build (`docs/archive/reviews/2026-09-20-youcoded-pages-phase2-design-review-1.md`).
+Deck 3 (`youcoded-pages-connections-3.questions.answers.json`) then settled the wording they
+touched: look-up lines say "Cannot change anything there. The page decides what it sends to this
+address."; the whole-internet card names the home network; a page whose code changed since it was
+allowed shows a quiet, dismissible note in the band and is not blocked; opening links in the
+browser stays allowed. Destin asked whether home-network access should ever be allowed — filed
+as a separate connection kind for a Home Assistant style page (`docs/roadmap/other-features.md`).
+A key now goes as `Authorization: Bearer <key>` unless the manifest says otherwise, and the
+page-builder skill (wecoded-marketplace, 0.2.0) teaches connections.
+
+**End-to-end pass (2026-09-23, Destin, dev window).** The analytics dashboard, built in chat by
+the updated skill, read live numbers through the YouCoded sign-in after one approval, and its
+campaign builder wrote through a named `writePaths` place. A weather page using a pasted key also
+worked ("tested with a weather app, and this seems to work"). Two fixes came out of the first
+open: requests past four at once now queue instead of being refused, and the per-minute cap is
+120. Not tried: a phone over remote access; Android refuses by design.
+
+**Merged 2026-09-23** (youcoded#552). The page-builder skill update (wecoded-marketplace
+`session/youcoded-pages-phase2`, plugin 0.2.0) is held until an app release carries Phase 2 —
+merging it earlier would hand everyone a skill that builds pages their app cannot run. Next
+phase starts with a Home Assistant style home-network connection (Destin, 2026-09-23).
 
 ## Phase 3 — files and assistant tasks (open)
 
