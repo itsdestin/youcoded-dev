@@ -104,9 +104,16 @@ has passed ~8 items — graduate it to its own file.
       Later: chat-alongside visual editing with drag/reorganize/resize, independent Android and durable automation.
       2026-09-17: Phase 1 (the shell, the page view, pins, the creator skill, page data, floating
       themes) shipped to master; the contract was skipped on Destin's call.
-      2026-09-19: Phase 2 (connections and refresh) decided on two questions decks and is being
-      designed on `session/youcoded-pages-phase2`. Phases 3–4 remain open questions in the plan.
-      `window-chrome` `all` `in-flight` `checked 2026-09-19` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+      2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552); Destin tested a live
+      dashboard and a keyed weather page end to end. Next: a home-network connection for a Home
+      Assistant page, then Phases 3–4 in the plan.
+      `window-chrome` `all` `in-flight` `checked 2026-09-23` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+
+- [ ] Publish the page-builder skill's connections update once an app release carries Pages
+      Phase 2. It is finished and held on wecoded-marketplace `session/youcoded-pages-phase2`
+      (plugin 0.2.0): merging it before that release gives everyone a skill that builds connected
+      pages their app cannot run. Merge it in the same step as the release.
+      `window-chrome` `all` `blocked` `checked 2026-09-23`
 
 - [ ] A page that manages a device on the home network: "one idea i had for a page is an explicit
       home assistant integration/management page" (2026-09-23, on the Phase 2 security deck). Pages

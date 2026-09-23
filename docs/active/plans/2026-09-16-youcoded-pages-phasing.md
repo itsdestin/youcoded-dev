@@ -20,7 +20,7 @@ producing the new functionalities"; the permissions infrastructure is "an open q
 | Phase | What a person gets | What it proves | Status |
 |---|---|---|---|
 | 1 · The shell | A Pages icon, a library of pages, pinned page icons, a page open inside the app in the live theme, a first page built in chat | The tab, the library, isolation, theming, the creator | **shipped 2026-09-17** |
-| 2 · Connections and refresh | A page that shows live information from a service and refreshes while the app is open | The permission model's first real test | **pinned 2026-09-19 — designing** |
+| 2 · Connections and refresh | A page that shows live information from a service and refreshes while the app is open | The permission model's first real test | **shipped 2026-09-23** (app; skill held for the release) |
 | 3 · Files and assistant tasks | A page that opens a file and asks a model to do something with it | Page-owned conversations, file access | open |
 | 4 · Marketplace | Publish a page, install someone else's, updates that re-ask when they need more | Packaging, review, trust on update | open |
 | Later | Sign-in style custom services, computer programs, a visual editor, standalone Android | — | open |
@@ -167,7 +167,7 @@ and pins, library, empty library, page view with its own band and framed panel, 
 layouts, two fuller sample pages). Still to build in Phase 1: the real backend behind the four
 workbench-only channels, the creator skill behind Make a page / Edit in chat, and draft/apply.
 
-## Phase 2 — connections and refresh (pinned 2026-09-19 — designing)
+## Phase 2 — connections and refresh (shipped 2026-09-23)
 
 **A person can:** make a page that shows information from a service and keeps it current
 while the app is open. Proving page: the analytics dashboard.
@@ -219,7 +219,7 @@ fetch-on-behalf channel; approval vocabulary to match is `marketplace/Capability
 guard test names does not exist yet.
 
 **Security review and deck 3 (2026-09-20 → 23).** A reviewer found 18 problems in the design;
-17 were fixed and one reversed on build (`docs/active/reviews/2026-09-20-youcoded-pages-phase2-design-review-1.md`).
+17 were fixed and one reversed on build (`docs/archive/reviews/2026-09-20-youcoded-pages-phase2-design-review-1.md`).
 Deck 3 (`youcoded-pages-connections-3.questions.answers.json`) then settled the wording they
 touched: look-up lines say "Cannot change anything there. The page decides what it sends to this
 address."; the whole-internet card names the home network; a page whose code changed since it was
@@ -236,8 +236,10 @@ worked ("tested with a weather app, and this seems to work"). Two fixes came out
 open: requests past four at once now queue instead of being refused, and the per-minute cap is
 120. Not tried: a phone over remote access; Android refuses by design.
 
-Next: mock the approval screen, the band's updated line, the card's Connections line and the
-Settings list in the workbench, then review decks.
+**Merged 2026-09-23** (youcoded#552). The page-builder skill update (wecoded-marketplace
+`session/youcoded-pages-phase2`, plugin 0.2.0) is held until an app release carries Phase 2 —
+merging it earlier would hand everyone a skill that builds pages their app cannot run. Next
+phase starts with a Home Assistant style home-network connection (Destin, 2026-09-23).
 
 ## Phase 3 — files and assistant tasks (open)
 

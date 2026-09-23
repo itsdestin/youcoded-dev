@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-20
 related: docs/active/plans/2026-09-16-youcoded-pages-phasing.md (Phase 2)
 ---

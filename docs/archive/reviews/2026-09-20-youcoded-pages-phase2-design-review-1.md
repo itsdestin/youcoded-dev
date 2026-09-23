@@ -1,7 +1,7 @@
 ---
-status: active
+status: shipped
 date: 2026-09-20
-related: docs/active/specs/2026-09-20-youcoded-pages-phase2-technical-design.md
+related: docs/archive/specs/2026-09-20-youcoded-pages-phase2-technical-design.md
 ---
 
 # Phase 2 design review, round 1 — triage
