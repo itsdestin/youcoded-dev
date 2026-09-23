@@ -20,16 +20,15 @@ verify:
   - test: youcoded/desktop/tests/SessionStrip-layout-effects.test.ts
   - test: youcoded/desktop/tests/animation-frame-budget.test.ts
   - test: youcoded/desktop/tests/main-blocking-calls.test.ts
-  # PENDING (2026-09-23) — uncomment each once its branch merges; audit-anchors fails on a
-  # missing path, full-line comments are skipped. TODO(coordinator):
-  #   session/perf-guard-busy-app  → - test: youcoded/desktop/tests/busy-app.test.tsx  (exact name: check the branch)
+  - test: youcoded/desktop/tests/busy-app-render-budget.test.tsx
+  - test: youcoded/desktop/tests/chat-state-paused.test.tsx
 ---
 # Performance — every new app element
 
 Each rule is a class that shipped and hurt: Destin's "freezes, stutter, worse over hours, worse
 with more sessions". Evidence: `docs/active/investigations/2026-08-27-perf-defect-classes.md`,
 `2026-09-16-smoothness-sweep.md`. Two general guards: **the busy-app test**
-(`desktop/tests/busy-app*.test.tsx`, branch `session/perf-guard-busy-app`) and **the
+(`desktop/tests/busy-app-render-budget.test.tsx`: eight real tabs, render counts per action) and **the
 main-process blocking-call ratchet** (`desktop/tests/main-blocking-calls.test.ts`).
 
 1. **The main process never blocks.** No `*Sync` fs, `execFileSync`/`spawnSync` or whole-file
@@ -41,7 +40,8 @@ main-process blocking-call ratchet** (`desktop/tests/main-blocking-calls.test.ts
 
 2. **Hidden means idle.** A mounted-but-hidden tab, pane or terminal does zero work: no
    timers, no `window`/`document` listeners, no drawing (xterm does not see `visibility:hidden`
-   — pause it explicitly), no subscriptions to other sessions' events. A kept-mounted tab is
+   — pause it explicitly), no subscriptions to other sessions' events, and its own chat state read paused
+   (`useChatState(id, { paused: !visible })`). A kept-mounted tab is
    `hidden` prop AND `React.memo` AND stable props AND no context read of its own — memo cannot
    stop a context reader, so the parent passes the one value down (FilesTab). **Why:** ten
    background sessions were ~40 React updates/s into invisible trees; hidden terminals kept
