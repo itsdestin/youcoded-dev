@@ -1,0 +1,232 @@
+{
+  "title": "What has to be done before 1.3.1 ships?",
+  "key": "release-1.3.1-triage",
+  "out": "triage.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "The 1.3.1 release",
+      "path": "The Next release list on the roadmap's front page",
+      "headline": "What is 1.3.1 for: going public, or going public plus a set of new features?",
+      "today": "30 items are marked as blocking 1.3.1. They mix three kinds of work: things a public launch legally or practically needs, real bugs people would hit, and large new features or behind-the-scenes rewrites.",
+      "problem": "At 30 items, 1.3.1 has no finish line. Several of the biggest are on hold by your own decision (2026-09-18), so as tagged the release cannot ship until paused work restarts and finishes.",
+      "proposal": "Decide what kind of release it is. The next pages then sort each item into it or out of it. An item taken out of 1.3.1 stays on the roadmap; only its release tag goes.",
+      "options": [
+        {
+          "id": "launch",
+          "label": "Launch release",
+          "summary": "About 11 items: signed installers, the Play listing, the legal paperwork, the Gemma licence notice, the safety-badge wording, the marketplace scan fix, the release tool fix, the local model forgetting your request, and three quick real-machine checks.",
+          "pros": [
+            "A finish line you can see: most of it is paperwork and small fixes.",
+            "People can install it without scary security warnings, including from the Play Store.",
+            "New features then ship in later updates instead of waiting for all of them."
+          ],
+          "cons": [
+            "The assistant-as-a-project idea and full project file search wait for a later release."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "launch-plus",
+          "label": "Launch plus features",
+          "summary": "The launch items, plus whichever features you tick on page 3.",
+          "pros": [
+            "New users meet the app with the features you think define it."
+          ],
+          "cons": [
+            "Each feature added is weeks of design and building before the launch can happen."
+          ]
+        },
+        {
+          "id": "as-tagged",
+          "label": "Keep all 30",
+          "pros": [
+            "Nothing is re-decided."
+          ],
+          "cons": [
+            "Includes five rewrites you put on hold, so no ship date is possible until they restart.",
+            "Mixes developer tooling into what is meant to be a product release."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Behind-the-scenes rewrites",
+      "intro": "Five items change nothing you would see. They were tagged 1.3.1 and then paused on 2026-09-18."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "The 1.3.1 release",
+      "path": "Roadmap: chat-data, local-models, native-harness, remote-access and user-interface",
+      "headline": "Should the five paused rewrites stop blocking 1.3.1 and ship whenever they are finished?",
+      "today": "Five cleanups each remove a duplicate copy of something: the phone and desktop features written twice, the settings screen written twice, the downloader written three times, one oversized conversation engine, and past-conversation lists that re-read far more than they need to. You paused all five on 2026-09-18 until other work lands.",
+      "problem": "They are marked as blocking the release but are also paused, so the release waits on work nobody is allowed to start yet. Only one is noticeable to users: the past-conversations list opening slowly on a big history.",
+      "proposal": "Yes: they keep their place and order on the roadmap and ship in whatever update follows their completion. No: 1.3.1 waits for all five. Don't know: nothing changes for now.",
+      "risk": "The duplicate copies keep drifting apart until the rewrites happen, so a change made on desktop can still be missed on the phone."
+    },
+    {
+      "id": "P-3",
+      "page": "New features marked for 1.3.1",
+      "intro": "Tick the ones that must be in 1.3.1. The rest stay planned for a later update."
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "The 1.3.1 release",
+      "path": "Roadmap: files, native-harness and chat-data",
+      "headline": "Which of these new features must be in 1.3.1 itself?",
+      "today": "Six features are tagged 1.3.1. None is built yet. Two have designs written, and the rest still need decisions from you first.",
+      "problem": "Each one is a real project. Kept in 1.3.1, they decide when the launch can happen.",
+      "proposal": "Ticked features stay 1.3.1 blockers. Unticked ones keep their place on the roadmap without a release date.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "file-search",
+          "label": "Full project search",
+          "summary": "Finding files by name, and searching inside them, covers the whole project instead of stopping at 2,000 files or 200 matches.",
+          "pros": ["You said 'I just want everything to work' about exactly this.", "The design is written."],
+          "cons": ["Four questions for you come first.", "Two stages of real building."]
+        },
+        {
+          "id": "assistant-project",
+          "label": "Assistant as a project",
+          "summary": "The three linked ideas: a built-in 'Your Assistant' project, a proper incognito mode replacing 'No folder', and a YouCoded home for skills.",
+          "pros": ["It is the idea that explains the whole app to a new user.", "'No folder' was shipped untested; this fixes it properly."],
+          "cons": ["Needs design decisions from you before anything is built.", "The largest of the six."]
+        },
+        {
+          "id": "chat-search-3",
+          "label": "Chat Search summaries",
+          "summary": "Each past conversation gets a short summary saying whether it was resolved, open or abandoned.",
+          "pros": ["Makes the 'open' filter in search actually work."],
+          "cons": ["Optional and off by default, so most users would never see it."]
+        },
+        {
+          "id": "marketplace-tool",
+          "label": "Assistant searches marketplace",
+          "summary": "The assistant can look for an existing plugin before building something itself.",
+          "pros": ["You called it a 1.3 blocker on 2026-09-05."],
+          "cons": ["Unconfirmed since then."]
+        },
+        {
+          "id": "parity",
+          "label": "Parity program",
+          "summary": "Everything still separating YouCoded's own assistant from a Claude Code session, as one ongoing program.",
+          "pros": ["Keeps the goal visible."],
+          "cons": ["An open-ended program, not one task. It can never be 'done' for a release."]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Smaller items",
+      "intro": "Tick the ones that must be in 1.3.1. Unticked ones stay on the roadmap without a release date."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "The 1.3.1 release",
+      "path": "Roadmap: dev-workspace, native-harness, user-interface and operations",
+      "headline": "Which of these smaller items must be done before 1.3.1 ships?",
+      "today": "Seven smaller items are tagged 1.3.1. Some are app fixes, some are about how releases are made, and one is about the website.",
+      "problem": "Several do not affect what a user of 1.3.1 gets, so they hold up the release for no user benefit.",
+      "proposal": "Ticked items stay 1.3.1 blockers. Unticked ones keep their place on the roadmap.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "permission-card",
+          "label": "Forgotten approval",
+          "summary": "After an 'Always allow', a command that looks covered still asks permission with no reason.",
+          "pros": ["Users see it: it reads as the app forgetting what they said.", "Probably small."],
+          "cons": ["Not re-checked since 2026-09-01."],
+          "recommended": true
+        },
+        {
+          "id": "errors",
+          "label": "Rest of error messages",
+          "summary": "The 17 error messages that said something false are fixed. Six batches of smaller wording and action fixes remain.",
+          "pros": ["Every error offering an action is your own rule."],
+          "cons": ["Six batches: the false ones, the part that mattered most, are already gone."]
+        },
+        {
+          "id": "tooltips",
+          "label": "Rest of hover hints",
+          "summary": "Settings, the marketplace and project view still use the browser's plain hover hints.",
+          "pros": ["The app looks consistent everywhere."],
+          "cons": ["You chose on 2026-09-10 to convert them only when those screens are next changed."]
+        },
+        {
+          "id": "release-method",
+          "label": "Bug-fix release branches",
+          "summary": "A way to ship a bug fix without also shipping every unfinished feature on the main line.",
+          "pros": ["Once the Play Store listing is live, quick fix releases become routine."],
+          "cons": ["Only matters after 1.3.1, for the update that follows it."]
+        },
+        {
+          "id": "ci-speed",
+          "label": "Faster test runs",
+          "summary": "A nightly practice build and a way to re-run one test on one computer type.",
+          "pros": ["Cuts the hour-long waits you asked about on 2026-09-20."],
+          "cons": ["Developer tooling: nothing in the app changes."]
+        },
+        {
+          "id": "helper-files",
+          "label": "Helper files pile up",
+          "summary": "Files from helper agents are never deleted.",
+          "pros": ["Keeps the disk tidy."],
+          "cons": ["Cannot start until deleting a conversation exists at all."]
+        },
+        {
+          "id": "landing-blur",
+          "label": "Website demo blur",
+          "summary": "The live demo on youcoded.ai goes blurry under some themes.",
+          "pros": ["Visible to every site visitor who tries the theme button."],
+          "cons": ["The website updates separately from app releases, so it can be fixed any day."]
+        }
+      ]
+    },
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "The 1.3.1 release",
+      "path": "The Next release list on the roadmap's front page",
+      "headline": "These eleven stay 1.3.1 blockers whatever else you pick.",
+      "changed": "Signed Windows and Mac installers; the Play Store listing; the LLC and trademark paperwork; Gemma's licence notice; 'Likely safe' badge wording; the marketplace scanning the wrong code; the release tool still expecting the archived repo; local models forgetting your request; and quick real-machine checks of the Linux update, the buddy on two screens, and the Mac 'Open Anyway' button.",
+      "notice": "Each one is either legally required, would break or embarrass a public release, or is a short check on a real machine. Most of the paperwork and signing is waiting on accounts in the LLC's name, which only you can open.",
+      "yes": "Keep these",
+      "no": "Change this list"
+    },
+    {
+      "id": "P-5",
+      "page": "Two things to fix now",
+      "intro": "Neither needs to wait for the release."
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "youcoded.ai",
+      "path": "The download buttons on the website",
+      "headline": "Should the website's download buttons go back to giving visitors the finished release?",
+      "today": "Since 2026-09-03 the buttons on youcoded.ai hand out the newest build of any kind, beta included. That was on purpose: the only finished release then was May's 1.2.4. The code itself says to switch back once 1.3.0 ships.",
+      "problem": "1.3.0 shipped on 2026-09-20, but the switch-back never happened. The newest build on GitHub is a test build, 1.3.1-beta.87, so every visitor downloading from the site gets a beta rather than 1.3.0.",
+      "proposal": "Yes: a few-line change to the website code, so the buttons give out the finished release. The betas stay published, and testers keep getting them through the app's beta setting. No: visitors keep getting betas.",
+      "risk": "None to people already using the app; it changes only which file a new visitor downloads. The site stores its answer for an hour, so a returning visitor may see the old link briefly."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "Marketplace",
+      "path": "The badge on a plugin's listing",
+      "headline": "What should the marketplace badge say instead of 'Likely safe'?",
+      "today": "Plugins that pass our scan show a badge reading 'Likely safe'.",
+      "problem": "The scan only checks for leaked passwords and keys and for a correctly shaped package. It does not check whether the plugin does anything harmful. A public product cannot claim a safety check that never happened.",
+      "proposal": "Type the wording you want. The suggestion is 'No leaked secrets found'. Nothing else about the badge changes.",
+      "answer": "words",
+      "prompt": "No leaked secrets found"
+    }
+  ]
+}
