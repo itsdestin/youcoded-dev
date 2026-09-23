@@ -10,21 +10,19 @@ last_verified: 2026-05-04
 
 ## The rule
 
-**Never touch Destin's live, built YouCoded app while it is running.** All development, testing, debugging, and runtime verification must happen in a separate dev build (`bash scripts/run-dev.sh` from the workspace root, which uses shifted ports and isolated `userData`).
+**Never experiment on the running built app.** Development and runtime tests use isolated `bash scripts/run-dev.sh`. **Exception (Destin, 2026-09-22):** on his explicit request, replace only installed theme files under `~/.claude/wecoded-themes/<slug>/` while the app runs. Back up first; verify the published version, write assets before the manifest, and verify the installed result. No app process, IPC, settings, or DevTools access.
 
 ## Why
 
 The built YouCoded app on Destin's machine is his **working environment** — the assistant he uses for actual work. Touching it is exactly equivalent to running experiments on production. On 2026-05-04 a "harmless" DevTools console read crashed his app mid-session.
-
-Treat the running built app the same way you would treat a production database: read-only inspection from outside is fine; anything that talks to it is not.
 
 ## Specifically forbidden against the live app
 
 - Running JavaScript in DevTools — even ostensibly read-only operations. The DevTools attach itself can stall the renderer; some DOM queries trigger layout/paint; querySelector + style mutation runs synchronously in the React render loop.
 - Sending IPC messages, modifying DOM/CSS/localStorage, dispatching reducer actions
 - Killing, restarting, or signalling its Electron processes (main, renderer, GPU, utility)
-- Touching files Electron has open: `Local Storage/leveldb/*`, `Cookies`, `settings.json`, `.claude.json`, anything under `AppData/Roaming/youcoded/`
-- Installing, uninstalling, enabling, or disabling plugins, themes, or hooks
+- Touching files Electron has open, other than the explicit theme-file exception above: `Local Storage/leveldb/*`, `Cookies`, `settings.json`, `.claude.json`, anything under `AppData/Roaming/youcoded/`
+- Installing, uninstalling, enabling, or disabling plugins or hooks (themes: exception above)
 - Any code change that requires the running app to reload it
 - Pressing keys in the running app's window (Ctrl+R, Ctrl+Shift+I, etc.)
 
@@ -34,10 +32,10 @@ Ordinary workspace documentation, guidance, roadmap and source edits are allowed
 the usual authorization/worktree rules; they do not require closing YouCoded or launching
 a dev instance. Editing this document does not change an already-running session's instructions.
 
-Judge the action's effect, not its directory: no live reload, active-state mutation,
-held-open file changes or process stopping. Hook, plugin and active integration changes
-are not documentation edits; existing prohibitions still apply. Verify consumers before
-claiming disruption. Process ancestry establishes ownership, not proof of a crash.
+Judge effects, not directories: except for requested theme files, no live reload,
+active-state change, held-open file edit or process stop. Hook/plugin/integration
+changes are not docs. Verify consumers before claiming disruption; ancestry is
+not proof of a crash.
 
 ## Allowed (read-only, from outside)
 

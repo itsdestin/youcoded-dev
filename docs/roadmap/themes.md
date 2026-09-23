@@ -45,3 +45,9 @@ here: installing or browsing themes (marketplace).
       Checked 2026-07-20 and it probably already does — nothing to see until a differently-rounded
       theme is installed, so this is verify, not build
       `session-drawer` `all` `needs-verify` `checked 2026-07-20`
+
+- [ ] Android ignores a theme's chosen font: Morning Rounds specifies Nunito, but the phone
+      uses the app's built-in monospace instead. Six of the eight published themes specify a
+      font, so this affects the wider theme library too. Seen while publishing Morning Rounds,
+      2026-09-22
+      `settings/themes` `android` `confirmed` `checked 2026-09-22`

@@ -19,20 +19,20 @@ The app serves students, professionals and everyday AI users—not just develope
 | `youcoded/` | itsdestin/youcoded | Main app: Electron desktop and Android |
 | `wecoded-marketplace/` | itsdestin/wecoded-marketplace | Skill registry and Cloudflare Worker |
 | `wecoded-themes/` | itsdestin/wecoded-themes | Community theme registry |
-| `youcoded-core/` | itsdestin/youcoded-core | Legacy plugin, mid-deprecation |
+| `youcoded-core/` | itsdestin/youcoded-core | Legacy plugin, ARCHIVED 2026-09-20 — read-only |
 | `youcoded-admin/` | itsdestin/youcoded-admin | Owner-only release and announcement skills |
 
 ## Cross-Repo Relationships
 
 Planning and versioning belong to the workspace; `ROADMAP.md` indexes area backlogs. Single-repo implementation depth belongs in that repo's `docs/`.
 
-Registries are fetched at runtime. Bundled plugin definitions must agree across desktop and Android. The legacy `youcoded-core` retirement is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`: until the relevant release ships, hook fixes must land in the legacy copy AND the app's bundled copies. Release coordination belongs to `youcoded-admin`.
+Registries are fetched at runtime. Bundled plugin definitions must agree across desktop and Android. **`youcoded-core` was ARCHIVED on GitHub 2026-09-20 (Destin): it is read-only, so a push, a release or a "mirror the fix into the legacy copy too" step now FAILS — hook fixes land in the app's bundled copies only (`desktop/hook-scripts/`, `app/src/main/assets/`, byte-identical, pinned by `write-guard-contract.test.ts`). Its clone URL still works, so v1.2.4 installs are unaffected.** The remaining retirement work — deleting the app's dead `youcoded-core`-aware branches, shipping in 1.3.1 — is governed by `docs/active/plans/2026-04-21-deprecate-youcoded-core.md`. Release coordination belongs to `youcoded-admin`.
 
 ## Working Rules
 
 ### Safety
 
-**Never touch Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/theme/hook installation or modification of files it holds open. Read-only inspection from outside is allowed. Full boundaries: `.claude/rules/live-app-safety.md`.
+**Never experiment on Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/hook installation or modification of files it holds open. **Destin explicitly exempted requested theme-file updates**; follow the narrow backup-and-verify procedure in `.claude/rules/live-app-safety.md`. Read-only inspection from outside is allowed.
 
 Ordinary workspace docs, guidance, roadmap and source edits are allowed under the usual authorization/worktree rules; they do not require closing the app. Do not equate editing a repository with modifying the running app. Active configuration, integrations and live reloads remain subject to the safety rule.
 
@@ -131,7 +131,7 @@ Read `docs/PITFALLS.md` before non-trivial changes. It holds cross-repo invarian
 
 On "wrap up," "close out," "we're done," or a substantial session's end, follow `.claude/skills/wrap-up/SKILL.md`. Invoke it if available; otherwise read the procedure directly. Apply findings, file dated roadmap items, or explicitly drop them with reasons—never leave an unactioned list. Respect authorization and the no-merge boundary even if a procedure says otherwise.
 
-**Wrap-up is not merge permission.** Destin decides when work is ready. A new-session handoff prompt goes in plain chat, not a file. Run the checks yourself; do not give him commands to type. Detailed close-out procedure: `docs/workspace-workflows.md` → Ending a Session.
+**Wrap-up is not merge permission.** Destin decides when work is ready. A new-session handoff prompt goes in plain chat, not a file, and carries only the task's own facts (see Where Knowledge Lives). Run the checks yourself; do not give him commands to type. Detailed close-out procedure: `docs/workspace-workflows.md` → Ending a Session.
 
 ## Keeping Documentation Accurate
 
@@ -149,7 +149,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 | Invariant / lesson | Knowledge ladder above; cross-repo only in `docs/PITFALLS.md` |
 | Doc contradicting code | Fix verified drift within authorized editing scope; otherwise report it. Deferred work goes in `docs/roadmap/dev-workspace.md` → knowledge |
 | Claude Code dependency watch | `youcoded/docs/cc-dependencies.md` |
-| In-flight specs/plans/handoffs | `docs/active/{specs,plans,handoffs,investigations,prototypes}/`, with `status: draft` or `active` |
+| In-flight specs/plans/handoffs | `docs/active/{specs,plans,handoffs,investigations,prototypes}/`, with `status: draft` or `active`. Task facts only: never restate workspace guidance — every session already loads CLAUDE.md and the rules |
 | Shipped/superseded records | `docs/archive/`, with corresponding status |
 | Personal preferences | Available personal guidance/memory mechanism, last resort; never product planning |
 

@@ -233,6 +233,15 @@ not a handoff document, not a path (Destin, 2026-09-04). A written handoff doc i
 right when the material is the *record* of a piece of work (`docs/active/handoffs/`); the
 prompt that points a new session at that record is chat.
 
+**Handoffs, plans and specs carry only the task's own facts — never workspace guidance.**
+A new session loads `CLAUDE.md` and has the same rules, skills and depth docs as the one
+writing the handoff, so repeating "use a worktree", "never touch the live app", "run
+verify.sh", "don't merge without asking" and the like adds nothing. Worse, a restated
+rule is a frozen copy: when the real rule changes, the copy goes stale and competes with
+it (Destin, 2026-09-19). Write what only this task knows — its goal, decisions made,
+state reached, files involved, open questions, task-specific traps. If a general rule
+matters unusually for this task, name it by path in one line rather than restating it.
+
 **Destin does not run commands.** If the wrap-up needs `scripts/close-out.sh`,
 `scripts/audit-anchors.mjs` or a test run, YOU run it and act on the output. Never end a
 turn by handing him something to type.

@@ -1,0 +1,36 @@
+{
+  "title": "Morning Rounds — is this a friendlier vet dog?",
+  "key": "morning-rounds-mascot-refine",
+  "out": "morning-rounds.review.html",
+  "stage": "review",
+  "images": "images/morning-rounds.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "labels": { "before": "Current PR", "after": "Proposed revision" },
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "dog-all": ["mascot", "all", "1280x320+0+0"],
+    "dog-size": ["mascot", "actual", "320x180+0+0"]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Morning Rounds mascot",
+      "path": "The buddy's idle, welcome, inquisitive, and surprised expressions",
+      "crop": "dog-all",
+      "headline": "The blue buddy now looks like the warm dog in the wallpaper, wearing red scrubs.",
+      "changed": "Tan head, cream muzzle, softer eyes, outward ears, red scrub shoulders and sleeves. The hand now overlaps the board.",
+      "notice": "All four expressions match the wallpaper dog, with the clipboard held rather than floating. Static preview; motion is not shown."
+    },
+    {
+      "id": "M-2",
+      "surface": "Morning Rounds mascot",
+      "path": "The buddy at its 80-pixel display size",
+      "crop": "dog-size",
+      "headline": "Check whether the dog, scrubs and clipboard still make sense at the size you will actually see.",
+      "changed": "This is the welcome expression at 80 pixels, before and after, without enlarging either drawing.",
+      "notice": "Look for the floppy ears, the red shoulders and whether the clipboard touches its hand.",
+      "risk": "At 24 pixels the clipboard's writing is too small to read, though the orange board remains visible."
+    }
+  ]
+}

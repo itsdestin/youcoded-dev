@@ -4,11 +4,25 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 (local-models); Claude Code is doing the work (claude-code-integration).
 
 ## sessions
-- [ ] A "Home" folder every install starts with, holding overarching assistant settings that
-      apply everywhere (Destin's note on the first-run guide's review deck, 2026-09-10). The
-      zero-context "No folder" choice on the new-session form shipped 2026-09-11 as the first
-      half; this is the fuller idea
-      `all` `decision` `checked 2026-09-11`
+- [ ] **v1.3.1 release blocker.** The "No folder" choice on the new-session form (shipped
+      2026-09-11) was never tested and not thought through (Destin, 2026-09-19: "we didn't
+      really like think that through… I didn't test it at all"). Test that it works, then turn
+      it into an incognito mode rather than just "no project folder". What incognito keeps and
+      leaves out needs deciding. Goes with the "Your Assistant" project item below
+      `all` `needs-verify` `checked 2026-09-19` `v1.3.1`
+
+- [ ] **v1.3.1 release blocker.** Every install should come with a built-in project, "Your
+      Assistant" (name not final), in the Projects list and managed by YouCoded. Destin,
+      2026-09-19: the assistant itself is a project — "the rules it follows and the ways it
+      behaves and the things it knows about you… is something that you get to build and design
+      and change your way. It'll work fine if you don't change anything." It is the home folder
+      for miscellaneous requests, and where the user's big-picture preferences, memory about
+      them and global instruction files live and are edited. The first-run tour changes to
+      point at it and frame it that way. Later it is the main assistant that takes a request
+      from the phone ("hey, do this thing") and hands it to the right project — see YouCoded
+      Mesh below. Replaces the 2026-09-10 "Home folder" idea from the first-run guide's review
+      deck
+      `projects` `all` `decision` `checked 2026-09-19` `v1.3.1`
 
 - [ ] Idea (Destin, 2026-09-08): "YouCoded Mesh" automatically chooses an available, suitable
       device of yours for remote requests and scheduled/autonomous duties, without making you
@@ -35,14 +49,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] **v1.3.1 release blocker.** A local model forgets the user's request halfway through a long
       first request, goes silent, then answers the next message as if the chat had just started
       (Destin, 2026-09-16, two Qwen 9B chats). The conversation is silently cut to fit the model's memory, and the cut also
-      makes the engine re-read everything every step. Fix, designed 2026-09-17: cut rarely and in
-      one large step, never cut the user's request, cap tool output to the model's size, fade cut
-      messages like /compact does, and show a toast pointing at Local models settings. Local
-      models only; cloud behaviour stays unchanged. The cloud side of the same problem is the
-      "Cloud model context management and cache/token efficiency improvements" item under cost,
-      which should reuse the pieces this fix builds. Related: the skill/rule shortening item just
-      above
-      `chat` `desktop` `confirmed` `checked 2026-09-17` `v1.3.1` → docs/active/specs/2026-09-17-local-context-cuts-design.md
+      makes the engine re-read everything every step. Revised direction agreed 2026-09-22:
+      Pi-like near-limit triggering, one substantial summary with a small recent tail, preserve
+      the user's request and actual approvals, and keep compaction after reopening. One shared
+      cloud/local mechanism replaces the local-only draft's prune/drop ladder; exact budgets
+      and implementation details are still proposals. The older draft remains incident evidence,
+      not a second implementation track. Goes with the cloud context-management item under cost
+      and the skill/rule shortening item above; not implemented yet
+      `chat` `desktop` `confirmed` `checked 2026-09-22` `v1.3.1` → docs/active/specs/2026-09-22-native-compaction-design.md
 
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
@@ -191,7 +205,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       already does the job. Wanted: a tool it can call to search plugins and integrations, so
       "check what we already have" comes before "build something new". Destin, 2026-09-05: a 1.3
       blocker, and the partner to the new "assume you can do it, find a way" rule in the prompt
-      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3`
+      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-05` `v1.3.1`
 
 - [ ] The assistant's standing instructions grew about five times on 2026-09-05 (youcoded #423) and
       what that did to a small model is still unknown. Measured twice on 2026-09-05 at one run per
@@ -290,12 +304,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Cloud model context management and cache/token efficiency improvements — one item so the
       fixes below are specced together. Combined 2026-09-17 from three earlier entries (each kept
       below with its filing date) plus gaps found the same day comparing the app with Claude
-      Code, Hermes Agent and Pi. The local-model fix (the "A local model forgets the user's
-      request" item under sessions; spec
-      docs/active/specs/2026-09-17-local-context-cuts-design.md) deliberately leaves cloud
-      behaviour unchanged, but builds pieces this item should reuse rather than rebuild: the
-      pinned request, cutting in the middle of a request, retry on overflow, the cut marker and
-      fading, and tool caps sized to the window. Competitor detail for the cache half:
+      Code, Hermes Agent and Pi. Revised compaction direction agreed 2026-09-22 is specified in
+      docs/active/specs/2026-09-22-native-compaction-design.md with a linked implementation-planning
+      draft: near-limit triggering, one durable handoff, bounded recent context, and no separate
+      prune-only stage. This now shares the local-model fix under sessions rather than keeping
+      cloud unchanged. Budget/storage details and UI review remain before implementation; the
+      new spec does not close every cache-efficiency follow-up below. Competitor detail for the cache half:
       docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md
       - Cache efficiency (filed 2026-09-10) — cloud and local sessions leave cache hits on the
         table, especially after reopening a conversation: OpenRouter turns can drift between
@@ -425,13 +439,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       unbuilt 2026-09-01)
       `settings` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-mcp-phase-2.md
 
-- [ ] **v1.3 release blocker — native-only users need a YouCoded-owned skills home.** Today the
+- [ ] **v1.3.1 release blocker — native-only users need a YouCoded-owned skills home.** Today the
       only project-skill convention is Claude Code's `.claude/skills/`, so a person using only
       YouCoded has no obvious place to put a personal or project workflow. Make `~/.youcoded/`
       and a project-owned `.youcoded/` location the native source of truth; treat `.claude/skills/`
       as optional import/export compatibility, never a prerequisite. The existing 2026-08-06 plan
       is Claude Code parity only and must be superseded or expanded before implementation.
-      `all` `blocked` `checked 2026-09-05` `v1.3`
+      `all` `blocked` `checked 2026-09-05` `v1.3.1`
 
 - [ ] Pasting a path like `/README.md` or `/My Files/notes.md` into the chat still gets eaten as a
       slash command and the text vanishes; the common `/home/…` shape was fixed 2026-08-10. Destin

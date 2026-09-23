@@ -1,0 +1,327 @@
+{
+  "title": "Morning Rounds — the mascot, and what ships with it",
+  "key": "morning-rounds-mascot",
+  "out": "mascot-dog.deck.html",
+  "images": "images/mascot-dog",
+  "runs": {
+    "after": "runs/after"
+  },
+  "theme": "fixed",
+  "_comment_theme": "fixed: these pictures were rendered by hand from the theme's own SVG assets, not captured from a running app, so there is exactly one folder of them. Without this the deck fans out over every theme the app knows and reports each as a missing capture.",
+  "themes": [
+    "light"
+  ],
+  "_comment_themes": "light: the deck needs a built-in token set to paint its own chrome, and this theme's cream canvas is the closest match. The deck paints the PAGE, not the theme under review — the pictures carry the theme. The shots themselves live under runs/after/shots-mascot/morning-rounds/, which is what the crops below name.",
+  "crops": {
+    "dog-all": [
+      "mascot",
+      "mascot-all",
+      "1408x352"
+    ],
+    "dog-idle": [
+      "mascot",
+      "mascot-idle",
+      "340x340"
+    ],
+    "dog-welcome": [
+      "mascot",
+      "mascot-welcome",
+      "340x340"
+    ],
+    "dog-inquisitive": [
+      "mascot",
+      "mascot-inquisitive",
+      "340x340"
+    ],
+    "dog-shocked": [
+      "mascot",
+      "mascot-shocked",
+      "340x340"
+    ],
+    "dog-80px": [
+      "mascot",
+      "mascot-80px",
+      "432x108"
+    ],
+    "scrubs-dog": [
+      "mascot",
+      "scrubs-dog",
+      "420x420"
+    ],
+    "scrubs-cat-exact": [
+      "mascot",
+      "scrubs-cat-exact",
+      "420x420"
+    ],
+    "scrubs-scrub-mid": [
+      "mascot",
+      "scrubs-scrub-mid",
+      "420x420"
+    ],
+    "scrubs-scrub-teal": [
+      "mascot",
+      "scrubs-scrub-teal",
+      "420x420"
+    ],
+    "scrubs-teal-deep": [
+      "mascot",
+      "scrubs-teal-deep",
+      "420x420"
+    ],
+    "scrubs-blue-clinic": [
+      "mascot",
+      "scrubs-blue-clinic",
+      "420x420"
+    ],
+    "scrubs-blue-deep": [
+      "mascot",
+      "scrubs-blue-deep",
+      "420x420"
+    ],
+    "scrubs-80px": [
+      "mascot",
+      "scrubs-80px",
+      "896x128"
+    ],
+    "scrubs-faces": [
+      "mascot",
+      "scrubs-faces",
+      "1408x352"
+    ]
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Buddy",
+      "path": "The floating buddy, and the avatar beside every message",
+      "headline": "The mascot is now the vet dog from your wallpaper",
+      "crop": "dog-all",
+      "changed": "The plain red buddy now has the dog's cream-lined ears, a cream muzzle with a nose, and a tail. The body is still the same carnelian as the dog's scrubs in the picture, so it reads as the same character standing next to them.",
+      "notice": "The ears are small lobes tucked into the head's top corners, the same footprint Strawberry Kitty's cat ears use, so they sit on the head rather than hanging beside it. The muzzle is a shallow wide lens rather than a tall snout — the body is nearly all face, so a taller one would have had to sit on top of the eyes. Four of the eight expressions are on the sheet: content, welcoming, curious and surprised.",
+      "points": [
+        {
+          "text": "Ears and tail sit in the rig's own slots, so the tail springs and trails exactly like an arm when the buddy is dragged to a screen edge.",
+          "kind": "good"
+        },
+        {
+          "text": "Android and the browser get the same art — their flat versions are generated from the rig rather than drawn separately, so the two can never drift apart.",
+          "kind": "good"
+        },
+        {
+          "text": "At 24 px, the smallest the buddy ever renders, the ears and muzzle still read but the eye catchlights blur into the face. Every existing theme's buddy does the same.",
+          "kind": "note"
+        }
+      ],
+      "secondary": [
+        {
+          "label": "At the size the buddy actually renders (80 px)",
+          "crop": "dog-80px"
+        }
+      ],
+      "highlight": {
+        "box": [
+          5,
+          26,
+          90,
+          52
+        ]
+      }
+    },
+    {
+      "id": "D-1",
+      "surface": "Theme",
+      "path": "Morning Rounds — the pack as it will ship",
+      "crop": "dog-welcome",
+      "headline": "Which of the four palettes should the published theme use?",
+      "notice": "A theme ships exactly one palette, so three of these are left out either way — they are a natural second theme pack later, not something lost.",
+      "risk": "Whichever you pick, I will fix the panel colour that the half-written preview file had wrong; it matched none of the four.",
+      "options": [
+        {
+          "id": "cream",
+          "label": "Rounds Cream",
+          "summary": "Warm paper and true carnelian — the daylight the wallpaper plate was drawn in, so the app and the picture agree.",
+          "pros": [
+            "Matches the wallpaper exactly, cream ground and scrubs red both.",
+            "The strongest contrast of the four, so text is the most comfortable to read.",
+            "The Kit already recorded this as the one you picked."
+          ],
+          "cons": [
+            "The brightest of the four — in a dark room it is the one that glares."
+          ],
+          "cost": "Nothing to build; it is already in the Kit.",
+          "recommended": true
+        },
+        {
+          "id": "soft",
+          "label": "Soft Paper",
+          "summary": "The same warm paper with a muted maroon instead of carnelian, and lower contrast throughout.",
+          "pros": [
+            "Easiest of the four to read for a long stretch.",
+            "Still warm, and still sits on the wallpaper's cream."
+          ],
+          "cons": [
+            "Noticeably less punch — the accent reads brown-red rather than the scrubs' red."
+          ],
+          "cost": "Nothing to build."
+        },
+        {
+          "id": "navy",
+          "label": "Hospital Navy",
+          "summary": "Cool clinical gray-blue, with the college's link navy on the scrollbar.",
+          "pros": [
+            "Reads as a hospital rather than as a warm illustration.",
+            "Pairs with the teal cat in the picture instead of the red dog."
+          ],
+          "cons": [
+            "Fights the wallpaper, which is cream and carnelian — the app and the picture would disagree."
+          ],
+          "cost": "Nothing to build."
+        },
+        {
+          "id": "dark",
+          "label": "Night Shift",
+          "summary": "Dark room, chart light — a warm near-black with a crimson accent.",
+          "pros": [
+            "Comfortable at night.",
+            "The dog's carnelian body pops hardest against it."
+          ],
+          "cons": [
+            "A different theme rather than a variation — the wallpaper would need re-grading."
+          ],
+          "cost": "A re-graded wallpaper, or it looks like a dark theme wearing a daylight picture."
+        }
+      ],
+      "highlight": {
+        "box": [
+          29,
+          41,
+          42,
+          22
+        ]
+      }
+    },
+    {
+      "id": "C-1",
+      "kind": "choice",
+      "surface": "Buddy",
+      "path": "Morning Rounds — the buddy's body colour",
+      "headline": "Which scrubs should the dog wear?",
+      "notice": "The first is the carnelian you have now. The rest are the cat's teal and a cooler blue, light to deep. One fails the readability bar — the palest, which is also the character's true colour — and I have left it in and said so rather than quietly dropping it. Every other candidate clears 3:1 for the cream face on the body and for the body on the page; the one after it clears by less than a tenth of a point.",
+      "risk": "The body colour is the one thing the mascot cannot inherit from the theme, so it is hardcoded.",
+      "variants": [
+        {
+          "id": "dog",
+          "label": "Carnelian",
+          "crop": "scrubs-dog",
+          "summary": "The dog's scrubs from the wallpaper — what the buddy wears now. Matches the dog in the picture exactly; strongest face readability of the seven.",
+          "measured": "Contrast 5.6:1 face on body"
+        },
+        {
+          "id": "cat-exact",
+          "label": "The cat's teal, exact",
+          "crop": "scrubs-cat-exact",
+          "summary": "Sampled straight off the wallpaper's cat. Truest to the picture, palest of the teals. Fails readability: the cream face measures 2.4:1 on it, and the body 2.4:1 on the page.",
+          "measured": "2.4:1 face on body — fails"
+        },
+        {
+          "id": "scrub-mid",
+          "label": "Teal, one step deeper",
+          "crop": "scrubs-scrub-mid",
+          "summary": "The cat's teal darkened just enough to carry a cream face. The palest teal that works, and only barely. Features are the weakest of the seven at 24 px.",
+          "measured": "3.03:1 face on body — passes by a hair"
+        },
+        {
+          "id": "scrub-teal",
+          "label": "Teal scrub",
+          "crop": "scrubs-scrub-teal",
+          "summary": "A settled clinical teal — the colour a real scrub top tends to be. My pick. Still recognisably the wallpaper's teal, with room for the face at every size.",
+          "measured": "4.1:1 face on body",
+          "recommended": true
+        },
+        {
+          "id": "teal-deep",
+          "label": "Deep teal",
+          "crop": "scrubs-teal-deep",
+          "summary": "Pine-dark teal. The most sober of the teals, closest to scrubs on a night shift. Dark enough that it stops reading as teal and starts reading as dark green.",
+          "measured": "5.6:1 face on body"
+        },
+        {
+          "id": "blue-clinic",
+          "label": "Clinic blue",
+          "crop": "scrubs-blue-clinic",
+          "summary": "A true blue scrub, in the hospital direction rather than the teal one. A third colour the wallpaper does not contain — it introduces something new.",
+          "measured": "4.8:1 face on body"
+        },
+        {
+          "id": "blue-deep",
+          "label": "Deep blue",
+          "crop": "scrubs-blue-deep",
+          "summary": "Near-navy, the darkest of the seven. Reads as the navy palette you passed over, and the muzzle becomes a bright patch.",
+          "measured": "7.4:1 face on body"
+        }
+      ]
+    },
+    {
+      "id": "D-3",
+      "surface": "Buddy",
+      "path": "Morning Rounds — the dog's finishing touch",
+      "crop": "dog-idle",
+      "headline": "Should the dog hold something?",
+      "notice": "The rig has an unused hand slot, and the wallpaper's cat is holding an orange clipboard of notes.",
+      "risk": "Scrubs and a stethoscope were tried and dropped earlier: the body is nearly all face, so a garment had 2.4 units of room and read as a smudge at 48 px.",
+      "options": [
+        {
+          "id": "clipboard",
+          "label": "Add the clipboard",
+          "summary": "A small orange clipboard in the dog's right hand, matching the one the cat holds in your wallpaper.",
+          "pros": [
+            "Ties the buddy to the picture the way the ears already do.",
+            "Fits in the arm's own slot, so it costs the face nothing.",
+            "Says 'vet student' without needing scrubs."
+          ],
+          "cons": [
+            "It travels with the arm, so it swings during the wave — charming if you like it, busy if you do not."
+          ],
+          "cost": "One more shape in the build, and a re-render of all five assets.",
+          "recommended": true
+        },
+        {
+          "id": "bare",
+          "label": "Leave it bare",
+          "summary": "Ears, muzzle and tail only, nothing in either hand.",
+          "pros": [
+            "The cleanest read at small sizes.",
+            "Nothing competing with the face.",
+            "Already built and verified."
+          ],
+          "cons": [
+            "Slightly less like the character in the wallpaper — a dog, but not obviously that dog."
+          ],
+          "cost": "Nothing; this is what exists now."
+        },
+        {
+          "id": "stethoscope",
+          "label": "Try the stethoscope again",
+          "summary": "A stethoscope looped around the neck, drawn small.",
+          "pros": [
+            "The most unmistakably medical option.",
+            "Would say what the theme is for at a glance."
+          ],
+          "cons": [
+            "This is the one already tried and dropped — four placements were rendered and every one either crossed the chin or collapsed into a smudge beside the mouth at 48 px.",
+            "I would be spending your time to reach the same answer."
+          ],
+          "cost": "A round of renders and probably a different answer, not a better one."
+        }
+      ],
+      "highlight": {
+        "box": [
+          72,
+          45,
+          12,
+          16
+        ]
+      }
+    }
+  ]
+}

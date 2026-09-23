@@ -16,6 +16,25 @@ status: active
 
 **Scope note:** This is a cross-repo plan. It touches three repos: `youcoded-dev` (workspace), `youcoded` (the app — both `desktop/` and `app/`), and `youcoded-core` (the repo being deprecated). All paths in this document are rooted at `C:/Users/desti/youcoded-dev/` unless otherwise specified.
 
+> **ARCHIVED EARLY, 2026-09-20 (Destin's call).** `itsdestin/youcoded-core` is now archived on
+> GitHub — out of the plan's order, which put the archive at the end of Phase 3. What that
+> changes:
+>
+> - **The repo is READ-ONLY.** Pushes, releases and tags fail. The "mirror every hook fix into
+>   the legacy copy too" rule is dead; the app's bundled copies are the only place a fix lands.
+>   Undo with `gh repo unarchive itsdestin/youcoded-core` if a mirror fix is ever genuinely needed.
+> - **Nothing breaks for users.** An archived repo still clones, so the ≤ v1.2.4 installs that
+>   run hooks out of `~/.claude/plugins/youcoded-core/` keep working, and a fresh 1.2.4 setup can
+>   still clone it. Eight commits (docs + the write-guard exit-code fix, already mirrored into
+>   both app bundles) stay unreleased on its master, which reaches those installs anyway because
+>   the clone takes the default branch, never a tag.
+> - **Evidence it was safe:** v1.3.0 ships the launch-time cleanup, and of 24 devices active in
+>   the 30 days to 2026-09-20 all but two had already run a 1.3 beta carrying it; Destin's own
+>   machine has neither the clone nor a stale hook entry in `~/.claude/settings.json`.
+> - **Still outstanding:** Phase 2 (delete the app's dead `youcoded-core`-aware branches) ships in
+>   1.3.1, and Phase 3's file-deletion/spec-move tasks plus Tasks 24–27 are now un-gated — the
+>   archive they were waiting on has happened.
+>
 > **GATE STATUS, VERIFIED 2026-08-26 (127 days after this plan was written).**
 > **Phase 1 is code-complete on `master` but Release N has never shipped, so the repo cannot be
 > archived and `youcoded-core` is still the live hook source for every user.**
