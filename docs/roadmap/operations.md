@@ -3,14 +3,6 @@ Filing test: is it about youcoded.ai, promotion, the company's legal paperwork o
 Not here: the download builds themselves, installer signing and store uploads (dev-workspace → release), or anything inside the app.
 seen-on is always n/a here.
 
-- [ ] REVERT NOW THAT 1.3.0 HAS SHIPPED: youcoded.ai's download buttons hand out the newest
-      release INCLUDING pre-releases, so visitors get a beta instead of a release. Deliberate
-      and temporary while v1.2.4 (May) was the only release (Destin, 2026-09-03). 1.3.0 shipped
-      2026-09-20, so the reason is gone: put the buttons back on stable-only. The beta
-      pre-releases can STAY published — the in-app beta channel (shipped 2026-09-13) is how a
-      tester gets them now, and deleting them would strand anyone already on one
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.0`
-
 - [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
       from the embed's theme button and the whole app window becomes one blur; the redesign makes
       theme switching a primary interaction so this must ship with it

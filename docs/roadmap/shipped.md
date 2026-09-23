@@ -1,6 +1,8 @@
 # Shipped
 
 One line per closed item, newest at the bottom: `- [x] YYYY-MM-DD <area> — <headline> (<commit or PR>)`.
+Lines are capped at 300 characters. Longer pre-2026-09-23 lines, and everything shipped before
+2026-09-01, are in full in `docs/archive/roadmap/shipped-full-to-2026-09-23.md`.
 
 A line that reads **PENDING MERGE OF `<branch>`** is work that is built and reviewed but has NOT
 landed on master, so it cites a branch instead of a merge sha. It is written here — rather than
@@ -38,6 +40,4 @@ decision either way.
 - [x] 2026-09-02 themes — Theme-builder skill end-to-end run — Destin has run it since the Kit rewrite (2026-09-02)
 - [x] 2026-09-02 themes — Android terminal mode hiding the wallpaper — no longer reproduces (Destin 2026-09-02)
 - [x] 2026-09-02 sync — Sync dead-ends on a machine without gh — Destin tested the no-gh path in his macOS VM, it worked (2026-09-02)
-
-Before 2026-09-23 some lines carried their whole story, and everything shipped before 2026-09-01
-was kept in an older format; both are in full in `docs/archive/roadmap/shipped-full-to-2026-09-23.md`.
+- [x] 2026-09-23 operations — Site download buttons hand out betas after 1.3.0 shipped — kept on purpose (decided 2026-09-23: keep offering betas; the release skill asks Destin each release)
