@@ -54,7 +54,7 @@ verify:
 ---
 # Multi-model native runtime (provider seam + sessions + local reliability)
 
-`SessionProvider` has THREE members — `'claude' | 'native' | 'shell'`; 'shell' is a plain terminal (no AI), made only by `engine:run-in-terminal`, so every provider branch must handle it. **Depth: `youcoded/docs/native-runtime.md`, `provider-dependencies.md`. Siblings: `harness-tools.md`, `native-permissions.md`; primer: `docs/active/specs/2026-09-01-agent-platform-vision-and-state.md`.**
+`SessionProvider` is `'claude' | 'native' | 'shell'`; shell is a terminal, not AI. Every provider branch handles it. **Depth: `youcoded/docs/native-runtime.md`, `provider-dependencies.md`; siblings: `harness-tools.md`, `native-permissions.md`.**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
 - **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`, which hides every desktop-only section off Electron.
@@ -64,8 +64,8 @@ verify:
 - **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (a `secretRef` only, no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateJson` (→ `mutateFileUnderLock`, THROWS on lock exhaustion).
 - **`SessionStore` coalesces same-`partId` deltas; display-only (`session-error`, payload-less `assistant-thinking`) is NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
 - **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
-- **Queued messages are renderer list state, NEVER timeline**; `native:*` calls have ONE shape on ALL transports (interrupt/retry fire-and-forget).
-- **The renderer native send path skips ALL PTY machinery** (`native-send.ts`); the send string MUST equal `buildOutgoingMessage(...).content`.
+- **Queued messages belong to renderer state, not timeline**; `native:*` shapes match on all transports (interrupt/retry fire-and-forget).
+- **Native sends bypass PTY** (`native-send.ts`); content equals `buildOutgoingMessage(...).content`.
 
 ## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine`
 - **The emit surface is FROZEN** — new loop states map onto existing `TranscriptEventType`s.
@@ -80,7 +80,7 @@ verify:
 ## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`compaction` tests
 - **CapabilityProfile NEVER branches on a model name** (`known-models.ts` is the ONLY modelId inspection); `supportsTools:false` → plain chat.
 - **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction, StatusBar.
-- **Two-stage compaction FAILS SAFE** — never drops a message, cuts on a USER boundary.
+- **Near-limit compaction uses one validated summary, not pruning.** Preserve tool groups and accepted history; shorten only the summary-input copy. Failure keeps history; only legacy reopens may request-fit. Portable restoration is Release 2. Guards: `compaction-budget.test.ts`, `harness-compaction.test.ts`.
 
 ## Stall watchdog & the park — guard: `harness-stall-watchdog.test.ts`
 - **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down; a late chunk still continues the turn. That `return` IS the feature.
