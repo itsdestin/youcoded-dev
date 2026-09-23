@@ -676,6 +676,12 @@ recurred — the repetition is the data.
 - Destin's words worth keeping: "my pc crashed. however, that data loss seems like a separate youcoded bug we should investigate" — he wanted the mechanism, not just the fix restored.
 - deleted/merged: none found — the change was three states on one existing line plus tests; the only deletion was the stale `pointer` wording in the comment beside it.
 
+## 2026-09-22 — native live status and early names (session/native-session-status-multi, youcoded#548 + youcoded-dev#171)
+- Fresh independent review caught two cases missing from an otherwise-green full suite: measured usage followed by a silent provider step left a stale live Cost figure, and one-directory absolute paths kept their directory in Basic names → applied: red-then-green tests in `harness-session-loop.test.ts` and `naming-core.test.ts`; no additional prose rule. The reviewer’s `./src/App.tsx` example was checked and already worked.
+- The first full verification after the fixes caught a type-narrowing error that the focused Vitest run cannot see → applied: explicit measured-usage guard at the emit site; keep `verify.sh` as the completion gate, not an extra doc.
+- A 3-line budget overrun surfaced on the focused budget test. RECURRENCE of the 2026-09-18 budget friction already filed in `dev-workspace.md` → applied: condensed the harness explanation and lowered its ceiling from 3833 to 3832; no duplicate roadmap entry.
+- deleted/merged: consolidated the live-progress explanation at its emit site (seven comment lines down to three); no new workflow document.
+
 ## 2026-09-22 — model switcher recommendations, manual review and merge (session/recommended-models)
 - Fresh review caught two defects the existing 26 green picker tests missed: `gpt-console` was mistaken for Sol by substring matching, and the General-page picker kept its mount-time toggle value → applied: two red-then-green cases in `desktop/tests/ModelPicker.test.tsx`, slug-token matching and re-read on open in the app. [2 bugs before merge]
 - Source comment pointed the scheduled endpoint-check runner at the wrong roadmap area → applied: corrected the pointer in `desktop/src/shared/recommended-models.ts`; the runner remains a single open `dev-workspace.md` item, not another entry.
