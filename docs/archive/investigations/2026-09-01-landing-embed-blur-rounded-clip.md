@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Landing-page live embed goes fully blurred under framed wallpaper themes — a rounded clip on the iframe defeats the chrome-glass clip-path
 ---

@@ -307,11 +307,17 @@ test('checkStructure: dead link', () => {
   assert.match(errs[0].message, /link does not resolve: docs\/active\/investigations\/2026-08-20-gone\.md/);
 });
 
-test('checkStructure: index row for a file that does not exist, and a file with no row', () => {
+// 2026-09-23: a row/file mismatch used to be a structure error, which stopped the run before
+// --fix could add the row — so every new area file needed its table row typed by hand.
+test('an index row for a missing file, or a file with no row, is drift that --fix repairs', () => {
   const root = withFixture(r => edit(r, 'ROADMAP.md', '[native-harness](docs/roadmap/native-harness.md)', '[themes](docs/roadmap/themes.md)'));
-  const msgs = checkStructure(loadRoadmap(root)).map(e => e.message);
-  assert.ok(msgs.some(m => /index row for themes but docs\/roadmap\/themes\.md does not exist/.test(m)));
-  assert.ok(msgs.some(m => /docs\/roadmap\/native-harness\.md has no row in the index/.test(m)));
+  assert.deepEqual(checkStructure(loadRoadmap(root)), []);
+  assert.ok(diffIndex(loadRoadmap(root)).some(d => /row native-harness:/.test(d.message)));
+  const r = run({ root, fix: true, today: '2026-09-01' });
+  assert.equal(r.exitCode, 0);
+  assert.doesNotMatch(read(root, 'ROADMAP.md'), /\[themes\]/);
+  assert.match(read(root, 'ROADMAP.md'), /\| \[native-harness\]\(docs\/roadmap\/native-harness\.md\) —/);
+  assert.deepEqual(diffIndex(loadRoadmap(root)), []);
 });
 
 test('checkStructure: missing index, missing shipped.md', () => {
@@ -428,7 +434,7 @@ test('expectedIndex: counts, headings, order by Open desc then name, next-releas
     { area: 'sync', heading: 'moving your stuff between devices', open: 3, needsVerify: 1, decisions: 0, parked: 1 },
     { area: 'native-harness', heading: "the app's own agent doing work", open: 1, needsVerify: 0, decisions: 1, parked: 0 },
   ]);
-  assert.deepEqual(ex.nextRelease, ['- sync: Sync dead-ends on any machine without gh — the setup screen shows a spinner']);
+  assert.deepEqual(ex.nextRelease, ['- sync: Sync dead-ends on any machine without gh']);
   assert.equal(renderRow(ex.rows[0]), '| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 3 | 1 | 0 | 1 |');
 });
 
@@ -466,9 +472,9 @@ test('rewriteIndex: touches only the table rows and the next-release lines', () 
 });
 
 test('rewriteIndex: an index with no next-release lines yet gets them inserted after Target:', () => {
-  const root = withFixture(r => edit(r, 'ROADMAP.md', '- sync: Sync dead-ends on any machine without gh — the setup screen shows a spinner\n', ''));
+  const root = withFixture(r => edit(r, 'ROADMAP.md', '- sync: Sync dead-ends on any machine without gh\n', ''));
   const after = rewriteIndex(loadRoadmap(root));
-  assert.match(after, /Target: `v1\.3`\n- sync: Sync dead-ends on any machine without gh — the setup screen shows a spinner\n/);
+  assert.match(after, /Target: `v1\.3`\n- sync: Sync dead-ends on any machine without gh\n/);
 });
 
 import { spawnSync } from 'node:child_process';
@@ -588,4 +594,66 @@ test('run: --today is validated; --root needs an argument', () => {
   const r = spawnSync(process.execPath, [SCRIPT, '--root'], { encoding: 'utf8' });
   assert.equal(r.status, 1);
   assert.match(r.stderr, /--root requires an argument/);
+});
+
+import { headline, closeEntry, SHIPPED_MAX } from './roadmap-check.mjs';
+
+// 2026-09-23: the Next release list used an entry's first PHYSICAL line, so every item ended
+// mid-sentence ("…behind an"). The headline is the first sentence, cut at a word.
+test('headline: first sentence, release-blocker tag dropped, long text cut at a word', () => {
+  const h = symptom => headline({ symptom });
+  assert.equal(h('**v1.3.1 release blocker.** Search stops at 200 matches. More detail here'), 'Search stops at 200 matches');
+  assert.equal(h('**v1.3.1 release blocker — native-only users need a skills home.** Today the'), 'native-only users need a skills home');
+  assert.equal(h('Helper transcripts pile up in the sessions folder forever — there is no way'), 'Helper transcripts pile up in the sessions folder forever');
+  assert.equal(h('Uses v1.3.1 and e.g.x without ending early at a version number here'), 'Uses v1.3.1 and e.g.x without ending early at a version number here');
+  const long = h('word '.repeat(60).trim());
+  assert.ok(long.length <= 110 && long.endsWith('…') && !long.includes('wor…'));
+});
+
+test('closeEntry: by line — entry and its blank line gone, shipped line appended above the old-format block', () => {
+  const root = withFixture();
+  const rm = loadRoadmap(root);
+  const e = rm.areas.find(a => a.area === 'sync').entries[1];
+  const { line } = closeEntry(rm, `sync:${e.line}`, { ref: 'youcoded#999', today: '2026-09-23' });
+  assert.equal(line, '- [x] 2026-09-23 sync — Android says "Synced" while the last push failed (youcoded#999)');
+  const area = read(root, 'docs/roadmap/sync.md');
+  assert.doesNotMatch(area, /Android says/);
+  assert.doesNotMatch(area, /\n\n\n/);
+  const shipped = read(root, 'docs/roadmap/shipped.md');
+  assert.ok(shipped.indexOf(line) < shipped.indexOf(OLD_FORMAT_HEADING));
+  assert.deepEqual(checkStructure(loadRoadmap(root)), []);
+});
+
+test('closeEntry: by text, with a headline override; ambiguous or missing --ref refuses and writes nothing', () => {
+  const root = withFixture();
+  const before = read(root, 'docs/roadmap/sync.md');
+  assert.throws(() => closeEntry(loadRoadmap(root), 'sync:the', { ref: 'x', today: '2026-09-23' }), /matched \d+ entries/);
+  assert.throws(() => closeEntry(loadRoadmap(root), 'sync:Android says', { today: '2026-09-23' }), /--ref/);
+  assert.throws(() => closeEntry(loadRoadmap(root), 'nope:1', { ref: 'x', today: '2026-09-23' }), /no area file/);
+  assert.equal(read(root, 'docs/roadmap/sync.md'), before);
+  const { line } = closeEntry(loadRoadmap(root), 'sync:android says', { ref: 'abc123', today: '2026-09-23', headlineText: 'Android sync status tells the truth' });
+  assert.match(line, /sync — Android sync status tells the truth \(abc123\)$/);
+});
+
+test('cli: --close closes, rewrites the index in the same step, and names the report to archive', () => {
+  const root = withFixture();
+  const r = cli(root, '--close', 'sync:Sync dead-ends', '--ref', 'youcoded#380', '--today', '2026-09-23');
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /closed sync:4/);
+  assert.match(r.stdout, /move it to docs\/archive/);
+  assert.doesNotMatch(read(root, 'ROADMAP.md'), /- sync: Sync dead-ends/);   // it was the only v1.3 item
+  assert.deepEqual(diffIndex(loadRoadmap(root)), []);
+  assert.equal(cli(root, '--close', 'sync:no such text', '--ref', 'x').status, 1);
+});
+
+test('parseShipped: a line over the cap is an error that says where the detail goes', () => {
+  const long = `- [x] 2026-09-23 sync — ${'x'.repeat(SHIPPED_MAX)} (youcoded#1)`;
+  const [err] = parseShipped(`# Shipped\n\n${long}\n`).errors;
+  assert.match(err.message, /characters \(max \d+\).*commit message or PR/);
+});
+
+test('run: claims skipped for a missing repo are counted in the Claims header, not only listed', () => {
+  const root = withFixture(r => fs.rmSync(path.join(r, 'youcoded', '.git'), { recursive: true }));
+  const r = run({ root, today: '2026-09-01' });
+  assert.match(r.text, /### Claims — 0 checked, 0 broken, 1 skipped \(repo not checked out here/);
 });

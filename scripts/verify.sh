@@ -98,6 +98,20 @@ if [[ -L "$DESKTOP/node_modules" ]]; then
   echo "" >&2
 fi
 
+# WHY (2026-09-23): a worktree whose node_modules was hardlinked from a STALE shared
+# checkout failed here as "oxlint: command not found" and a TS5095 tsconfig error — neither
+# says "your dependencies are older than this branch". Name the missing packages up front.
+MISSING_DEPS=$(cd "$DESKTOP" && node -e '
+  const p = require("./package.json"); const fs = require("fs");
+  const names = Object.keys({ ...p.dependencies, ...p.devDependencies });
+  console.log(names.filter((n) => !fs.existsSync("node_modules/" + n)).join(" "));' 2>/dev/null || true)
+if [[ -n "$MISSING_DEPS" ]]; then
+  echo "WARNING: node_modules is older than package.json — missing: $MISSING_DEPS" >&2
+  echo "         Failures below are likely that, not your change. Provision this worktree with" >&2
+  echo "         workspace-start, or run 'npm ci' in $DESKTOP if its node_modules is its own." >&2
+  echo "" >&2
+fi
+
 # Default base ref: prefer origin/master over the local master.
 #
 # WHY this order (2026-09-07): workspace-start.mjs creates every session branch

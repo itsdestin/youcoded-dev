@@ -1,0 +1,83 @@
+{
+ "deck": "youcoded-pages-connections-r1",
+ "started": "2026-09-19T08:35:28.497Z",
+ "submitted": "2026-09-19T08:50:47Z",
+ "cur": 10,
+ "answers": {
+  "C-1": {
+   "note": "remove the key symbol. i think most of the copy under the key paste box would confuse a non-technical user. i think we can drop the \"everything else on the internet\" line. i separately feel like the paste boxshouldn't be contained in the \"this page would be able to section\". the explanation of the permission and the key entry are kinda separate things. i think we should just have a \"continue\" button, then a second page/modal that has instructions for how to find the relevant key or whatever. we could write this, or maybe make the instructions something that come with the page and can be filled by the page author?",
+   "v": "other",
+   "seconds": 458,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-2": {
+   "note": "remove key icon. the \"paste a different one\" doesn't look like a button or match existing app elements. also drop the \"everything else on internet\" line.",
+   "v": "other",
+   "seconds": 57,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-3": {
+   "note": "drom icon, everyhing on internet line. change \"one more thing\" in the top to \"additional permissions\"",
+   "v": "other",
+   "seconds": 47,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-4": {
+   "v": "yes",
+   "note": "i think this explanation could be clearer about what the permission actually means in practice, and associated risks.",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-5": {
+   "note": "i think finish setting up on your computer could be pulled out into a greyed out button where \"allow\" would be and explain more \"managing keys not currently supported on phone, use computer for setup\" or whatever.",
+   "v": "other",
+   "seconds": 84,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-6": {
+   "v": "other",
+   "note": "i want to drop this to just a bare \"2m\" with retry. no \"updated/ago\"",
+   "seconds": 99,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-7": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-8": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-9": {
+   "v": "yes",
+   "note": "i dont like the waiting for your okay. should probably me a button on the bottom right that offers to connect or something.",
+   "seconds": 54,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-10": {
+   "note": "remove should be to the right of never mine, and both should be right aligned.",
+   "v": "other",
+   "seconds": 31,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-11": {
+   "v": "yes",
+   "note": "change \"connected accounts\" to \"connected services\"",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

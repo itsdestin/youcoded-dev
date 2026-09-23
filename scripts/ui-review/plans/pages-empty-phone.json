@@ -1,0 +1,6 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=empty",
+  "width": 390,
+  "height": 844,
+  "shots": [{ "name": "landing", "actions": [{ "click": "[aria-label='Open Pages']", "settle": 850 }], "expect": "[aria-label='Back to chat']" }]
+}
