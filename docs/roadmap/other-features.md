@@ -82,8 +82,14 @@ has passed ~8 items — graduate it to its own file.
       downloaded executable code would refuse), a pair-to-desktop-only app, or a proper web
       client over an encrypted remote connection. Wanted: a written comparison of cost, App Store
       constraints and what each option can and cannot do, before any build. The website's iOS
-      popup says we are exploring this (2026-09-10)
-      `n/a` `decision` `checked 2026-09-10`
+      popup says we are exploring this (2026-09-10). Constraint to design around (2026-09-23):
+      an iPhone app cannot start other programs at all, and App Store rule 2.5.2 bars
+      downloading code that adds features — so no bash, git or Claude Code on the phone, bundled
+      or not. The likely shape: the built-in assistant running inside the app with its file
+      tools rebuilt in-app (reusing the Android harness work), plus "connect to my computer" for
+      Claude Code and commands. Running AI-written code locally (a-Shell-style WebAssembly) is a
+      gray area Apple once threatened to remove; leave for later
+      `n/a` `decision` `checked 2026-09-23`
 
 - [ ] Nothing in the app or on youcoded.ai points to r/youcoded, the community Destin opened on
       2026-09-10 for bug reports, feature ideas, themes and things people make with the app.
