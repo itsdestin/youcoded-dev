@@ -89,6 +89,9 @@ STUB_PANE = """<!doctype html><meta charset="utf-8"><title>stub pane</title>
     if (e.data && e.data.type === 'youcoded:theme') {
       window.__lastTheme = e.data.theme;
       parent.postMessage({type:'stub:theme', theme:e.data.theme, candidate:'%(id)s', id:window.__id}, '*');
+      // A real live pane acknowledges only after ThemeProvider paints; this
+      // stub has no provider, so its paint is immediate after the message.
+      parent.postMessage({type:'youcoded:pane-theme', theme:e.data.theme, candidate:'%(id)s'}, '*');
     }
   });
 </script>

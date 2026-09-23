@@ -200,6 +200,9 @@ def _live_step(spec, st):
         # renders Yes/No buttons over panes nobody can choose between.
         'shape': 'choice' if st.get('variants') else 'approve',
         'surface': st['surface'], 'path': st['path'],
+        # WHY: a live stage can scroll independently of a pane; put optional
+        # per-step operating instructions above the panes, not below them.
+        'hint': st.get('hint', ''),
         'headline': st['headline'], 'changed': st.get('changed', ''), 'measured': st.get('measured', ''),
         'notice': st.get('notice', ''), 'risk': st.get('risk', ''),
         # WHY these ride along (2026-09-10): a live pane has no `runs`, so page.js's default

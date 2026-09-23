@@ -142,7 +142,10 @@ Deck-level `live.worktree` names the build. A pane shows one of two things:
 yes/no. Four panes is the cap. An app pane needs no `changed` — nothing changed, it is the app
 as it is. ONE app pane with no `paneWidth` and no `height` **fills the stage**, so the whole
 screen is usable without scrolling; give it either and it takes that size instead, and a ROW of
-panes is a comparison and always keeps its declared size.
+panes is a comparison and always keeps its declared size. An optional step-level `hint`
+appears **above** the panes in the scrolling comparison area; put operating directions there
+when they must be seen before the first interaction. The header's `path` is hidden at laptop
+widths and the question cards sit below the panes, so neither can carry those directions.
 
 WHY the app rows exist (Destin, 2026-09-06): a candidate is a SKETCH somebody wrote for one
 comparison. Asking him to operate a real screen had no shape at all, so a live slide could only

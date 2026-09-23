@@ -307,6 +307,8 @@ test('live step: panes, label theme row that does not reload them, no picking by
     // build time — otherwise switching theme on step 1 leaves step 2's panes on the old one.
     assert.deepEqual(await c.evaluate("[...new Set(window.__acks.filter(a=>a.type==='stub:theme').map(a=>a.theme))]"), ['midnight'],
       'panes are told the theme on load, with no click');
+    assert.equal(await c.evaluate("document.querySelectorAll('#inner iframe[data-applied-theme=midnight]').length"), 2,
+      'both panes acknowledge painted theme before a preview claims they are ready');
     const loadedIds = await c.evaluate("JSON.stringify(window.__acks.filter(a=>a.type==='stub:loaded').map(a=>a.id).sort())");
     assert.equal(JSON.parse(loadedIds).length, 2, 'both panes announced themselves');
     await c.evaluate("[...document.querySelectorAll('#thumbs .thumb')].find(b=>b.dataset.v==='light').click()"); await sleep(500);
@@ -673,6 +675,22 @@ test('preview writes one png per page × size × theme and a contact sheet', asy
   assert.equal(existsSync(join(dirname(spec), 'questions.serve.json')), false, 'preview takes no serve lock');
 });
 
+test('a server-down live pane makes preview fail instead of accepting a text-only shot', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-live-down-'));
+  const deadBase = `http://127.0.0.1:${await freePort()}`;
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import live_spec; print(live_spec(${JSON.stringify(tmp)}, base=${JSON.stringify(deadBase)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); assert.ok(spec.endsWith('live.json'), fx.stderr);
+  const build = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' });
+  assert.equal(build.status, 0, build.stdout + build.stderr);
+  const port = await freePort();
+  const srv = spawn('python3', [RC, 'serve', spec, '--no-build', '--no-live', '--port', String(port), '--timeout', '2'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    await sleep(800);
+    const r = await renderDeck({ url: `http://127.0.0.1:${port}/live.html`, out: join(tmp, 'shots'), sizes: ['640x480'], themes: ['midnight'], pages: 1 });
+    assert.ok(r.errors.some(e => e.includes('live app server unavailable')), JSON.stringify(r.errors));
+  } finally { srv.kill(); }
+});
+
 // A page that never sets window.__deckReady used to be screenshotted silently: the bounded
 // poll (40 × 250ms) would just time out and renderDeck would shoot whatever was on screen with
 // no sign anything was wrong. A plain, no-JS HTML file served over file:// is the simplest
@@ -945,10 +963,14 @@ print(p)`;
     assert.equal(await c.evaluate("document.querySelector('#content').classList.contains('live-fill')"), true);
     const box = JSON.parse(await c.evaluate("(()=>{const s=document.querySelector('.stage').getBoundingClientRect(),"
       + "f=document.querySelector('#inner iframe').getBoundingClientRect(),"
-      + "cap=document.querySelector('#inner figcaption').getBoundingClientRect();"
-      + "return JSON.stringify({s:{w:s.width,h:s.height,b:s.bottom},f:{w:f.width,h:f.height,b:f.bottom},cap:cap.height});})()"));
-    // Tall: everything the stage has, minus its padding and the caption above the pane.
-    assert.ok(box.f.h > box.s.h - box.cap - 40, `pane ${box.f.h} should fill stage ${box.s.h} (caption ${box.cap})`);
+      + "cap=document.querySelector('#inner figcaption').getBoundingClientRect(),"
+      + "hint=document.querySelector('#livehint'), hs=getComputedStyle(hint);"
+      + "return JSON.stringify({s:{w:s.width,h:s.height,b:s.bottom},f:{w:f.width,h:f.height,b:f.bottom},"
+      + "cap:cap.height,hint:hint.getBoundingClientRect().height+parseFloat(hs.marginTop)+parseFloat(hs.marginBottom)});})()"));
+    // Tall: everything the stage has, minus its padding, the now-before-pane
+    // operating hint, and the caption. Neither hint nor the app may be clipped.
+    assert.ok(box.f.h > box.s.h - box.cap - box.hint - 40,
+      `pane ${box.f.h} should fill stage ${box.s.h} (caption ${box.cap}, hint ${box.hint})`);
     // And never past it — the clipped bottom strip is exactly what this guards.
     assert.ok(box.f.b <= box.s.b + 1, `pane bottom ${box.f.b} must stay inside the stage ${box.s.b}`);
     assert.ok(box.f.w > box.s.w - 40, `pane ${box.f.w} should fill stage ${box.s.w}`);

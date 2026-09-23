@@ -61,7 +61,19 @@
   // here: Chrome fires an iframe `load` event on its own error page too.
   const probeLive = () => fetch(DECK.live.base + '/', { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
   function drawLivePanes() {
-    $$('#inner iframe').forEach(f => { if (f.dataset.src) f.src = f.dataset.src; });
+    $$('#inner iframe').forEach(f => {
+      if (!f.dataset.src) return;
+      // WHY: an offscreen renderer can finish loading AFTER its first size
+      // report; an early theme message then lands before its listener exists.
+      // Re-send at frame load, when the renderer is listening, so every pane
+      // uses the chosen theme even before the reviewer scrolls it into view.
+      f.addEventListener('load', () => {
+        if (!f.isConnected) return;
+        delete f.dataset.appliedTheme;
+        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* gone */ }
+      }, { once: true });
+      f.src = f.dataset.src;
+    });
   }
   function drawServerDown(st) {
     // Specific and accurate (docs/error-message-standards.md): we know exactly which address
@@ -77,7 +89,10 @@
   function setLiveTheme() {
     document.documentElement.dataset.theme = theme;
     $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
-    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ } });
+    $$('#inner iframe').forEach(f => {
+      delete f.dataset.appliedTheme;
+      try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ }
+    });
   }
   // What a pane may be wide, as a range. A width the pane MEASURED for itself beats the one
   // the spec guessed at — the number lives in the registry in the other repo, so the deck can
@@ -372,7 +387,8 @@
       // Once a click lands inside a pane, focus is in ITS document and this page stops seeing
       // key presses — so say so rather than leaving arrow keys mysteriously dead. Prev/Next
       // and every answer button still work with the mouse.
-      $('#livehint').textContent = 'These panes are the running app — hover, click and drag them. Click the page outside a pane to use ← → again.';
+      $('#livehint').textContent = (st.hint ? st.hint + ' ' : '')
+        + 'These panes are the running app. Click outside a pane to use ← → again.';
       probeLive().then(up => {
         if (DECK.steps[cur] !== st) return;   // he moved on while we were asking
         if (up) drawLivePanes(); else drawServerDown(st);
@@ -785,14 +801,35 @@
     // Symmetric with the route, which only accepts theme messages from a loopback origin.
     if (!DECK.live || e.origin !== DECK.live.base) return;
     const d = e.data;
+    if (d?.type === 'youcoded:pane-theme' && typeof d.theme === 'string') {
+      // WHY: mounting does not imply the requested palette has painted. The
+      // renderer acknowledges after ThemeProvider writes it, so preview can
+      // refuse a pane whose first screenshot still wears its URL's old theme.
+      const f = $$('#inner iframe').find(x => x.contentWindow === e.source);
+      if (f && d.theme === theme) {
+        f.dataset.appliedTheme = d.theme;
+      } else if (f && Number(f.dataset.themeRetries || 0) < 3) {
+        // WHY: an offscreen pane can acknowledge its initial default AFTER
+        // our load-time theme request; ThemeProvider's async initial restore
+        // overwrites that request. Retry on its painted-theme acknowledgement,
+        // never claim readiness from the earlier size report.
+        f.dataset.themeRetries = String(Number(f.dataset.themeRetries || 0) + 1);
+        try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+      }
+      return;
+    }
     if (!d || d.type !== 'youcoded:pane-height' || !(d.height > 0)) return;
     const st = DECK.steps[cur];
-    if (st.kind !== 'live' || st.height) return;   // a declared height is an override, not a suggestion
+    if (st.kind !== 'live') return;
     // contentWindow identity, not the id in the payload: it is the only thing that cannot be
     // wrong when four panes report independently. The id is the fallback if the frame moved.
     const panes = $$('#inner iframe');
     const f = panes.find(x => x.contentWindow === e.source) || panes.find(x => x.dataset.pane === d.candidate);
     if (!f) return;
+    // WHY: layout readiness predates the async app in each frame. Preview must
+    // wait for THIS mounted report before photographing a live pane, including
+    // a pane whose height is explicitly fixed by its deck.
+    const firstMount = f.dataset.mounted !== 'true';
     // The pane's address carries the deck's FIRST theme, baked at build time — so a live step
     // opened while the deck is on any other theme (switched on an earlier step, or ?theme= in
     // the URL) showed Midnight panes inside a Light deck. Answering its height report is the
@@ -800,12 +837,17 @@
     // `load` event is not — it fires before the app's async boot installs the listener, and
     // the message is dropped silently (tried that first, 2026-09-01).
     try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+    f.dataset.mounted = 'true';
+    // WHY: the first layout sent fluid width before the iframe installed its
+    // listener. Its requested-width cache must be cleared ONCE after mount, or
+    // the candidate stays at min width inside a wider allocated pane.
+    if (firstMount) delete f.dataset.askedWidth;
     // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
     // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
     // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of
     // the design, and a design you cannot see all of is not a design you can judge. The stage
     // is `overflow:auto` already, so a tall pane makes the STAGE scroll and stays whole.
-    f.style.height = Math.max(MIN_PANE_H, d.height) + 'px';
+    if (!st.height) f.style.height = Math.max(MIN_PANE_H, d.height) + 'px'; // declared height wins
     // WIDTH is not capped and not guessed. It comes from the registry in the other repo, so
     // the pane is the only thing that knows it; a deck-level `live.paneWidth` that is too
     // small clips the design's right-hand edge with nothing to say so (permissions-mode-control

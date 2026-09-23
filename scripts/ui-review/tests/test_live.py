@@ -11,6 +11,7 @@ Plan: docs/archive/plans/2026-08-31-live-review-panes-plan.md.
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -114,6 +115,15 @@ class PictureFreeDeckTests(unittest.TestCase):
         self.assertEqual([st['kind'] for st in data['steps']], ['live', 'live'])
         self.assertIn('view=live', data['steps'][0]['panes'][0]['url'])
 
+    def test_live_instruction_is_visible_before_the_panes(self):
+        # WHY: laptop headers hide `path`, and three full-height live panes scroll
+        # in the deck stage. An instruction below them cannot explain how to start.
+        spec = spec_with(self.tmp, lambda r: r['steps'][0].update({'hint': 'Scroll outside the drawer to see all choices.'}))
+        self.assertEqual(deck_data(spec, {})['steps'][0]['hint'], 'Scroll outside the drawer to see all choices.')
+        page, _ = build_page(spec, {})
+        stage = page[page.index('id="stage"'):]
+        self.assertLess(stage.index('id="livehint"'), stage.index('id="inner"'))
+
     def test_a_deck_that_is_not_all_live_still_demands_images(self):
         p = live_spec(self.tmp)
         with open(p) as f:
@@ -158,6 +168,37 @@ class BuildTests(unittest.TestCase):
 
     def test_width_falls_back_to_the_routes_own_default(self):
         self.assertEqual(self.data['steps'][0]['width'], PANE_WIDTH)
+
+
+class LivePreviewReadinessTests(unittest.TestCase):
+    def test_render_waits_for_every_authored_pane_not_just_the_deck_layout(self):
+        # WHY: a live deck's contact sheet used to capture three loading spinners
+        # because __deckReady predates iframe mounting. No Chrome needed for this race.
+        js = """
+          import { waitForLivePanes } from './deck/render.mjs';
+          import assert from 'node:assert/strict';
+          let polls = 0;
+          const evaluate = async () => ++polls >= 3;
+          assert.equal(await waitForLivePanes(evaluate, async () => {}, 4), true);
+          assert.equal(polls, 3);
+          polls = 0;
+          assert.equal(await waitForLivePanes(evaluate, async () => {}, 2), false);
+          assert.equal(polls, 2);
+        """
+        result = subprocess.run(['node', '--input-type=module', '-e', js],
+                                cwd=os.path.dirname(HERE), capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_first_mount_retries_fluid_width_after_listener_is_ready(self):
+        with open(os.path.join(os.path.dirname(HERE), 'deck', 'page.js')) as f:
+            page = f.read()
+        self.assertIn('if (firstMount) delete f.dataset.askedWidth;', page)
+
+    def test_live_pane_mount_signal_precedes_declared_height_override(self):
+        # An explicit height must not block the mount/theme message used by preview.
+        with open(os.path.join(os.path.dirname(HERE), 'deck', 'page.js')) as f:
+            page = f.read()
+        self.assertLess(page.index("f.dataset.mounted = 'true'"), page.index('if (!st.height) f.style.height'))
 
 
 class AnswerWordsTests(unittest.TestCase):
