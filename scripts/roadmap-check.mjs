@@ -552,7 +552,12 @@ export function run({ root, fix = false, fixClaims = false, quiet = false, struc
   }
   const checked = claims.results.filter(r => !r.skipped);
   const broken = checked.filter(r => !r.ok);
-  say('', `### Claims — ${checked.length} checked, ${broken.length} broken`);
+  // WHY the skipped count is in the header (2026-09-23): run from a workspace-only worktree,
+  // 81 of 87 claims were skipped (their repo not checked out) and the header read "6 checked,
+  // 0 broken" — 11 broken claims stayed invisible until the app worktree was added.
+  const skipped = claims.results.length - checked.length;
+  say('', `### Claims — ${checked.length} checked, ${broken.length} broken`
+    + (skipped ? `, ${skipped} skipped (repo not checked out here — add it with workspace-start to check them)` : ''));
   say(`checked against: ${Object.entries(claims.shas).map(([k, v]) => `${k}=${v.slice(0, 8)}`).join(' ') || '(no git)'}`);
   for (const r of broken) say(`- ${where({ area: r.area, line: r.entry.line })} ${cut(r.entry.firstLine)} — ${r.reason} (${r.entry.link})`);
   if (flipped.length) say(`- flipped to needs-verify: ${flipped.map(where).join(', ')}`);

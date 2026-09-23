@@ -637,6 +637,17 @@ seen-on is always n/a here.
 
 ## knowledge
 
+- [ ] Nine roadmap items point at reports whose proof no longer matches the code, so each may be
+      quietly fixed, moved, or still true under new wording (found 2026-09-23 once the app was
+      checked out beside the workspace; one of the same batch, the landing embed blur, turned
+      out fixed). Re-check each against the code and close, re-anchor or keep it:
+      dev-workspace (Backup & Sync workbench crash), local-models (second large model crash,
+      faster engine builds, LM Studio parity), other-features (silent sign-out on one rejected
+      call), remote-access (oldest reply on connect, slow first connect, remote hydration), sync
+      (GitHub size ceiling). `node scripts/roadmap-check.mjs` from a worktree that has every repo
+      lists them with the failing check
+      `n/a` `confirmed` `checked 2026-09-23`
+
 - [ ] A Worker setting the code reads can exist only as a test value with nothing loading it into
       the live Worker, and every check stays green: the admin-device filter sat that way until
       2026-09-13 even though the 2026-09-01 audit named it, so every admin analytics number counted

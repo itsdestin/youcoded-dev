@@ -651,3 +651,9 @@ test('parseShipped: a line over the cap is an error that says where the detail g
   const [err] = parseShipped(`# Shipped\n\n${long}\n`).errors;
   assert.match(err.message, /characters \(max \d+\).*commit message or PR/);
 });
+
+test('run: claims skipped for a missing repo are counted in the Claims header, not only listed', () => {
+  const root = withFixture(r => fs.rmSync(path.join(r, 'youcoded', '.git'), { recursive: true }));
+  const r = run({ root, today: '2026-09-01' });
+  assert.match(r.text, /### Claims — 0 checked, 0 broken, 1 skipped \(repo not checked out here/);
+});
