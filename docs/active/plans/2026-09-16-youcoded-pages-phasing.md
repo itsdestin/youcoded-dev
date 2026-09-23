@@ -8,8 +8,24 @@ related: docs/active/specs/2026-09-15-youcoded-pages-scope.md (the approved scop
 
 **What this is.** The approved scope (2026-09-15) says everything Pages should eventually
 include. This plan puts it in build order. Each phase ends with something a person can use.
-Only Phase 1 is pinned down. Every later phase is a direction, not a decision: its open
-questions are listed and get answered on a questions deck when that phase starts.
+Phases 1 and 2 are built and on master; Phases 3 and 4 are directions, not decisions — their
+open questions get answered on a questions deck when each phase starts.
+
+## Where to pick up (2026-09-23)
+
+- **Released?** Phase 2 is on master (youcoded#552) but in no app release yet. When the release
+  that carries it ships, merge the held page-builder skill update in the same step
+  (wecoded-marketplace branch `session/youcoded-pages-phase2`, plugin 0.2.0 — bring it up to
+  master first). Roadmap: "Publish the page-builder skill's connections update".
+- **Next build, chosen by Destin:** a home-network connection so a Home Assistant style page can
+  reach one named device (roadmap: "A page that manages a device on the home network"). Starts
+  with a short deck for its approval wording.
+- **Then:** Pages on a phone (never designed at phone width; connected pages over remote access
+  never tried) with the small leftover of a page deleted while open; then Phase 3 below.
+- **Depth:** Phase 1 and Phase 2 technical designs and the Phase 2 security review are in
+  `docs/archive/specs/` and `docs/archive/reviews/`; code and tests are listed on the MAP row.
+- **Destin's working preferences for this feature:** he reviews decks himself (no UX tester,
+  code reviewer or grader) and skipped the contract in both phases.
 
 **Destin's direction (2026-09-16):** "splitting it into ordered steps with each step
 producing the new functionalities"; the permissions infrastructure is "an open question";
@@ -54,9 +70,9 @@ What is in it:
 - **Personal and project pages.** A page belongs to you or to a project, and says which.
 
 What is NOT in it: no connections to services, no file access beyond the picker, no model
-tasks, no background work, no marketplace, no permissions screen. The app does not yet block a
-page from reaching the internet (decided 2026-09-17: no blocking work in Phase 1), so the
-honest wording is "pages have no way to reach your files or accounts yet", not "isolated".
+tasks, no background work, no marketplace, no permissions screen. In Phase 1 the app did not
+block a page from reaching the internet (decided 2026-09-17: no blocking work in Phase 1).
+**Superseded by Phase 2:** pages are now blocked from everything they have not been allowed.
 
 Proving page: something that needs nothing from outside — a timer, a paint page, a notes
 board. Destin's analytics dashboard is Phase 2's proving page, not Phase 1's.
@@ -113,12 +129,13 @@ cards. One note: align "Back to chat" and "Esc" and put a dot between them (appl
 - **Versioning is git.** Both homes are git repositories; "put it back" in chat restores from
   history. No draft state, no previous-copy file: an assistant's edit goes straight to live and
   the open page reloads.
-- **No outside-access blocking in Phase 1** ("i dont want to do much backend work"). The
-  honest wording says a page is not stopped from reaching the internet yet.
+- **No outside-access blocking in Phase 1** ("i dont want to do much backend work").
+  Superseded by Phase 2, which blocks everything unapproved.
 - **Rename, delete, icon and description through chat** for now; the library keeps only pin
   and Edit in chat.
 - **The three sample pages stay workbench demos**; a fresh install starts with the welcome card.
-- **The side panel starts hidden**, everywhere.
+- ~~**The side panel starts hidden**, everywhere.~~ Superseded the same day: the panel is
+  pinned open (redirection below).
 - Switching pages in the panel reloads the page; accepted for Phase 1 since page data is saved
   as it goes.
 
@@ -128,8 +145,9 @@ pinned open and its toggle removed; the band carries the app's Settings, Pages a
 (not the chat/terminal toggle, files or games); a filled "+ Create a page" sits above Manage
 pages; the old Pages screen is reached only through Manage pages and closes back onto the view.
 Built and committed the same day. Rows R22 (panel starts hidden), R21 (library header "Esc · Back
-to chat") and the round-1 "Pages button opens the library" reading are superseded; the contract
-needs a round-9 deck and a refresh before signing.
+to chat") and the round-1 "Pages button opens the library" reading are superseded. (The contract
+these rows belonged to was later skipped — see the wrap-up below.) Since 2026-09-23 a person with
+no pages lands on the welcome card in the page view itself (youcoded#550).
 
 **Second redirection during testing (2026-09-17, in chat):** Create a page / Make a page / Edit
 open the app's new-session dialog (folder, model, skip permissions) with the page-builder command
@@ -140,8 +158,9 @@ chrome (Halftone Dimension) the screens went transparent over the wallpaper with
 four framings were captured (`youcoded-pages-floating.choice.json`) and Destin picked **two
 cards** in chat, then asked for the gap under the header pill to match the gutters (8px
 everywhere). Two Settings bugs fixed (scrim order, Esc from inside a page). The round-10 deck
-spec (`youcoded-pages-shell-r10.review.json`) is written, unbuilt, on his instruction to hold
-decks until asked.
+spec (`youcoded-pages-shell-r10.review.json`) was written and never built: Destin asked to hold
+THAT deck while he refined the design ("wait on the deck"), then skipped it at wrap-up. This was
+about one deck, not a standing rule to hold decks.
 
 **Phase 1 wrap-up (2026-09-17, later the same day):** Destin's own end-to-end pass in the dev
 window passed. He chose to skip the contract and the round-10 / acceptance decks ("this is
@@ -152,20 +171,12 @@ full desktop verification is green on master's toolchain. Left open, filed on th
 (`docs/roadmap/other-features.md`): the page view at phone width, a page deleted while open,
 and a one-off accent-coloured tint over pages in two wallpaper themes that cleared on its own.
 
-**Build status (2026-09-17):** the contract (24 rows) is written and awaits Destin's signature;
-the technical design is reviewed (12/12 findings folded in); the `wecoded-pages-plugin` skill,
-the store, the watcher, the five-surface bridge, page data and the Make a page / Edit in chat
-opening prompt are built, verified (`scripts/verify.sh` green) and committed on
-`session/youcoded-pages-spec` in the app, workspace and marketplace repos. A read-only real-app
-pass (an isolated dev instance, nothing written) showed the library over the real backend. Not
-yet exercised end to end: the skill building a page in a real conversation, which Destin does
-himself in a dev instance (the plugin is not installed into the live app's `~/.claude`; drop
-`skills/page-builder` into a project's `.claude/skills/` for the try).
-
-**Where the shell stands after round 6:** every screen of Phase 1 is approved (top-bar button
-and pins, library, empty library, page view with its own band and framed panel, phone
-layouts, two fuller sample pages). Still to build in Phase 1: the real backend behind the four
-workbench-only channels, the creator skill behind Make a page / Edit in chat, and draft/apply.
+**How a skill change is tried before it ships:** the installed plugin in Destin's everyday app
+must not be changed, so copy `skills/page-builder` into a throwaway project's
+`.claude/skills/` under another name (Phase 2 used `page-builder-next`) and start the dev
+window's chat in that folder. Choose a project page there, or the page syncs to every device.
+(The 2026-09-17 build-status notes that stood here — a contract awaiting signature, "still to
+build" lists — were overtaken by the wrap-up above and removed on 2026-09-23.)
 
 ## Phase 2 — connections and refresh (shipped 2026-09-23)
 
@@ -180,9 +191,9 @@ sees them.
 `youcoded-pages-connections.questions.answers.json` and
 `youcoded-pages-connections-2.questions.answers.json`, both in the design folder:
 
-- **Everything unapproved is blocked.** The app becomes a page's only way out; libraries, fonts
-  and pictures are saved inside the page folder by the creator skill. This reverses Phase 1's
-  "no blocking work".
+- **Everything unapproved is blocked.** The app becomes a page's only way out; the creator
+  skill pastes libraries into the page itself and uses `data:` URLs or inline SVG for pictures.
+  This reverses Phase 1's "no blocking work".
 - **A page may ask for the whole internet** as its own blunt approval ("Can reach any website.
   Anything shown in this page, or typed into it, could be sent anywhere."). Destin: "what if i
   want to create a basic web browser". **Never combined** with a key or sign-in on the same
@@ -200,13 +211,16 @@ sees them.
   "read-only" and "safe" are never used for an outside service.
 - **A key is typed only into the app's approval screen**, kept where model-provider keys live;
   a second page is offered the saved key and still asks.
-- **Refresh on opening and while open**, per-page interval with a one-minute floor; no
-  background refresh for pinned pages in this phase.
-- **"Updated 2 min ago" and the refresh button belong to the app**, in the band beside the page
-  name, connected pages only; a failed update shows there while the page keeps its last numbers.
+- **Refresh on opening and while open**; no background refresh for pinned pages in this
+  phase. The one-minute floor is the creator skill's guidance, not an enforced limit: the app
+  refuses past 120 requests a minute per page, because one refresh of a dashboard can be a
+  dozen requests.
+- **The age and the refresh button belong to the app**, in the band beside the page name,
+  connected pages only. Review round 1 cut it to a bare "2m" (no "Updated … ago"); a failed update
+  reads "Couldn't update · 3h" while the page keeps its last numbers.
 - **Managing lives in two places:** a Connections line on the page's library card, and saved
-  keys (with the pages using each) under Settings › Connected accounts. Remove says "stops
-  future use".
+  keys (with the pages using each) under Settings › Account › Connected services (renamed from
+  Connected accounts in review round 1). Remove says "stops future use".
 - **Phone:** may use and approve pages; a new key is entered on the computer only ("Finish
   setting this up on your computer").
 
@@ -227,7 +241,13 @@ allowed shows a quiet, dismissible note in the band and is not blocked; opening 
 browser stays allowed. Destin asked whether home-network access should ever be allowed — filed
 as a separate connection kind for a Home Assistant style page (`docs/roadmap/other-features.md`).
 A key now goes as `Authorization: Bearer <key>` unless the manifest says otherwise, and the
-page-builder skill (wecoded-marketplace, 0.2.0) teaches connections.
+page-builder skill (wecoded-marketplace, 0.2.0) teaches connections. The screens took four review
+rounds (`youcoded-pages-connections-r1…r4.review.answers.json`); the biggest change was splitting
+key entry into its own second step with the page author's instructions for finding the key.
+
+**Added after the first real open:** a YouCoded connection may make changes only at the exact
+places it lists (`writePaths`, for the analytics page's campaign builder) — never the whole
+account; look-ups stay open.
 
 **End-to-end pass (2026-09-23, Destin, dev window).** The analytics dashboard, built in chat by
 the updated skill, read live numbers through the YouCoded sign-in after one approval, and its
@@ -281,4 +301,6 @@ the page or separately; how a project-owned page is shared.
    covered it).
 2. Mockups in the workbench, then a Before/After review deck. Destin reviews decks himself;
    the automated UX tester, code reviewer and grader are not used (his standing preference).
-3. Contract, build, verify, review deck of the built thing, then Destin's merge call.
+3. Technical design with one adversarial review round, build, verify, Destin's own end-to-end
+   try in a dev window, then his merge call. (The contract step was skipped in both phases on
+   his call.)
