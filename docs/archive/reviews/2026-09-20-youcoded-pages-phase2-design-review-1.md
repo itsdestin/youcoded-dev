@@ -26,7 +26,7 @@ design doc is amended where a finding is accepted; the amendments are the record
 | 12 | Freshness records any finished request, so the band can say "now" over week-old numbers | **accepted** — recorded per connection, only on a 2xx |
 | 13 | `pages:approve` is a remote channel; "no keys on the phone" was renderer-only | **accepted** — main refuses key material from a remote caller |
 | 14 | "Cannot send changes" describes a two-way channel as one-way | **accepted, needs Destin** — the wording is approved copy, so it changes on a deck, not here |
-| 15 | The whole-internet bullets omit the home network; DNS rebinding beats the guard | **accepted** — pin the validated address for this path; the fourth bullet is deck wording |
+| 15 | The whole-internet bullets omit the home network; DNS rebinding beats the guard | **accepted in part** — the fourth bullet shipped (deck 3); pinning the validated address was NOT built (needs the `undici` dependency, awaiting Destin's OK; filed on the roadmap) |
 | 16 | `keyHelp` is author text shown at the key box and outside the fingerprint | **reversed on build** — see below |
 | 17 | The approval gate reads the list summary, not the loaded document | **accepted** — gate on the loaded page |
 | 18 | Absolute-URL requirement, `accept` header combining, popups | **accepted** — stated and handled |

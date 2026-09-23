@@ -6,6 +6,14 @@ related: docs/active/plans/2026-09-16-youcoded-pages-phasing.md (Phase 2)
 
 # YouCoded Pages Phase 2 — connections and refresh, technical design
 
+> **Shipped 2026-09-23 (youcoded#552). Changed after this design, in the built code:** the
+> in-flight cap QUEUES (up to 50 waiting) and the minute cap is 120 (§4 caps); a key defaults to
+> `Authorization: Bearer <key>` with `keyIn` / `keyParam` / `keyScheme` in the manifest; a
+> YouCoded connection may change things only at the `writePaths` it lists; a page whose code
+> changed since approval shows a dismissible note instead of asking again (deck 3); look-up lines
+> read "Cannot change anything there. The page decides what it sends to this address." Finding
+> 15's address pinning was NOT built (see §4 step 5).
+
 The screens are approved (four review rounds, `docs/active/design/2026-09-15-youcoded-pages/`).
 This is the half behind them: what a page may reach, who holds the key, who makes the request,
 and where "Updated 2m" comes from. Decisions it implements are listed in the phasing plan.
@@ -124,8 +132,10 @@ and **no approval is recorded** when the key could not be stored (finding 11).
    hop** (finding 4: today it spreads the caller's headers into each hop and only re-checks
    public-ness, so a 302 would hand the credential to the redirect target). A hop to a different
    host keeps the request but loses every credential header; a hop the connection does not cover
-   is refused outright. The address validated by the guard is the address connected to, so a
-   rebinding answer cannot win the race (finding 15).
+   is refused outright. **Not done:** connecting to the exact address the guard validated
+   (finding 15). Node's `fetch` offers no per-request address hook; it needs the `undici` package
+   added, which waits for Destin's OK — so a hostile name server can still, rarely, win the race.
+   Filed on the roadmap.
 6. Cap the body (1 MB, `readBodyCapped`), return `{ ok, status, headers: <allowlist>, body }`.
    Response headers are filtered so `Set-Cookie` never reaches the page. **The credential string
    is redacted from the body, the headers, the final URL and every error message** before the
