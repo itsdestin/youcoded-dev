@@ -1,7 +1,7 @@
 ---
 date: 2026-09-21
 updated: 2026-09-23
-status: active
+status: shipped
 type: spec
 topic: Backend-owned conversation admission
 source-deck: docs/active/design/2026-09-21-lease-handoff/lease-handoff.questions.json

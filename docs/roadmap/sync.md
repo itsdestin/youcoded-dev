@@ -37,33 +37,13 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       Seen in the M2 dev repro, 2026-07-23 (CC and native alike).
       `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-lease-loss-undetected-in-file-fallback.md
 
-- [ ] Two devices can resume the same conversation and both end up writing at once even when the
-      SyncHub is healthy. Claiming is not one atomic step today: a resume that sees the lease free
-      still syncs, opens the session, and only then asks to acquire — another device can take it in
-      between, the loser's "no" is only logged, and the session stays open anyway. Two resumes
-      started together can both pass the same gate for the same reason. Lease records also expire
-      silently after 300 s without renewals, so a device that sleeps long enough can come back
-      writing while another already holds the lease with no warning on either side. Found in the
-      lease/handoff audit, 2026-09-21 (H1, H4, H5, plus the acknowledge half of H3). Decided the
-      same day (deck Q-1/Q-2/Q-3): claim BEFORE opening, with two riders — measure the real claim
-      round-trip first and put an escape hatch in so a claim that can't run (offline, slow) never
-      blocks opening a conversation. A losing device gets a message and a Try again button, not the
-      other copy opened for it. A waking device yields to the device that kept working, with a
-      take-over-on-this-device affordance that runs the existing takeover in reverse.
-      In-progress repair 2026-09-23 moves admission into shared backend creation and removes the
-      renderer's independent claim/release lifecycle; real-device latency and final-message acceptance
-      remain open. See docs/active/plans/2026-09-23-conversation-admission-repair.md.
-      `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
-
-- [ ] A forced takeover or a failed final push can leave the resuming device starting from an older
-      copy of the conversation: the new owner is in and working before the old device has finished
-      sending its last turns, and those turns may only show up later as a conflict copy. The person
-      who resumed starts stale with no sign anything is missing; this is not a lossless-merge guarantee.
-      Needs an agreed meaning for "handoff finished" — either the resuming device waits for the old
-      device's last push, or it says "final changes still arriving" and catches up afterwards.
-      Same audit (H2, H3). Decided 2026-09-21 (deck Q-8): not the pill as proposed — Destin's
-      wording for the state: "Still syncing recent messages, this may take a moment."
-      `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+- [ ] A device that slept past its 300 s lease can come back still writing a conversation another
+      device has since taken, with no warning on either side. Opening is now admitted by the backend
+      before any writer starts (youcoded#557: a losing device gets a message and Try again, a second
+      denial asks before taking over), but the waking-device case — yield to the device that kept
+      working, with a take-back-over affordance — was not built, and click-to-ready latency has not
+      been measured on two real computers. From the lease/handoff audit, 2026-09-21 (H5).
+      `settings/sync` `all` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] Verify whether a conversation resumed on another computer includes the latest helper messages,
       not just the main conversation; a completed handoff may leave helper-card history incomplete.
