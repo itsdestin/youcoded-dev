@@ -132,14 +132,19 @@ test('LIVE: pop-in is caught, and an eager re-render is not', { skip: haveChrome
   const chrome = spawn(CHROME, [
     '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
     '--no-first-run', '--no-default-browser-check', '--window-size=900,800', 'about:blank',
-  ], { stdio: 'ignore' });
+  ], { stdio: ['ignore', 'ignore', 'pipe'] });
+  // WHY: CI could find Chrome on PATH but saw no debugging port. Preserve its
+  // launch error instead of reporting only a generic timeout on both live proofs.
+  let chromeError = '';
+  chrome.stderr.on('data', (chunk) => { chromeError = (chromeError + chunk).slice(-8192); });
+  chrome.on('error', (error) => { chromeError = `${chromeError}\n${error.message}`; });
   let cdp = null;
   try {
     let targets = null;
     for (let i = 0; i < 60 && !targets; i++) {
       try { targets = await listTargets(port); } catch { await new Promise((r) => setTimeout(r, 200)); }
     }
-    assert.ok(targets, 'Chrome never opened its debugging port');
+    assert.ok(targets, `Chrome never opened its debugging port (exit=${chrome.exitCode}, signal=${chrome.signalCode}): ${chromeError}`);
     cdp = await connect(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
 
     // `lazy` reproduces the app's shape: entries far from the viewport lose their

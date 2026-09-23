@@ -1,0 +1,46 @@
+{
+  "title": "Morning Rounds — the finishing touches you requested",
+  "key": "morning-rounds-mascot-refine-4",
+  "out": "morning-rounds.review-4.html",
+  "stage": "review",
+  "images": "images/morning-rounds.review-4",
+  "runs": { "before": "runs/round-4-before", "after": "runs/round-4-after" },
+  "labels": { "before": "Last pass", "after": "This pass" },
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "uniform": ["mascot", "welcome", "240x210+40+75"],
+    "clipboard": ["mascot", "welcome", "130x150+185+90"],
+    "actual-size": ["mascot", "actual", "320x180+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R4-1",
+      "surface": "Morning Rounds buddy",
+      "path": "Red scrubs on the chest and leg tops",
+      "crop": "uniform",
+      "headline": "The scrub seam is slanted and off-center, with a little hospital cross on its right side.",
+      "changed": "The short center line now leans right, a cream medical cross sits on the dog's right chest, and both leg tops have red scrub cuffs above tan paws.",
+      "notice": "Does the uniform read like the wallpaper dog's red scrubs at this scale?"
+    },
+    {
+      "id": "R4-2",
+      "surface": "Morning Rounds buddy",
+      "path": "Clipboard raised above its right hand",
+      "crop": "clipboard",
+      "headline": "The board now sits above the hand, tilted about 45 degrees.",
+      "changed": "It remains in the animated hand's slot, but its whole orange face is visible rather than hidden behind the arm. No extra beige finger returns.",
+      "notice": "Check whether its lower corner now reads as held by the hand."
+    },
+    {
+      "id": "R4-3",
+      "surface": "Morning Rounds buddy",
+      "path": "The welcome expression at 80 pixels",
+      "crop": "actual-size",
+      "headline": "Check the full mascot again at its everyday display size.",
+      "changed": "The uniform details, raised board, and the rest of the dog together at 80 pixels.",
+      "notice": "If you like this version, the next step is updating the PR—nothing has been merged.",
+      "risk": "These are stills, not a moving preview."
+    }
+  ]
+}
