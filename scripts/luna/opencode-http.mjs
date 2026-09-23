@@ -39,7 +39,8 @@ async function json(url, options = {}) {
 // WHY: the repeat comparison (live-repeat-comparison.mjs) needs fresh sessions with no restart,
 // a fixed pause between turns, and a unique gate label per round.
 export async function runOpenCodeHttpThreeTurns({ binary, cwd, env, prompts, authRoot, gate, restartBeforeTurn = 2, gapMs = 0, repetitionLabel = 'opencode-http-three-turn' }) {
-  if (!Array.isArray(prompts) || prompts.length !== 3 || !prompts.every(x => typeof x === 'string' && x)) throw new TypeError('Three fixed prompts required.');
+  // WHY 1-3: the tool-loop comparison sends two replies per conversation; the original runs send three.
+  if (!Array.isArray(prompts) || prompts.length < 1 || prompts.length > 3 || !prompts.every(x => typeof x === 'string' && x)) throw new TypeError('One to three fixed prompts required.');
   if (!gate || typeof gate.beginRepetition !== 'function' || typeof gate.reserved !== 'function') throw new TypeError('Strict external request gate required.');
   const isolatedEnv = Object.fromEntries(['PATH','HOME','XDG_CONFIG_HOME','XDG_DATA_HOME','XDG_CACHE_HOME','XDG_STATE_HOME','TMPDIR','YOUCODED_LUNA_EXPERIMENT','OPENCODE_PURE']
     .filter(key => typeof env?.[key] === 'string').map(key => [key,env[key]]));
@@ -57,7 +58,7 @@ export async function runOpenCodeHttpThreeTurns({ binary, cwd, env, prompts, aut
   const before=gate.reserved();
   gate.beginRepetition(repetitionLabel);
   try {
-    for (let index=0;index<3;index++) {
+    for (let index=0;index<prompts.length;index++) {
       if (index>0 && gapMs>0) await new Promise((resolve)=>setTimeout(resolve,gapMs));
       if (index===restartBeforeTurn && backend) { killGroup(backend.pid); backend=null; }
       if (!backend) backend=await startBackend(binary,cwd,isolatedEnv);
