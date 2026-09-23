@@ -28,6 +28,8 @@ settings, cache key unchanged), so the misses were routing, not prefix churn.
 The Codex backend derives cache affinity from the `session-id` **header**, not only the body
 `prompt_cache_key` (codex-rs `core/src/client.rs`: "ChatGPT derives cache affinity from the
 Responses session-id header"). Codex, OpenCode, pi and Hermes all send it; YouCoded sent none.
+YouCoded sent the session id only as the body key:
+<!-- claim: {"path": "youcoded/desktop/src/main/providers/chatgpt-model.ts", "contains": "promptCacheKey: cacheKey"} -->
 Fix: `transformParams` in `desktop/src/main/providers/chatgpt-model.ts` adds `session-id` and
 `x-client-request-id` = the session id. Branch `fix/chatgpt-session-id-cache` (youcoded), verify.sh green.
 
@@ -43,7 +45,7 @@ Why turn-1 hits rose to 9/10 is unexplained (new session ⇒ new key); do not cl
 | WebSocket + `previous_response_id` deltas | no | experimental | yes (auto) | no | yes (default) |
 | item ids on replay | kept | stripped | kept | reasoning ids stripped | non-server ids stripped |
 
-## Next candidates (ranked)
+## Next candidates (as ranked at first; outcomes below)
 
 1. Move volatile `<env>` lines (date, git branch/dirty count — `harness/prompt-assembly.ts:163-173`)
    below the stable instructions/CLAUDE.md/skills, so same-project conversations share a longer
@@ -82,3 +84,22 @@ t1,t2 tools → full process restart + resume → t3 → forced compaction → t
 
 Caveat: conversations stayed ~7k tokens, so cached history beyond the ~5.6k static prefix shows
 only as the 6,656-token reads; a real threshold compaction on a long history was not exercised.
+
+## Outcomes of the candidate list
+
+1. `<env>` last — done, branch `fix/native-prompt-cache-order` (Anthropic splits the system prompt
+   at `ENV_OPEN`). Not measurable on the rig (fixture is not a git repo). It does NOT fix the
+   roadmap item "reopening a compacted conversation the next day restores the whole history" —
+   the checkpoint still sees a changed date.
+2. Tool-list stability — dropped: the list only changes on a model swap (which resets the cache
+   anyway) or a first skill appearing; zero changes across 30 measured requests.
+3. `x-codex-turn-state` — dropped (32/35 within-reply hits already).
+4. Content-hash cache key — not pursued; first-turn hits rose to 9/10 with the header alone.
+5. WebSocket deltas — not needed.
+6. Longer retention — impossible on GPT-5.6+ (see Follow-up measurements).
+7. llama.cpp `--cache-reuse` — dropped. Probed on b10665 with Qwen3.5-2B and Gemma-4-E2B: both
+   log "cache_reuse is not supported by this context, it will be disabled"; answers identical.
+   Qwen 3.5/3.6 (hybrid) and Gemma 4 (SWA) are 10 of the 11 curated local models; gpt-oss is SWA
+   too (not probed). Revisit only if a plain-attention model is added.
+8. Helpers forking from the parent's cached opening — filed under native-harness → specialists,
+   likely to be dropped.
