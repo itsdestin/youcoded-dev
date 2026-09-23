@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
-import { readNativeDiagnostics } from './native-diagnostics.mjs';
 
 // WHY derived, not pinned: the workspace copy this script sits in (scripts/luna/../..) —
 // its youcoded/ component must carry the experiment hooks (youcoded master since #555).
@@ -155,14 +154,6 @@ export async function connectIsolatedNative(_child, { port, viteTarget, fixtureR
   };
 }
 
-export function nativeDiagnosticsReader(directory) {
-  const seen = new Set();
-  return async ({ sessionId }) => {
-    for (let tries = 0; tries < 12; tries++) {
-      const rows = await readNativeDiagnostics({ directory, sessionId, seen });
-      if (rows.length) return rows;
-      await delay(250);
-    }
-    return [];
-  };
-}
+// WHY no session-scoped usage reader here: the app HMACs conversation IDs in its
+// diagnostics with a per-process key, so a lookup by the real id never matches (cost two
+// failed live launches, 2026-09-23). Runners read rows appended during each phase instead.
