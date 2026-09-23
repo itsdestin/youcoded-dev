@@ -32,7 +32,7 @@ Registries are fetched at runtime. Bundled plugin definitions must agree across 
 
 ### Safety
 
-**Never touch Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/theme/hook installation or modification of files it holds open. Read-only inspection from outside is allowed. Full boundaries: `.claude/rules/live-app-safety.md`.
+**Never experiment on Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/hook installation or modification of files it holds open. **Destin explicitly exempted requested theme-file updates**; follow the narrow backup-and-verify procedure in `.claude/rules/live-app-safety.md`. Read-only inspection from outside is allowed.
 
 Ordinary workspace docs, guidance, roadmap and source edits are allowed under the usual authorization/worktree rules; they do not require closing the app. Do not equate editing a repository with modifying the running app. Active configuration, integrations and live reloads remain subject to the safety rule.
 
