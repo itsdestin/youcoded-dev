@@ -11,6 +11,8 @@ message: >-
   Browser open). A blocking fs call in any of them stalls every window's IPC
   at once. harness/tools/edit.ts, write.ts and file-fingerprint.ts run for
   the model's file tools, several times per turn (added 2026-09-17).
+  conversations/reconciler.ts walks EVERY transcript ever written at startup
+  and every 30 minutes (added 2026-09-23).
 note: |
   MERGED (review of batch B, 2026-09-16) from three previously separate,
   byte-for-byte-identical rules that differed only in `files:` and prose —
@@ -39,6 +41,11 @@ note: |
   own. Its Glob half is no-sync-fs-in-glob-walk and its Read half is
   read-tool-no-blocking-read. No new fixture: the rule already fires on
   three.
+  2026-09-23 (perf, many tabs): conversations/reconciler.ts joined `files:`
+  after its scan went fully async. The old reconciler called
+  `fs.realpathSync.native(...)`, a shape the one-pattern form missed (the
+  callee is `fs.realpathSync.native`, not `fs.X`), so a second pattern now
+  catches the `.native` variant; its own fixture (+1) proves it fires.
 files:
   - "**/src/main/conversations/transcript-mirror.ts"
   - "**/src/main/marketplace-file-reader.ts"
@@ -46,11 +53,15 @@ files:
   - "**/src/main/harness/tools/edit.ts"
   - "**/src/main/harness/tools/write.ts"
   - "**/src/main/harness/tools/file-fingerprint.ts"
+  - "**/src/main/conversations/reconciler.ts"
   - "**/fixtures/no-sync-fs-whole-file-transcript-mirror.ts"
   - "**/fixtures/no-sync-fs-whole-file-marketplace-file-reader.ts"
   - "**/fixtures/no-sync-fs-whole-file-transcript-cwd.ts"
+  - "**/fixtures/no-sync-fs-whole-file-reconciler.ts"
 rule:
-  pattern: fs.$METHOD($$$ARGS)
+  any:
+    - pattern: fs.$METHOD($$$ARGS)
+    - pattern: fs.$METHOD.native($$$ARGS)
 constraints:
   METHOD:
     regex: "Sync$"

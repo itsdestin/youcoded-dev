@@ -377,7 +377,9 @@ fi
 # 2026-09-18 (render-cost consolidation): +1 for filestab-memoized (FilesTab exported as a
 #   plain function) and +3 for filestab-no-artifact-context (useArtifact(),
 #   useArtifactOptional() and useContext(ArtifactContext), one fixture line each) — 423 (419 on master + these 4).
-EXPECTED_VIOLATIONS=423
+# 2026-09-23 (perf, many tabs): +1 — no-sync-fs-whole-file gains conversations/reconciler.ts
+#   and a second pattern for the `fs.xSync.native(...)` shape; its new reconciler fixture fires once.
+EXPECTED_VIOLATIONS=424
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
