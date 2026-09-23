@@ -229,6 +229,13 @@ as a separate connection kind for a Home Assistant style page (`docs/roadmap/oth
 A key now goes as `Authorization: Bearer <key>` unless the manifest says otherwise, and the
 page-builder skill (wecoded-marketplace, 0.2.0) teaches connections.
 
+**End-to-end pass (2026-09-23, Destin, dev window).** The analytics dashboard, built in chat by
+the updated skill, read live numbers through the YouCoded sign-in after one approval, and its
+campaign builder wrote through a named `writePaths` place. A weather page using a pasted key also
+worked ("tested with a weather app, and this seems to work"). Two fixes came out of the first
+open: requests past four at once now queue instead of being refused, and the per-minute cap is
+120. Not tried: a phone over remote access; Android refuses by design.
+
 Next: mock the approval screen, the band's updated line, the card's Connections line and the
 Settings list in the workbench, then review decks.
 
