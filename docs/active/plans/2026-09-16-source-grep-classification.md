@@ -51,8 +51,8 @@ with real behaviour tests · **X** not a source-text test at all.
 | `tests/dialog-chrome-authority.test.ts` | No view paints its own dialog header or back chevron | A | ast-grep | `no-hand-rolled-dialog-header` | 4/4 |
 | `tests/field-error-adoption.test.ts` | Hand-written `text-2xs text-destructive-fg` markup, with counted exemptions | A | ast-grep | `no-hand-rolled-field-error` | 3/3 |
 | `tests/item-list-authority.test.ts` | No bare ✕ glyph as a list-item action across renderer | A, H | ast-grep (keep the non-vacuity case) | `no-bare-glyph-item-action` | 4/4 |
-| `tests/main-hot-path-no-sync-fs.test.ts` | No fs.*Sync inside named main-process hot functions | D | ast-grep | `no-sync-fs-in-main-hot-path` | 3/3 |
-| `tests/main-read-path-no-sync-fs.test.ts` | No `fs.*Sync` inside four named read-path functions | D | ast-grep | `no-sync-fs-in-main-read-path` | 4/4 |
+| `tests/main-hot-path-no-sync-fs.test.ts` | No fs.*Sync inside named main-process hot functions | D | ast-grep | `no-sync-fs-in-main-hot-path` (retired 2026-09-23 → `tests/main-blocking-calls.test.ts`) | 3/3 |
+| `tests/main-read-path-no-sync-fs.test.ts` | No `fs.*Sync` inside four named read-path functions | D | ast-grep | `no-sync-fs-in-main-read-path` (retired 2026-09-23 → `tests/main-blocking-calls.test.ts`) | 4/4 |
 | `tests/menu-row-reachability.test.ts` | Props present/absent inside sliced component function bodies | D, B | ast-grep | `shortcuts-dialog-keeps-scroll-body` | 7/7 |
 | `tests/overlay-layer-authority.test.ts` | No hardcoded z-index band, no hand-rolled bg-black scrim | A | ast-grep | `no-hardcoded-z-index-or-scrim` | 5/5 |
 | `tests/perf-marks-renderer.test.ts` | performance.mark literals exist, ordered, near session.list() | B, D | ast-grep | `perf-mark-sessions-listed-inside-session-list` | 3/3 |
