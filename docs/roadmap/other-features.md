@@ -104,7 +104,7 @@ has passed ~8 items — graduate it to its own file.
       Later: chat-alongside visual editing with drag/reorganize/resize, independent Android and durable automation.
       2026-09-17: Phase 1 (the shell, the page view, pins, the creator skill, page data, floating
       themes) shipped to master; the contract was skipped on Destin's call.
-      2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552); Destin tested a live
+      2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552, cbc793a6f); Destin tested a live
       dashboard and a keyed weather page end to end. Next: a home-network connection for a Home
       Assistant page, then Phases 3–4 in the plan.
       `window-chrome` `all` `in-flight` `checked 2026-09-23` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
