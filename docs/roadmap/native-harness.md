@@ -49,14 +49,14 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] **v1.3.1 release blocker.** A local model forgets the user's request halfway through a long
       first request, goes silent, then answers the next message as if the chat had just started
       (Destin, 2026-09-16, two Qwen 9B chats). The conversation is silently cut to fit the model's memory, and the cut also
-      makes the engine re-read everything every step. Fix, designed 2026-09-17: cut rarely and in
-      one large step, never cut the user's request, cap tool output to the model's size, fade cut
-      messages like /compact does, and show a toast pointing at Local models settings. Local
-      models only; cloud behaviour stays unchanged. The cloud side of the same problem is the
-      "Cloud model context management and cache/token efficiency improvements" item under cost,
-      which should reuse the pieces this fix builds. Related: the skill/rule shortening item just
-      above
-      `chat` `desktop` `confirmed` `checked 2026-09-17` `v1.3.1` → docs/active/specs/2026-09-17-local-context-cuts-design.md
+      makes the engine re-read everything every step. Revised direction agreed 2026-09-22:
+      Pi-like near-limit triggering, one substantial summary with a small recent tail, preserve
+      the user's request and actual approvals, and keep compaction after reopening. One shared
+      cloud/local mechanism replaces the local-only draft's prune/drop ladder; exact budgets
+      and implementation details are still proposals. The older draft remains incident evidence,
+      not a second implementation track. Goes with the cloud context-management item under cost
+      and the skill/rule shortening item above; not implemented yet
+      `chat` `desktop` `confirmed` `checked 2026-09-22` `v1.3.1` → docs/active/specs/2026-09-22-native-compaction-design.md
 
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
@@ -279,8 +279,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
-      as the app forgetting the approval
-      `tool-cards` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
+      as the app forgetting the approval. Re-checked 2026-09-23: still true — the Always-allow menu now states its limits up front, but the card raised later still gives no reason
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto
@@ -304,12 +304,12 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Cloud model context management and cache/token efficiency improvements — one item so the
       fixes below are specced together. Combined 2026-09-17 from three earlier entries (each kept
       below with its filing date) plus gaps found the same day comparing the app with Claude
-      Code, Hermes Agent and Pi. The local-model fix (the "A local model forgets the user's
-      request" item under sessions; spec
-      docs/active/specs/2026-09-17-local-context-cuts-design.md) deliberately leaves cloud
-      behaviour unchanged, but builds pieces this item should reuse rather than rebuild: the
-      pinned request, cutting in the middle of a request, retry on overflow, the cut marker and
-      fading, and tool caps sized to the window. Competitor detail for the cache half:
+      Code, Hermes Agent and Pi. Revised compaction direction agreed 2026-09-22 is specified in
+      docs/active/specs/2026-09-22-native-compaction-design.md with a linked implementation-planning
+      draft: near-limit triggering, one durable handoff, bounded recent context, and no separate
+      prune-only stage. This now shares the local-model fix under sessions rather than keeping
+      cloud unchanged. Budget/storage details and UI review remain before implementation; the
+      new spec does not close every cache-efficiency follow-up below. Competitor detail for the cache half:
       docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md
       - Cache efficiency (filed 2026-09-10) — cloud and local sessions leave cache hits on the
         table, especially after reopening a conversation: OpenRouter turns can drift between
@@ -333,7 +333,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
         surprise misses (four layouts in the survey, a deck for Destin), and a measurement pass
         in a dev instance — nothing reads the recorded local reuse count yet, and whether
         OpenRouter honours the top-level cache field and the session pin is asserted only
-        against a stubbed network
+        against a stubbed network. 2026-09-23: the ChatGPT-plan measurement pass is done
+        (live rig, docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md): follow-up
+        replies missed the cache a third of the time because one routing label was missing
+        (fix on a branch, 13/20 → 18/20); with it, restart + resume and compaction kept the
+        cache on every request. The date/git snapshot now sits last in the opening prompt so
+        conversations in one folder share the rest (branch). OpenRouter and local remain
+        unmeasured; llama.cpp's chunk reuse is unsupported by every offered local model
       - The context chip keeps the OLD model's window after a model swap or a resume (filed
         2026-09-16) — swap a 1M model for a small local one and the chip can read "97%
         remaining" on a window the very next message overflows; it only corrects once a turn
@@ -371,6 +377,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Helpers start from scratch and pay full price for their whole opening every time the
+      assistant hands off work, even though the main conversation's opening is already stored by
+      the provider. Investigate letting a helper start from the main conversation's stored opening
+      (Claude Code "forks" helpers this way); likely to be dropped — it changes what a helper sees,
+      and on ChatGPT a helper can still miss the parent's copy
+      `desktop` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md
+
 - [ ] Audit every place YouCoded recommends or automatically chooses a model, then build one
       maintained recommendation system so those choices do not go stale as model generations change
       `settings/defaults` `all` `confirmed` `checked 2026-09-15`

@@ -1,0 +1,84 @@
+{
+ "deck": "youcoded-pages-connections-questions",
+ "started": "2026-09-19T07:36:47.550Z",
+ "submitted": "2026-09-19T07:43:38Z",
+ "cur": 3,
+ "answers": {
+  "Q-block": {
+   "v": "pick",
+   "pick": "block-all",
+   "note": "i do think we need to add an option for some pages to basically allow everything though. like, for example, what if i want to create a basic web browser or something within youcoded? i'd imagine this wouldn't work at all under your system as proposed?",
+   "seconds": 47,
+   "theme": "devils-garden"
+  },
+  "Q-levels": {
+   "v": "pick",
+   "pick": "plain-list",
+   "seconds": 47,
+   "theme": "devils-garden"
+  },
+  "Q-own-pages": {
+   "v": "pick",
+   "pick": "always-ask",
+   "seconds": 47,
+   "theme": "devils-garden"
+  },
+  "S-change": {
+   "v": "yes",
+   "seconds": 47,
+   "theme": "devils-garden"
+  },
+  "Q-first": {
+   "v": "other",
+   "note": "i kinda want all of the above i think?",
+   "seconds": 31,
+   "theme": "devils-garden"
+  },
+  "Q-readonly": {
+   "v": "pick",
+   "pick": "lookup-or-full",
+   "seconds": 31,
+   "theme": "devils-garden"
+  },
+  "S-key-entry": {
+   "v": "yes",
+   "seconds": 31,
+   "theme": "devils-garden"
+  },
+  "Q-key-reuse": {
+   "v": "pick",
+   "pick": "ask-reuse",
+   "seconds": 31,
+   "theme": "devils-garden"
+  },
+  "Q-refresh-when": {
+   "v": "pick",
+   "pick": "open-only",
+   "seconds": 27,
+   "theme": "devils-garden"
+  },
+  "Q-last-updated": {
+   "v": "pick",
+   "pick": "app-owned",
+   "seconds": 27,
+   "theme": "devils-garden"
+  },
+  "Q-manage": {
+   "v": "pick",
+   "pick": "both",
+   "seconds": 15,
+   "theme": "devils-garden"
+  },
+  "S-remove": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "devils-garden"
+  },
+  "Q-phone": {
+   "v": "pick",
+   "pick": "phone-use-approve",
+   "seconds": 15,
+   "theme": "devils-garden"
+  }
+ }
+}

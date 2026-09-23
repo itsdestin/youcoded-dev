@@ -107,7 +107,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       done (`<Tooltip>`, 82 hints); what is left is settings, the marketplace and project
       view (~148 of 236 real hints), which Destin deferred until those files are touched anyway.
       Settled: the ~1 s delay stays (he rejected a shorter one) and there is no circled-i — every
-      hint, long ones included, is a hover hint
+      hint, long ones included, is a hover hint. 2026-09-23: Destin made the remainder a 1.3.1 blocker in his triage
       `all` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/archive/investigations/2026-09-01-app-native-tooltips.md
 
 - [ ] Error messages still guess at causes in many places — the app-wide re-audit is done and

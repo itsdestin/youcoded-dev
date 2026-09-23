@@ -10,6 +10,13 @@ related:
 
 # Local context cuts — cutting a conversation to fit a local model, visibly
 
+> **Planning update — 2026-09-22:** The user-approved direction in
+> [Native compaction](2026-09-22-native-compaction-design.md) replaces this draft's
+> local-only/cloud-unchanged scope, 85%-to-50% thresholds, and prune/drop ladder with
+> one cloud/local checkpoint mechanism. This document remains as incident evidence;
+> its toast/fading/settings UI proposals are not automatically carried forward.
+> Implementation has not started. See the new spec and its linked plan for current work.
+
 ## Why
 
 On 2026-09-16 two Qwen 3.5 9B sessions (32k window) each "forgot" the user's request halfway

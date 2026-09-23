@@ -110,14 +110,19 @@ test('LIVE: a forced layout per delta is detected, and a coalesced stream is not
   const chrome = spawn(CHROME, [
     '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
     '--no-first-run', '--no-default-browser-check', 'about:blank',
-  ], { stdio: 'ignore' });
+  ], { stdio: ['ignore', 'ignore', 'pipe'] });
+  // WHY: A browser binary on PATH is not proof it launched; CI needs Chrome's
+  // own startup error to distinguish a broken sandbox from a slow port bind.
+  let chromeError = '';
+  chrome.stderr.on('data', (chunk) => { chromeError = (chromeError + chunk).slice(-8192); });
+  chrome.on('error', (error) => { chromeError = `${chromeError}\n${error.message}`; });
   let cdp = null;
   try {
     let targets = null;
     for (let i = 0; i < 60 && !targets; i++) {
       try { targets = await listTargets(port); } catch { await new Promise((r) => setTimeout(r, 200)); }
     }
-    assert.ok(targets, 'Chrome never opened its debugging port');
+    assert.ok(targets, `Chrome never opened its debugging port (exit=${chrome.exitCode}, signal=${chrome.signalCode}): ${chromeError}`);
     cdp = await connect(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
     assert.equal(await enablePerformanceDomain(cdp), true);
 

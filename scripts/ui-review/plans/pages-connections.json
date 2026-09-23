@@ -1,0 +1,293 @@
+{
+ "_comment": "Pages Phase 2 (connections): the approval screen in each state, the band's Updated line, a card's connections.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "approve-saved-key",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Weather'))",
+     "settle": 1300
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-saved-key-offer]"
+   ]
+  },
+  {
+   "name": "approve-new-key-full",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Task board'))",
+     "settle": 1300
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-approval='what']",
+   "measure": [
+    "[data-page-approval] [data-page-connection]"
+   ]
+  },
+  {
+   "name": "approve-key-step",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Task board'))",
+     "settle": 1300
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-page-approval] button')].find(b=>b.textContent.trim()==='Continue')",
+     "settle": 700
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-key-step]",
+   "measure": [
+    "[data-key-storage-note]"
+   ]
+  },
+  {
+   "name": "approve-change",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Headlines'))",
+     "settle": 1300
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-already-allowed]"
+   ]
+  },
+  {
+   "name": "approve-open-internet",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Link reader'))",
+     "settle": 1300
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-open-internet-means]"
+   ]
+  },
+  {
+   "name": "approve-on-phone",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&pagesPhone=1",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Task board'))",
+     "settle": 1300
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-approval]",
+   "measure": [
+    "[data-finish-on-computer]"
+   ]
+  },
+  {
+   "name": "connected-fresh",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('YouCoded analytics'))",
+     "settle": 1600
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-freshness='ok']",
+   "measure": [
+    "[data-page-freshness]"
+   ]
+  },
+  {
+   "name": "connected-failed",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Trip board'))",
+     "settle": 1600
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-freshness='failed']",
+   "measure": [
+    "[data-page-freshness]"
+   ]
+  },
+  {
+   "name": "after-allow",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Weather'))",
+     "settle": 1300
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Allow and open').pop()",
+     "settle": 1800
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "iframe[title='Weather']"
+  },
+  {
+   "name": "library-cards",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Manage pages').pop()",
+     "settle": 900
+    },
+    {
+     "hover": "js:document.querySelector('.screen-view .header-bar > .justify-center') || document.querySelector('.screen-view')",
+     "settle": 400
+    }
+   ],
+   "expect": "[data-page-connections-link]",
+   "measure": [
+    {
+     "text": "1 connection"
+    }
+   ]
+  },
+  {
+   "name": "card-connections",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Manage pages').pop()",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-page-connections-link]')].find(b=>b.closest('[role=button]').textContent.includes('Headlines'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[data-connect]",
+   "measure": [
+    "[data-connect]"
+   ]
+  },
+  {
+   "name": "card-connections-remove",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Manage pages').pop()",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-page-connections-link]')].find(b=>b.closest('[role=button]').textContent.includes('Trip board'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Remove').pop()",
+     "settle": 600
+    }
+   ],
+   "expect": "[data-page-connection]",
+   "measure": [
+    "[data-remove-confirm]"
+   ]
+  },
+  {
+   "name": "settings-saved-keys",
+   "actions": [
+    {
+     "click": "[aria-label='Settings']",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>/^Account/.test(b.textContent.trim()))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Connected services'))",
+     "settle": 900
+    }
+   ],
+   "expect": "[data-saved-page-keys]",
+   "measure": [
+    {
+     "text": "Keys saved for pages"
+    }
+   ]
+  }
+ ]
+}

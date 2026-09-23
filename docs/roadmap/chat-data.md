@@ -60,8 +60,8 @@ produced and the panel that shows them (files).
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
-      unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is)
-      `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
+      unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is). Taken off 1.3.1 in Destin's triage 2026-09-23
+      `desktop` `needs-verify` `checked 2026-09-01`
 
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —

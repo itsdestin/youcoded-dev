@@ -174,8 +174,8 @@ bash scripts/close-out.sh <branch> [<repo>]     # repo: a sub-repo name, or `wor
 
 **Finish every line it reports.** A `TODO` is yours to do now. A `--` line is a judgement it
 deliberately refuses to make — make it: close the roadmap item **if the work actually
-shipped** (delete it from its area file, one line in `docs/roadmap/shipped.md`, archive its
-report, `node scripts/roadmap-check.mjs --fix`); give the subsystem a `docs/MAP.md` row
+shipped** (`node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`, then archive its
+report); give the subsystem a `docs/MAP.md` row
 ("no rule" is an answer, "no row" is not); move `status: shipped` docs to `docs/archive/`
 and repoint cross-links — but a doc describing work still in review stays in `docs/active/`,
 or it goes invisible to the reviewing session.

@@ -1,0 +1,36 @@
+{
+ "deck": "morning-rounds-mascot",
+ "started": "2026-09-22T00:00:00.000Z",
+ "submitted": "2026-09-23T00:06:10Z",
+ "cur": 3,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "seconds": 25,
+   "theme": "light",
+   "zoom": 1
+  },
+  "D-1": {
+   "v": "pick",
+   "pick": "cream",
+   "seconds": 17,
+   "theme": "light",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "pick",
+   "note": "remove the tail",
+   "pick": "blue-clinic",
+   "seconds": 42,
+   "theme": "light",
+   "zoom": 1
+  },
+  "D-3": {
+   "v": "pick",
+   "pick": "clipboard",
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

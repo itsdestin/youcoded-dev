@@ -1,0 +1,46 @@
+{
+  "title": "Morning Rounds — scrubs and clipboard, second pass",
+  "key": "morning-rounds-mascot-refine-2",
+  "out": "morning-rounds.review-2.html",
+  "stage": "review",
+  "images": "images/morning-rounds.review-2",
+  "runs": { "before": "runs/round-2-before", "after": "runs/round-2-after" },
+  "labels": { "before": "First revision", "after": "Second revision" },
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "scrubs": ["mascot", "welcome", "220x180+55+78"],
+    "clipboard": ["mascot", "welcome", "120x140+194+107"],
+    "actual-size": ["mascot", "actual", "320x180+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R2-1",
+      "surface": "Morning Rounds buddy",
+      "path": "The red scrub top on the welcome expression",
+      "crop": "scrubs",
+      "headline": "The red now rises into a scrub top with a small cream V-neck, rather than a curved stripe.",
+      "changed": "Red shoulders reach higher on both sides. A cream V opens below the muzzle; the face and sleeves keep their colours.",
+      "notice": "Does this look more like the red scrubs worn by the dog in the wallpaper?"
+    },
+    {
+      "id": "R2-2",
+      "surface": "Morning Rounds buddy",
+      "path": "The board beside its right hand",
+      "crop": "clipboard",
+      "headline": "The clipboard stands nearly upright and tucks into the dog's hand.",
+      "changed": "The board moved closer to the arm, lost its strong slant, and sits behind a visible tan grip.",
+      "notice": "Check whether it now looks carried instead of floating beside the hand."
+    },
+    {
+      "id": "R2-3",
+      "surface": "Morning Rounds buddy",
+      "path": "The welcome expression at its 80-pixel display size",
+      "crop": "actual-size",
+      "headline": "See the scrub neckline and held board at the size you would normally see them.",
+      "changed": "The same first and second revisions shown at 80 pixels, with no enlarged mascot art.",
+      "notice": "Judge the whole dog rather than the enlarged details.",
+      "risk": "These are stills of the flat art; animation and drag are not shown."
+    }
+  ]
+}

@@ -32,7 +32,7 @@ Registries are fetched at runtime. Bundled plugin definitions must agree across 
 
 ### Safety
 
-**Never touch Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/theme/hook installation or modification of files it holds open. Read-only inspection from outside is allowed. Full boundaries: `.claude/rules/live-app-safety.md`.
+**Never experiment on Destin's running, built app.** It is his working environment. No DevTools attachment, IPC, DOM/storage changes, process signalling, plugin/hook installation or modification of files it holds open. **Destin explicitly exempted requested theme-file updates**; follow the narrow backup-and-verify procedure in `.claude/rules/live-app-safety.md`. Read-only inspection from outside is allowed.
 
 Ordinary workspace docs, guidance, roadmap and source edits are allowed under the usual authorization/worktree rules; they do not require closing the app. Do not equate editing a repository with modifying the running app. Active configuration, integrations and live reloads remain subject to the safety rule.
 
@@ -153,7 +153,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 | Shipped/superseded records | `docs/archive/`, with corresponding status |
 | Personal preferences | Available personal guidance/memory mechanism, last resort; never product planning |
 
-When work merges, archive its lifecycle docs, remove its open roadmap item and append a closure to `docs/roadmap/shipped.md`. Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
+When work merges, archive its lifecycle docs and close its roadmap item with `node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`. Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 

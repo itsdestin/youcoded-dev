@@ -4,6 +4,7 @@ Not here: a failing or flaky test — fix it on sight (CLAUDE.md → Local build
 seen-on is always n/a here.
 
 ## tests
+
 - [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
       → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
       the tool-card, chat-reducer, ipc-handlers, chatview and EngineCard-remnant follow-ups listed
@@ -15,12 +16,14 @@ seen-on is always n/a here.
       `git merge-base --is-ancestor origin/feat/specialists-plans-ui origin/master`.
       Merged so far: test files 892 → 783, cases 11,533 → 11,533 (youcoded#509–#532)
       `n/a` `confirmed` `checked 2026-09-19`
+
 - [ ] `tests/artifacts/import-file.test.ts` — the two `failed copy rollback` cases that use
       `onCollision: 'replace'` with `disclosedCollisions` (ENOSPC and COPY_INCOMPLETE) sometimes
       return `{ok: true, skipped: true}` on the Windows CI leg, so the mocked copy failure is never
       reached. An unchanged re-run of 01a2fa4b went green on all three (2026-09-06); the file and
       its source were untouched since 2026-07-23. Re-run before bisecting
       `n/a` `needs-verify` `checked 2026-09-06`
+
 - [ ] `tests/specialist-run.test.ts` "a background completion is injected as a user-role turn when
       the parent goes idle" timed out once on the Windows CI leg (run 35156247052, 2026-09-16, the
       merged-commit dispatch of session/ci-test-health): the child's ledger status was still
@@ -29,6 +32,7 @@ seen-on is always n/a here.
       dispatches; not touched by that branch. One observation, filed as a Windows load timeout;
       if it recurs, measure the child's real duration on the runner before widening anything
       `n/a` `needs-verify` `checked 2026-09-16`
+
 - [ ] Two cases failed only under full-suite load and passed alone (2026-09-16, `verify.sh --full`,
       11,550 tests, on a branch touching neither): "the waiting line CLEARS once the change lands"
       (then in `local-engine-fields-rendered.test.tsx`; after Plan C its EngineCard sections are
@@ -37,6 +41,7 @@ seen-on is always n/a here.
       role). Both re-ran green in one isolated run right after. Wall-clock waits under load; not
       re-checked on pristine master. (The third, chatgpt-request-diagnostics, was fixed 2026-09-18.)
       `n/a` `needs-verify` `checked 2026-09-19`
+
 - [ ] `tests/shell-registry.test.ts` fails on this machine in ISOLATION, not only under load —
       one of its two "still-running marks" cases goes red on every run, alternating between
       them (4 runs, 2026-09-16). Both assert on wall-clock milliseconds (60 ms / 140 ms marks),
@@ -44,6 +49,7 @@ seen-on is always n/a here.
       in `510fe0f5` with the long-running-command notice. Needs an injectable clock, not a
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
+
 - [ ] Three small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
       whole cycle: (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
       sign they are its children — have it say so from the process's ancestry, instead of a doc
@@ -74,6 +80,7 @@ seen-on is always n/a here.
       Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
       is recognised, but the fix is a longer or retried launch in the perf-lab harness
       `n/a` `needs-verify` `checked 2026-09-10`
+
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a
@@ -112,6 +119,7 @@ seen-on is always n/a here.
       was filed separately until 2026-09-16; the Retry-persists worry itself was closed on
       2026-09-16 as the test, not the product (shipped.md)
       `desktop` `confirmed` `checked 2026-09-16` `regression`
+
 - [ ] A test that only reads files outside `desktop/` never runs in the fast local check:
       `verify.sh` picks affected tests by filtering the diff to `desktop/`, so editing only
       an Android manifest or a workspace file yields "tests: none", and the guard that
@@ -121,7 +129,6 @@ seen-on is always n/a here.
       lying, not about shipping broken. Fix: let a test declare the paths it watches, or
       widen the source-scanning-guard fallback to spot cross-repo reads
       `n/a` `confirmed` `checked 2026-09-05`
-
 
 - [ ] `native-session-host` can fail its own CLEANUP on the macOS CI leg — `ENOTEMPTY` from
       `rmHostRoot()` while deleting the temp dir, thrown out of afterEach into a test that had
@@ -280,7 +287,21 @@ seen-on is always n/a here.
       and renderer state — never a coverage gate on PRs
       `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
 
+- [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
+      turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
+      pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
+      showed it fine. These are Ink TUI menus parsed by screen-scrape
+      (`renderer/parser/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
+      whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
+      sessions by a path that skips the gate entirely, and the UI workbench has no session
+      launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
+      method, model-switch safeguard — replayed through the parser and rendered, so a reworded
+      CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
+      the 2026-07-16 "trust" substring collision in `docs/archive/roadmap/shipped-full-to-2026-09-23.md`
+      `desktop` `needs-verify` `checked 2026-09-03` `regression`
+
 ## rigs
+
 - [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
       cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
       catches it. `deck/AUTHORING.md` already warns about it, and on 2026-09-17 it still took three
@@ -369,6 +390,7 @@ seen-on is always n/a here.
       contract check, hours later, refuses the later rounds' sources; a warning at build time
       would have caught it (resume-filter-chips rounds 2 and 3 reused round 1's key, 2026-09-10)
       `desktop` `confirmed` `checked 2026-09-10`
+
 - [ ] The drag sweep prints its scores and then CRASHES writing the frame dump it tells you to
       read: on a 60-drag run `drag-fuzz.json` throws at the `writeFileSync` and the file is
       never created, so the one artefact that says WHICH drag was bad does not exist for the
@@ -443,7 +465,6 @@ seen-on is always n/a here.
       reviewer, and whether the UX tester's first run cut Destin's review-deck rounds; decide
       from those numbers whether each reviewer earns its cost
       `n/a` `parked` `checked 2026-09-04`
-
 
 - [ ] A 526-line conversation-triage script for the test engine exists only on branch
       `chore/conversation-triage-script` (rescued 2026-09-04 from the deleted assistant-settings
@@ -539,7 +560,93 @@ seen-on is always n/a here.
       has not seen it in his own app — check whether a maximized-at-launch window avoids it)
       `terminal` `n/a` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-terminal-pty-column-count.md
 
+- [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
+      orphans its Vite server. Stopping a dev instance the documented way — derive the pid
+      from its port, kill it — leaves the renderer's dev server holding port 5223, so the
+      next `run-dev.sh` dies with a bind error that names Vite rather than the leftover.
+      Cost 2026-09-10: one failed relaunch plus a second kill, mid-test, while Destin was
+      waiting on his phone. A `--stop` that kills the pair, or a pidfile the script cleans
+      up, would execute; the launcher already knows both ports
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] RECURRENCE, 2026-09-20, with the mechanism the entry above was missing. `run-dev.sh --stop`
+      killed the Electron pair, printed "offset 50's ports are free" and was RIGHT about 5223/9950/9272 —
+      but `npm run dev:renderer` and its Vite child were still alive, orphaned to init (ppid 1673), with
+      **Vite listening on 5173: its own default, which the offset never moves.** The stop path finds
+      leftovers by scanning the offset's three ports, so a socket the offset does not control is invisible
+      to it, and the next launch dies with a bind error naming Vite rather than the orphan. Detected only
+      because the backgrounded launcher reported `exit=1` after 1h49m and the port was checked by hand;
+      found with `ss -ltnp`, killed by exact pid (never a name match — the live app runs node too).
+      Whatever fixes this should scan the process tree the launcher started, not a port list
+      `n/a` `confirmed` `checked 2026-09-20`
+
+- [ ] `workbench-boot-check.mjs` boots sixteen routes (the `scenario=*` / `view=*` set plus a
+      stalled and a first-run variant), so eleven of the twenty-seven `?switch=` values
+      `mock-shim.ts` reads have never been booted by any check — `planUsage`, `chatgpt`,
+      `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`, `student`, `voice`,
+      `buddyHelper` (counts re-taken 2026-09-16). `scripts/ui-review/README.md` → Extending has told
+      every session to add a route for a new switch since the file was written; none of the
+      eleven has one. A switch that crashes the mock would surface as a failed screenshot in
+      whichever session next used it, not as a red check. Counted 2026-09-09 while adding the
+      `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
+      same instruction but cannot boot anything
+      `n/a` `confirmed` `checked 2026-09-16`
+
+- [ ] `run-dev.sh --offset N` fails with a bare Vite "Port 5233 is already in use" when the offset
+      collides with another session's dev instance — after the whole launch sequence has run, and
+      without saying that a dev instance is what owns it or which offset is free. Hit 2026-09-10:
+      picked `--offset 60`, which another session's `remote-mesh-roadmap` instance already held.
+      With four-plus concurrent session worktrees on this machine this is the normal case, not the
+      rare one, and CLAUDE.md's "concurrent instances also need distinct --offset and --profile"
+      cannot help — the rule was followed, the guess was just taken. A preflight that checks the
+      three ports the offset resolves to, names the worktree holding one, and suggests the next
+      free offset would turn a cryptic late failure into a one-line answer
+      `n/a` `confirmed` `checked 2026-09-10`
+
+- [ ] A finished session's worktree manifest is never removed, so its session key is permanently
+      poisoned and the manifests pile up. `workspace-start` records each worktree in
+      `.git/youcoded-sessions/<key>.json` and `validateWorktree` refuses a recorded-but-missing
+      path with "Missing recorded worktree: … Restore it or use a new session key; it will not be
+      recreated automatically." Nothing deletes the file: `close-out.sh` lists the worktree, local
+      branch and remote branch as mechanical TODOs but never mentions the manifest, and no script
+      greps for `youcoded-sessions` to unlink one. Counted 2026-09-20 while closing out
+      `shared-component-sync-context`: 20 of 33 manifests pointed at worktrees that no longer
+      exist. Harmless until someone reuses a natural key — "analytics-dashboard" and
+      "paste-attachments" are exactly the names a later session would pick again — and then it
+      fails at startup with advice to invent a different key rather than "that session is over,
+      I cleaned it up". Either `close-out.sh` should list the manifest beside the other three
+      cleanup items, or removing the last worktree it records should drop it
+      `n/a` `confirmed` `checked 2026-09-20`
+
+- [ ] A session worktree disappeared mid-session and took the only copy of the work with it,
+      and nothing in the workspace noticed — no warning before, none after. Destin asked for a
+      one-line buddy cursor fix; it was made, tested and verified in `worktrees/sessions/buddy-cursor`;
+      the next turn found the directory, its git admin dir, the `session/buddy-cursor` branch AND its
+      manifest all gone together. A `kwin_wayland` coredump at 19:16:02 killed his desktop session
+      (no reboot — uptime ran continuously from 14:23), so a crash was the first suspect, but a crash
+      does not un-register a worktree and delete a branch: `git worktree prune` had nothing to prune.
+      Nothing in `scripts/` or the app removes one (the dev-dashboard is clipboard-only by design);
+      what actually issued it is NOT established. The work was rebuilt and shipped, so the cost was
+      one re-do — the durable gap is that uncommitted work has no second copy, a branch with zero
+      commits preserves nothing, and re-running the same `--session` key silently created a fresh
+      worktree at master rather than hinting anything was lost. Full timeline and the searches that
+      ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
+      Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
+      worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
+      `n/a` `needs-verify` `checked 2026-09-20`
+
 ## knowledge
+
+- [ ] Nine roadmap items point at reports whose proof no longer matches the code, so each may be
+      quietly fixed, moved, or still true under new wording (found 2026-09-23 once the app was
+      checked out beside the workspace; one of the same batch, the landing embed blur, turned
+      out fixed). Re-check each against the code and close, re-anchor or keep it:
+      dev-workspace (Backup & Sync workbench crash), local-models (second large model crash,
+      faster engine builds, LM Studio parity), other-features (silent sign-out on one rejected
+      call), remote-access (oldest reply on connect, slow first connect, remote hydration), sync
+      (GitHub size ceiling). `node scripts/roadmap-check.mjs` from a worktree that has every repo
+      lists them with the failing check
+      `n/a` `confirmed` `checked 2026-09-23`
 
 - [ ] A Worker setting the code reads can exist only as a test value with nothing loading it into
       the live Worker, and every check stays green: the admin-device filter sat that way until
@@ -611,7 +718,6 @@ seen-on is always n/a here.
       it recognises as only the table (strip the markers inside the table block and regenerate),
       leaving any other conflict alone
       `n/a` `confirmed` `checked 2026-09-05`
-
 
 - [ ] Path-scoped rules never reach a session that edits through the Bash tool, which is what
       bypass-permissions mode tells sessions to do. Measured on 2026-09-03 (session
@@ -695,9 +801,19 @@ seen-on is always n/a here.
 
 ## release
 
-- [ ] Destin, 2026-09-20: "just fixing a few minor test issues and such has seemingly eaten over
-      an hour of our time today just waiting around on runs. is there any way we could improve
-      this in the future for better/faster iteration and fixes?" Two answers he liked, neither
+- [ ] A scheduled check that every id in the model switcher's recommended list
+      (`desktop/src/shared/recommended-models.ts`, added 2026-09-20) is still live on its
+      provider, feeding the release skill recommendations for what to change. OpenRouter's own
+      catalog already drops a dead id from the picker for free (the list is intersected with the
+      live catalog at render), so the runner's real job is RENAMES and new "latest" aliases:
+      which ids to add, which to swap, which to retire. The ChatGPT plan families match by name
+      rather than id and self-heal. Destin 2026-09-20: roadmapped for now, not built
+      `n/a` `confirmed` `checked 2026-09-20`
+
+- [ ] Waiting on CI runs eats whole sessions. Destin, 2026-09-20: "just fixing a few minor test
+      issues and such has seemingly eaten over an hour of our time today just waiting around on
+      runs. is there any way we could improve this in the future for better/faster iteration and
+      fixes?" Two answers he liked, neither
       built yet. (1) A NIGHTLY rehearsal build: dispatch `desktop-test-build.yml` from master on
       a schedule, publish nothing, and notify on failure — today's broken launch check had been
       broken since 2026-09-16 and surfaced only when a release needed it, because that check runs
@@ -731,15 +847,6 @@ seen-on is always n/a here.
       needs the checkout any more
       `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
 
-- [ ] Moderating r/youcoded (set up 2026-09-10) is all by hand: Destin approves held posts from
-      brand-new accounts, copies Reddit bug reports and ideas into real roadmap entries, and
-      flips posts to Fixed or Planned himself. Set up automation for the repetitive parts, such as
-      turning new Bug Report and Feature Idea posts into roadmap entries, and marking a post Fixed
-      when its fix ships. Reddit stopped giving out new API access in November 2025, so the route
-      is Reddit's own Mod Tools Automations or a Community App, not a script with an API key.
-      Current setup is recorded in ~/Documents/youcoded-subreddit-setup.md
-      `n/a` `decision` `checked 2026-09-10`
-
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
       from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
@@ -753,15 +860,7 @@ seen-on is always n/a here.
       the packager's minor updates are bumped by hand from now on). Open only until a Mac
       confirms the "Open Anyway" button is back on a build cut after the merge — test build run
       33921417200 was dispatched for that on 2026-09-04
-      `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
-
-- [ ] REVERT NOW THAT 1.3.0 HAS SHIPPED: youcoded.ai's download buttons hand out the newest
-      release INCLUDING pre-releases, so visitors get a beta instead of a release. Deliberate
-      and temporary while v1.2.4 (May) was the only release (Destin, 2026-09-03). 1.3.0 shipped
-      2026-09-20, so the reason is gone: put the buttons back on stable-only. The beta
-      pre-releases can STAY published — the in-app beta channel (shipped 2026-09-13) is how a
-      tester gets them now, and deleting them would strand anyone already on one
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.0`
+      `n/a` `needs-verify` `checked 2026-09-04` `regression` `v1.3.1` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
       undifferentiated 3,200-odd commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
@@ -771,13 +870,8 @@ seen-on is always n/a here.
       fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
       one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
       versionCode bump and ships a paired Android build (no bare desktop-only hotfixes). Promoted to a
-      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1`
-
-- [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
-      from the embed's theme button and the whole app window becomes one blur; the redesign makes
-      theme switching a primary interaction so this must ship with it
-      `n/a` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-landing-embed-blur-rounded-clip.md
+      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first. Taken off 1.3.1 in Destin's triage 2026-09-23
+      `n/a` `confirmed` `checked 2026-09-03`
 
 - [ ] Every compiled file ships inside the installer, tests included — 47 test files and 19
       workbench files in the 1.2.4 asar, none reachable; installer weight, not a blocker
@@ -802,60 +896,13 @@ seen-on is always n/a here.
       re-run them together now that the Kotlin half is in
       `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] The new site header does not match the two logos nearest it, and both were consciously
-      deferred on 2026-09-04 rather than decided. The header is now a glass tile with the robot
-      in the theme colour and a wide-caps wordmark; the FOOTER logo a few screens down still
-      wears the old solid tile and mixed-case name, and the four theme mascots directly beneath
-      the header are master's newer full-bodied art while the header's robot is still the app's
-      flat icon. Destin saw both and said leave them for now, so this is a decision waiting to
-      be made, not a defect
-      `n/a` `decision` `checked 2026-09-04`
-
-- [ ] Landing copy note, recorded so it is not re-derived: conversation tags, private notes and
-      one-tap prompt chips are unique (0 of 8 competitors on 2026-08-31) but must not lead the
-      landing page — uniqueness is not the argument
-      `n/a` `parked` `checked 2026-08-31`
-
-- [ ] The demo videos on the landing page are recordings of the desktop app shrunk to phone
-      width, so on a phone the app's own writing inside them is a few pixels tall — you can see
-      there is an app, not what it is doing. Re-filming them framed for a phone is the fix
-      `n/a` `confirmed` `checked 2026-09-03`
-
-- [ ] On a phone the landing page's "More than a chatbot" and "How we got here" run about three
-      and two full screens of unbroken text each; a first-time reader also flagged the third
-      About paragraph ("outpace development of competing closed agents") as strategy talk with
-      no reason to be on the page
-      `n/a` `confirmed` `checked 2026-09-03`
-
-- [ ] The asterisk on the landing page's iOS download button has no footnote anywhere near it —
-      the explanation sits about ten screens further down, so someone taps it expecting an App
-      Store link
-      `n/a` `confirmed` `checked 2026-09-03`
-
-- [ ] The promo film's opening still shows Cotton Candy holding the wand that Destin removed from
-      the site's hero button (2026-09-11 refresh). Not asked yet — his call whether to re-film it;
-      renders need his go-ahead
-      `n/a` `decision` `checked 2026-09-11`
-
-- [ ] Ship v1.3.1 — the release mechanics, now that v1.3.0 has been cut (2026-09-20: version
-      bumps on both platforms, the `1.3.0` CHANGELOG entry, the `v1.3.0` tag, both platform
-      workflows). 1.3.1 is Release N+1 of the youcoded-core retirement and carries the items
-      tagged `v1.3.1`; what still blocks it is the release-method rework and the signing items
-      in this section
-      `n/a` `blocked` `checked 2026-09-20` `v1.3.1`
-
-- [ ] Public-launch formalization is the 1.3.1 gate: signed macOS/Windows installers, a Play listing,
-      the LLC behind every account, a trademark filing. Done 2026-09-03: youcoded.ai (site, API,
-      email), the Anthropic-token fix, Android → MIT, the LLC itself (Destin's Adventures, LLC),
-      EIN, DMCA agent, legal pages naming the company (youcoded#416). D-U-N-S arrived 2026-09-10;
-      in the mail: trade name. The report's "Status" block is the current state; Destin's values
-      are in the brain
-      `n/a` `in-flight` `checked 2026-09-16` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
-
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
       The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
-      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
-      `n/a` `blocked` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads.
+      Windows needs a decision first (2026-09-23): Microsoft will not validate a company under
+      3 years old, so sign as Destin personally, buy a commercial certificate, or stay unsigned
+      — options in the report's Status block
+      `n/a` `blocked` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
@@ -863,91 +910,3 @@ seen-on is always n/a here.
       data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
       priority for the rebuilt app (deck Q-3)
       `android` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
-
-- [ ] Nothing tests the menus Claude Code shows AT SESSION LAUNCH, so a stuck launch only ever
-      turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
-      pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
-      showed it fine. These are Ink TUI menus parsed by screen-scrape
-      (`renderer/parser/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
-      whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
-      sessions by a path that skips the gate entirely, and the UI workbench has no session
-      launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
-      method, model-switch safeguard — replayed through the parser and rendered, so a reworded
-      CC prompt fails a test instead of hanging a session. Prior art for the failure mode:
-      the 2026-07-16 "trust" substring collision in `docs/roadmap/shipped.md`
-      `desktop` `needs-verify` `checked 2026-09-03` `regression`
-
-- [ ] `run-dev.sh` has no way to stop what it started, and killing the Electron process
-      orphans its Vite server. Stopping a dev instance the documented way — derive the pid
-      from its port, kill it — leaves the renderer's dev server holding port 5223, so the
-      next `run-dev.sh` dies with a bind error that names Vite rather than the leftover.
-      Cost 2026-09-10: one failed relaunch plus a second kill, mid-test, while Destin was
-      waiting on his phone. A `--stop` that kills the pair, or a pidfile the script cleans
-      up, would execute; the launcher already knows both ports
-      `n/a` `confirmed` `checked 2026-09-10`
-
-- [ ] RECURRENCE, 2026-09-20, with the mechanism the entry above was missing. `run-dev.sh --stop`
-      killed the Electron pair, printed "offset 50's ports are free" and was RIGHT about 5223/9950/9272 —
-      but `npm run dev:renderer` and its Vite child were still alive, orphaned to init (ppid 1673), with
-      **Vite listening on 5173: its own default, which the offset never moves.** The stop path finds
-      leftovers by scanning the offset's three ports, so a socket the offset does not control is invisible
-      to it, and the next launch dies with a bind error naming Vite rather than the orphan. Detected only
-      because the backgrounded launcher reported `exit=1` after 1h49m and the port was checked by hand;
-      found with `ss -ltnp`, killed by exact pid (never a name match — the live app runs node too).
-      Whatever fixes this should scan the process tree the launcher started, not a port list
-      `n/a` `confirmed` `checked 2026-09-20`
-
-- [ ] `workbench-boot-check.mjs` boots sixteen routes (the `scenario=*` / `view=*` set plus a
-      stalled and a first-run variant), so eleven of the twenty-seven `?switch=` values
-      `mock-shim.ts` reads have never been booted by any check — `planUsage`, `chatgpt`,
-      `claudeCode`, `authMode`, `arcade`, `remote`, `lease`, `reason`, `student`, `voice`,
-      `buddyHelper` (counts re-taken 2026-09-16). `scripts/ui-review/README.md` → Extending has told
-      every session to add a route for a new switch since the file was written; none of the
-      eleven has one. A switch that crashes the mock would surface as a failed screenshot in
-      whichever session next used it, not as a red check. Counted 2026-09-09 while adding the
-      `undocumentedWorkbenchSwitches` audit check, which catches the DOCUMENTATION half of the
-      same instruction but cannot boot anything
-      `n/a` `confirmed` `checked 2026-09-16`
-
-- [ ] `run-dev.sh --offset N` fails with a bare Vite "Port 5233 is already in use" when the offset
-      collides with another session's dev instance — after the whole launch sequence has run, and
-      without saying that a dev instance is what owns it or which offset is free. Hit 2026-09-10:
-      picked `--offset 60`, which another session's `remote-mesh-roadmap` instance already held.
-      With four-plus concurrent session worktrees on this machine this is the normal case, not the
-      rare one, and CLAUDE.md's "concurrent instances also need distinct --offset and --profile"
-      cannot help — the rule was followed, the guess was just taken. A preflight that checks the
-      three ports the offset resolves to, names the worktree holding one, and suggests the next
-      free offset would turn a cryptic late failure into a one-line answer
-      `n/a` `confirmed` `checked 2026-09-10`
-
-- [ ] A finished session's worktree manifest is never removed, so its session key is permanently
-      poisoned and the manifests pile up. `workspace-start` records each worktree in
-      `.git/youcoded-sessions/<key>.json` and `validateWorktree` refuses a recorded-but-missing
-      path with "Missing recorded worktree: … Restore it or use a new session key; it will not be
-      recreated automatically." Nothing deletes the file: `close-out.sh` lists the worktree, local
-      branch and remote branch as mechanical TODOs but never mentions the manifest, and no script
-      greps for `youcoded-sessions` to unlink one. Counted 2026-09-20 while closing out
-      `shared-component-sync-context`: 20 of 33 manifests pointed at worktrees that no longer
-      exist. Harmless until someone reuses a natural key — "analytics-dashboard" and
-      "paste-attachments" are exactly the names a later session would pick again — and then it
-      fails at startup with advice to invent a different key rather than "that session is over,
-      I cleaned it up". Either `close-out.sh` should list the manifest beside the other three
-      cleanup items, or removing the last worktree it records should drop it
-      `n/a` `confirmed` `checked 2026-09-20`
-
-- [ ] A session worktree disappeared mid-session and took the only copy of the work with it,
-      and nothing in the workspace noticed — no warning before, none after. Destin asked for a
-      one-line buddy cursor fix; it was made, tested and verified in `worktrees/sessions/buddy-cursor`;
-      the next turn found the directory, its git admin dir, the `session/buddy-cursor` branch AND its
-      manifest all gone together. A `kwin_wayland` coredump at 19:16:02 killed his desktop session
-      (no reboot — uptime ran continuously from 14:23), so a crash was the first suspect, but a crash
-      does not un-register a worktree and delete a branch: `git worktree prune` had nothing to prune.
-      Nothing in `scripts/` or the app removes one (the dev-dashboard is clipboard-only by design);
-      what actually issued it is NOT established. The work was rebuilt and shipped, so the cost was
-      one re-do — the durable gap is that uncommitted work has no second copy, a branch with zero
-      commits preserves nothing, and re-running the same `--session` key silently created a fresh
-      worktree at master rather than hinting anything was lost. Full timeline and the searches that
-      ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
-      Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
-      worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
-      `n/a` `needs-verify` `checked 2026-09-20`

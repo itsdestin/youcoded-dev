@@ -1,0 +1,22 @@
+{
+ "deck": "morning-rounds-mascot-refine",
+ "started": "2026-09-23T01:43:48.213Z",
+ "submitted": "2026-09-23T01:44:48Z",
+ "cur": 1,
+ "answers": {
+  "M-1": {
+   "v": "other",
+   "seconds": 48,
+   "theme": "light",
+   "zoom": 1,
+   "note": "this is much better. i think the scrub design could use a bit of work still, and the clipboard still looks to be held/angled at an odd position, but this is a significant improvement!"
+  },
+  "M-2": {
+   "v": "other",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1,
+   "note": "see previous"
+  }
+ }
+}
