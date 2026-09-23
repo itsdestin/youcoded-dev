@@ -1,0 +1,37 @@
+{
+  "title": "Getting the latest messages before resuming",
+  "key": "handoff-message-freshness-questions",
+  "out": "freshness.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "F-1",
+      "words": true,
+      "surface": "Moving a conversation to this computer",
+      "path": "Resume a conversation → confirm Take over → receive recent messages",
+      "headline": "Should a handoff wait for the latest messages before starting the conversation here?",
+      "today": "The other computer can release the conversation before this computer has confirmed that its final messages arrived. The conversation can then start from an older saved copy.",
+      "problem": "Starting to write before those messages arrive can split the history. Showing a syncing message alone does not make it safe to replace a conversation that is already running.",
+      "proposal": "For an explicit handoff, show your wording — ‘Still syncing recent messages, this may take a moment.’ Wait for confirmation before starting here, but offer an explicit way to continue with the saved copy if confirmation is unavailable. Ordinary offline opening stays unchanged; this is not a new general offline warning.",
+      "options": [
+        {
+          "id": "wait-with-escape",
+          "label": "Wait first, with a way to continue",
+          "summary": "Keep the conversation preview visible while checking recent messages. Start automatically when confirmed. If the check fails or takes too long, offer Try again, Open saved copy, or Leave it. Open saved copy explains that recent messages may be missing and still respects the existing takeover checks.",
+          "pros": ["Normal handoffs do not start writing from an unconfirmed history.", "You can still choose to continue when a device or connection is unavailable."],
+          "cons": ["A slow handoff delays starting the conversation.", "Continuing without confirmation can still leave separate copies; they will not be silently combined into a running chat."],
+          "recommended": true
+        },
+        {
+          "id": "open-with-warning",
+          "label": "Start from the saved copy",
+          "summary": "After the existing takeover checks, start with the messages already on this computer. If freshness is unconfirmed, keep a visible note that recent messages may be missing. Do not replace the running conversation with later arrivals.",
+          "pros": ["No additional wait for final-message confirmation.", "You can start working immediately with the available history."],
+          "cons": ["The assistant may act without the other computer's recent messages.", "Later arrivals can remain a separate copy rather than appear in this chat; the warning cannot promise automatic catch-up."]
+        }
+      ],
+      "risk": "A successful takeover is not proof of message delivery. Older app versions and unreachable computers may not provide confirmation. Split-copy resolution remains separate roadmap work."
+    }
+  ]
+}

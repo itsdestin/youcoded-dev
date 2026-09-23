@@ -50,17 +50,25 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       blocks opening a conversation. A losing device gets a message and a Try again button, not the
       other copy opened for it. A waking device yields to the device that kept working, with a
       take-over-on-this-device affordance that runs the existing takeover in reverse.
+      In-progress repair 2026-09-23 moves admission into shared backend creation and removes the
+      renderer's independent claim/release lifecycle; real-device latency and final-message acceptance
+      remain open. See docs/active/plans/2026-09-23-conversation-admission-repair.md.
       `settings/sync` `all` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] A forced takeover or a failed final push can leave the resuming device starting from an older
       copy of the conversation: the new owner is in and working before the old device has finished
-      sending its last turns, and those turns only show up later as a conflict copy. Nothing is
-      lost permanently, but the person who resumed starts stale with no sign anything is missing.
+      sending its last turns, and those turns may only show up later as a conflict copy. The person
+      who resumed starts stale with no sign anything is missing; this is not a lossless-merge guarantee.
       Needs an agreed meaning for "handoff finished" — either the resuming device waits for the old
       device's last push, or it says "final changes still arriving" and catches up afterwards.
       Same audit (H2, H3). Decided 2026-09-21 (deck Q-8): not the pill as proposed — Destin's
       wording for the state: "Still syncing recent messages, this may take a moment."
       `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
+- [ ] Verify whether a conversation resumed on another computer includes the latest helper messages,
+      not just the main conversation; a completed handoff may leave helper-card history incomplete.
+      Destin deferred this check on 2026-09-23; not reproduced across devices yet.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-23` → docs/active/investigations/2026-09-23-handoff-message-freshness.md
 
 - [ ] Backup & Sync transparency pass on lease handoffs: the (i) popup says nothing about what
       happens when two devices have the same conversation open, and the takeover dialog's wording
@@ -73,7 +81,9 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       NOT decided — Destin asked how the "second copy" interacts with git sync first (answered in
       chat 2026-09-21: git merges cleanly unless both devices changed the same part, in which case
       the other device's version keeps the filename and the local one becomes the "(from …)" copy);
-      re-ask before building it. The timeout wording becomes "couldn't confirm the handoff".
+      Resolved 2026-09-23 (admission-repair deck Q-6): keep the ordinary confirmation short;
+      track better resolution of split conversations in the conflict-copy resolver item below.
+      The timeout wording becomes "couldn't confirm the handoff".
       `settings/sync` `desktop` `decision` `checked 2026-09-21` → docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - [ ] The sync worker accepts whatever device id a lease message claims without checking it against
@@ -132,8 +142,10 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
 
 - [ ] When two devices edit the same file, the only sign is one amber line in Backup & Sync that vanishes on restart
       and names no file — there is no way in the app to find the "(from …)" copy or pick which version to keep.
-      Destin, beta.9 dogfood 2026-07-24; milestone his call.
-      `settings/sync` `desktop` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
+      Destin, beta.9 dogfood 2026-07-24; milestone his call. Reaffirmed 2026-09-23 in admission-repair
+      deck Q-6: "we need to add a better resolution mechanism/ui to the roadmap for split conversations
+      with multiple copies." Include conversation-specific resolution, not just a warning; design remains open.
+      `settings/sync` `desktop` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 
 - [ ] Idea: same-machine takeover handoff without the hub — two installs sharing `~/YouCoded` (dev instance + built
       app) can see each other's lease files but can't deliver a takeover request when the SyncHub is down, since
