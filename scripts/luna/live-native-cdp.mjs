@@ -140,6 +140,12 @@ export async function connectIsolatedNative(_child, { port, viteTarget, fixtureR
       for (const type of result?.events ?? []) for (const cb of callbacks) cb({ type });
       return { status: result?.status === 'complete' ? 'sent' : result?.status ?? 'error', reason: result?.reason ?? null };
     },
+    // WHY: the lifecycle comparison forces a compaction with the same bridge call the
+    // app's own /compact uses; only the ok/reason result crosses CDP.
+    async compact(id) {
+      const r = await evaluate(`(async () => { const x = await window.claude.native.compact(${JSON.stringify(id)}); return x ?? null; })()`, 120_000);
+      return { ok: r?.ok === true, reason: typeof r?.reason === 'string' ? r.reason.slice(0, 60) : null };
+    },
     async close() { for (const row of pending.values()) { clearTimeout(row.timer); row.reject(new Error('Private renderer closed.')); } pending.clear(); ws.close(); },
   };
 }

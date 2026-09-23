@@ -58,3 +58,27 @@ Why turn-1 hits rose to 9/10 is unexplained (new session ⇒ new key); do not cl
 
 OpenRouter already sends `session_id` (`providers/prompt-cache.ts`); whether it forwards
 `prompt_cache_key` to OpenAI models is unverified. Items 1–2 apply to it.
+
+## Follow-up measurements (same day, YouCoded with the `session-id` fix)
+
+**Retention.** GPT-5.6+ (incl. Luna) has a fixed 30-minute sliding cache TTL
+(`prompt_cache_options.ttl` accepts only `30m`); `prompt_cache_retention` is rejected with a 400 on
+the ChatGPT backend (openai/codex#39397, #39392). No client sends a retention field there. Nothing to build.
+
+**Tool loop** (`live-tool-comparison.mjs`, `2026-09-23-luna-tool-loop-results.jsonl`, 5 rounds):
+YouCoded steps inside a reply hit 32/35. `x-codex-turn-state` echo would target only the 3 misses —
+dropped. (OpenCode rows there hold only each reply's last step; fixed in the lifecycle runner.)
+
+**Lifecycle** (`live-lifecycle-comparison.mjs`, `2026-09-23-luna-lifecycle-results.jsonl`, 3 rounds:
+t1,t2 tools → full process restart + resume → t3 → forced compaction → t4,t5):
+
+| | YouCoded | OpenCode 1.18.31 |
+|---|---|---|
+| Requests with any cache hit | 45/45 | 27/38 |
+| Input served from cache | 85% | 67% |
+| First request after restart | 3/3 hit | 2/3 |
+| Compaction summary request | 3/3 hit (shares the chat prefix) | 0/3 (separate ~1.4k-token prompt) |
+| First request after compaction | 3/3 hit (static prefix) | 3/3 |
+
+Caveat: conversations stayed ~7k tokens, so cached history beyond the ~5.6k static prefix shows
+only as the 6,656-token reads; a real threshold compaction on a long history was not exercised.
