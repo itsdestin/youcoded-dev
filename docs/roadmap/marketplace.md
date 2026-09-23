@@ -25,6 +25,15 @@ them. Not here: the theme renders wrong (themes).
       Destin 2026-09-02: still failing — and previews in general are unreliable (not always created or shown correctly); fix the class
       `marketplace-screen` `desktop` `confirmed` `checked 2026-09-02`
 
+- [ ] A theme installed from a pre-release preview can show the old mascot after its first
+      marketplace publication, even though the published art changed: Morning Rounds' blue
+      preview and red release both declared 1.0.0, so Update was hidden and applying kept the
+      blue installed files. The PR bump guard compares only against main; it explicitly skips a
+      new slug, even when that slug was already installed from a preview. Destin asked to ship
+      1.0.1 for now (wecoded-themes#34); prevent this for future preview-to-first-release
+      installs without making every genuinely new theme bump unnecessarily, 2026-09-22
+      `marketplace-screen` `desktop` `confirmed` `checked 2026-09-22`
+
 ## backend
 
 - [ ] Website analytics is live, but its account allowance, spending alerts and applicable backup
