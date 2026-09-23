@@ -49,7 +49,7 @@ Records at `~/YouCoded/Personal/Conversations/<provider>/<id>.json` + transcript
 - **Merges are convergent (lattice join), not positional** — `mergeRecords` tie-breaks by total-order content compare; `foldConflictCopies` picks each field group over the ORIGINAL inputs.
 - **The record id/provider is a path-traversal boundary** (charset allowlist + `path.resolve`-contain; reachable over remote WS). **Fire-and-forget store writes MUST `.catch()`.**
 - **Materialize sweep + Resume Browser union both SKIP live sessions** — renaming a transcript CC is appending to detaches its inode → lost turns.
-- **The reconciler recovers the EXACT projectKey from known folders** (`ccProjectSlug(folder)→basename`) **and MUST skip symlinks** (`lstatSync`+`isSymbolicLink`) — keep the skip after Plan 2c deletes the symlink creators.
+- **The reconciler recovers the EXACT projectKey from known folders** (`ccProjectSlug(folder)→basename`) **and MUST skip symlinks** (`lstat`, never `stat`, +`isSymbolicLink`; async since 2026-09-23) — keep the skip after Plan 2c deletes the symlink creators.
 
 ## Session leases & takeover (Plan 2b — DORMANT behind `native.supported` except materialize-on-release, Bug-1 filter, SessionStart-acquire)
 - **Lease ops are DO-AUTHORITATIVE request/response, NOT client-relayed signals** (300s expiry). `lease-event` broadcasts NEVER enter the replay ring (re-query via `op:get`).
