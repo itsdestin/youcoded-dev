@@ -1,0 +1,31 @@
+{
+  "_why": "Self-verifying real ResumeBrowser comparison at a short height where the stress list overflows. The desktop fixture row is selected by the dev-only candidate to show the second pane; only the list edge and outer heading are under review.",
+  "base": "http://127.0.0.1:5513/?mode=workbench&child=1&view=live&surface=resume-shell&round=1&scenario=stress&latency=150",
+  "width": 1100,
+  "height": 600,
+  "boot": 3500,
+  "shots": [
+    {
+      "name": "today-top",
+      "url": "http://127.0.0.1:5513/?mode=workbench&child=1&view=live&surface=resume-shell&round=1&candidate=today&scenario=stress&latency=150",
+      "expect": "js:!!document.querySelector('[data-resume-review-list][data-fade-bottom=true]') && document.querySelector('[data-resume-review-list]').scrollHeight > document.querySelector('[data-resume-review-list]').clientHeight && document.querySelector('h2')?.textContent === 'Resume Session'"
+    },
+    {
+      "name": "proposed-top",
+      "url": "http://127.0.0.1:5513/?mode=workbench&child=1&view=live&surface=resume-shell&round=1&candidate=proposed&scenario=stress&latency=150",
+      "expect": "js:!!document.querySelector('[data-resume-review-list][data-fade-bottom=true]') && document.querySelector('[data-resume-review-list]').scrollHeight > document.querySelector('[data-resume-review-list]').clientHeight && document.querySelector('h2')?.textContent === 'Resume Session'"
+    },
+    {
+      "name": "today-end",
+      "url": "http://127.0.0.1:5513/?mode=workbench&child=1&view=live&surface=resume-shell&round=1&candidate=today&scenario=stress&latency=150",
+      "actions": [{"eval": "document.querySelector('[data-resume-review-list]').scrollTop = document.querySelector('[data-resume-review-list]').scrollHeight"}, {"wait": 400}],
+      "expect": "js:document.querySelector('[data-resume-review-list]').scrollTop > 0 && document.querySelector('[data-resume-review-list]').dataset.fadeTop === 'true' && document.querySelector('[data-resume-review-list]').dataset.fadeBottom !== 'true'"
+    },
+    {
+      "name": "proposed-end",
+      "url": "http://127.0.0.1:5513/?mode=workbench&child=1&view=live&surface=resume-shell&round=1&candidate=proposed&scenario=stress&latency=150",
+      "actions": [{"eval": "document.querySelector('[data-resume-review-list]').scrollTop = document.querySelector('[data-resume-review-list]').scrollHeight"}, {"wait": 400}],
+      "expect": "js:document.querySelector('[data-resume-review-list]').scrollTop > 0 && document.querySelector('[data-resume-review-list]').dataset.fadeTop === 'true' && document.querySelector('[data-resume-review-list]').dataset.fadeBottom !== 'true'"
+    }
+  ]
+}

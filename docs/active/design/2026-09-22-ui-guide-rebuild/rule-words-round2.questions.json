@@ -1,0 +1,66 @@
+{
+  "title": "UI guide — wording after the screen review",
+  "key": "ui-guide-wording-round2",
+  "out": "rule-words-round2.questions.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark"],
+  "steps": [
+    {
+      "id": "P-headers", "page": "What the popup guide should say",
+      "intro": "You accepted the built About and Project-file screens. These questions approve wording only. They do not change screens, publish the guide or approve a merge."
+    },
+    {
+      "id": "T-01-r4", "words": true,
+      "surface": "Settings and popup headers", "path": "Settings → About and other titled dialogs",
+      "headline": "Should this be the guide's exact rule for the reviewed outer headers?",
+      "today": "Settings has a 16px medium title; the newly accepted shared dialogs use 16px semibold in a header at least 56px tall. About's version now begins the body. Some other dialogs still need informative subtitles.",
+      "problem": "The old guide says every dialog title is medium weight. Replacing it with an 'every title is semibold and one line' rule would wrongly alter Settings, file names and dialogs whose second line explains something important.",
+      "proposal": "Exact proposed wording: “On the reviewed Settings drawer and titled Dialog shells, keep the header above the scrolling body. Settings keeps its 16px medium title; shared titled Dialogs use a 16px semibold title and at least 56px of header height with Back and Close reachable. In About, place the version first in the body, not under the title. Do not force this treatment onto unreviewed subtitles, page headings or file/row labels. Custom shells keep their own reviewed recipes; use the separately approved tapered header line and content fade only where those were reviewed.”",
+      "options": [
+        {"id": "approve", "label": "Approve this wording", "recommended": true, "pros": ["Describes the screens you accepted without changing unreviewed subtitles.", "Keeps Settings and Dialog title weights honest."], "cons": ["It is intentionally narrower than a universal popup rule."]},
+        {"id": "revise", "label": "Revise it", "pros": ["You can name any missing header detail in Other."], "cons": ["The guide's header rule stays a draft until the new wording is reviewed."]}
+      ]
+    },
+    {
+      "id": "P-04-r1", "words": true,
+      "surface": "Project instruction file", "path": "Projects → Instructions & Memories → a project file",
+      "headline": "Should the guide also record this specific Project-file treatment?",
+      "today": "You accepted the project context-file popup without its scope / Always / size row. The unboxed explanation, filename, file actions and underlying file metadata remain; global-file warnings were not changed.",
+      "problem": "A general rule saying 'hide file metadata' would wrongly strip context from global files or the separate Projects → Files browser.",
+      "proposal": "Exact proposed wording: “In Projects → Instructions & Memories, a project-scoped context-file detail shows its filename and Edit, Reveal and Copy path actions in the header, then a plain explanation above the content. Omit the redundant scope / timing / size row from this popup, not from the file data. Global files retain their metadata and stronger warning. This is not a rule for the Projects → Files browser.”",
+      "options": [
+        {"id": "approve", "label": "Approve this recipe", "recommended": true, "pros": ["Records the accepted screen without extending it to every file view."], "cons": ["Adds a narrow, screen-specific guide entry rather than a single universal rule."]},
+        {"id": "leave-out", "label": "Leave it out", "pros": ["Keeps the guide shorter; the accepted screen stays built."], "cons": ["Future edits have no written explanation for why this one metadata row is absent."]},
+        {"id": "revise", "label": "Revise the wording", "pros": ["You can point out what the recipe missed in Other."], "cons": ["This entry stays a draft while we adjust it."]}
+      ]
+    },
+    {
+      "id": "P-files", "page": "Session Files has its own role",
+      "intro": "The accepted preview cards are not a redesign of Projects → Files. There is one small conflict with the old guide's count rule to settle before the rebuilt guide can be published."
+    },
+    {
+      "id": "T-03-r4", "words": true,
+      "surface": "Session Files", "path": "Conversation → Session Files",
+      "headline": "Should this be the guide's exact Session Files rule?",
+      "today": "You accepted inset cards with an 84 × 48 left preview, centered filename/status group, one tapered header divider, no search divider and a fade only when the list can scroll further.",
+      "problem": "The old draft said not to show thumbnails, while the current guide says file cards are only for previewable things. Neither describes the accepted cards, which can show a file-type fallback when there is no visual preview.",
+      "proposal": "Exact proposed wording: “Session Files uses compact inset cards: an 84 × 48 file preview at left (or a file-type fallback), with the filename and short status/time group centered beside it. Keep Remove reachable with keyboard and a full touch hit area. Use the reviewed tapered header line and fade only at a list edge with more content to scroll; do not add a second divider under search. This is a Session Files recipe, not a new layout for Projects → Files, download cards or every file list.”",
+      "options": [
+        {"id": "approve", "label": "Approve this wording", "recommended": true, "pros": ["Pins the preview you chose while excluding other file browsers.", "Preserves Remove and conditional scrolling."], "cons": ["The separate count-format question below still needs a decision before publication."]},
+        {"id": "revise", "label": "Revise it", "pros": ["You can name a missing detail in Other."], "cons": ["The file-view rule stays a draft until reviewed again."]}
+      ]
+    },
+    {
+      "id": "COUNT-1", "words": true,
+      "surface": "Session Files count", "path": "The heading above the Session Files list",
+      "headline": "Should the accepted “Session Files (12)” heading remain an exception to the guide's count rule?",
+      "today": "The built heading shows “Session Files (12)”. The current guide instead says counts should be an unparenthesized, muted number, such as “Session Files 12”. You accepted the screen as a whole, not a separate count comparison.",
+      "problem": "Publishing the new file recipe without resolving this would leave the rebuilt guide contradicting a screen it documents.",
+      "proposal": "Pick how to reconcile them. This answer will not alter the screen on its own: a count change would get a focused visual review first.",
+      "options": [
+        {"id": "align", "label": "Use “Session Files 12”", "recommended": true, "pros": ["Matches the existing count rule across the app.", "Keeps parentheses from becoming an accidental exception."], "cons": ["Needs a small visual comparison and a development-screen update before publishing that rule."]},
+        {"id": "exception", "label": "Keep “Session Files (12)”", "pros": ["Preserves exactly the heading you just saw and accepted.", "No screen change needed."], "cons": ["Requires a named exception to the general count rule in the guide."]},
+        {"id": "defer", "label": "Decide later", "pros": ["Leaves room for a visual comparison before choosing."], "cons": ["The rebuilt guide cannot be published as internally consistent yet."]}
+      ]
+    }
+  ]
+}

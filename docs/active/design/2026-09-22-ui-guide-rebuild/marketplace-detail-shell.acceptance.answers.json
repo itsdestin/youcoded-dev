@@ -1,0 +1,22 @@
+{
+ "deck": "ui-guide-marketplace-detail-acceptance-1",
+ "started": "2026-09-23T11:13:40.778Z",
+ "submitted": "2026-09-23T11:14:02Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "pick",
+   "pick": "proposed",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-1": {
+   "v": "pick",
+   "pick": "proposed",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "deck": "ui-guide-resume-shell-1",
+ "started": "2026-09-23T11:52:45.602Z",
+ "submitted": "2026-09-23T11:53:18Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "v": "pick",
+   "pick": "proposed",
+   "seconds": 31,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

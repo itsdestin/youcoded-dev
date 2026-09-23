@@ -1,0 +1,37 @@
+{
+  "title": "See the remaining popup headers and scroll edges",
+  "key": "ui-guide-custom-popup-visual-1",
+  "out": "custom-popup-headers.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 710},
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Marketplace file viewer",
+      "path": "Marketplace → a plugin → open a skill file",
+      "hint": "Scroll inside each file; scroll outside to switch versions. Compare the plugin label in Meadow Mist and Halftone Dimension.",
+      "headline": "Which file header and scrolling edge feels right?",
+      "risk": "Sample file only; the one-line option hides plugin/type context. No production styling changed.",
+      "live": {"surface": "custom-file-popup-edge", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Today", "candidate": "today", "summary": "Plugin/type above 18px semibold file name; full-width line, no fade."},
+        {"id": "two-lines", "label": "Keep both lines", "candidate": "two-lines", "summary": "Two lines, medium file name, 8% divider, 42px/4%-side fade."},
+        {"id": "one-line", "label": "One compact line", "candidate": "one-line", "summary": "File name only at 16px medium, with the same divider and fade."}
+      ]
+    },
+    {
+      "id": "T-1",
+      "surface": "Tags & note editor",
+      "path": "Conversation → Tags & note",
+      "hint": "Open each version in a New Window to see the full editor; shrink that window until the body scrolls to compare its edge.",
+      "headline": "How much of this treatment belongs on the smaller Tags popup?",
+      "risk": "The fade stays off if the editor fits; Manage Tags is already covered by the shared Dialog. No production styling changed.",
+      "live": {"surface": "custom-tags-popup-edge", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Today", "candidate": "today", "summary": "14px bold title, full-width divider, bare body."},
+        {"id": "divider", "label": "Divider only", "candidate": "divider", "summary": "16px medium title and 8% divider, no content fade."},
+        {"id": "fade", "label": "Divider and fade", "candidate": "fade", "summary": "16px medium title, 8% divider, 42px content fade with 4% sides only while scrolling."}
+      ]
+    }
+  ]
+}

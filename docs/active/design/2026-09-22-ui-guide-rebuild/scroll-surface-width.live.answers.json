@@ -1,0 +1,15 @@
+{
+ "deck": "ui-guide-scroll-surface-width-5",
+ "started": "2026-09-23T07:31:56.365Z",
+ "submitted": "2026-09-23T07:32:32Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "pick",
+   "pick": "width-4",
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

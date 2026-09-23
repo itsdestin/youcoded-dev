@@ -1,0 +1,15 @@
+{
+ "deck": "ui-guide-scroll-surface-curve-at-4-6",
+ "started": "2026-09-23T07:35:50.255Z",
+ "submitted": "2026-09-23T07:36:22Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "pick",
+   "pick": "wide-linear",
+   "seconds": 31,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

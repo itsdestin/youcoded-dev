@@ -1,0 +1,39 @@
+{
+  "title": "Selected screens — implemented in development",
+  "key": "ui-guide-selected-screens-built",
+  "out": "selected-screens-built.review.html",
+  "images": "images/selected-screens-built.review",
+  "runs": {
+    "before": "../../../../scratch/ui-consistency-popup-preview/built-review/before",
+    "after": "../../../../scratch/ui-consistency-popup-preview/built-review/after"
+  },
+  "themes": ["halftone-dimension", "meadow-mist"],
+  "crops": {
+    "about": ["selected-built", "about", "440x365+500+145"],
+    "project": ["selected-built", "project", "1310x650+65+65"],
+    "files": ["selected-built", "files", "500x720+940+40"]
+  },
+  "steps": [
+    {
+      "id": "B-1", "surface": "About", "path": "Settings → About", "crop": "about", "highlight": {"box": [2, 1, 96, 33]},
+      "headline": "About keeps one header line and shows the version first in the body.",
+      "changed": "The version moved below the divider, above Disclaimer. The dialog's title now shares the aligned 56px header and stronger 16px weight chosen for the four dialog sizes.",
+      "notice": "The Close button, disclaimer and privacy wording remain; a longer version no longer adds a second header line.",
+      "risk": "Other dialogs with informative subtitles still use their own second lines; this does not silently remove their text. Android appearance has not been captured."
+    },
+    {
+      "id": "B-2", "surface": "Project file detail", "path": "Projects → Instructions & Memories → CLAUDE.md", "crop": "project", "highlight": {"box": [1, 7, 98, 19]},
+      "headline": "The file opens without the metadata row or a boxed Project instructions notice.",
+      "changed": "Project Instructions / Always / file size is no longer displayed in this popup; the plain explanation stays above the file, and Edit, Reveal and Copy path remain in the header.",
+      "notice": "The file data is not deleted, and global files keep their stronger warning and metadata. The document has the same full reading width and approved tapered header line.",
+      "risk": "The pictured file body is representative Workbench text, not your CLAUDE.md. At phone width the long filename shortens sharply beside the actions; contrast still needs a separate review."
+    },
+    {
+      "id": "B-3", "surface": "Session Files", "path": "Open Session Files beside a conversation", "crop": "files", "highlight": {"box": [2, 0, 96, 43]},
+      "headline": "Each file has an 84 × 48 preview with its filename and status centered alongside it.",
+      "changed": "Inset rows and a thumbnail replace the plain list. The header has the selected tapered divider, the search divider is gone and the list fades only while there is more to scroll.",
+      "notice": "Remove, open and filter actions remain; the filename and status stay readable next to images, text previews and fallback file-type labels.",
+      "risk": "Touch and Android rendering are not visually signed off. Tiny content in a thumbnail may crop; the full file still opens on selection."
+    }
+  ]
+}

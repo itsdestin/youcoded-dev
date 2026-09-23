@@ -1,0 +1,43 @@
+{
+  "title": "The UI guide — exact wording for three roles",
+  "key": "ui-guide-wording-round1-1",
+  "out": "rule-words-round1.questions.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark"],
+  "steps": [
+    {"id": "P-headers", "page": "Headers and scroll edges", "intro": "Yes approves only the exact quoted rule; No asks for a revision; Don't know defers. No screen changes follow automatically."},
+    {
+      "id": "T-01-r3",
+      "words": true,
+      "surface": "Settings and popup titles",
+      "path": "Settings, About and Development, Project details, Marketplace details, Tags & note, Resume Session",
+      "headline": "Should this be the guide’s rule for outer popup titles?",
+      "today": "You chose and accepted 16px medium titles on Settings and the reviewed titled popups. Full-page headings, list names and item labels have different jobs.",
+      "problem": "A blanket 'all titles match' rule would also enlarge file names, section labels and menu rows, or crowd Back and Close on narrow screens.",
+      "proposal": "Exact rule: “Use a 16px medium-weight title for the outer header of Settings and titled popups. Page headings, section labels, row labels, file and entry names, and buttons have their own hierarchy; don't resize them just to match popup titles. Leave room for Back, Close, and long titles.”",
+      "risk": "This would guide future titled popups. It does not change untitled menus or approve a universal text size."
+    },
+    {
+      "id": "T-02-r2",
+      "words": true,
+      "surface": "Header dividers and scrolling edges",
+      "path": "Settings and the separately accepted titled popup shells",
+      "headline": "Should this be the guide’s rule for a popup header above scrolling content?",
+      "today": "Settings, shared dialogs, Project and Marketplace details, the file viewer, Tags & note, and Resume's list side have reviewed header/body treatments. The wide Assistant settings rail scrolls differently.",
+      "problem": "A painted fade can clash with a tapered line on wallpaper themes. But making every internal separator fade would erase useful structure.",
+      "proposal": "Exact rule: “On the reviewed fixed-header, separately scrolling Settings and titled-popup shells, draw a 1px header line inset 16px per side and tapered over the first and last 8% of its span. Where more body content is hidden, fade the content at that edge over 42px, softening the outer 4%; otherwise show no fade. Do not paint a panel-colored strip. Structural row borders, Markdown rules, metadata boundaries, internal separators, untitled dialogs and the wide Assistant settings rail are separate roles; review new custom shells before using this recipe.”",
+      "risk": "Only reviewed header/body shells, not every titled popup, divider or scrolling list. A new custom shell gets its own visual check."
+    },
+    {"id": "P-files", "page": "Files have different jobs", "intro": "Yes approves both distinct sentences below; No with a note revises either one. This is wording only, not a Session Files production edit."},
+    {
+      "id": "T-03-r3",
+      "words": true,
+      "surface": "Session Files and Project Files",
+      "path": "A conversation → Files; a project → Files",
+      "headline": "Should this be the guide’s rule for these two file views?",
+      "today": "Session Files still shows flat rows; you chose compact inset cards in its visual comparison. Project Files already offers both a preview grid and a dense list; phone download cards serve another task.",
+      "problem": "Copying the Project grid into Session Files would invent previews. Forcing every file view into cards would lose a useful dense list and obscure the phone's different download action.",
+      "proposal": "Exact rule: “In Session Files, use compact inset cards for files without previews: put the filename first, then a short status and date, with a quiet outline; do not invent a thumbnail. In Project Files, keep both the preview grid and dense list, choosing by task and available preview. Phone download cards and other file surfaces may use their own treatment.”",
+      "risk": "Filename legibility and touch/keyboard access to Remove remain functional requirements, not aesthetic choices. No universal file-card rule is proposed."
+    }
+  ]
+}

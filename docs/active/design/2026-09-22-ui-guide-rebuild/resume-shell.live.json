@@ -1,0 +1,22 @@
+{
+  "title": "Resume Session — should its popup match?",
+  "key": "ui-guide-resume-shell-live-prototype",
+  "out": "resume-shell.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 1020},
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Resume Session with conversation preview",
+      "path": "Session strip → Resume → a conversation",
+      "headline": "Should Resume Session use the matching popup header and list edge?",
+      "hint": "Compare the title and divider, then scroll each list to the end and back. The transcript is unchanged.",
+      "risk": "This is the real Resume browser with sample conversations. The proposed styling is review-only; the desktop preview's transcript and actions are not changing.",
+      "live": {"surface": "resume-shell", "round": 1, "paneWidth": 1020, "height": 560},
+      "variants": [
+        {"id": "today", "label": "Today", "candidate": "today", "summary": "14px bold title, existing tapered divider, and painted 36px fade at the scrolling list edges."},
+        {"id": "proposed", "label": "Matching", "candidate": "proposed", "summary": "16px medium title, 8% tapered divider, and conditional unpainted 42px fade with softened sides."}
+      ]
+    }
+  ]
+}

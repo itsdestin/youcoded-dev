@@ -1,0 +1,35 @@
+{
+  "title": "Check the applied Marketplace and Tags popups",
+  "key": "ui-guide-custom-popup-acceptance-1",
+  "out": "custom-popup-headers.acceptance.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 710},
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Marketplace file viewer",
+      "path": "Confirming the single-line file header you chose",
+      "hint": "Scroll inside the file to its last line; scroll outside to switch between Before and Applied. Open in New Window if you want the full file height.",
+      "headline": "Does the applied Marketplace file header match your choice?",
+      "risk": "The file text is sample data. The applied single-line title omits the plugin/type line; other Marketplace popups are unchanged.",
+      "live": {"surface": "custom-file-popup-edge", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Before (for reference)", "candidate": "today", "summary": "Original two-line header, 18px semibold filename, full-width divider and bare body."},
+        {"id": "one-line", "label": "Applied file viewer", "candidate": "one-line", "summary": "Actual one-line 16px medium filename, 8% divider and 42px/4%-side conditional content fade."}
+      ]
+    },
+    {
+      "id": "T-1",
+      "surface": "Tags & note editor",
+      "path": "Confirming the conditional fade you chose",
+      "hint": "Open each version in a New Window to see the full editor; shrink that window until its body scrolls, then compare the edge.",
+      "headline": "Does the applied Tags editor match your choice?",
+      "risk": "The fade is off when the body fits; on a short window, note controls near the bottom edge become faint until scrolled into view.",
+      "live": {"surface": "custom-tags-popup-edge", "round": 1},
+      "variants": [
+        {"id": "today", "label": "Before (for reference)", "candidate": "today", "summary": "Original 14px bold title, full-width divider and bare body."},
+        {"id": "fade", "label": "Applied Tags & note", "candidate": "fade", "summary": "Actual 16px medium title, 8% divider and 42px/4%-side fade only when the editor scrolls."}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "title": "One-line headers and more balanced file views",
+  "key": "ui-guide-popup-files-round3",
+  "out": "popup-files-round3.review.html",
+  "images": "images/popup-files-round3.review",
+  "runs": {"today": "../../../../scratch/ui-consistency-popup-preview/round3/review"},
+  "themes": ["halftone-dimension", "meadow-mist"],
+  "crops": {
+    "about-inline": ["round3-review", "inline-about", "440x365+500+145"],
+    "about-body": ["round3-review", "body-about", "440x365+500+145"],
+    "project-today": ["round3-review", "today-project", "1310x650+65+65"],
+    "project-quiet": ["round3-review", "quiet-project", "1310x650+65+65"],
+    "project-reader": ["round3-review", "reader-project", "1310x650+65+65"],
+    "files-picked": ["round3-review", "picked-files", "500x570+940+40"],
+    "files-center": ["round3-review", "center-files", "500x570+940+40"],
+    "files-edges": ["round3-review", "edges-files", "500x570+940+40"]
+  },
+  "steps": [
+    {
+      "id": "H-3", "surface": "About", "path": "Settings → About",
+      "headline": "Where should the version go when the header is one line?",
+      "notice": "Both options keep your aligned 56px header and keep the version visible. Today the version is a second line under About; you asked to remove that second line.",
+      "risk": "This previews the real desktop dialog in two themes. Long versions, very narrow windows and Android still need verification before any production edit.",
+      "variants": [
+        {"id": "inline", "label": "Beside title", "crop": "about-inline", "summary": "The version shares the header row, just before Close. Saves body space; the title and version compete in a narrow window."},
+        {"id": "body", "label": "At top of body", "crop": "about-body", "summary": "The header shows just About and Close; the version appears above Disclaimer. Gives the header more breathing room, but occupies body space."}
+      ]
+    },
+    {
+      "id": "P-4", "surface": "Project context file detail", "path": "Projects → Instructions & Memories → CLAUDE.md",
+      "headline": "Which file-reading layout belongs with the rest of the app?",
+      "notice": "This is the large Project file detail popup you meant, not the Files grid. All choices keep its actions, scope and warning copy. The previously chosen header line and conditional scroll fade stay in place. Only this context-file view changes; the shared shell's other callers do not.",
+      "risk": "The file text is representative Workbench content, not your real CLAUDE.md. Other context-file types, scrolling/editing, narrow windows, keyboard use and Android still need verification. Captures in both themes flagged contrast issues; this is not a contrast sign-off.",
+      "variants": [
+        {"id": "current", "label": "Today · stacked bands", "crop": "project-today", "summary": "Full-width metadata band, separate notice card and full-width document. Reference option if neither refinement feels right."},
+        {"id": "quiet", "label": "Quieter bands", "crop": "project-quiet", "summary": "Metadata rests on the panel and the notice becomes a plain line. Document keeps the full reading width."},
+        {"id": "reader", "label": "Reading surface", "crop": "project-reader", "summary": "Quieter metadata with a centered document surface and preserved notice. Clear reading bounds, but more panel-within-panel contrast."}
+      ]
+    },
+    {
+      "id": "F-3", "surface": "Session Files", "path": "Open Session Files beside a conversation",
+      "headline": "How should filenames and status sit beside the 84 × 48 preview?",
+      "notice": "All keep your selected rectangular preview, tapered header, no line beneath search and overflow-only fade. Compare the text's vertical position against each image; nothing changes the file actions.",
+      "risk": "Shown with Workbench file fixtures in two desktop themes. Tiny text inside previews can crop; unsupported file types show a glyph. Touch, keyboard and Android are unverified.",
+      "variants": [
+        {"id": "picked", "label": "Previous · compact", "crop": "files-picked", "summary": "Your earlier 84 × 48 pick with the filename and status grouped close together at the image center."},
+        {"id": "center", "label": "Center text group", "crop": "files-center", "summary": "Filename and status form a centered block with a clearer gap and a softer proportional filename."},
+        {"id": "edges", "label": "Align to image edges", "crop": "files-edges", "summary": "Filename sits near the preview's top and status near its bottom, retaining the monospace filename."}
+      ]
+    }
+  ]
+}

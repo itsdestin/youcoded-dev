@@ -1,0 +1,25 @@
+{
+  "title": "Resume Session — should its popup match?",
+  "key": "ui-guide-resume-shell-1",
+  "out": "resume-shell.choice.html",
+  "images": "images/resume-shell.choice",
+  "runs": {"today": "runs/resume-shell"},
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "crops": {
+    "resume-today": ["resume-shell", "today", "420x456+50+72"],
+    "resume-matching": ["resume-shell", "proposed", "420x456+50+72"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Resume Session list",
+      "path": "Session strip → Resume → a conversation",
+      "headline": "Should Resume Session use the matching popup header and list edge?",
+      "risk": "Actual popup crops show its list column; open the full two-column preview separately. The transcript and production styling are unchanged.",
+      "variants": [
+        {"id": "today", "label": "Today", "crop": "resume-today", "summary": "14px bold title, existing tapered divider, and painted 36px fade at the scrolling list edges."},
+        {"id": "proposed", "label": "Matching", "crop": "resume-matching", "summary": "16px medium title, 8% tapered divider, and conditional unpainted 42px fade with softened sides."}
+      ]
+    }
+  ]
+}

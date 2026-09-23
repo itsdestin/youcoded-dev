@@ -1,0 +1,38 @@
+{
+  "title": "Settings scroll fade — choose the strength at your selected width",
+  "key": "ui-guide-scroll-surface-curve-at-4-6",
+  "out": "scroll-surface-curve-at-4.live.html",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark", "creme", "midnight"],
+  "live": {"worktree": "ui-consistency-audit", "paneWidth": 700},
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings drawer",
+      "path": "Fade strength with the selected side coverage",
+      "hint": "Scroll inside each drawer to see the fade; scroll outside to reach the next version. Try Meadow Mist, Halftone and a solid theme above.",
+      "headline": "At the selected width, how strong should the fade be?",
+      "risk": "Review-only comparison. All versions keep the 42px depth and your selected 4% side taper; only how fast content disappears changes. The provisional 20% header-line taper remains unchanged. This does not approve an app-wide rule or change production styling.",
+      "live": {"surface": "settings-taper-calibration", "round": 8},
+      "variants": [
+        {
+          "id": "wide-linear",
+          "label": "Steady fade",
+          "candidate": "wide-linear",
+          "summary": "Content fades at an even rate from the edge."
+        },
+        {
+          "id": "wide-firmer",
+          "label": "A bit stronger",
+          "candidate": "wide-firmer",
+          "summary": "The strength shown when you picked the 4% width. More content disappears near the edge."
+        },
+        {
+          "id": "wide-strongest",
+          "label": "Much stronger",
+          "candidate": "wide-strongest",
+          "summary": "Content disappears quickly near the edge; the change might feel abrupt when scrolling."
+        }
+      ]
+    }
+  ]
+}

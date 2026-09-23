@@ -1,0 +1,39 @@
+{
+  "title": "The remaining popups: file details and tags",
+  "key": "ui-guide-custom-popup-questions-1",
+  "out": "custom-popup-headers.questions.html",
+  "stage": "ask",
+  "themes": ["meadow-mist", "halftone-dimension", "light", "dark"],
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Marketplace file viewer",
+      "path": "Marketplace → a plugin → open a skill or command file",
+      "headline": "Should file popups keep their two-line header when we compare the new divider and fade?",
+      "today": "The file viewer shows a small line naming the plugin and file type above a larger file name. A full-width line separates it from the scrolling file; the content does not fade at the edges.",
+      "problem": "Replacing the whole header with a compact single title could make it less clear which plugin a file belongs to. Keeping the larger title may also make this popup look different from Settings and Project details.",
+      "proposal": "Choose which header structure to carry into a visual Before/After comparison. The divider and fade themselves will be shown separately before any change is applied.",
+      "options": [
+        {"id": "keep-two-lines", "label": "Keep both lines", "pros": ["You can see the plugin and file name together.", "The existing file context stays familiar."], "cons": ["The header stays taller than a standard dialog."], "recommended": true},
+        {"id": "single-title", "label": "One compact title", "pros": ["Matches the smaller Project and dialog headers more closely."], "cons": ["The plugin and file type move into the body or disappear from the header."]},
+        {"id": "leave-marketplace", "label": "Leave this popup alone", "pros": ["The file viewer keeps its current hierarchy and edge."], "cons": ["Its full-width line and abrupt scrolling edge remain different from the approved popups."]}
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Tags & note popup",
+      "path": "Conversation → Tags & note",
+      "headline": "Should the small Tags & note popup get the same edge treatment?",
+      "today": "This narrow editor has a 14px bold title and a full-width divider. Its body can scroll when the window is short or the tag list grows, but normally it fits without scrolling. Manage Tags opens a separate shared dialog that already has the approved treatment.",
+      "problem": "A permanent fade could dim tag controls in a short editor, while leaving the long state with a hard edge may feel inconsistent.",
+      "proposal": "Choose what to compare visually. Any fade would appear only while content is hidden above or below, not on a body that fits.",
+      "options": [
+        {"id": "divider-and-conditional-fade", "label": "Line and scroll fade", "pros": ["Matches the approved popups when tags overflow.", "No fade while everything fits."], "cons": ["Items near a scrolling edge briefly become faint."]},
+        {"id": "divider-only", "label": "Line only", "pros": ["Makes the header consistent without fading controls."], "cons": ["Overflow still ends abruptly."]},
+        {"id": "leave-tags", "label": "Leave it as is", "pros": ["Keeps this unusually small editor familiar."], "cons": ["Its full-width divider remains different from Settings and other dialogs."]}
+      ]
+    }
+  ]
+}

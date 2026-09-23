@@ -1,0 +1,66 @@
+{
+  "title": "Popup sizes and Session Files — see them together",
+  "key": "ui-guide-popup-files-comparison-1",
+  "out": "popup-files-comparison.review.html",
+  "images": "images/popup-files-comparison.review",
+  "runs": {"today": "../../../../scratch/ui-consistency-popup-preview/run"},
+  "crops": {
+    "dialog-family": ["context", "dialogs", "1628x362+0+0"],
+    "other-family": ["context", "custom", "1628x362+0+0"],
+    "exceptions": ["context", "exceptions", "1230x440+0+0"],
+    "files-today": ["preview-plan", "files-current", "500x370+940+40"],
+    "files-card": ["preview-plan", "files-card", "500x370+940+40"],
+    "files-square": ["preview-plan", "files-square", "500x370+940+40"],
+    "files-wide": ["preview-plan", "files-wide", "500x370+940+40"]
+  },
+  "themes": ["light", "midnight", "halftone-dimension", "meadow-mist"],
+  "steps": [
+    {
+      "id": "P-1", "surface": "Popups in Settings", "path": "Support YouCoded; About; Submit a ticket; Assistant settings",
+      "crop": "dialog-family", "highlight": {"box": [26, 1, 24, 96]},
+      "headline": "Which approach to the four dialog sizes should we explore?",
+      "notice": "These are representative popups, captured together at the same browser size; widths are ceilings, not minimums.",
+      "risk": "This chooses a direction to mock, not a new app-wide rule or permission to resize existing popups.",
+      "options": [
+        {"id":"keep-roles", "label":"Keep four roles", "pros":["Each size matches its job: quick prompt, ordinary panel, document, or two-column window."], "cons":["Four choices to remember; less obvious which one a new popup needs."], "summary":"Formalize what each size is for, without changing these screens."},
+        {"id":"merge-small", "label":"Combine small sizes", "pros":["One fewer size to choose; short dialogs and ordinary panels line up."], "cons":["Quick confirmations may grow wider, or some panels may crowd their text."], "summary":"Test prompt and panel at one shared size; leave document and wide alone."},
+        {"id":"content-fit", "label":"Fit the content", "pros":["Short and long content can use the width they actually need."], "cons":["Dialogs may feel less consistent and could change size as their contents load."], "summary":"Try a bounded, content-led width before selecting named sizes."}
+      ]
+    },
+    {
+      "id": "P-2", "surface": "Other popup classes", "path": "Project switcher; Tags & note; Resume Session; Marketplace Details",
+      "crop": "other-family", "highlight": {"box": [1, 1, 24, 96]},
+      "headline": "How far should a common popup style extend beyond the four dialogs?",
+      "notice": "These are different jobs: a search palette, compact editor, two-pane browser, and near-fullscreen details view.",
+      "risk": "Keeping distinct sizes does not prevent titles, close controls, and scroll edges from using an approved treatment where reviewed.",
+      "options": [
+        {"id":"roles-first", "label":"Keep distinct roles", "pros":["Search, editing, browsing, and full details keep their useful layouts."], "cons":["More shell styles remain to document and check for drift."], "summary":"Formalize each class and review shared details per shell."},
+        {"id":"shared-chrome", "label":"Unify outer chrome", "pros":["Headers and dismiss controls feel related without squeezing the content."], "cons":["The four shapes still differ, and some headers need exceptions."], "summary":"Mock common outer headings, close controls and edges across eligible classes."},
+        {"id":"fewer-classes", "label":"Fewer classes", "pros":["Fewer sizes and layouts to learn and maintain."], "cons":["A compact note editor may inherit too much space; a two-pane browser may become cramped."], "summary":"Try merging only the compact popup and search palette into dialog roles first."}
+      ]
+    },
+    {
+      "id":"P-3", "surface":"Menus and full-size viewers", "path":"Right-click a message; open a file in Project Files",
+      "crop":"exceptions", "highlight":{"box":[1,2,47,93]},
+      "headline":"Should anchored menus and near-fullscreen file views follow the dialog size ladder?",
+      "notice":"The menu opens beside your click; the file detail needs most of the screen. Neither is a centered, reading-sized dialog.",
+      "risk":"This decides their relationship to a future popup rule, not their individual styling or behavior.",
+      "options":[
+        {"id":"separate-roles","label":"Keep them separate","pros":["Each keeps its useful placement and size."],"cons":["The guide must spell out more exceptions."],"summary":"Name anchored menus and large file views as distinct classes."},
+        {"id":"shared-parts","label":"Share compatible parts","pros":["Common surfaces and dismiss controls can feel related."],"cons":["There is no useful common width or header for a right-click menu and a file view."],"summary":"Keep placements but test only compatible chrome per class."}
+      ]
+    },
+    {
+      "id":"F-1", "surface":"Session Files", "path":"Open the file list beside a conversation",
+      "headline":"Which file entry is most useful in Session Files?",
+      "notice":"Only the file cards change; Project Files keeps its grid and list. The screenshots show file previews from the app's own viewer, using sample files.",
+      "risk":"Small text previews can crop awkwardly; unsupported or unavailable files show an extension label, and these pictures do not verify Android behavior.",
+      "variants":[
+        {"id":"today-rows","label":"Today's rows","crop":"files-today","summary":"Continuous file list. Most entries fit, but boundaries between files are quiet."},
+        {"id":"cards-no-preview","label":"Cards, no preview","crop":"files-card","summary":"The compact card direction previously picked; no extra file read or potentially misleading thumbnail."},
+        {"id":"square-preview","label":"Square preview","crop":"files-square","summary":"A 44px left square shows actual supported file content or an extension fallback; text is often cropped."},
+        {"id":"wide-preview","label":"Wide preview","crop":"files-wide","summary":"A 72 × 44px left rectangle gives visual files more room, while using more of the filename width."}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# Project context-file metadata removal — focused visual review
+
+**Status: `P-5=no-meta` picked on 2026-09-23 at 21:47 UTC; scoped visual direction only, not production or design-guide approval.** In `ui-guide-popup-files-round3#P-4`, Destin picked the *quiet* Project context-file detail and asked to remove its `Project Instructions · Always · 4.1 KB` metadata banner. This request applies to the near-fullscreen context-file detail under Projects → Instructions & Memories, **not** the Project Files browser or all callers of `ProjectDetailOverlay`.
+
+`project-context-metadata.review.json` compares his previous quiet pick to that same layout without the metadata row. The project-scope explanation remains visible as an unboxed line, and the filename, Edit/Reveal/Copy path/Close actions, approved header divider, and conditional scroll mask remain unchanged. The file's scope, timing and size are not deleted from the model; the row is simply not rendered in this visual proposal.
+
+Captured 2/2 verified shots in Meadow Mist and Halftone Dimension, with representative Workbench text. The original P-4 screenshot was reused as the before image. Contrast checks still report failures; do not call this a contrast sign-off. Temporary component and fixture edits were removed after capture. Narrow windows, keyboard, editing, Android and production file I/O remain unverified. The selected no-meta candidate is a scoped visual direction, not final implementation or a new design-guide rule. The quiet-with-row alternative was not selected.
