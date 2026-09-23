@@ -36,7 +36,9 @@ async function json(url, options = {}) {
 
 /** One serialized root-chat request per turn; the backend, not its attached CLI,
  * confirms completion and persists the same session across a real server restart. */
-export async function runOpenCodeHttpThreeTurns({ binary, cwd, env, prompts, authRoot, gate }) {
+// WHY: the repeat comparison (live-repeat-comparison.mjs) needs fresh sessions with no restart,
+// a fixed pause between turns, and a unique gate label per round.
+export async function runOpenCodeHttpThreeTurns({ binary, cwd, env, prompts, authRoot, gate, restartBeforeTurn = 2, gapMs = 0, repetitionLabel = 'opencode-http-three-turn' }) {
   if (!Array.isArray(prompts) || prompts.length !== 3 || !prompts.every(x => typeof x === 'string' && x)) throw new TypeError('Three fixed prompts required.');
   if (!gate || typeof gate.beginRepetition !== 'function' || typeof gate.reserved !== 'function') throw new TypeError('Strict external request gate required.');
   const isolatedEnv = Object.fromEntries(['PATH','HOME','XDG_CONFIG_HOME','XDG_DATA_HOME','XDG_CACHE_HOME','XDG_STATE_HOME','TMPDIR','YOUCODED_LUNA_EXPERIMENT','OPENCODE_PURE']
@@ -53,27 +55,29 @@ export async function runOpenCodeHttpThreeTurns({ binary, cwd, env, prompts, aut
   let backend;
   let sessionId;
   const before=gate.reserved();
-  gate.beginRepetition('opencode-http-three-turn');
+  gate.beginRepetition(repetitionLabel);
   try {
     for (let index=0;index<3;index++) {
-      if (index===2 && backend) { killGroup(backend.pid); backend=null; }
+      if (index>0 && gapMs>0) await new Promise((resolve)=>setTimeout(resolve,gapMs));
+      if (index===restartBeforeTurn && backend) { killGroup(backend.pid); backend=null; }
       if (!backend) backend=await startBackend(binary,cwd,isolatedEnv);
       const base=backend.url;
       if (!sessionId) {
         const created=await json(`${base}/session`,{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
         if (!SESSION_ID.test(created?.id)) throw new Error('OpenCode session identity missing.');
         sessionId=created.id;
-      } else if (index===2) {
+      } else if (index===restartBeforeTurn) {
         const resumed=await json(`${base}/session/${encodeURIComponent(sessionId)}`);
         if (resumed?.id!==sessionId) throw new Error('OpenCode did not restore the same session.');
       }
       gate.beginTurn(index+1);
+      const turnStart=gate.reserved();
       try {
         const response=await json(`${base}/session/${encodeURIComponent(sessionId)}/message`,{
           method:'POST',headers:{'content-type':'application/json'},
           body:JSON.stringify({model:{providerID:'openai',modelID:'gpt-5.6-luna'},parts:[{type:'text',text:prompts[index]}]}),
         });
-        for (const row of sanitizeCompletedResponse(response)) turns.push({turn:index+1,...row});
+        for (const row of sanitizeCompletedResponse(response)) turns.push({turn:index+1,...row,attempts:gate.reserved()-turnStart});
       } finally { gate.endTurn(); }
     }
     return { turns, sessionLabel:'session-1', requestCount:gate.reserved()-before };

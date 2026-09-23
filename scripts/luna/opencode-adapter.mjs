@@ -93,7 +93,9 @@ export async function verifySignedInRoot(authRoot, isolatedEnv) {
   if (auth.isSymbolicLink() || !auth.isFile() || auth.uid !== process.getuid?.() || (auth.mode & 0o777) !== 0o600) throw new Error('OpenCode auth.json must be an owned regular mode 0600 file.');
 }
 
-export async function runOpenCodeThreeTurns({ binary, cwd, env, prompts, authRoot, gate }) {
+// WHY: the repeat comparison (live-repeat-comparison.mjs) needs many fresh sessions without the
+// turn-3 restart, a fixed pause between turns, and a unique gate label per round.
+export async function runOpenCodeThreeTurns({ binary, cwd, env, prompts, authRoot, gate, restartBeforeTurn = 2, gapMs = 0, repetitionLabel = 'opencode-three-turn' }) {
   if (!gate || typeof gate.url !== 'string' || typeof gate.beginRepetition !== 'function' || typeof gate.beginTurn !== 'function' || typeof gate.endTurn !== 'function' || typeof gate.endRepetition !== 'function' || typeof gate.reserved !== 'function' || typeof gate.halted !== 'function'
       || typeof binary !== 'string' || !binary || typeof cwd !== 'string' || !Array.isArray(prompts) || prompts.length !== 3
       || !prompts.every((prompt) => typeof prompt === 'string' && prompt.length > 0)) {
@@ -122,10 +124,11 @@ export async function runOpenCodeThreeTurns({ binary, cwd, env, prompts, authRoo
   let sessionId = null;
   let backend = null;
   const clientStartCount = gate.reserved();
-  gate.beginRepetition('opencode-three-turn');
+  gate.beginRepetition(repetitionLabel);
   try {
     for (let index = 0; index < prompts.length; index++) {
-      if (index === 2) {
+      if (index > 0 && gapMs > 0) await new Promise((resolve) => setTimeout(resolve, gapMs));
+      if (index === restartBeforeTurn) {
         killGroup(backend.pid);
         backend = null;
         backend = await startBackend(binary, cwd, isolatedEnv);
@@ -146,7 +149,13 @@ export async function runOpenCodeThreeTurns({ binary, cwd, env, prompts, authRoo
           cwd, env: isolatedEnv, timeoutMs: TURN_MS,
           onLine(line) {
             const sanitized = sanitizeOpenCodeEvent(line);
-            if (sanitized) { completedSteps++; turns.push({ turn: index + 1, ...sanitized }); }
+            if (sanitized) {
+              completedSteps++;
+              // WHY: the sanitizer hides a zero cache read as null; the repeat comparison needs the
+              // raw counts (OpenCode's `input` excludes cache reads/writes) to score misses as 0%.
+              const t = JSON.parse(line).part.tokens;
+              turns.push({ turn: index + 1, ...sanitized, rawInput: t.input, rawCacheRead: t.cache?.read ?? null, rawCacheWrite: t.cache?.write ?? null });
+            }
             // WHY: attached OpenCode CLI can exit zero after emitting a session error;
             // never accept a session ID alone as evidence that a model turn completed.
             try { if (JSON.parse(line)?.type === 'error') reportedError = true; } catch { /* only JSON events matter */ }
