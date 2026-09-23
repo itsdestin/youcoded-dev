@@ -10,7 +10,7 @@ related:
 
 # Native compaction — implementation plan
 
-> **For implementation agents:** execute with `superpowers:subagent-driven-development` (this session) or `superpowers:executing-plans` (a separate session). Product decisions U1–U10 live in the [design spec](../specs/2026-09-22-native-compaction-design.md); this plan fixes the engineering choices and the order of work.
+> **For implementation agents:** execute with `superpowers:subagent-driven-development` (this session) or `superpowers:executing-plans` (a separate session). Product decisions U1–U11 live in the [design spec](../specs/2026-09-22-native-compaction-design.md); this plan fixes the engineering choices and the order of work.
 
 **Goal:** one compaction per near-full context: summarize everything before a small recent tail, validate, commit, continue the same turn.
 
