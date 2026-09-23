@@ -108,6 +108,15 @@ has passed ~8 items — graduate it to its own file.
       designed on `session/youcoded-pages-phase2`. Phases 3–4 remain open questions in the plan.
       `window-chrome` `all` `in-flight` `checked 2026-09-19` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
 
+- [ ] A page that manages a device on the home network: "one idea i had for a page is an explicit
+      home assistant integration/management page" (2026-09-23, on the Phase 2 security deck). Pages
+      are blocked from every home-network address today, including for "any website" pages, and
+      the manifest refuses ports and address literals. Needs its own connection kind approved per
+      device (for example `homeassistant.local:8123`), allowed past the private-address block for
+      that exact device only, with the device's access token held like any other key, and its own
+      approval wording. The blanket block stays for everything else.
+      `window-chrome` `desktop` `decision` `checked 2026-09-23`
+
 - [ ] A web browser as a page: "what if i want to create a basic web browser or something within
       youcoded?" An open-internet page can fetch from anywhere, but most large sites refuse to be
       shown inside another page, so a real browser needs the app to supply pages a website view
