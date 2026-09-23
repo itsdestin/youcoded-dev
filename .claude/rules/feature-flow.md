@@ -77,7 +77,7 @@ was signed (`.contract.answers.json`, step `yes`); the acceptance deck was submi
 ## The build stage is reviewed, capped, recorded
 **Invariant:** technical design → reviewer rounds writing
 `docs/active/reviews/<date>-<feature>-design-review-<n>.md` (findings marked accepted /
-rejected / already handled; stop on a round accepting nothing, cap three) → task breakdown → subagent build, a reviewer per task.
+rejected / already handled; stop on a round accepting nothing, cap three) → task breakdown → subagent build, per-task reviewer, both checking `.claude/rules/performance.md`.
 **Why:** whether rounds improve or churn a design is unmeasured.
 **Guard:** none — candidate.
 
