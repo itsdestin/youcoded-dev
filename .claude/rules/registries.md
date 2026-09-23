@@ -41,7 +41,7 @@ Both registries are GitHub repos fetched at runtime via `raw.githubusercontent.c
 
 ## MCP plugin authoring (marketplace plugins) — **read `wecoded-marketplace/docs/mcp-authoring.md` before shipping a stdio MCP server**
 - **`bash` is NOT on the Windows system PATH** — don't write `command:"bash"` in `mcp-manifest.json`; use a real on-PATH binary (`node`/`uvx`/`python`), `command_windows`, or bash's 8.3 short name (`C:\PROGRA~1\Git\usr\bin\bash.exe` — spaces break the spawn). MSYS `/c/...` paths work only as ARGS, never `command`.
-- **The reconciler expands ONLY `{{plugin_root}}`** — `${PACKAGE_DIR}` is expanded by nobody (roadmap `marketplace`). **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` lies** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Spawn-probe the handshake first; five more footguns in that doc.
+- **The reconciler expands `{{plugin_root}}` and (1.3.1+) its alias `${PACKAGE_DIR}`, and reads `platform` or a `platforms` list** — both platforms mirror it; guard: `mcp-reconciler.test.ts` / `McpReconcilerManifestTest.kt`. **Pin `mcp>=1.0.0,<2.0.0`** (0.x→1.x is dict→Pydantic breaking). **`claude mcp list` lies** (verifies only `initialize`) — verify with in-session `/mcp` (full `tools/list`). Spawn-probe the handshake first; five more footguns in that doc.
 
 ## Announcements (`announcement-service.ts`, `shared/announcement.ts`)
 - **Source of truth is `youcoded/announcements.txt`** (app repo), NOT youcoded-core. `/announce` writes there; public URL `raw.githubusercontent.com/itsdestin/youcoded/master/announcements.txt`.
