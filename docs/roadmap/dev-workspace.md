@@ -895,6 +895,17 @@ seen-on is always n/a here.
       up, would execute; the launcher already knows both ports
       `n/a` `confirmed` `checked 2026-09-10`
 
+- [ ] RECURRENCE, 2026-09-20, with the mechanism the entry above was missing. `run-dev.sh --stop`
+      killed the Electron pair, printed "offset 50's ports are free" and was RIGHT about 5223/9950/9272 —
+      but `npm run dev:renderer` and its Vite child were still alive, orphaned to init (ppid 1673), with
+      **Vite listening on 5173: its own default, which the offset never moves.** The stop path finds
+      leftovers by scanning the offset's three ports, so a socket the offset does not control is invisible
+      to it, and the next launch dies with a bind error naming Vite rather than the orphan. Detected only
+      because the backgrounded launcher reported `exit=1` after 1h49m and the port was checked by hand;
+      found with `ss -ltnp`, killed by exact pid (never a name match — the live app runs node too).
+      Whatever fixes this should scan the process tree the launcher started, not a port list
+      `n/a` `confirmed` `checked 2026-09-20`
+
 - [ ] `workbench-boot-check.mjs` boots sixteen routes (the `scenario=*` / `view=*` set plus a
       stalled and a first-run variant), so eleven of the twenty-seven `?switch=` values
       `mock-shim.ts` reads have never been booted by any check — `planUsage`, `chatgpt`,
@@ -932,3 +943,20 @@ seen-on is always n/a here.
       I cleaned it up". Either `close-out.sh` should list the manifest beside the other three
       cleanup items, or removing the last worktree it records should drop it
       `n/a` `confirmed` `checked 2026-09-20`
+
+- [ ] A session worktree disappeared mid-session and took the only copy of the work with it,
+      and nothing in the workspace noticed — no warning before, none after. Destin asked for a
+      one-line buddy cursor fix; it was made, tested and verified in `worktrees/sessions/buddy-cursor`;
+      the next turn found the directory, its git admin dir, the `session/buddy-cursor` branch AND its
+      manifest all gone together. A `kwin_wayland` coredump at 19:16:02 killed his desktop session
+      (no reboot — uptime ran continuously from 14:23), so a crash was the first suspect, but a crash
+      does not un-register a worktree and delete a branch: `git worktree prune` had nothing to prune.
+      Nothing in `scripts/` or the app removes one (the dev-dashboard is clipboard-only by design);
+      what actually issued it is NOT established. The work was rebuilt and shipped, so the cost was
+      one re-do — the durable gap is that uncommitted work has no second copy, a branch with zero
+      commits preserves nothing, and re-running the same `--session` key silently created a fresh
+      worktree at master rather than hinting anything was lost. Full timeline and the searches that
+      ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
+      Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
+      worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
+      `n/a` `needs-verify` `checked 2026-09-20`
