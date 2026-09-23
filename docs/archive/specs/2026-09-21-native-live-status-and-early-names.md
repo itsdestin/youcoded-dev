@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Native live status and early session names

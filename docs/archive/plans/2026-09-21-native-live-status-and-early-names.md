@@ -1,5 +1,7 @@
 # Native Live Status and Early Names — Implementation Plan
 
+**Archived 2026-09-22:** Implemented in youcoded#548; checkboxes below record the original task sequence, not outstanding work. The final review added measured-then-silent cost and short absolute-path regression tests.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` or `superpowers:executing-plans` to implement task-by-task. Steps use checkbox syntax.
 
 **Goal:** Show native usage after each measured request, name new sessions promptly, and shorten file paths in automatic titles.
