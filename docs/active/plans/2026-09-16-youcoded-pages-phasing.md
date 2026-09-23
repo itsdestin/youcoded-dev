@@ -218,6 +218,17 @@ fetch-on-behalf channel; approval vocabulary to match is `marketplace/Capability
 `ui/Dialog.tsx`; `ConnectedAccounts.tsx` is the Settings home; the `useVisibleInterval` hook the
 guard test names does not exist yet.
 
+**Security review and deck 3 (2026-09-20 → 23).** A reviewer found 18 problems in the design;
+17 were fixed and one reversed on build (`docs/active/reviews/2026-09-20-youcoded-pages-phase2-design-review-1.md`).
+Deck 3 (`youcoded-pages-connections-3.questions.answers.json`) then settled the wording they
+touched: look-up lines say "Cannot change anything there. The page decides what it sends to this
+address."; the whole-internet card names the home network; a page whose code changed since it was
+allowed shows a quiet, dismissible note in the band and is not blocked; opening links in the
+browser stays allowed. Destin asked whether home-network access should ever be allowed — filed
+as a separate connection kind for a Home Assistant style page (`docs/roadmap/other-features.md`).
+A key now goes as `Authorization: Bearer <key>` unless the manifest says otherwise, and the
+page-builder skill (wecoded-marketplace, 0.2.0) teaches connections.
+
 Next: mock the approval screen, the band's updated line, the card's Connections line and the
 Settings list in the workbench, then review decks.
 
