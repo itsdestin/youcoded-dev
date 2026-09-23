@@ -681,3 +681,10 @@ recurred — the repetition is the data.
 - The first full verification after the fixes caught a type-narrowing error that the focused Vitest run cannot see → applied: explicit measured-usage guard at the emit site; keep `verify.sh` as the completion gate, not an extra doc.
 - A 3-line budget overrun surfaced on the focused budget test. RECURRENCE of the 2026-09-18 budget friction already filed in `dev-workspace.md` → applied: condensed the harness explanation and lowered its ceiling from 3833 to 3832; no duplicate roadmap entry.
 - deleted/merged: consolidated the live-progress explanation at its emit site (seven comment lines down to three); no new workflow document.
+
+## 2026-09-22 — model switcher recommendations, manual review and merge (session/recommended-models)
+- Fresh review caught two defects the existing 26 green picker tests missed: `gpt-console` was mistaken for Sol by substring matching, and the General-page picker kept its mount-time toggle value → applied: two red-then-green cases in `desktop/tests/ModelPicker.test.tsx`, slug-token matching and re-read on open in the app. [2 bugs before merge]
+- Source comment pointed the scheduled endpoint-check runner at the wrong roadmap area → applied: corrected the pointer in `desktop/src/shared/recommended-models.ts`; the runner remains a single open `dev-workspace.md` item, not another entry.
+- The picker had a MAP hot path but its new curated-list file was undiscoverable from the map → applied: model-recommendations row in `docs/MAP.md` with shared list, settings and test entry points.
+- Chat Search queried user text, not generated conversation titles; one exact-title query returned no hits, a shorter user phrase found it → dropped: documented in the skill and solved in one query, no new machinery justified.
+- deleted/merged: drag-reorder implementation was already removed at Destin's request before this handoff; no duplicate feature code found to remove here.
