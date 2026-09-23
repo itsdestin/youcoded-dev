@@ -1,0 +1,15 @@
+{
+ "deck": "project-plugin-controls-review-3",
+ "started": "2026-09-23T09:51:21.538Z",
+ "submitted": "2026-09-23T09:52:01Z",
+ "cur": 0,
+ "answers": {
+  "P-1": {
+   "note": "all of the sub-options should share a container with the parent option, as all other app ui does. left/right margins should be equal for all cards at all levels",
+   "v": "other",
+   "seconds": 39,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

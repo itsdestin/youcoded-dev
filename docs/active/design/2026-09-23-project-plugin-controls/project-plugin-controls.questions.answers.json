@@ -1,0 +1,35 @@
+{
+ "deck": "project-plugin-controls-questions",
+ "started": "2026-09-23T07:43:08.942Z",
+ "submitted": "2026-09-23T07:45:01Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "discover-on-demand",
+   "note": "i think however it works today.",
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "keep-current",
+   "note": "but if enabled, show as enabled in the config menus",
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "executable-only",
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "sync-file",
+   "note": "i think these would already be synced given how projects work today?",
+   "seconds": 28,
+   "theme": "morning-rounds"
+  }
+ }
+}

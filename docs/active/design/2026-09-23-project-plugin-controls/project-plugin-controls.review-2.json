@@ -1,0 +1,29 @@
+{
+  "title": "Project plugins — controls revised",
+  "key": "project-plugin-controls-review-2",
+  "out": "project-plugin-controls.review-2.html",
+  "stage": "review",
+  "live": { "worktree": "plugin-project-controls", "offset": 342, "paneWidth": 820 },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Projects",
+      "path": "After a plugin download → configure across projects",
+      "headline": "Do the project cards and item expanders now feel like YouCoded controls?",
+      "changed": "The hand-drawn arrow characters and expansion links were replaced with the app's chevron and button controls. The sample plugin still starts off in every project.",
+      "notice": "Open and close a project or its items. The chevrons rotate, and a standard button treatment appears on hover.",
+      "risk": "This is a UI-only preview: sample plugin, isolated controls rather than the full Projects page, and no settings saved. The command drawer remains for a separate review.",
+      "live": { "surface": "project-plugin-controls", "round": 2, "candidate": "project-first-stacked" }
+    },
+    {
+      "id": "P-2",
+      "surface": "Projects",
+      "path": "Projects → skills and tools",
+      "headline": "Are Your Assistant's always-on bundled switches visibly locked, with a useful hover hint?",
+      "changed": "The four bundled plugins in Your Assistant are shown on but greyed out. Hover or focus a switch to see why it cannot be changed. Personal stays separately configurable.",
+      "notice": "Hover the dimmed Chat Search switch, then expand Personal to compare an editable switch. The non-bundled Research Kit stays optional even in Your Assistant.",
+      "risk": "The preview illustrates the control states and tooltip only; no settings are saved, and this is not the full Projects screen.",
+      "live": { "surface": "project-plugin-controls", "round": 2, "candidate": "project-library" }
+    }
+  ]
+}

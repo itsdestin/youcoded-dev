@@ -1,0 +1,21 @@
+{
+ "deck": "project-plugin-controls-review-2",
+ "started": "2026-09-23T09:43:27.333Z",
+ "submitted": "2026-09-23T09:44:33Z",
+ "cur": 1,
+ "answers": {
+  "P-1": {
+   "v": "other",
+   "note": "these containers are still weird. the weird header section/containers should be styled like other settings cards",
+   "seconds": 49,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
