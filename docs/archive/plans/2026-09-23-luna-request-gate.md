@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 date: 2026-09-23
 type: plan
 tags: [native-harness, prompt-cache, evaluation, opencode, luna]
@@ -13,7 +13,7 @@ tags: [native-harness, prompt-cache, evaluation, opencode, luna]
 
 **Architecture:** A private loopback guard server owns an in-memory total request counter across *client* restarts. Each isolated client asks the guard for one reservation immediately before each actual ChatGPT OAuth provider HTTP fetch (including any auxiliary fetch on that path); refusal/unreachable guard prevents the dispatch. The guard never receives or records prompts, URLs, headers, account IDs or session IDs. Its own failure stops the run; it must never be restarted mid-run. This is only an offline proof of the counting seam, not yet the multi-turn fixture, quota policy or a live authorization.
 
-**Tech Stack:** Node.js `node:http`/`node:test`, YouCoded Electron TypeScript + Vitest, OpenCode 1.18.31 Bun + Bun tests. Parent spec: `docs/active/specs/2026-09-15-youcoded-opencode-luna-prompt-reuse.md`.
+**Tech Stack:** Node.js `node:http`/`node:test`, YouCoded Electron TypeScript + Vitest, OpenCode 1.18.31 Bun + Bun tests. Parent spec: `docs/archive/specs/2026-09-15-youcoded-opencode-luna-prompt-reuse.md`.
 
 ## Global Constraints
 

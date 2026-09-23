@@ -6,6 +6,7 @@
 // Usage: node live-lifecycle-comparison.mjs [rounds=3] [gapSeconds=10] > results.jsonl
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
+import os from 'node:os';
 import { buildFixture } from './fixture.mjs';
 import { startRequestGate } from './request-gate.mjs';
 import { stagePrivateOpenCodeProfile } from './private-opencode-profile.mjs';
@@ -13,7 +14,7 @@ import { startBackend, verifySignedInRoot, killGroup } from './opencode-adapter.
 import { assertIsolatedEnvironment } from './live-controller.mjs';
 import { launchIsolatedNative, connectIsolatedNative } from './live-native-cdp.mjs';
 
-const BASE = '/home/destin/.cache/youcoded-luna-experiment';
+const BASE = `${os.homedir()}/.cache/youcoded-luna-experiment`;
 const BINARY = `${BASE}/opencode-v1.18.31/packages/opencode/dist/opencode-linux-x64/bin/opencode`;
 const ROUNDS = Number(process.argv[2] ?? 3);
 const GAP_MS = Number(process.argv[3] ?? 10) * 1000;

@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 date: 2026-09-23
 type: plan
 tags: [native-harness, prompt-cache, evaluation, opencode, luna]
@@ -13,7 +13,7 @@ tags: [native-harness, prompt-cache, evaluation, opencode, luna]
 
 **Architecture:** This is a prerequisite gate, not the scored experiment. Pin OpenCode's source to v1.18.31, establish observable request/usage/failed-retry boundaries for *both* clients, then prove launch-state isolation using read-only source inspection and a no-launch dry run. Record a pass/block verdict; only a pass authorizes a separate implementation plan for fixture, normalizer, controller and synthetic-stream tests. A pass is not authorization to install OpenCode, authenticate or send model requests.
 
-**Tech Stack:** Git worktrees, Node.js, Bash, Electron, OpenCode v1.18.31 pinned source, YouCoded native harness diagnostics. Parent contract: `docs/active/specs/2026-09-15-youcoded-opencode-luna-prompt-reuse.md`.
+**Tech Stack:** Git worktrees, Node.js, Bash, Electron, OpenCode v1.18.31 pinned source, YouCoded native harness diagnostics. Parent contract: `docs/archive/specs/2026-09-15-youcoded-opencode-luna-prompt-reuse.md`.
 
 ## Global Constraints
 
@@ -35,7 +35,7 @@ YouCoded's `chatgpt-auth.ts:995-1015` records dispatches before each underlying 
 
 ## File ownership
 
-- Existing input, no edits: `docs/active/specs/2026-09-15-youcoded-opencode-luna-prompt-reuse.md`.
+- Existing input, no edits: `docs/archive/specs/2026-09-15-youcoded-opencode-luna-prompt-reuse.md`.
 - This plan records steps only. Its completion verdict is a short report in conversation with exact pinned source URLs and worktree `file:line` references; do not make a permanent report that includes account/profile data.
 - If either gate blocks, propose a **specific** non-interception path to regain coverage, its privacy/fairness trade-off and the approval it needs. Do not silently weaken the experiment or start building a scorer.
 

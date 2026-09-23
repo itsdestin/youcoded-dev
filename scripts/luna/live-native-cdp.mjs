@@ -1,8 +1,13 @@
 import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import os from 'node:os';
+import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { readNativeDiagnostics } from './native-diagnostics.mjs';
 
-const WORKTREE = '/home/destin/youcoded-dev/worktrees/sessions/prompt-reuse-luna-recovery';
+// WHY derived, not pinned: the workspace copy this script sits in (scripts/luna/../..) —
+// its youcoded/ component must carry the experiment hooks (youcoded master since #555).
+const WORKTREE = fileURLToPath(new URL('../..', import.meta.url)).replace(/\/$/, '');
 const DEV = `${WORKTREE}/scripts/run-dev.sh`;
 const APP = `${WORKTREE}/youcoded`;
 const PORT = 9472;
@@ -12,7 +17,7 @@ const TARGET = 'http://localhost:5423';
 export async function launchIsolatedNative({ env }) {
   if (process.platform !== 'linux' || env.YOUCODED_LUNA_EXPERIMENT !== '1'
       || env.YOUCODED_PROFILE !== 'luna-eval' || !env.LUNA_GUARD_URL || !env.LUNA_FIXTURE_ROOT
-      || env.HOME !== '/home/destin/.cache/youcoded-luna-experiment') {
+      || env.HOME !== path.join(os.homedir(), '.cache/youcoded-luna-experiment')) {
     throw new Error('Experiment-only private native launch flags are required.');
   }
   // WHY: the private HOME still needs this user's display authorization and KDE keychain;

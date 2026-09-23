@@ -1,12 +1,13 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
+import os from 'node:os';
 import { buildFixture } from './fixture.mjs';
 import { startRequestGate } from './request-gate.mjs';
 import { stagePrivateOpenCodeProfile } from './private-opencode-profile.mjs';
 import { runOpenCodeThreeTurns } from './opencode-adapter.mjs';
 import { launchIsolatedNative, connectIsolatedNative, nativeDiagnosticsReader } from './live-native-cdp.mjs';
 
-const BASE = '/home/destin/.cache/youcoded-luna-experiment';
+const BASE = `${os.homedir()}/.cache/youcoded-luna-experiment`;
 const BINARY = `${BASE}/opencode-v1.18.31/packages/opencode/dist/opencode-linux-x64/bin/opencode`;
 const PROMPTS = [
   'Without using tools or reading files, reply in one short sentence: The marker is blue.',

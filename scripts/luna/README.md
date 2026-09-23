@@ -27,10 +27,10 @@ step). Redirect it to the scratchpad and summarize; commit results next to the i
   `~/.cache/youcoded-luna-experiment/`: its own sign-ins (one ChatGPT OAuth for the app, one for
   OpenCode), transcripts and diagnostics. The live app and the installed OpenCode are never touched.
 - **The app side needs experiment-only instrumentation** gated on `YOUCODED_LUNA_EXPERIMENT=1`
-  plus the `luna-eval` dev profile: the request gate hook in `chatgpt-auth.ts`, a fixture jail on
-  the file tools (`lunaPathRefused`), and the KWin helper switched off. As of 2026-09-23 it lives
-  only on youcoded branch `session/prompt-reuse-luna-recovery`; launch the rig from a worktree
-  that has it (`live-native-cdp.mjs` pins the worktree path).
+  plus the `luna-eval` dev profile in an unpackaged build: the request gate hook in `chatgpt-auth.ts`, a fixture jail on
+  the file tools (`lunaPathRefused`), and the KWin helper switched off. They are on youcoded
+  master (youcoded#555) and inert unless all three conditions hold. The runners launch the
+  `youcoded/` component of the workspace copy they sit in (`live-native-cdp.mjs` derives it).
 - **Results come from the app's own content-free diagnostics**
   (`private-diagnostics/chatgpt-cache/requests.jsonl` in the private profile). Conversation IDs
   there are HMAC'd per process, so runners take rows by position — the isolated app runs nothing

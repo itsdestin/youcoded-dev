@@ -1,5 +1,5 @@
 ---
-status: active
+status: superseded
 date: 2026-09-23
 type: plan
 tags: [native-harness, prompt-cache, opencode, luna]
@@ -29,7 +29,7 @@ tags: [native-harness, prompt-cache, opencode, luna]
 **Files:**
 - Modify: `/home/destin/.cache/youcoded-luna-experiment/opencode-v1.18.31/packages/opencode/test/config/config.test.ts` (existing fake service layer and writable-config tests around lines 96–113 and 1127–1155)
 - Modify: `/home/destin/.cache/youcoded-luna-experiment/opencode-v1.18.31/packages/opencode/src/config/config.ts` (directory install at lines 438–480 and merged-config return at lines 589–609)
-- Modify: `docs/active/plans/2026-09-23-luna-request-gate.md` (record verified scope/remaining barriers)
+- Modify: `docs/archive/plans/2026-09-23-luna-request-gate.md` (record verified scope/remaining barriers)
 
 **Interfaces:** `configLayer({ npm?: Layer.Layer<Npm.Service> })` lets the test count `install` calls with `Layer.mock(Npm.Service)`. The existing `Config.Service.get()` and `waitForDependencies()` interfaces are unchanged. The experiment flag is the same exact `YOUCODED_LUNA_EXPERIMENT=1` already used for the private Codex guard; `OPENCODE_PURE=1` is required alongside it.
 
