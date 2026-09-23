@@ -22,7 +22,7 @@ related:
 
 **Release 1 — in-session fixes:** Tasks 1, 2, 3, 6, and Task 7 steps 1–4. Near-limit trigger, first-turn compaction, one summary with quotations, summarizer-copy shortening, overflow retry, no false turn end. Compaction lives in memory; nothing visual changes, so no review deck.
 
-**Release 2 — keep compaction on reopen:** Tasks 4, 5, Task 7 steps 5–6, and the smaller-model decision (§2.6). Needs a UI review deck for the fading/marker change before Task 7 step 5.
+**Release 2 — keep compaction on reopen, and the model-switch popup:** Tasks 4, 5, 9 and Task 7 steps 5–6. One UI review deck covers the fading fix (Task 7 step 5) and the switch popup (Task 9) before either is built.
 
 ## 2. Decided engineering choices
 
@@ -86,7 +86,7 @@ A versioned field on the existing durable `compact-summary` event: `v`, `generat
 - **Races:** new input, steers and notices wait in the existing pending queue during build/commit and are appended once afterwards. A changed revision/generation at commit rejects the candidate. Clear, interrupt and model switch cancel it.
 - **Legacy/corruption:** old summary-only records keep legacy reconstruction; never infer a resume point from them. A malformed new record falls back to the previous valid checkpoint, else the raw transcript, and logs a content-free reason. Opening a chat never runs a paid summary to convert old records.
 - Keep strict exact-history checks (`assemblyDigest` etc.). Portable restore never carries private provider metadata.
-- **Smaller-model switch — Destin's open decision.** A: compact on the previous model before switching. B: block the switch with a clear "too long for that model" message. Until decided (including all of Release 1), a switch uses the normal pre-request check on the new model, and stops with a clear message if the result cannot fit (effectively B).
+- **Smaller-model switch (U11, Task 9).** A switch to a model the chat does not fit is blocked by a popup: **Summarize and switch**, or X/Esc to stay. In Release 1, before the popup exists, a switch uses the normal pre-request check on the new model and stops with a clear message if the result cannot fit.
 
 ## 3. Code map (verified at `08a5f2aaa`)
 
@@ -103,6 +103,7 @@ Paths are relative to `youcoded/desktop/src/`.
 | `main/harness/session-store.ts:256–268` | `flushReferences` gives persisted refs, rejects failed/unknown ones | Used by the Release 2 commit |
 | `main/harness/native-session-host.ts:2936–3037` | Exact-history publish is fire-and-forget; resume tries exact restore, else rebuilds | Release 2: narrow awaited commit path; portable restore in the fallback |
 | `main/harness/history-rebuild.ts` | Skips `compact-summary` | Release 2: apply §2.6 reopen rule |
+| `main/harness/native-session-host.ts:4443` | `setBinding`: mid-session model swap; the next turn uses the new model; the old model stays loaded until the swap | Release 2: fit check against the new model before the swap (Task 9) |
 | `shared/types.ts:494` | `autoCompaction?: boolean` on the event | Extend with optional fields; no new event type |
 | `renderer/state/chat-reducer.ts:2879–2901` | Compaction complete strips the spinner, then calls `endTurn` (the false turn end) | Native auto: keep the turn alive |
 | `renderer/state/transcript-page-actions.ts:167–182`, `archive-boundary.ts:20–30` | Paging replays usage without a marker; everything before a marker counts as archived | Release 2 (see Task 7) |
@@ -213,6 +214,21 @@ npx vitest run tests/accepted-history-capture.test.ts tests/accepted-history-sto
 
 ```bash
 npx vitest run tests/harness-history-rebuild.test.ts tests/native-session-host-continuation.test.ts tests/accepted-history-store.test.ts
+```
+
+### Task 9 — model-switch popup (Release 2; U11)
+
+**Files:** `native-session-host.ts` (`setBinding`), the IPC bridge, renderer model-switch handling in `App.tsx`, a new popup component. **Tests:** `native-session-host-continuation.test.ts`, `harness-compaction.test.ts`, the popup's own `<Popup>.test.tsx`, IPC parity tests.
+
+1. Deck first: popup wording and layout at desktop and narrow widths, reviewed with Destin.
+2. Before the swap, measure the current history against the **new** model's §2.1 budget. It fits → swap as today, no popup.
+3. It doesn't fit → the renderer shows the popup; nothing changes yet. X or Esc closes it and keeps the current model.
+4. **Summarize and switch:** run the Task 3 summary on the current model, with the tail and post-compaction check computed from the new model's window (the summary allowance from the current model). Success → commit (Task 4) then swap. Failure, or still too big (for example the new model's fixed prompt alone is too large) → stay on the current model and show an honest error.
+5. Stop during the summary cancels the switch and leaves history untouched. A switch requested while a turn is running is checked when the swap actually applies, not mid-turn.
+6. Desktop and Android/remote consumers of any new IPC message stay in parity.
+
+```bash
+npx vitest run tests/native-session-host-continuation.test.ts tests/harness-compaction.test.ts
 ```
 
 ### Task 8 — finish each release
