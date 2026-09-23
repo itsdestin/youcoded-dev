@@ -203,6 +203,17 @@ See `docs/build-and-release.md` for full build order, release flows, and version
 
 Why offer at all: four live rounds found **nine** real defects that 4,500 passing tests did not — Bash returning 27,966 chars from one command, Grep reporting a 500-match cap as a true total, Glob treating `{ts,kt}` as literal text, a provider 402 rendered as `[object Object]`. Unit tests here drive scripted fake models; only a real model spending a real turn exercises the judgment these tools are built for. Rule: `.claude/rules/harness-evaluator.md` (auto-loads on `harness/tools/**` too).
 
+### Measuring prompt-cache reuse (Luna rig)
+
+When a change could move how much input a provider serves from cache (request headers, prompt
+order, history rebuild, compaction, resume), measure it on real ChatGPT-plan requests with
+`scripts/luna/` — the harness evaluator grades behaviour through OpenRouter and cannot see the
+ChatGPT backend's cache. It spends plan quota: ask Destin, state the request cap, and alternate
+client order across rounds. Pick the runner by question (plain turns, tool loops, or restart +
+compaction); read `scripts/luna/README.md` for the isolation model before the first run.
+Deterministic prompt shape stays pinned by unit tests (`prompt-assembly.test.ts`,
+`prompt-cache.test.ts`, `chatgpt-model.test.ts`), not by the rig.
+
 ## Ending a Session
 
 **When Destin says "wrap up", "close out this session", "let's finish up", "we're done",
