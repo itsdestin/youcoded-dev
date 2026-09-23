@@ -849,7 +849,7 @@ seen-on is always n/a here.
       the packager's minor updates are bumped by hand from now on). Open only until a Mac
       confirms the "Open Anyway" button is back on a build cut after the merge — test build run
       33921417200 was dispatched for that on 2026-09-04
-      `n/a` `needs-verify` `checked 2026-09-04` `regression` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
+      `n/a` `needs-verify` `checked 2026-09-04` `regression` `v1.3.1` → docs/active/investigations/2026-09-03-macos-beta72-unopenable-postmortem.md
 
 - [ ] Re-work the release method: releases tag master directly, so every release ships the
       undifferentiated 3,200-odd commits accumulated since v1.2.4 (May 2026), and bug-fix minors can't
@@ -859,8 +859,8 @@ seen-on is always n/a here.
       fold in when building: every fix needs a "goes in the minor?" cherry-pick decision, and the
       one-tag-both-platforms rule (ADR 005) means even a fix-only minor must coordinate an Android
       versionCode bump and ships a paired Android build (no bare desktop-only hotfixes). Promoted to a
-      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first
-      `n/a` `confirmed` `checked 2026-09-03` `v1.3.1`
+      1.3 blocker 2026-09-03: store listings make bug-fix releases routine, so this must exist first. Taken off 1.3.1 in Destin's triage 2026-09-23
+      `n/a` `confirmed` `checked 2026-09-03`
 
 - [ ] Every compiled file ships inside the installer, tests included — 47 test files and 19
       workbench files in the 1.2.4 asar, none reachable; installer weight, not a blocker

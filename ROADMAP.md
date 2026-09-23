@@ -40,12 +40,11 @@ harness and the local engine.
 
 ## Next release
 Target: `v1.3.1`
-- chat-data: Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an…
 - chat-data: Four smaller reads left over from cycle 2 still do more work than they need to: listing past conversations…
 - dev-workspace: Waiting on CI runs eats whole sessions
 - dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
 - dev-workspace: Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56…
-- dev-workspace: Re-work the release method: releases tag master directly, so every release ships the undifferentiated…
+- dev-workspace: Every macOS download since 2026-07-23 is unopenable, and the download page sends people to a button that no…
 - dev-workspace: Windows and macOS installers still hit the security wall
 - dev-workspace: No Google Play listing
 - files: Searching a big project's files still stops at the first 2,000 files and says "This folder is large
@@ -53,7 +52,7 @@ Target: `v1.3.1`
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
 - local-models: The file downloader exists three times (model files, the engine, voice assets) and the checksum helper four…
 - marketplace: A plugin that ships from a non-default branch gets scanned against the wrong code
-- marketplace: The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets and file shapes
+- marketplace: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
 - native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested and not thought through…
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
 - native-harness: A local model forgets the user's request halfway through a long first request, goes silent, then answers the…
@@ -63,7 +62,6 @@ Target: `v1.3.1`
 - native-harness: After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later command that looks…
 - native-harness: Helper (specialist) transcripts pile up in the sessions folder forever
 - native-harness: native-only users need a YouCoded-owned skills home
-- operations: Landing-page live embed goes fully blurred under framed wallpaper themes
 - operations: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
 - other-features: The Linux buddy has never been tried on two screens
 - remote-access: 182 features are hand-written twice, once for the desktop window and once for a phone or browser connecting…
@@ -75,17 +73,17 @@ Target: `v1.3.1`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 33 | 3 | 9 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 12 | 5 | 23 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 11 | 5 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 9 | 1 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 8 | 2 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 6 | 0 | 9 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 21 | 10 | 1 | 4 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 21 | 10 | 0 | 4 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 19 | 5 | 3 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 18 | 6 | 3 | 6 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 14 | 1 | 3 | 2 |
-| [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 11 | 3 | 3 | 1 |
+| [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |

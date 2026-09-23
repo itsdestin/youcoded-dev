@@ -3,11 +3,6 @@ Filing test: is it about youcoded.ai, promotion, the company's legal paperwork o
 Not here: the download builds themselves, installer signing and store uploads (dev-workspace → release), or anything inside the app.
 seen-on is always n/a here.
 
-- [ ] Landing-page live embed goes fully blurred under framed wallpaper themes — pick Meadow Mist
-      from the embed's theme button and the whole app window becomes one blur; the redesign makes
-      theme switching a primary interaction so this must ship with it
-      `n/a` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-landing-embed-blur-rounded-clip.md
-
 - [ ] The new site header does not match the two logos nearest it, and both were consciously
       deferred on 2026-09-04 rather than decided. The header is now a glass tile with the robot
       in the theme colour and a wide-caps wordmark; the FOOTER logo a few screens down still

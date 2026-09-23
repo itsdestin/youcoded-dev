@@ -78,10 +78,11 @@ them. Not here: the theme renders wrong (themes).
       Registry. Sequenced after the trust layer and abuse handling exist; it is a public commitment.
       `all` `parked` `checked 2026-08-27` → docs/active/investigations/2026-09-01-marketplace-public-sub-registry-layer-e.md
 
-- [ ] The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
-      and file shapes; a public product cannot imply a check that never happened. Wording is
-      Destin's call — candidate "No leaked secrets found"
-      `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+- [ ] The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets
+      and file shapes. Destin, 2026-09-23: keep the "Likely safe" wording and make the scan earn it
+      instead — "maybe just use an llm … to evaluate for certain criteria". Wanted: an AI review of
+      each plugin against a written list of what makes one unsafe, feeding the badge
+      `marketplace-screen` `all` `confirmed` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
       to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to

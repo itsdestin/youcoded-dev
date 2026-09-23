@@ -279,8 +279,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
-      as the app forgetting the approval
-      `tool-cards` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
+      as the app forgetting the approval. Re-checked 2026-09-23: still true — the Always-allow menu now states its limits up front, but the card raised later still gives no reason
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto

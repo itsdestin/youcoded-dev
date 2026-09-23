@@ -41,3 +41,4 @@ decision either way.
 - [x] 2026-09-02 themes — Android terminal mode hiding the wallpaper — no longer reproduces (Destin 2026-09-02)
 - [x] 2026-09-02 sync — Sync dead-ends on a machine without gh — Destin tested the no-gh path in his macOS VM, it worked (2026-09-02)
 - [x] 2026-09-23 operations — Site download buttons hand out betas after 1.3.0 shipped — kept on purpose (decided 2026-09-23: keep offering betas; the release skill asks Destin each release)
+- [x] 2026-09-23 operations — Landing-page live embed goes fully blurred under framed wallpaper themes (youcoded 868bcf3bd, the 2026-09-03 landing redesign)
