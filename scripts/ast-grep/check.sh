@@ -284,6 +284,11 @@ fi
 #   artifact-provider-value-memoized (an inline value object, a self-closing provider
 #   handed another value, a useMemo whose deps miss artifactState (3); an App with no
 #   provider tag, one whose value is not a useMemo (2)).
+# 2026-09-23 (perf, artifact-store-selectors.test.tsx): artifact-provider-value-memoized
+#   REPLACED by artifact-provider-stable-store — App now hands the provider a store made
+#   once, not a memoised value. Count unaffected, still 5: an inline value object, a
+#   self-closing provider handed another store, the right store with a value prop beside
+#   it (3); an App with no provider tag, one that builds the store per render (2).
 # 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
 #   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
 #   with no previewMeta.saveNote editor (1)).
