@@ -136,8 +136,11 @@ and **no approval is recorded** when the key could not be stored (finding 11).
 8. `pages:approve` refuses key material from a remote caller (finding 13). "No keys on the phone"
    was a renderer rule; it is now enforced where a crafted message cannot get past it.
 
-Caps: 30s per request, 4 concurrent per page, 60 per page per rolling minute. Over the limit
-refuses `'too-many-requests'` rather than queueing, so a runaway page cannot spend a paid key.
+Caps: 30s per request; 120 per page per rolling minute, over which the answer is a refusal
+(`'too-many-requests'`) so a runaway page cannot spend a paid key; and 4 in flight per page, past
+which requests **wait their turn** (up to 50 waiting) rather than being refused. The first real
+dashboard asks for 11 things at once, and the original refuse-past-four rule broke it on its first
+open (2026-09-23).
 
 **The credential never enters the renderer**, so this is also the honest answer for the phone: a
 remote viewer's request executes on the desktop exactly as a local one does.
