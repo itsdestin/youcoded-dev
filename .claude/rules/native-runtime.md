@@ -80,7 +80,7 @@ verify:
 ## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`compaction` tests
 - **CapabilityProfile NEVER branches on a model name** (`known-models.ts` is the ONLY modelId inspection); `supportsTools:false` → plain chat.
 - **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction, StatusBar.
-- **Near-limit compaction uses one validated summary, not pruning.** Preserve tool groups and accepted history; shorten only the summary-input copy. Failure keeps history; only legacy reopens may request-fit. Portable restoration is Release 2. Guards: `compaction-budget.test.ts`, `harness-compaction.test.ts`.
+- **Near-limit compaction: one validated summary, never pruning.** Keep tool groups and accepted history; shorten only the summarizer's copy. The `compact-summary` line is the durable record — append, then adopt. Switches are fit-checked (`native:switch-model`). Guards: `harness-compaction`, `native-switch-model` tests.
 
 ## Stall watchdog & the park — guard: `harness-stall-watchdog.test.ts`
 - **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down; a late chunk still continues the turn. That `return` IS the feature.
