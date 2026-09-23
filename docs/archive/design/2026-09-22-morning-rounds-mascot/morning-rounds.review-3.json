@@ -1,0 +1,46 @@
+{
+  "title": "Morning Rounds — scrub seam and a clean clipboard grip",
+  "key": "morning-rounds-mascot-refine-3",
+  "out": "morning-rounds.review-3.html",
+  "stage": "review",
+  "images": "images/morning-rounds.review-3",
+  "runs": { "before": "runs/round-3-before", "after": "runs/round-3-after" },
+  "labels": { "before": "Previous revision", "after": "Your requested changes" },
+  "themes": ["light"],
+  "theme": "fixed",
+  "crops": {
+    "scrubs": ["mascot", "welcome", "220x180+55+78"],
+    "clipboard": ["mascot", "welcome", "120x140+194+107"],
+    "actual-size": ["mascot", "actual", "320x180+0+0"]
+  },
+  "steps": [
+    {
+      "id": "R3-1",
+      "surface": "Morning Rounds buddy",
+      "path": "The scrub neckline and sleeves",
+      "crop": "scrubs",
+      "headline": "The red scrub edges meet closer to the mouth, with a dark seam and longer sleeves.",
+      "changed": "The extra cream triangle is gone. Red comes higher beside the muzzle, a short dark line divides the scrub front, and red sleeves cover more of both arms.",
+      "notice": "Check the neckline and whether the lower arms still read as paws."
+    },
+    {
+      "id": "R3-2",
+      "surface": "Morning Rounds buddy",
+      "path": "The clipboard at its right hand",
+      "crop": "clipboard",
+      "headline": "The square-looking beige finger is gone from the clipboard.",
+      "changed": "The same upright board now paints behind the original arm; no extra tan finger is drawn over it.",
+      "notice": "Does it still look held, without the pasted-on square?"
+    },
+    {
+      "id": "R3-3",
+      "surface": "Morning Rounds buddy",
+      "path": "The welcome face at its 80-pixel display size",
+      "crop": "actual-size",
+      "headline": "See the whole dog at the size you approved in the last round.",
+      "changed": "This compares the last revision with the new neckline, sleeves, seam and hand treatment at 80 pixels.",
+      "notice": "Judge whether the overall character still feels friendly.",
+      "risk": "This is static flat art; motion is not shown."
+    }
+  ]
+}
