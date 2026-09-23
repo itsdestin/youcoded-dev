@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# ARCHIVED 2026-09-23: kept for reference beside 2026-09-04-prompt-workbench.html, the page
+# it generated (the one review surface of the three that was accepted — see
+# 2026-09-04-native-prompt-vs-competitors.md). SCR below points at a scratchpad from the
+# session that wrote this, long since deleted — the script will crash on that path; it is
+# not meant to be re-run.
 """Prompt workbench: snag rule-sized snippets from other agents' prompts, edit YouCoded's
 own prompt beside them, see the diff. One self-contained HTML file.
 
@@ -6,7 +11,7 @@ Snippets are split programmatically from the verbatim sources (bullets / paragra
 tagged by the section they came from. 'Proposed' snippets are original wording (ours)."""
 import html, json, re, sys
 
-SCR = '/tmp/claude-1000/-home-destin-youcoded-dev/2c59b0b5-d6ff-4dff-bf78-5e1789fabeed/scratchpad'
+SCR = '/tmp/claude-1000/-home-destin-youcoded-dev/2c59b0b5-d6ff-4dff-bf78-5e1789fabeed/scratchpad'  # historical path, long gone
 sys.path.insert(0, SCR)
 import importlib.util as _u; _s=_u.spec_from_file_location('R', __import__('os').path.join(__import__('os').path.dirname(__file__), 'prompt-reading-page.py')); R=_u.module_from_spec(_s); _s.loader.exec_module(R)
 

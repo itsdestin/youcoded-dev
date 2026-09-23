@@ -1,6 +1,9 @@
 ---
 paths:
-  - "youcoded-core/**"
+  # WHY **/ (2026-09-23): a plain "youcoded-core/**" only matches at the workspace
+  # root, never inside a session worktree — same bug as registries.md. See
+  # .claude/rules/README.md.
+  - "**/youcoded-core/**"
 last_verified: 2026-07-15
 verify:
   - path: youcoded-core/plugin.json

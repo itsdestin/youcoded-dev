@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# ARCHIVED 2026-09-23: kept for reference beside 2026-09-04-native-prompt-vs-competitors.html,
+# the card-matrix page it generated (rejected as a review format — see the companion .md).
 """Generate the instruction-layer comparison surface (one HTML file).
 
 Every quote is verbatim from the source named in the card. Trims are marked with an

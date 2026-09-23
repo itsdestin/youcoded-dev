@@ -1,9 +1,29 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: finish the remote-hydration work — live/replay ordering and view-state parity (commits 2 and 3 of the 2026-07-20 plan)
 ---
+
+**RESOLVED 2026-09-10.** Both commits shipped, plus the double-apply/drop concern, all in
+the "remote batch 2/3" work:
+- **Commit 2 (ordering) — `youcoded@4f9320217`** ("the phone says when it is ready, and the
+  host holds everything until then"). The phone sends `client:ready` once React has mounted;
+  the host gates everything behind a queue (`runRestore`'s "THE CUT LINE") until that ack
+  arrives, instead of a hardcoded 500 ms guess. This also closes the double-apply/drop half
+  of the symptom — the queue-index bookkeeping (`snapshotIndex`, `hookPassIndex`) is what
+  makes replay exactly-once. Pinned by `remote-readiness.test.ts`.
+- **Commit 3 (view-state parity) — `youcoded@9b02964f6`** and **`youcoded@e7e2282c3`**. Not
+  the specced shape (broadcasting `activeSessionId`/`viewModes`) but the same goal reached a
+  different way: `e7e2282c3` adds a `focus: { sessionId }` field to `serializeChatState` so a
+  phone with no session of its own opens where the desktop is, and `9b02964f6` is a deliberate
+  reversal of the OTHER half — contract R4 decided the chat/terminal view toggle stays
+  per-screen and is never broadcast at all (it used to broadcast on Android and move every
+  other client), which is what the old
+  `On Android, tell the native side to switch views` line did. Pinned by
+  `view-switch-stays-local.test.ts`.
+
+Closed on `docs/roadmap/remote-access.md`; see `docs/roadmap/shipped.md`.
 
 # Remote hydration: the two unshipped commits
 

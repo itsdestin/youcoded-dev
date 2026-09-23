@@ -1,9 +1,17 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: review-harness.mjs's API-key scrub does not stop the model reading the key — decide whether to retire the script or port the evaluator's fixes
 ---
+
+> **Resolved 2026-09-23:** retired per Destin's 2026-09-02 decision below. Checked what would
+> be lost: nothing real — running the `harness-battery` case through `harness-eval.mjs`
+> produces the same battery and the same model prose, just captured in that run's own
+> `report-<plan>.md` instead of appended to `2026-08-01-native-agent-harness-reviews.md`.
+> `test-engine/review-harness.mjs` and `test-engine/review-roster.json` were deleted;
+> references updated in `docs/MAP.md`, `.claude/rules/harness-evaluator.md`,
+> `youcoded/desktop/test-engine/README.md` and the workspace `.gitignore`.
 
 # `review-harness.mjs` still leaks `OPENROUTER_API_KEY` to the model it runs
 

@@ -322,6 +322,27 @@ fi
 ALL_SHIPPED=$(rg -l '^status: shipped' "$WORKSPACE/docs/active" 2>/dev/null | wc -l)
 [[ "$ALL_SHIPPED" -gt 0 ]] && note "($ALL_SHIPPED doc(s) marked shipped are still in docs/active/ overall — not necessarily yours)"
 
+echo
+echo "Workspace hygiene"
+# WHY (2026-09-23): the SHARED youcoded-dev checkout accumulated ~200 untracked files
+# (design reviews, investigations, plans) that exist only on this laptop — invisible to
+# any other machine or session, and gone if the disk fails. Nothing else catches this at
+# close-out. Non-blocking (note, not fail): it's a heads-up for whoever left them, not a
+# gate on this branch. CLOSE_OUT_WORKSPACE lets the test point this at a disposable repo
+# instead of asserting on this machine's real clutter.
+UNTRACKED_ROOT="${CLOSE_OUT_WORKSPACE:-$WORKSPACE}"
+if [[ -e "$UNTRACKED_ROOT/.git" ]]; then
+  UNTRACKED=$(git -C "$UNTRACKED_ROOT" status --porcelain --untracked-files=all -- docs scripts 2>/dev/null \
+    | sed -n 's/^?? //p' | sort)
+  UCOUNT=$(printf '%s\n' "$UNTRACKED" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [[ "$UCOUNT" -gt 0 ]]; then
+    note "WARNING: $UCOUNT untracked file(s) under docs/ and scripts/ in the shared checkout — only on this machine:"
+    printf '%s\n' "$UNTRACKED" | sed '/^$/d' | head -5 | sed 's/^/       /'
+    [[ "$UCOUNT" -gt 5 ]] && note "  …and $((UCOUNT - 5)) more."
+    note "move them into your branch (git add) or ask Destin before ending the session"
+  fi
+fi
+
 # WHY single quotes around the inner placeholder: nested double quotes ended the string early,
 # so bash read `<commit or PR>` as a redirect from a file named "commit" and never printed the note.
 note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index)"

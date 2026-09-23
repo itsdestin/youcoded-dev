@@ -43,7 +43,10 @@ decision either way.
 - [x] 2026-09-23 operations — Site download buttons hand out betas after 1.3.0 shipped — kept on purpose (decided 2026-09-23: keep offering betas; the release skill asks Destin each release)
 - [x] 2026-09-23 operations — Landing-page live embed goes fully blurred under framed wallpaper themes (youcoded 868bcf3bd, the 2026-09-03 landing redesign)
 - [x] 2026-09-23 window-chrome — YouCoded Pages Phase 2: pages that connect, with the app holding the keys — approval card, blocking shell, one checked request door, keys in the keychain, freshness in the band (youcoded#552)
-
+- [x] 2026-09-23 dev-workspace — The old review-harness script still lets the model it runs read the OpenRouter key (its env scrub does not work) (pending: session/tooling-review-20260923)
+- [x] 2026-09-23 dev-workspace — Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded failed to start" (youcoded@13456d8a0)
+- [x] 2026-09-23 remote-access — Remote browser, freshly connected: the oldest assistant reply in the conversation morphs into a copy of the newest streaming one (youcoded@03faf5e48)
+- [x] 2026-09-23 remote-access — Finish the remote-hydration work: a remote browser can land on a different session or view than the desktop window shows, and events arriving during connect… (youcoded@4f9320217, youcoded@9b02964f6, youcoded@e7e2282c3)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

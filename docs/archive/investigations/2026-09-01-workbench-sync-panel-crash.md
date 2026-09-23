@@ -1,9 +1,17 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: Settings → Backup & Sync takes the whole workbench down — the mock shim has no `sync` namespace and SyncPanel reads `.length` off the catch-all's empty array
 ---
+
+**RESOLVED 2026-09-04 (`youcoded@13456d8a0`).** Destin hit the same crash on the PUBLIC landing
+page's live demo (same root cause, different host). Fixed at both ends: `mock-shim.ts` now
+hand-writes the `sync` namespace, and `SyncPanel.tsx` (the file this report calls `SyncPopup`)
+optional-chains every field the other side might omit — `status && status.syncedCategories.length`
+became `status && (status.syncedCategories?.length ?? 0) > 0`. Pinned by
+`desktop/tests/SyncPanel.test.tsx` → "Backup & Sync — a partial status must not crash the app".
+Closed on `docs/roadmap/dev-workspace.md`; see `docs/roadmap/shipped.md`.
 
 # Settings → Backup & Sync crashes the workbench to "YouCoded failed to start"
 
