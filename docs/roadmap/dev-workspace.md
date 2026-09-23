@@ -5,6 +5,12 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`,
+      2026-09-23) holds ~700 calls marked "unreviewed — hot-path candidate". The guard stops new
+      ones; the old ones still freeze every window when a click or timer reaches them. Work
+      through the list by how often each runs and convert or classify it; the list may only shrink
+      `n/a` `confirmed` `checked 2026-09-23` `performance`
+
 - [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
       → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
       the tool-card, chat-reducer, ipc-handlers, chatview and EngineCard-remnant follow-ups listed
