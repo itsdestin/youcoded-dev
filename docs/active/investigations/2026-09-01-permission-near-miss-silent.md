@@ -16,7 +16,7 @@ decision-path matcher, and it deliberately refuses a wildcard Bash grant in two 
 
 1. **Chained command** — the command contains a shell operator the pattern does not
    (`npm run build && echo hi` under `npm run*`). Safety rule 1.
-   <!-- claim: {"path": "youcoded/desktop/src/shared/subject-glob.ts", "contains": "SAFETY RULE 1 — a wildcard never swallows a second command"} -->
+   <!-- claim: {"path": "youcoded/desktop/src/shared/subject-glob.ts", "contains": "SAFETY RULE 1 — a wildcard grant never covers a second command"} -->
 2. **Destructive flag after a bounded wildcard** — `git push origin feat/x --force` under a
    grant built for `git push origin feat/x` (`BOUNDED_RUNG_VETO`, safety rule 2).
 

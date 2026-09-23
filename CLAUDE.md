@@ -153,7 +153,7 @@ Prefer **a pinning test > an ast-grep rule > a WHY comment > a path-scoped rule 
 | Shipped/superseded records | `docs/archive/`, with corresponding status |
 | Personal preferences | Available personal guidance/memory mechanism, last resort; never product planning |
 
-When work merges, archive its lifecycle docs, remove its open roadmap item and append a closure to `docs/roadmap/shipped.md`. Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
+When work merges, archive its lifecycle docs and close its roadmap item with `node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`. Close retrospectives when their findings are resolved or filed. Exclude archives from searches for current guidance.
 
 ## Subsystem References (read on demand — NOT auto-loaded)
 

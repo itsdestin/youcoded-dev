@@ -36,19 +36,6 @@ them. Not here: the theme renders wrong (themes).
 
 ## backend
 
-- [ ] Website analytics is live, but its account allowance, spending alerts and applicable backup
-      window are not fully verified: Free Website was confirmed, the Workers subscription lookup
-      returned 403, and provider docs alone say Free 7 days / Paid 30 days. Verify the account's
-      billing and alert coverage without assuming a free zone caps Worker costs; no plan upgrade
-      was made. Follow-up monitoring, not a new activation approval gate
-      `n/a` `needs-verify` `checked 2026-09-15`
-
-- [ ] Website analytics reports cleanup health as unknown after activation, with no last sweep yet.
-      Observe the first daily prune, then verify cleanup/recovery monitoring and provider backup
-      expiry separately from the active database's 90-day history; live ingestion success does not
-      prove retention operations. Follow-up monitoring, not a new activation approval gate
-      `n/a` `needs-verify` `checked 2026-09-15`
-
 - [ ] The Regions list in admin analytics is empty — "Region data isn't coming through yet." Every
       device in the last 30 days arrives with a blank region, while countries come through fine.
       Seen on Destin's analytics dashboard 2026-09-13; cause not looked into
@@ -91,10 +78,11 @@ them. Not here: the theme renders wrong (themes).
       Registry. Sequenced after the trust layer and abuse handling exist; it is a public commitment.
       `all` `parked` `checked 2026-08-27` → docs/active/investigations/2026-09-01-marketplace-public-sub-registry-layer-e.md
 
-- [ ] The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
-      and file shapes; a public product cannot imply a check that never happened. Wording is
-      Destin's call — candidate "No leaked secrets found"
-      `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+- [ ] The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets
+      and file shapes. Destin, 2026-09-23: keep the "Likely safe" wording and make the scan earn it
+      instead — "maybe just use an llm … to evaluate for certain criteria". Wanted: an AI review of
+      each plugin against a written list of what makes one unsafe, feeding the badge
+      `marketplace-screen` `all` `confirmed` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
       to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to
