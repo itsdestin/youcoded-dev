@@ -695,6 +695,15 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] A scheduled check that every id in the model switcher's recommended list
+      (`desktop/src/shared/recommended-models.ts`, added 2026-09-20) is still live on its
+      provider, feeding the release skill recommendations for what to change. OpenRouter's own
+      catalog already drops a dead id from the picker for free (the list is intersected with the
+      live catalog at render), so the runner's real job is RENAMES and new "latest" aliases:
+      which ids to add, which to swap, which to retire. The ChatGPT plan families match by name
+      rather than id and self-heal. Destin 2026-09-20: roadmapped for now, not built
+      `n/a` `confirmed` `checked 2026-09-20`
+
 - [ ] Destin, 2026-09-20: "just fixing a few minor test issues and such has seemingly eaten over
       an hour of our time today just waiting around on runs. is there any way we could improve
       this in the future for better/faster iteration and fixes?" Two answers he liked, neither

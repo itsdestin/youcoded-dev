@@ -675,3 +675,10 @@ recurred — the repetition is the data.
 - `audit-anchors.mjs` exited 1 with two FAIL blocks that are both outside this session's change (7 missing MAP paths in `wecoded-marketplace`, which is not checked out here; 15 `docs/active/` docs duplicated under `docs/archive/`, which the tool's own output flags as another session's uncommitted files). Confirmed no failure named this session's files → dropped: not mine to fix, and CLAUDE.md says report rather than repair another session's in-flight work. [1 audit run]
 - Destin's words worth keeping: "my pc crashed. however, that data loss seems like a separate youcoded bug we should investigate" — he wanted the mechanism, not just the fix restored.
 - deleted/merged: none found — the change was three states on one existing line plus tests; the only deletion was the stale `pointer` wording in the comment beside it.
+
+## 2026-09-22 — model switcher recommendations, manual review and merge (session/recommended-models)
+- Fresh review caught two defects the existing 26 green picker tests missed: `gpt-console` was mistaken for Sol by substring matching, and the General-page picker kept its mount-time toggle value → applied: two red-then-green cases in `desktop/tests/ModelPicker.test.tsx`, slug-token matching and re-read on open in the app. [2 bugs before merge]
+- Source comment pointed the scheduled endpoint-check runner at the wrong roadmap area → applied: corrected the pointer in `desktop/src/shared/recommended-models.ts`; the runner remains a single open `dev-workspace.md` item, not another entry.
+- The picker had a MAP hot path but its new curated-list file was undiscoverable from the map → applied: model-recommendations row in `docs/MAP.md` with shared list, settings and test entry points.
+- Chat Search queried user text, not generated conversation titles; one exact-title query returned no hits, a shorter user phrase found it → dropped: documented in the skill and solved in one query, no new machinery justified.
+- deleted/merged: drag-reorder implementation was already removed at Destin's request before this handoff; no duplicate feature code found to remove here.
