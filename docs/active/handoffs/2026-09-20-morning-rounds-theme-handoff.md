@@ -8,6 +8,40 @@ Written 2026-09-20 at the end of a session that reached Kit approval but never r
 Phase 2. The theme is for Destin's girlfriend and friends at Cornell vet school.
 Destin is a non-developer; do the technical work rather than handing him commands.
 
+> **Status 2026-09-22: the pack is built and its PR is open — see the four decisions
+> below, which supersede several claims further down this document.**
+>
+> Destin answered a review deck (`docs/active/design/2026-09-21-morning-rounds-mascot/`):
+>
+> | Question | Answer |
+> |---|---|
+> | A-1 keep the vet-dog mascot? | **Yes** |
+> | D-1 which palette ships? | **Rounds Cream** (`wp-cream`) |
+> | C-1 which scrubs on the buddy? | **Clinic blue** `#3A6FA8`, with the note "remove the tail" |
+> | D-3 should the dog hold something? | **Add the clipboard** |
+>
+> **Three claims in this document are now wrong; the deck and the code supersede them:**
+>
+> 1. *"Destin's final call for now: bare — no hat, no scrubs."* — no longer true. The
+>    mascot now carries cream-lined dog ears in the hat slot and the wallpaper cat's
+>    orange clipboard in the item slot; the tail was REMOVED at his request.
+> 2. **Gotcha 7 ("cream rim `#FFF3E4`") is not this theme's treatment, and the reasoning
+>    in it is unsound.** The rim strokes the eye ellipse AND every filled mouth, so on a
+>    mid-tone body it paints a halo round each eye that reads as a sticker border. Read
+>    off all seven shipped rigs: the five with a light or mid body (golden-sunbreak,
+>    cotton-candy-sky, meadow-mist, kuromi-dreamer, strawberry-kitty) all set a dark
+>    `fill` and NO `rim`. The only themes setting one are halftone-dimension (rim
+>    `#00b8ff` on a near-black `#191327` body, where it is the only thing separating eye
+>    from head) and devils-garden (whose rim is a warm spark, not the face colour). The
+>    theme originally shipped with `rim: CREAM` and that was the defect Destin was seeing.
+> 3. **Gotcha 6's "lowest facial element is y=13.6" is the shocked mouth's centre.** The
+>    true lowest element is the happy grin at **y=14.5**.
+>
+> Also note gotcha 7's implied remedy — a light rim on a dark body — is real
+> `reference/mascots.md` rule 3, but it applies to a body the eye cannot separate from.
+> Clinic blue `#3A6FA8` is mid-tone: its eye measures 3.22:1 against the body, so no rim
+> is needed and the rim is what made it read badly.
+
 ## The one-line state
 
 Kit is **approved and live**; the pack is **not built**. "Build theme pack" is not a
@@ -44,8 +78,11 @@ build — it emits a `kit-build` event for *you* to process, and the event that 
 Phase 2, per the skill's `reference/phase2-finalize.md` — read it before starting; the
 steps below are a map, not a replacement.
 
-1. **Decide the palette — do this first, it is a real decision, not a formality.**
-   The manifest carries exactly one palette in `tokens` (verified: no shipped theme has
+1. ~~**Decide the palette**~~ — **ANSWERED 2026-09-22: Rounds Cream (`wp-cream`)**, via the
+   review deck. The paragraph below is kept because it records which four candidates
+   existed and why the seeded manifest matched none of them.
+   The original note follows:
+   "The manifest carries exactly one palette in `tokens` (verified: no shipped theme has
    a `palettes` field; the template has no such key). The Kit defined **four**, so one
    must be picked. Worse, they disagree:
 
@@ -61,7 +98,14 @@ steps below are a map, not a replacement.
    The seeded manifest matches **no** palette exactly — it is closest to wp-soft but its
    `panel` differs, and the Kit says wp-cream. **Ask Destin which palette ships** rather
    than guessing; the other three are a natural follow-up theme-pack idea, not something
-   the manifest can hold.
+   the manifest can hold."
+
+   **What actually shipped:** `wp-cream`'s tokens exactly, plus a `background.average-color`
+   the Kit never wrote. That field is not cosmetic — a glass theme without it is audited
+   against flat tokens, which understates the real ratios and only WARNS. With the
+   wallpaper's true average (`#E3D6CC`) declared, `fg-dim` and `fg-faint` on `inset` fell
+   below their HARD thresholds (3.98 and 1.99) and had to be darkened to `#6B5F56` and
+   `#9A9184`. The theme-builder should write this field whenever it bakes a wallpaper.
 2. Folder + hero wallpaper + terminal-bg bake (`prep-terminal-bg.cjs`).
 3. Remaining SVGs (cursor, particle shape, scrollbar, icons) — most already exist.
 4. Manifest from `scripts/manifest-template.jsonc`. **The slug transform is the trap

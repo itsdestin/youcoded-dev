@@ -1,0 +1,12 @@
+{
+  "id": "cvm",
+  "skin": "solid",
+  "body": "#C31230",
+  "highlight": "#E8475E",
+  "shade": "#8A0D20",
+  "face": { "ink": "#FFF3E4", "fill": "#7A1220", "rim": "#FFF3E4" },
+  "catchlight": "pair",
+  "spark": ["#F6AE2D", "#FFD98A", "#65BDBF"],
+  "accent": "#F6AE2D",
+  "tail": false
+}

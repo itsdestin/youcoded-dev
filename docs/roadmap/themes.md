@@ -45,3 +45,19 @@ here: installing or browsing themes (marketplace).
       Checked 2026-07-20 and it probably already does — nothing to see until a differently-rounded
       theme is installed, so this is verify, not build
       `session-drawer` `all` `needs-verify` `checked 2026-07-20`
+
+- [ ] Android ignores a theme's chosen font entirely: every installed theme renders in the app's
+      built-in monospace, so a theme whose whole identity is its typeface (Nunito, Comfortaa,
+      Space Grotesk) looks like the theme on desktop and like the default on a phone. Desktop
+      injects the theme's font link; nothing on Android reads the field at all. Five of the
+      seven published themes set a font, so this is every font theme, not one pack. Seen while
+      publishing Morning Rounds, 2026-09-22
+      `settings/themes` `all` `confirmed` `checked 2026-09-22`
+
+- [ ] A wallpaper theme that doesn't declare its background's average colour gets its contrast
+      audited against flat tokens, which understates the real ratios and only warns — so a theme
+      can go green while its dim and faint text is genuinely below the bar. The theme-builder
+      writes the field; nothing makes it, and the publishing path doesn't either. Found on
+      Morning Rounds, where declaring the real average dropped two tiers below their hard
+      thresholds, 2026-09-22
+      `settings/themes` `all` `confirmed` `checked 2026-09-22`
