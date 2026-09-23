@@ -13,7 +13,7 @@ related:
 
 ## Status and authority
 
-Destin approved the product direction below on 2026-09-22 and revised it after a review on 2026-09-23 (U3 revised; U8–U10 added). This is a draft; constants, schemas, UI copy and code are not approved. No app code has changed. Anything labeled **recommendation** is an engineering proposal, not a user decision.
+Destin approved the product direction below on 2026-09-22 and revised it after a review on 2026-09-23 (U3 revised; U8–U11 added). This is a draft; constants, schemas, UI copy and code are not approved. No app code has changed. Anything labeled **recommendation** is an engineering proposal, not a user decision.
 
 ## 1. Goal
 
@@ -37,6 +37,7 @@ These summarize explicit choices or approvals in the design conversation, not im
 | U8 | The summary includes up to 3 short, exact quotations of the user's own words under Goal, Constraints and User decisions, only where useful. Still-valid quotes carry forward through later compactions; superseded ones are replaced. No automated quote verifier. | 2026-09-23: Destin proposed the quotations; accepted the tweaks; declined a verifier as overcomplicating. |
 | U9 | When the summary request would not fit, oversized tool outputs are shortened **in the summarizer's copy only**, with a marker, instead of stopping the conversation with a context-limit error. The real transcript is untouched. | 2026-09-23 review: accepted the reviewer's suggestions (“looks good”). |
 | U10 | Ship in two releases: first the in-session fixes (near-limit trigger, first-turn compaction, one summary, no false turn end); then durable restoration on reopen, using a simple saved record (summary + one resume point). | 2026-09-23 review: accepted the reviewer's suggestions. |
+| U11 | Switching to a model the conversation no longer fits is blocked with a popup offering **Summarize and switch** (summarize on the current model so the chat fits the new one, then switch) or dismiss with X/Esc (stay on the current model). | 2026-09-23: Destin: “fine if we block, but it should be a popup with a ‘summarize and switch’ button or an x/esc button.” |
 
 ### Rejected or replaced directions
 
@@ -103,7 +104,7 @@ Summary generation has its own output allowance. The normal reply allowance, sum
 - Do not silently remove the oldest summary input to fit the request.
 - Use the handoff contract in §5. No AI grading call.
 - Budget the summary allowance and instruction overhead before the near-limit trigger. If the summary input still cannot fit (for example, after a giant tool result), shorten the largest tool outputs in the summarizer's copy only, with a visible "[output shortened]" marker, until it fits (U9). No multi-pass summary ladder.
-- **Open decision:** after a switch to a much smaller model, the history may not fit even with shortened tool outputs. Recommendation: compact on the previous model before switching. This needs Destin's approval because it is not the current model.
+- **Smaller-model switch (U11):** when the conversation would not fit the chosen model, the switch waits behind a popup. **Summarize and switch** runs one summary on the current model, sized so the result fits the new model, then switches; X/Esc keeps the current model. If the summary fails or still cannot fit, stay on the current model and say so. Popup copy and layout go through the UI review step.
 
 ### 4.5 Validate and commit once
 
@@ -237,7 +238,7 @@ Cross-conversation memory, new history search/indexing, provider-native opaque c
 | A4 | The summary's Goal/Constraints carry the active request and corrections (with quotes where useful); complete parallel tool groups and retained-message ordering survive; app notices are never quoted as the user or treated as approvals. |
 | A5 | A short session yields a short handoff; complex sessions may use larger allowance. Unapproved AI choices never become user decisions in quality fixtures, including repeated compaction. |
 | A6 | Normal compaction makes one summary call and no committed prune-first rewrite; candidate remains uncommitted on abort/timeout/length/error/persistence failure. |
-| A7 | Post-cut headroom and tool pairing checked; giant tool results are shortened in the summarizer's copy only; smaller-model switches follow the chosen policy or stop honestly. |
+| A7 | Post-cut headroom and tool pairing checked; giant tool results are shortened in the summarizer's copy only; switching to a model the chat no longer fits shows the U11 popup; Summarize and switch either fits and switches or stays on the current model with an honest error; X/Esc changes nothing. |
 | A8 | Durable restoration after date/prompt/tool/model changes; strict private continuation fences remain intact; clear/retry/branch operations cannot resurrect invalid history. |
 | A9 | Crash/revision/interruption/queued-input races yield old state or a valid new checkpoint; exactly one replay-safe completion marker. |
 | A10 | One confirmed-overflow retry; unrelated errors do not compact; completed tools are never replayed as recovery side effects. |
