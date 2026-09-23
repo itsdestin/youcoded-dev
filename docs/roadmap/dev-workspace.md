@@ -898,8 +898,11 @@ seen-on is always n/a here.
 
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
       The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
-      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
-      `n/a` `blocked` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads.
+      Windows needs a decision first (2026-09-23): Microsoft will not validate a company under
+      3 years old, so sign as Destin personally, buy a commercial certificate, or stay unsigned
+      — options in the report's Status block
+      `n/a` `blocked` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
