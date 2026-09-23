@@ -1,0 +1,21 @@
+{
+ "deck": "pages-empty-placement",
+ "started": "2026-09-23T08:34:16.578Z",
+ "submitted": "2026-09-23T08:34:44Z",
+ "cur": 1,
+ "answers": {
+  "1": {
+   "v": "yes",
+   "note": "we should also hide/collapse the sidebar ONLY on this no page state.",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "2": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

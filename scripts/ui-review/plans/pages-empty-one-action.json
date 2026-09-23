@@ -1,0 +1,7 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=empty",
+  "shots": [
+    { "name": "landing", "actions": [{ "click": "[aria-label='Open Pages']", "settle": 850 }], "expect": "js:!!document.querySelector('.screen-view') && ![...document.querySelectorAll('.screen-view button')].some(b=>b.textContent.includes('Manage pages'))" },
+    { "name": "populated", "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default", "actions": [{ "click": "[aria-label='Open Pages']", "settle": 850 }], "expect": "js:[...document.querySelectorAll('.screen-view button')].some(b=>b.textContent.includes('Manage pages'))" }
+  ]
+}
