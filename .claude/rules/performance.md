@@ -66,15 +66,17 @@ main-process blocking-call ratchet** (branch `session/perf-guard-main-sync`).
 
 5. **Keystroke-frequency state stays in the component that needs it.** Draft text, a search
    query, a caret never live in App or a shared parent; parents get the value on submit or
-   debounced, and no effect re-subscribes per keystroke. **Why:** the file editor re-subscribed
+   debounced (or a tiny store only the reader subscribes to — the drawer's slash filter), and no
+   effect re-subscribes per keystroke. **Why:** the file editor re-subscribed
    its watcher on every character. **Guard:** the busy-app test.
 
 6. **Layout and paint stay cheap.** No read-after-write layout (`getComputedStyle`,
    `offsetWidth` after a style write) in per-frame or per-key paths, and no dependency-less
-   `useLayoutEffect` that measures; animate `transform`/`opacity` only; a custom property
-   written at high frequency is registered with `@property`; high-frequency writes coalesce to
-   one `requestAnimationFrame`; an `infinite` animation carries `steps()`. **Why:** ~120 forced
-   style recalcs/s in SessionStrip; unregistered root variables recalc the whole document; one
+   `useLayoutEffect` that measures; animate `transform`/`opacity` only; a high-frequency style or
+   custom-property write skips an unchanged value and coalesces to one `requestAnimationFrame`
+   (not `@property` — it kills `var(--x, fallback)` fallbacks and visibly moves layout); an
+   `infinite` animation carries `steps()`. **Why:** ~120 forced style recalcs/s in
+   SessionStrip; root variables rewritten per keystroke recalc the whole document; one
    smooth pulsing dot cost ~29% of a core at 180 Hz. **Guard:** `SessionStrip-layout-effects`,
    `animation-frame-budget`, `no-unstepped-infinite-animation`.
 
