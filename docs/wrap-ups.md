@@ -665,3 +665,10 @@ recurred — the repetition is the data.
 - Destin: skip 1.3.0 → then "i lied … cut an official 1.3.0"; 1.3.1 is the next official release and waits for the ten `v1.3.1` blockers; the website keeps serving pre-releases for now; announcement expiry one week, his wording kept verbatim → applied across the roadmap tags, `build-and-release.md`, and the live announcement.
 - A one-line `announcements.txt` change ran the full Linux build (~20 min, auto-merge disabled repo-wide) because the `changes` gate skips only `docs/` → roadmap: `dev-workspace.md`, with the nightly-rehearsal and single-file-single-OS asks he made in the same breath.
 - deleted/merged: the Linux "AppImage else .deb" fallback and macOS's "else any dmg" fallback (both were the bug); `.deb`-opens-a-browser and its test; the duplicated `largeSheetNote` wording in CsvView/XlsxView became one function.
+
+## 2026-09-22 — model switcher recommendations, manual review and merge (session/recommended-models)
+- Fresh review caught two defects the existing 26 green picker tests missed: `gpt-console` was mistaken for Sol by substring matching, and the General-page picker kept its mount-time toggle value → applied: two red-then-green cases in `desktop/tests/ModelPicker.test.tsx`, slug-token matching and re-read on open in the app. [2 bugs before merge]
+- Source comment pointed the scheduled endpoint-check runner at the wrong roadmap area → applied: corrected the pointer in `desktop/src/shared/recommended-models.ts`; the runner remains a single open `dev-workspace.md` item, not another entry.
+- The picker had a MAP hot path but its new curated-list file was undiscoverable from the map → applied: model-recommendations row in `docs/MAP.md` with shared list, settings and test entry points.
+- Chat Search queried user text, not generated conversation titles; one exact-title query returned no hits, a shorter user phrase found it → dropped: documented in the skill and solved in one query, no new machinery justified.
+- deleted/merged: drag-reorder implementation was already removed at Destin's request before this handoff; no duplicate feature code found to remove here.
