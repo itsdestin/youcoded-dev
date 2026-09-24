@@ -120,8 +120,8 @@
       "path": "Terminal view",
       "crop": "terminal",
       "headline": "The terminal becomes a floating frosted card with rounded corners, a thin edge and a soft shadow, clear of the header and the window edges.",
-      "changed": "It was already see-through (a pre-blurred copy of the wallpaper), but it ran edge to edge behind the header. Now it is inset on all four sides like the other panels, with the blurred wallpaper lined up behind it.",
-      "notice": "The terminal is slightly smaller: a few pixels at each side and the bottom, and about half a line at the top. It is the same size in chat and terminal views, so switching views does not redraw it. Desktop only: phones keep today's terminal.",
+      "changed": "It was already see-through (a pre-blurred copy of the wallpaper), but it ran edge to edge behind the header. Now it is inset on all four sides like the other panels, with the blurred wallpaper lined up behind it. The tint fills the card to its edge (the gaps you spotted are fixed).",
+      "notice": "The text area is about the same size as before, and stays the same size in chat and terminal views, so switching views does not redraw it. Desktop only: phones keep today's terminal.",
       "risk": "Not tried on a phone. The phone terminal is untouched, but that means it won't match the desktop's card look."
     }
   ]
