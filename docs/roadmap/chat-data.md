@@ -9,14 +9,6 @@ produced and the panel that shows them (files).
       matching the two cards, 2026-09-16)
       `projects` `desktop` `confirmed` `checked 2026-09-16`
 
-- [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
-      browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
-      still closes it (seen in the workbench while filming the promo, 2026-09-03). Same cause as
-      the 2026-09-10 code-review finding that a SECOND Escape can fall through to the chat: the
-      layered Escape handling pops the browser's entry after the first press and nothing puts it
-      back (`use-esc-close.tsx` re-pushes only when `open` or the store changes)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-16`
-
 - [ ] Priority shows as a tag on every card and in the per-card tag picker, but the Tags filter
       cannot narrow to it; the note marker looks like a tag too and cannot be filtered
       `resume-browser` `all` `confirmed` `checked 2026-09-10`
@@ -43,10 +35,6 @@ produced and the panel that shows them (files).
       row previews the conversation (desktop) or expands a panel (phone width) and the Resume
       Session button sits in the preview's foot; a beta tester expected the name to open it
       `resume-browser` `all` `confirmed` `checked 2026-09-16`
-
-- [ ] Resuming a conversation that is already open in a tab made a second tab with the same name
-      instead of switching to it (seen in the workbench, 2026-09-10)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
 
 - [ ] At phone width the Resume browser's expanded row details truncate to unreadable stubs
       ("wecoded-m…", "qwen3-coder-30…"). (The Skip Permissions switch it also showed is not a

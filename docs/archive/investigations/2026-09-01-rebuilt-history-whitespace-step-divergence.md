@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Resumed native history differs from live history for a whitespace-only empty step
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Live-vs-rebuilt history divergence for whitespace-only empty steps
 

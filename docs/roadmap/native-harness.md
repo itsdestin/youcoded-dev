@@ -72,27 +72,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       youcoded#533.)
       `settings` `desktop` `confirmed` `checked 2026-09-18`
 
-- [ ] After a native session recovers from a step that produced only blank whitespace, the
-      history the model sees on resume is not byte-identical to what it saw live (leading blank
-      lines fold into the retry's text). Invisible to the user; leftover from the empty-step fix
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-rebuilt-history-whitespace-step-divergence.md
-
 - [ ] Main-chat thinking bubble flickers — disappears and reappears with no visible tokens — during
       a very slow native stream (Destin, 2026-08-16, OpenRouter qwen3.8-27b streaming at ~6
       tokens/s; not specialist-related). Needs a slow provider to reproduce
       `chat` `desktop` `needs-verify` `checked 2026-08-16` `needs-repro`
-
-- [ ] Resuming a native conversation that never got a title (predates the title feeder, or all
-      title attempts failed offline) shows a real name in the Resume Browser row but `Resuming…`
-      on the session pill until the next completed turn. Fix is known; held on Destin's copy
-      call — should the pill show the raw first-message text the browser row already uses?
-      Destin 2026-09-02: the pill shows the first message's opening words
-      `session-drawer` `desktop` `confirmed` `checked 2026-09-02` → docs/active/investigations/2026-09-01-resumed-native-session-no-stored-title.md
-
-- [ ] During a cross-device takeover of a native session, a message sent in exactly the wrong
-      instant runs a whole turn on the old device before the handoff proceeds (found in the M2
-      final review; the flush still happens after, so nothing is lost)
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-quiesce-takeover-send-window.md
 
 - [ ] Editing a queued message that had files attached refills the composer with the raw file
       paths as text and drops the attachments (accepted-for-now limit from the M1 queue work);
@@ -161,11 +144,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       re-sending the message, not re-running a paused step
       `chat` `desktop` `confirmed` `checked 2026-09-16`
 
-- [ ] While the assistant is quiet, the amber "Still waiting" card and the "Retrying in 15s…"
-      countdown may flicker back and forth, because an unrelated update resets the chat to
-      "fine" without clearing the stall warning. Reported by a code read, never seen live
-      `chat` `desktop` `needs-verify` `checked 2026-09-16`
-
 - [ ] Every cloud model gets frontier-strength treatment (full tool presentation, parallel calls),
       so a small hosted model chokes the same way a small local one does; and an unknown local
       model is sized by its context window, a poor stand-in for capability. Capability and context
@@ -180,6 +158,11 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       2026-09-18 (Destin): resumes after the native-session-host test split has merged and
       phase 4 is done, since phase 4 moves the runtime this touches
       `desktop` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+
+- [ ] If a conversation moves to another device while it is being summarised to save space, the
+      move does not wait for the summary to finish, and a summary cut off this way reports
+      "interrupted" as if the user had pressed Stop (found 2026-09-23)
+      `desktop` `confirmed` `checked 2026-09-23`
 
 ## tools
 - [ ] The assistant cannot explain the app it lives in: asked "how do I tag a session" or "where
@@ -203,20 +186,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       LOCAL model gets, which no OpenRouter arm exercises, and whether "keep going until it's done"
       makes a small model loop more
       `desktop` `needs-verify` `checked 2026-09-05` → docs/archive/investigations/2026-09-04-native-prompt-vs-competitors.md
-
-- [ ] One Grep from a conversation whose folder is your home directory can hang the turn for
-      hours — on 2026-08-26 a background Explorer's search sat 4 h in Google Drive before Stop killed it
-      `desktop` `confirmed` `checked 2026-09-01` `urgent` → docs/active/investigations/2026-09-01-grep-glob-no-deadline.md
-
-- [ ] On a small local vision model the assistant is told an image is "already visible earlier in
-      this conversation" and gets no picture, even though it can no longer see it, until the file changes.
-      **Now genuinely reachable** — measured 2026-09-05 while building the local-engine upgrades: no
-      `KNOWN_MODELS` entry has ever declared `supportsVision`, and local bindings always resolved to
-      "don't know", so no local model could reach the buggy path at all. Once the engine reports a
-      paired vision file, any downloaded local vision model resolves true, and the only remaining
-      precondition is a context under ~8,500 tokens — which is exactly the small vision models this
-      feature makes easy to install.
-      `desktop` `confirmed` `checked 2026-09-05` → docs/active/investigations/2026-09-01-trimmed-image-dedupe-cache.md
 
 - [ ] After the shell has cd'd elsewhere, Read and Bash can silently open two different files for the
       same relative name — Destin to decide: reject relative paths outright, or keep the hints and live with it
@@ -274,19 +243,18 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       create and resume, and the permission chip stops at Full Auto
       `status-bar` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-native-no-bypass-mode.md
 
-- [ ] Once a wide enough Bash approval is saved, a destructive `rm` on a workspace or system
-      directory can run without asking — nothing sits below a remembered grant the way Claude
-      Code's target check does
-      `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remembered-grant-beats-deny-list.md
-
-- [ ] The assistant refuses to open `~/.ssh` or `.env` with its file tools, but `cat` through a
-      shell command reads the same file; there is no sandbox underneath either
-      `desktop` `confirmed` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-bash-skips-secret-path-deny.md
-
 - [ ] Sandboxing vs. a "scratch workspace" (run risky sessions on a copy, show a diff to keep or
       discard) — pick one as its own design pass before any sandbox work; the existing write-up
-      argues against OS sandboxing as a cross-platform promise
-      `desktop` `parked` `checked 2026-08-26` `security` → docs/active/investigations/2026-08-09-native-skip-permissions.md
+      argues against OS sandboxing as a cross-platform promise. 2026-09-23: the new command
+      checks (youcoded#562) catch the deletes and secret reads a model normally writes, but some
+      shapes still run with no card, and only a sandbox closes them:
+      - deletes: `find ~ -mindepth 1 -delete`, `echo ~ | xargs rm -rf`, `$(which rm)`,
+        `git clean -fdx ~`, brace expansion like `rm -rf ~/{*,.*}`, and `~root`
+      - secret reads: `ls -a | xargs cat`, paths built at run time, and script files
+      - login files not on the file tools' secret list: `~/.npmrc`, `~/.pypirc`,
+        `~/.docker/config.json`, `/etc/shadow`, a bare `id_rsa`, and `.ENV` on case-insensitive
+        filesystems
+      `desktop` `parked` `checked 2026-09-23` `security` → docs/active/investigations/2026-08-09-native-skip-permissions.md
 
 ## cost
 - [ ] Cloud model context management and cache/token efficiency improvements — one item so the
@@ -326,11 +294,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
         cache on every request. The date/git snapshot now sits last in the opening prompt so
         conversations in one folder share the rest (branch). OpenRouter and local remain
         unmeasured; llama.cpp's chunk reuse is unsupported by every offered local model
-      - The context chip keeps the OLD model's window after a model swap or a resume (filed
-        2026-09-16) — swap a 1M model for a small local one and the chip can read "97%
-        remaining" on a window the very next message overflows; it only corrects once a turn
-        finishes. The session-context panel's "Context window" row and its small-window warning
-        have the same lag
+      - (2026-09-23) Fixed and removed from this list: the context chip keeping the old model's
+        window after a model swap or a resume (youcoded#562)
       - (2026-09-17) Nothing is restored after compaction; Claude Code re-reads the files the
         assistant was recently working in
       - (2026-09-17) Tool output caps are fixed numbers (Read 100k characters, the others 30k)
@@ -377,12 +342,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       to delete one, and closing the parent conversation leaves its helpers' files behind.
       Blocked on a general delete-conversation feature existing at all (none does today)
       `desktop` `blocked` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-specialist-child-transcript-gc.md
-
-- [ ] After a reload, a helper's card can come back with no notes on it: the reload sends the
-      conversation's history and the helper records separately, and if the helper record arrives
-      before the card exists on screen it is dropped rather than parked, so the next live update
-      is the first thing the card shows. Found by the 2026-09-04 code review of the note-order fix
-      `tool-cards` `desktop` `needs-verify` `checked 2026-09-04`
 
 - [ ] Specialists stage two — plans: the model proposes a multi-step fan-out as data, the user
       approves a card, the executor journals and resumes it. Approved in the 2026-08-11

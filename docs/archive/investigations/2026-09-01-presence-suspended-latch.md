@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Presence can wedge OFF for the rest of the process — the `suspended` latch is only clearable by a powerMonitor `resume`
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Presence wedges OFF permanently when a `resume` event is missed
 

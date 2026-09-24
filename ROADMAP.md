@@ -51,7 +51,6 @@ Target: `v1.3.1`
 - files: Searching inside files' text in a project stops at 200 matches (20 per file, 5 seconds) and shows "200+",…
 - local-models: Gemma models download with no licence notice, and Google's Gemma terms require passing their use restrictions…
 - local-models: The file downloader exists three times (model files, the engine, voice assets) and the checksum helper four…
-- marketplace: A plugin that ships from a non-default branch gets scanned against the wrong code
 - marketplace: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
 - native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested and not thought through…
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
@@ -72,18 +71,18 @@ Target: `v1.3.1`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 32 | 3 | 9 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 12 | 5 | 23 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 41 | 16 | 2 | 6 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 38 | 8 | 1 | 4 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 24 | 8 | 2 | 2 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 6 | 0 | 9 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 5 | 6 | 5 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 55 | 10 | 5 | 23 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 29 | 6 | 1 | 4 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 6 | 2 | 2 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 22 | 5 | 6 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 22 | 7 | 7 | 5 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 21 | 10 | 0 | 4 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 7 | 1 | 4 |
-| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 14 | 1 | 3 | 2 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 17 | 4 | 0 | 9 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 13 | 3 | 1 | 4 |
+| [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 2 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 

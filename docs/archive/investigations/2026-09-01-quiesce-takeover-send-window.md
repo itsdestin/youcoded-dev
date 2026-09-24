@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: A send() arriving during the one-macrotask window of a cross-device takeover runs a full turn before the handoff
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # `NativeSessionHost.quiesce()` has a one-macrotask window in which `send()` is not refused
 

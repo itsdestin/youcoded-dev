@@ -36,11 +36,6 @@ here: installing or browsing themes (marketplace).
       closest current combination still leaves outlined ghost pills
       `all` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-01-chrome-style-bare.md
 
-- [ ] In the theme editor, a particle preset that isn't one of the listed choices shows as unset and
-      gets overwritten on the next save. Bug 5 of the 2026-07-19 input-migration family (bugs 2–4
-      shipped in PR #297)
-      `themes-screen` `desktop` `needs-verify` `checked 2026-09-01`
-
 - [ ] Destin's ask: the session switcher's corners should follow the active theme's rounding rule.
       Checked 2026-07-20 and it probably already does — nothing to see until a differently-rounded
       theme is installed, so this is verify, not build

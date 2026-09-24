@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Plan-approval buttons send arrows and Enter in one PTY write — the shape CC 2.1.220 drops
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Plan-approval buttons send arrows + Enter in ONE write
 

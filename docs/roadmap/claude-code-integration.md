@@ -34,37 +34,15 @@ chat-data).
       look. Found by the design check on 2026-09-16; moving it changes its look slightly.
       `model-picker` `desktop` `confirmed` `checked 2026-09-16`
 
-- [ ] Clicking a plan-approval button other than the first ("No, refine plan", "Tell Claude what to
-      change") may still approve the plan as option 1 on Claude Code 2.1.220+ (found 2026-07-30
-      during the permission-timeout review; not yet tried in a dev instance)
-      `tool-cards` `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-plan-approval-single-write.md
-
 - [ ] Idea: the app's bundled hooks (write-guard, hook-relay) could rewrite tool output at the
       boundary — redact secrets or PII, normalize paths — now that Claude Code lets a PostToolUse
       hook replace any tool's output (2.1.121+). Additive; nothing depends on it
       `all` `parked` `checked 2026-04-29`
 
-- [ ] A permission ask left unanswered for five minutes quietly expires and the session sits wedged
-      with no way forward — worst with the assistant's own questions (AskUserQuestion). The fix was
-      built on branch `feat/permission-ask-timeout` (worktree `worktrees/perm-timeout`, youcoded PR #278,
-      2026-07-31) but the PR was never reviewed and now conflicts heavily with master
-      `tool-cards` `all` `blocked` `checked 2026-09-01`
-
-- [ ] In one narrow ordering the hook relay can lose a permission expiry entirely — the card keeps
-      showing a live ask over a socket that is already dead; clicking any button then reports the
-      failure honestly. Found in the permission-timeout review; fix rides that same branch
-      `tool-cards` `desktop` `needs-verify` `checked 2026-07-31`
-
 - [ ] After resuming a Claude Code session, some tool cards still show as running — a tool cannot be
       live in a session that was closed. The native-session half shipped (PR #287); what remains is
       Claude Code sessions, where the app has no mid-turn idle signal to reap them on
       `tool-cards` `all` `needs-verify` `checked 2026-09-01`
-
-- [ ] The session id the app hands Claude Code leaks into every process that session starts, so a
-      `claude` launched from inside a session (Bash tool, script, background job) reports its hooks
-      under the parent session's id — this is what once repointed a live chat view at a foreign
-      transcript (2026-07-26, verified on the Z13)
-      `desktop` `needs-verify` `checked 2026-07-26` `security`
 
 - [ ] Three more ways a Claude Code prompt card can stick around after the prompt is gone (a remote
       client that connected mid-prompt, Android's native prompt hook, the buddy window's feed) — all
@@ -87,10 +65,19 @@ chat-data).
       trust-folder prompt — terminal view shows the prompt and answers fine, chat view never
       surfaces it (Destin, 2026-09-03, screenshot on file: "Accessing workspace: /home/destin
       ... Yes, I trust this folder"). Since 2026-09-14 the screen at least says "Something may
-      be wrong" after 6 s with a Check terminal view button, so it no longer hangs silently. The
-      parser markers DO match that wording (`ink-select-parser.ts`), and the init gate is
-      already released the moment a trust prompt is detected — so the remaining suspect is the
-      trust-gate detection itself never seeing the prompt in chat state. Note the confounder in
-      this repro — `~/.claude/settings.json` also had 12 dangling hook paths at the time, so
-      hooks could not fire; re-verify with healthy hooks before concluding
-      `desktop` `needs-verify` `checked 2026-09-16` `needs-repro`
+      be wrong" after 6 s with a Check terminal view button, so it no longer hangs silently.
+      Cause found 2026-09-23: Claude Code 2.1.281's folder-trust prompt no longer numbers its
+      options, so the app never recognises it as a prompt and no trust card appears in chat
+      `desktop` `confirmed` `checked 2026-09-23`
+
+- [ ] Reloading the app window while a permission or plan question is waiting makes its card
+      disappear: the terminal looks blank and the chat looks idle while Claude Code is still
+      waiting for an answer. Now that a question is held for up to 2 hours, this can last much
+      longer than before (found 2026-09-23)
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-23`
+
+- [ ] On Android, the protection that stops a `claude` started inside a chat from taking over
+      that chat does nothing yet: the Claude Code bundled with the Android app (2.1.112) does not
+      pass along what the protection needs. It switches on by itself once Android's Claude Code
+      is updated (found 2026-09-23)
+      `android` `confirmed` `checked 2026-09-23`

@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: An image trimmed out of the outgoing request is still claimed "already visible" by the image dedupe cache
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Trimmed-for-the-wire image still counted as "already visible"
 

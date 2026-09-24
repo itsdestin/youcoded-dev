@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: A remembered "Always allow" outranks the destructive deny-list — no non-overridable floor under native permissions
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed. Shapes the new command checks still miss are tracked on the parked sandboxing item in docs/roadmap/native-harness.md.
 
 # Nothing sits below a remembered grant
 

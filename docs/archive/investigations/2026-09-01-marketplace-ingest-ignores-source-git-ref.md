@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: the catalog ingest scans a repo's default branch and ignores index.json's sourceGitRef
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in wecoded-marketplace#103 and youcoded#562; its roadmap entry is closed.
 
 # Ingest ignores `sourceGitRef`
 
