@@ -1,0 +1,14 @@
+[
+  {
+    "theme": "midnight",
+    "name": "inbox-install-phone",
+    "run": "1790255592556",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [],
+    "rmseVsBaseline": 0.325546,
+    "dump": [],
+    "file": "docs/active/design/2026-09-23-project-plugin-controls/runs/built/shots-project-plugin-marketplace-install-phone/midnight/inbox-install-phone.png"
+  }
+]
