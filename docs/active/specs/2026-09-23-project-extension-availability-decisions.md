@@ -48,6 +48,11 @@ date: 2026-09-23
 - **Approved:** R-1 right-aligned drawer chips with direct red-chip click; M-2 post-install setup on a phone; S-1 wrapping phone descriptions.
 - **Reworked and approved in `combined-review-2` (all yes, 2026-09-24):** M-1 post-install project setup in the Marketplace panel (first answer was "hard to understand"; re-asked with a two-step picture); S-2 setup explanation as a popup, not inside the card; K-1 the risk confirmation as a popup naming the connecting parts (first answer "confused"). **Every UI surface in the first-build scope now has sign-off.**
 
+## Build questions, 2026-09-24 (`project-plugin-controls.build-questions.answers.json`)
+
+- **B-1 `none-outside`:** conversations outside any project get nothing automatic, even though that changes today's behaviour there (Destin chose it over keeping today's behaviour).
+- **B-2 `later`:** the Android app has no Projects screen; phone-app support ships with Android Projects. Remote access from a phone gets the full tab now. This supersedes combined-review Q-4 for this build.
+
 ## Still open before a build contract
 
 1. Visual sign-off on the in-context Marketplace post-install step, the drawer's round-3 right-aligned chips, and the locked rows inside Your Assistant's Projects tab. The local-MCP and missing-device actions still need their own full-context review; **the round-6 grouping direction alone did not approve the whole feature**.

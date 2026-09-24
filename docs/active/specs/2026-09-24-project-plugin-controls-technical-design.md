@@ -168,15 +168,12 @@ backend and get the full feature.
 - Renderer: tab rows from a fixture view; chips per status; busy-app render budget stays
   green (the tab and chips must not subscribe to chat state).
 
-## Open for Destin
+## Resolved by Destin (`project-plugin-controls.build-questions.answers.json`, 2026-09-24)
 
-1. **Conversations outside any project.** The decisions say no-project conversations get
-   no automatic skills (not even Chat Search). Today they get everything, and "don't turn
-   off what works today" also stands. The app has no incognito conversation yet.
-   Proposed: outside a project, keep today's behaviour until incognito exists, then apply
-   "none" to incognito only.
-2. **Android.** The Android app has no Projects screen (every Projects channel is
-   desktop-only), so Q-4's "show it with a note" has nowhere to appear yet. A phone browser
-   on remote access does get the full tab, and there the switches really apply. Proposed:
-   no Android work in this build; the note ships with whatever later build brings Projects
-   to the Android app.
+1. **B-1 `none-outside`:** a native conversation whose cwd is in no saved-folder project
+   gets NO automatic skills and NO tool connections (including Chat Search). Manual `/skill`
+   still works (the host path is unfiltered). The drawer shows every skill amber "Manual use"
+   there. This is a deliberate behaviour change: release notes must say so.
+2. **B-2 `later`:** no Android work in this build. Android keeps answering the new channels
+   `not-implemented-on-mobile`; the renderer hides chips on that answer. Remote browsers get
+   the full feature from the desktop.
