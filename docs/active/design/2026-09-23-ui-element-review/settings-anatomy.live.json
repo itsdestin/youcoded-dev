@@ -1,0 +1,129 @@
+{
+  "title": "Settings layout",
+  "key": "ui-element-review-settings-anatomy",
+  "out": "settings-anatomy.live.html",
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 540
+  },
+  "steps": [
+    {
+      "id": "SA-1",
+      "surface": "Settings",
+      "path": "Any Settings popup",
+      "hint": "Each pane is the same Settings popup (modelled on Remote Access), drawn with the app's real parts. Scroll inside it; try a dark theme and Meadow Mist.",
+      "headline": "Where should a setting's control go: below its title, beside it, or depending on size?",
+      "notice": "Today the app does this five different ways, often inside one window (Assistant settings).",
+      "live": {
+        "surface": "settings-anatomy",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "below",
+          "label": "Always below",
+          "candidate": "below",
+          "summary": "Title and hint, then the control on its own line — every setting."
+        },
+        {
+          "id": "beside",
+          "label": "Always beside",
+          "candidate": "beside",
+          "summary": "Title and hint left, control right — every setting."
+        },
+        {
+          "id": "mixed",
+          "label": "By control size",
+          "candidate": "mixed",
+          "summary": "Switches beside; text boxes and choices below."
+        }
+      ]
+    },
+    {
+      "id": "SA-2",
+      "surface": "Settings",
+      "path": "A setting with five choices (Keep awake)",
+      "headline": "How should a setting with several choices be offered?",
+      "notice": "Look at \"Keep awake\". Today this exact setting is a five-part strip, though the app's own rule says strips stop at four.",
+      "live": {
+        "surface": "settings-anatomy",
+        "round": 2
+      },
+      "variants": [
+        {
+          "id": "segmented",
+          "label": "Switch strip",
+          "candidate": "segmented",
+          "summary": "All choices side by side in one strip."
+        },
+        {
+          "id": "radios",
+          "label": "Boxed list",
+          "candidate": "radios",
+          "summary": "One boxed row per choice."
+        },
+        {
+          "id": "select",
+          "label": "Dropdown",
+          "candidate": "select",
+          "summary": "One box that opens a list."
+        }
+      ]
+    },
+    {
+      "id": "SA-3",
+      "surface": "Settings",
+      "path": "A group of related settings (Backups)",
+      "headline": "Should a group of settings sit in a box inside a box, or flat?",
+      "notice": "Look at \"Backups\" at the bottom. Today Backup & Sync uses four box styles, one inside another.",
+      "live": {
+        "surface": "settings-anatomy",
+        "round": 3
+      },
+      "variants": [
+        {
+          "id": "nested",
+          "label": "Boxes in a box",
+          "candidate": "nested",
+          "summary": "An outer card holding inner cards and a dashed add button — today's shape."
+        },
+        {
+          "id": "flat",
+          "label": "Flat",
+          "candidate": "flat",
+          "summary": "A small label, the rows directly under it, then a normal button."
+        }
+      ]
+    },
+    {
+      "id": "SA-4",
+      "surface": "Settings",
+      "path": "Any Settings popup",
+      "headline": "How much space between groups in a Settings popup?",
+      "notice": "Look at the gaps between Access, This computer and Backups.",
+      "live": {
+        "surface": "settings-anatomy",
+        "round": 4
+      },
+      "variants": [
+        {
+          "id": "compact",
+          "label": "Tighter",
+          "candidate": "compact",
+          "summary": "16px between groups, 6px between rows."
+        },
+        {
+          "id": "roomy",
+          "label": "Roomier",
+          "candidate": "roomy",
+          "summary": "24px between groups, 8px between rows."
+        }
+      ]
+    }
+  ]
+}
