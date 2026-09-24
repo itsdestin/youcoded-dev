@@ -36,7 +36,8 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
 - **ONE backdrop-filter, ever** — the frame chrome is a single `<div class="chrome-glass">` clipped via `clip-path: polygon()`; per-element backdrop-filters seam at non-100% zoom.
 - **`destination-out` is NOT a valid `mix-blend-mode`** — silently ignored (black chat area). Cut shapes with `clip-path`.
-- **`chrome-glass` is `display:none` in floating-chrome modes**; `.chrome-wrapper` must stay `background: transparent !important`; drawer-pane sits ABOVE chrome-glass (`z-index:11`).
+- **`chrome-glass` is `display:none` in floating-chrome modes** (`'float'` instead collapses its clip-path — depth doc); `.chrome-wrapper` stays `background: transparent !important`; drawer-pane sits ABOVE chrome-glass (`z-index:11`).
+- **Blur only through theme-engine's glass sheet**, never a static `backdrop-filter` — else Reduced effects can't remove it · guard: `float-chrome-pops.test.ts`.
 - **Compound attribute selectors must be same-element:** `data-wallpaper` is on `<html>`, `data-chrome-style` on `<body>` — descendant combinator, never `[a][b]`.
 - **The right slot holds EITHER the artifact drawer OR the games panel** — both read `var(--right-pane-width)`; `chrome-glass--drawer-open` gates on `activeDrawerOpen || gameState.panelOpen`. Don't hardcode the width.
 
