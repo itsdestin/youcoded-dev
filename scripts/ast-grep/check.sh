@@ -377,7 +377,8 @@ fi
 # 2026-09-18 (render-cost consolidation): +1 for filestab-memoized (FilesTab exported as a
 #   plain function) and +3 for filestab-no-artifact-context (useArtifact(),
 #   useArtifactOptional() and useContext(ArtifactContext), one fixture line each) — 423 (419 on master + these 4).
-EXPECTED_VIOLATIONS=423
+# 2026-09-23: +1 for main-auto-approve-through-should-auto-approve (plan-approval review).
+EXPECTED_VIOLATIONS=424
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
