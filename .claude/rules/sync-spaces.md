@@ -48,6 +48,11 @@ verify:
   - test: youcoded/desktop/tests/sync-spaces-engine.test.ts
   - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
     contains: "dropOversizeFromOutgoing"
+  - path: youcoded/desktop/src/main/sync-spaces/git-transport.ts
+    contains: "holdUnmanaged"
+  - path: youcoded/desktop/src/main/sync-spaces/guards.ts
+    contains: "isNeverSyncPath"
+  - test: youcoded/desktop/tests/sync-spaces-daily-backup.test.ts
   - path: youcoded/desktop/src/main/sync-spaces/repair.ts
     contains: "deleteZeroByteObjects"
   - path: youcoded/desktop/src/main/sync-spaces/self-sync-status.ts
@@ -62,7 +67,7 @@ verify:
 ---
 # Sync Spaces, SyncHub, backup & GitHub-connect
 
-**Depth + why: `youcoded/docs/sync-spaces.md`; guards = frontmatter `verify:`.**
+**Depth + why: `youcoded/docs/sync-spaces.md`.**
 
 ## Git transport (`sync-spaces/git-transport.ts`)
 - **`GIT_DIR` env, not `--separate-git-dir`; ignores/attributes in `$GIT_DIR/info/`; `info/attributes` = `* -text`, NOT `text=auto`.**
@@ -71,6 +76,7 @@ verify:
 - **Non-zero git exits are guilty until proven benign** (allowlist; corruption → coded `repo-corrupt`, else the REAL stderr) — never `{pushed:false}` on a failed commit.
 - **Zero-byte loose objects are POISON** — only `repair()` clears them, never writing outside `.youcoded/`.
 - **Never push an over-cap blob** (`dropOversizeFromOutgoing`); show them.
+- **Secrets enforced at staging (`stageAll`: `reset`, never `rm --cached`); a pull holds unmanaged files (`holdUnmanaged`); every conflict step is checked and aborts on failure.**
 
 ## Engine & service (`engine.ts`, `service.ts`)
 - **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; a persistent `watcher.on('error')` is required; `stop()` clears the state map FIRST.
@@ -79,7 +85,7 @@ verify:
 - **Corrupt-repo heal is ONCE per space per launch** (`healedSpaces`, marked BEFORE attempting). **Self device-row recency derives from `lastSyncFor` evidence**, never `.sync-marker`.
 
 ## SyncHub (`sync-hub-socket.ts` + `SyncGroupRoom` DO)
-- **The DO is per-account, an ACCELERANT not truth** — never drop the 120s poll. **spaceKey = `repoNameForSpace()`, never the local id; signal ONLY on `pushed:true`; the hub send runs LAST of the fan-outs in `broadcast()`, isolated.**
+- **The DO is per-account, an ACCELERANT not truth** — keep the 120s poll. **spaceKey = `repoNameForSpace()`; signal ONLY on `pushed:true`; the hub send runs LAST in `broadcast()`, isolated.**
 - **Per-device recency rides the SAME signal** (`lastSyncByDevice` in DO storage; pure `deviceActivityLabel` renders). **Self reads the LOCAL `lastSyncEpoch`, NOT the map.**
 
 ## Import (`sync-spaces/import-project.ts`)
@@ -87,8 +93,8 @@ verify:
 
 ## Project UX + discovery
 - **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state/label); other status-coloured controls aren't sync.
-- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json` — VISIBLE per-file, NEVER under `.youcoded/`.** `state` = `stopped`-dominates monotonic (not LWW); **fold-on-read** blocks resurrection; schema stays 1.
-- **Per-field merge: `laterOf` takes `{v, at}` wrappers (`description` does; the name dimension passes whole entries); `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`.** Whole-entry `laterOf` tie-breaks on `JSON.stringify` (broke associativity); a shared clock reverts a peer's rename.
+- **Project registry at `~/YouCoded/Personal/ProjectSync/<name>.json`, NEVER under `.youcoded/`.** `state` = `stopped`-dominates (not LWW); **fold-on-read** blocks resurrection; schema stays 1.
+- **Per-field merge via `laterOf` `{v, at}` wrappers; `description` is LWW on its OWN `descriptionUpdatedAt`, never `updatedAt`** (associativity + shared-clock traps: depth doc).
 
 ## Device registry
 - **TWO identities, NEVER merged: `getDeviceIdentity(userData)` = per-INSTALL (leases); `getMachineIdentity(builtAppUserData)` = per-MACHINE (registry), which READS, never mints — `null` ⇒ register NOTHING.**
@@ -96,12 +102,12 @@ verify:
 - **`removeDevice` deletes conflict copies too — a plain delete, NOT a tombstone.** **Self-marking uses `machineId` on BOTH surfaces.**
 
 ## Legacy backup / demolition
-- **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive.** **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore is GONE.** The >500MB warning rides `notice`, NOT `error`; `git gc` is local `--auto`.
+- **`sweepProjectSymlinks()` is `lstat`-only, removes ONLY symlinks/junctions, NEVER recursive.** **Drive/iCloud backup is WRITE-ONLY dated snapshots; restore is GONE.** **Prune only after a full success, never the newest.** The >500MB warning rides `notice`, NOT `error`; `git gc` is local `--auto`.
 
 ## Sync Warnings
 - **`~/.claude/.sync-warnings.json` is authoritative; two writers, non-overlapping codes**; push-failure warnings are non-dismissible.
 - **`runHealthCheck`: launch, then 5-min ticks (60 s while offline) while watched and sync is on — a warning must not outlive its cause**.
-- **Node-killed timeouts have empty stderr — use `extractStderr(e, timeoutMs)`**.
+- **Node-killed timeouts have empty stderr: use `extractStderr(e, timeoutMs)`.**
 
 ## GitHub auth (`github-{auth,connect,client}.ts`)
 - **The access token NEVER leaves the main process** — only the github-client store (safeStorage, per-install userData, never `~/.claude`/synced dirs) and `gh auth login --with-token` stdin; never logged, thrown, or in payloads/WS/git argv/config. App store PRIMARY, gh best-effort.
