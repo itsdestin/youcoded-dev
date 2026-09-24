@@ -1,0 +1,38 @@
+{
+ "deck": "ui-element-review-settings-anatomy",
+ "started": "2026-09-24T09:24:49.209Z",
+ "submitted": "2026-09-24T09:29:15Z",
+ "cur": 3,
+ "answers": {
+  "SA-1": {
+   "v": "pick",
+   "pick": "mixed",
+   "note": "a dark button/switch/selection should NEVER be on the bottom left. left-aligned buttons are broken buttons in my perspective. in some cases, may make an exception if countered with a right-aligned button/option in the same line, but most unacceptable.",
+   "seconds": 115,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "SA-2": {
+   "v": "other",
+   "note": "i think it depends.... also, the ui for keep awake needs to be unique and rebuilt though. it should show how much keep awake time is left. though we can deal with this later.",
+   "seconds": 92,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "SA-3": {
+   "v": "pick",
+   "pick": "flat",
+   "note": "for this example. flat, but i could see this differing for different use cases? idk...",
+   "seconds": 42,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "SA-4": {
+   "v": "pick",
+   "pick": "compact",
+   "seconds": 16,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}
