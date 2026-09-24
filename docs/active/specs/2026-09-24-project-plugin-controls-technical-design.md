@@ -84,13 +84,21 @@ An item with no entry in the record resolves by rule, evaluated on the device:
 3. Everything else (earlier installs, personal/project skills, user-added or adopted tool
    connections) → **on**, which is today's behaviour.
 
-`seededAt` is written the first time the new build touches a project (listing it, opening
-its tab, or starting a conversation in it). To make "what works today" identical on every
+`seededAt` is written ONCE per project, only when absent, and only when the user opens that
+project's Skills & tools tab or starts a conversation in it — never by listing projects, so
+opening the Projects page causes no writes (pin: listing N projects writes nothing; a second
+seed of the same project writes nothing). To make "what works today" identical on every
 device, seeding also **materialises** the rule result for every item present at that
 moment into explicit `items`/`plugins` entries (including Theme Builder = on for projects
 that existed before the feature). Explicit entries then sync; a second device merges them
 rather than recomputing. A project created after the feature ships gets `seededAt` at
 creation and Theme Builder off, matching the approved defaults.
+
+Uninstall: removing a plugin writes `plugins[p] = {on:false, removed:true, at}` in every
+project that has an entry for it (mirroring `skill-config-store`'s `removePackage` cascade).
+`removed` hides it from needs-setup on every device, so no phantom "Install" row appears
+for something deliberately removed; installing it again clears `removed` through the setup
+flow.
 
 Plugin master: `plugins[p].on=false` pauses automatic use of every part; part entries keep
 their values (approved: pause remembers choices). First enable with `partsChosen=false`
@@ -101,14 +109,13 @@ turns all parts on and sets `partsChosen=true`.
 `resolveAvailability(projectKey, catalogEntries, mcpEntries) → { skillIds:Set, mcpIds:Set }`
 — pure function, the single source of truth, unit-tested.
 
-- **Skills:** `NativeSessionHost` resolves the conversation's project from its cwd: the saved
-  folder whose canonical path equals the cwd, or else the LONGEST saved folder that
-  contains it (a conversation started in a subfolder of a project belongs to it). No
-  existing helper does ancestor matching, so this is new code with its own unit table
-  (exact, subfolder, sibling-prefix `proj` vs `project`, case on Windows, none). Project
-  View's own `matchProjectByPath` stays exact-match and is not changed in this build, so a
-  conversation in a project's subfolder gets that project's skills but Project View does not
-  highlight it as the active project — a known, visible-only difference, noted not fixed, computes availability at
+- **Skills:** `NativeSessionHost` resolves the conversation's project from its cwd by EXACT canonical-path match to a
+  saved folder — the same rule Project View's `matchProjectByPath` uses, so both always
+  agree. No ancestor matching: the app seeds a "Home" saved folder at the user's home
+  directory and picks it as the default new-conversation folder
+  (`folders-service.ts`, `FolderSwitcher.tsx`), so an ancestor rule would have swallowed
+  every folder into Home and silently defeated B-1. Conversations in the Home folder are in
+  the Home project and follow its switches (seeded to today's behaviour), computes availability at
   `create()`, and passes a filtered `list()` into the session catalog alongside the preset
   allowlist (intersection). `load()` stays open, matching the allowlist precedent — manual
   `/skill` keeps working through the unfiltered host path.
@@ -193,8 +200,10 @@ backend and get the full feature.
 
 1. **B-1 `none-outside`:** a native conversation whose cwd is in no saved-folder project
    gets NO automatic skills and NO tool connections (including Chat Search). Manual `/skill`
-   still works (the host path is unfiltered). The drawer shows every skill amber "Manual use"
-   there. This is a deliberate behaviour change: release notes must say so.
+   still works (the host path is unfiltered). The drawer shows every installed skill amber "Manual use"
+   there and no Unavailable cards (there is no project whose choices could be missing).
+   In practice this is rarer than it sounds: new conversations default to the Home folder,
+   which IS a project (see §3). This is a deliberate behaviour change: release notes must say so.
 2. **B-2 `later`:** no Android work in this build. Android keeps answering the new channels
    `not-implemented-on-mobile`; the renderer hides chips on that answer. Remote browsers get
    the full feature from the desktop.
