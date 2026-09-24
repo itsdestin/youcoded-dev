@@ -1,0 +1,4 @@
+{
+  "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default&projectAssistantPreview=1",
+  "shots":[{"name":"assistant-locked-focus-explanation","actions":[{"click":"[title=Projects]","settle":1000},{"click":"[title='Switch project']","settle":300},{"click":"js:[...document.querySelectorAll('[role=dialog] button')].find(x=>x.textContent.includes('Your Assistant'))","settle":700},{"click":"[aria-label='Skills & tools']","settle":500},{"eval":"document.querySelector('[aria-label=\"Chat Search is always available in Your Assistant\"]').focus()","settle":300}],"expect":"js:!!document.querySelector('[aria-label=\"Chat Search is always available in Your Assistant\"]').getAttribute('aria-describedby') && document.body.textContent.includes('Other projects have their own choices')"}]
+}

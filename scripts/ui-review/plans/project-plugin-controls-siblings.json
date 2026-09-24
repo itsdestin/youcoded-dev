@@ -1,0 +1,8 @@
+{
+ "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+ "shots":[
+  {"name":"files","actions":[{"click":"[title=Projects]","settle":1000}],"expect":"[aria-label=Files]"},
+  {"name":"conversations","actions":[{"click":"[title=Projects]","settle":1000},{"click":"[aria-label=Conversations]","settle":500}],"expect":"[aria-label=Conversations]"},
+  {"name":"instructions","actions":[{"click":"[title=Projects]","settle":1000},{"click":"[aria-label='Instructions & Memories']","settle":500}],"expect":"[aria-label='Instructions & Memories']"}
+ ]
+}

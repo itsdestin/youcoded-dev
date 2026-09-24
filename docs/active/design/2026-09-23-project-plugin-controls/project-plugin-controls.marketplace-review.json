@@ -1,0 +1,38 @@
+{
+  "title": "After downloading a plugin — choose projects",
+  "key": "project-plugin-controls-marketplace-review",
+  "out": "project-plugin-controls.marketplace-review.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.marketplace-review",
+  "runs": { "before": "runs/marketplace-before", "after": "runs/marketplace-after" },
+  "labels": { "before": "Marketplace detail before Install", "after": "After the download finishes" },
+  "themes": ["midnight"],
+  "crops": {
+    "plugin-detail": ["project-plugin-marketplace-install", "inbox-before-install", "840x510+300+75"],
+    "project-setup-phone": ["project-plugin-marketplace-install-phone", "inbox-install-phone", "390x720+0+10"]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Marketplace plugin details",
+      "path": "Marketplace → Inbox → Install",
+      "crop": "plugin-detail",
+      "headline": "After Install succeeds, should this detail panel turn into project setup?",
+      "changed": "The plugin is installed once on this device but starts inactive in every project. The same Marketplace panel switches to a focused project list: expand a project, turn on Inbox, then choose its skill. Repeat for as many projects as you want.",
+      "notice": "Closing or Done keeps the download installed, even if no project was enabled; it can be configured later in Projects. Changes apply to new conversations.",
+      "risk": "The three projects and switches are workbench samples, not real saved choices. The user may want a more explicit completed-download cue."
+    },
+    {
+      "id": "M-2",
+      "surface": "Marketplace on a phone",
+      "path": "Marketplace → Inbox → Install",
+      "crop": "project-setup-phone",
+      "runs": ["after"],
+      "highlight": { "box": [7, 18, 87, 53] },
+      "headline": "Do the project rows, per-skill switch, and Done action fit on your phone?",
+      "changed": "The same panel uses the existing Marketplace phone inset and scrolls if the project list grows. The first project opens so the plugin and its skill are visible without a second tap.",
+      "notice": "Each project can be expanded separately; the plugin master pauses automatic use while preserving item choices.",
+      "risk": "This is a workbench-only preview. No project settings are saved yet."
+    }
+  ]
+}

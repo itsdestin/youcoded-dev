@@ -1,0 +1,4 @@
+{
+  "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "shots":[{"name":"unavailable-opens-project-setup","actions":[{"click":"[title='Browse skills']","settle":900},{"click":"js:[...document.querySelectorAll('[aria-label=\"Writing helper unavailable on this device; open project setup\"] span')].find(x=>x.textContent.trim()==='Unavailable')","settle":1000}],"expect":"js:!!document.querySelector('[aria-label=\"Items needing setup on this device\"]') && !!document.querySelector('[aria-label=\"Skills & tools\"]') && document.querySelector('[aria-label=\"Items needing setup on this device\"]').getBoundingClientRect().top < innerHeight"}]
+}

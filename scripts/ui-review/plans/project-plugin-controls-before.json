@@ -1,0 +1,10 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default&pluginControlsBefore=1",
+  "shots": [
+    {
+      "name": "projects-skills-wide",
+      "actions": [{ "click": "[title=Projects]", "settle": 1000 }],
+      "expect": "[aria-label=Files]"
+    }
+  ]
+}

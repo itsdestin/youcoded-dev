@@ -1,0 +1,27 @@
+{
+ "deck": "project-plugin-controls-real-projects-review",
+ "started": "2026-09-23T11:33:56.169Z",
+ "submitted": "2026-09-23T11:36:16Z",
+ "cur": 2,
+ "answers": {
+  "R-1": {
+   "v": "other",
+   "note": "this looks terrible, doesn't visually match the vibe of any of the other 3 tabs",
+   "seconds": 28,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "seconds": 103,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "theme": "midnight",
+    "name": "projects-skills-wide",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "Chat",
+        "ratio": 1.24,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(13, 17, 23)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.flex.items-center.gap-1 > div.relative.flex.bg-inset > button.relative.z-10.px-1.5 > span.wide-view-toggle-label.text-xs.font-medium",
+        "x": 204,
+        "y": 12,
+        "w": 29,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 432,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.02,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 528,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "·",
+        "ratio": 2.02,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.flex.items-center.justify-end > div.flex.bg-inset.rounded-md > button.px-2.py-1.rounded-sm > span.hidden.sm:inline.text-fg-faint",
+        "x": 1277,
+        "y": 14,
+        "w": 7,
+        "h": 12
+      }
+    ],
+    "rmseVsBaseline": 0.208292,
+    "dump": [],
+    "file": "docs/active/design/2026-09-23-project-plugin-controls/runs/before/midnight/projects-skills-wide.png"
+  }
+]

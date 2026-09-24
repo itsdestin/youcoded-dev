@@ -1,0 +1,21 @@
+{
+ "deck": "project-plugin-controls-drawer-review-2",
+ "started": "2026-09-23T12:41:12.272Z",
+ "submitted": "2026-09-23T12:43:02Z",
+ "cur": 1,
+ "answers": {
+  "C-1": {
+   "note": "i want the chips to be right-aligned. ensure they are consistent with how session switcher tokens are derived for the equivalanets. the \"set up in projects\" text should not be a visible separate button. clicking the chip should just do it, meaning it also needs to remain hover/click sensitive despite beying greyed out and such",
+   "v": "other",
+   "seconds": 91,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

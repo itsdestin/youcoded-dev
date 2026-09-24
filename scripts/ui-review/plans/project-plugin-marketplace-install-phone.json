@@ -1,0 +1,4 @@
+{
+  "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default","width":390,"height":744,
+  "shots":[{"name":"inbox-install-phone","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"eval":"document.querySelector('[data-marketplace-card=\"youcoded-inbox\"]').click()","settle":900},{"click":"js:[...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')","settle":1700}],"expect":"[data-project-install-preview]"}]
+}

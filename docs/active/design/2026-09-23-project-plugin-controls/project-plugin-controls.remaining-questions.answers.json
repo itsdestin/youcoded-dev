@@ -1,0 +1,33 @@
+{
+ "deck": "project-plugin-controls-remaining-questions",
+ "started": "2026-09-23T11:03:04.230Z",
+ "submitted": "2026-09-23T11:04:33Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "note": "",
+   "pick": "show-current",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "missing-first",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "show-add-locally",
+   "seconds": 22,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "native-first",
+   "seconds": 22,
+   "theme": "midnight"
+  }
+ }
+}

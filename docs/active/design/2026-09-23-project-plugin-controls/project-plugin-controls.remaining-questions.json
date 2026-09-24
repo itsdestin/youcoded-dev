@@ -1,0 +1,108 @@
+{
+  "title": "Project plugin controls — decisions before the full UI",
+  "key": "project-plugin-controls-remaining-questions",
+  "out": "project-plugin-controls.remaining-questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Existing projects",
+      "path": "Projects → skills and tools",
+      "headline": "How should the new switches first appear in projects you already have?",
+      "today": "Skills and bundled plugins already work in existing projects. You decided these controls must not silently disable anything that works today; new marketplace downloads will instead start inactive everywhere.",
+      "problem": "The proposed defaults for ordinary projects do not necessarily match what an older project can already use. Applying them retroactively could turn a working skill off.",
+      "proposal": "Choose the starting view for existing projects. In both options, a choice you make afterward takes precedence and new marketplace downloads start off.",
+      "options": [
+        {
+          "id": "show-current",
+          "label": "Show what works today",
+          "pros": ["Existing projects keep their working skills, and the switches honestly show which are available."],
+          "cons": ["An older project may initially have more switches on than a brand-new project."],
+          "recommended": true
+        },
+        {
+          "id": "keep-unset",
+          "label": "Show inherited state",
+          "pros": ["Distinguishes older behavior from choices you made with the new controls."],
+          "cons": ["Adds a third state to understand and makes it harder to see what the assistant can use."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Personal skills across devices",
+      "path": "Projects → skills and tools on a second device",
+      "headline": "Should syncing personal skill files be required in the first build?",
+      "today": "A skill inside a synced project folder can travel with that project's files. A skill in your personal folder sits outside those projects, so project sync does not carry it. You said you would like personal skills to travel too.",
+      "problem": "A project choice may arrive on a second device before the personal skill file does. The choice alone cannot make that skill run there.",
+      "proposal": "Choose whether to build a separate personal-skill sync path now or show the missing skill and add that sync path as a later piece of work. Neither option silently installs marketplace plugins.",
+      "options": [
+        {
+          "id": "sync-now",
+          "label": "Sync personal files now",
+          "pros": ["Your personally added skills work across your devices without copying files."],
+          "cons": ["Needs a separate, safe sync design before this feature can be built."]
+        },
+        {
+          "id": "missing-first",
+          "label": "Show missing for now",
+          "pros": ["Project controls can be built first; you can see the saved choice and which device lacks the file."],
+          "cons": ["You must add the personal skill on that device until personal-file sync is built."],
+          "recommended": true
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Items from outside the marketplace",
+      "path": "Projects → skills and tools on a second device",
+      "headline": "What should a project show when an outside item is missing on this device?",
+      "today": "Your project choices should sync, but files installed from elsewhere do not auto-install. Marketplace plugins can offer Install; an outside skill, plugin or server might not have a one-click installer.",
+      "problem": "Hiding the entry makes a saved choice look lost. An Install button would promise a download YouCoded may not know how to perform.",
+      "proposal": "Choose how to show an outside item until it exists locally. A missing server still needs local setup and never syncs its credentials.",
+      "options": [
+        {
+          "id": "show-add-locally",
+          "label": "Show with local setup",
+          "pros": ["Keeps the project choice visible and explains that the file or server must be added on this device."],
+          "cons": ["There is no universal one-click fix for externally installed items."],
+          "recommended": true
+        },
+        {
+          "id": "hide-missing",
+          "label": "Hide until present",
+          "pros": ["The page only lists what this device can use."],
+          "cons": ["A synced project setting can seem to vanish and reappear across devices."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Claude Code conversations",
+      "path": "Projects → skills and tools",
+      "headline": "Should Claude Code opt-in be part of the first build?",
+      "today": "These new project switches are planned for YouCoded's own assistant first. Claude Code currently has its own settings; you decided YouCoded must not change them without an explicit explanation and consent.",
+      "problem": "Showing a switch as if it controls Claude Code before the consent flow exists would be misleading. Adding that flow now would also widen this first build.",
+      "proposal": "Choose the first-build boundary. In either option, Claude Code settings are never silently changed.",
+      "options": [
+        {
+          "id": "native-first",
+          "label": "YouCoded assistant first",
+          "pros": ["The controls can be built and tested without changing Claude Code settings; the UI can state their scope."],
+          "cons": ["Claude Code conversations will not follow these project switches yet."],
+          "recommended": true
+        },
+        {
+          "id": "both-with-consent",
+          "label": "Include Claude Code opt-in",
+          "pros": ["One build can cover both kinds of conversation."],
+          "cons": ["Requires a separate consent design and testing against Claude Code's own configuration before this feature is ready."]
+        }
+      ]
+    }
+  ]
+}

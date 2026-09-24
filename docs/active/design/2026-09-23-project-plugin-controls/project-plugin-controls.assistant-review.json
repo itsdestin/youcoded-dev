@@ -1,0 +1,38 @@
+{
+  "title": "Your Assistant — built-in skills stay on",
+  "key": "project-plugin-controls-assistant-review",
+  "out": "project-plugin-controls.assistant-review.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.assistant-review",
+  "runs": { "before": "runs/assistant-before", "after": "runs/assistant-after" },
+  "labels": { "before": "Ordinary project — choices", "after": "Your Assistant — locked on" },
+  "themes": ["midnight"],
+  "crops": {
+    "project-skills": ["project-plugin-controls-context", "projects-skills-wide", "1068x565+186+315"],
+    "assistant-phone": ["project-plugin-assistant-locks-phone", "assistant-locked-plugin-switches-phone", "390x700+0+40"]
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Projects → Skills & tools",
+      "path": "Projects → Your Assistant → Skills & tools",
+      "crop": "project-skills",
+      "headline": "Do the always-on built-in plugins fit this tab in Your Assistant?",
+      "changed": "An ordinary project's four bundled plugins have switches you can choose. In Your Assistant the same four appear on but subdued and cannot be turned off. Their row text says 'Always on in Your Assistant'; hovering or focusing a switch explains why. Other installed plugins are still optional in Your Assistant.",
+      "notice": "These settings apply only to conversations in Your Assistant; they are not global defaults inherited by other projects.",
+      "risk": "Your Assistant is a workbench-only sample project until the built-in project itself ships. This is a visual review of the locked rows, not approval of that project's entire hero or backend."
+    },
+    {
+      "id": "A-2",
+      "surface": "Your Assistant on a phone",
+      "path": "Projects → Your Assistant → Skills & tools",
+      "crop": "assistant-phone",
+      "runs": ["after"],
+      "highlight": { "box": [4, 1, 91, 40] },
+      "headline": "Can you recognize all four locked built-ins at phone width?",
+      "changed": "The four always-on rows stack full width under the same Projects tab. Installed plugins below still have an ordinary switch and can be configured separately.",
+      "notice": "The switch is focusable through its wrapper even while disabled, so the reason isn't only available on mouse hover.",
+      "risk": "The phone capture is a mocked future project, not an Android implementation."
+    }
+  ]
+}

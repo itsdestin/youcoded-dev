@@ -1,0 +1,14 @@
+{
+  "_why": "The real Projects tab, not the old isolated plugin mockup; the narrow capture must prove all four tabs and the controls fit.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "shots": [
+    {
+      "name": "projects-skills-wide",
+      "actions": [
+        { "click": "[title=Projects]", "settle": 1000 },
+        { "click": "[aria-label='Skills & tools']", "settle": 500 }
+      ],
+      "expect": "js:!!document.querySelector('[aria-label=\"Installed plugins\"]')"
+    }
+  ]
+}

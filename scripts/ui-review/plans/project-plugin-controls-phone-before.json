@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default&pluginControlsBefore=1",
+  "width": 390,
+  "height": 744,
+  "shots": [
+    {
+      "name": "projects-skills-phone",
+      "actions": [
+        { "click": "[aria-label='Open menu']", "settle": 500 },
+        { "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))", "settle": 1000 }
+      ],
+      "expect": "[aria-label=Files]"
+    }
+  ]
+}

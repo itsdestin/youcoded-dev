@@ -1,0 +1,4 @@
+{
+  "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default&projectAssistantPreview=1","width":390,"height":744,
+  "shots":[{"name":"assistant-locked-plugin-switches-phone","actions":[{"click":"[aria-label='Open menu']","settle":200},{"click":"js:[...document.querySelectorAll('[role=menuitem]')].find(x=>x.textContent.includes('Projects'))","settle":1000},{"click":"[title='Switch project']","settle":300},{"click":"js:[...document.querySelectorAll('[role=dialog] button')].find(x=>x.textContent.includes('Your Assistant'))","settle":700},{"click":"[aria-label='Skills & tools']","settle":500},{"eval":"document.querySelector('[aria-label=\"Included plugins\"]').scrollIntoView({block:'start'})","settle":250}],"expect":"js:[...document.querySelectorAll('[aria-label*=\"always on in Your Assistant\"]')].length===4"}]
+}

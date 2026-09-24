@@ -1,0 +1,5 @@
+{
+  "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width":390,"height":744,
+  "shots":[{"name":"skills-drawer-phone","actions":[{"click":"[title='Browse skills']","settle":900}],"expect":"[title='Open marketplace']"},{"name":"skills-drawer-phone-scroll","actions":[{"click":"[title='Browse skills']","settle":900},{"eval":"document.querySelector('.scroll-fade').scrollTop=130","settle":300}],"expect":"js:document.querySelector('.scroll-fade').scrollTop>0"}]
+}

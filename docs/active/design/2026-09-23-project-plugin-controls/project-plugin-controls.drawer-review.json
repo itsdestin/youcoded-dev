@@ -1,0 +1,37 @@
+{
+  "title": "Skill drawer — what this project can use",
+  "key": "project-plugin-controls-drawer-review",
+  "out": "project-plugin-controls.drawer-review.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.drawer-review",
+  "runs": { "before": "runs/drawer-before", "after": "runs/drawer-after" },
+  "themes": ["midnight"],
+  "crops": {
+    "drawer-browse": ["project-plugin-drawer", "skills-drawer", "1440x325+0+575"],
+    "drawer-phone": ["project-plugin-drawer-phone", "skills-drawer-phone-scroll", "390x350+0+394"]
+  },
+  "steps": [
+    {
+      "id": "D-1",
+      "surface": "Skills drawer",
+      "path": "Chat → Browse skills",
+      "crop": "drawer-browse",
+      "headline": "Should the drawer show Automatic, Manual use, and Unavailable like this?",
+      "changed": "The skill cards gain a quiet availability label beside their existing source badge. An unavailable skill stays visible as a muted non-clickable card, with a note that its choice is saved but the file is missing here. Two short lines above the cards explain automatic use and how to invoke manual skills with /.",
+      "notice": "Manual use still opens the skill deliberately; turning off automatic use does not hide it from / or the drawer. Missing items cannot be run from the drawer.",
+      "risk": "These are workbench sample statuses, not real project settings; the missing-card action is only copy, not navigation."
+    },
+    {
+      "id": "D-2",
+      "surface": "Skills drawer on a phone",
+      "path": "Chat → Browse skills → scroll",
+      "crop": "drawer-phone",
+      "runs": ["after"],
+      "highlight": { "box": [5, 42, 90, 58] },
+      "headline": "Do the same labels stay readable when the drawer is narrow?",
+      "changed": "At 390px the drawer keeps its existing two-column cards. Scrolling reveals the skill status beside the plugin badge; the unavailable card uses the same grid without offering a false Run action.",
+      "notice": "Search and favorites remain where they are today.",
+      "risk": "The sample status labels are not yet wired to project availability."
+    }
+  ]
+}
