@@ -1,0 +1,22 @@
+{
+ "deck": "ui-element-review-card-anatomy",
+ "started": "2026-09-24T09:31:38.274Z",
+ "submitted": "2026-09-24T09:34:41Z",
+ "cur": 1,
+ "answers": {
+  "CA-1": {
+   "v": "other",
+   "note": "i want to keep the chip-ish styling for the name and likely safe badges used today. or something close to it. we can make the other footer elements chips too",
+   "seconds": 169,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "CA-2": {
+   "v": "pick",
+   "pick": "date-top",
+   "seconds": 13,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}
