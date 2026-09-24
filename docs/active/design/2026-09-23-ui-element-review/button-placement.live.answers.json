@@ -1,0 +1,50 @@
+{
+ "deck": "ui-element-review-button-placement",
+ "started": "2026-09-24T09:13:21.822Z",
+ "submitted": "2026-09-24T09:17:21Z",
+ "cur": 5,
+ "answers": {
+  "BP-1": {
+   "v": "other",
+   "note": "i feel like this kinda depends on which surface the buttons appear on? stacked looks good in narrow popups, but much worse in wide popups or messages",
+   "seconds": 119,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "BP-2": {
+   "v": "other",
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "BP-3": {
+   "v": "pick",
+   "pick": "full",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "BP-4": {
+   "v": "other",
+   "note": "i kinda want this to be stacked maybe? but it would be red on the right if we don't stack. idk ",
+   "seconds": 41,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "BP-5": {
+   "v": "pick",
+   "pick": "flipped",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "BP-6": {
+   "v": "pick",
+   "note": "might rework tool cards and permission prompts as a seprate endeavor. we should just have our design guide explicitly note that these elements are not consider final/formal",
+   "seconds": 42,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "pick": "today"
+  }
+ }
+}
