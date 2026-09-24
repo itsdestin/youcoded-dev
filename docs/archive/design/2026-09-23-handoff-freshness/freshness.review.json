@@ -1,0 +1,43 @@
+{
+  "title": "Waiting for recent messages",
+  "key": "handoff-freshness-ui-review",
+  "out": "freshness.review.html",
+  "stage": "design",
+  "themes": ["midnight", "light"],
+  "images": "images/freshness.review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/freshness-runs/before",
+    "after": "../../../../scratch/lease-handoff/freshness-runs/after"
+  },
+  "labels": {"before": "Today: waiting during resume", "after": "Proposed waiting prompt"},
+  "crops": {"waiting": ["freshness", "waiting-focus", "550x180+0+0"]},
+  "live": {
+    "worktree": "/home/destin/youcoded-dev/worktrees/sessions/conversation-sync-investigation/youcoded",
+    "base": "http://127.0.0.1:5234",
+    "offset": 61,
+    "paneWidth": 420
+  },
+  "steps": [
+    {
+      "id": "F-2",
+      "surface": "Resume a conversation",
+      "path": "Resume Session → Take over → waiting for recent messages",
+      "crop": "waiting",
+      "headline": "Explain the wait and let you leave.",
+      "changed": "Instead of only Resuming, show what is pending and offer Leave it.",
+      "notice": "The next card shows the full, scrollable preview. Leaving opens nothing here.",
+      "risk": "UI prototype only. Leaving cannot undo an already-requested stop on the other computer.",
+      "highlight": {"box": [2, 3, 95, 92]}
+    },
+    {
+      "id": "F-3",
+      "surface": "Incomplete handoff",
+      "path": "Recent messages could not be confirmed",
+      "headline": "Try retrying, opening the saved copy, and leaving.",
+      "changed": "An incomplete check offers retry, this computer’s saved copy, or leave.",
+      "notice": "Try each button. Controls above the prompt reset the demonstration.",
+      "risk": "UI only: no transfer or conversation opens. Existing takeover checks still apply.",
+      "live": {"surface": "handoff-freshness", "round": 1, "candidate": "incomplete"}
+    }
+  ]
+}
