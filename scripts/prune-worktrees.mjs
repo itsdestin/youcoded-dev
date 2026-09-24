@@ -82,9 +82,15 @@ function ignoredFiles(worktreePath) {
   for (const line of out.split('\n')) {
     if (!line.startsWith('!! ')) continue;
     const p = line.slice(3);
-    const first = p.split('/')[0];
-    if (REGENERABLE_DIRS.has(first) || p.endsWith('.tsbuildinfo')) continue;
-    seen.add(p.includes('/') ? `${first}/` : p);
+    // WHY every segment, and the full path (2026-09-23, first real run): checking only the
+    // first segment reported `scripts/ui-review/deck/__pycache__/` as all of "scripts/",
+    // which reads like the whole folder would be lost.
+    if (p.split('/').some(seg => REGENERABLE_DIRS.has(seg)) || p.endsWith('.tsbuildinfo')) continue;
+    // A nested component worktree (youcoded/, youcoded-admin/ inside a session dir) is
+    // ignored by the workspace repo but is its own worktree, checked and removed as its own
+    // entry — not a stray file this removal would destroy.
+    if (fs.existsSync(path.join(worktreePath, p, '.git'))) continue;
+    seen.add(p);
   }
   return [...seen].sort();
 }
@@ -164,7 +170,18 @@ function findUnregistered(root, registeredPaths) {
  * Read-only: `fetch: true` (the default) only runs `git fetch`, nothing else
  * touches disk. Returns { root, notes, candidates, notSafe, missing, unregistered }.
  */
-export function scan({ root, inventory, excludeKeys = [], skipProcessCheck = false, invokingCwd = process.cwd(), fetch = true }) {
+// WHY (2026-09-23, found on the first real run): run from inside a session worktree, the
+// default root was that WORKTREE, whose component folders are themselves worktrees rather
+// than the component repos. Only the workspace repo got scanned, so a session whose app
+// worktree held unmerged work was grouped from its workspace half alone and reported SAFE,
+// and --apply would then have removed it. Always scan from the MAIN checkout: the parent of
+// git's common dir is the same no matter which worktree the tool is started from.
+export function mainCheckoutOf(dir) {
+  try { return path.dirname(git(dir, 'rev-parse', '--path-format=absolute', '--git-common-dir')); } catch { return dir; }
+}
+
+export function scan({ root: givenRoot, inventory, excludeKeys = [], skipProcessCheck = false, invokingCwd = process.cwd(), fetch = true }) {
+  const root = mainCheckoutOf(givenRoot);
   const notes = [];
   const invokingReal = safeRealpath(invokingCwd);
   const registeredPaths = new Set();
@@ -214,6 +231,19 @@ export function scan({ root, inventory, excludeKeys = [], skipProcessCheck = fal
   const candidates = [], notSafe = [];
   for (const g of groups.values()) {
     const reasons = [...new Set(g.entries.flatMap(e => e.reasons))];
+    // Second guard for the same failure: any checkout directly inside this group that the
+    // scan did not classify (a component repo missing from the inventory, or not checked
+    // out at root) makes the whole group NOT SAFE — removing the outer worktree would
+    // delete it along with its ignored contents.
+    const classified = new Set(g.entries.map(e => safeRealpath(e.path) ?? e.path));
+    let children = [];
+    try { children = fs.readdirSync(g.dir, { withFileTypes: true }).filter(d => d.isDirectory()); } catch {}
+    for (const child of children) {
+      const childPath = path.join(g.dir, child.name);
+      if (exists(path.join(childPath, '.git')) && !classified.has(safeRealpath(childPath) ?? childPath)) {
+        reasons.push(`unscanned checkout inside: ${child.name}/`);
+      }
+    }
     const ignored = [...new Set(g.entries.flatMap(e => e.ignored.map(i => e.repo === 'workspace' ? i : `${e.repo}/${i}`)))].sort();
     const entries = g.entries.map(({ groupDir: _g, groupKind: _k, ...rest }) => rest);
     (reasons.length ? notSafe : candidates).push({ dir: g.dir, kind: g.kind, safe: reasons.length === 0, reasons, entries, ignored });
@@ -242,7 +272,8 @@ function resolveTargetDir(root, target) {
  * already passed the clean-working-tree check, so plain remove is enough,
  * and `--force` is exactly what would let a race slip through.
  */
-export function applyPrune({ root, inventory, targets, excludeKeys = [], skipProcessCheck = false, invokingCwd = process.cwd(), fetch = true }) {
+export function applyPrune({ root: givenRoot, inventory, targets, excludeKeys = [], skipProcessCheck = false, invokingCwd = process.cwd(), fetch = true }) {
+  const root = mainCheckoutOf(givenRoot); // same reason as scan(): never classify from a worktree
   if (!targets || !targets.length) throw new Error('Refusing to apply with no targets named — there is no "apply all". Name each session key or worktree path to remove.');
   fetch && scan({ root, inventory, excludeKeys, skipProcessCheck, invokingCwd, fetch: true }); // one fetch pass for the whole call, not one per target
   const results = [];

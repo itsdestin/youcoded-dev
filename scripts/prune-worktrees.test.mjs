@@ -142,6 +142,30 @@ test('one dirty nested component makes the WHOLE session not safe, not just its 
   assert.equal(c.entries.length, 2, 'both worktrees in the group must still be listed');
 });
 
+// 2026-09-23, first real run: started from inside a session worktree, the tool scanned only
+// the workspace repo and called sessions with dirty app worktrees SAFE.
+test('scanning from inside a session worktree classifies exactly as scanning from the main checkout', t => {
+  const f = fixture(t);
+  const other = path.join(f.root, 'worktrees', 'sessions', 'lambda');
+  f.addWorktree('workspace', other, 'session/lambda');
+  f.makeDirty(f.addWorktree('youcoded', path.join(other, 'youcoded'), 'session/lambda'));
+  const mine = path.join(f.root, 'worktrees', 'sessions', 'mu');
+  f.addWorktree('workspace', mine, 'session/mu');
+  const report = scan({ root: mine, inventory: f.inventory, invokingCwd: f.dir, fetch: false });
+  assert.ok(!report.candidates.some(x => x.dir === other), 'a session with a dirty app worktree must never be SAFE');
+  assert.ok(report.notSafe.find(x => x.dir === other)?.reasons.includes('dirty'));
+});
+
+test('a checkout inside a group that the scan did not classify makes the group NOT SAFE', t => {
+  const f = fixture(t);
+  const sessionDir = path.join(f.root, 'worktrees', 'sessions', 'nu');
+  f.addWorktree('workspace', sessionDir, 'session/nu');
+  fs.mkdirSync(path.join(sessionDir, 'youcoded', '.git'), { recursive: true }); // a checkout no inventory repo registered
+  const report = scan({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false });
+  assert.ok(!report.candidates.some(x => x.dir === sessionDir));
+  assert.ok(report.notSafe.find(x => x.dir === sessionDir)?.reasons.includes('unscanned checkout inside: youcoded/'));
+});
+
 test('a registered worktree whose directory was deleted by hand is reported MISSING, not a candidate', t => {
   const f = fixture(t);
   const dest = path.join(f.root, 'worktrees', 'eta');
@@ -161,6 +185,9 @@ test('ignored scratch files are surfaced; regenerable dirs like node_modules are
   fs.writeFileSync(path.join(dest, 'scratch', 'notes.txt'), 'do not lose this\n');
   fs.mkdirSync(path.join(dest, 'node_modules', 'pkg'), { recursive: true });
   fs.writeFileSync(path.join(dest, 'node_modules', 'pkg', 'index.js'), '// regenerable\n');
+  // Nested regenerable dir: checking only the first path segment reported this as "tools/".
+  fs.mkdirSync(path.join(dest, 'tools', 'node_modules', 'pkg'), { recursive: true });
+  fs.writeFileSync(path.join(dest, 'tools', 'node_modules', 'pkg', 'index.js'), '// regenerable\n');
   const report = scan({ root: f.root, inventory: f.inventory, invokingCwd: f.dir, fetch: false });
   const c = report.candidates.find(x => x.dir === dest);
   assert.ok(c, 'the worktree is otherwise clean and merged, so it must still be a candidate');
