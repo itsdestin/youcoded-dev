@@ -1,0 +1,28 @@
+{
+ "deck": "welcome-back-review-2",
+ "started": "2026-09-24T08:35:15.186Z",
+ "submitted": "2026-09-24T08:42:18Z",
+ "cur": 2,
+ "answers": {
+  "C-1": {
+   "v": "pick",
+   "pick": "stacked",
+   "seconds": 19,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-quit": {
+   "v": "other",
+   "note": "\"Resume on Next Launch?\" remove the second level header text \"11 sessions open\". add text under the header divider \"You have 11 active sessions - proceed?\" as a header (white, bolded, small-ish text\". change current body text to \"Closing this window will end your active sessions. Would you like an offer to resume these sessions the next time you launch YouCoded?\" put the toggle/resume text in-line with the close window button, even if you have to make the popup a bit wider.",
+   "seconds": 391,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-model": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
