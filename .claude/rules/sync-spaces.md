@@ -89,7 +89,7 @@ verify:
 - **Per-device recency rides the SAME signal** (`lastSyncByDevice` in DO storage; pure `deviceActivityLabel` renders). **Self reads the LOCAL `lastSyncEpoch`, NOT the map.**
 
 ## Import (`sync-spaces/import-project.ts`)
-- **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks `existsSync(dest)` BEFORE cpSync; store remaps degrade to WARNINGS, never silent drops.
+- **Import MOVES the folder — never copy-and-keep-both.** The EXDEV branch re-checks the destination (async, under a per-destination claim) BEFORE copying; store remaps degrade to WARNINGS, never silent drops.
 
 ## Project UX + discovery
 - **Sync status comes ONLY from pure `sync-dot-state.ts`** (every dot's state/label); other status-coloured controls aren't sync.

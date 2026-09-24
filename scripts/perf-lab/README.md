@@ -151,6 +151,11 @@ budget is capped by the run's own `--max-minutes`, so a gate can never push a ru
 past the deadline its caller set. Pinned by `run-report.test.mjs` → "the
 machine-idle gate".
 
+**Your own parallel agents count as "busy".** Do not start the rig while this session's
+subagents are running `verify.sh` or vitest — on 2026-09-23/24 five runs were lost to the
+20-minute gate that way (and to other sessions' screenshot sweeps). Run it after they finish,
+and run before/after back to back so both see the same machine.
+
 ### Asking a report which STEP produced a number
 
 ```

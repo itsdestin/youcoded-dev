@@ -92,6 +92,7 @@ decision either way.
 - [x] 2026-09-24 claude-code-integration — In one narrow ordering the hook relay can lose a permission expiry entirely (youcoded#562)
 - [x] 2026-09-24 themes — In the theme editor, a particle preset that isn't one of the listed choices shows as unset and gets overwritten on the next save (youcoded#562)
 - [x] 2026-09-24 claude-code-integration — Chat view hangs on "Initializing session..." when Claude Code is waiting on its trust-folder prompt (youcoded#564)
+- [x] 2026-09-24 user-interface — While a reply streams, the chat you are looking at still redraws every message in it on every word, not only the one being written, and the small spinner keeps… (youcoded#566)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

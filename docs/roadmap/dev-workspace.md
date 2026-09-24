@@ -5,11 +5,15 @@ seen-on is always n/a here.
 
 ## tests
 
-- [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`,
-      2026-09-23) holds ~700 calls marked "unreviewed — hot-path candidate". The guard stops new
-      ones; the old ones still freeze every window when a click or timer reaches them. Work
-      through the list by how often each runs and convert or classify it; the list may only shrink
-      `n/a` `confirmed` `checked 2026-09-23` `performance`
+- [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`)
+      still holds ~650 "unreviewed" calls. The 2026-09-24 triage ranked them and six batches
+      shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
+      slider/download strip). Left: move the ~330 entries the triage marks harmless into
+      startup-only / user-rare (JSON lines ready in the report); batches B2 (native-home +
+      session-store), B4 (conversation-store — its rewrite has now landed), B5 (chat-search
+      index), B7 (git-transport / sync service), B10 (skill-provider catalog reads), B12
+      (project-watcher); custom-theme glass sliders still save on every tick (theme:write-file)
+      `n/a` `confirmed` `checked 2026-09-24` `performance` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
 
 - [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
       → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
@@ -307,6 +311,27 @@ seen-on is always n/a here.
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
 ## rigs
+
+- [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
+      ChatGPT sign-in that never renews, so the real app is never signed out). Destin
+      2026-09-24: "it's sometimes annoying to add separate api keys and such for a quick test".
+      Investigated, not built: keys are locked under the app's name, so dev needs the keychain
+      helper under the built name (may prompt KWallet); ChatGPT renewal in dev would sign the real
+      app out; needs a written read-only exemption in live-app-safety.md; Linux first. Recommended
+      design B (keys + borrowed ChatGPT, no marketplace). OpenCode is not an in-app sign-in
+      `n/a` `decision` `checked 2026-09-24`
+
+- [ ] Removing a provider in a dev instance also removes it from the real app — both read and
+      write the shared `~/.youcoded/providers.json` (provider-registry remove), so a quick test
+      can silently delete a real provider row
+      `n/a` `needs-verify` `checked 2026-09-24`
+
+- [ ] The perf rig's native-stream phase streams into a brand-new chat, so it cannot see per-word
+      costs that grow with chat history (the 2026-09-24 visible-chat fix showed 0 in the rig);
+      add a variant that streams into a chat with prior history, markers and cards. Also
+      terminal switching measured 137 ms (09-11) vs ~580 ms (09-23) with a very tight spread —
+      a fixed wait or a scenario change; find which
+      `n/a` `confirmed` `checked 2026-09-24` `performance`
 
 - [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
       cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
@@ -628,6 +653,13 @@ seen-on is always n/a here.
       ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
       Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
       worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
+      RECURRED 2026-09-23/24: `worktrees/sessions/perf-many-tabs-baseline` (a clean, zero-commit
+      baseline kept for perf-rig comparisons) vanished with its branch between a PC crash and the
+      next rig run; four "before" runs failed with `spawn git ENOENT` before it was noticed, and
+      re-running the key now REFUSES ("Missing recorded worktree … will not be recreated") — an
+      improvement, but a new key was the only way on. Lead, unconfirmed: the same evening a tooling
+      session pruned "9 finished session worktrees"; a clean worktree at master with no commits
+      looks exactly like finished work to a pruner
       `n/a` `needs-verify` `checked 2026-09-20`
 
 ## knowledge
