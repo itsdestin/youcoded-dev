@@ -73,3 +73,10 @@ observers). This review does not re-litigate those; it covers different ground.
 - I17 rejected — the queued-message strip's cards sit above the fade (z-index) on their own glass, so a message behind them reads like one behind the chips — the approved look.
 - I24 corrected — the theme-builder Minimalist preset is NOT on wecoded-marketplace master; it exists only as uncommitted edits in the shared checkout (2026-09-21). Theme-builder integration remains deferred.
 - I25/I29 deferred — theme-spec.md chrome-style docs (pre-existing gap) and a chrome-style-aware contrast audit belong with the theme-builder step.
+
+### Follow-up, 2026-09-24 (later the same day)
+- I12 — Destin: ship the per-control blur as is; testing on Windows is a roadmap item flagged `v1.3.1` (themes.md). No Windows machine is available here.
+- I16 closed — the contrast rules now carry a SOFT "float control outline vs canvas" check run against EVERY theme (any theme can be Minimalist through the new Look setting). Shipped themes measure 1.16–1.44, Halftone's gradient and Midnight included; threshold 1.15.
+- I24 closed — the theme builder offers Minimalist (wecoded-marketplace `session/theme-minimal-chrome`): the shared checkout's draft was carried over and its preview rewritten to the approved look. The shared checkout itself was left untouched.
+- I25 closed — theme-spec.md documents the three chrome styles.
+- I29 closed — see I16; the rule lives in the canonical contrast-rules.js, vendored into youcoded and wecoded-themes.

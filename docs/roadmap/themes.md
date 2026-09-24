@@ -2,9 +2,16 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
-- [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
-      Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and
-      friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31
+- [ ] Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it
+      gives every small button its own blur, and on Windows a screen full of separately
+      blurred cards has twice stopped drawing (blank cards). Destin chose to ship it as is
+      (2026-09-24); if it breaks, Reduce Visual Effects turns the blur off
+      `window-chrome` `desktop` `needs-verify` `checked 2026-09-24` `v1.3.1`
+
+- [ ] On the light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
+      Strawberry Kitty, and since 2026-09-22 Morning Rounds) the provider brand colours — the
+      Claude orange on the model chip and friends — are still hard to read; 27 colour/theme
+      pairs fail contrast (25 on 2026-08-31, Morning Rounds added two), seen 2026-08-31
       `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
 
 - [ ] A community theme's custom CSS can run a never-ending animation on the always-visible

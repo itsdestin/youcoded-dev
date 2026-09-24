@@ -63,6 +63,7 @@ Target: `v1.3.1`
 - operations: Public launch paperwork for 1.3.1: the LLC behind every account and a trademark filing
 - other-features: The Linux buddy has never been tried on two screens
 - remote-access: 182 features are hand-written twice, once for the desktop window and once for a phone or browser connecting…
+- themes: Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it gives every small…
 - user-interface: Browser-default hover tooltips look foreign to the app
 - user-interface: Error messages still guess at causes in many places
 - user-interface: The settings screen exists twice
@@ -82,7 +83,7 @@ Target: `v1.3.1`
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 7 | 2 | 0 | 3 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
