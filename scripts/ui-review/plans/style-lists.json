@@ -1,0 +1,59 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "settings-drawer",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    }
+   ],
+   "expect": "[aria-label='Close settings']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "ctx-menu-assistant-bubble",
+   "actions": [
+    {
+     "rightClick": "js:document.querySelector('.assistant-bubble p, .assistant-bubble')",
+     "settle": 600
+    }
+   ],
+   "expect": "[role=menu]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "shift-session-switcher",
+   "actions": [
+    {
+     "click": "js:document.querySelector('.chat-scroll')",
+     "settle": 200
+    },
+    {
+     "keyDown": "Shift"
+    },
+    {
+     "wait": 700
+    }
+   ],
+   "expect": "[title='Close Session']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "projects-switcher",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[title='Switch project']",
+     "settle": 800
+    }
+   ],
+   "expect": "[aria-label='Switch project']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  }
+ ]
+}

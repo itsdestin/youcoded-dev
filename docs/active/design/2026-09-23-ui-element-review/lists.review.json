@@ -1,0 +1,234 @@
+{
+  "title": "Lists and menus — rows four ways",
+  "key": "ui-element-review-lists",
+  "out": "lists.review.html",
+  "images": "images/lists.review",
+  "runs": {
+    "today": "runs/lists"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "today-settings-drawer": [
+      "l",
+      "today-settings-drawer",
+      "320x740+0+50"
+    ],
+    "boxed-settings-drawer": [
+      "l",
+      "boxed-settings-drawer",
+      "320x740+0+50"
+    ],
+    "lines-settings-drawer": [
+      "l",
+      "lines-settings-drawer",
+      "320x740+0+50"
+    ],
+    "plain-settings-drawer": [
+      "l",
+      "plain-settings-drawer",
+      "320x740+0+50"
+    ],
+    "today-ctx-menu-assistant-bubble": [
+      "l",
+      "today-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "boxed-ctx-menu-assistant-bubble": [
+      "l",
+      "boxed-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "lines-ctx-menu-assistant-bubble": [
+      "l",
+      "lines-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "plain-ctx-menu-assistant-bubble": [
+      "l",
+      "plain-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "today-shift-session-switcher": [
+      "l",
+      "today-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "boxed-shift-session-switcher": [
+      "l",
+      "boxed-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "lines-shift-session-switcher": [
+      "l",
+      "lines-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "plain-shift-session-switcher": [
+      "l",
+      "plain-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "today-projects-switcher": [
+      "l",
+      "today-projects-switcher",
+      "660x420+390+130"
+    ],
+    "boxed-projects-switcher": [
+      "l",
+      "boxed-projects-switcher",
+      "660x420+390+130"
+    ],
+    "lines-projects-switcher": [
+      "l",
+      "lines-projects-switcher",
+      "660x420+390+130"
+    ],
+    "plain-projects-switcher": [
+      "l",
+      "plain-projects-switcher",
+      "660x420+390+130"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Settings",
+      "path": "The Settings list",
+      "headline": "Settings: which list rows look best here?",
+      "notice": "Look at: The rows: Account, Assistant settings, Appearance… Only how rows are separated changes.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-settings-drawer",
+          "summary": "Today's mix (with your Round corners and Raised cards)."
+        },
+        {
+          "id": "boxed",
+          "label": "Boxed rows",
+          "crop": "boxed-settings-drawer",
+          "summary": "Each row is its own soft tinted box with a small gap — the Settings look, everywhere."
+        },
+        {
+          "id": "lines",
+          "label": "Lines between",
+          "crop": "lines-settings-drawer",
+          "summary": "Flat rows split by a thin line; no line after the last row."
+        },
+        {
+          "id": "plain",
+          "label": "Plain rows",
+          "crop": "plain-settings-drawer",
+          "summary": "Flat rows with no box and no line; only hover and selection show them."
+        }
+      ],
+      "risk": "Different answers per screen are fine: short menus and long settings lists can reasonably differ."
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat",
+      "path": "Right-click on a message",
+      "headline": "Chat: which list rows look best here?",
+      "notice": "Look at: The three menu rows: Ask about this, Copy, Select all. Only how rows are separated changes.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-ctx-menu-assistant-bubble",
+          "summary": "Today's mix (with your Round corners and Raised cards)."
+        },
+        {
+          "id": "boxed",
+          "label": "Boxed rows",
+          "crop": "boxed-ctx-menu-assistant-bubble",
+          "summary": "Each row is its own soft tinted box with a small gap — the Settings look, everywhere."
+        },
+        {
+          "id": "lines",
+          "label": "Lines between",
+          "crop": "lines-ctx-menu-assistant-bubble",
+          "summary": "Flat rows split by a thin line; no line after the last row."
+        },
+        {
+          "id": "plain",
+          "label": "Plain rows",
+          "crop": "plain-ctx-menu-assistant-bubble",
+          "summary": "Flat rows with no box and no line; only hover and selection show them."
+        }
+      ]
+    },
+    {
+      "id": "R-3",
+      "surface": "Sessions",
+      "path": "Hold Shift, or open the session list",
+      "headline": "Sessions: which list rows look best here?",
+      "notice": "Look at: The conversation rows. Only how rows are separated changes.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-shift-session-switcher",
+          "summary": "Today's mix (with your Round corners and Raised cards)."
+        },
+        {
+          "id": "boxed",
+          "label": "Boxed rows",
+          "crop": "boxed-shift-session-switcher",
+          "summary": "Each row is its own soft tinted box with a small gap — the Settings look, everywhere."
+        },
+        {
+          "id": "lines",
+          "label": "Lines between",
+          "crop": "lines-shift-session-switcher",
+          "summary": "Flat rows split by a thin line; no line after the last row."
+        },
+        {
+          "id": "plain",
+          "label": "Plain rows",
+          "crop": "plain-shift-session-switcher",
+          "summary": "Flat rows with no box and no line; only hover and selection show them."
+        }
+      ]
+    },
+    {
+      "id": "R-4",
+      "surface": "Projects",
+      "path": "The project switcher",
+      "headline": "Projects: which list rows look best here?",
+      "notice": "Look at: The project rows. The outlined row is where the keyboard is. Only how rows are separated changes.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-projects-switcher",
+          "summary": "Today's mix (with your Round corners and Raised cards)."
+        },
+        {
+          "id": "boxed",
+          "label": "Boxed rows",
+          "crop": "boxed-projects-switcher",
+          "summary": "Each row is its own soft tinted box with a small gap — the Settings look, everywhere."
+        },
+        {
+          "id": "lines",
+          "label": "Lines between",
+          "crop": "lines-projects-switcher",
+          "summary": "Flat rows split by a thin line; no line after the last row."
+        },
+        {
+          "id": "plain",
+          "label": "Plain rows",
+          "crop": "plain-projects-switcher",
+          "summary": "Flat rows with no box and no line; only hover and selection show them."
+        }
+      ]
+    }
+  ]
+}

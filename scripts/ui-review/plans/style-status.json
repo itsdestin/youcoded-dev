@@ -1,0 +1,104 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[aria-label='Open Your Library'], [title='Your Library']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[title='Marketplace']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "local-model-memory-warning",
+   "actions": [
+    {
+     "click": "[title='All Sessions']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='+New Session'||b.textContent.includes('New Session'))",
+     "settle": 900
+    },
+    {
+     "click": "[aria-label='Model'][aria-haspopup='listbox']",
+     "settle": 700
+    },
+    {
+     "click": "[aria-label='Search all models']",
+     "settle": 200
+    },
+    {
+     "type": "14b"
+    },
+    {
+     "wait": 600
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[data-model-picker-portal] [aria-pressed], [data-model-picker-portal] button, [data-model-picker-portal] [role=option]')].find(b=>/14b/i.test(b.textContent))",
+     "settle": 1400
+    },
+    {
+     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.includes('may not fit in available memory'))?.click()"
+    },
+    {
+     "wait": 500
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('button')].some(b=>/Show more|may not fit/i.test(b.textContent))",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress"
+  },
+  {
+   "name": "sync-error",
+   "actions": [
+    {
+     "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); /* WHY: mock namespaces may be get-only proxies, so assigning one method can be dropped. Wrap each namespace with a local override map. */ for(const ns of ['syncSpaces','session']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.seen=(...parts)=>parts.some(p=>document.body.innerText.includes(p)); window.failPersonal=()=>{const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:[...s.recentEvents.filter(e=>e.type!=='error'),{type:'error',spaceId:'personal',at:Date.now()-30000,message:'Sync push failed for personal: error: RPC failed; curl 28 Operation too slow. Less than 2000 bytes/sec transferred the last 20 seconds\\nsend-pack: unexpected disconnect while reading sideband packet\\nfatal: the remote end hung up unexpectedly'}]};};};"
+    },
+    {
+     "eval": "window.failPersonal();"
+    },
+    {
+     "click": "[data-hint='Settings']",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button,[role=button]')].find(b=>b.textContent.includes('Backup & Sync'))",
+     "settle": 1400
+    }
+   ],
+   "expect": "js:[...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.trim()==='Try again')",
+   "measure": [
+    {
+     "text": "Try again"
+    }
+   ],
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  }
+ ]
+}
