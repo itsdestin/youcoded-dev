@@ -1,0 +1,29 @@
+{
+  "title": "Minimalist header — what rises out of the wallpaper?",
+  "key": "minimalist-header-lenses",
+  "out": "minimalist-chrome.header-lenses.html",
+  "images": "images/minimalist-chrome.header-lenses",
+  "runs": { "today": "runs/lenses" },
+  "themes": ["meadow-mist"],
+  "theme": "fixed",
+  "crops": {
+    "header-cushion": ["main", "cushion", "1440x45+0+0"],
+    "header-lens": ["main", "lens", "1440x45+0+0"],
+    "header-bevel": ["main", "bevel", "1440x45+0+0"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Chat",
+      "path": "Top row of the window, in Meadow Mist",
+      "headline": "Which individual button feels like it's rising through the wallpaper?",
+      "notice": "The full-width veil is off in all three. The session pill, message box and chips keep the soft surfaces you already chose. These are workbench candidates, not a shipped change.",
+      "risk": "A still picture can show the surface, not how its hover or press feels. We'll check those on your chosen version.",
+      "variants": [
+        { "id": "cushion", "label": "Soft cushion", "crop": "header-cushion", "summary": "A soft translucent centre with a shaded lower edge. Gentle depth; the button shape stays visible." },
+        { "id": "lens", "label": "Frosted lens", "crop": "header-lens", "summary": "More blur and a thin rim. Clearest glass read, but closest to a conventional little panel." },
+        { "id": "bevel", "label": "Melted edge", "crop": "header-bevel", "summary": "A clearer centre with a brighter upper edge and deeper lower shadow. More raised, less frosted." }
+      ]
+    }
+  ]
+}

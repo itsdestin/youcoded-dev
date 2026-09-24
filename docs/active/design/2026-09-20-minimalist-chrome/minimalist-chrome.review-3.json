@@ -1,0 +1,60 @@
+{
+  "title": "Minimalist chrome \u2014 the header buttons lose their panel",
+  "key": "minimalist-chrome-r3",
+  "out": "minimalist-chrome.review-3.html",
+  "images": "images/minimalist-chrome.review-3",
+  "runs": {
+    "before": "runs/r2",
+    "after": "runs/r3"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "chrome-top": [
+      "main",
+      "home",
+      "1440x110+0+0"
+    ],
+    "chrome-bottom": [
+      "main",
+      "home",
+      "1440x150+0+750"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Every screen",
+      "path": "The strip along the top of the window",
+      "crop": "chrome-top",
+      "headline": "The header buttons, with no panel behind them",
+      "changed": "Every panel in the header is gone. The gear, Pages, Projects, the timer, the palette, the Chat/Terminal toggle, Session Files, Games, minimize/maximize/close \u2014 each is now its own glyph sitting straight on the wallpaper. The three group boxes that held them (the toggle's, the games button's, the caption buttons') no longer paint anything either.",
+      "measured": "header fills and borders now measure rgba(0,0,0,0); before, each button carried a 1px border and a 58% fill",
+      "notice": "The wallpaper runs unbroken across the whole header. The only thing marking a control is the mark itself and its shadow, so nothing reads as a box on the picture.",
+      "risk": "With no fill, the small icons have less to sit on over a busy wallpaper, so a textured pack can make them busier to pick out. The glyphs keep a soft shadow to stay separated from it.",
+      "highlight": {
+        "selector": ".header-bar"
+      }
+    },
+    {
+      "id": "N-1",
+      "surface": "Every screen",
+      "path": "The message box and the strip under it",
+      "crop": "chrome-bottom",
+      "headline": "Left alone: the message box and chips keep their soft surface",
+      "changed": "Nothing here moved between the last round and this one. Each has the same fill, the same one-pixel edge and the same blur.",
+      "measured": "fill at 58% of the theme's own inset colour, blur(22px) \u2014 identical in both pictures",
+      "notice": "These keep the surface you approved, because a place to type needs to look like a place to type.",
+      "risk": "None. This is here so the two treatments sit side by side and you can see the difference between a surface and a control.",
+      "highlight": {
+        "selector": ".input-bar-container form"
+      }
+    }
+  ]
+}

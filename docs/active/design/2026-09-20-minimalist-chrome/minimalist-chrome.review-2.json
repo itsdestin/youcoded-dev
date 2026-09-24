@@ -1,0 +1,75 @@
+{
+  "title": "Minimalist chrome — the controls you asked to soften",
+  "key": "minimalist-chrome-r2",
+  "out": "minimalist-chrome.review-2.html",
+  "images": "images/minimalist-chrome.review-2",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs/r2"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": ["midnight", "meadow-mist"],
+  "crops": {
+    "chrome-top": ["main", "home", "1440x120+0+0"],
+    "chrome-bottom": ["main", "home", "1440x150+0+750"],
+    "chrome-bottom-soft": ["main", "homesoft", "1440x150+0+750"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Every screen",
+      "path": "The strip along the top of the window",
+      "crop": "chrome-top",
+      "headline": "The top controls, with the odd halo gone and glass behind them",
+      "changed": "The glow around each control was tinted with the theme's border colour, which on a dark theme is LIGHTER than the page — so every control wore a grey halo. The shadow is now the app's own neutral shadow, and each control frosts what is behind it instead of sitting on it flatly.",
+      "measured": "shadow is now neutral black at 0.16 on Midnight — it was the theme's grey edge colour; blur(22px) on a wallpaper theme, up from none",
+      "notice": "On Midnight the controls stop glowing. On Meadow Mist you can see the wallpaper through them, softly blurred.",
+      "risk": "The controls are a little more see-through than before, so a very busy wallpaper makes their small labels slightly harder to read.",
+      "highlight": {
+        "selector": ".header-bar"
+      }
+    },
+    {
+      "id": "R-2",
+      "surface": "Every screen",
+      "path": "The message box and the strip under it",
+      "crop": "chrome-bottom",
+      "headline": "The message box and chips, frosted the same way",
+      "changed": "The message field, the quick chips and every status chip now frost the wallpaper behind them and carry the neutral shadow instead of the grey halo.",
+      "measured": "fill at 58% of the theme's own inset colour, blur(22px) — the same values the app's other glass panels already use",
+      "notice": "They read as part of the picture rather than as boxes laid on top of it.",
+      "risk": "Same controls, same places. Nothing moved.",
+      "highlight": {
+        "selector": ".input-bar-container form"
+      }
+    },
+    {
+      "id": "C-1",
+      "surface": "Every screen",
+      "path": "The edges of every lifted control",
+      "headline": "How should a lifted control end at its edge?",
+      "notice": "Both of these are the softened version — the halo is gone and the glass is on in each. The only difference is whether the control draws a line around itself.",
+      "risk": "With no line at all, a control sitting on a busy part of a wallpaper has only its shadow to say where it ends.",
+      "variants": [
+        {
+          "id": "bordered",
+          "label": "A thin edge",
+          "crop": "chrome-bottom",
+          "summary": "The control keeps the one-pixel edge it has today, in the theme's own border colour. It reads as a definite thing with a definite edge.",
+          "measured": "1 px edge, shadow alpha 0.24 (measured on Meadow Mist)"
+        },
+        {
+          "id": "soft",
+          "label": "No edge, just depth",
+          "crop": "chrome-bottom-soft",
+          "summary": "The edge is gone entirely. The control is carried by its fill and a deeper shadow, so there is no drawn line anywhere — this is the \"fades into the background\" reading.",
+          "measured": "border transparent, shadow alpha 0.42 (measured on Meadow Mist)",
+          "risk": "It is the softer of the two, and on a light wallpaper the pale controls lose the crisp line that separates them from the page."
+        }
+      ]
+    }
+  ]
+}

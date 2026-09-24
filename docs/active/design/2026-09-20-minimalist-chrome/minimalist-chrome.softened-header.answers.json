@@ -1,0 +1,15 @@
+{
+ "deck": "minimalist-softened-header",
+ "started": "2026-09-23T03:37:03.178Z",
+ "submitted": "2026-09-23T03:38:17Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "v": "other",
+   "note": "this is getting much closer to what i want, but there are sill some things that seem a bit janky. the weird bright line throughout the middle of the session switcher is odd, and the coloring in the chat/terminal toggle looks a bit odd",
+   "seconds": 73,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

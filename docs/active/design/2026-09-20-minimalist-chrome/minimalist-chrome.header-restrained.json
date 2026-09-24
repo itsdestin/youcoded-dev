@@ -1,0 +1,22 @@
+{
+  "title": "Minimalist header — soften the color",
+  "key": "minimalist-header-restrained",
+  "out": "minimalist-chrome.header-restrained.html",
+  "images": "images/minimalist-chrome.header-restrained",
+  "runs": { "before": "runs/lenses-emphasis", "after": "runs/lenses-restrained" },
+  "labels": { "before": "Harsh ink + dot rings", "after": "Soft theme colors" },
+  "themes": ["meadow-mist", "midnight"],
+  "theme": "fixed",
+  "crops": { "header": ["main", "cushion", "1440x50+0+0"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "Header over Meadow Mist and Midnight",
+      "crop": "header",
+      "headline": "No black button override or pale rings around the dots.",
+      "changed": "Buttons have their previous theme colors back, with a subtle same-color halo. Status dots keep their green, red, amber, blue or gray centers and get a faint same-color glow instead of a white outline. The selected session keeps the increased transparency, but its text returns to the theme's original softer shade.",
+      "notice": "Only float-style cushion chrome is affected. No full-width veil or new button fill; other styles and content surfaces are unchanged."
+    }
+  ]
+}

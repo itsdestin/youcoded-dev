@@ -1,0 +1,23 @@
+{
+  "title": "Minimalist header — remove the bright stripe",
+  "key": "minimalist-glass-structure",
+  "out": "minimalist-chrome.glass-structure.html",
+  "images": "images/minimalist-chrome.glass-structure",
+  "runs": { "before": "runs/lenses-softened", "after": "runs/lenses-structural" },
+  "labels": { "before": "The bright stripe and mint tint", "after": "Separate soft shell and neutral selection" },
+  "themes": ["meadow-mist"],
+  "theme": "fixed",
+  "crops": { "header-only": ["main", "cushion", "1440x50+0+0"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "The top row in Meadow Mist",
+      "crop": "header-only",
+      "highlight": { "box": [33, 7, 37, 75] },
+      "headline": "The session switcher has a separate, subtler surface; the view switch no longer adds a mint-coloured glow.",
+      "changed": "The old button gradient stretched across the long switcher and formed the bright stripe. Its new surface is a low-opacity blur behind the dots and session name; the Chat/Terminal selection uses the same neutral glass as nearby buttons.",
+      "notice": "The full-width header veil remains off, and the Terminal button stays fully visible."
+    }
+  ]
+}
