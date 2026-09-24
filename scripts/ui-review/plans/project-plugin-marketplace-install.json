@@ -3,6 +3,6 @@
   "ready":"/civic report|no plugins/i.test(document.body.textContent)",
   "shots":[
     {"name":"inbox-before-install","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":900}],"expect":"js:!![...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')"},
-    {"name":"inbox-after-install","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":900},{"click":"js:[...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')","settle":1700}],"expect":"[data-project-install-preview]"}
+    {"name":"inbox-after-install","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":900},{"click":"js:[...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')","settle":1700}],"expect":"js:document.body.textContent.includes('Choose where the assistant can use it automatically')"}
   ]
 }

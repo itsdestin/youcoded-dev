@@ -1,0 +1,14 @@
+[
+  {
+    "theme": "midnight",
+    "name": "two-project-choices",
+    "run": "1790251926028",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [],
+    "rmseVsBaseline": 0.196917,
+    "dump": [],
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/docs/active/design/2026-09-23-project-plugin-controls/runs/built/shots-project-plugin-marketplace-choices/midnight/two-project-choices.png"
+  }
+]

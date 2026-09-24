@@ -1,0 +1,54 @@
+[
+  {
+    "theme": "midnight",
+    "name": "skills-drawer",
+    "run": "1790251926028",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "Chat",
+        "ratio": 1.24,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(13, 17, 23)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.flex.items-center.gap-1 > div.relative.flex.bg-inset > button.relative.z-10.px-1.5 > span.wide-view-toggle-label.text-xs.font-medium",
+        "x": 236,
+        "y": 12,
+        "w": 29,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 432,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.02,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 528,
+        "w": 7,
+        "h": 16
+      }
+    ],
+    "rmseVsBaseline": 0.185969,
+    "dump": [],
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/docs/active/design/2026-09-23-project-plugin-controls/runs/built/shots-project-plugin-drawer/midnight/skills-drawer.png"
+  }
+]

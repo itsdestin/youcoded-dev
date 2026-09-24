@@ -1,0 +1,11 @@
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-controls-context.json project-plugin-controls-context midnight 0/1 58301
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-controls-phone.json project-plugin-controls-phone midnight 0/1 58302
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-controls-siblings.json project-plugin-controls-siblings midnight 0/1 58303
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-drawer.json project-plugin-drawer midnight 0/1 58304
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-drawer-phone.json project-plugin-drawer-phone midnight 0/1 58305
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-drawer-route.json project-plugin-drawer-route midnight 0/1 58306
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-marketplace-choices.json project-plugin-marketplace-choices midnight 0/1 58307
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-marketplace-install.json project-plugin-marketplace-install midnight 0/1 58308
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-marketplace-install-phone.json project-plugin-marketplace-install-phone midnight 0/1 58309
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-risk-confirm.json project-plugin-risk-confirm midnight 0/1 58310
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-setup-rows-phone.json project-plugin-setup-rows-phone midnight 0/1 58311
