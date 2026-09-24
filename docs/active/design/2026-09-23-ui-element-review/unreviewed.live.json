@@ -1,0 +1,107 @@
+{
+  "title": "Last questions from the unreviewed screens",
+  "key": "ui-element-review-unreviewed",
+  "out": "unreviewed.live.html",
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 880
+  },
+  "steps": [
+    {
+      "id": "U-1",
+      "surface": "Marketplace, Library, Pages",
+      "path": "Any grid of things you can open or install",
+      "headline": "Is this the chip-style card you asked for?",
+      "notice": "Your note: keep today's chip look for \"Likely safe\" and the author, and make the footer details chips too.",
+      "live": {
+        "surface": "card-anatomy",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "Today's Marketplace card."
+        },
+        {
+          "id": "chips",
+          "label": "Chips (your pick)",
+          "candidate": "chips",
+          "summary": "Trust and author chips kept; the footer details as chips; name and tinted status on top."
+        }
+      ]
+    },
+    {
+      "id": "U-2",
+      "surface": "Resume Session",
+      "path": "The conversation cards in Resume, which also carry tag and done buttons",
+      "headline": "With the date top right, where do a card's tag and done buttons go?",
+      "notice": "You chose the date top right. Resume's cards already use that corner for two small buttons.",
+      "risk": "\"Icons on hover\" leaves phones and touchscreens without the buttons, because there is no hover there.",
+      "live": {
+        "surface": "card-anatomy",
+        "round": 3
+      },
+      "variants": [
+        {
+          "id": "icons-bottom",
+          "label": "Icons bottom right",
+          "candidate": "icons-bottom",
+          "summary": "Date top right; the two buttons at the end of the details line."
+        },
+        {
+          "id": "icons-hover",
+          "label": "Icons on hover",
+          "candidate": "icons-hover",
+          "summary": "Date top right; the buttons appear beside it only under the pointer."
+        },
+        {
+          "id": "icons-top-date-end",
+          "label": "Icons keep the corner",
+          "candidate": "icons-top-date-end",
+          "summary": "Buttons stay top right; on these cards the date joins the details line."
+        }
+      ]
+    },
+    {
+      "id": "U-3",
+      "words": true,
+      "surface": "Terminal",
+      "path": "Ctrl+` or the terminal button in the header",
+      "headline": "Should the terminal keep its plain look or get the app's framing?",
+      "today": "The terminal view is a plain text area in the app window: white or dark background, monospace text, the command line at the bottom in a thin outlined box.",
+      "problem": "It follows none of the new rules (no card, no header), but it is a real terminal where text alignment matters, so framing it could get in the way.",
+      "proposal": "Either keep it plain on purpose and name it as an exception in the guide, or give it a light frame: the theme's card corner, a thin border and the same padding as chat.",
+      "options": [
+        {
+          "id": "raw",
+          "label": "Keep it plain",
+          "pros": [
+            "Nothing changes; the terminal stays a terminal.",
+            "Maximum room for text."
+          ],
+          "cons": [
+            "Looks unlike the rest of the app."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "framed",
+          "label": "Light frame",
+          "pros": [
+            "Matches the chat view beside it."
+          ],
+          "cons": [
+            "A little less room for text; a new look for a tool people know well."
+          ]
+        }
+      ]
+    }
+  ]
+}
