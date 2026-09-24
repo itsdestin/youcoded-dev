@@ -318,3 +318,32 @@ never.
 - **D9 (retry blind spot).** WHY comment at the plan-child `withRetry` site, and a test pinning
   that a retried request with no reported usage adds nothing to either total (the known,
   accepted gap — a widening would fail it).
+
+## Revision 2 — after design review 2 (`docs/active/reviews/2026-09-24-plans-spending-design-review-2.md`)
+
+- **E1 (the wire for one source).** `runPlanChild` (`native-session-host.ts:5296`) BUILDS the
+  `planSpend` object and passes it into the child's `HarnessSessionOpts` — a direct callback,
+  called from the real per-step accumulation site (`harness-session.ts:3111–3115`), so the frozen
+  transcript-event surface is untouched. That object keeps the running total the chip reads:
+  for plan children `runPlanChild` stops calling `addSpend` from `turn-complete`/`session-error`/
+  `user-interrupt` and emits `emitSubagentUsage()` from the object's total at the end, so the chip
+  and the journal read ONE number. Compaction: plan children never compacted before; if T2 enables
+  it, `priceSummaryUsage` calls the same `afterReply`. (Revision 1's line citations for D1 are
+  superseded by this.)
+- **E2 + E3 (local engine, re-solved).** Drop the per-slot-window claim — `/props` reports the
+  whole shared pool under the app's spawn (no `--parallel`). The guard is keyed on the STEP's
+  frozen binding, not the parent's profile: at manifest-freeze time each step records
+  `local: true` when its binding is the local engine; the executor runs **at most ONE local-engine
+  plan specialist at a time** (cloud steps are unaffected and still run up to the usual cap), so
+  local children never share the pool concurrently and each keeps the full window it has today.
+  Slower for local-only plans, but it can never overcommit the pool — the same failure the deleted
+  `localPoolTokens` prevented, with no arithmetic. Test: a 4-item local split step on a
+  cloud-model parent never runs two local children at once.
+- **E4 (one choke point).** `PlanChildHandle` gains `spendPending: Promise<void>` (set by
+  `launch()`); `commitReport` — the one function all three commit paths already call
+  (`plan-executor.ts:720, 1129, 1475`) — awaits it first and, on a recorded write failure, routes
+  the attempt to recovery instead of committing. `ActiveRun` gains `limitReached` and
+  `spendWriteFailed`.
+- **E5 (the card).** T7 also removes every Add budget reference from `PlanCard.tsx` (handler at
+  ~442, the button, and the fallback that offers Add budget to unnamed pause kinds), and the
+  renderer tests that pin them.
