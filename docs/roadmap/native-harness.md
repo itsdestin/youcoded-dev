@@ -374,8 +374,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-08-16`
 
 ## skills-mcp
-- [ ] Project skills & tools controls are built and accepted but NOT merged (youcoded PR and
-      youcoded-dev PR on `session/plugin-project-controls`, 2026-09-24): each project chooses
+- [ ] Project skills & tools controls are built and accepted but NOT merged (draft PRs youcoded#571 and
+      youcoded-dev#203, 2026-09-24): each project chooses
       which skills, plugins and tool connections the assistant uses on its own; new Marketplace
       downloads start off and open "choose your projects"; drawer chips show Automatic / Manual
       use / Unavailable. Destin wants to review every new screen himself before refinements and

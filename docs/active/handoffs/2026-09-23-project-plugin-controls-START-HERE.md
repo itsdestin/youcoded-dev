@@ -6,7 +6,8 @@ date: 2026-09-24
 # Project skills, plugins and tools — built, accepted, NOT merged; Destin's UI review next
 
 **Where:** branch `session/plugin-project-controls` in the workspace and in `youcoded/`, both pushed,
-each with an open pull request marked do-not-merge. Resume with
+each with an open DRAFT pull request marked do-not-merge (itsdestin/youcoded#571,
+itsdestin/youcoded-dev#203). Resume with
 `node scripts/workspace-start.mjs --session plugin-project-controls youcoded`. Merge only on
 Destin's explicit word.
 
