@@ -179,6 +179,38 @@
           "checkedBy": "live-app",
           "threshold": "quit warning renders as an in-app window, confirmed in a dev instance",
           "source": "welcome-back-review-3#S-inapp"
+        },
+        {
+          "id": "R25",
+          "statement": "Handing off a Claude Code session to another device removes it from this device's Welcome back, same as a native session.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/holder-takeover.test.ts",
+          "threshold": "both pinned-snapshot Claude Code untrack tests pass",
+          "source": "review:../../reviews/2026-09-24-welcome-back-code-review.md#F1"
+        },
+        {
+          "id": "R26",
+          "statement": "A resume that fails removes the session from Welcome back instead of leaving it stuck as still open.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/ipc-handlers.test.ts",
+          "threshold": "the failed-native-resume untrack test passes",
+          "source": "review:../../reviews/2026-09-24-welcome-back-code-review.md#F2"
+        },
+        {
+          "id": "R27",
+          "statement": "Opening a session's tag/notes editor on Welcome back scrolls that row into view instead of hiding it behind the buttons.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/ResumeBrowser-welcome-back.test.tsx",
+          "threshold": "the Organize-sheet scroll-into-view test passes",
+          "source": "review:../../reviews/2026-09-24-welcome-back-ux-review-2.md#U1"
+        },
+        {
+          "id": "R28",
+          "statement": "After Resume all reopens only some sessions, it says how many reopened and why the rest stayed.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/ResumeBrowser-welcome-back.test.tsx",
+          "threshold": "the partial-resume status-line tests pass",
+          "source": "review:../../reviews/2026-09-24-welcome-back-ux-review-2.md#U2"
         }
       ]
     }
