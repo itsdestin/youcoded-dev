@@ -35,6 +35,30 @@ Carry-forward implementation evidence: `../reviews/2026-09-22-sync-restart-port.
 
 Current status: three changes ported; 80 focused tests passed after 23 failures in the initial run (57 passed). Note: the initial backup-helper failures were missing-module failures, not direct proof of the consent predicate; that guard still merits a mutation check. Parent independently ran `bash scripts/verify.sh <restart-app>` after the builder stopped: exit 0, all seven gates passed; evidence `scratch/sync-port-parent-verify.log`. This is the related-test gate, not the full desktop test suite; Android and Worker remain unverified. Parent inspected current-renderer notice and help captures in midnight and halftone; text is visible and unclipped. The old broader UX issues (green All synced alongside conflict attention, no affected-file actions) were not silently expanded into this copy-only port. Fresh review returned two blockers to validate: an in-flight healer can recreate a canonical after the unlocked `remove()` deletes its claims, and a valid claim is repeatedly renamed while an invalid canonical blocks incorporation. The actual `remove()` caller found is phantom-record cleanup (`conversations/service.ts:333`), not a general Delete chat action; do not conflate this with global user deletion. The builder is reproducing/classifying these findings and will correct narrow verified issues before fresh verification/re-review. Earlier green gates remain evidence for the pre-review patch, not final acceptance.
 
+## Status 2026-09-23 (supersedes the "Current status" paragraph above)
+
+App branch `session/sync-safety-restart-20260922`, rebased on master `7247ad7eb`, all pushed. Every
+item in the risk map below was reproduced (real git, disposable data) or ruled out, and each
+reproduced one has a red-then-green regression test:
+
+| Risk | Outcome |
+|---|---|
+| Carried heal change froze writes on an unreadable canonical | fixed: bytes set aside as `<id>.json.damaged-<uuid>` |
+| Secrets overridden by user `.gitignore` | fixed: `stageAll` (also a two-sided secret conflict — review blocker) |
+| First sync / merge overwrote ignored local files | fixed: `holdUnmanaged`/`restoreUnmanaged` |
+| Failed backup pruned + consumed the day (both paths) | fixed: prune after full success, newest kept, per-destination marker |
+| Shared dated backup folder | fixed: newer-wins copies |
+| Conflict command failures as absence/success | fixed: checked `ls-files -u`, abort on failure |
+| Repair Tier 1 pushed an unapplied fetch as deletions/resurrections | fixed: keep readable local tip, else adopt keeping local copies |
+| Device forget left a copy on lock | fixed: retry then report |
+| Stopped name reattached / case-only names shared a repo | fixed: refused at create, import and discovery |
+| Cross-drive import race | not present (EXDEV recheck already refuses) |
+| Cross-process settings lost update | real only between two app processes within microseconds; left (roadmap: dev-copy race) |
+
+Two independent review rounds; round-2 findings fixed or filed. `verify.sh --full` green
+(`scratch/verify-final.log`). Android/Worker not run (no Kotlin/Worker change). Deliberately left
+items are filed in `docs/roadmap/sync.md` (2026-09-23 entries). Nothing merged.
+
 ## Reassessment criteria
 
 Every previous finding must be classified as still present, addressed upstream, changed/partly addressed, or not yet established. Historical positive bug-presence tests are not regression tests. Direct invocation of repair proves repair's behavior, not that a particular real-world corruption necessarily reaches it.

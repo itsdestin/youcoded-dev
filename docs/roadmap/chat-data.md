@@ -139,7 +139,8 @@ produced and the panel that shows them (files).
       renaming a chat kicks off a full search-index rebuild three seconds later that lists,
       stats and chunk-reads every conversation on the main thread (`chatsearch-index`). Neither
       is on a click path a user waits on directly; both are stalls with no visible cause.
-      Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` is being
-      rewritten on `session/sync-safety-audit-20260908` — convert both after that lands
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
+      Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` was being
+      rewritten for sync safety; that work (`session/sync-safety-restart-20260922`) made heal's file
+      reads async but left the directory listing synchronous — convert both after it lands
+      `desktop` `confirmed` `checked 2026-09-23` `performance`
 
