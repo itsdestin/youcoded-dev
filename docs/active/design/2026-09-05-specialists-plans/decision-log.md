@@ -346,3 +346,19 @@ B-3 the low-limit warning line.
 - C-1: **popup**, not in-card. *"if the popup is unique to that plan, it should name the plan.
   the popup styling needs to be greatly improved, currently does not match existing app styling
   well at all for popups."* → title names the plan; restyle to the app's own popup pattern.
+
+## Decision 38 — the assistant hears about approval and completion (live test, 2026-09-24)
+
+Symptom: *"the plan completed, but then just sat there without giving me any indications/updates."*
+The plan ran fine (4 specialists, ~103k tokens, no pauses) but nothing ever told the assistant it
+finished — only "Ask the assistant" pause handoffs queued a notice turn.
+1. **On completion** the assistant receives the final step's report(s) as a host notice turn and
+   presents the outcome to the user as an ordinary reply. Once, durable across restarts, waits if
+   a turn is running.
+2. **On approval** (Destin): *"assistant should basically be told that it will recieve an update
+   when the plan is complete. it should provide a 1-line confirmation to the user. if the user
+   asks, you may complete other work while the plan is underway"*.
+Also found in the same test: a ChatGPT-sign-in plan's note read "no published price" instead of
+"included in your ChatGPT plan" (decision 34 Q-5) — fixing; and the assistant set a step's model
+("GPT-6-Sol", source `document`) — decision 35.4 wording in propose_plan being strengthened;
+asked Destin whether he requested it.
