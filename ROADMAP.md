@@ -81,7 +81,7 @@ Target: `v1.3.1`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 5 | 6 | 5 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 22 | 7 | 7 | 5 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 21 | 10 | 0 | 4 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 1 | 4 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 7 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 14 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
