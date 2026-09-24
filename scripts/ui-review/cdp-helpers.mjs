@@ -11,7 +11,11 @@
 // and scratch profile directory so multiple instances never collide.
 export function CHROME_FLAGS(W, H, cdpPort, profileDir) {
   return [
-    '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
+    '--headless=new', '--disable-gpu', '--no-sandbox',
+    // WHY opt-out: a shot that must SHOW a styled scroll bar (float chrome's,
+    // 2026-09-24) was otherwise impossible — every shot hid them. Default stays
+    // hidden so existing baselines do not change.
+    ...(process.env.SHOW_SCROLLBARS === '1' ? [] : ['--hide-scrollbars']),
     // Headless Chrome has NO input device, so it answers `(hover: none)` and
     // `(pointer: coarse)` — it looks like a phone to CSS. Anything gated on a real
     // cursor then never renders, and the shot lands in _unverified with a
