@@ -347,3 +347,22 @@ never.
 - **E5 (the card).** T7 also removes every Add budget reference from `PlanCard.tsx` (handler at
   ~442, the button, and the fallback that offers Add budget to unnamed pause kinds), and the
   renderer tests that pin them.
+
+## Revision 3 — after design review 3 (`docs/active/reviews/2026-09-24-plans-spending-design-review-3.md`, the last round)
+
+- **F1 (where the one object is built and attached).** ONE `PlanSpend` object per attempt, built in
+  `startPlanChild` (`native-session-host.ts:~5267`) before its resume/fresh-child branch, then
+  attached at TWO points exactly the way `gate`/`providerType`/`tag` are threaded today:
+  (1) `buildSpecialistSession`'s `extra.plan` → `HarnessSessionOpts.planSpend` (the spread at
+  `:3649`), so the harness calls `afterReply`/`beforeRequest` on it; (2) `wireChildLive`'s `opts`
+  (`:3762`) → `LiveEntry.planSpend`, so `runPlanChild`'s `finally` (`:5350–5360`) emits
+  `emitSubagentUsage()` from that object's total. `runPlanChild` builds nothing. (Supersedes E1's
+  "runPlanChild builds" wording.)
+- **F2 (live, not snapshot).** The handle carries a FUNCTION, `spendSettled(): Promise<void>`,
+  which returns the object's CURRENT `pending` chain at call time (never a value captured at
+  launch). `commitReport` calls `await handle.spendSettled()` first on all three paths.
+  Test: a turn with three replies where only the third write is slow/failing — commit waits for
+  it, and a failure routes to recovery.
+
+The review cap (three rounds) is reached; both final findings came with exact fixes, applied
+here. The design goes to build with the task order in Revision 1 (T1 → T2 → {T3, T4, T5} → T6 → T7).
