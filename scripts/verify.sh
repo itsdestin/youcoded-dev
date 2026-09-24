@@ -173,8 +173,10 @@ done
 # the source tree at RUNTIME (guard-scope, or their own join(__dirname,'..','src')).
 # `vitest related` walks the IMPORT graph, so it can never relate one of them to a
 # file you changed: they are invisible to every partial run, while being exactly
-# the guards a new edit is most likely to trip. They are also nearly free (27
-# files, ~1.2s), so every related run gets them appended.
+# the guards a new edit is most likely to trip. They are also cheap to run
+# (27 files took ~1.2s when first measured; 53 files by 2026-09-23 — recounted
+# with this same grep from desktop/, run time not re-measured), so every
+# related run gets them appended.
 # 2026-08-28: a `text-[13px]` passed a green verify.sh twice and turned CI red on
 # all three platforms — type-scale-authority.test.ts had never been run.
 SCANNERS=()

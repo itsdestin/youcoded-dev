@@ -624,6 +624,34 @@ test('large status and committed path inventories exceed Node default buffers wi
   assert.equal(out.report.shared.changes.length, paths.length);
 });
 
+// WHY: pins preflight's scaling fix. It used to scan the full dirty-path list per incoming
+// path (O(names x dirty)) and spawn ~4-6 Git subprocesses per incoming path (a treeEntry
+// lookup for every ancestor and self against both revisions, check-ignore, ls-files) —
+// measured at ~3s/500 paths, ~10s/1,500, ~27s/3,000. Neither set here overlaps the other
+// (bulk/ vs local-), so this exercises the full-scan/full-spawn worst case without tripping
+// any blocker. The bound is generous enough to absorb a slow CI host while still failing
+// fast if the quadratic scan or per-path spawning regresses.
+test('preflight stays fast at thousands of changed and dirty paths', t => {
+  const f = makeWorkspace(t);
+  const count = 3_000;
+  for (let i = 0; i < count; i++) {
+    const name = `bulk/${String(i).padStart(5, '0')}.txt`;
+    const target = path.join(f.seed, name);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, 'x');
+  }
+  f.git(f.seed, 'add', 'bulk');
+  f.git(f.seed, 'commit', '-m', 'bulk incoming inventory');
+  f.git(f.seed, 'push', 'origin', 'master');
+  for (let i = 0; i < count; i++) fs.writeFileSync(path.join(f.root, `local-${String(i).padStart(5, '0')}.txt`), 'x');
+  const started = Date.now();
+  const out = syncWorkspace({ root: f.root });
+  const elapsedMs = Date.now() - started;
+  assert.equal(out.report.shared.incoming[0]?.paths.length, count, JSON.stringify(out.report.action));
+  assert.equal(out.report.shared.changes.length, count);
+  assert.ok(elapsedMs < 15_000, `preflight took ${elapsedMs}ms for ${count} changed and ${count} dirty paths`);
+});
+
 test('briefing identifies session-relative incoming and local guidance', t => {
   const f = makeWorkspace(t);
   const session = path.join(path.dirname(f.root), 'session');

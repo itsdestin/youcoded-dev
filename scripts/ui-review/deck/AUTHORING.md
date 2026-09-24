@@ -11,6 +11,17 @@ Copy a template from `scripts/ui-review/templates/` — one per kind, every fiel
 explained in place. `_comment` keys (at any depth, including `_comment_<field>`) are stripped
 when the deck is built, so leave them or delete them as you like.
 
+## Start here
+
+| Want to… | Read |
+|---|---|
+| Build and serve any deck, start to finish | "Order of work" (bottom of this file) |
+| Ask Destin 4+ questions at once | "Question — words only", "Page markers" |
+| Pick which step kind fits | `.claude/rules/review-deck.md`'s table, then "The step kinds" |
+| Get a field or refusal exactly right | "Deck-level fields", "What the builder refuses" |
+| Know what a submission writes | "The answers file", "What he sees when he submits" |
+| Run `build`/`preview`/`serve`/etc. | "Commands" |
+
 ## Where a deck lives, and what it is called
 
 A feature's decks sit in `docs/active/design/<date>-<feature>/` **of the session's workspace

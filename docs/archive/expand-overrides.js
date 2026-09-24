@@ -1,3 +1,8 @@
+// ARCHIVED 2026-09-23: its one-time backfill already landed in
+// wecoded-marketplace/overrides/*.json. Moved out of scripts/ for that reason; its
+// __dirname-relative path to wecoded-marketplace no longer resolves from here, so
+// don't try to run it as-is.
+//
 // Backfills longer (~2 paragraph) longDescriptions into each override file.
 // Re-run safe: overwrites longDescription field only.
 //

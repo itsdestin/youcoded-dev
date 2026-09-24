@@ -1,0 +1,303 @@
+{
+  "title": "Dev dashboard — seven decisions before I draw it",
+  "intro": "You asked for a YouCoded dev dashboard: one page that launches dev servers from any branch and runs our check suites. Before I design it, seven questions. Everything below is about what YOU would see and do — none of it is about code. Facts I checked first, so the questions make sense: there are 24 separate copies of the app on this machine right now (the main one plus 23 branch copies, one per in-flight piece of work); your app is currently on the 'Golden Sunbreak' theme, and I can read that theme's exact colours, corner radius, wallpaper and blur settings from an ordinary file on disk without ever touching your running app.",
+  "sections": [
+    {
+      "title": "How it gets built and where it runs",
+      "questions": [
+        {
+          "id": "build-shape",
+          "area": "foundation",
+          "today": "There is no dashboard. To launch a dev copy of the app you tell me a branch name and I type a command; to run the checks I type a different command. You see none of it except my summary afterwards.",
+          "problem": "You can't see what's runnable, what's already running, or what passed — and you can't start any of it yourself. Everything routes through me typing.",
+          "proposal": "Build the dashboard as a page you open in your browser at a fixed web address. The question is what it's made of, because that decides how much extra work it is later to move it inside YouCoded as a real Settings screen.",
+          "options": [
+            {
+              "label": "A small standalone page, hand-built to look like YouCoded",
+              "pros": [
+                "Fastest to get in your hands — working today rather than after a build-out",
+                "Genuinely functional from minute one: buttons really launch things",
+                "Reads your live theme file, so it looks like your app without being your app"
+              ],
+              "cons": [
+                "When it later becomes a real Settings screen, the look carries over but the plumbing is rewritten",
+                "It is a dev tool on your machine, not something other users would ever see"
+              ]
+            },
+            {
+              "label": "Build it as a real YouCoded screen from the start, served on its own address",
+              "pros": [
+                "Looks exactly like the app because it IS the app's screen, theme switching and all, for free",
+                "Moving it into Settings later is mostly deleting the standalone wrapper"
+              ],
+              "cons": [
+                "Slower to first use — the app's screen machinery has to be stood up before a single button works",
+                "Heavier to run: it boots a chunk of YouCoded just to show you a list of branches"
+              ]
+            },
+            {
+              "label": "Mock it up in the workbench first, build the working version after you approve the look",
+              "pros": [
+                "You see and shape the layout before anything is wired up",
+                "Matches how we do new app features"
+              ],
+              "cons": [
+                "Nothing works during the mockup stage — the buttons are painted, not live",
+                "Two rounds before you can actually use it, and you said you want to use and test it"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "theme-source",
+          "area": "look",
+          "today": "Your app is on 'Golden Sunbreak'. When you switch themes, the app changes; nothing else on your machine does.",
+          "problem": "A dev page that ignores your theme looks like a foreign tool bolted on. You asked for it to match the active theme.",
+          "proposal": "The dashboard reads the same theme file your app reads and paints itself to match. The question is how far that goes.",
+          "options": [
+            {
+              "label": "Follow your active theme automatically, colours and shapes only",
+              "pros": [
+                "Switch themes in the app, reload the dashboard, it has followed — no setting to keep in sync",
+                "Reads plainly and loads instantly; nothing heavy in the background"
+              ],
+              "cons": [
+                "No wallpaper or frosted-glass blur, so side by side with the app it will look flatter",
+                "If you're running two themes' worth of work at once it always shows the one your app is set to"
+              ]
+            },
+            {
+              "label": "Follow your active theme fully — colours, shapes, wallpaper, blur",
+              "pros": [
+                "Sitting next to your app it looks like it belongs to it",
+                "Still automatic — no picker to remember"
+              ],
+              "cons": [
+                "Wallpaper and blur behind a dense table of branches can make text harder to scan",
+                "Slightly heavier page; on a big list you may notice it when scrolling"
+              ]
+            },
+            {
+              "label": "A theme picker on the dashboard itself, defaulting to your active theme",
+              "pros": [
+                "You can put the dashboard in a plain high-contrast theme while the app stays pretty",
+                "Doubles as a quick way to eyeball how a theme's colours read on a dense screen"
+              ],
+              "cons": [
+                "One more control on a page you asked to be as minimal as possible",
+                "It can drift out of step with the app and look wrong for no obvious reason"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Launching dev copies of the app",
+      "questions": [
+        {
+          "id": "launch-scope",
+          "area": "dev servers",
+          "today": "I run a command naming a branch; a separate 'YouCoded Dev' window opens on your desktop. If two of them collide on the same port one of them gets killed silently. Nothing tracks which ones are open.",
+          "problem": "You can't see what's running, you can't stop one without asking me, and after a long day there can be several open with no way to tell which branch each one is.",
+          "proposal": "The dashboard lists every branch copy and gives each a Launch button. The question is how much it manages after launch.",
+          "options": [
+            {
+              "label": "Launch only — the dashboard opens windows, you close them yourself",
+              "pros": [
+                "Simplest thing on screen: a list of branches and one button each",
+                "Nothing to go wrong; closing a window works the way it always has"
+              ],
+              "cons": [
+                "No way to tell from the page which branches are already open",
+                "Launching the same branch twice can silently kill the first window"
+              ]
+            },
+            {
+              "label": "Launch and track — each row shows Running or not, with a Stop button",
+              "pros": [
+                "One glance tells you what's open and on which branch",
+                "Stop from the page instead of hunting for the right window",
+                "Ports and profiles get picked for you, so two instances can't collide"
+              ],
+              "cons": [
+                "The page has to keep checking in the background, so it is never fully idle",
+                "If a window is closed the normal way, the row takes a moment to notice"
+              ]
+            },
+            {
+              "label": "Launch, track, and label the windows so they match the page",
+              "pros": [
+                "Every open window's title says which branch it is, matching the row you clicked",
+                "Easiest to keep straight when four are open at once"
+              ],
+              "cons": [
+                "Nothing extra to go wrong, but it is more moving parts than the simplest version",
+                "Window titles are set at launch, so one you started before today's dashboard won't be labelled"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "launch-warning",
+          "area": "dev servers",
+          "today": "When I launch a dev copy, a real window appears on your desktop, sometimes while you're doing something else. I warn you in chat first.",
+          "problem": "A dashboard button that silently paints a window over your work would be worse than the current warning.",
+          "proposal": "Decide what a Launch click does before the window appears.",
+          "options": [
+            {
+              "label": "Click launches immediately — you clicked it, you expect a window",
+              "pros": [
+                "Fastest; one click, no ceremony",
+                "You are already looking at the dashboard, so nothing is a surprise"
+              ],
+              "cons": [
+                "A stray click opens a whole app window and takes focus off what you were doing",
+                "Takes 10-20 seconds to appear, so a mis-click is slow to undo"
+              ]
+            },
+            {
+              "label": "Click starts it and the row says 'starting…' — the window is not brought to the front",
+              "pros": [
+                "You keep your place; the window appears behind and waits for you",
+                "The row tells you it worked, so you don't click twice"
+              ],
+              "cons": [
+                "A window you asked for opening behind your work can feel like nothing happened",
+                "You have to go find it in the taskbar"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Running checks and evaluations",
+      "questions": [
+        {
+          "id": "suite-set",
+          "area": "checks",
+          "today": "We have several separate check suites. The fast one takes about ten seconds and catches most mistakes. There's a whole-app screenshot sweep that takes five minutes. There's an Android one. There's a docs-accuracy audit. There's a paid one that asks real AI models to use the app's tools and grades them, at roughly 25 cents per run.",
+          "problem": "None of them are discoverable — you'd have to remember they exist and ask me by name.",
+          "proposal": "Put buttons on the dashboard for a set of them, per branch. The question is how big that set is to start.",
+          "options": [
+            {
+              "label": "The fast safety check only, per branch",
+              "pros": [
+                "One button, one answer: is this branch safe or not",
+                "Ten seconds, so you'll actually use it",
+                "Nothing on the page you'd never press"
+              ],
+              "cons": [
+                "Says nothing about Android, about how the app looks, or about whether the docs still match",
+                "You'd still ask me for the others by name"
+              ]
+            },
+            {
+              "label": "The free ones: fast safety check, Android tests, docs audit, and the workbench boot check",
+              "pros": [
+                "Everything that costs nothing but time is one click away",
+                "Covers the two blind spots the fast check openly admits to — Android and docs"
+              ],
+              "cons": [
+                "Four buttons per branch is more page than one button per branch",
+                "Android takes minutes, so a mis-click ties up the machine for a while"
+              ]
+            },
+            {
+              "label": "All of them, with the paid one clearly marked and asking to confirm the spend",
+              "pros": [
+                "Nothing hidden — the full toolbox, including the screenshot sweep and the model evaluation",
+                "You could start a paid model evaluation yourself instead of asking me"
+              ],
+              "cons": [
+                "Real money is one confirm-click away on a page you might browse casually",
+                "The screenshot sweep runs several browsers at once for five minutes and will slow the machine down"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "output-view",
+          "area": "checks",
+          "today": "When I run a check, I see pages of output and hand you a one-line verdict. You never see the raw output unless something goes wrong.",
+          "problem": "If you press the button yourself, you need to know it's working and what it found — but the raw output is mostly noise.",
+          "proposal": "Decide what the page shows while a check runs and after it finishes.",
+          "options": [
+            {
+              "label": "A verdict line, with the full output behind a 'show details' toggle",
+              "pros": [
+                "Normal case is one calm line: passed, or failed with the count",
+                "The detail is there when you want it and out of the way when you don't",
+                "Keeps the page as minimal as you asked"
+              ],
+              "cons": [
+                "While it's running you see a spinner, not progress, so a slow one feels stuck",
+                "For a failure you'll usually still want me to read the details and explain"
+              ]
+            },
+            {
+              "label": "Live scrolling output as it runs, collapsing to a verdict when it's done",
+              "pros": [
+                "You can see it is genuinely working, not hung",
+                "For the slow suites, watching progress is reassuring"
+              ],
+              "cons": [
+                "Scrolling technical output is exactly the jargon you don't want on screen",
+                "Busier page; harder to have three branches checking at once without it feeling chaotic"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "What else earns a place on the page",
+      "questions": [
+        {
+          "id": "extras",
+          "area": "scope",
+          "today": "There are 23 branch copies of the app on disk right now. Some are finished and merged weeks ago, some hold work that exists nowhere else. Nothing on your machine tells them apart, and one of them recently sat holding the only copy of four days of work while looking exactly like a finished one.",
+          "problem": "You have no view of what's in flight, what's safe to delete, and what would be lost forever if deleted. That is the most dangerous gap here.",
+          "proposal": "Beyond launching and checking, add one more thing to each branch row. Pick the one you'd get the most from — I'll build one now and we can add more later.",
+          "options": [
+            {
+              "label": "Status: is it saved, is it pushed, is it merged, would deleting it lose work",
+              "pros": [
+                "Directly answers 'is this finished, and is it safe to clean up'",
+                "Flags the dangerous case — work that exists only on this disk — in red before you touch it",
+                "Turns a list of 23 cryptic names into something you can actually act on"
+              ],
+              "cons": [
+                "Reading 23 branches' status takes a couple of seconds when the page loads",
+                "It tells you what's safe to delete but doesn't delete it — that stays a conversation with me"
+              ]
+            },
+            {
+              "label": "What the branch is about — the last few changes in plain language, and any design doc for it",
+              "pros": [
+                "Answers 'what even is leu-t13-manifest' without asking me",
+                "Makes the list browsable rather than a wall of codenames"
+              ],
+              "cons": [
+                "Change descriptions are written by me for me, so some will still read as jargon",
+                "Doesn't warn you about anything — it's context, not safety"
+              ]
+            },
+            {
+              "label": "A running-processes panel: every dev server and stray browser this machine has open, with ports and a Stop button",
+              "pros": [
+                "Cleans up the leftovers that block the next launch",
+                "Answers 'why is my machine slow' in one glance"
+              ],
+              "cons": [
+                "It is about the machine, not about your work, so you'd look at it rarely",
+                "A Stop button next to a list of processes is the easiest way on this page to kill something you wanted"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

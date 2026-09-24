@@ -1,7 +1,11 @@
 ---
 paths:
-  - "wecoded-themes/**"
-  - "wecoded-marketplace/**"
+  # WHY **/ (2026-09-23): a plain "wecoded-themes/**" only matches at the workspace
+  # root, so it never fired inside a session worktree (worktrees/sessions/<name>/
+  # wecoded-themes/...), where CLAUDE.md sends all non-trivial work — this rule
+  # never loaded for the checkouts it's about. See .claude/rules/README.md.
+  - "**/wecoded-themes/**"
+  - "**/wecoded-marketplace/**"
   - "**/desktop/src/main/claude-code-registry.ts"
   - "**/desktop/src/main/local-theme-synthesizer.ts"
   - "**/desktop/src/main/theme-marketplace-provider.ts"
