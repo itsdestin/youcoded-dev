@@ -140,7 +140,7 @@ produced and the panel that shows them (files).
       stats and chunk-reads every conversation on the main thread (`chatsearch-index`). Neither
       is on a click path a user waits on directly; both are stalls with no visible cause.
       Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` was being
-      rewritten for sync safety; that work (`session/sync-safety-restart-20260922`) made heal's file
-      reads async but left the directory listing synchronous — convert both after it lands
+      rewritten for sync safety; that work (youcoded#563) made heal's file reads async but left the
+      directory listing synchronous — both are now free to convert
       `desktop` `confirmed` `checked 2026-09-23` `performance`
 

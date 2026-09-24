@@ -11,11 +11,6 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       not detected or separated.
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-23`
 
-- [ ] The Sync panel can show a green "All synced" right beside the "Conflicting changes were saved in
-      separate files" notice, and the notice has no way to open the affected files. Left alone when the
-      notice wording changed, 2026-09-23.
-      `settings/sync` `desktop` `decision` `checked 2026-09-23`
-
 - [ ] If the app crashes in the middle of a sync, the copies it saved of files git doesn't manage stay in the
       hidden sync folder for good (never lost, never cleaned up, never offered back).
       `settings/sync` `desktop` `needs-verify` `checked 2026-09-23`
@@ -148,6 +143,7 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       Destin, beta.9 dogfood 2026-07-24; milestone his call. Reaffirmed 2026-09-23 in admission-repair
       deck Q-6: "we need to add a better resolution mechanism/ui to the roadmap for split conversations
       with multiple copies." Include conversation-specific resolution, not just a warning; design remains open.
+      Also: the panel can show a green "All synced" right beside that amber line (seen 2026-09-23).
       `settings/sync` `desktop` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 
 - [ ] Idea: same-machine takeover handoff without the hub — two installs sharing `~/YouCoded` (dev instance + built
