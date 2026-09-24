@@ -1,0 +1,258 @@
+{
+  "title": "Welcome back — reopening sessions after the app closes",
+  "key": "welcome-back-questions",
+  "out": "welcome-back.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-route",
+      "words": true,
+      "surface": "How we build it",
+      "path": "The whole feature",
+      "headline": "How much design process should this feature go through before it is built?",
+      "today": "New screens normally go through a full route: these questions, then mockups, an outside tester who has never seen the plan, a signed list of what 'done' means, code reviewers and a final grade. Small, clear changes can skip straight to one before/after deck.",
+      "problem": "This screen is the first thing you would see after a crash, and it touches resuming, sessions open on your other computer, and local models. The full route catches more, but takes longer and uses more helpers.",
+      "proposal": "Pick the route. Either way you see mockups and a review deck before anything ships.",
+      "options": [
+        {
+          "id": "full",
+          "label": "Full route",
+          "pros": ["An outside tester tries the mockups before you see them, and again after it is built.", "A written 'definition of done' you sign, graded at the end.", "Best fit for a screen that appears at startup, where a bug is very visible."],
+          "cons": ["Slower: several extra rounds before code.", "Roughly a dozen helper runs, so more usage."],
+          "recommended": true
+        },
+        {
+          "id": "short",
+          "label": "Short route",
+          "pros": ["Faster: I build it, then show you one before/after deck."],
+          "cons": ["No outside tester or grader, so more rides on your review.", "Edge cases (other computer, local models) are more likely to slip through."]
+        }
+      ]
+    },
+    {
+      "id": "P-which",
+      "page": "Which sessions come back",
+      "intro": "These decide which sessions appear on the Welcome back screen."
+    },
+    {
+      "id": "S-sent",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Appears when you open the app",
+      "headline": "Only sessions where you sent at least one message come back.",
+      "changed": "Stated, not asked: a session you opened but never typed in is not remembered.",
+      "notice": "Empty 'New Session' tabs you forgot about do not clutter the list.",
+      "yes": "Agreed",
+      "no": "Include empty ones"
+    },
+    {
+      "id": "Q-quit",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Closing the whole app window while sessions are open",
+      "headline": "When you close the whole app on purpose with sessions open, should those come back next launch?",
+      "today": "Closing the app window with sessions open shows a warning that the sessions will be ended. Next launch opens on an empty start screen; the old sessions are only in the Resume browser.",
+      "problem": "A crash and a normal quit look alike afterwards. If normal quits count, you get the Welcome back screen after every quit; if they do not, a quit you regret loses your place.",
+      "proposal": "Three ways to treat a normal quit. Crashes, power loss and the computer shutting down always count.",
+      "options": [
+        {
+          "id": "always",
+          "label": "Always come back",
+          "pros": ["Simplest: whatever was open is offered back, no matter how the app closed.", "Matches 'the app closes or whatever'."],
+          "cons": ["If you often quit with sessions open, you see this screen most launches."],
+          "recommended": true
+        },
+        {
+          "id": "ask-at-quit",
+          "label": "Ask in the quit warning",
+          "pros": ["The existing warning gains a 'Reopen these next time' tick box, so you decide at the moment you quit."],
+          "cons": ["One more thing to read every time you quit.", "Slightly more to build and test."]
+        },
+        {
+          "id": "crash-only",
+          "label": "Crashes only",
+          "pros": ["The screen appears only when something went wrong."],
+          "cons": ["A deliberate quit you regret means digging through the Resume browser."]
+        }
+      ]
+    },
+    {
+      "id": "S-x",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "The X on a session tab",
+      "headline": "Closing one session with its X means you are done with it, so it never appears on Welcome back.",
+      "changed": "Stated, not asked: only the X on a single session removes it from the list. It stays in the Resume browser as today.",
+      "notice": "Sessions you closed one by one never reappear at startup.",
+      "yes": "Agreed",
+      "no": "Disagree"
+    },
+    {
+      "id": "S-device",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Using YouCoded on more than one computer",
+      "headline": "Each computer only offers back the sessions that were open on that computer.",
+      "changed": "Stated, not asked (you decided this on 2026-09-02): what was open on your laptop never shows up on your other computer's Welcome back screen.",
+      "notice": "If a session is now open on your other computer, the usual 'take it over?' question appears when you resume it, exactly as in the Resume browser today.",
+      "yes": "Agreed",
+      "no": "Disagree"
+    },
+    {
+      "id": "P-screen",
+      "page": "What the screen looks like and does",
+      "intro": "The layout itself comes later as mockups. These set what it must be able to do."
+    },
+    {
+      "id": "Q-where",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Appears when you open the app",
+      "headline": "Where should the list of sessions to reopen appear?",
+      "today": "After a restart the app opens on an empty start screen that says 'No Active Session', with a New Session form and a Resume button.",
+      "problem": "You have to remember what you were doing and hunt for each session in the Resume browser, one at a time.",
+      "proposal": "Three places the list could appear. Pick the one that feels right as the first thing you see.",
+      "options": [
+        {
+          "id": "replace",
+          "label": "Instead of start screen",
+          "summary": "A full 'Welcome back' screen takes the start screen's place until you choose.",
+          "pros": ["Impossible to miss; room for a long list with titles, folders and times.", "The usual start screen appears as soon as you finish."],
+          "cons": ["You must press a button (even 'Start fresh') before doing anything else."],
+          "recommended": true
+        },
+        {
+          "id": "popup",
+          "label": "Popup window",
+          "pros": ["Can be dismissed with Escape or a click outside.", "The start screen is visible behind it."],
+          "cons": ["Easy to wave away by accident.", "Less room; a long list scrolls in a small box."]
+        },
+        {
+          "id": "card",
+          "label": "Card on start screen",
+          "pros": ["Least intrusive; you can ignore it and start something new."],
+          "cons": ["Easiest to overlook, which defeats the point after a crash.", "Crowds the start screen."]
+        }
+      ]
+    },
+    {
+      "id": "Q-ticks",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "The tick box beside each session",
+      "headline": "Should every session start ticked, ready to resume, or start unticked?",
+      "today": "There is no such list today.",
+      "problem": "After a crash you usually want most things back, but after a normal quit you may want only one or two.",
+      "proposal": "Pick the starting state. You can change any tick before pressing Resume.",
+      "options": [
+        {
+          "id": "all",
+          "label": "All ticked",
+          "pros": ["One press gets everything back.", "Best for the crash case."],
+          "cons": ["After a normal quit you untick the ones you don't want."],
+          "recommended": true
+        },
+        {
+          "id": "none",
+          "label": "None ticked",
+          "pros": ["Nothing reopens unless you pick it."],
+          "cons": ["After a crash you tick every one by hand."]
+        }
+      ]
+    },
+    {
+      "id": "Q-actions",
+      "words": true,
+      "pick": "several",
+      "surface": "Welcome back screen",
+      "path": "Each session row",
+      "headline": "Besides resuming, what should you be able to do to each session on the list?",
+      "today": "The Resume browser can mark a session complete, which hides it there unless you ask to see completed ones.",
+      "problem": "Some sessions on the list are finished work you just never closed. Without a way to say so, they come back every time.",
+      "proposal": "Pick every action a row should offer. Resume, Resume all and Start fresh are there regardless.",
+      "options": [
+        {
+          "id": "complete",
+          "label": "Mark complete",
+          "pros": ["Same meaning as in the Resume browser: finished, hidden by default.", "Tidies the Resume browser at the same time."],
+          "cons": ["None beyond a button per row."],
+          "recommended": true
+        },
+        {
+          "id": "dismiss",
+          "label": "Not now",
+          "summary": "Take it off this list without marking it complete.",
+          "pros": ["For work that is not finished but not needed today; it stays findable in the Resume browser."],
+          "cons": ["A second button per row that looks similar to Mark complete."]
+        },
+        {
+          "id": "open-browser",
+          "label": "Show in Resume browser",
+          "pros": ["Jump to the full browser to see notes, tags and preview."],
+          "cons": ["Leaves the Welcome back screen part-way through."]
+        }
+      ]
+    },
+    {
+      "id": "Q-leftover",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Leaving the screen",
+      "headline": "Sessions you leave unticked: forget them, or offer them again next launch?",
+      "today": "There is no such list today.",
+      "problem": "If unticked sessions come back every launch, the list never shrinks. If they are forgotten, a mis-click loses them from this list.",
+      "proposal": "Either way, forgotten sessions are still in the Resume browser.",
+      "options": [
+        {
+          "id": "forget",
+          "label": "Forget them",
+          "pros": ["The screen only ever shows what was open last time.", "Nothing piles up."],
+          "cons": ["An unticked session is only reachable through the Resume browser afterwards."],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Offer again",
+          "pros": ["Nothing drops off without a deliberate choice."],
+          "cons": ["The screen keeps appearing until you resume, complete or dismiss every row."]
+        }
+      ]
+    },
+    {
+      "id": "Q-model",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Resuming a session that used a local or non-Claude model",
+      "headline": "When a session ran on a local or non-Claude model, should resuming it reuse that model automatically?",
+      "today": "Resuming such a session from the Resume browser first asks you which model to use.",
+      "problem": "Resuming five sessions at once could mean five model questions in a row.",
+      "proposal": "Pick whether Welcome back reuses the last model or asks.",
+      "options": [
+        {
+          "id": "reuse",
+          "label": "Reuse last model",
+          "pros": ["One press resumes everything.", "If that model is no longer available, it falls back to asking."],
+          "cons": ["You cannot switch model at resume time from this screen (you still can inside the session)."],
+          "recommended": true
+        },
+        {
+          "id": "ask",
+          "label": "Ask each time",
+          "pros": ["Same as the Resume browser."],
+          "cons": ["A question per session when resuming several."]
+        }
+      ]
+    },
+    {
+      "id": "S-phone",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Android app",
+      "headline": "This ships on the desktop app first; the Android app gets it later.",
+      "changed": "Stated, not asked: on Android, sessions already keep running in the background when the app closes, and resuming old sessions there is not finished yet.",
+      "notice": "Nothing changes on your phone with this work.",
+      "yes": "Agreed",
+      "no": "Need Android too"
+    }
+  ]
+}
