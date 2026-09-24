@@ -1,0 +1,49 @@
+{
+ "deck": "ui-element-review-headers",
+ "started": "2026-09-24T00:03:20.880Z",
+ "submitted": "2026-09-24T00:08:45Z",
+ "cur": 4,
+ "answers": {
+  "H-1": {
+   "v": "pick",
+   "pick": "centered-pages",
+   "seconds": 59,
+   "theme": "light",
+   "zoom": 1
+  },
+  "H-2": {
+   "v": "pick",
+   "pick": "dialog",
+   "seconds": 76,
+   "theme": "light",
+   "zoom": 1
+  },
+  "H-3": {
+   "note": "idk what this would actually look like in practice, hard to judge. i think i'm fine to simplift to a standard large-medium-small or like 1st-2nd-3rd level heading or something? idk",
+   "v": "other",
+   "seconds": 83,
+   "theme": "light",
+   "zoom": 1
+  },
+  "H-4": {
+   "v": "picks",
+   "picks": [
+    "tab-faint",
+    "tab-faint-market",
+    "stats"
+   ],
+   "note": "b/c are the same, right? should be a single style.",
+   "seconds": 82,
+   "theme": "light",
+   "zoom": 1
+  },
+  "H-5": {
+   "v": "pick",
+   "pick": "button",
+   "note": "put \"esc\" on the left and \"back to chat\" on the right though.",
+   "seconds": 25,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
