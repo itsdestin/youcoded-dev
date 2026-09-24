@@ -113,7 +113,11 @@ the existing `missingProject`/`notSyncedYet` fields; ids with no row at all simp
 
 1. `ev.preventDefault()`; send `window:close-request {requestId, sessions: owned.length}` to
    THAT window's webContents.
-2. Await `window:answer-close` for that requestId, **timeout 5 s** (B-quit risk card: a frozen
+2. Await `window:answer-close` for that requestId. **The renderer sends
+   `window:close-request-shown {requestId}` as soon as the prompt renders, which cancels
+   the timeout** — the timeout exists only for a renderer that never draws the prompt,
+   never for a person reading it (Destin, 2026-09-24: the window closed mid-read). Until
+   shown: **timeout 5 s** (B-quit risk card: a frozen
    renderer cannot draw it). Timeout → run the SAME destroy + `releaseSession` loop and close,
    but skip `untrack` — sessions stay tracked, as after a crash (review 1, D4: no orphaned
    processes behind a closed window).
