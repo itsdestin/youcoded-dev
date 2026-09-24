@@ -1,0 +1,36 @@
+{
+ "deck": "ui-element-review-buttons",
+ "started": "2026-09-24T00:11:32.597Z",
+ "submitted": "2026-09-24T00:15:13Z",
+ "cur": 3,
+ "answers": {
+  "B-1": {
+   "v": "pick",
+   "pick": "icon-x",
+   "seconds": 45,
+   "theme": "light",
+   "zoom": 1
+  },
+  "B-2": {
+   "note": "unsure. i think each of these may/may not have a place, but could also arguably be consolidated. i'd want to visualize my options better before committing.",
+   "v": "other",
+   "seconds": 54,
+   "theme": "light",
+   "zoom": 1
+  },
+  "B-3": {
+   "note": "unsure how a/b differ. ",
+   "v": "other",
+   "seconds": 70,
+   "theme": "light",
+   "zoom": 1
+  },
+  "B-4": {
+   "v": "other",
+   "note": "unsure. i think same as earlier response. these may warrant different options in different circumstances, but could also make sense to consolidate. unsure whic.",
+   "seconds": 51,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
