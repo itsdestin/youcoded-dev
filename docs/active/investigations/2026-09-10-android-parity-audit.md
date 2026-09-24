@@ -574,6 +574,12 @@ Notification permission is declared in the manifest and never requested at runti
 The generated web bundle folder is ignored whole; nothing under it is tracked (since 2026-09-10).
 <!-- claim: {"path": "youcoded/.gitignore", "contains": "Nothing here is tracked"} -->
 
+- (2026-09-24) Project skills & tools: the Android app has no Projects screen, so the new Skills &
+  tools tab can't appear on the phone app; when Projects comes to Android, the tab must carry a
+  note that its switches don't affect conversations started on the phone (Destin chose "show it
+  with a note", combined-review Q-4; deferred by build-question B-2). Remote access from a phone
+  already gets the full tab from the desktop.
+
 ## Sources
 
 Channel table, push-event gaps, and android-only list: sweep of `ipcMain.handle/on` across

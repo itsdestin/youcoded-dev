@@ -2,6 +2,12 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] Starting a new conversation from Projects → New Conversation logs a React error ("Cannot
+      update a component (AppInner) while rendering a different component (AppInner)"); seen in
+      the UI Workbench on both master and the project-controls branch, 2026-09-24, not yet
+      checked in the app
+      `desktop` `needs-verify` `checked 2026-09-24`
+
 - [ ] The design check still lists about 530 places where a screen overrides a shared button’s
       look, types a size in by hand, or uses a color outside the theme. Only the mechanical
       fixes were made on 2026-09-16; each remaining group needs its own design call.

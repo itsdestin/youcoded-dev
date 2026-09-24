@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 owner: Destin (decisions)
 date: 2026-09-23
 ---
@@ -53,10 +53,11 @@ date: 2026-09-23
 - **B-1 `none-outside`:** conversations outside any project get nothing automatic, even though that changes today's behaviour there (Destin chose it over keeping today's behaviour).
 - **B-2 `later`:** the Android app has no Projects screen; phone-app support ships with Android Projects. Remote access from a phone gets the full tab now. This supersedes combined-review Q-4 for this build.
 
-## Still open before a build contract
+## Status (2026-09-24)
 
-1. Visual sign-off on the in-context Marketplace post-install step, the drawer's round-3 right-aligned chips, and the locked rows inside Your Assistant's Projects tab. The local-MCP and missing-device actions still need their own full-context review; **the round-6 grouping direction alone did not approve the whole feature**.
-2. A source-grounded native enforcement/migration policy: snapshot effective availability for existing projects; identify synced project IDs, local installation and MCP setup; keep manual skills callable without leaking automatic discovery; gate off MCP tools at conversation start. Personal-file sync, mid-session MCP connections and Claude Code integration are explicitly later work, not unresolved first-build decisions.
-3. A written implementation/acceptance contract and platform verification. Android-local sessions run Claude Code, not YouCoded's native harness (`youcoded/app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt`); the first native-only controls must not falsely claim to affect those sessions. Remote viewing of desktop native sessions is a separate case. This record is **not** the build contract.
-
-No live configuration or production availability behavior was changed. The app edits are workbench-gated visuals except a behavior-preserving extraction of SessionStrip's status color maps into a shared module for the drawer preview and an optional ProjectHero preview label; none implements project policy, installation or native enforcement.
+Built on `session/plugin-project-controls` (both repos) from the technical design
+`2026-09-24-project-plugin-controls-technical-design.md`; contract signed, graded and accepted.
+Not merged: Destin wants to review every new screen himself before refinements
+(`docs/active/handoffs/2026-09-23-project-plugin-controls-START-HERE.md`). Deferred, not open:
+Your Assistant's locked switches (combined-review Q-1), the Android app (B-2), Claude Code
+opt-in, personal-skill sync, mid-conversation tool connections, a tool-connection settings form.

@@ -374,6 +374,21 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `parked` `checked 2026-08-16`
 
 ## skills-mcp
+- [ ] Project skills & tools controls are built and accepted but NOT merged (youcoded PR and
+      youcoded-dev PR on `session/plugin-project-controls`, 2026-09-24): each project chooses
+      which skills, plugins and tool connections the assistant uses on its own; new Marketplace
+      downloads start off and open "choose your projects"; drawer chips show Automatic / Manual
+      use / Unavailable. Destin wants to review every new screen himself before refinements and
+      merge (2026-09-24: "i think i still want to review this ui further before we finalize").
+      Start at docs/active/handoffs/2026-09-23-project-plugin-controls-START-HERE.md
+      `desktop` `in-flight` `checked 2026-09-24`
+
+- [ ] Your Assistant's four built-in plugins should show always-on, dimmed switches that can't be
+      turned off, with a hover/focus explanation (approved design, deferred 2026-09-24 until the
+      Your Assistant project exists; the project skills & tools controls ship for ordinary
+      projects first)
+      `projects` `desktop` `blocked` `checked 2026-09-24`
+
 - [ ] MCP servers can only be set up by hand-editing a config file on disk — there is no
       settings screen to add, edit or remove one, and servers Claude Code already knows about
       stay invisible to the app's own agent (desktop; deferred from phase 1, 2026-08-05; still
