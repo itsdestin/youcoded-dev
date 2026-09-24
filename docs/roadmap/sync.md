@@ -1,6 +1,24 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
+- [ ] A project where a password file (like `.env`) was uploaded by an older app version keeps that copy
+      online and in its history. New edits now stay on the device, but nothing removes what already went up;
+      removing it means rewriting the project's history on every device. Decided out of scope, 2026-09-23.
+      `settings/sync` `desktop` `decision` `checked 2026-09-23` `security`
+
+- [ ] Two projects created before 2026-09-23 whose names differ only by capital letters ("Notes" and
+      "notes") still share one online copy and mix their files. New ones are refused; existing pairs are
+      not detected or separated.
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-23`
+
+- [ ] If the app crashes in the middle of a sync, the copies it saved of files git doesn't manage stay in the
+      hidden sync folder for good (never lost, never cleaned up, never offered back).
+      `settings/sync` `desktop` `needs-verify` `checked 2026-09-23`
+
+- [ ] The Android app's GitHub backup copies `mcp.json` (which can hold service keys) and settings into the
+      backup repository, with only junk files excluded. The desktop app no longer has this backup.
+      `android` `needs-verify` `checked 2026-09-23` `security`
+
 - [ ] Very long conversations (over 50 MB) stop updating on your other devices — the device that has them keeps
       them, and the Sync panel now says so, but the other devices never get the newest messages. Six of Destin's
       conversations (54–107 MB) hit this, 2026-09-16. Needs a way to sync long conversations in pieces.
@@ -125,6 +143,7 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       Destin, beta.9 dogfood 2026-07-24; milestone his call. Reaffirmed 2026-09-23 in admission-repair
       deck Q-6: "we need to add a better resolution mechanism/ui to the roadmap for split conversations
       with multiple copies." Include conversation-specific resolution, not just a warning; design remains open.
+      Also: the panel can show a green "All synced" right beside that amber line (seen 2026-09-23).
       `settings/sync` `desktop` `decision` `checked 2026-09-23` → docs/active/investigations/2026-09-01-sync-conflict-copy-resolver.md
 
 - [ ] Idea: same-machine takeover handoff without the hub — two installs sharing `~/YouCoded` (dev instance + built
