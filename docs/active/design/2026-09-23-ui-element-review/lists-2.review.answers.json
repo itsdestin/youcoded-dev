@@ -1,0 +1,22 @@
+{
+ "deck": "ui-element-review-lists-2",
+ "started": "2026-09-24T07:11:47.402Z",
+ "submitted": "2026-09-24T07:12:10Z",
+ "cur": 1,
+ "answers": {
+  "R-5": {
+   "v": "pick",
+   "pick": "boxed",
+   "seconds": 15,
+   "theme": "light",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "pick",
+   "pick": "plain",
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
