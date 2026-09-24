@@ -1,8 +1,9 @@
 ---
 date: 2026-09-22
-status: active
+status: superseded
 type: handoff
 topic: Minimalist chrome style — what Destin asked for, what is built, and where the last session lost him
+superseded_by: docs/active/handoffs/2026-09-24-appearance-panel-START-HERE.md
 ---
 
 # Minimalist chrome — START HERE
