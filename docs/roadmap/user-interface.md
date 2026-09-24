@@ -2,11 +2,6 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
-- [ ] While a reply streams, the chat you are looking at still redraws every message in it on
-      every word, not only the one being written, and the small spinner keeps ticking in chats
-      you are not looking at. Left over from the 2026-09-23 many-tabs batch
-      `chat` `desktop` `confirmed` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-16-smoothness-sweep.md
-
 - [ ] The design check still lists about 530 places where a screen overrides a shared button’s
       look, types a size in by hand, or uses a color outside the theme. Only the mechanical
       fixes were made on 2026-09-16; each remaining group needs its own design call.
