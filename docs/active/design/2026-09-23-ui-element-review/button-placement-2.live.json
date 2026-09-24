@@ -1,0 +1,67 @@
+{
+  "title": "Button placement — two follow-ups",
+  "key": "ui-element-review-button-placement-2",
+  "out": "button-placement-2.live.html",
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 740
+  },
+  "steps": [
+    {
+      "id": "BW-1",
+      "surface": "Popups",
+      "path": "A wide popup (like Development or a Marketplace item) with a main action and Cancel",
+      "headline": "In a wide popup, where do the two buttons sit?",
+      "notice": "You said stacking looks worse in wide popups. Filled stays on the right either way.",
+      "live": {
+        "surface": "button-placement",
+        "round": 6,
+        "paneWidth": 740
+      },
+      "variants": [
+        {
+          "id": "right",
+          "label": "Pair on the right",
+          "candidate": "right",
+          "summary": "Both hug their labels at the right edge."
+        },
+        {
+          "id": "halves",
+          "label": "Equal halves",
+          "candidate": "halves",
+          "summary": "Both share the full width."
+        }
+      ]
+    },
+    {
+      "id": "BW-2",
+      "surface": "Popups",
+      "path": "A narrow popup or a phone, with the buttons stacked",
+      "headline": "When the buttons stack, is the main button on top or at the bottom?",
+      "notice": "You said stacking looks good in narrow popups and on phones.",
+      "live": {
+        "surface": "button-placement",
+        "round": 7
+      },
+      "variants": [
+        {
+          "id": "filled-top",
+          "label": "Main on top",
+          "candidate": "filled-top",
+          "summary": "The filled button first, Cancel under it."
+        },
+        {
+          "id": "filled-bottom",
+          "label": "Main at the bottom",
+          "candidate": "filled-bottom",
+          "summary": "Cancel first, the filled button last — nearest your thumb on a phone."
+        }
+      ]
+    }
+  ]
+}
