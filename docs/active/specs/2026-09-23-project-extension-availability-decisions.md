@@ -46,7 +46,7 @@ date: 2026-09-23
 - **Q-3 `assistant-and-file`:** a missing item's setup offers "Ask assistant to set it up", plus "Choose skill file" for a skill. No tool-connection settings screen in the first build.
 - **Q-4 `show-with-note`:** on Android the Skills & tools tab is shown and editable, with one line saying phone conversations aren't affected yet.
 - **Approved:** R-1 right-aligned drawer chips with direct red-chip click; M-2 post-install setup on a phone; S-1 wrapping phone descriptions.
-- **Reworked, re-review pending (`combined-review-2`):** M-1 was "hard to understand" (re-asked with a two-step picture); S-2 "dont want this inside the card. maybe a popup" and K-1 "confused" → both are now popups using the app's Dialog.
+- **Reworked and approved in `combined-review-2` (all yes, 2026-09-24):** M-1 post-install project setup in the Marketplace panel (first answer was "hard to understand"; re-asked with a two-step picture); S-2 setup explanation as a popup, not inside the card; K-1 the risk confirmation as a popup naming the connecting parts (first answer "confused"). **Every UI surface in the first-build scope now has sign-off.**
 
 ## Still open before a build contract
 
