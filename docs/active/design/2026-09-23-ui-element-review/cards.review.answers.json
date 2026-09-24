@@ -1,0 +1,57 @@
+{
+ "deck": "ui-element-review-cards",
+ "started": "2026-09-24T06:25:56.435Z",
+ "submitted": "2026-09-24T06:29:06Z",
+ "cur": 6,
+ "answers": {
+  "K-1": {
+   "note": "i think somewhere between today and raised.",
+   "v": "other",
+   "seconds": 89,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-2": {
+   "v": "other",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "note": "same as prev"
+  },
+  "K-3": {
+   "note": "same as previous",
+   "v": "other",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-4": {
+   "v": "pick",
+   "pick": "raised",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-5": {
+   "v": "pick",
+   "pick": "raised",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "K-6": {
+   "v": "pick",
+   "pick": "raised",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-7": {
+   "v": "pick",
+   "pick": "raised",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
