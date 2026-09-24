@@ -1,0 +1,53 @@
+{
+  "title": "When a conversation needs a summary",
+  "key": "native-compaction-release2",
+  "stage": "design",
+  "out": "native-compaction.review.html",
+  "images": "images/native-compaction.review",
+  "runs": {
+    "today": "../../../../scratch/compaction-release2-today"
+  },
+  "labels": {
+    "today": "Today — no new interface built"
+  },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "conversation": ["native-desktop", "home", "1400x390+20+70"],
+    "model-choice": ["native-desktop", "model-picker", "720x260+360+250"],
+    "narrow-model-choice": ["native-narrow", "model-picker", "390x320+0+205"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Chat",
+      "path": "A conversation after the assistant summarizes older messages",
+      "crop": "conversation",
+      "headline": "After a native summary, dim the older messages but not the recent messages kept alongside it.",
+      "changed": "Keep the summary marker already added by the in-session work. The proposed change dims only the older summarized portion; the retained recent messages stay at normal contrast. The full chat remains readable.",
+      "notice": "The marker shows where the summary happened without falsely fading recent messages that were carried forward.",
+      "risk": "The change applies to native automatic summaries; clearing the chat and Claude Code summaries retain their existing treatment. This image shows today's chat, not a completed summary.",
+      "highlight": { "box": [74, 58, 25, 15] }
+    },
+    {
+      "id": "B-2",
+      "surface": "Model picker",
+      "path": "Choose a model with less room than this conversation needs",
+      "crop": "model-choice",
+      "headline": "Ask before switching to a model that cannot fit this conversation.",
+      "changed": "The new dialog says: ‘This chat is too long for [new model]. [Current model] can summarize older messages first.’ One ‘Summarize and switch’ button, plus X or Esc to stay.",
+      "notice": "The current model summarizes first. The switch only happens if that summary fits the new model; fitting chats switch without a dialog.",
+      "risk": "Failure keeps the current model and shows an honest error. The picture is today's picker, not the unbuilt dialog.",
+      "highlight": { "box": [25, 50, 50, 14] }
+    },
+    {
+      "id": "B-3",
+      "surface": "Model picker on a narrow window",
+      "path": "Choose a smaller model while the app is phone-width",
+      "crop": "narrow-model-choice",
+      "headline": "Keep the same summarize-or-dismiss choice usable at phone width.",
+      "changed": "The button and X stay visible at phone width. X or Esc preserves the chat and model. The picture is today's picker, not the unbuilt dialog.",
+      "notice": "One choice works at both widths. We will review the actual narrow dialog after implementation.",
+      "highlight": { "box": [16, 48, 68, 15] }
+    }
+  ]
+}

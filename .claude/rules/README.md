@@ -1,4 +1,19 @@
+---
+paths:
+  - "**/.claude/rules/**"
+last_verified: 2026-09-23
+---
+
 # Rules conventions
+
+<!-- WHY this file now carries frontmatter (2026-09-23): with none, Claude Code loaded
+     it EAGERLY every session — confirmed 244/244 sessions in
+     ~/.claude/instructions-loaded.log. It only matters when someone is about to touch a
+     rule file, so scope it like any other rule. `scripts/audit-anchors.mjs` already
+     excludes README.md by filename from its rule enumeration (it teaches the anchor/glob
+     syntax with fictitious example paths that must never be checked as real anchors), so
+     this frontmatter is read by Claude Code only, never treated as a normal rule's
+     verify: block by the auditor. -->
 
 Every rule file: YAML frontmatter + terse body (≤600 words). Overflow migrates to the
 lazy doc the rule points to, or becomes a pinning test.

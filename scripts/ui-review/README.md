@@ -16,6 +16,21 @@ Default output: `scratch/ui-review-<date>/` (git-ignored) with `gallery.html`,
 Runs the UI Workbench (real renderer, fake backend, headless Chrome) — **never the live
 app**. A full 6-theme sweep runs one Chrome per (plan, theme, shard) through a queue of `UI_REVIEW_JOBS` workers (default 24) — about 5 minutes on this machine; `UI_REVIEW_PLANS=main,overlays` limits a run to the plans a PR touches.
 
+## Start here
+
+Long file — jump to the section for the job in hand.
+
+| Want to… | Read |
+|---|---|
+| Screenshot every surface/theme | "Pieces", then the command above |
+| Serve a review or questions deck | `review-cards.py` in "Pieces"; `.claude/rules/review-deck.md` |
+| Record a demo loop | "Recording a loop" |
+| Edit landing-site copy | "Editing copy on the site" |
+| Regenerate mascots/hero art | "Hero mascots, the tab icon, and the share image" |
+| Add/use a workbench `?switch=` | "Workbench switches the plans rely on" |
+| Verify on real Electron | "Real-app pass (Electron)" |
+| Test drag/hover by hand | "Drag probe and drag sweep" |
+
 ## Why it can be trusted (the 2026-08-25 lessons)
 
 **The server is checked before the shots are.** `run-review.sh` starts its own workbench on
@@ -73,7 +88,7 @@ them every surface is under 3,300. It needs a serving workbench, so it is not in
 | `coverage.mjs` | covered / partial / MISSED per surface × theme, with reasons. |
 | `make-gallery.py` | the HTML gallery. |
 | `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. **Which kind to pick, and the rules that go with it: `.claude/rules/review-deck.md`. Every field of every kind, the page grammar, the refusals, the answers file and every command: `scripts/ui-review/deck/AUTHORING.md`. One worked template per kind: `scripts/ui-review/templates/`.** |
-| `review-page.py` | the earlier prose-first review page (Phase A/B pages). Rejected as a review surface on 2026-08-26 — do not use for new phases. |
+| `review-page.py` | the earlier prose-first review page (Phase A/B pages). Rejected as a review surface on 2026-08-26; archived to `docs/archive/ui-review-tools/` 2026-09-23 (nothing live referenced it) — do not use for new phases. |
 
 ## Writing a shot
 
@@ -340,8 +355,9 @@ by class), so removing one alone shifts every later card's clip.
 ### Copy-preview and copy-review (earlier tools)
 
 `copy-preview.py` builds a page-shaped preview of **proposed** copy (old text on a toggle, per-row
-loop verdicts) — for reviewing a rewrite before it lands. `copy-review.py` is the older
-old/new table, rejected 2026-08-28 as "chunked up and displayed all kinds of weird". Neither
+loop verdicts) — for reviewing a rewrite before it lands. `copy-review.py` was the older
+old/new table, rejected 2026-08-28 as "chunked up and displayed all kinds of weird"; archived to
+`docs/archive/ui-review-tools/` 2026-09-23 (nothing live referenced it). Neither
 serves the live page; reach for `site-copy-editor.py` when Destin wants to edit the site himself.
 
 ## Hero mascots, the tab icon, and the share image (2026-09-04)
@@ -420,7 +436,11 @@ earlier: `?planUsage=1` (the Claude plan's 5-hour/7-day windows on `status:data`
 it the Claude card has no bars while ChatGPT's has two),
 `?chatgpt=signed-out|waiting|signed-in|free|blocked` (the ChatGPT account card; default
 signed-in on Plus), `?claudeCode=signed-in|signed-out|apikey|not-installed|unknown`
-(Claude Code's own sign-in; default signed-in on Max), `?authMode=oauth|chatgpt|apikey`
+(Claude Code's own sign-in; default signed-in on Max),
+`?openrouter=verified|rejected|expired|wrong-type|none` (pins the OpenRouter card's key
+health verdict; with no pin the card falls back to unsaved), `?openrouterSignIn=waiting|failed`
+(pins the OpenRouter sign-in card mid-round-trip instead of its default instant success),
+`?authMode=oauth|chatgpt|apikey`
 (pins the first-run sign-in screen mid-round-trip), `?signedIn=1` (a YouCoded account and
 a fake friend).
 
@@ -429,11 +449,22 @@ The rest: `?arcade=<game>` (open a game the scenario cannot reach),
 `?remotePreview=setup|consent|checking|checked|ready|conflict|error|disabled|not-installed|sign-in-required|checked-failed|checked-silent`
 (the mock-only setup-flow stages the remote-access decks were shot from; `checked-*` are the
 end-of-setup check's three answers), `?lease=held:<device>` (a resume
-raises the takeover dialog), `?reason=<code>` (why a setting is switched off),
+raises the takeover dialog), `?conversation=reconnecting|restoring|incomplete|complete`
+(needs `&connection=remote`; puts the phone's copy-of-conversation strip in that phase),
+`?remoteFiles=refused` (same; every file channel refused, reproducing what a phone gets
+today), `?filesLocked=1` (Project Files gets one folder that refuses to open),
+`?reason=<code>` (why a setting is switched off),
 `?student=1` (the student persona's files, project and history),
+`?projects=none` (the project index answers with no projects, so Projects' empty-state
+explainer is reachable; composes with any scenario),
 `?voice=<phrase>` (dictation without a microphone), `?reply=<name>` (which fixture the
-"model" speaks), `?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
+"model" speaks), `?replySpeed=<k>` (plays that reply k× faster, text and pauses alike),
+`?seed=none` (empties the chat in `scenario=site` ONLY — elsewhere it is ignored), `?title=`, `?model=`, `?platform=android`,
 `?autoplay=<n>`, `?buddyHelper=installed|missing|stale` (the Linux buddy helper controls),
+`?guide=tour|tips|tip:<id>` (arms the first-run tour/tips this profile owes, or fires one
+named tip after boot; a leftover `tour` from an earlier load can bleed into a later shot —
+clear it with a fresh profile or no flag), `?localApps=found` (first-run Local Models: two
+model apps already detected running, vs. the default empty),
 `?screenFrame=cards|sheet|rail|bleed` (how the page view's panel and frame sit on a wallpaper
 in floating chrome — the Pages floating-theme round, 2026-09-17; `cards` is what ships).
 

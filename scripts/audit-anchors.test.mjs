@@ -294,6 +294,69 @@ test('main: an off-schema rule fails the whole run loudly (pinning)', () => {
   assert.match(r.stdout, /0\/1 ok/); // parse failure counts toward total — no negative math
 });
 
+test('main: a rule file with no frontmatter counts toward the eager-token budget', () => {
+  // WHY this pins the fix (2026-09-23): a rule with no frontmatter has no `paths:`
+  // scope, so Claude Code loads it EAGERLY — same as README.md before it got real
+  // frontmatter. It used to vanish from eagerWords entirely because it never enters
+  // rules[] (it fails frontmatter parsing), so the eager-budget estimate silently
+  // missed exactly the rules most likely to be a problem.
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-eager-nofm-'));
+  fs.mkdirSync(path.join(root, '.claude', 'rules'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+  const claudeMd = 'minimal fixture workspace';
+  const noFmBody = Array(50).fill('word').join(' ') + '\n';
+  fs.writeFileSync(path.join(root, 'CLAUDE.md'), claudeMd);
+  fs.writeFileSync(path.join(root, 'docs', 'MAP.md'), '# map\n');
+  fs.writeFileSync(path.join(root, '.claude', 'rules', 'no-frontmatter.md'), noFmBody);
+  const script = fileURLToPath(new URL('./audit-anchors.mjs', import.meta.url));
+  const r = spawnSync(process.execPath, [script, '--root', root, '--no-diff', '--json'], { encoding: 'utf8' });
+  const result = JSON.parse(r.stdout);
+  const expectedWords = countBodyWords(claudeMd) + countBodyWords(noFmBody);
+  assert.equal(result.budgets.eagerTokens, Math.ceil(expectedWords * 1.33));
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
+test('main: an over-budget rule body WARNS, it does not fail the mechanical pass', () => {
+  // WHY (2026-09-23): pty-io.md/test-suite-hygiene.md/feature-flow.md/review-deck.md
+  // were reported over the 600-word body budget by a whole-file `wc -w`, which counts
+  // the frontmatter too — but nothing here ever flagged them, because their real,
+  // frontmatter-stripped body counts were actually under budget. Even so, an over-budget
+  // body is a trim-when-convenient signal, not a correctness bug (the rule still loads
+  // and scopes correctly), so this must WARN rather than fail the run.
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'audit-eager-overbudget-'));
+  fs.mkdirSync(path.join(root, '.claude', 'rules'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'docs'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'a'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'CLAUDE.md'), 'minimal fixture workspace');
+  fs.writeFileSync(path.join(root, 'docs', 'MAP.md'), '# map\n');
+  fs.writeFileSync(path.join(root, 'a', 'file.ts'), '// tracked file so the rule glob matches something\n');
+  const longBody = Array(700).fill('word').join(' ') + '\n';
+  fs.writeFileSync(path.join(root, '.claude', 'rules', 'long.md'),
+    `---\npaths:\n  - "a/**"\n---\n${longBody}`);
+  // ruleGlobs (§4) requires the glob to match >=1 GIT-TRACKED file, so the fixture
+  // needs a real repo, not just files on disk — otherwise `git ls-files` returns
+  // nothing and the run fails for an unrelated reason, masking what this test checks.
+  execFileSync('git', ['-C', root, 'init', '-q', '-b', 'master']);
+  execFileSync('git', ['-C', root, 'add', '.']);
+  execFileSync('git', ['-C', root, '-c', 'user.email=test@example.com', '-c', 'user.name=Test',
+    'commit', '-q', '-m', 'init']);
+  const script = fileURLToPath(new URL('./audit-anchors.mjs', import.meta.url));
+  const r = spawnSync(process.execPath, [script, '--root', root, '--no-diff', '--json'], { encoding: 'utf8' });
+  const result = JSON.parse(r.stdout);
+  assert.equal(result.ok, true, 'an over-budget rule body must not fail the run');
+  assert.equal(r.status, 0);
+  assert.equal(result.budgets.violations.length, 0, 'over-budget rule bodies are not "violations"');
+  assert.equal(result.budgets.ruleBodyWarnings.length, 1);
+  assert.equal(result.budgets.ruleBodyWarnings[0].file, '.claude/rules/long.md');
+  assert.equal(result.budgets.ruleBodyWarnings[0].words, 700);
+
+  const human = spawnSync(process.execPath, [script, '--root', root, '--no-diff'], { encoding: 'utf8' });
+  assert.equal(human.status, 0);
+  assert.match(human.stdout, /WARN rule bodies over the word budget/);
+  assert.match(human.stdout, /long\.md: 700 words \(limit 600\)/);
+  fs.rmSync(root, { recursive: true, force: true });
+});
+
 test('main: bad --root value and non-workspace dir produce one clear error, exit 1', () => {
   const script = fileURLToPath(new URL('./audit-anchors.mjs', import.meta.url));
   const noVal = spawnSync(process.execPath, [script, '--root'], { encoding: 'utf8' });

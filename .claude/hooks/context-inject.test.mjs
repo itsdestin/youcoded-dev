@@ -354,7 +354,11 @@ test('a worktree whose commits are PUSHED (without -u) is not flagged as at risk
   assert.match(out, /session\/pushed-no-u/, 'the worktree must still be listed');
   assert.doesNotMatch(out, /EXIST ONLY HERE/,
     'the commit is on the server — saying otherwise is the false alarm this fixes');
-  assert.match(out, /- pushed \[/, 'a backed-up worktree gets the plain marker, not the warning one');
+  // Since 2026-09-23 a clean, fully-pushed worktree is listed by branch name on one
+  // shared line instead of its own row — still named, never carrying the ⚠ marker.
+  assert.match(out, /- 1 clean, fully-pushed worktree\(s\) in youcoded with work not yet on origin\/master: session\/pushed-no-u/,
+    'a backed-up worktree gets the plain marker, not the warning one');
+  assert.doesNotMatch(out, /⚠ pushed \[/);
   fs.rmSync(ws, { recursive: true, force: true });
   fs.rmSync(remote, { recursive: true, force: true });
 });
@@ -383,6 +387,88 @@ test('uncommitted files carry the warning marker even when everything is pushed'
   const out = runHook(ws);
   assert.match(out, /⚠ dirty \[/, 'uncommitted work is the case no push rule can reach');
   assert.match(out, /1 uncommitted file\(s\)/);
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+});
+
+// --- collapsing merged/empty/clean worktrees (2026-09-23) -------------------
+// Real workspace measurement: ~14 of ~60 lines in this section said, verbatim except
+// for the name, "nothing ahead ...; merged or empty, candidate for cleanup" — a row
+// with nothing left to act on, drowning the handful of ⚠ lines a session actually
+// needs. Only a worktree with ahead==0 AND no dirty files AND no unpushed commits
+// (the plain "-" marker) may collapse; anything carrying a ⚠, or still ahead, must
+// stay listed by name so it is never mistaken for "safe to ignore".
+
+test('a merged, clean, pushed worktree collapses into a per-repo summary line, not an individual row', () => {
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  // Forked at the current tip with no further commits: ahead==0 by construction,
+  // and that shared commit is already reachable via origin/master, so it also reads
+  // as pushed with zero extra work — exactly the "nothing left to say" case.
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/done-1', path.join(ws, 'worktrees', 'done-1'));
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/done-2', path.join(ws, 'worktrees', 'done-2'));
+  const out = runHook(ws);
+  assert.doesNotMatch(out, /done-1/, 'a collapsed worktree must not print its own name');
+  assert.doesNotMatch(out, /done-2/, 'nor must a second one');
+  assert.match(out, /\+ 2 more worktree\(s\) in youcoded are merged\/empty and clean/,
+    'the count of collapsed worktrees must be summarized, not silently dropped');
+  assert.match(out, /`git -C youcoded worktree list`/, 'the summary names the command to see them');
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+});
+
+test('a worktree ahead of master, or carrying a ⚠, is never folded into the collapse count', () => {
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/done', path.join(ws, 'worktrees', 'done'));
+  const aheadPath = path.join(ws, 'worktrees', 'ahead');
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/ahead', aheadPath);
+  fs.writeFileSync(path.join(aheadPath, 'work.txt'), 'new work\n');
+  git(aheadPath, 'add', 'work.txt');
+  git(aheadPath, 'commit', '-q', '-m', 'ahead of master');
+  const dirtyPath = path.join(ws, 'worktrees', 'dirty');
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/dirty', dirtyPath);
+  fs.writeFileSync(path.join(dirtyPath, 'scratch.txt'), 'unsaved\n');
+  const out = runHook(ws);
+  assert.match(out, /session\/ahead/, 'a worktree ahead of master stays listed individually');
+  assert.match(out, /⚠ dirty \[/, 'a dirty worktree stays listed individually, marker and all');
+  assert.match(out, /\+ 1 more worktree\(s\) in youcoded are merged\/empty and clean/,
+    'only the truly done worktree collapses — the count must not include the other two');
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+});
+
+test('collapsing is per repo: each sub-repo gets its own summary line and command', () => {
+  const { ws } = makeWorkspace(); // adds `youcoded` with no remote (ahead reads "?", never collapses)
+  const secondRepoDir = path.join(ws, 'youcoded-admin');
+  fs.mkdirSync(secondRepoDir, { recursive: true });
+  git(secondRepoDir, 'init', '-q', '-b', 'master');
+  git(secondRepoDir, 'config', 'user.email', 'test@example.com');
+  git(secondRepoDir, 'config', 'user.name', 'Test');
+  fs.writeFileSync(path.join(secondRepoDir, 'README.md'), '# admin\n');
+  git(secondRepoDir, 'add', '.');
+  git(secondRepoDir, 'commit', '-q', '-m', 'init');
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-inject-remote2-'));
+  git(remote, 'init', '-q', '--bare', '-b', 'master');
+  git(secondRepoDir, 'remote', 'add', 'origin', remote);
+  git(secondRepoDir, 'push', '-q', '-u', 'origin', 'master');
+  git(secondRepoDir, 'remote', 'set-head', 'origin', 'master');
+  git(secondRepoDir, 'worktree', 'add', '-q', '-b', 'session/admin-done', path.join(ws, 'worktrees', 'admin-done'));
+  const out = runHook(ws);
+  assert.match(out, /\+ 1 more worktree\(s\) in youcoded-admin are merged\/empty and clean/);
+  assert.match(out, /`git -C youcoded-admin worktree list`/);
+  assert.doesNotMatch(out, /\+ \d+ more worktree\(s\) in youcoded are/,
+    'youcoded has no collapsible worktree here — it must not get a spurious summary line');
+  fs.rmSync(ws, { recursive: true, force: true });
+  fs.rmSync(remote, { recursive: true, force: true });
+});
+
+test('all worktrees collapsing does not read as "(none)"', () => {
+  // "(none)" means no worktrees exist at all; a fully-collapsed section means several
+  // exist and are all done. The two must never look alike.
+  const { ws, repo, remote } = makeWorkspaceWithRemote();
+  git(repo, 'worktree', 'add', '-q', '-b', 'session/only-one', path.join(ws, 'worktrees', 'only-one'));
+  const out = runHook(ws);
+  assert.doesNotMatch(out, /\(none\)/, 'a collapsed-but-nonempty section must not print "(none)"');
+  assert.match(out, /\+ 1 more worktree\(s\) in youcoded are merged\/empty and clean/);
   fs.rmSync(ws, { recursive: true, force: true });
   fs.rmSync(remote, { recursive: true, force: true });
 });

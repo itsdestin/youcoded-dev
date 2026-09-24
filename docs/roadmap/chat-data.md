@@ -9,14 +9,6 @@ produced and the panel that shows them (files).
       matching the two cards, 2026-09-16)
       `projects` `desktop` `confirmed` `checked 2026-09-16`
 
-- [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
-      browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
-      still closes it (seen in the workbench while filming the promo, 2026-09-03). Same cause as
-      the 2026-09-10 code-review finding that a SECOND Escape can fall through to the chat: the
-      layered Escape handling pops the browser's entry after the first press and nothing puts it
-      back (`use-esc-close.tsx` re-pushes only when `open` or the store changes)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-16`
-
 - [ ] Priority shows as a tag on every card and in the per-card tag picker, but the Tags filter
       cannot narrow to it; the note marker looks like a tag too and cannot be filtered
       `resume-browser` `all` `confirmed` `checked 2026-09-10`
@@ -44,10 +36,6 @@ produced and the panel that shows them (files).
       Session button sits in the preview's foot; a beta tester expected the name to open it
       `resume-browser` `all` `confirmed` `checked 2026-09-16`
 
-- [ ] Resuming a conversation that is already open in a tab made a second tab with the same name
-      instead of switching to it (seen in the workbench, 2026-09-10)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
-
 - [ ] At phone width the Resume browser's expanded row details truncate to unreadable stubs
       ("wecoded-m…", "qwen3-coder-30…"). (The Skip Permissions switch it also showed is not a
       phone-only difference: desktop's preview foot renders the same options, gated only on the
@@ -60,8 +48,8 @@ produced and the panel that shows them (files).
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
-      unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is)
-      `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
+      unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is). Taken off 1.3.1 in Destin's triage 2026-09-23
+      `desktop` `needs-verify` `checked 2026-09-01`
 
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —
@@ -153,12 +141,5 @@ produced and the panel that shows them (files).
       is on a click path a user waits on directly; both are stalls with no visible cause.
       Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` is being
       rewritten on `session/sync-safety-audit-20260908` — convert both after that lands
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
-
-- [ ] The 30-minute conversation reconcile lists every transcript ever written and lstat +
-      tail-reads each one, synchronously — a stall every half hour that grows for as long as
-      the app has been used (`conversations/reconciler.ts`; its own note measured 2.8 s at 600
-      records before the last fix). Found by the 2026-09-16 smoothness sweep (C10), not built:
-      the fix is the same fs.promises recipe the click paths got, with the walk bounded per tick
       `desktop` `confirmed` `checked 2026-09-16` `performance`
 

@@ -33,6 +33,18 @@ Confirm with `git log --oneline origin/master -1`, then do the cleanup above by 
 the merge.
 Verify the commit landed on the remote default first: `git merge-base --is-ancestor <sha> origin/master` must exit 0 (a stale local `master` is not the authority). Leaving stale worktrees or branches around accumulates cruft and confuses future sessions about what's in-flight and what's already shipped.
 
+**Finding which OLD worktrees (not just the one you just merged) are safe to delete is `scripts/prune-worktrees.mjs`.** Checking any one worktree by hand takes several commands per repo it touches — is it clean, is it merged, is anything still using it — which is exactly why ~60 piled up here unpruned (2026-09-23). The script does that check for every registered worktree in this repo and every component repo:
+
+```bash
+node scripts/prune-worktrees.mjs                          # dry run — reports only, changes NOTHING
+node scripts/prune-worktrees.mjs --exclude <this-session-key>   # also treat a session as in-use
+node scripts/prune-worktrees.mjs --apply <key> [<key> ...] # deletes ONLY the exact names given
+```
+
+A worktree is SAFE only when its `git status` is clean, its branch is already an ancestor of origin's default branch, and no running process has its working directory inside it (Linux only — `/proc/*/cwd`; elsewhere it says so and refuses unless `--skip-process-check`). A **session** (`worktrees/sessions/<key>/`, which can hold this workspace's own worktree plus one nested worktree per component repo) is safe only when every worktree inside it is safe — one dirty component worktree makes the whole session not-safe, even if the workspace-level part looks clean. Older standalone worktrees at `worktrees/<name>` are checked the same way, alone. The dry run also lists: worktrees git has registered but whose directory is already gone (`git worktree prune` fixes those), unregistered leftover directories under `worktrees/` that are not any repo's worktree, and — per safe candidate — any ignored file `git worktree remove` would destroy (a `scratch/` folder, a stray `.env`) after filtering out directories npm/vite/tsc regenerate on their own (`node_modules`, `dist`, `.vite`, etc.).
+
+**There is no "apply all."** `--apply` always requires naming each session key or path; it re-checks that exact target is still safe immediately before removing it, in case something changed since the dry run. It removes nested component worktrees before the workspace-level one (removing the parent first would try to delete directories another repo still has registered inside it), runs `git branch -D` on the local branch in each repo, deletes the branch on `origin` if one exists there, and never passes `--force` to `git worktree remove` — a candidate that is genuinely safe never needs it, and `--force` is exactly what would let a race condition slip through. **Freed disk space can be smaller than `du` suggests**: a component's `node_modules` is hardlinked with the shared checkout (`cp -al`, see above), so deleting a worktree's copy does not free those shared inodes (observed once: `du` said 13.7 GB, disk actually freed 5 GB).
+
 **A red check on the PR is yours until proven otherwise.** Master is protected on
 `build (ubuntu-latest)` (2026-09-16), so a red Linux check stops the merge: open the failed
 job's log (`gh run view <id> --log-failed`), find the `FAIL` lines, and fix them on the branch.
@@ -202,6 +214,17 @@ See `docs/build-and-release.md` for full build order, release flows, and version
 **When you change a native harness tool, a prompt/instruction file, or want to compare models, OFFER to run the harness evaluator — then let Destin decide.** `youcoded/desktop/test-engine/harness-eval.mjs --plan <file>` runs a case across a matrix of **code version × instruction file × model**, each cell in its own disposable `os.tmpdir()` fixture, and grades every run twice: free mechanical checks read off the event stream, plus an LLM judge whose every grade must quote the text it scored. `--dry-run` is free and needs no key; `--only <cellId>` is one cell; `--max-spend <usd>` is a hard cap. A real run needs `--key-file` — **the CLI refuses to start if `OPENROUTER_API_KEY` is in its environment**, because that is readable by the models it runs. Measured ~$0.25 a cell, so **never run the paid path unasked**.
 
 Why offer at all: four live rounds found **nine** real defects that 4,500 passing tests did not — Bash returning 27,966 chars from one command, Grep reporting a 500-match cap as a true total, Glob treating `{ts,kt}` as literal text, a provider 402 rendered as `[object Object]`. Unit tests here drive scripted fake models; only a real model spending a real turn exercises the judgment these tools are built for. Rule: `.claude/rules/harness-evaluator.md` (auto-loads on `harness/tools/**` too).
+
+### Measuring prompt-cache reuse (Luna rig)
+
+When a change could move how much input a provider serves from cache (request headers, prompt
+order, history rebuild, compaction, resume), measure it on real ChatGPT-plan requests with
+`scripts/luna/` — the harness evaluator grades behaviour through OpenRouter and cannot see the
+ChatGPT backend's cache. It spends plan quota: ask Destin, state the request cap, and alternate
+client order across rounds. Pick the runner by question (plain turns, tool loops, or restart +
+compaction); read `scripts/luna/README.md` for the isolation model before the first run.
+Deterministic prompt shape stays pinned by unit tests (`prompt-assembly.test.ts`,
+`prompt-cache.test.ts`, `chatgpt-model.test.ts`), not by the rig.
 
 ## Ending a Session
 

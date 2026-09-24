@@ -12,6 +12,8 @@
 //   node scripts/roadmap-check.mjs --fix               also rewrite the index (ROADMAP.md) to match the area files
 //   node scripts/roadmap-check.mjs --fix-claims        also flip confirmed items whose claim anchor broke to needs-verify
 //   node scripts/roadmap-check.mjs --structure         job 1 only (the edit hook)
+//   node scripts/roadmap-check.mjs --close <area>:<line or text> --ref "<commit or PR>" [--headline "<text>"]
+//                                                      close one item: delete it, append its shipped.md line, rewrite the index
 //   node scripts/roadmap-check.mjs --vocab             print every closed token list, then exit
 //   node scripts/roadmap-check.mjs --quiet             print only structure errors (CI)
 //   node scripts/roadmap-check.mjs --root <dir>        workspace root; defaults to the git checkout you are IN
@@ -40,6 +42,7 @@ export const INDEX_FILE = 'ROADMAP.md';
 export const SHIPPED_FILE = 'shipped.md';
 export const OLD_FORMAT_HEADING = '## Shipped before 2026-09-01 (old format)';
 export const STALE_DAYS = 60;
+export const SHIPPED_MAX = 300;   // characters per shipped.md line; see parseShipped
 
 // ---------- vocabularies (spec §3) ----------
 // Closed lists on purpose: a typo must be an error, never a new screen.
@@ -283,8 +286,54 @@ export function parseShipped(text) {
     const l = lines[i];
     if (/^- \[ \]/.test(l)) errors.push({ line: i + 1, message: 'open items do not belong in shipped.md' });
     else if (/^- \[x\]/.test(l) && !SHIPPED_LINE_RE.test(l)) errors.push({ line: i + 1, message: 'shipped line must be `- [x] YYYY-MM-DD <area> — <headline> (<commit or PR>)`' });
+    // WHY a cap (2026-09-23): "one line per item" had grown into 1,000-character essays, and
+    // the log reached 73,000 words — twice the open backlog. The story belongs in the commit or PR.
+    else if (/^- \[x\]/.test(l) && l.length > SHIPPED_MAX) errors.push({ line: i + 1, message: `shipped line is ${l.length} characters (max ${SHIPPED_MAX}) — keep the headline and the commit or PR; the detail belongs in the commit message or PR` });
   }
   return { errors };
+}
+
+// ---------- --close: one step from open item to shipped line ----------
+// WHY (2026-09-23): closing was three hand steps — delete the entry, append to shipped.md,
+// re-run --fix — written out in ROADMAP.md, CLAUDE.md, close-out.sh and the wrap-up skill,
+// and sessions regularly did one or two of them. `which` is `<area>:<line>` or
+// `<area>:<text>` (text must match exactly one entry's symptom; line numbers shift as other
+// sessions edit, text does not).
+export function closeEntry(rm, which, { ref, today, headlineText } = {}) {
+  const m = String(which).match(/^([^:]+):(.+)$/);
+  if (!m) throw new Error('--close takes <area>:<line> or <area>:<text from the entry>');
+  const [, areaName, key] = m;
+  const area = rm.areas.find(a => a.area === areaName);
+  if (!area) throw new Error(`no area file ${ROADMAP_DIR}/${areaName}.md (areas: ${rm.areas.map(a => a.area).join(', ')})`);
+  const hits = /^\d+$/.test(key)
+    ? area.entries.filter(e => e.line === Number(key))
+    : area.entries.filter(e => e.symptom.toLowerCase().includes(key.toLowerCase()));
+  if (hits.length !== 1) {
+    const near = hits.length ? hits.map(e => `  ${areaName}:${e.line} ${headline(e, 90)}`).join('\n') : '  (none)';
+    throw new Error(`--close ${which} matched ${hits.length} entries — it must match exactly one:\n${near}`);
+  }
+  if (!ref) throw new Error('--close needs --ref "<commit or PR>" — the shipped line cites where the work landed');
+  const e = hits[0];
+
+  // Remove the entry's lines plus one neighbouring blank line, so no double gap is left.
+  const areaPath = path.join(rm.root, ROADMAP_DIR, `${areaName}.md`);
+  const lines = fs.readFileSync(areaPath, 'utf8').split('\n');
+  let from = e.line - 1, to = e.metaLineNo - 1;
+  if (lines[to + 1] === '') to++;
+  else if (from > 0 && lines[from - 1] === '') from--;
+  lines.splice(from, to - from + 1);
+  fs.writeFileSync(areaPath, lines.join('\n'));
+
+  // Newest at the bottom of the new-format lines (above the old-format block if one exists).
+  const shippedPath = path.join(rm.root, ROADMAP_DIR, SHIPPED_FILE);
+  const sLines = fs.readFileSync(shippedPath, 'utf8').split('\n');
+  const line = `- [x] ${today} ${areaName} — ${headlineText || headline(e, 160)} (${ref})`;
+  const old = sLines.findIndex(l => l.trim() === OLD_FORMAT_HEADING);
+  let at = old === -1 ? sLines.length : old;
+  while (at > 0 && sLines[at - 1].trim() === '') at--;
+  sLines.splice(at, 0, line);
+  fs.writeFileSync(shippedPath, sLines.join('\n'));
+  return { entry: e, line };
 }
 
 // ---------- loading ----------
@@ -315,15 +364,26 @@ export function checkStructure(rm) {
     }
   }
   if (!rm.index) errors.push({ file: INDEX_FILE, line: 0, message: `${INDEX_FILE} is missing` });
-  else {
-    for (const e of rm.index.errors) errors.push({ file: INDEX_FILE, line: e.line, message: e.message });
-    const onDisk = new Set(rm.areas.map(a => a.area));
-    const inIndex = new Set(rm.index.rows.map(r => r.area));
-    for (const r of rm.index.rows) if (!onDisk.has(r.area)) errors.push({ file: INDEX_FILE, line: r.line + 1, message: `index row for ${r.area} but ${ROADMAP_DIR}/${r.area}.md does not exist` });
-    for (const a of rm.areas) if (!inIndex.has(a.area)) errors.push({ file: INDEX_FILE, line: 0, message: `${areaFile(a)} has no row in the index (run --fix)` });
-  }
+  // WHY a missing or extra index row is NOT a structure error (2026-09-23): structure errors
+  // stop the run before --fix rewrites the index, so adding a new area file meant hand-typing
+  // its table row first. diffIndex reports the row mismatch as drift and --fix repairs it.
+  else for (const e of rm.index.errors) errors.push({ file: INDEX_FILE, line: e.line, message: e.message });
   if (!rm.shipped) errors.push({ file: `${ROADMAP_DIR}/${SHIPPED_FILE}`, line: 0, message: `${ROADMAP_DIR}/${SHIPPED_FILE} is missing` });
   else for (const e of rm.shipped.errors) errors.push({ file: `${ROADMAP_DIR}/${SHIPPED_FILE}`, line: e.line, message: e.message });
+  // WHY (2026-09-23): a lone `<<<<<<< HEAD` sat above the ROADMAP.md backlog table for
+  // weeks after a half-finished conflict repair (a3cd5cae). The row parser skips any
+  // non-row line, so the check read "clean" and every --fix rewrite carried the debris
+  // forward. Conflict markers are never legitimate in these files — make them an error.
+  const files = [INDEX_FILE, `${ROADMAP_DIR}/${SHIPPED_FILE}`, ...rm.areas.map(areaFile)];
+  for (const rel of files) {
+    const abs = path.join(rm.root, rel);
+    if (!fs.existsSync(abs)) continue;
+    fs.readFileSync(abs, 'utf8').split('\n').forEach((text, i) => {
+      if (/^(<{7}|={7}|>{7})( |$)/.test(text)) {
+        errors.push({ file: rel, line: i + 1, message: `leftover merge-conflict marker: ${text.slice(0, 20)}` });
+      }
+    });
+  }
   return errors;
 }
 
@@ -424,8 +484,20 @@ export function expectedIndex(rm) {
     parked: a.entries.filter(e => e.status === 'parked').length,
   })).sort((x, y) => y.open - x.open || (x.area < y.area ? -1 : 1));
   const target = rm.index?.target ?? null;
-  const nextRelease = rm.areas.flatMap(a => a.entries.filter(e => e.release === target).map(e => `- ${a.area}: ${e.firstLine}`));
+  const nextRelease = rm.areas.flatMap(a => a.entries.filter(e => e.release === target).map(e => `- ${a.area}: ${headline(e)}`));
   return { rows, nextRelease };
+}
+
+// An entry's headline: its first sentence, cut at a word boundary.
+// WHY not the first physical line (2026-09-23): entries wrap at ~100 columns, so the Next
+// release list read "…behind an", "…eaten over" — every line ended mid-sentence. A leading
+// "**v1.3.1 release blocker.**" is dropped too: the list is already the release's blockers.
+export function headline(e, max = 110) {
+  let s = e.symptom.replace(/\*\*/g, '').replace(/^v\d+(\.\d+)* release blocker\s*[.:—-]*\s*/i, '');
+  const end = s.search(/[.;](\s|$)| — /);
+  if (end >= 20) s = s.slice(0, end);
+  if (s.length > max) s = s.slice(0, s.lastIndexOf(' ', max - 1)) + '…';
+  return s;
 }
 
 export function renderRow(r) {
@@ -494,7 +566,12 @@ export function run({ root, fix = false, fixClaims = false, quiet = false, struc
   }
   const checked = claims.results.filter(r => !r.skipped);
   const broken = checked.filter(r => !r.ok);
-  say('', `### Claims — ${checked.length} checked, ${broken.length} broken`);
+  // WHY the skipped count is in the header (2026-09-23): run from a workspace-only worktree,
+  // 81 of 87 claims were skipped (their repo not checked out) and the header read "6 checked,
+  // 0 broken" — 11 broken claims stayed invisible until the app worktree was added.
+  const skipped = claims.results.length - checked.length;
+  say('', `### Claims — ${checked.length} checked, ${broken.length} broken`
+    + (skipped ? `, ${skipped} skipped (repo not checked out here — add it with workspace-start to check them)` : ''));
   say(`checked against: ${Object.entries(claims.shas).map(([k, v]) => `${k}=${v.slice(0, 8)}`).join(' ') || '(no git)'}`);
   for (const r of broken) say(`- ${where({ area: r.area, line: r.entry.line })} ${cut(r.entry.firstLine)} — ${r.reason} (${r.entry.link})`);
   if (flipped.length) say(`- flipped to needs-verify: ${flipped.map(where).join(', ')}`);
@@ -505,12 +582,12 @@ export function run({ root, fix = false, fixClaims = false, quiet = false, struc
   // 3. symptom pass
   const sp = symptomPass(rm, today);
   say('', `### For Destin — ${sp.decisions.length} decision(s), ${sp.stale.length} item(s) unconfirmed for ${STALE_DAYS}+ days`);
-  for (const e of sp.decisions) say(`- decision ${where(e)} ${cut(e.firstLine)}`);
+  for (const e of sp.decisions) say(`- decision ${where(e)} ${headline(e, 90)}`);
   const byArea = new Map();
   for (const e of sp.stale) { if (!byArea.has(e.area)) byArea.set(e.area, []); byArea.get(e.area).push(e); }
   for (const [area, list] of byArea) {
     say(`- ${area}:`);
-    for (const e of list) say(`  - ${where(e)} ${cut(e.firstLine)} (${e.status}, checked ${e.checked})`);
+    for (const e of list) say(`  - ${where(e)} ${headline(e, 90)} (${e.status}, checked ${e.checked})`);
   }
 
   // 4. index
@@ -547,7 +624,19 @@ function main() {
   const root = rootArg ? path.resolve(rootArg) : defaultRoot();
   const today = value('--today') ?? new Date().toISOString().slice(0, 10);
   if (!isRealDate(today)) { console.error(`roadmap-check: --today must be YYYY-MM-DD, got "${today}"`); process.exit(1); }
-  const fix = flag('--fix');
+  // --close: remove one entry, append its shipped line, then fall through to a --fix run so
+  // the index is rewritten in the same step.
+  const closeArg = value('--close');
+  if (closeArg !== undefined) {
+    const rm = loadRoadmap(root);
+    if (!rm) { console.error(`roadmap-check: no ${ROADMAP_DIR}/ under ${root}`); process.exit(1); }
+    try {
+      const { entry, line } = closeEntry(rm, closeArg, { ref: value('--ref'), today, headlineText: value('--headline') });
+      process.stdout.write(`roadmap-check: closed ${entry.area}:${entry.line} under ${root}\nshipped.md gained: ${line}\n`);
+      if (entry.link) process.stdout.write(`its report ${entry.link} — move it to docs/archive/ unless another entry still links it\n`);
+    } catch (err) { console.error(`roadmap-check: ${err.message}`); process.exit(1); }
+  }
+  const fix = flag('--fix') || closeArg !== undefined;
   const fixClaims = flag('--fix-claims');
   // A write names the checkout it lands in, so a run from the wrong directory is visible.
   if (fix || fixClaims) process.stdout.write(`roadmap-check: writing under ${root}\n`);

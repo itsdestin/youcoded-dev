@@ -2,14 +2,6 @@
 Filing test: getting a model onto this machine and serving it — downloads, disk, the engine
 process. Would this break the same way on a cloud model? No. (Yes → native-harness.)
 
-- [ ] A 2B model says "will be tight" on a 128 GB laptop — and every other local model is
-      mislabelled the same way, because the estimate scores against the 4 GB slice the BIOS
-      calls "video memory" instead of the ~90 GB the graphics chip can really reach. Destin
-      2026-09-07: count shared memory on every unified machine — this one, Apple M-series,
-      Windows where it makes sense — and check the logic so the same memory is never counted
-      twice
-      `local-models-screen` `desktop` `confirmed` `checked 2026-09-07` → docs/active/investigations/2026-09-07-unified-memory-fit-estimate.md
-
 - [ ] Loading a second large local model took the whole machine down — Qwen3.5-122B and
       Qwen3.6-35B resident together on the Strix Halo desktop (2026-08-16) lost the desktop
       shell, YouCoded, Chrome and Steam. **The warning half is fixed**: the numbers behind it are
@@ -69,26 +61,6 @@ process. Would this break the same way on a cloud model? No. (Yes → native-har
       relative — 5/s is poor on this machine and good on a laptop), how a model nobody has run
       yet is estimated, and whether hosted models get the same tag.
       `model-picker` `all` `confirmed` `checked 2026-09-06` `performance`
-
-- [ ] Whole publishers' models are invisible in search because of how they punctuate filenames.
-      Measured over 10 real repos on 2026-09-05: `mradermacher/gemma-3-12b-it-GGUF` (13 files,
-      0 offered) and **`TheBloke/Llama-2-7B-Chat-GGUF` (12 files, 0 offered)** both write
-      `<name>.Q4_K_M.gguf` with a dot, and TheBloke is one of the largest GGUF publishers on
-      Hugging Face. A THIRD, separate cause: `Mungert/gemma-3-4b-it-gguf` (24 files, 0 offered)
-      is rejected on case, not punctuation — lowercase double-quant names like
-      `gemma-3-4b-it-f16-q8_0.gguf`. Worth splitting into the two causes when picked up, and
-      worth surveying how many of search's results are affected before widening the pattern:
-      loosening it wrongly makes unrelated files look like downloadable models.
-      `desktop` `confirmed` `checked 2026-09-05`
-
-- [ ] A vision model downloaded while the app is already running can be told to the assistant as
-      text-only. The engine does re-read the file pairing on request, and a download completing
-      does ask it to — but fire-and-forget with a swallowed error, while the model's profile is
-      settled once when the session starts. Lose that race and Local Models says "vision ready"
-      while the assistant is told the model cannot see, so the user attaches a picture and it
-      silently vanishes. Found reviewing the vision work 2026-09-05; deriving the answer from the
-      files on disk as well as from the engine would close it for good.
-      `local-models-screen` `desktop` `confirmed` `checked 2026-09-05`
 - [ ] Installing the local-model engine still asks the computer to unpack the download with a
       program the app does not ship, so a machine without it fails at a step the user did not know
       existed. Lower risk than the speech model was — the shapes it downloads need no extra helper

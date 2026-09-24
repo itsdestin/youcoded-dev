@@ -36,19 +36,6 @@ them. Not here: the theme renders wrong (themes).
 
 ## backend
 
-- [ ] Website analytics is live, but its account allowance, spending alerts and applicable backup
-      window are not fully verified: Free Website was confirmed, the Workers subscription lookup
-      returned 403, and provider docs alone say Free 7 days / Paid 30 days. Verify the account's
-      billing and alert coverage without assuming a free zone caps Worker costs; no plan upgrade
-      was made. Follow-up monitoring, not a new activation approval gate
-      `n/a` `needs-verify` `checked 2026-09-15`
-
-- [ ] Website analytics reports cleanup health as unknown after activation, with no last sweep yet.
-      Observe the first daily prune, then verify cleanup/recovery monitoring and provider backup
-      expiry separately from the active database's 90-day history; live ingestion success does not
-      prove retention operations. Follow-up monitoring, not a new activation approval gate
-      `n/a` `needs-verify` `checked 2026-09-15`
-
 - [ ] The Regions list in admin analytics is empty — "Region data isn't coming through yet." Every
       device in the last 30 days arrives with a blank region, while countries come through fine.
       Seen on Destin's analytics dashboard 2026-09-13; cause not looked into
@@ -59,12 +46,6 @@ them. Not here: the theme renders wrong (themes).
       gives each app its own private ID that a USB connection can't read for these builds, so the
       likely fix is a "Copy analytics ID" control in the app's About screen, then adding both IDs
       `n/a` `confirmed` `checked 2026-09-13`
-
-- [ ] A plugin that ships from a non-default branch gets scanned against the wrong code. Four live
-      listings (three `netsuite-*`, one `42crunch`) were stamped "Likely safe" having read nothing;
-      the false verdicts were cleared by hand 2026-08-31 and the 13 netsuite rows now read
-      "Not checked" — and will forever, until the scan follows the branch the listing names.
-      `all` `needs-verify` `checked 2026-09-03` `security` `v1.3.1` → docs/active/investigations/2026-09-01-marketplace-ingest-ignores-source-git-ref.md
 
 - [ ] Every marketplace refresh re-downloads the whole catalog (~1 MB on the wire, ~5,000 rows)
       even when one listing changed. Wanted: send only what changed since the client's last version,
@@ -91,10 +72,11 @@ them. Not here: the theme renders wrong (themes).
       Registry. Sequenced after the trust layer and abuse handling exist; it is a public commitment.
       `all` `parked` `checked 2026-08-27` → docs/active/investigations/2026-09-01-marketplace-public-sub-registry-layer-e.md
 
-- [ ] The "Likely safe" badge reads as a safety verdict, but the scan only looks for leaked secrets
-      and file shapes; a public product cannot imply a check that never happened. Wording is
-      Destin's call — candidate "No leaked secrets found"
-      `marketplace-screen` `all` `decision` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+- [ ] The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets
+      and file shapes. Destin, 2026-09-23: keep the "Likely safe" wording and make the scan earn it
+      instead — "maybe just use an llm … to evaluate for certain criteria". Wanted: an AI review of
+      each plugin against a written list of what makes one unsafe, feeding the badge
+      `marketplace-screen` `all` `confirmed` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] Harden account sign-in against link-based account takeover: the GitHub device-flow can be abused
       to hijack a YouCoded account — social layer only (comments, friends, game records, sync, up to
@@ -117,6 +99,16 @@ them. Not here: the theme renders wrong (themes).
       read from config rather than compiled in, so the next move cannot repeat this
       `all` `confirmed` `checked 2026-09-11`
 
+- [ ] The "publish to marketplace" plugin can't be changed through a normal pull request: any
+      change makes the plugin check scan the whole plugin, and the plugin's deliberate fake keys
+      (kept on purpose to test its own secret scrubbing) fail the blocking hard-coded-key scan; a
+      version bump is required too. Because of this, the 2026-09-23 help-text update was
+      dropped, so the plugin still tells authors to copy `${PACKAGE_DIR}` instead of
+      recommending `{{plugin_root}}` and the `platforms` list, which the MCP authoring guide
+      already documents. Wanted: let the scan tell deliberate test fixtures from real content,
+      then land the wording (found 2026-09-23)
+      `n/a` `confirmed` `checked 2026-09-23`
+
 ## install
 
 - [ ] 314 Docker-packaged MCP listings can be browsed but not installed — the detail page shows
@@ -136,15 +128,6 @@ them. Not here: the theme renders wrong (themes).
       revisit.
       `library` `all` `needs-verify` `checked 2026-09-01` `security` → docs/active/investigations/2026-09-01-marketplace-installed-plugin-turns-unsafe.md
 
-- [ ] Two marketplace plugins (spotify-services, youcoded-messaging) ship MCP manifests that use
-      a placeholder the app never fills in, so their server command comes out literally wrong for
-      everyone — the docs said the app expanded it; it only expands a different token
-      `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`
-
-- [ ] Those same manifests list the platforms they support as a list, but the app reads a single
-      platform field — so the platform filter silently does nothing for both plugins
-      `marketplace-screen` `all` `needs-verify` `checked 2026-09-01`
-
 - [ ] There is no way to pay a pack author anything. Wanted: a tip jar that splits a user's
       donation between YouCoded and the marketplace authors whose packs they actually use.
       Destin's proposed ranking for who appears in the split: the author of the theme currently
@@ -154,3 +137,9 @@ them. Not here: the theme renders wrong (themes).
       there is no split math or UI, and the usage-ranking signal does not exist in marketplace
       analytics yet (was two items, 2026-09-02 and 2026-09-03; merged 2026-09-16)
       `marketplace-screen` `all` `parked` `checked 2026-09-16`
+
+- [ ] People who installed the Spotify plugin on Linux or Android with an older build keep a
+      broken, failed connection entry for it, because the app's plugin check only ever adds
+      entries and never removes one the plugin no longer supports on that device. Low priority
+      (found 2026-09-23)
+      `all` `parked` `checked 2026-09-23`

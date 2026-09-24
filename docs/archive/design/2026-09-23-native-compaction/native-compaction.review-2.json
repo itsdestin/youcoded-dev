@@ -1,0 +1,101 @@
+{
+  "title": "When a conversation needs a summary — built",
+  "key": "native-compaction-release2-built",
+  "stage": "review",
+  "out": "native-compaction.review-2.html",
+  "images": "images/native-compaction.review-2",
+  "runs": {
+    "before": "../../../../scratch/compaction-release2-built/before",
+    "after": "../../../../scratch/compaction-release2-built/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Built"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "crops": {
+    "fade": [
+      "compaction",
+      "fade",
+      "1400x470+20+230"
+    ],
+    "popup": [
+      "compaction",
+      "popup",
+      "600x440+420+230"
+    ],
+    "popup-narrow": [
+      "compaction",
+      "popup-narrow",
+      "390x420+0+160"
+    ],
+    "states": [
+      "compaction",
+      "states",
+      "600x330+420+270"
+    ]
+  },
+  "steps": [
+    {
+      "id": "A-1",
+      "surface": "Chat",
+      "path": "A conversation after the assistant summarizes older messages",
+      "crop": "fade",
+      "headline": "After a summary, only the older messages dim; the recent messages the assistant still sees stay bright.",
+      "changed": "Today everything above the Compacted divider dims, including the recent messages kept alongside the summary. Now the dimming stops at the first kept message.",
+      "notice": "The last exchange or two before the divider stay at full contrast, so you can tell what the assistant still remembers word for word.",
+      "risk": "If the app can't tell where the kept part starts, it dims nothing new rather than guess. Claude Code chats and Clear are unchanged."
+    },
+    {
+      "id": "A-2",
+      "surface": "Model picker",
+      "path": "Status bar model chip, then choose a model this chat is too long for",
+      "crop": "popup",
+      "headline": "Choosing a model the chat no longer fits now asks first instead of switching.",
+      "changed": "A small window says the chat is too long for the new model and offers Summarize and switch. X or Esc closes it and keeps your current model; the list stays open.",
+      "notice": "Models the chat fits still switch instantly, with no popup. Summarize and switch uses the current model to write the summary, then switches.",
+      "risk": "The fit check is an estimate from this chat's size; a model whose size the app doesn't know is never blocked.",
+      "highlight": {
+        "box": [
+          21,
+          27,
+          58,
+          46
+        ]
+      }
+    },
+    {
+      "id": "A-3",
+      "surface": "Model picker on a narrow window",
+      "path": "The same choice at phone width",
+      "crop": "popup-narrow",
+      "headline": "At phone width the question, the button and the X all fit on screen.",
+      "changed": "Same popup as on desktop, sized to the narrow window. Closing it returns you to the model list with your current model still selected.",
+      "notice": "Nothing about your chat or model changes unless you press Summarize and switch and it succeeds.",
+      "highlight": {
+        "box": [
+          5,
+          38,
+          89,
+          48
+        ]
+      }
+    },
+    {
+      "id": "A-4",
+      "surface": "Model picker",
+      "path": "After pressing Summarize and switch",
+      "crop": "states",
+      "labels": {
+        "before": "While it summarizes",
+        "after": "If it still can't fit"
+      },
+      "headline": "While summarizing, the button waits and says closing stops it; a failure says why and that your model didn't change.",
+      "changed": "Left: the button reads Summarizing… and a line says it can take a minute and that closing stops it. Right: an honest error, ending with which model you are still using.",
+      "notice": "The chat also shows its usual Compacting card while the summary runs, and the Compacted divider when it lands.",
+      "risk": "A slow local model can take minutes here; the popup stays until it finishes or you close it."
+    }
+  ]
+}

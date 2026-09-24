@@ -98,6 +98,20 @@ if [[ -L "$DESKTOP/node_modules" ]]; then
   echo "" >&2
 fi
 
+# WHY (2026-09-23): a worktree whose node_modules was hardlinked from a STALE shared
+# checkout failed here as "oxlint: command not found" and a TS5095 tsconfig error — neither
+# says "your dependencies are older than this branch". Name the missing packages up front.
+MISSING_DEPS=$(cd "$DESKTOP" && node -e '
+  const p = require("./package.json"); const fs = require("fs");
+  const names = Object.keys({ ...p.dependencies, ...p.devDependencies });
+  console.log(names.filter((n) => !fs.existsSync("node_modules/" + n)).join(" "));' 2>/dev/null || true)
+if [[ -n "$MISSING_DEPS" ]]; then
+  echo "WARNING: node_modules is older than package.json — missing: $MISSING_DEPS" >&2
+  echo "         Failures below are likely that, not your change. Provision this worktree with" >&2
+  echo "         workspace-start, or run 'npm ci' in $DESKTOP if its node_modules is its own." >&2
+  echo "" >&2
+fi
+
 # Default base ref: prefer origin/master over the local master.
 #
 # WHY this order (2026-09-07): workspace-start.mjs creates every session branch
@@ -155,12 +169,37 @@ for f in "${CHANGED[@]:-}"; do
   REL+=("${f#desktop/}")
 done
 
+# Tests that read a changed or DELETED non-code file by name. `vitest related`
+# follows imports only, and the lists above skip deletions entirely, so a test
+# that does readFileSync('…/review-roster.json') is invisible to both. 2026-09-23:
+# deleting desktop/test-engine/review-roster.json printed "tests: none" here, then
+# 26 harness-eval tests went red on the PR's Linux CI.
+mapfile -t GONE_OR_DATA < <(
+  { git -C "$CHECKOUT" diff --name-only --diff-filter=D "$BASE...HEAD" 2>/dev/null
+    git -C "$CHECKOUT" diff --name-only --diff-filter=D HEAD 2>/dev/null
+    printf '%s\n' "${CHANGED[@]:-}" | grep -vE '\.(ts|tsx|js|jsx)$'
+  } | grep '^desktop/' | grep -vE '^desktop/(tests|src)/.*\.(snap|md)$' | sort -u || true)
+DATA_TESTS=()
+for f in "${GONE_OR_DATA[@]:-}"; do
+  [[ -n "$f" ]] || continue
+  # The stem too (a test may spell it `review-roster\.json` in a regex), but only
+  # when it is long enough not to match half the suite ("index", "main").
+  base=$(basename "$f"); stem=${base%.*}; pats=(-e "$base"); (( ${#stem} >= 8 )) && pats+=(-e "$stem")
+  while IFS= read -r t; do [[ -n "$t" ]] && DATA_TESTS+=("$t"); done < <(cd "$DESKTOP" && grep -rlF "${pats[@]}" tests --include='*.test.ts' --include='*.test.tsx' 2>/dev/null || true)
+done
+if [[ ${#DATA_TESTS[@]} -gt 0 ]]; then
+  mapfile -t DATA_TESTS < <(printf '%s\n' "${DATA_TESTS[@]}" | sort -u)
+  REL+=("${DATA_TESTS[@]}")
+fi
+
 # Source-scanning guards — the `*-authority` suites and their relatives — read
 # the source tree at RUNTIME (guard-scope, or their own join(__dirname,'..','src')).
 # `vitest related` walks the IMPORT graph, so it can never relate one of them to a
 # file you changed: they are invisible to every partial run, while being exactly
-# the guards a new edit is most likely to trip. They are also nearly free (27
-# files, ~1.2s), so every related run gets them appended.
+# the guards a new edit is most likely to trip. They are also cheap to run
+# (27 files took ~1.2s when first measured; 53 files by 2026-09-23 — recounted
+# with this same grep from desktop/, run time not re-measured), so every
+# related run gets them appended.
 # 2026-08-28: a `text-[13px]` passed a green verify.sh twice and turned CI red on
 # all three platforms — type-scale-authority.test.ts had never been run.
 SCANNERS=()
@@ -197,7 +236,7 @@ elif [[ -n "$BROAD_HIT" ]]; then
 elif [[ ${#REL[@]} -eq 0 ]]; then
   echo "  tests: none — no changed TS/JS files under desktop/"
 else
-  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards"
+  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards${DATA_TESTS:+ + ${#DATA_TESTS[@]} naming a changed/deleted data file}"
 fi
 echo ""
 

@@ -214,6 +214,10 @@ if [[ "$MERGED" == yes ]]; then
     [[ $nested_worktree == 1 ]] && continue
     fail "unregistered leftover directory: ${d%/}"
   done
+  # This loop only ever looks at $BRANCH's own worktree. For every OTHER accumulated
+  # worktree (this workspace's, and every component repo's), `node scripts/prune-worktrees.mjs`
+  # is the dry-run tool that reports which ones are actually safe to delete.
+  note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
     pass "pushed to origin — a reviewer can see it"
@@ -322,7 +326,30 @@ fi
 ALL_SHIPPED=$(rg -l '^status: shipped' "$WORKSPACE/docs/active" 2>/dev/null | wc -l)
 [[ "$ALL_SHIPPED" -gt 0 ]] && note "($ALL_SHIPPED doc(s) marked shipped are still in docs/active/ overall — not necessarily yours)"
 
-note "roadmap: close the item for this work in the SAME session — delete it from docs/roadmap/<area>.md, one line in docs/roadmap/shipped.md, then node scripts/roadmap-check.mjs --fix (CLAUDE.md)"
+echo
+echo "Workspace hygiene"
+# WHY (2026-09-23): the SHARED youcoded-dev checkout accumulated ~200 untracked files
+# (design reviews, investigations, plans) that exist only on this laptop — invisible to
+# any other machine or session, and gone if the disk fails. Nothing else catches this at
+# close-out. Non-blocking (note, not fail): it's a heads-up for whoever left them, not a
+# gate on this branch. CLOSE_OUT_WORKSPACE lets the test point this at a disposable repo
+# instead of asserting on this machine's real clutter.
+UNTRACKED_ROOT="${CLOSE_OUT_WORKSPACE:-$WORKSPACE}"
+if [[ -e "$UNTRACKED_ROOT/.git" ]]; then
+  UNTRACKED=$(git -C "$UNTRACKED_ROOT" status --porcelain --untracked-files=all -- docs scripts 2>/dev/null \
+    | sed -n 's/^?? //p' | sort)
+  UCOUNT=$(printf '%s\n' "$UNTRACKED" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [[ "$UCOUNT" -gt 0 ]]; then
+    note "WARNING: $UCOUNT untracked file(s) under docs/ and scripts/ in the shared checkout — only on this machine:"
+    printf '%s\n' "$UNTRACKED" | sed '/^$/d' | head -5 | sed 's/^/       /'
+    [[ "$UCOUNT" -gt 5 ]] && note "  …and $((UCOUNT - 5)) more."
+    note "move them into your branch (git add) or ask Destin before ending the session"
+  fi
+fi
+
+# WHY single quotes around the inner placeholder: nested double quotes ended the string early,
+# so bash read `<commit or PR>` as a redirect from a file named "commit" and never printed the note.
+note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index)"
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
 

@@ -42,46 +42,16 @@ searched or resumed (chat-data).
       poll. An ordinary Markdown file opens in ~60 ms
       `desktop` `confirmed` `checked 2026-09-10` `performance`
 
-- [ ] The git badge under an open file can go stale the first time the assistant writes to
-      a file that was opened straight from a path rather than picked out of the file list.
-      Such a file is known by its path until the first write, which gives it a permanent id
-      — and the change announcement carries the NEW id while the pane still holds the old
-      one, so the footer treats its own file as somebody else's and skips the refresh.
-      Found by review 2026-09-10 while narrowing which changes the footer listens to. Mostly
-      hidden today behind a louder existing bug: the pane usually reloads wholesale a moment
-      later and kicks the user back to the file list, which is the thing they would report.
-      Fix the two together — the footer needs to learn a file's id can change under it
-      `desktop` `confirmed` `checked 2026-09-10`
-
-- [ ] Chat file chips: a path with no extension — `Dockerfile`, `Makefile`, `LICENSE` — still
-      renders as dead grey text, because the detector requires a `.ext` even though every
-      extension is now accepted (the 2026-09-05 fix that made `.log` `.sh` `.toml` clickable
-      left this shape out)
-      `chat` `all` `confirmed` `checked 2026-09-16`
-
 - [ ] A file chip in chat for a file that exists but lives outside the project folder (Claude
       named a document in Destin's notes repo) fails with "Couldn't open README.md — the file
       wasn't found in this project", and the chip shows only the bare filename so two READMEs
       look identical; the same click on a project file works (Destin, 2026-09-03)
       `chat` `desktop` `needs-verify` `checked 2026-09-03`
 
-- [ ] Resume a Claude Code conversation: its files list has nothing from before the resume,
-      only files the new turns touch (until 2026-08-27 the same defect showed as every resume
-      re-recording all the files instead); native conversations are fine
-      `files-panel` `desktop` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-resumed-cc-session-files-drawer.md
-
 - [ ] Stutters when editing a file in the files pane, copying text out of a code block, or
       moving around an HTML preview (Destin, 2026-08-27) — still unmeasured; the perf-lab
       scenario for it now exists but has not been run against master
       `files-panel` `desktop` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-artifact-viewer-spikes.md
-
-- [ ] A file the agent wrote outside the project through a `../` path shows in the files list
-      but can never be opened — refused as an orphan on every platform, never repaired
-      `files-panel` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-dotdot-artifact-records-unrepaired.md
-
-- [ ] Files panel opens after a reply delivers a file but the file is not selected — the list
-      shows instead; cosmetic, never data loss (one instance fixed 2026-08-25, the class remains)
-      `files-panel` `all` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-artifact-list-replace-orphans-selection.md
 
 - [ ] A dev instance's main process ran out of memory (~2.8 GB) after 73 minutes on 2026-08-26
       while ~15 subagents were rewriting files in the project it was watching; cause never
@@ -118,15 +88,6 @@ searched or resumed (chat-data).
 - [ ] Project view: a Roadmap tab that renders any project's `ROADMAP.md`, discovered the
       same way as context files
       `projects` `all` `parked` `checked 2026-07-15`
-
-- [ ] Saving from the files pane writes straight to disk and skips the same-machine write lock that
-      Claude Code's Write/Edit go through — so a save from the pane can clobber a file another live
-      session is editing, and vice versa
-      `files-panel` `desktop` `needs-verify` `checked 2026-07-20`
-
-- [ ] The Git Branch chip in the status bar is empty in native sessions — Claude Code's own status line
-      is its only feed, so a native coder session in a repo shows nothing (Destin, 2026-08-25)
-      `status-bar` `desktop` `needs-verify` `checked 2026-08-25`
 
 - [ ] Editor tabs — open more than one file at a time in the files pane. Both hosts are strictly
       one-file-at-a-time today; the most-missed thing after syntax highlighting

@@ -1,0 +1,7 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=empty",
+  "shots": [
+    { "name": "landing", "actions": [{ "click": "[aria-label='Open Pages']", "settle": 850 }], "expect": "[aria-label='Back to chat']" },
+    { "name": "manage", "actions": [{ "click": "[aria-label='Open Pages']", "settle": 850 }, { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Manage pages'))", "settle": 850 }], "expect": "[aria-label='Exit pages']" }
+  ]
+}
