@@ -38,6 +38,8 @@ status: active
 
 # Remote Access / Remote Server — Review Findings Handoff
 
+> **2026-09-24 — where this goes now:** Finding 3's duplicated preference handlers (desktop vs remote) are removed by R3's first family group in `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`. Recheck the other findings against R3's per-family behaviour-change reports as they land.
+
 **Date:** 2026-07-10
 **Source:** Full-codebase review of youcoded master (commit `4f02dacd`, no open PRs) covering correctness, performance, dead code, and complexity. This doc collects every finding that touches the remote access system so a dedicated session can fix/improve/rework it as a unit. All file:line references were verified against master on the review date.
 

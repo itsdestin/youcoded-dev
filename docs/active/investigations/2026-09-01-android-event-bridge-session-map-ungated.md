@@ -11,6 +11,8 @@ topic: Android EventBridge repoints the mobile→Claude session-id map on every 
 
 # Android `EventBridge` maps session ids with no gate
 
+> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/active/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
+
 **Symptom.** Risk, not yet observed on a device: after a subagent or tool hook fires, the
 Android app can come to believe a conversation belongs to a different Claude Code session id
 than the one it started — the poisoning that produced the desktop "wrong transcript replays

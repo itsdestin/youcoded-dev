@@ -935,5 +935,8 @@ seen-on is always n/a here.
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
       data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
-      priority for the rebuilt app (deck Q-3)
-      `android` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      priority for the rebuilt app (deck Q-3). Planned: the account steps can happen now; the app
+      itself passes Play's rules only after A1 of the Android rebuild (every program shipped inside
+      the app, no downloads after install). Listing it is A6; whether the first Play release waits
+      for the rebuilt app is an open decision in the Android plan
+      `android` `confirmed` `checked 2026-09-24` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md

@@ -47,8 +47,8 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 | T | Tooling ratchets | G1, G2, G9, G3, G4, throttling guard | 1–2 + 1 | none; runs alongside 1a/1b |
 | 2 | Always-on timers | W2, W7, W8, W9, W11, W12, W18, W19, W23 | 2 + 1 | Batch C merged or dropped |
 | 3 | Launch path | W3, W4+D5, W15, W16, W17, W25, W21, W22 | 2 + 1 | Batches A and C merged or dropped |
-| 4 | One door for desktop and phone | D2, D1, D3, M5 | ~12–20 + one reviewer per run | runs alone |
-| 5 | Structure B | D4, D7, D8, D11, D12, W5, W6, W1 | 4–5 + 1 each | Phase 4 done; Batch C merged or dropped |
+| 4 | One door for desktop and phone — run as R1–R4 of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md` | D2, D1, D3, M5 | ~12–20 + one reviewer per run | R0 of that plan; runs alone (R1–R3) |
+| 5 | Structure B | D4, D7, D8, D11, D12, W5, W6, W1 | 4–5 + 1 each | Phase 4 done (R4); native-session-host test split merged; Batch C merged or dropped |
 
 1a, 1b and T are independent and may run at the same time in three worktrees. 1a and 1b both touch `main.ts` only in different regions (1a: none; 1b: buddy branches), and neither touches T's files.
 
@@ -139,17 +139,11 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 **For Destin.** Today the desktop window and a phone reach the app's features through two different doors, and behind them 182 features are written out twice by hand — some already behave differently on the phone. The cause is that the code which registers the desktop features also *builds* the assistant runtime inside itself, so the phone door cannot share it. What changes: the runtime is built once and handed to both doors; then each group of features is moved to a table both doors read, one group at a time; then the three copies of "turn a chat event into a screen update" become one; then the event type gets a proper shape the compiler can check. End state: one body per feature, and the phone bug where already-open sessions show in Resume is fixed by construction (Phase 1a's one-liner is the interim). **You would notice:** where the phone had drifted from the desktop, it now matches the desktop — that is a change on the phone, listed per group in each run's report. The buddy's three known missing behaviours (it does not clear on `/clear`, etc.) stay missing in this phase; closing them is visible and is its own decision.
 
-**Must run alone.** Nothing else edits `main/ipc-handlers.ts` or `main/remote-server.ts` while Phase 4 is in flight. Coordinator checks open branches before starting each run.
+**Where the run list lives now (2026-09-24).** Phase 4 is executed as phases **R1–R4** of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`, which holds the current run list, files, gates and traps: D2 = R1, D1 = R2 (contract, object arguments) + R3 (one run per family), D3 + M5 = R4. Its R0 names what must happen first (branches that edit the two door files land first; owed phone passes; the edit lock becomes a `close-out.sh` check). The one ordered list of this and the Android rebuild is `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`. This section keeps only the phase's purpose, its sequencing decision and its overall gate; the execution protocol above still applies to every run.
 
-The D3 event-translator merge is desktop-only and may be split off into phase 5 if phase 4's remote half stays parked.
+**Must run alone.** Nothing else edits `main/ipc-handlers.ts` or `main/remote-server.ts` from R1 to the end of R3. R4 does not edit them.
 
-**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/active/investigations/2026-09-10-android-parity-audit.md`, D9) would serve over a local socket, and remote access already ships and pays the drift daily. On hold as a 1.3.1 release blocker since 2026-09-18 (Destin); roadmap items: `docs/roadmap/remote-access.md` (phase 4) and the phase 5 items in native-harness, user-interface, local-models and chat-data.
-
-**Order and files.**
-1. **D2** (one run): hoist runtime construction out of `ipc-handlers.ts:2669, 3074` into `main/create-runtime.ts`, called from `main.ts`; each handler group becomes `main/ipc/<group>.ts` exporting `register(ctx)`. Pure move; keep the two ordering assumptions the audit names. Gate: `verify.sh`, IPC parity tests unchanged, `rg -n "new NativeSessionHost|new .*Supervisor" main/ipc-handlers.ts` empty.
-2. **D1** (one run per channel group; 36 banner-separated groups today — merge trivially small adjacent groups only when the reviewer agrees): a channel table `{name, handler(payload, ctx)}` registered once; both transports iterate it. Normalise on the object first (preload passes positional args, the shim one object). Files: `main/ipc-handlers.ts:346-5192`, `main/remote-server.ts:1670-3765`, `preload.ts`, `renderer/remote-shim.ts`; rule `.claude/rules/ipc-bridge.md`. Gate per run: `verify.sh`; the two parity tests; a per-group test that desktop and phone call the same body; the run's report lists every phone behaviour that changed.
-3. **D3** (one run): one pure `eventToAction(event, {live})` in `renderer/state/`; callers `App.tsx:1363-1664`, `buddy/BubbleFeed.tsx:101-312`, `state/transcript-page-actions.ts:26-31`. Keep the buddy ledger's three gaps as they are (visible if closed). Gate: `tests/transcript-event-surface-parity.test.ts` still passes with its ledger intact.
-4. **M5** (one run, the payoff): `TranscriptEvent.data` becomes a discriminated union (`shared/types.ts:243-512`). Crosses IPC and persisted transcripts; Kotlin's copy is D9's problem — note the divergence, do not touch Android.
+**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/active/plans/2026-09-24-android-rebuild-plan.md`, A2–A4) serves over a local socket, and remote access already ships and pays the drift daily. On hold as a 1.3.1 release blocker since 2026-09-18 (Destin); roadmap items: `docs/roadmap/remote-access.md` (`## one-core`) and the phase 5 items in native-harness, user-interface, local-models and chat-data.
 
 **Gate for the phase.** G2's line budgets drop for `ipc-handlers.ts` and `remote-server.ts` on every run (the worker lowers the budget; never leaves headroom). B1's 1a fix is deleted when its group moves. Dev-instance check after the last D1 run: a phone session (remote web) opens Resume, installs a skill, pages history.
 
@@ -182,7 +176,7 @@ The D3 event-translator merge is desktop-only and may be split off into phase 5 
 
 ## Not scheduled (recorded so the list stays honest)
 
-D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOUCODED_NATIVE` half-enforced flag — retire or enforce at one chokepoint; one line, whenever a Phase 4 run passes it), M9 beyond G1's ratchet, B4 (in-view class after compaction — filed with the smoothness sweep's D-batch), B5 (`stableStringify` in `chat-reducer.ts:1115` — one line, take it in 1a if the worker has room, else file), G5–G8, G10–G12, and the unread native turn loop (`harness-session.ts:2263-3719`).
+D9 (Android rebuild — now phase A3 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`), D10 (measured; R2 proposes generating preload's list as static code, which reopens it — decision 2 in the remote plan), W26 (replaced by the two guards), M6 (`YOUCODED_NATIVE` half-enforced flag — retire or enforce at one chokepoint; one line, whenever a Phase 4 run passes it), M9 beyond G1's ratchet, B4 (in-view class after compaction — filed with the smoothness sweep's D-batch), B5 (`stableStringify` in `chat-reducer.ts:1115` — one line, take it in 1a if the worker has room, else file), G5–G8, G10–G12, and the unread native turn loop (`harness-session.ts:2263-3719`).
 
 ## State
 
@@ -193,5 +187,5 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
-| 4 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after Plan C's `remote-` cluster has merged |
+| 4 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker. Plan C's `remote-` cluster merged 2026-09-18 (#527); next gate is R0 (branches that edit the door files land first). Runs as R1–R4 of the remote-access refactor plan |
 | 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition) |

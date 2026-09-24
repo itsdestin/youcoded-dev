@@ -11,6 +11,8 @@ topic: Android never reads youcoded-skills.json after first run — SkillConfigS
 
 # Android forgets skill settings after the first launch
 
+> **2026-09-24 — where this goes now:** **Fix now:** named in A0 of `docs/active/plans/2026-09-24-android-rebuild-plan.md` as the one Kotlin fix not to defer (it destroys data).
+
 **Roadmap entry:** `docs/roadmap/android-only.md` (bug is in Android's own Kotlin; desktop is
 unaffected).
 **History:** added 2026-08-28 (found while adding the quick-chip edit surface, youcoded#359);

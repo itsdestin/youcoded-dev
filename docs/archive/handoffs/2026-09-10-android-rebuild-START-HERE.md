@@ -1,6 +1,7 @@
 ---
 date: 2026-09-10
-status: active
+status: superseded
+superseded_by: docs/active/handoffs/2026-09-24-one-core-START-HERE.md
 type: handoff
 topic: Android rebuild — where it stands, what was decided, and how to start step 4 (the harness runtime on the phone)
 ---

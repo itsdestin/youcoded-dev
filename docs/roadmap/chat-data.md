@@ -130,7 +130,7 @@ produced and the panel that shows them (files).
       remembered and its fallback capped, the dead replay path deleted, and the replayed-turn
       record's type made unambiguous (D11) — simplification phase 5's chat-data share. Resume
       opens faster on a big history; nothing else changes. On hold since 2026-09-18 (Destin):
-      resumes after phase 4, with the rest of phase 5
+      resumes after phase 4 (R1–R4 of the one-core work), with the rest of phase 5
       `desktop` `blocked` `checked 2026-09-18` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
 - [ ] Every conversation record write and read first lists the whole conversations directory,

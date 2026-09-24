@@ -11,6 +11,8 @@ topic: Android resume never resumes — the resume id is dropped at the one call
 
 # Android resume never resumes
 
+> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/active/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
+
 **Symptom.** On Android, resuming a past Claude Code conversation starts a fresh session
 instead; and for a project whose folder name contains hyphens, the session can open in the
 wrong folder.

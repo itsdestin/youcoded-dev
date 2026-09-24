@@ -11,6 +11,8 @@ topic: Android ManagedSession bare-phrase screen scans can false-fire prompt car
 
 # Android bare-phrase screen scans false-fire prompt cards
 
+> **2026-09-24 — where this goes now:** Retired by construction in a3 (sessions family) of `docs/active/plans/2026-09-24-android-rebuild-plan.md` — do not fix separately in kotlin.
+
 **Symptom.** On Android, Claude's ordinary reply text can pop a phantom prompt card — the
 paste-your-sign-in-code card, or the Continue / "Ready" card — when the reply merely contains
 phrases like "press Enter to continue" or "paste the code".
