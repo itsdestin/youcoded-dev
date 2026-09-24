@@ -68,7 +68,9 @@ doubt, remove rather than add.
 | Title | A popup or side panel's name | 16px semibold (above) |
 | Small label | A group inside a screen, popup or list ("Volume", "Privacy") | 12px medium, `fg-muted`, **normal case, no letter-spacing** |
 
-UNDERLINE-PENDING
+A small label that heads a **section of reading text** (About's "Disclaimer",
+"Privacy") also gets a **soft underline under its words** (`edge` colour, 4px below
+the text). Labels over short settings groups stay plain.
 
 ### Text and numbers
 - Body 14px `fg`; secondary text one grey (`fg-muted`); `fg-faint` only for disabled.
@@ -80,7 +82,8 @@ UNDERLINE-PENDING
 - Shape: the theme's control radius for every button, tab, filter and search box
   (built-in themes: Round, 14px).
 - **Main action:** filled accent. At most one per view.
-- SECONDARY-PENDING
+- **Everything less important beside it** (Cancel, Preview, Not now): **outlined** — a thin
+  border, never bare text.
 - Destructive: red, filled only in a confirmation step.
 - Close: the ✕ button, never a letter or text.
 - Switching views or filters: the shared `SegmentedTabs` / `FilterChip`; all follow the
@@ -88,7 +91,7 @@ UNDERLINE-PENDING
 
 ### Cards
 - Anything you open, install or pick from a grid is a **raised card**: panel colour,
-  thin `edge-dim` border, SHADOW-PENDING, the theme's card radius, 12px gap between
+  thin `edge-dim` border, a **medium shadow** (`0 4px 20px rgb(0 0 0 / .16), 0 1px 3px rgb(0 0 0 / .08)`), the theme's card radius, 12px gap between
   cards. Reference: Your Library.
 - No flat, tinted or borderless card variants.
 
@@ -106,6 +109,11 @@ UNDERLINE-PENDING
 - A passive warning, info or danger notice is a **tinted box with a matching border**
   (`Callout`). Reference: Backup & Sync → "conversations too big to sync".
 - Errors follow `docs/error-message-standards.md` (`<ErrorState>`).
+
+### Building a Page
+Pages use the page kit's classes (`.yc-button`, `.yc-card`, `.yc-title`, `.yc-muted`…),
+which carry these recipes; theme colours and shape reach the page automatically. Follow
+this guide where a class leaves a choice open, and never restyle a kit class.
 
 ## Before you show Destin
 
