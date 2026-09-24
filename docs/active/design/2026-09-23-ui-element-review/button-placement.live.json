@@ -1,0 +1,192 @@
+{
+  "title": "Button placement",
+  "key": "ui-element-review-button-placement",
+  "out": "button-placement.live.html",
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 520
+  },
+  "steps": [
+    {
+      "id": "BP-1",
+      "surface": "Popups",
+      "path": "Any popup with a main action and Cancel",
+      "hint": "Each pane is a real popup. Try a dark theme and Meadow Mist too.",
+      "headline": "A popup with a main action and Cancel: which arrangement?",
+      "notice": "You said: the dark button always on the right, the light one directly to its left; a single button often full width; sometimes stacked, sometimes side by side.",
+      "live": {
+        "surface": "button-placement",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "Plain-text Cancel left; the dark button stretched across the rest."
+        },
+        {
+          "id": "right",
+          "label": "Pair on the right",
+          "candidate": "right",
+          "summary": "Outlined Cancel directly left of the dark button, both at the right edge."
+        },
+        {
+          "id": "halves",
+          "label": "Equal halves",
+          "candidate": "halves",
+          "summary": "Cancel and the dark button share the width, dark on the right."
+        },
+        {
+          "id": "stacked",
+          "label": "Stacked",
+          "candidate": "stacked",
+          "summary": "Dark button full width on top, Cancel full width under it."
+        }
+      ]
+    },
+    {
+      "id": "BP-2",
+      "surface": "Popups",
+      "path": "The same popup at phone width",
+      "headline": "The same popup on a phone: which arrangement?",
+      "notice": "Phone and narrow windows. Pick the same as above if nothing should change on a phone.",
+      "live": {
+        "surface": "button-placement-phone",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "right",
+          "label": "Pair on the right",
+          "candidate": "right",
+          "summary": "Kept side by side at the right edge."
+        },
+        {
+          "id": "halves",
+          "label": "Equal halves",
+          "candidate": "halves",
+          "summary": "Side by side, each half the width."
+        },
+        {
+          "id": "stacked",
+          "label": "Stacked",
+          "candidate": "stacked",
+          "summary": "Dark button on top, Cancel under it, both full width."
+        }
+      ]
+    },
+    {
+      "id": "BP-3",
+      "surface": "Popups",
+      "path": "Any popup with one main action (e.g. Submit a ticket)",
+      "headline": "A popup with a single button: full width, right, or centered?",
+      "notice": "You said: the dark button always on the right, the light one directly to its left; a single button often full width; sometimes stacked, sometimes side by side.",
+      "live": {
+        "surface": "button-placement",
+        "round": 2
+      },
+      "variants": [
+        {
+          "id": "full",
+          "label": "Full width",
+          "candidate": "full",
+          "summary": "The button spans the popup."
+        },
+        {
+          "id": "right",
+          "label": "On the right",
+          "candidate": "right",
+          "summary": "The button hugs its label at the right edge."
+        },
+        {
+          "id": "center",
+          "label": "Centered",
+          "candidate": "center",
+          "summary": "The button hugs its label in the middle."
+        }
+      ]
+    },
+    {
+      "id": "BP-4",
+      "surface": "Popups",
+      "path": "A confirmation that removes or deletes something",
+      "headline": "In a \"remove this?\" confirmation, which side does the red button go?",
+      "notice": "Today the app does this both ways. The red button is the main action here.",
+      "live": {
+        "surface": "button-placement",
+        "round": 3
+      },
+      "variants": [
+        {
+          "id": "danger-right",
+          "label": "Red on the right",
+          "candidate": "danger-right",
+          "summary": "Cancel, then the red button last — where the dark button always goes."
+        },
+        {
+          "id": "danger-left",
+          "label": "Red on the left",
+          "candidate": "danger-left",
+          "summary": "The red button first, Cancel after it."
+        }
+      ]
+    },
+    {
+      "id": "BP-5",
+      "surface": "Chat",
+      "path": "A question the assistant asks you in the chat",
+      "headline": "Should chat questions follow the popup rule too?",
+      "notice": "Today chat cards put the dark button first, on the left — the opposite of popups.",
+      "live": {
+        "surface": "button-placement",
+        "round": 4
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "Dark Submit first on the left, a quiet Dismiss after it."
+        },
+        {
+          "id": "flipped",
+          "label": "Same as popups",
+          "candidate": "flipped",
+          "summary": "Outlined Dismiss directly left of a dark Submit, at the right edge."
+        }
+      ]
+    },
+    {
+      "id": "BP-6",
+      "surface": "Chat",
+      "path": "The permission row under a command the assistant wants to run",
+      "headline": "Should the permission row be mirrored so Yes ends on the right?",
+      "notice": "These are the buttons you press most. The arrow keys follow the same order, and the highlighted button still starts on Yes either way.",
+      "risk": "Mirroring changes where your hand goes for the most-used buttons in the app; it takes a few days to get used to.",
+      "live": {
+        "surface": "button-placement",
+        "round": 5
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "candidate": "today",
+          "summary": "Yes · Always Allow · No, from the left."
+        },
+        {
+          "id": "flipped",
+          "label": "Mirrored",
+          "candidate": "flipped",
+          "summary": "No · Always Allow · Yes, at the right edge."
+        }
+      ]
+    }
+  ]
+}
