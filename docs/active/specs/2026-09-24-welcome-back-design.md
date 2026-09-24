@@ -45,7 +45,12 @@ metadata (the old attempt's real fault).
   `open := {}`, persist. Union, not replace: if the app dies again before Destin answers the
   screen, the un-answered offer survives.
 - `session:forget-reopen(ids)` removes those conversation ids from `offer`.
-- Writes: in-memory state, coalesced async write (~200 ms), temp-file + rename. Never `*Sync`
+- Writes: in-memory state, **written through on every change** (serialized on one promise
+  chain, latest state wins, temp-file + rename) — not coalesced. Changes are a handful per
+  session (first message, remap, X), so there is nothing to batch, and a debounce window is
+  a window in which a crash loses a session (review 2, D8). The only remaining gap is the
+  async write itself (milliseconds); closing it needs a synchronous write, which
+  performance rule 1 bans — accepted and stated here so it is not rediscovered as a bug. Never `*Sync`
   on a hot path (performance rule 1; `main-blocking-calls.test.ts`). The startup read is one
   `fs.promises.readFile` started in `app.whenReady()` before `createWindow()` is called; a
   missing/corrupt file = empty (never throws). **The store exposes a `ready` promise and every
@@ -90,7 +95,7 @@ handed off. A process that died on its own (exit) stays tracked: it was open in 
 | `session:forget-reopen` | `(ids: string[]) → {ok}` | handler | invoke | answers `{ok:true}` |
 | `window:close-request` (push, main→renderer) | `{ requestId, sessions: number }` | `webContents.send` | none (Electron-only `window` ns) | — |
 | `window:answer-close` | `{ requestId, close, reopen? }` | handler | none | — |
-| `window:close-request-cancelled` (push) | `{ requestId }` | `webContents.send` | none | — |
+| `window:close-request-cancelled` (push) | `{ requestId }` → `window.onCloseRequestCancelled` | `webContents.send` | none | — |
 
 `window.claude.window` is the documented Electron-only namespace (PITFALLS: IPC parity), so the
 close pair lives there and needs no shim/Android twin. Names byte-identical across files;
@@ -113,10 +118,13 @@ the existing `missingProject`/`notSyncedYet` fields; ids with no row at all simp
 3. `close:false` → nothing. `close:true` → if `!reopen`, `untrack` each owned id; then the
    existing destroy + `releaseSession` loop + `confirmedClose = true; win.close()`.
 4. A second close press while a request is pending re-uses the pending request (no stacking).
-5. **Whole-app quit wins over a pending prompt (review 1, D2).** `before-quit` fires before
-   any window's `close` and runs `shutdownApp()` → `destroyAll()`. So: the close handler
-   returns immediately (lets the window close, asks nothing) once `shuttingDown` is set; and
-   `before-quit` first settles every pending close request as "keep tracked" (resolve with
+5. **Whole-app quit wins over a pending prompt (review 1, D2; review 2, D6).** `before-quit`
+   fires before any window's `close` and runs `shutdownApp()` → `destroyAll()`; SIGTERM/SIGINT
+   (`main.ts:2486-2489`, the OS shutdown/logout route) call `shutdownApp()` WITHOUT
+   `before-quit`. So the settle step lives in ONE function, `settlePendingCloseRequests()`,
+   called at the top of `shutdownApp()` itself — every route passes through it. The close
+   handler returns immediately (lets the window close, asks nothing) once `shuttingDown` is
+   set; and the settle step resolves every pending close request as "keep tracked" (resolve with
    `{close:true, reopen:true}` semantics — no `untrack`) and pushes
    `window:close-request-cancelled {requestId}` so the renderer drops its prompt. A late
    answer for a settled request is ignored. Menu quit / SIGTERM / OS shutdown therefore never
@@ -145,9 +153,16 @@ sessions already destroyed by step 3; `open` is correct by then.
 
 - `welcome-back-store.test.ts`: startup union; track/untrack/remap; forget; corrupt file;
   coalesced write; flush.
-- IPC: `ipc-channels.test.ts` parity (automatic); handler test that `SESSION_DESTROY` untracks
-  and `destroySession` alone does not.
-- Close flow: `main` close handler unit (answer false/true/reopen, timeout keeps tracked).
+- IPC: `ipc-channels.test.ts` — the automatic check only diffs preload vs `shared/types.ts`
+  (review 2, D7), so add a HAND-WRITTEN parity block (same shape as the `voice:*` /
+  `handoff:*` blocks) asserting `session:reopen-list` / `session:forget-reopen` in
+  `remote-shim.ts` (invoke) and `SessionService.kt` (`[]` / `{ok:true}`), and the three
+  `window:*` channels in preload + ipc-handlers/main only. Handler test that `SESSION_DESTROY`
+  untracks and `destroySession` alone does not.
+- Close flow: `main` close handler unit (answer false/true/reopen, timeout destroys and keeps
+  tracked, a late answer after settle is ignored, SIGTERM path settles too).
+- Renderer: `window.onCloseRequestCancelled({requestId})` clears `quitPrompt` (review 2, D9);
+  `quitPrompt` carries the `requestId` it answers.
 - Renderer: `ResumeBrowser` welcome mode — seeds all resumable ticked; complete unticks;
   Escape/scrim don't close; footer label counts; `needsModel` note; list closes when empty.
   `QuitSessionsPrompt` copy + switch default off. App gating (remote/non-leader skip).
