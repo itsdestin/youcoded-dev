@@ -1,0 +1,150 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "shots": [
+  {
+   "name": "home",
+   "actions": [],
+   "sameAsBaseline": true,
+   "expect": "[title=Settings]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "settings-appearance",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "settings-sound",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Sound\"))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog], [aria-label='Close settings'] ~ *",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "projects",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    }
+   ],
+   "expect": "[aria-label=Files]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "marketplace",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    }
+   ],
+   "expect": "[aria-label='Open Your Library'], [title='Your Library']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "library",
+   "actions": [
+    {
+     "click": "[title='Browse skills']",
+     "settle": 800
+    },
+    {
+     "click": "[title='Open marketplace']",
+     "settle": 1500
+    },
+    {
+     "click": "[aria-label='Open Your Library'],[title='Your Library']",
+     "settle": 1200
+    }
+   ],
+   "expect": "[title='Marketplace']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "tags-note-popover",
+   "actions": [
+    {
+     "click": "[title^='Tags & note']",
+     "settle": 600
+    }
+   ],
+   "expect": "[placeholder^='Search or create']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "resume-browser",
+   "actions": [
+    {
+     "click": "[placeholder^='Message']",
+     "settle": 200
+    },
+    {
+     "type": "/resume"
+    },
+    {
+     "key": "Enter",
+     "settle": 1200
+    }
+   ],
+   "expect": "[placeholder^='Search sessions']",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "projects-add-project",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 900
+    },
+    {
+     "click": "[title='Switch project']",
+     "settle": 800
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>/add a project/i.test(b.textContent))",
+     "settle": 900
+    }
+   ],
+   "expect": "[role=dialog]",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default"
+  },
+  {
+   "name": "first-run-sign-in",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&firstRun=AUTHENTICATE",
+   "boot": 4500,
+   "actions": [
+    {
+     "wait": 400
+    }
+   ],
+   "measure": [
+    "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Log in with Claude')?.parentElement"
+   ],
+   "sameAsBaseline": true,
+   "expect": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Log in with Claude')"
+  }
+ ]
+}
