@@ -1,0 +1,22 @@
+{
+ "deck": "handoff-freshness-ui-review",
+ "started": "2026-09-23T08:56:16.451Z",
+ "submitted": "2026-09-23T08:58:16Z",
+ "cur": 1,
+ "answers": {
+  "F-2": {
+   "v": "other",
+   "note": "this is weird. no leave it option necessary. ",
+   "seconds": 78,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "other",
+   "seconds": 41,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "this is too much text and confusing/duplicative."
+  }
+ }
+}

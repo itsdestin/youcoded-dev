@@ -1,0 +1,35 @@
+{
+ "deck": "conversation-admission-repair",
+ "started": "2026-09-23T03:13:42.577Z",
+ "submitted": "2026-09-23T03:16:41Z",
+ "cur": 3,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "note": "are we sure this is the best ux? why not escalate into a takeover?",
+   "seconds": 42,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "yes",
+   "seconds": 35,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "keep-short",
+   "note": "i think we need to add a better resolution mechanism/ui to the roadmap for split conversations with multiple copies.",
+   "seconds": 86,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
