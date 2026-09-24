@@ -1,0 +1,23 @@
+{
+ "deck": "appearance-panel-review-3",
+ "started": "2026-09-24T10:03:13.847Z",
+ "submitted": "2026-09-24T10:12:40Z",
+ "cur": 1,
+ "answers": {
+  "AR3-1": {
+   "v": "other",
+   "note": "but more effort into building better renders/images. Auto (Theme)/Clear/Frosted/Solid, \"Message Bubbles\" instead of \"Bubble shape\", i dont think terminal is still an option for chrome? i'm actually not even sure what the message box setting does? do any themes really use that?",
+   "seconds": 342,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "AR3-2": {
+   "note": "the container for the themes sucks. doesn't feel like a container, just an outline. and we need to replace the painted fade element here (and anywhere else it appears) with our new fade/ui style from the ui consistency branch. i only want to be able to see like 1.5 theme cards in the container, then the browse marketplace/build new theme buttons should be inside the container at the bottom. the themes will scroll under the buttons. ",
+   "v": "pick",
+   "pick": "collapsed",
+   "seconds": 222,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}
