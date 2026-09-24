@@ -1,0 +1,5708 @@
+{
+  "schemaVersion": 1,
+  "label": "final-after",
+  "sha": "82777660ca26dd72f4ec7cfd4fc9591425fa3808",
+  "branch": "session/perf-many-tabs-20260923",
+  "dirty": "da39a3ee5e6b",
+  "timestamp": "2026-09-24T01:16:07.999Z",
+  "machine": {
+    "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "ramGb": 121,
+    "kernel": "7.1.3-2-cachyos",
+    "node": "v26.4.0",
+    "renderer": {
+      "source": "SystemInfo",
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+      "softwareRendering": true,
+      "accelerated": false,
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "unavailable_off",
+        "vulkan": "disabled_off",
+        "webgl": "unavailable_off",
+        "video_decode": "unavailable_off"
+      },
+      "devices": [
+        {
+          "vendorId": 4098,
+          "deviceId": 5510,
+          "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+          "active": null
+        }
+      ],
+      "error": null,
+      "attempts": []
+    }
+  },
+  "noise": {
+    "loadAvgBefore": 2.32,
+    "machineBusyPctBefore": 1.7,
+    "maxLoadAvgAccepted": 3.4,
+    "maxBusyPctAccepted": 8.2,
+    "discardedRuns": 25
+  },
+  "startup": null,
+  "idle": null,
+  "history": null,
+  "workload": null,
+  "replayStall": null,
+  "artifacts": null,
+  "projects": null,
+  "terminal": {
+    "runs": [
+      {
+        "sessions": {
+          "names": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3",
+            "native-0",
+            "native-1"
+          ],
+          "sizes": {
+            "cc-0": "huge",
+            "cc-1": "medium",
+            "cc-2": "small",
+            "cc-3": "empty",
+            "native-0": "native",
+            "native-1": "native"
+          },
+          "switchedBetween": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3"
+          ]
+        },
+        "renderer": "dom",
+        "glyphs": {
+          "lines": 2000,
+          "terminals": 4,
+          "fillMs": [
+            679,
+            213,
+            423,
+            217
+          ]
+        },
+        "switchCount": 40,
+        "verifiedSwitches": 40,
+        "failedSwitches": 0,
+        "menuSwitches": 0,
+        "switchPaintedMedianMs": 577,
+        "switchPaintedP95Ms": 640.3,
+        "atlasClearsTotal": 40,
+        "atlasClearsPerSwitch": 1,
+        "clearsOutsideSlots": 0,
+        "squeezedSlots": 0,
+        "ipc": {
+          "pings": 748,
+          "totalStallMs": 0,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 22,
+          "openStalls": 0,
+          "rejectedPings": 0,
+          "readErrors": 0
+        },
+        "stallVerdicts": {
+          "none": 40
+        },
+        "longtaskMaxMs": 102,
+        "longtaskTotalMs": 1785,
+        "longtaskCount": 26,
+        "frameGapMaxMs": 161,
+        "switchWindowMs": 40009,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 550.8,
+            "reason": null,
+            "slotMs": 1004,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 20,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 579.3,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 58,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 546.1,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 529.6,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 2,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 4,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 544.5,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 5,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 545.3,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 6,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 545.7,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 2,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 7,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 529.3,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 8,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 544.2,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 2,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 9,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 545.2,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 10,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 543.7,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 11,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 529.4,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 2,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 561.1,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 578.6,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 8,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 69,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 8ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 541.5,
+            "reason": null,
+            "slotMs": 994,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 546.9,
+            "reason": null,
+            "slotMs": 1001,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 16,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 577.1,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 59,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 17,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 575.3,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 12,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 55,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 18,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 558.3,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 19,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 577,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 53,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 20,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 575.7,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 51,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 21,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 574.9,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 22,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 622.3,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 10,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 86,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 23,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 589.2,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 74,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 622.3,
+            "reason": null,
+            "slotMs": 994,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 85,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 609,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 12,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 70,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 656.1,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 22,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 96,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 22ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 592.5,
+            "reason": null,
+            "slotMs": 1001,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 65,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 28,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 651.8,
+            "reason": null,
+            "slotMs": 991,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 17,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 102,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 29,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 625.2,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 90,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 30,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 640.3,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 90,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 31,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 609.8,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 8,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 72,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 8ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 32,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 577.3,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 6,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 51,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 33,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 593.1,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 64,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 34,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 575.8,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 51,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 35,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 576.1,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 58,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 577.9,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 6,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 54,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 577.7,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 54,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 638.9,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 17,
+              "totalStallMs": 0,
+              "maxMs": 9,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 95,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 9ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 607.9,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 9,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 77,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 9ms, under the 250ms stall threshold"
+            }
+          }
+        ],
+        "probe": {
+          "longtaskCount": 33,
+          "longtaskTotalMs": 2529,
+          "longtaskMaxMs": 196,
+          "frameGapCount": 62,
+          "frameGapMaxMs": 204,
+          "longtaskSupported": true,
+          "observedMs": 47251,
+          "frames": 2641,
+          "framesPerSec": 55.9,
+          "marks": [
+            {
+              "t": 5,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 908,
+              "label": "native-create:start"
+            },
+            {
+              "t": 1288,
+              "label": "terminal:setup:start"
+            },
+            {
+              "t": 5210,
+              "label": "terminal:setup:end"
+            },
+            {
+              "t": 6222,
+              "label": "terminal:switches:start"
+            },
+            {
+              "t": 6223,
+              "label": "terminal:switch-0:start"
+            },
+            {
+              "t": 7227,
+              "label": "terminal:switch-0:end"
+            },
+            {
+              "t": 7228,
+              "label": "terminal:switch-1:start"
+            },
+            {
+              "t": 8227,
+              "label": "terminal:switch-1:end"
+            },
+            {
+              "t": 8228,
+              "label": "terminal:switch-2:start"
+            },
+            {
+              "t": 9227,
+              "label": "terminal:switch-2:end"
+            },
+            {
+              "t": 9228,
+              "label": "terminal:switch-3:start"
+            },
+            {
+              "t": 10228,
+              "label": "terminal:switch-3:end"
+            },
+            {
+              "t": 10230,
+              "label": "terminal:switch-4:start"
+            },
+            {
+              "t": 11227,
+              "label": "terminal:switch-4:end"
+            },
+            {
+              "t": 11229,
+              "label": "terminal:switch-5:start"
+            },
+            {
+              "t": 12228,
+              "label": "terminal:switch-5:end"
+            },
+            {
+              "t": 12229,
+              "label": "terminal:switch-6:start"
+            },
+            {
+              "t": 13227,
+              "label": "terminal:switch-6:end"
+            },
+            {
+              "t": 13229,
+              "label": "terminal:switch-7:start"
+            },
+            {
+              "t": 14228,
+              "label": "terminal:switch-7:end"
+            },
+            {
+              "t": 14230,
+              "label": "terminal:switch-8:start"
+            },
+            {
+              "t": 15227,
+              "label": "terminal:switch-8:end"
+            },
+            {
+              "t": 15229,
+              "label": "terminal:switch-9:start"
+            },
+            {
+              "t": 16228,
+              "label": "terminal:switch-9:end"
+            },
+            {
+              "t": 16230,
+              "label": "terminal:switch-10:start"
+            },
+            {
+              "t": 17226,
+              "label": "terminal:switch-10:end"
+            },
+            {
+              "t": 17228,
+              "label": "terminal:switch-11:start"
+            },
+            {
+              "t": 18228,
+              "label": "terminal:switch-11:end"
+            },
+            {
+              "t": 18229,
+              "label": "terminal:switch-12:start"
+            },
+            {
+              "t": 19227,
+              "label": "terminal:switch-12:end"
+            },
+            {
+              "t": 19228,
+              "label": "terminal:switch-13:start"
+            },
+            {
+              "t": 20228,
+              "label": "terminal:switch-13:end"
+            },
+            {
+              "t": 20232,
+              "label": "terminal:switch-14:start"
+            },
+            {
+              "t": 21226,
+              "label": "terminal:switch-14:end"
+            },
+            {
+              "t": 21227,
+              "label": "terminal:switch-15:start"
+            },
+            {
+              "t": 22228,
+              "label": "terminal:switch-15:end"
+            },
+            {
+              "t": 22230,
+              "label": "terminal:switch-16:start"
+            },
+            {
+              "t": 23227,
+              "label": "terminal:switch-16:end"
+            },
+            {
+              "t": 23231,
+              "label": "terminal:switch-17:start"
+            },
+            {
+              "t": 24228,
+              "label": "terminal:switch-17:end"
+            },
+            {
+              "t": 24231,
+              "label": "terminal:switch-18:start"
+            },
+            {
+              "t": 25227,
+              "label": "terminal:switch-18:end"
+            },
+            {
+              "t": 25230,
+              "label": "terminal:switch-19:start"
+            },
+            {
+              "t": 26228,
+              "label": "terminal:switch-19:end"
+            },
+            {
+              "t": 26231,
+              "label": "terminal:switch-20:start"
+            },
+            {
+              "t": 27228,
+              "label": "terminal:switch-20:end"
+            },
+            {
+              "t": 27232,
+              "label": "terminal:switch-21:start"
+            },
+            {
+              "t": 28230,
+              "label": "terminal:switch-21:end"
+            },
+            {
+              "t": 28234,
+              "label": "terminal:switch-22:start"
+            },
+            {
+              "t": 29229,
+              "label": "terminal:switch-22:end"
+            },
+            {
+              "t": 29233,
+              "label": "terminal:switch-23:start"
+            },
+            {
+              "t": 30229,
+              "label": "terminal:switch-23:end"
+            },
+            {
+              "t": 30233,
+              "label": "terminal:switch-24:start"
+            },
+            {
+              "t": 31227,
+              "label": "terminal:switch-24:end"
+            },
+            {
+              "t": 31230,
+              "label": "terminal:switch-25:start"
+            },
+            {
+              "t": 32229,
+              "label": "terminal:switch-25:end"
+            },
+            {
+              "t": 32233,
+              "label": "terminal:switch-26:start"
+            },
+            {
+              "t": 33228,
+              "label": "terminal:switch-26:end"
+            },
+            {
+              "t": 33231,
+              "label": "terminal:switch-27:start"
+            },
+            {
+              "t": 34232,
+              "label": "terminal:switch-27:end"
+            },
+            {
+              "t": 34237,
+              "label": "terminal:switch-28:start"
+            },
+            {
+              "t": 35228,
+              "label": "terminal:switch-28:end"
+            },
+            {
+              "t": 35231,
+              "label": "terminal:switch-29:start"
+            },
+            {
+              "t": 36229,
+              "label": "terminal:switch-29:end"
+            },
+            {
+              "t": 36232,
+              "label": "terminal:switch-30:start"
+            },
+            {
+              "t": 37227,
+              "label": "terminal:switch-30:end"
+            },
+            {
+              "t": 37230,
+              "label": "terminal:switch-31:start"
+            },
+            {
+              "t": 38227,
+              "label": "terminal:switch-31:end"
+            },
+            {
+              "t": 38229,
+              "label": "terminal:switch-32:start"
+            },
+            {
+              "t": 39227,
+              "label": "terminal:switch-32:end"
+            },
+            {
+              "t": 39230,
+              "label": "terminal:switch-33:start"
+            },
+            {
+              "t": 40227,
+              "label": "terminal:switch-33:end"
+            },
+            {
+              "t": 40230,
+              "label": "terminal:switch-34:start"
+            },
+            {
+              "t": 41227,
+              "label": "terminal:switch-34:end"
+            },
+            {
+              "t": 41230,
+              "label": "terminal:switch-35:start"
+            },
+            {
+              "t": 42225,
+              "label": "terminal:switch-35:end"
+            },
+            {
+              "t": 42228,
+              "label": "terminal:switch-36:start"
+            },
+            {
+              "t": 43227,
+              "label": "terminal:switch-36:end"
+            },
+            {
+              "t": 43229,
+              "label": "terminal:switch-37:start"
+            },
+            {
+              "t": 44228,
+              "label": "terminal:switch-37:end"
+            },
+            {
+              "t": 44233,
+              "label": "terminal:switch-38:start"
+            },
+            {
+              "t": 45228,
+              "label": "terminal:switch-38:end"
+            },
+            {
+              "t": 45231,
+              "label": "terminal:switch-39:start"
+            },
+            {
+              "t": 46228,
+              "label": "terminal:switch-39:end"
+            },
+            {
+              "t": 46231,
+              "label": "terminal:switches:end"
+            }
+          ],
+          "errors": []
+        },
+        "warnings": [
+          "terminal: the visible terminal rendered through 'dom', not WebGL — clearTextureAtlas() is only a full repaint on this path, so every atlas cost below is the DOM-repaint cost, not a GPU re-rasterise"
+        ]
+      },
+      {
+        "sessions": {
+          "names": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3",
+            "native-0",
+            "native-1"
+          ],
+          "sizes": {
+            "cc-0": "huge",
+            "cc-1": "medium",
+            "cc-2": "small",
+            "cc-3": "empty",
+            "native-0": "native",
+            "native-1": "native"
+          },
+          "switchedBetween": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3"
+          ]
+        },
+        "renderer": "dom",
+        "glyphs": {
+          "lines": 2000,
+          "terminals": 4,
+          "fillMs": [
+            450,
+            455,
+            455,
+            439
+          ]
+        },
+        "switchCount": 40,
+        "verifiedSwitches": 40,
+        "failedSwitches": 0,
+        "menuSwitches": 0,
+        "switchPaintedMedianMs": 795.2,
+        "switchPaintedP95Ms": 889.3,
+        "atlasClearsTotal": 40,
+        "atlasClearsPerSwitch": 1,
+        "clearsOutsideSlots": 0,
+        "squeezedSlots": 0,
+        "ipc": {
+          "pings": 604,
+          "totalStallMs": 161,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 84,
+          "openStalls": 0,
+          "rejectedPings": 0,
+          "readErrors": 0
+        },
+        "stallVerdicts": {
+          "none": 40
+        },
+        "longtaskMaxMs": 316,
+        "longtaskTotalMs": 10724,
+        "longtaskCount": 88,
+        "frameGapMaxMs": 417,
+        "switchWindowMs": 40054,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 826.1,
+            "reason": null,
+            "slotMs": 985,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 0,
+              "maxMs": 12,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 243,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 921.9,
+            "reason": null,
+            "slotMs": 1006,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 12,
+              "totalStallMs": 0,
+              "maxMs": 10,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 316,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 624.6,
+            "reason": null,
+            "slotMs": 965,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 8,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 88,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 8ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 588.9,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 59,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 4,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 638.6,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 17,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 96,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 5,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 641.4,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 10,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 88,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 6,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 636.9,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 92,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 7,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 594.6,
+            "reason": null,
+            "slotMs": 991,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 72,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 8,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 684.5,
+            "reason": null,
+            "slotMs": 994,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 17,
+              "totalStallMs": 0,
+              "maxMs": 9,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 115,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 9ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 9,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 704.4,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 16,
+              "totalStallMs": 0,
+              "maxMs": 11,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 129,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 11ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 10,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 785.6,
+            "reason": null,
+            "slotMs": 1010,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 11,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 170,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 11ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 11,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 706.4,
+            "reason": null,
+            "slotMs": 968,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 17,
+              "totalStallMs": 0,
+              "maxMs": 38,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 134,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 38ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 726.2,
+            "reason": null,
+            "slotMs": 990,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 16,
+              "totalStallMs": 0,
+              "maxMs": 9,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 138,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 9ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 747.1,
+            "reason": null,
+            "slotMs": 993,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 16,
+              "totalStallMs": 0,
+              "maxMs": 41,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 155,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 41ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 847.5,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 27,
+              "maxMs": 77,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 185,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 77ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 787.2,
+            "reason": null,
+            "slotMs": 986,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 14,
+              "maxMs": 64,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 169,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 64ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 16,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 848.7,
+            "reason": null,
+            "slotMs": 988,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 21,
+              "maxMs": 71,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 209,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 71ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 17,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 842,
+            "reason": null,
+            "slotMs": 980,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 20,
+              "maxMs": 70,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 205,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 70ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 18,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 771.3,
+            "reason": null,
+            "slotMs": 994,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 160,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 19,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 763.5,
+            "reason": null,
+            "slotMs": 976,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 16,
+              "totalStallMs": 3,
+              "maxMs": 53,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 162,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 53ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 20,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 825.8,
+            "reason": null,
+            "slotMs": 992,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 1,
+              "maxMs": 51,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 180,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 51ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 21,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 859,
+            "reason": null,
+            "slotMs": 986,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 0,
+              "maxMs": 9,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 255,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 9ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 22,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 768.5,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 12,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 154,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 23,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 777.2,
+            "reason": null,
+            "slotMs": 989,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 8,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 159,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 8ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 844.2,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 0,
+              "maxMs": 19,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 240,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 19ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 904.6,
+            "reason": null,
+            "slotMs": 990,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 13,
+              "totalStallMs": 0,
+              "maxMs": 47,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 273,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 47ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 858.9,
+            "reason": null,
+            "slotMs": 991,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 17,
+              "maxMs": 67,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 222,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 67ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 797.3,
+            "reason": null,
+            "slotMs": 988,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 12,
+              "maxMs": 62,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 175,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 62ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 28,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 823.7,
+            "reason": null,
+            "slotMs": 982,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 0,
+              "maxMs": 14,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 194,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 14ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 29,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 866.7,
+            "reason": null,
+            "slotMs": 981,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 0,
+              "maxMs": 18,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 192,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 18ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 30,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 845.1,
+            "reason": null,
+            "slotMs": 981,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 0,
+              "maxMs": 23,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 192,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 23ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 31,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 807.9,
+            "reason": null,
+            "slotMs": 992,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 34,
+              "maxMs": 84,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 163,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 84ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 32,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 779.5,
+            "reason": null,
+            "slotMs": 982,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 12,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 177,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 33,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 886.7,
+            "reason": null,
+            "slotMs": 992,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 13,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 218,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 34,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 795.2,
+            "reason": null,
+            "slotMs": 990,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 39,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 194,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 39ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 35,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 820.3,
+            "reason": null,
+            "slotMs": 977,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 14,
+              "totalStallMs": 12,
+              "maxMs": 62,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 192,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 62ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 854.8,
+            "reason": null,
+            "slotMs": 992,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 13,
+              "totalStallMs": 0,
+              "maxMs": 17,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 200,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 17ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 778.6,
+            "reason": null,
+            "slotMs": 987,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 15,
+              "totalStallMs": 0,
+              "maxMs": 40,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 194,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 40ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 889.3,
+            "reason": null,
+            "slotMs": 973,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 13,
+              "totalStallMs": 0,
+              "maxMs": 15,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 266,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 15ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 739.9,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 16,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 148,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          }
+        ],
+        "probe": {
+          "longtaskCount": 104,
+          "longtaskTotalMs": 12692,
+          "longtaskMaxMs": 430,
+          "frameGapCount": 92,
+          "frameGapMaxMs": 439,
+          "longtaskSupported": true,
+          "observedMs": 49096,
+          "frames": 2178,
+          "framesPerSec": 44.4,
+          "marks": [
+            {
+              "t": 160,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1380,
+              "label": "native-create:start"
+            },
+            {
+              "t": 1840,
+              "label": "terminal:setup:start"
+            },
+            {
+              "t": 6952,
+              "label": "terminal:setup:end"
+            },
+            {
+              "t": 7988,
+              "label": "terminal:switches:start"
+            },
+            {
+              "t": 8033,
+              "label": "terminal:switch-0:start"
+            },
+            {
+              "t": 9018,
+              "label": "terminal:switch-0:end"
+            },
+            {
+              "t": 9021,
+              "label": "terminal:switch-1:start"
+            },
+            {
+              "t": 10027,
+              "label": "terminal:switch-1:end"
+            },
+            {
+              "t": 10052,
+              "label": "terminal:switch-2:start"
+            },
+            {
+              "t": 11017,
+              "label": "terminal:switch-2:end"
+            },
+            {
+              "t": 11021,
+              "label": "terminal:switch-3:start"
+            },
+            {
+              "t": 12019,
+              "label": "terminal:switch-3:end"
+            },
+            {
+              "t": 12022,
+              "label": "terminal:switch-4:start"
+            },
+            {
+              "t": 13017,
+              "label": "terminal:switch-4:end"
+            },
+            {
+              "t": 13019,
+              "label": "terminal:switch-5:start"
+            },
+            {
+              "t": 14019,
+              "label": "terminal:switch-5:end"
+            },
+            {
+              "t": 14023,
+              "label": "terminal:switch-6:start"
+            },
+            {
+              "t": 15019,
+              "label": "terminal:switch-6:end"
+            },
+            {
+              "t": 15029,
+              "label": "terminal:switch-7:start"
+            },
+            {
+              "t": 16020,
+              "label": "terminal:switch-7:end"
+            },
+            {
+              "t": 16025,
+              "label": "terminal:switch-8:start"
+            },
+            {
+              "t": 17019,
+              "label": "terminal:switch-8:end"
+            },
+            {
+              "t": 17023,
+              "label": "terminal:switch-9:start"
+            },
+            {
+              "t": 18019,
+              "label": "terminal:switch-9:end"
+            },
+            {
+              "t": 18024,
+              "label": "terminal:switch-10:start"
+            },
+            {
+              "t": 19034,
+              "label": "terminal:switch-10:end"
+            },
+            {
+              "t": 19051,
+              "label": "terminal:switch-11:start"
+            },
+            {
+              "t": 20019,
+              "label": "terminal:switch-11:end"
+            },
+            {
+              "t": 20032,
+              "label": "terminal:switch-12:start"
+            },
+            {
+              "t": 21022,
+              "label": "terminal:switch-12:end"
+            },
+            {
+              "t": 21027,
+              "label": "terminal:switch-13:start"
+            },
+            {
+              "t": 22020,
+              "label": "terminal:switch-13:end"
+            },
+            {
+              "t": 22027,
+              "label": "terminal:switch-14:start"
+            },
+            {
+              "t": 23025,
+              "label": "terminal:switch-14:end"
+            },
+            {
+              "t": 23036,
+              "label": "terminal:switch-15:start"
+            },
+            {
+              "t": 24022,
+              "label": "terminal:switch-15:end"
+            },
+            {
+              "t": 24038,
+              "label": "terminal:switch-16:start"
+            },
+            {
+              "t": 25026,
+              "label": "terminal:switch-16:end"
+            },
+            {
+              "t": 25042,
+              "label": "terminal:switch-17:start"
+            },
+            {
+              "t": 26022,
+              "label": "terminal:switch-17:end"
+            },
+            {
+              "t": 26035,
+              "label": "terminal:switch-18:start"
+            },
+            {
+              "t": 27029,
+              "label": "terminal:switch-18:end"
+            },
+            {
+              "t": 27044,
+              "label": "terminal:switch-19:start"
+            },
+            {
+              "t": 28020,
+              "label": "terminal:switch-19:end"
+            },
+            {
+              "t": 28032,
+              "label": "terminal:switch-20:start"
+            },
+            {
+              "t": 29024,
+              "label": "terminal:switch-20:end"
+            },
+            {
+              "t": 29033,
+              "label": "terminal:switch-21:start"
+            },
+            {
+              "t": 30019,
+              "label": "terminal:switch-21:end"
+            },
+            {
+              "t": 30024,
+              "label": "terminal:switch-22:start"
+            },
+            {
+              "t": 31023,
+              "label": "terminal:switch-22:end"
+            },
+            {
+              "t": 31032,
+              "label": "terminal:switch-23:start"
+            },
+            {
+              "t": 32021,
+              "label": "terminal:switch-23:end"
+            },
+            {
+              "t": 32029,
+              "label": "terminal:switch-24:start"
+            },
+            {
+              "t": 33024,
+              "label": "terminal:switch-24:end"
+            },
+            {
+              "t": 33033,
+              "label": "terminal:switch-25:start"
+            },
+            {
+              "t": 34023,
+              "label": "terminal:switch-25:end"
+            },
+            {
+              "t": 34032,
+              "label": "terminal:switch-26:start"
+            },
+            {
+              "t": 35023,
+              "label": "terminal:switch-26:end"
+            },
+            {
+              "t": 35040,
+              "label": "terminal:switch-27:start"
+            },
+            {
+              "t": 36028,
+              "label": "terminal:switch-27:end"
+            },
+            {
+              "t": 36050,
+              "label": "terminal:switch-28:start"
+            },
+            {
+              "t": 37032,
+              "label": "terminal:switch-28:end"
+            },
+            {
+              "t": 37043,
+              "label": "terminal:switch-29:start"
+            },
+            {
+              "t": 38024,
+              "label": "terminal:switch-29:end"
+            },
+            {
+              "t": 38041,
+              "label": "terminal:switch-30:start"
+            },
+            {
+              "t": 39022,
+              "label": "terminal:switch-30:end"
+            },
+            {
+              "t": 39034,
+              "label": "terminal:switch-31:start"
+            },
+            {
+              "t": 40026,
+              "label": "terminal:switch-31:end"
+            },
+            {
+              "t": 40041,
+              "label": "terminal:switch-32:start"
+            },
+            {
+              "t": 41023,
+              "label": "terminal:switch-32:end"
+            },
+            {
+              "t": 41037,
+              "label": "terminal:switch-33:start"
+            },
+            {
+              "t": 42029,
+              "label": "terminal:switch-33:end"
+            },
+            {
+              "t": 42040,
+              "label": "terminal:switch-34:start"
+            },
+            {
+              "t": 43030,
+              "label": "terminal:switch-34:end"
+            },
+            {
+              "t": 43046,
+              "label": "terminal:switch-35:start"
+            },
+            {
+              "t": 44023,
+              "label": "terminal:switch-35:end"
+            },
+            {
+              "t": 44034,
+              "label": "terminal:switch-36:start"
+            },
+            {
+              "t": 45026,
+              "label": "terminal:switch-36:end"
+            },
+            {
+              "t": 45041,
+              "label": "terminal:switch-37:start"
+            },
+            {
+              "t": 46028,
+              "label": "terminal:switch-37:end"
+            },
+            {
+              "t": 46049,
+              "label": "terminal:switch-38:start"
+            },
+            {
+              "t": 47022,
+              "label": "terminal:switch-38:end"
+            },
+            {
+              "t": 47034,
+              "label": "terminal:switch-39:start"
+            },
+            {
+              "t": 48029,
+              "label": "terminal:switch-39:end"
+            },
+            {
+              "t": 48042,
+              "label": "terminal:switches:end"
+            }
+          ],
+          "errors": []
+        },
+        "warnings": [
+          "terminal: the visible terminal rendered through 'dom', not WebGL — clearTextureAtlas() is only a full repaint on this path, so every atlas cost below is the DOM-repaint cost, not a GPU re-rasterise"
+        ]
+      },
+      {
+        "sessions": {
+          "names": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3",
+            "native-0",
+            "native-1"
+          ],
+          "sizes": {
+            "cc-0": "huge",
+            "cc-1": "medium",
+            "cc-2": "small",
+            "cc-3": "empty",
+            "native-0": "native",
+            "native-1": "native"
+          },
+          "switchedBetween": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3"
+          ]
+        },
+        "renderer": "dom",
+        "glyphs": {
+          "lines": 2000,
+          "terminals": 4,
+          "fillMs": [
+            641,
+            643,
+            450,
+            426
+          ]
+        },
+        "switchCount": 40,
+        "verifiedSwitches": 40,
+        "failedSwitches": 0,
+        "menuSwitches": 0,
+        "switchPaintedMedianMs": 569.5,
+        "switchPaintedP95Ms": 613.7,
+        "atlasClearsTotal": 40,
+        "atlasClearsPerSwitch": 1,
+        "clearsOutsideSlots": 0,
+        "squeezedSlots": 0,
+        "ipc": {
+          "pings": 755,
+          "totalStallMs": 0,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "maxMs": 15,
+          "openStalls": 0,
+          "rejectedPings": 0,
+          "readErrors": 0
+        },
+        "stallVerdicts": {
+          "none": 40
+        },
+        "longtaskMaxMs": 79,
+        "longtaskTotalMs": 1603,
+        "longtaskCount": 27,
+        "frameGapMaxMs": 120,
+        "switchWindowMs": 40008,
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 592.3,
+            "reason": null,
+            "slotMs": 1004,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": 1,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 63,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 1,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.5,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 52,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 2,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.2,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 52,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 3,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 554.4,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 4,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 570.2,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 54,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 5,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 570.3,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 55,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 6,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.1,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 56,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 7,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 555.2,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 11,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 11ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 8,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 584.9,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 59,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 9,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.8,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 15,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 53,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 15ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 10,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 570,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 55,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 11,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 550.9,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 6,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 12,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.3,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 2,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 52,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 13,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.3,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 13,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 53,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 14,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 570.8,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 52,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 15,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 552,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 16,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.8,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 17,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 583.7,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 59,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 18,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 586.2,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 12,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 60,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 19,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 552.6,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 20,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.5,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 52,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 21,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 566.5,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 10,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 51,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 10ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 22,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 585.1,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 56,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 23,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.8,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 24,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.3,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 5,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 53,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 25,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.3,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 26,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.1,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 27,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 565.2,
+            "reason": null,
+            "slotMs": 995,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 58,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 28,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 585.3,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 62,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 29,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.6,
+            "reason": null,
+            "slotMs": 999,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 30,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.7,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 3,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 31,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 552.9,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 1,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 32,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 568.8,
+            "reason": null,
+            "slotMs": 998,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 50,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 33,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 569.5,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 2,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 0,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 2ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 34,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 615.2,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 79,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 35,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 600.1,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 4,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 71,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 4ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 36,
+            "idx": 0,
+            "name": "cc-0",
+            "ok": true,
+            "mode": "pill",
+            "ms": 602.2,
+            "reason": null,
+            "slotMs": 1000,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 6,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 76,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 37,
+            "idx": 1,
+            "name": "cc-1",
+            "ok": true,
+            "mode": "pill",
+            "ms": 614.2,
+            "reason": null,
+            "slotMs": 996,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 6,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 78,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 38,
+            "idx": 2,
+            "name": "cc-2",
+            "ok": true,
+            "mode": "pill",
+            "ms": 613.7,
+            "reason": null,
+            "slotMs": 993,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 18,
+              "totalStallMs": 0,
+              "maxMs": 7,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 75,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 7ms, under the 250ms stall threshold"
+            }
+          },
+          {
+            "i": 39,
+            "idx": 3,
+            "name": "cc-3",
+            "ok": true,
+            "mode": "pill",
+            "ms": 583.5,
+            "reason": null,
+            "slotMs": 997,
+            "clears": 1,
+            "ipc": {
+              "everyMs": 50,
+              "pings": 19,
+              "totalStallMs": 0,
+              "maxMs": 6,
+              "over250ms": 0,
+              "over1000ms": 0,
+              "openStallMs": null,
+              "rejectedPings": 0,
+              "missedTicks": 0
+            },
+            "longtaskMaxMs": 67,
+            "stall": {
+              "verdict": "none",
+              "why": "worst IPC round trip was 6ms, under the 250ms stall threshold"
+            }
+          }
+        ],
+        "probe": {
+          "longtaskCount": 40,
+          "longtaskTotalMs": 3171,
+          "longtaskMaxMs": 327,
+          "frameGapCount": 63,
+          "frameGapMaxMs": 350,
+          "longtaskSupported": true,
+          "observedMs": 48875,
+          "frames": 2674,
+          "framesPerSec": 54.7,
+          "marks": [
+            {
+              "t": 10,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1036,
+              "label": "native-create:start"
+            },
+            {
+              "t": 1497,
+              "label": "terminal:setup:start"
+            },
+            {
+              "t": 6839,
+              "label": "terminal:setup:end"
+            },
+            {
+              "t": 7851,
+              "label": "terminal:switches:start"
+            },
+            {
+              "t": 7853,
+              "label": "terminal:switch-0:start"
+            },
+            {
+              "t": 8857,
+              "label": "terminal:switch-0:end"
+            },
+            {
+              "t": 8859,
+              "label": "terminal:switch-1:start"
+            },
+            {
+              "t": 9857,
+              "label": "terminal:switch-1:end"
+            },
+            {
+              "t": 9859,
+              "label": "terminal:switch-2:start"
+            },
+            {
+              "t": 10856,
+              "label": "terminal:switch-2:end"
+            },
+            {
+              "t": 10858,
+              "label": "terminal:switch-3:start"
+            },
+            {
+              "t": 11856,
+              "label": "terminal:switch-3:end"
+            },
+            {
+              "t": 11859,
+              "label": "terminal:switch-4:start"
+            },
+            {
+              "t": 12856,
+              "label": "terminal:switch-4:end"
+            },
+            {
+              "t": 12858,
+              "label": "terminal:switch-5:start"
+            },
+            {
+              "t": 13857,
+              "label": "terminal:switch-5:end"
+            },
+            {
+              "t": 13859,
+              "label": "terminal:switch-6:start"
+            },
+            {
+              "t": 14856,
+              "label": "terminal:switch-6:end"
+            },
+            {
+              "t": 14857,
+              "label": "terminal:switch-7:start"
+            },
+            {
+              "t": 15857,
+              "label": "terminal:switch-7:end"
+            },
+            {
+              "t": 15860,
+              "label": "terminal:switch-8:start"
+            },
+            {
+              "t": 16857,
+              "label": "terminal:switch-8:end"
+            },
+            {
+              "t": 16859,
+              "label": "terminal:switch-9:start"
+            },
+            {
+              "t": 17857,
+              "label": "terminal:switch-9:end"
+            },
+            {
+              "t": 17859,
+              "label": "terminal:switch-10:start"
+            },
+            {
+              "t": 18857,
+              "label": "terminal:switch-10:end"
+            },
+            {
+              "t": 18860,
+              "label": "terminal:switch-11:start"
+            },
+            {
+              "t": 19857,
+              "label": "terminal:switch-11:end"
+            },
+            {
+              "t": 19859,
+              "label": "terminal:switch-12:start"
+            },
+            {
+              "t": 20857,
+              "label": "terminal:switch-12:end"
+            },
+            {
+              "t": 20859,
+              "label": "terminal:switch-13:start"
+            },
+            {
+              "t": 21856,
+              "label": "terminal:switch-13:end"
+            },
+            {
+              "t": 21858,
+              "label": "terminal:switch-14:start"
+            },
+            {
+              "t": 22857,
+              "label": "terminal:switch-14:end"
+            },
+            {
+              "t": 22859,
+              "label": "terminal:switch-15:start"
+            },
+            {
+              "t": 23857,
+              "label": "terminal:switch-15:end"
+            },
+            {
+              "t": 23859,
+              "label": "terminal:switch-16:start"
+            },
+            {
+              "t": 24858,
+              "label": "terminal:switch-16:end"
+            },
+            {
+              "t": 24861,
+              "label": "terminal:switch-17:start"
+            },
+            {
+              "t": 25856,
+              "label": "terminal:switch-17:end"
+            },
+            {
+              "t": 25859,
+              "label": "terminal:switch-18:start"
+            },
+            {
+              "t": 26857,
+              "label": "terminal:switch-18:end"
+            },
+            {
+              "t": 26859,
+              "label": "terminal:switch-19:start"
+            },
+            {
+              "t": 27857,
+              "label": "terminal:switch-19:end"
+            },
+            {
+              "t": 27859,
+              "label": "terminal:switch-20:start"
+            },
+            {
+              "t": 28858,
+              "label": "terminal:switch-20:end"
+            },
+            {
+              "t": 28861,
+              "label": "terminal:switch-21:start"
+            },
+            {
+              "t": 29857,
+              "label": "terminal:switch-21:end"
+            },
+            {
+              "t": 29860,
+              "label": "terminal:switch-22:start"
+            },
+            {
+              "t": 30857,
+              "label": "terminal:switch-22:end"
+            },
+            {
+              "t": 30859,
+              "label": "terminal:switch-23:start"
+            },
+            {
+              "t": 31857,
+              "label": "terminal:switch-23:end"
+            },
+            {
+              "t": 31860,
+              "label": "terminal:switch-24:start"
+            },
+            {
+              "t": 32857,
+              "label": "terminal:switch-24:end"
+            },
+            {
+              "t": 32858,
+              "label": "terminal:switch-25:start"
+            },
+            {
+              "t": 33856,
+              "label": "terminal:switch-25:end"
+            },
+            {
+              "t": 33859,
+              "label": "terminal:switch-26:start"
+            },
+            {
+              "t": 34858,
+              "label": "terminal:switch-26:end"
+            },
+            {
+              "t": 34862,
+              "label": "terminal:switch-27:start"
+            },
+            {
+              "t": 35857,
+              "label": "terminal:switch-27:end"
+            },
+            {
+              "t": 35859,
+              "label": "terminal:switch-28:start"
+            },
+            {
+              "t": 36856,
+              "label": "terminal:switch-28:end"
+            },
+            {
+              "t": 36858,
+              "label": "terminal:switch-29:start"
+            },
+            {
+              "t": 37857,
+              "label": "terminal:switch-29:end"
+            },
+            {
+              "t": 37859,
+              "label": "terminal:switch-30:start"
+            },
+            {
+              "t": 38855,
+              "label": "terminal:switch-30:end"
+            },
+            {
+              "t": 38857,
+              "label": "terminal:switch-31:start"
+            },
+            {
+              "t": 39857,
+              "label": "terminal:switch-31:end"
+            },
+            {
+              "t": 39858,
+              "label": "terminal:switch-32:start"
+            },
+            {
+              "t": 40856,
+              "label": "terminal:switch-32:end"
+            },
+            {
+              "t": 40858,
+              "label": "terminal:switch-33:start"
+            },
+            {
+              "t": 41858,
+              "label": "terminal:switch-33:end"
+            },
+            {
+              "t": 41861,
+              "label": "terminal:switch-34:start"
+            },
+            {
+              "t": 42858,
+              "label": "terminal:switch-34:end"
+            },
+            {
+              "t": 42860,
+              "label": "terminal:switch-35:start"
+            },
+            {
+              "t": 43857,
+              "label": "terminal:switch-35:end"
+            },
+            {
+              "t": 43859,
+              "label": "terminal:switch-36:start"
+            },
+            {
+              "t": 44859,
+              "label": "terminal:switch-36:end"
+            },
+            {
+              "t": 44862,
+              "label": "terminal:switch-37:start"
+            },
+            {
+              "t": 45858,
+              "label": "terminal:switch-37:end"
+            },
+            {
+              "t": 45864,
+              "label": "terminal:switch-38:start"
+            },
+            {
+              "t": 46857,
+              "label": "terminal:switch-38:end"
+            },
+            {
+              "t": 46860,
+              "label": "terminal:switch-39:start"
+            },
+            {
+              "t": 47857,
+              "label": "terminal:switch-39:end"
+            },
+            {
+              "t": 47859,
+              "label": "terminal:switches:end"
+            }
+          ],
+          "errors": []
+        },
+        "warnings": [
+          "terminal: the visible terminal rendered through 'dom', not WebGL — clearTextureAtlas() is only a full repaint on this path, so every atlas cost below is the DOM-repaint cost, not a GPU re-rasterise"
+        ]
+      }
+    ],
+    "median": {
+      "switchPaintedMedianMs": 577,
+      "switchPaintedP95Ms": 640.3,
+      "atlasClearsPerSwitch": 1,
+      "atlasClearsTotal": 40,
+      "clearsOutsideSlots": 0,
+      "squeezedSlots": 0,
+      "longtaskMaxMs": 102,
+      "longtaskTotalMs": 1785,
+      "longtaskCount": 27,
+      "frameGapMaxMs": 161,
+      "ipc": {
+        "totalStallMs": 0,
+        "maxMs": 22,
+        "over250ms": 0,
+        "pings": 748,
+        "openStalls": 0,
+        "rejectedPings": 0,
+        "readErrors": 0
+      },
+      "verifiedSwitches": 40,
+      "failedSwitches": 0
+    },
+    "warnings": [
+      "terminal: the visible terminal rendered through 'dom', not WebGL — clearTextureAtlas() is only a full repaint on this path, so every atlas cost below is the DOM-repaint cost, not a GPU re-rasterise"
+    ]
+  },
+  "nativeStream": {
+    "runs": [
+      {
+        "sessions": {
+          "names": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3",
+            "native-0",
+            "native-1"
+          ],
+          "sizes": {
+            "cc-0": "huge",
+            "cc-1": "medium",
+            "cc-2": "small",
+            "cc-3": "empty",
+            "native-0": "native",
+            "native-1": "native"
+          },
+          "streaming": "native-0",
+          "huge": "cc-0"
+        },
+        "deltas": {
+          "planned": 3000,
+          "perSecTarget": 150,
+          "requests": 3
+        },
+        "visible": {
+          "taskMs": 15864.1,
+          "scriptMs": 11009.9,
+          "taskPct": 78.9,
+          "deltasPlanned": 3000,
+          "deltasSent": 3000,
+          "perSecTarget": 150,
+          "perSecAchieved": 150,
+          "streamMs": 19993,
+          "backpressureWaits": 0,
+          "aborted": false,
+          "charsStreamed": 12136,
+          "charsShown": 9780,
+          "firstResponseMs": 35,
+          "turnMs": 20102,
+          "turnEndSignal": "stop-button",
+          "commits": 1174,
+          "layouts": 1178,
+          "layoutsPerFrame": 0.999,
+          "commitsPerFrame": 0.996,
+          "framesPerSec": 58.6,
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "longtaskCount": 0,
+          "frameGapMaxMs": 49,
+          "windowMs": 20112,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 201,
+            "totalStallMs": 0,
+            "maxMs": 74,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 74ms, under the 250ms stall threshold"
+          },
+          "profilePath": null
+        },
+        "switching": {
+          "switchCount": 8,
+          "duringStream": 8,
+          "verifiedSwitches": 8,
+          "failedSwitches": 0,
+          "menuSwitches": 0,
+          "switchPaintedMedianMs": 110.5,
+          "switchPaintedP95Ms": 178.8,
+          "intoStreamingMedianMs": 153.8,
+          "intoHugeMedianMs": 110.5,
+          "taskMs": 11493.9,
+          "taskPct": 57.2,
+          "deltasSent": 3000,
+          "perSecAchieved": 150,
+          "turnMs": 20073,
+          "longtaskTotalMs": 494,
+          "longtaskMaxMs": 93,
+          "frameGapMaxMs": 124,
+          "windowMs": 20082,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 200,
+            "totalStallMs": 0,
+            "maxMs": 78,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 78ms, under the 250ms stall threshold"
+          },
+          "switches": [
+            {
+              "i": 0,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 128.4,
+              "paintedMs": 178.8,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 1,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 73.2,
+              "paintedMs": 73.3,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 2,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 63.6,
+              "paintedMs": 107.2,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 3,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 107.7,
+              "paintedMs": 107.8,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 4,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 63.8,
+              "paintedMs": 104.3,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 5,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 156.8,
+              "paintedMs": 156.9,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 6,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 66.4,
+              "paintedMs": 110.5,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 7,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 153.6,
+              "paintedMs": 153.8,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            }
+          ]
+        },
+        "hidden": {
+          "taskMs": 1711.5,
+          "scriptMs": 612.4,
+          "taskPct": 7.9,
+          "deltasPlanned": 3000,
+          "deltasSent": 3000,
+          "perSecTarget": 150,
+          "perSecAchieved": 150,
+          "streamMs": 19995,
+          "backpressureWaits": 0,
+          "aborted": false,
+          "charsStreamed": 12115,
+          "charsShown": 0,
+          "firstResponseMs": null,
+          "turnMs": 21510,
+          "turnEndSignal": "server",
+          "commits": 0,
+          "layouts": 3,
+          "layoutsPerFrame": null,
+          "commitsPerFrame": null,
+          "framesPerSec": 59.7,
+          "longtaskTotalMs": 151,
+          "longtaskMaxMs": 91,
+          "longtaskCount": 2,
+          "frameGapMaxMs": 95,
+          "windowMs": 21555,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 215,
+            "totalStallMs": 0,
+            "maxMs": 5,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 5ms, under the 250ms stall threshold"
+          },
+          "profilePath": null
+        },
+        "probe": {
+          "longtaskCount": 15,
+          "longtaskTotalMs": 1658,
+          "longtaskMaxMs": 292,
+          "frameGapCount": 30,
+          "frameGapMaxMs": 303,
+          "longtaskSupported": true,
+          "observedMs": 67855,
+          "frames": 3880,
+          "framesPerSec": 57.2,
+          "marks": [
+            {
+              "t": 4,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 1031,
+              "label": "native-create:start"
+            },
+            {
+              "t": 2494,
+              "label": "native-stream:visible:start"
+            },
+            {
+              "t": 22606,
+              "label": "native-stream:visible:end"
+            },
+            {
+              "t": 23614,
+              "label": "native-stream:switching:start"
+            },
+            {
+              "t": 43696,
+              "label": "native-stream:switching:end"
+            },
+            {
+              "t": 46285,
+              "label": "native-stream:hidden:start"
+            },
+            {
+              "t": 67840,
+              "label": "native-stream:hidden:end"
+            }
+          ],
+          "errors": []
+        },
+        "warnings": []
+      },
+      {
+        "sessions": {
+          "names": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3",
+            "native-0",
+            "native-1"
+          ],
+          "sizes": {
+            "cc-0": "huge",
+            "cc-1": "medium",
+            "cc-2": "small",
+            "cc-3": "empty",
+            "native-0": "native",
+            "native-1": "native"
+          },
+          "streaming": "native-0",
+          "huge": "cc-0"
+        },
+        "deltas": {
+          "planned": 3000,
+          "perSecTarget": 150,
+          "requests": 3
+        },
+        "visible": {
+          "taskMs": 9097.7,
+          "scriptMs": 6489.3,
+          "taskPct": 45.3,
+          "deltasPlanned": 3000,
+          "deltasSent": 3000,
+          "perSecTarget": 150,
+          "perSecAchieved": 150,
+          "streamMs": 19994,
+          "backpressureWaits": 0,
+          "aborted": false,
+          "charsStreamed": 12136,
+          "charsShown": 9780,
+          "firstResponseMs": 20,
+          "turnMs": 20059,
+          "turnEndSignal": "stop-button",
+          "commits": 1203,
+          "layouts": 1206,
+          "layoutsPerFrame": 1.002,
+          "commitsPerFrame": 1,
+          "framesPerSec": 60,
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "longtaskCount": 0,
+          "frameGapMaxMs": 0,
+          "windowMs": 20068,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 200,
+            "totalStallMs": 0,
+            "maxMs": 3,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+          },
+          "profilePath": null
+        },
+        "switching": {
+          "switchCount": 8,
+          "duringStream": 8,
+          "verifiedSwitches": 8,
+          "failedSwitches": 0,
+          "menuSwitches": 0,
+          "switchPaintedMedianMs": 74.2,
+          "switchPaintedP95Ms": 119.5,
+          "intoStreamingMedianMs": 55.4,
+          "intoHugeMedianMs": 85.3,
+          "taskMs": 7679.8,
+          "taskPct": 38.3,
+          "deltasSent": 3000,
+          "perSecAchieved": 150,
+          "turnMs": 20045,
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "frameGapMaxMs": 78,
+          "windowMs": 20049,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 200,
+            "totalStallMs": 0,
+            "maxMs": 14,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 14ms, under the 250ms stall threshold"
+          },
+          "switches": [
+            {
+              "i": 0,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 72.3,
+              "paintedMs": 119.5,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 1,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 43,
+              "paintedMs": 43.1,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 2,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 36.1,
+              "paintedMs": 85.3,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 3,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 64.4,
+              "paintedMs": 64.6,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 4,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 35.9,
+              "paintedMs": 85,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 5,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 54.8,
+              "paintedMs": 54.9,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 6,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 36.7,
+              "paintedMs": 74.2,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 7,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 55.3,
+              "paintedMs": 55.4,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            }
+          ]
+        },
+        "hidden": {
+          "taskMs": 1556.7,
+          "scriptMs": 428.6,
+          "taskPct": 7.2,
+          "deltasPlanned": 3000,
+          "deltasSent": 3000,
+          "perSecTarget": 150,
+          "perSecAchieved": 150,
+          "streamMs": 19995,
+          "backpressureWaits": 0,
+          "aborted": false,
+          "charsStreamed": 12115,
+          "charsShown": 0,
+          "firstResponseMs": null,
+          "turnMs": 21508,
+          "turnEndSignal": "server",
+          "commits": 0,
+          "layouts": 3,
+          "layoutsPerFrame": null,
+          "commitsPerFrame": null,
+          "framesPerSec": 60,
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "longtaskCount": 0,
+          "frameGapMaxMs": 0,
+          "windowMs": 21515,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 215,
+            "totalStallMs": 0,
+            "maxMs": 1,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+          },
+          "profilePath": null
+        },
+        "probe": {
+          "longtaskCount": 4,
+          "longtaskTotalMs": 545,
+          "longtaskMaxMs": 189,
+          "frameGapCount": 13,
+          "frameGapMaxMs": 196,
+          "longtaskSupported": true,
+          "observedMs": 67300,
+          "frames": 3998,
+          "framesPerSec": 59.4,
+          "marks": [
+            {
+              "t": 8,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 846,
+              "label": "native-create:start"
+            },
+            {
+              "t": 2149,
+              "label": "native-stream:visible:start"
+            },
+            {
+              "t": 22217,
+              "label": "native-stream:visible:end"
+            },
+            {
+              "t": 23223,
+              "label": "native-stream:switching:start"
+            },
+            {
+              "t": 43272,
+              "label": "native-stream:switching:end"
+            },
+            {
+              "t": 45783,
+              "label": "native-stream:hidden:start"
+            },
+            {
+              "t": 67298,
+              "label": "native-stream:hidden:end"
+            }
+          ],
+          "errors": []
+        },
+        "warnings": []
+      },
+      {
+        "sessions": {
+          "names": [
+            "cc-0",
+            "cc-1",
+            "cc-2",
+            "cc-3",
+            "native-0",
+            "native-1"
+          ],
+          "sizes": {
+            "cc-0": "huge",
+            "cc-1": "medium",
+            "cc-2": "small",
+            "cc-3": "empty",
+            "native-0": "native",
+            "native-1": "native"
+          },
+          "streaming": "native-0",
+          "huge": "cc-0"
+        },
+        "deltas": {
+          "planned": 3000,
+          "perSecTarget": 150,
+          "requests": 3
+        },
+        "visible": {
+          "taskMs": 7683.1,
+          "scriptMs": 5551.6,
+          "taskPct": 38.3,
+          "deltasPlanned": 3000,
+          "deltasSent": 3000,
+          "perSecTarget": 150,
+          "perSecAchieved": 150,
+          "streamMs": 19994,
+          "backpressureWaits": 0,
+          "aborted": false,
+          "charsStreamed": 12136,
+          "charsShown": 9780,
+          "firstResponseMs": 22,
+          "turnMs": 20059,
+          "turnEndSignal": "stop-button",
+          "commits": 1202,
+          "layouts": 1206,
+          "layoutsPerFrame": 1.002,
+          "commitsPerFrame": 0.999,
+          "framesPerSec": 60,
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "longtaskCount": 0,
+          "frameGapMaxMs": 0,
+          "windowMs": 20068,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 200,
+            "totalStallMs": 0,
+            "maxMs": 3,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+          },
+          "profilePath": null
+        },
+        "switching": {
+          "switchCount": 8,
+          "duringStream": 8,
+          "verifiedSwitches": 8,
+          "failedSwitches": 0,
+          "menuSwitches": 0,
+          "switchPaintedMedianMs": 73.6,
+          "switchPaintedP95Ms": 126.4,
+          "intoStreamingMedianMs": 49.3,
+          "intoHugeMedianMs": 75.3,
+          "taskMs": 6597.2,
+          "taskPct": 32.9,
+          "deltasSent": 3000,
+          "perSecAchieved": 150,
+          "turnMs": 20044,
+          "longtaskTotalMs": 53,
+          "longtaskMaxMs": 53,
+          "frameGapMaxMs": 83,
+          "windowMs": 20049,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 200,
+            "totalStallMs": 0,
+            "maxMs": 54,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 54ms, under the 250ms stall threshold"
+          },
+          "switches": [
+            {
+              "i": 0,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 83.3,
+              "paintedMs": 126.4,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 1,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 40.1,
+              "paintedMs": 40.2,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 2,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 35.9,
+              "paintedMs": 74.4,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 3,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 57.6,
+              "paintedMs": 57.7,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 4,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 34.2,
+              "paintedMs": 75.3,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 5,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 48.7,
+              "paintedMs": 48.8,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            },
+            {
+              "i": 6,
+              "idx": 0,
+              "name": "cc-0",
+              "intoStreaming": false,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 34.8,
+              "paintedMs": 73.6,
+              "settled": true,
+              "entries": 60,
+              "reason": null
+            },
+            {
+              "i": 7,
+              "idx": 4,
+              "name": "native-0",
+              "intoStreaming": true,
+              "duringStream": true,
+              "ok": true,
+              "mode": "pill",
+              "ms": 49.3,
+              "paintedMs": 49.3,
+              "settled": true,
+              "entries": 4,
+              "reason": null
+            }
+          ]
+        },
+        "hidden": {
+          "taskMs": 719.8,
+          "scriptMs": 291.2,
+          "taskPct": 3.3,
+          "deltasPlanned": 3000,
+          "deltasSent": 3000,
+          "perSecTarget": 150,
+          "perSecAchieved": 150,
+          "streamMs": 19994,
+          "backpressureWaits": 0,
+          "aborted": false,
+          "charsStreamed": 12115,
+          "charsShown": 0,
+          "firstResponseMs": null,
+          "turnMs": 21505,
+          "turnEndSignal": "server",
+          "commits": 0,
+          "layouts": 3,
+          "layoutsPerFrame": null,
+          "commitsPerFrame": null,
+          "framesPerSec": 60,
+          "longtaskTotalMs": 0,
+          "longtaskMaxMs": 0,
+          "longtaskCount": 0,
+          "frameGapMaxMs": 0,
+          "windowMs": 21510,
+          "ipc": {
+            "everyMs": 100,
+            "pings": 215,
+            "totalStallMs": 0,
+            "maxMs": 3,
+            "over250ms": 0,
+            "over1000ms": 0,
+            "openStallMs": null,
+            "rejectedPings": 0,
+            "missedTicks": 0
+          },
+          "stall": {
+            "verdict": "none",
+            "why": "worst IPC round trip was 3ms, under the 250ms stall threshold"
+          },
+          "profilePath": null
+        },
+        "probe": {
+          "longtaskCount": 5,
+          "longtaskTotalMs": 546,
+          "longtaskMaxMs": 159,
+          "frameGapCount": 13,
+          "frameGapMaxMs": 163,
+          "longtaskSupported": true,
+          "observedMs": 67158,
+          "frames": 3998,
+          "framesPerSec": 59.5,
+          "marks": [
+            {
+              "t": 2,
+              "label": "cc-create:start"
+            },
+            {
+              "t": 676,
+              "label": "native-create:start"
+            },
+            {
+              "t": 2023,
+              "label": "native-stream:visible:start"
+            },
+            {
+              "t": 22091,
+              "label": "native-stream:visible:end"
+            },
+            {
+              "t": 23097,
+              "label": "native-stream:switching:start"
+            },
+            {
+              "t": 43146,
+              "label": "native-stream:switching:end"
+            },
+            {
+              "t": 45645,
+              "label": "native-stream:hidden:start"
+            },
+            {
+              "t": 67155,
+              "label": "native-stream:hidden:end"
+            }
+          ],
+          "errors": []
+        },
+        "warnings": []
+      }
+    ],
+    "median": {
+      "deltas": {
+        "planned": 3000,
+        "perSecTarget": 150
+      },
+      "visible": {
+        "deltasSent": 3000,
+        "perSecAchieved": 150,
+        "streamMs": 19994,
+        "charsShown": 9780,
+        "firstResponseMs": 22,
+        "turnMs": 20059,
+        "taskMs": 9097.7,
+        "scriptMs": 6489.3,
+        "taskPct": 45.3,
+        "commits": 1202,
+        "layouts": 1206,
+        "layoutsPerFrame": 1.002,
+        "commitsPerFrame": 0.999,
+        "framesPerSec": 60,
+        "longtaskTotalMs": 0,
+        "longtaskMaxMs": 0,
+        "longtaskCount": 0,
+        "frameGapMaxMs": 0,
+        "windowMs": 20068,
+        "ipc": {
+          "totalStallMs": 0,
+          "maxMs": 3,
+          "pings": 200,
+          "openStalls": null,
+          "rejectedPings": 0
+        },
+        "stallVerdict": "none"
+      },
+      "switching": {
+        "deltasSent": 3000,
+        "duringStream": 8,
+        "verifiedSwitches": 8,
+        "failedSwitches": 0,
+        "menuSwitches": 0,
+        "switchPaintedMedianMs": 74.2,
+        "switchPaintedP95Ms": 126.4,
+        "intoStreamingMedianMs": 55.4,
+        "intoHugeMedianMs": 85.3,
+        "longtaskTotalMs": 53,
+        "longtaskMaxMs": 53,
+        "frameGapMaxMs": 83,
+        "turnMs": 20045,
+        "taskMs": 7679.8,
+        "taskPct": 38.3,
+        "ipc": {
+          "totalStallMs": 0,
+          "maxMs": 54,
+          "pings": 200
+        },
+        "stallVerdict": "none"
+      },
+      "hidden": {
+        "deltasSent": 3000,
+        "perSecAchieved": 150,
+        "charsShown": 0,
+        "turnMs": 21508,
+        "taskMs": 1556.7,
+        "scriptMs": 428.6,
+        "taskPct": 7.2,
+        "commits": 0,
+        "framesPerSec": 60,
+        "longtaskTotalMs": 0,
+        "longtaskMaxMs": 0,
+        "longtaskCount": 0,
+        "frameGapMaxMs": 0,
+        "windowMs": 21515,
+        "ipc": {
+          "totalStallMs": 0,
+          "maxMs": 3,
+          "pings": 215
+        },
+        "stallVerdict": "none"
+      },
+      "probe": {
+        "longtaskTotalMs": 546,
+        "longtaskMaxMs": 189
+      }
+    },
+    "warnings": []
+  },
+  "nativeResume": null,
+  "scrollback": null,
+  "measures": {
+    "terminal": {
+      "scenario": "terminal",
+      "question": "What does a session switch cost in terminal view, and how many shared glyph-atlas clears does each one trigger?",
+      "configuration": [
+        "the workload's six sessions (4 Claude Code — huge / medium / small resumed plus an empty control — and 2 native), opened with the same openJourneySessions",
+        "the four Claude Code sessions each switched to terminal view (Ctrl+`) and filled with 2,000 lines of mixed glyphs (printable ASCII + TUI box-drawing, seven colours, bold every fifth line) printed by fake-claude on the typed line `perf-lab-glyphs 2000`",
+        "40 switches between those four in terminal view, one per one-second slot; the two native sessions stay open in chat view and are never switched to (no PTY, and a switch through one flips every terminal's inset)",
+        "every repeat is its OWN boot with a freshly built fixture, like the workload",
+        "stock theme, no wallpaper"
+      ],
+      "clocks": {
+        "switchPaintedMedianMs": "click the session pill -> that session's terminal is the visible one AND two animation frames have painted (the atlas clear's full refresh lands in the first of them)",
+        "atlasClearsPerSwitch": "window.__terminalRegistry.atlasClears after the switch window settled (counter still for 1 s) minus before the first switch, over verified switches; ~1 means one hide->show heal per switch",
+        "longtaskMaxMs": "the renderer long-task probe over the marked switch window only (setup and fill excluded)",
+        "ipc.totalStallMs": "the IPC ping probe (every 50 ms) installed at the START of each switch's one-second slot and read just before the NEXT switch (the last slot is held open for its full second), so the time between switches is covered; a ping still in flight at a slot's close counts its wait so far beyond the ping interval; summed over the 40 slots, with slots whose reading failed counted in ipc.readErrors"
+      },
+      "blindTo": [
+        "GPU cost: the rig runs on llvmpipe under Xvfb (report.machine.renderer), so WebGL may not initialise and clearTextureAtlas() then only forces a full DOM repaint — the GPU texture re-upload cost on real hardware is NOT measured here; `renderer` on each run says which path it got",
+        "wallpaper themes: the stock theme has no wallpaper, so the terminal's see-through container and backing layer are not in play",
+        "switching through native sessions in terminal view, and toggling chat <-> terminal (both resize every terminal and fire the resize heal)",
+        "the transient GPU texture corruption (sleep/resume, VRAM reclaim) the heal still defends against — whether glyphs stay correct needs a human on real hardware",
+        "the few milliseconds between one slot's probe read and the next slot's install (CDP round trips), and the first ping interval of each slot (probe-ipc sends its first ping one interval after install)"
+      ]
+    },
+    "nativeStream": {
+      "scenario": "native-stream",
+      "question": "What does a native reply streaming at cloud-model speed cost the window it is shown in, the switches made during it, and a window it is hidden from?",
+      "configuration": [
+        "the workload's six sessions (4 Claude Code — huge / medium / small resumed plus an empty control — and 2 native), opened with the same openJourneySessions; the two native sessions are bound to the perf-lab fake endpoint instead of the local engine",
+        "each leg is one reply of 3000 deltas at 150/s from fake-provider.mjs — realistic markdown (prose, fenced code, diffs, log dumps) split into token-sized pieces, byte-identical between runs",
+        "switching leg: 8 switches, one every 2000 ms starting 1500 ms into the stream, alternating huge <-> the streaming session",
+        "hidden leg: the huge conversation on screen while the native session streams",
+        "every repeat is its OWN boot with a freshly built fixture, like the workload",
+        "stock theme, no wallpaper"
+      ],
+      "clocks": {
+        "visible.taskMs": "the renderer main thread's BUSY time over the stream window (CDP Performance TaskDuration delta) — every task counted, however short; taskPct is its share of the window. Long tasks alone read 0 here: per-frame work under 50 ms never registers with the long-task observer",
+        "visible.longtaskTotalMs": "renderer long tasks (>= 50 ms) summed over the marked stream window: native.send -> the app's Stop button gone",
+        "visible.turnMs": "native.send -> the Stop button gone (the turn ended in the app's own terms); turnEndSignal says whether that button was seen or the fake server's completion + a settle was used instead",
+        "visible.commits": "MutationObserver commits inside the visible .chat-scroll over the stream (the transcript batcher coalesces deltas to one commit per frame, so commits ~ frames is healthy and commits >> frames means it is not engaging)",
+        "switching.switchPaintedMedianMs": "click the session pill -> the target conversation's messages on screen (the workload's painted clock), for switches made while deltas were still arriving",
+        "hidden.longtaskTotalMs": "the same long-task sum while the streaming session is NOT the visible one",
+        "ipc.totalStallMs": "the IPC ping probe (every 100 ms) over each leg; the main process forwards every delta over IPC, so this is what streaming costs every other window"
+      },
+      "blindTo": [
+        "the real engine: the fake answers at once, so firstResponseMs is the app's own send path, not prefill or model load",
+        "tool calls, thinking blocks and attachments (text deltas only)",
+        "the buddy window (no scenario opens one)",
+        "GPU paint cost: llvmpipe under Xvfb (report.machine.renderer)",
+        "the local model's own delta rate — this phase is about the renderer, and deliberately not hostage to it"
+      ]
+    }
+  },
+  "network": [
+    "startup.median.chores.announcements",
+    "startup.median.postWindowDone"
+  ],
+  "errors": {
+    "coldStarts": [],
+    "scenarioBoot": null,
+    "workloadBoots": [],
+    "stallBoot": null,
+    "artifactsBoot": null,
+    "projectsBoot": null,
+    "terminalBoots": [
+      0,
+      0,
+      0
+    ],
+    "nativeStreamBoots": [
+      0,
+      0,
+      0
+    ],
+    "nativeResumeBoots": [],
+    "scrollbackBoot": null
+  },
+  "screens": null,
+  "aborted": null,
+  "incomplete": []
+}

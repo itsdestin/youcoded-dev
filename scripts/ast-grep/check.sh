@@ -284,6 +284,11 @@ fi
 #   artifact-provider-value-memoized (an inline value object, a self-closing provider
 #   handed another value, a useMemo whose deps miss artifactState (3); an App with no
 #   provider tag, one whose value is not a useMemo (2)).
+# 2026-09-23 (perf, artifact-store-selectors.test.tsx): artifact-provider-value-memoized
+#   REPLACED by artifact-provider-stable-store — App now hands the provider a store made
+#   once, not a memoised value. Count unaffected, still 5: an inline value object, a
+#   self-closing provider handed another store, the right store with a value prop beside
+#   it (3); an App with no provider tag, one that builds the store per render (2).
 # 2026-09-16 (u7, session-meta-unreadable.test.tsx): +3 for note-editor-guarded-on-unreadable
 #   (an unguarded preview note editor, one "guarded" only by a message mention (2); a drawer
 #   with no previewMeta.saveNote editor (1)).
@@ -377,7 +382,15 @@ fi
 # 2026-09-18 (render-cost consolidation): +1 for filestab-memoized (FilesTab exported as a
 #   plain function) and +3 for filestab-no-artifact-context (useArtifact(),
 #   useArtifactOptional() and useContext(ArtifactContext), one fixture line each) — 423 (419 on master + these 4).
-EXPECTED_VIOLATIONS=423
+# 2026-09-23 (perf, many tabs): +1 — no-sync-fs-whole-file gains conversations/reconciler.ts
+#   and a second pattern for the `fs.xSync.native(...)` shape; its new reconciler fixture fires once.
+# 2026-09-23 (perf, main-process guard): -17 — the fourteen per-file "no sync fs in the main
+#   process" rules (no-sync-fs-*, *-stays-async, read-tool-no-blocking-read,
+#   native-session-list-uses-async-form, …) and their 17 fixture matches are RETIRED in favour of
+#   ONE class-wide ratchet: youcoded/desktop/tests/main-blocking-calls.test.ts (every blocking call
+#   in src/main is on a reviewed allowlist; its PROTECTED table carries every retired rule's ban
+#   and "must still exist" check). 424 - 17 = 407.
+EXPECTED_VIOLATIONS=407
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

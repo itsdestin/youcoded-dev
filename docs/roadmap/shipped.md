@@ -47,6 +47,8 @@ decision either way.
 - [x] 2026-09-23 dev-workspace — Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded failed to start" (youcoded@13456d8a0)
 - [x] 2026-09-23 remote-access — Remote browser, freshly connected: the oldest assistant reply in the conversation morphs into a copy of the newest streaming one (youcoded@03faf5e48)
 - [x] 2026-09-23 remote-access — Finish the remote-hydration work: a remote browser can land on a different session or view than the desktop window shows, and events arriving during connect… (youcoded@4f9320217, youcoded@9b02964f6, youcoded@e7e2282c3)
+- [x] 2026-09-24 chat-data — The 30-minute conversation reconcile lists every transcript ever written and lstat + tail-reads each one, synchronously (youcoded#561)
+- [x] 2026-09-24 claude-code-integration — The sub-agent watcher keeps two 5-second timers per open Claude Code session for the session's whole life (one prunes an index, one `readdirSync`s the… (youcoded#561)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

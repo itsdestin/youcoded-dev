@@ -30,6 +30,7 @@ was meant to do. Feature-flow design §8e.
    `.claude/rules/renderer-lists.md`). Also: a memoised row handed a fresh object or closure
    every render, and a new list of the user's own things with no stress pin (1,000+ items in,
    at most one chunk drawn).
+6. **Performance.** Check the diff against every rule in `.claude/rules/performance.md` (main process never blocks, hidden means idle, slice subscriptions, per-event cost, keystroke state, layout/paint).
 
 Not your job: taste, formatting, anything a linter already enforces, or re-designing the
 feature. If you disagree with the approved design, say so in one line at the end and move on.

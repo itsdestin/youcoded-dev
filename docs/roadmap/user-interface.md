@@ -2,6 +2,11 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] While a reply streams, the chat you are looking at still redraws every message in it on
+      every word, not only the one being written, and the small spinner keeps ticking in chats
+      you are not looking at. Left over from the 2026-09-23 many-tabs batch
+      `chat` `desktop` `confirmed` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-16-smoothness-sweep.md
+
 - [ ] The design check still lists about 530 places where a screen overrides a shared button’s
       look, types a size in by hand, or uses a color outside the theme. Only the mechanical
       fixes were made on 2026-09-16; each remaining group needs its own design call.
@@ -162,10 +167,13 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       tasks 1,217 → 0 ms; Marketplace 58,706 → 3,281 page elements, model search 24,679 →
       1,255; the preview and buddy chat fold like the chat, and entries present when a chat
       opens can now fold too (they never could). Left for later, each measured first: the
-      Resume browser's kept-built previews for Projects; splitting ArtifactContext so no
-      reader redraws on another session's file write; a selector-scoped marketplace store
-      (an install click still redraws the ≤100 visible cards)
-      `all` `confirmed` `checked 2026-09-18` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+      Resume browser's kept-built previews for Projects; a selector-scoped marketplace store
+      (an install click still redraws the ≤100 visible cards). 2026-09-23 "many tabs" batch
+      (docs/active/investigations/2026-09-16-smoothness-sweep.md → Status 2026-09-23): tabs
+      you are not looking at now do no drawing, ticking or listening — Batch B built, a file
+      change in one tab no longer redraws the others, typing a / command no longer redraws the
+      whole app — with a whole-app test that fails if hidden tabs start working again
+      `all` `confirmed` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not

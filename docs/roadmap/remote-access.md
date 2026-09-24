@@ -1,6 +1,12 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] With a phone connected, the computer sends it the terminal output and chat events of every
+      open session, not only the one the phone is showing — more sessions running means a busier
+      computer and phone. Found by the 2026-09-23 performance review; not built because remote
+      code is being restructured
+      `remote` `needs-verify` `checked 2026-09-23` `performance`
+
 - [ ] Some chat cards can sit in a different place on the phone than on the computer. A "Usage
       limit reached" style prompt card is drawn by each device when it notices the prompt on its
       own copy of the terminal, so each places it where it happened to notice; and the "Switched
