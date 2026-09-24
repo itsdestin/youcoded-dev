@@ -75,8 +75,8 @@ Target: `v1.3.1`
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 39 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 29 | 6 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 26 | 10 | 8 | 5 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 6 | 2 | 2 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 22 | 5 | 6 | 5 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 21 | 6 | 2 | 2 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 17 | 4 | 0 | 9 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |

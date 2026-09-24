@@ -1,15 +1,15 @@
 ---
 date: 2026-09-24
-status: active
+status: shipped
 type: spec
 topic: Welcome back — offer the sessions open at last shutdown; in-app quit warning
 ---
 
 # Welcome back — technical design
 
-Approved UI (the backend's contract): decks in `docs/active/design/2026-09-24-welcome-back/`
+Approved UI (the backend's contract): decks in `docs/archive/design/2026-09-24-welcome-back/`
 (questions, review, review-2 + answers). Supersedes the 2026-09-01 investigation's
-store-flag sketch (`docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md`).
+store-flag sketch (`docs/archive/investigations/2026-09-01-resume-on-startup-welcome-back.md`).
 Mockup code is on `session/session-resume-20260924` in youcoded: `ResumeBrowser` welcome-back
 mode, `QuitSessionsPrompt`, `state/welcome-back.ts`, App wiring, workbench scenario
 `welcome-back`, four MOCK_ONLY channels.

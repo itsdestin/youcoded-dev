@@ -1,6 +1,6 @@
 ---
 date: 2026-09-24
-status: active
+status: shipped
 type: review
 topic: Welcome back — adversarial design review 1
 ---

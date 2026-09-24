@@ -1,15 +1,15 @@
 ---
 date: 2026-09-24
-status: active
+status: shipped
 type: plan
 topic: Welcome back — build tasks
 ---
 
 # Welcome back — build tasks
 
-Design (authority): `docs/active/specs/2026-09-24-welcome-back-design.md`, reviewed three
-rounds (`docs/active/reviews/2026-09-24-welcome-back-design-review-{1,2,3}.md`).
-Contract (signed): `docs/active/design/2026-09-24-welcome-back/welcome-back.contract.json`.
+Design (authority): `docs/archive/specs/2026-09-24-welcome-back-design.md`, reviewed three
+rounds (`docs/archive/reviews/2026-09-24-welcome-back-design-review-{1,2,3}.md`).
+Contract (signed): `docs/archive/design/2026-09-24-welcome-back/welcome-back.contract.json`.
 App branch: `session/session-resume-20260924` in
 `worktrees/sessions/session-resume-20260924/youcoded`. The renderer mockup is already on it.
 

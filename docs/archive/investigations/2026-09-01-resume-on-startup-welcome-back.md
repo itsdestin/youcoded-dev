@@ -1,6 +1,6 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: chat-data — "Welcome back" resume-on-startup, rebuilt on the Conversation Store; blocked on one design decision (device scoping)
 ---
