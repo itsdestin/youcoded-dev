@@ -99,11 +99,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       add or change provider keys (identical to desktop) or keys stay computer-only
       `model-picker` `remote` `decision` `checked 2026-09-11`
 
-- [ ] Remote browser, freshly connected: the oldest assistant reply in the conversation
-      morphs into a copy of the newest streaming one — every connect, not a race
-            Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
-`chat` `remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydrate-turn-group-id-collision.md
-
 - [ ] Over remote access some features are still missing: the game lobby signs in but stays
       empty (only the incognito switch is bridged), files cannot be uploaded or edited from a
       phone, and several buttons throw. Which namespaces are safe to expose was Destin's call:
@@ -128,18 +123,16 @@ Filing test: reaching the app from another device — the protocol, the browser 
       shows sign-in. His test ran against the dev window, which serves the 523 source files one
       by one instead of one bundle, so the wait he felt is inflated by dev mode; the built app
       has not been timed on his phone. Fix shape: a small first download holding only sign-in
-      and the connection code, with the app loading after the password is accepted. The 2.5 s
-      of scripted waiting after sign-in is a separate, proven cost (below)
+      and the connection code, with the app loading after the password is accepted.
+      **The 2.5 s of scripted waiting after sign-in (the proven half, below) shipped fixed
+      2026-09-10 (youcoded#4f9320217): the hardcoded 500 ms `setTimeout` and the sequential
+      snapshot→PTY wait are gone, replaced by a `client:ready` ack the phone sends once React
+      has mounted, pinned by `remote-readiness.test.ts`'s "no 500 ms timer" source guard.
+      What's left open here is only the UNPROVEN bundle-size white screen** — a different
+      bottleneck (first paint, not first chat) that fix does not touch
       Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
       after the milestone's batches 2 and 3
-      `remote` `needs-verify` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
-
-- [ ] Finish the remote-hydration work: a remote browser can land on a different session or
-      view than the desktop window shows, and events arriving during connect can double-apply
-      or drop (commits 2 and 3 of the 2026-07-20 plan; ask Destin which still bites)
-      Destin 2026-09-02: still sees intermittent desktop/remote mismatch bugs, not sure they are exactly this
-            Destin 2026-09-10, after batch 1: "mostly fixed" on his phone — not seen this pass
-`remote` `needs-verify` `checked 2026-09-10` → docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md
+      `remote` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] A phone browser on remote access behaves like a desktop in the terminal view — touch
       adaptations off, soft keyboard and scrolling wrong (found 2026-07-20 on Chrome/Android)

@@ -72,10 +72,10 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 33 | 3 | 9 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 32 | 3 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 64 | 12 | 5 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 39 | 9 | 1 | 4 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 37 | 7 | 1 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 8 | 2 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 6 | 0 | 9 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 5 | 6 | 5 |

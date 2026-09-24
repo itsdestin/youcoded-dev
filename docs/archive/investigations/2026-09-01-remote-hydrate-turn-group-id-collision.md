@@ -1,9 +1,17 @@
 ---
 date: 2026-09-01
-status: active
+status: resolved
 type: investigation
 topic: remote hydrate — `turn-`/`group-` id collisions corrupt the hydrated chat
 ---
+
+**RESOLVED 2026-09-08 (`youcoded@03faf5e48`).** Exactly the fix shape this report specced:
+`nextTurnId()` and `nextGroupId()` both now carry the same `ID_EPOCH` prefix `nextMessageId()`
+already had (`turn-${ID_EPOCH}-${++turnCounter}`, `group-${ID_EPOCH}-${++groupCounter}`).
+Pinned by `chat-hydration.test.ts` → "preserves host turns and tool groups when a fresh client
+receives live events" (host/client boot simulated via `vi.resetModules()`, which reproduces the
+collision without the fix). Closed on `docs/roadmap/remote-access.md`; see
+`docs/roadmap/shipped.md`.
 
 # Remote hydrate: `turn-`/`group-` ids collide with the hydrated ones
 

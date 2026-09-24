@@ -95,6 +95,32 @@ jobs:
       - name: Test the workspace drift guards
         run: node --test scripts/workspace-drift-guards.test.mjs scripts/workspace-mcp.test.mjs
 
+      # workspace-start.mjs is the tool EVERY session runs before touching a file
+      # (CLAUDE.md: "Before any development edit"), and its 27 tests never ran anywhere
+      # automatic before 2026-09-23 — only by hand, which meant a break here would surface
+      # as sessions misbehaving at startup, not as a red build. It's fast (seconds), so it
+      # runs on every push/PR/schedule, same as the other suites above.
+      - name: Test workspace-start
+        if: ${{ !cancelled() }}
+        run: node --test scripts/workspace-start.test.mjs
+
+      # prune-worktrees.mjs is the tool that decides which of the ~60 accumulated worktrees
+      # are safe to delete — a wrong "safe" verdict here destroys someone's unpushed work, so
+      # its classification (merged/dirty/unmerged/unpushed/nested-dirty-component/missing-dir/
+      # ignored-scratch shapes) and its refusal to apply anything unsafe or unnamed both need
+      # a red build if they ever regress, same reasoning as workspace-start above.
+      - name: Test prune-worktrees
+        if: ${{ !cancelled() }}
+        run: node --test scripts/prune-worktrees.test.mjs
+
+      # workspace-sync.mjs backs the same startup tool and can fast-forward the shared
+      # checkout. Its suite once took minutes (a per-file git lookup made one 14,000-path
+      # test run ~150-280s), so it briefly ran nightly only; the 2026-09-23 batching rewrite
+      # brought the whole suite to ~30s, so it runs on every push/PR like the others.
+      - name: Test workspace-sync
+        if: ${{ !cancelled() }}
+        run: node --test scripts/workspace-sync.test.mjs
+
       - name: Test the workbench boot check
         if: ${{ !cancelled() }}
         run: node --test scripts/workbench-boot-check.test.mjs
@@ -198,6 +224,13 @@ jobs:
       - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-conflict.test.sh
+
+      # The shared checkout accumulated ~200 untracked files nobody ever gets told about
+      # at close-out (2026-09-23). The warning must be a note, never a fail — it's about
+      # SOMEONE's leftovers, not necessarily this branch's own work.
+      - name: close-out.sh warns about untracked files in the shared checkout
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-untracked-warning.test.sh
 
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite

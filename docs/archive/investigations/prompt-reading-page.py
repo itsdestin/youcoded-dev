@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# ARCHIVED 2026-09-23: kept for reference beside 2026-09-04-reading-the-prompts.html, the
+# page it generated (rejected as a review format, see 2026-09-04-native-prompt-vs-competitors.md).
+# SCR below points at a scratchpad from the session that wrote this, long since deleted —
+# the script will crash on that path; it is not meant to be re-run.
 """Reading page: understand each agent's system prompt and how they differ.
 
 Every quoted block is verbatim from its source (see the source line under it). The gloss
@@ -7,7 +11,7 @@ GitHub source 2026-09-04; Claude Code from the live prompt of the session that w
 """
 import html, json, re, sys
 
-SCR = '/tmp/claude-1000/-home-destin-youcoded-dev/2c59b0b5-d6ff-4dff-bf78-5e1789fabeed/scratchpad'
+SCR = '/tmp/claude-1000/-home-destin-youcoded-dev/2c59b0b5-d6ff-4dff-bf78-5e1789fabeed/scratchpad'  # historical path, long gone
 YC = json.load(open(SCR + '/yc-slices.json'))
 HM = json.load(open(SCR + '/hermes-slices.json'))
 CODEX_SMALL = open(SCR + '/competitors/raw/codex/codex-raw-gpt-5.2-codex_prompt.md').read()

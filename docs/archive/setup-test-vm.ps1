@@ -1,4 +1,9 @@
 <#
+ARCHIVED 2026-09-23: superseded by the native-KVM VM workflow in docs/vm-testing.md.
+This VirtualBox path was blocked by a Hyper-V conflict (docs/archive/investigations/
+2026-04-29-vbox-hyperv-conflict.md) and was never actually used. Kept beside its own
+doc, docs/archive/local-dev-vm.md, for reference only.
+
 .SYNOPSIS
   Provision a clean Windows 11 VirtualBox VM for testing the YouCoded installer.
 
