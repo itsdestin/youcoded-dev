@@ -1,0 +1,156 @@
+{
+  "title": "List rows — three styles, clearly labelled",
+  "key": "ui-element-review-lists-2",
+  "out": "lists-2.review.html",
+  "images": "images/lists-2.review",
+  "runs": {
+    "today": "runs/lists"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "today-settings-drawer": [
+      "l",
+      "today-settings-drawer",
+      "320x740+0+50"
+    ],
+    "boxed-settings-drawer": [
+      "l",
+      "boxed-settings-drawer",
+      "320x740+0+50"
+    ],
+    "lines-settings-drawer": [
+      "l",
+      "lines-settings-drawer",
+      "320x740+0+50"
+    ],
+    "plain-settings-drawer": [
+      "l",
+      "plain-settings-drawer",
+      "320x740+0+50"
+    ],
+    "today-ctx-menu-assistant-bubble": [
+      "l",
+      "today-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "boxed-ctx-menu-assistant-bubble": [
+      "l",
+      "boxed-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "lines-ctx-menu-assistant-bubble": [
+      "l",
+      "lines-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "plain-ctx-menu-assistant-bubble": [
+      "l",
+      "plain-ctx-menu-assistant-bubble",
+      "260x130+395+38"
+    ],
+    "today-shift-session-switcher": [
+      "l",
+      "today-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "boxed-shift-session-switcher": [
+      "l",
+      "boxed-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "lines-shift-session-switcher": [
+      "l",
+      "lines-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "plain-shift-session-switcher": [
+      "l",
+      "plain-shift-session-switcher",
+      "400x500+520+32"
+    ],
+    "today-projects-switcher": [
+      "l",
+      "today-projects-switcher",
+      "660x420+390+130"
+    ],
+    "boxed-projects-switcher": [
+      "l",
+      "boxed-projects-switcher",
+      "660x420+390+130"
+    ],
+    "lines-projects-switcher": [
+      "l",
+      "lines-projects-switcher",
+      "660x420+390+130"
+    ],
+    "plain-projects-switcher": [
+      "l",
+      "plain-projects-switcher",
+      "660x420+390+130"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-5",
+      "surface": "Settings",
+      "path": "The Settings list",
+      "headline": "Settings: boxes, lines, or plain rows?",
+      "notice": "Look at: the rows Account, Assistant settings, Appearance… \"Boxed rows\" is how it looks today. You already picked plain rows for the right-click menu.",
+      "variants": [
+        {
+          "id": "boxed",
+          "label": "Boxed rows · today",
+          "crop": "boxed-settings-drawer",
+          "summary": "Each row sits in its own soft tinted box, with a small gap between boxes."
+        },
+        {
+          "id": "lines",
+          "label": "Lines between",
+          "crop": "lines-settings-drawer",
+          "summary": "No boxes. A thin line separates each row from the next."
+        },
+        {
+          "id": "plain",
+          "label": "Plain rows",
+          "crop": "plain-settings-drawer",
+          "summary": "No boxes and no lines. Rows are told apart only by spacing; hovering highlights one."
+        }
+      ],
+      "risk": "Long lists (Settings) and pick-one menus (sessions) may reasonably differ; picking differently here is a real answer."
+    },
+    {
+      "id": "R-6",
+      "surface": "Sessions",
+      "path": "Hold Shift, or open the session list",
+      "headline": "Sessions: boxes, lines, or plain rows?",
+      "notice": "Look at: the conversation rows (fix chat scroll stick, theme contrast pass…). \"Plain rows\" is how it looks today. You already picked plain rows for the right-click menu.",
+      "variants": [
+        {
+          "id": "boxed",
+          "label": "Boxed rows",
+          "crop": "boxed-shift-session-switcher",
+          "summary": "Each row sits in its own soft tinted box, with a small gap between boxes."
+        },
+        {
+          "id": "lines",
+          "label": "Lines between",
+          "crop": "lines-shift-session-switcher",
+          "summary": "No boxes. A thin line separates each row from the next."
+        },
+        {
+          "id": "plain",
+          "label": "Plain rows · today",
+          "crop": "plain-shift-session-switcher",
+          "summary": "No boxes and no lines. Rows are told apart only by spacing; hovering highlights one."
+        }
+      ]
+    }
+  ]
+}
