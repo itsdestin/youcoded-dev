@@ -390,7 +390,9 @@ fi
 #   ONE class-wide ratchet: youcoded/desktop/tests/main-blocking-calls.test.ts (every blocking call
 #   in src/main is on a reviewed allowlist; its PROTECTED table carries every retired rule's ban
 #   and "must still exist" check). 424 - 17 = 407.
-EXPECTED_VIOLATIONS=407
+# 2026-09-23 (plan-approval review): +1 — main-auto-approve-through-should-auto-approve's
+#   fixture fires once. 407 + 1 = 408.
+EXPECTED_VIOLATIONS=408
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
