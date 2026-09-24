@@ -43,6 +43,7 @@ Writing into Claude Code's Ink input bar is a stack of undocumented behaviors. *
 ## Never write to the PTY during a pending interaction (`pty-input-gate.ts`)
 - **CC's Ink select menu is LIVE in the PTY while a hook permission card is up** — a bare `\r` auto-answers the highlighted option. Every automated writer MUST consult `hasPendingInteraction`/`canRetrySubmit` (or `HookRelay.hasPendingPermission`). Deliberate menu-drivers (ToolCard arrows, PromptCard/TrustGate, xterm keystrokes) bypass.
 - **Answer a menu by typing the option's DIGIT — never arrows + `\r` in one write.** CC drops arrows sharing a write with the Enter and confirms the HIGHLIGHTED option: every Resume Session button ran `/compact`, "No, exit" trusted the folder (2026-07-26). Guard: `keystroke-diagnostic.test.ts`.
+- **Unnumbered menus (2.1.281 startup dialogs) go only through `state/ink-menu-driver.ts`** — confirmed arrows, Enter alone. Guard: `startup-dialogs.test.ts`.
 - **`useSubmitConfirmation` is the second-line defense** — a bare `\r` only when `pending` stays 8s AND `canRetrySubmit()` passes. `attentionState==='ok'` ALONE is NOT idle (mid-turn, or with a menu up) — gating on it auto-answered prompts. `!isThinking` is no better — it never clears if CC never got the message.
 
 ## ESC / keyboard routing
