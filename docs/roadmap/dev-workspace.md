@@ -653,6 +653,13 @@ seen-on is always n/a here.
       ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
       Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
       worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
+      RECURRED 2026-09-23/24: `worktrees/sessions/perf-many-tabs-baseline` (a clean, zero-commit
+      baseline kept for perf-rig comparisons) vanished with its branch between a PC crash and the
+      next rig run; four "before" runs failed with `spawn git ENOENT` before it was noticed, and
+      re-running the key now REFUSES ("Missing recorded worktree … will not be recreated") — an
+      improvement, but a new key was the only way on. Lead, unconfirmed: the same evening a tooling
+      session pruned "9 finished session worktrees"; a clean worktree at master with no commits
+      looks exactly like finished work to a pruner
       `n/a` `needs-verify` `checked 2026-09-20`
 
 ## knowledge
