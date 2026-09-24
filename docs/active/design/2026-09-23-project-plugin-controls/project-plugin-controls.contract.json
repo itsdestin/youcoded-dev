@@ -1,0 +1,190 @@
+{
+  "title": "Project skills and plugin controls — contract",
+  "key": "project-plugin-controls-contract",
+  "out": "project-plugin-controls.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/plugin-project-controls",
+  "sources": {
+    "project-plugin-controls-questions": "project-plugin-controls.questions.json",
+    "project-plugin-controls-remaining-questions": "project-plugin-controls.remaining-questions.json",
+    "project-plugin-controls-review-6": "project-plugin-controls.review-6.json",
+    "project-plugin-controls-real-projects-review": "project-plugin-controls.real-projects-review.json",
+    "project-plugin-controls-real-projects-review-2": "project-plugin-controls.real-projects-review-2.json",
+    "project-plugin-controls-drawer-review": "project-plugin-controls.drawer-review.json",
+    "project-plugin-controls-drawer-review-2": "project-plugin-controls.drawer-review-2.json",
+    "project-plugin-controls-combined-review": "project-plugin-controls.combined-review.json",
+    "project-plugin-controls-combined-review-2": "project-plugin-controls.combined-review-2.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Projects",
+      "path": "Projects → a project → Skills & tools, the skill drawer, and Marketplace install",
+      "headline": "This is what done means for project skills and plugin controls, before Your Assistant's locked switches arrive.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "An automatically enabled skill lets the assistant know it exists, and it reads that skill's full instructions only when it's actually used.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "A skill you add yourself outside the marketplace keeps behaving the way it does today, with no extra step required to enable it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-questions#Q-2"
+        },
+        {
+          "id": "R3",
+          "statement": "Turning on a plugin's server or hook automatically shows a risk warning; an automatically discoverable skill alone does not trigger that warning.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-questions#Q-3"
+        },
+        {
+          "id": "R4",
+          "statement": "An existing project's switches first show which skills and tools already work there today, rather than starting from a blank default.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-remaining-questions#Q-1"
+        },
+        {
+          "id": "R5",
+          "statement": "A personal skill missing on this device shows the saved choice and explains it needs to be added here; syncing the file is later work.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-remaining-questions#Q-2"
+        },
+        {
+          "id": "R6",
+          "statement": "An item installed from outside the marketplace and missing here stays visible with an explanation that it needs local setup, instead of disappearing.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-remaining-questions#Q-3"
+        },
+        {
+          "id": "R7",
+          "statement": "These project switches control only YouCoded's own assistant for now; Claude Code's settings are left untouched.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-remaining-questions#Q-4"
+        },
+        {
+          "id": "R8",
+          "statement": "Each project and its plugin use the app's own collapsible-card style, with each skill and the server as its own card inside, evenly padded.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-review-6#P-1",
+          "note": "good enough for now."
+        },
+        {
+          "id": "R9",
+          "statement": "At phone width, all four project tabs stay reachable; the open tab shows its name while the others keep their icons.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-real-projects-review#R-2"
+        },
+        {
+          "id": "R10",
+          "statement": "Managing which skills and tools are automatic lives inside the Projects screen you already use, alongside its other tabs, not a separate page.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-real-projects-review#R-3"
+        },
+        {
+          "id": "R11",
+          "statement": "The Skills & tools tab fills the same width as the project's Files and Instructions & Memories tabs, with matching group headings and full-width rows.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-real-projects-review-2#V-1"
+        },
+        {
+          "id": "R12",
+          "statement": "On a phone, a plugin shows as one full-width row with its skills and server inset below; a missing item uses the same shape.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-real-projects-review-2#V-2"
+        },
+        {
+          "id": "R13",
+          "statement": "On a narrow phone screen, each skill's automatic, manual or unavailable status stays readable beside its plugin badge.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-drawer-review#D-2"
+        },
+        {
+          "id": "R14",
+          "statement": "Clicking an unavailable skill's card closes the drawer and opens Projects on Skills & tools, scrolled to that missing item's row.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-drawer-review-2#C-2"
+        },
+        {
+          "id": "R15",
+          "statement": "An already-open conversation keeps showing the skill availability it started with; a note explains that a changed switch applies to your next new conversation.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review#Q-2"
+        },
+        {
+          "id": "R16",
+          "statement": "'Set up here' offers to ask the assistant to fix a missing item, or choose the file yourself for a missing personal skill.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review#Q-3"
+        },
+        {
+          "id": "R17",
+          "statement": "On Android, the Skills & tools tab stays visible and editable, with a note that its switches don't affect phone conversations yet.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review#Q-4"
+        },
+        {
+          "id": "R18",
+          "statement": "Each skill's status chip sits at the card's right edge, colored like the session switcher; clicking the chip or its dimmed card opens its setup.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review#R-1"
+        },
+        {
+          "id": "R19",
+          "statement": "After you install a plugin, the same window lists your projects so you can turn it on only where you want; it starts off everywhere.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review-2#M-1"
+        },
+        {
+          "id": "R20",
+          "statement": "On a phone, the marketplace install panel opens with the first project already expanded, so its plugin and skill show without an extra tap.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review#M-2"
+        },
+        {
+          "id": "R21",
+          "statement": "On a phone, a setup row's description wraps onto a second line instead of cutting off, and both buttons say Set up here.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review#S-1"
+        },
+        {
+          "id": "R22",
+          "statement": "Pressing 'Set up here' for something missing on this device opens a popup explaining why, instead of expanding inside the card.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review-2#S-2"
+        },
+        {
+          "id": "R23",
+          "statement": "Switching on a plugin that can reach outside services shows a popup first, naming those connections, before it actually turns on.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-combined-review-2#K-1"
+        }
+      ]
+    }
+  ]
+}

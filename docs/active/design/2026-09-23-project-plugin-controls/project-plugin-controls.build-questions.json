@@ -1,0 +1,44 @@
+{
+  "title": "Project skills & tools — two things the code turned up",
+  "key": "project-plugin-controls-build-questions",
+  "out": "project-plugin-controls.build-questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "B-1",
+      "words": true,
+      "surface": "Conversations outside a project",
+      "path": "New conversation in a folder that isn't one of your projects",
+      "headline": "A conversation started outside any project: keep every skill and tool on, as today, or turn all of them off?",
+      "today": "A conversation in a folder that isn't one of your projects gets every installed skill and tool, including Chat Search. YouCoded has no private (incognito) conversation mode yet.",
+      "problem": "Two of your earlier answers disagree here. One says conversations outside a project get no automatic skills at all. Another says nothing that works today may quietly switch off.",
+      "proposal": "Outside a project, keep today's behaviour: everything on. When a private conversation mode is built, it gets nothing automatic, as you asked.",
+      "options": [
+        { "id": "keep-today", "label": "Keep today's behaviour", "recommended": true,
+          "pros": ["Nothing you rely on stops working after the update", "Your 'nothing automatic' rule still applies once private conversations exist"],
+          "cons": ["Until then, conversations outside a project can't be limited"] },
+        { "id": "none-outside", "label": "Nothing automatic outside",
+          "pros": ["Matches your earlier 'no automatic skills' answer exactly"],
+          "cons": ["After the update, Chat Search and other skills stop being automatic in any folder that isn't a project, which may look like something broke"] }
+      ]
+    },
+    {
+      "id": "B-2",
+      "words": true,
+      "surface": "The Android app",
+      "path": "Android app → Projects",
+      "headline": "The Android app has no Projects screen yet. Leave phones for later in this build?",
+      "today": "In the Android app, the Projects screen shows nothing yet; it's a computer-only screen for now. If you open YouCoded on your phone through remote access to your computer, you get the full Projects screen, including Skills & tools.",
+      "problem": "Your last answer asked for the Skills & tools tab on Android with a note. My question assumed the phone app already has a Projects screen. It doesn't, so there's nowhere to put the tab.",
+      "proposal": "This build works on your computer and through remote access from your phone, and the switches there really do apply. The phone-app note ships whenever Projects comes to the Android app.",
+      "options": [
+        { "id": "later", "label": "Phones later", "recommended": true,
+          "pros": ["No delay to this feature", "Remote access from your phone already gets the full tab"],
+          "cons": ["The Android app itself shows nothing about project skills yet"] },
+        { "id": "build-android-projects", "label": "Build Android Projects now",
+          "pros": ["The phone app gets a Projects screen too"],
+          "cons": ["A whole separate feature; delays this one substantially"] }
+      ]
+    }
+  ]
+}
