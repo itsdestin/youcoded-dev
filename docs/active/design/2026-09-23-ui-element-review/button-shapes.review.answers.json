@@ -1,0 +1,57 @@
+{
+ "deck": "ui-element-review-button-shapes",
+ "started": "2026-09-24T02:17:10.522Z",
+ "submitted": "2026-09-24T03:41:11Z",
+ "cur": 6,
+ "answers": {
+  "P-1": {
+   "v": "pick",
+   "pick": "pill",
+   "seconds": 3173,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "pick",
+   "pick": "pill",
+   "seconds": 11,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-3": {
+   "note": "unsure. i think this should adjust dynamically with the other app elements for roundness. what would each of these look like at different levels",
+   "v": "other",
+   "seconds": 706,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-4": {
+   "v": "other",
+   "note": "same as before i think",
+   "seconds": 407,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-5": {
+   "note": "same as before. also same for search box. should take theme radius settings. ",
+   "v": "other",
+   "seconds": 28,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-6": {
+   "note": "same as before",
+   "v": "other",
+   "seconds": 701,
+   "theme": "light",
+   "zoom": 1
+  },
+  "P-7": {
+   "v": "other",
+   "note": "same as before i think?",
+   "seconds": 14,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
