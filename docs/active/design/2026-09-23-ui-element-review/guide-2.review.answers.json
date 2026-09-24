@@ -1,0 +1,157 @@
+{
+ "deck": "ui-guide-approval-2",
+ "started": "2026-09-24T20:02:02.552Z",
+ "submitted": "2026-09-24T20:12:06Z",
+ "cur": 22,
+ "answers": {
+  "G-1": {
+   "note": "this just feels like word salad rather than meaningful content that a new session would find useful when building new ui...",
+   "v": "other",
+   "seconds": 39,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-1": {
+   "v": "yes",
+   "note": "kinda same as previous tho, this has room for improvement",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-2": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-3": {
+   "v": "other",
+   "note": "\"details nobody asked for and options/information that would confuse someone who has never before seen the app or messed with its features.",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-4": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-5": {
+   "v": "yes",
+   "note": "still feels a bit word salady",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-6": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-7": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-8": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-2": {
+   "v": "yes",
+   "note": "reference pages or projects view",
+   "seconds": 27,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-3": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-4": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-5": {
+   "v": "yes",
+   "note": "still word salady",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-6": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-7": {
+   "v": "yes",
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-8": {
+   "v": "other",
+   "note": "another thing we missed. for text areas with actions (password/set, search/filter), the actions should be INSIDE the text input region nested on the righthand side. see main input bar, existing search/passsword areas, etc. this may still be a bit word salady, i want to see it applied to the most egregious settings menus.",
+   "seconds": 109,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-9": {
+   "v": "yes",
+   "note": "the pills in the marketplace cardds shouldd not wrap. should be a sinlge line/row that fades off at the end.",
+   "seconds": 47,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-10": {
+   "v": "yes",
+   "note": "but obviously using the existing real icons and such",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-11": {
+   "v": "other",
+   "note": "want to see these changes applied. hard to judge from just these statements.",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-12": {
+   "v": "yes",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-13": {
+   "v": "other",
+   "note": "may have room to improve pages more with our new theme guide. may be able to provide additional elements/guidance for the page builder.",
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-14": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "G-15": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

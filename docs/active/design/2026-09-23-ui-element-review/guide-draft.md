@@ -13,30 +13,32 @@ correct it. Every rule comes from a decision Destin made comparing real screens 
 side (`decisions.md` beside this file names the source of each). Where a rule names a
 screen, open it as the example: copy the look, not blindly the code.
 
-## The taste in one paragraph
+## How to use this guide
 
-Calm, quiet and consistent. One style per job, used everywhere that job appears. The
-theme decides colour **and shape**. Text is small, grey and normal-case unless it is the
-one thing to read; no spaced-out capitals, no redundant labels, one-line headers. Things
-you open stand out as raised cards; things you read past stay soft. Actions sit on the
-right: a filled button, switch or chosen option never hangs alone at the bottom-left.
-When in doubt, remove rather than add.
+1. Name the job: "a popup with a main action", "a list of settings", "a card for something
+   you can install".
+2. Find that job's recipe below and copy its sizes, order and placement exactly, checking
+   the example screen it names.
+3. If no recipe fits, stop and ask Destin for one. Do not invent a look.
 
 ## Principles
 
-1. **Find the job first.** Use the recipe below for that job exactly. A new look needs a
-   new job and Destin's approval — never a one-off.
+1. **Find the job first.** Every element has a job with a recipe below — "two buttons in a
+   narrow popup" → Buttons; "a setting with a switch" → Settings. Copy the recipe exactly;
+   if none fits, ask Destin for one instead of inventing a look.
 2. **The theme paints and shapes everything.** Colours come from theme tokens; the fixed
    status hues (green, red, amber, blue) are the only exceptions and go in tints, never in
    text. Corner roundness comes from the theme's shape setting — never write a fixed pill
    or pixel radius on a control.
 3. **Quiet by default.** Small grey labels in normal case. Show what the user needs to act
-   on; drop details nobody asked for. Headers are one line.
+   on; drop details nobody asked for and options or information that would confuse someone
+   who has never seen the app or used its features. Headers are one line.
 4. **Three heading levels, no more.** If a screen seems to need a fourth, it needs fewer
    sections.
-5. **Cards stand out; rows stay soft; nothing nests.** Things you open are raised cards.
-   Lists of settings are soft boxed rows; pick-one menus are plain rows. Never a box inside
-   a box.
+5. **Cards for things, rows for lists, no nesting.** Something you open or install (a
+   plugin, a Page, a file) is a raised card. A list you read or pick from (settings, a menu)
+   is rows, never cards. Group with a small label and spacing — never put a box inside a
+   box.
 6. **Actions live on the right.** One filled button per view. A filled button, switch or
    selection never sits alone at the bottom-left — only when balanced by something on the
    right of the same line.
@@ -48,7 +50,7 @@ When in doubt, remove rather than add.
 
 ### Full screens (Projects, Pages, Marketplace, Library)
 - The screen names itself **centered in the window's top strip, small (14px medium), with
-  its icon**. Reference: Pages.
+  its icon**. Reference: Pages or the Projects view.
 - The way out is a **filled small button reading "Esc · Back to chat"**, top right.
 - Big groups on the screen use the *Large* heading.
 
@@ -73,10 +75,13 @@ A small label heading a **section of reading text** (About's "Disclaimer") also 
 underline under its words. Labels over short settings groups stay plain.
 
 ### Text and numbers
-- Body 14px; secondary text one grey; the faintest grey only for disabled things.
-- Nothing below 11px carries information.
-- A count beside a label or tab: **the word, then a smaller faint number** — "Files 17". In
-  a summary line: **bold number, grey word** — "17 files". No brackets, no number chips.
+- Body text: 14px, main text colour.
+- Hints, descriptions, dates and other secondary text: 12px in the one grey used for
+  secondary text. The faintest grey is only for disabled things.
+- Nothing a user has to read is smaller than 11px.
+- A count beside a label or tab is the word then a smaller, fainter number: "Files 17". In a
+  summary line it is a bold number then a grey word: "17 files". Never "(17)" and never a
+  number in a bubble.
 
 ### Spacing
 - One scale: **4 · 8 · 12 · 16 · 24 px.** 4 between an icon and its label; 8 between
@@ -95,6 +100,8 @@ underline under its words. Labels over short settings groups stay plain.
 - **Destructive confirm:** the red button takes the main action's place — on the right when
   side by side, on top when stacked.
 - Close is always the ✕ button, never a letter or the word.
+- **A text box with its own action** (a password's Set, a search's filter, send) keeps that
+  action **inside the box, at the right** — like the message box and the search boxes.
 - Switching views or filters uses the shared tab strip and filter chips, following the same
   roundness.
 
@@ -115,6 +122,7 @@ underline under its words. Labels over short settings groups stay plain.
 - **Text order:** name with its status pill and star on the top line → **one row of chips
   right under the name** (trust, who made it, kind, numbers) → the description (two lines at
   most).
+- The chip row **never wraps**: one line that fades out at its end.
 - **Conversation cards** (Resume, Projects, chat references): name on top with the **tag and
   note buttons at the top right**; the **date at the bottom right**, at the end of the details
   line.
