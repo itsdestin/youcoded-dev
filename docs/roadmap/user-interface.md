@@ -297,3 +297,9 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       review deck (both platforms, every theme) before it is kept. On hold since 2026-09-18
       (Destin); resumes with the rest of phase 5
       `settings` `all` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+
+- [ ] Tool cards and permission prompts get their own redesign, separate from the design-guide
+      work. Destin, 2026-09-24: "might rework tool cards and permission prompts as a seprate
+      endeavor. we should just have our design guide explicitly note that these elements are not
+      consider final/formal." The guide marks them as not final; nothing changes until then.
+      `tool-cards` `all` `decision` `checked 2026-09-24`

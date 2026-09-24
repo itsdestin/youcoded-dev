@@ -312,3 +312,8 @@ Filing test: reaching the app from another device — the protocol, the browser 
       C's `remote-` test cluster merges, alone — nothing else may edit the two door files the
       plan names while it runs. Goes before the Android rebuild, not inside it
       `remote` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+
+- [ ] Keep awake needs its own redesign. Destin, 2026-09-24: "the ui for keep awake needs to be
+      unique and rebuilt though. it should show how much keep awake time is left." Today it is a
+      five-part switch strip with no sign of how long is left.
+      `settings` `all` `decision` `checked 2026-09-24`
