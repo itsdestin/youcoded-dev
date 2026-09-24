@@ -336,3 +336,13 @@ Open details went to a questions deck: `specialists-plans.spending.questions.jso
    version for approval.
 3. **Parallel builders each get their own copy of the project** (*"yes probably?"*) — stage 3.
    Start with version-controlled (git) projects; bringing the winner back is the hard part.
+
+## Decision 37 — spending review deck (`specialists-plans.spending.review.answers.json`, 2026-09-24)
+Kept: R-1 estimate line + gear, R-2 unpriced tokens line, R-3 "Spent $X" + Stop with per-step
+limits gone, R-4 one "Reached your $5 limit." row with Stop · Continue, B-1 "Spent $X of $Y",
+B-3 the low-limit warning line.
+- B-2 (Continue → new-limit box): *"we can probably clean this state up a bit. lots of
+  buttons/text in that warning card"* → rework, fewer words and buttons.
+- C-1: **popup**, not in-card. *"if the popup is unique to that plan, it should name the plan.
+  the popup styling needs to be greatly improved, currently does not match existing app styling
+  well at all for popups."* → title names the plan; restyle to the app's own popup pattern.
