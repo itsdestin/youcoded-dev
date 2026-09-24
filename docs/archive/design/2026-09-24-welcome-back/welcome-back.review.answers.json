@@ -1,0 +1,54 @@
+{
+ "deck": "welcome-back-review",
+ "started": "2026-09-24T08:26:32.400Z",
+ "submitted": "2026-09-24T08:30:56Z",
+ "cur": 6,
+ "answers": {
+  "L-1": {
+   "v": "other",
+   "note": "i think the margin on the left should apply to the tags/file fileds so they sit under the name instead of the checkbox. i don;t like the styling of the start fresh/resume all 4 buttons",
+   "seconds": 142,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "S-dialog": {
+   "v": "yes",
+   "note": "we should also make this warning an app native warning instead of an os popup.",
+   "seconds": 25,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "Q-default": {
+   "v": "pick",
+   "pick": "unticked",
+   "seconds": 21,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "S-other-quit": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "S-model": {
+   "v": "other",
+   "note": "resume browser still prefills with last model, and is supposed to. confuse.",
+   "seconds": 38,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "S-trim": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "S-out": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

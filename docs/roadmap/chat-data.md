@@ -56,12 +56,6 @@ produced and the panel that shows them (files).
       needs a fresh sighting before anything is touched
       `resume-browser` `desktop` `needs-verify` `checked 2026-08-12` `needs-repro`
 
-- [ ] "Welcome back" on cold start — after a window close, crash or OS kill, list the chats that were
-      still open in the strip with checkboxes, Resume-all and Start-fresh. Scoping is decided
-      (Destin 2026-09-02: this device only — chats left open on one machine must not pop up on
-      another; discard any old branch and build it fresh); nothing is built and no milestone is set
-      `desktop` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
-
 - [ ] A conversation you renamed by hand cannot be handed back to automatic naming. Review 3
       removed the reset action from the dialog ("get rid of that button. it's dumb"), so the
       only way out is to type another name. Matters in AI mode, where automatic naming would
