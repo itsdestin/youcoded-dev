@@ -1,0 +1,254 @@
+{
+  "title": "Buttons — every style the app uses today",
+  "key": "ui-element-review-buttons",
+  "out": "buttons.review.html",
+  "images": "images/buttons.review",
+  "runs": {
+    "today": "runs/today"
+  },
+  "labels": {
+    "today": "Today"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "close-dialog": [
+      "main",
+      "settings-sound",
+      "840x64+300+156"
+    ],
+    "close-tags": [
+      "main",
+      "tags-note-popover",
+      "840x56+300+266"
+    ],
+    "close-games": [
+      "main",
+      "games-picker",
+      "840x46+590+40"
+    ],
+    "close-escape-text": [
+      "marketplace",
+      "marketplace-detail",
+      "1320x64+60+64"
+    ],
+    "shape-full-pill": [
+      "main",
+      "tags-note-popover",
+      "840x50+300+570"
+    ],
+    "shape-full-rect": [
+      "main",
+      "settings-appearance",
+      "840x100+300+566"
+    ],
+    "shape-setup-pill": [
+      "chatgpt-signin",
+      "first-run-sign-in",
+      "840x120+300+486"
+    ],
+    "shape-big-rect": [
+      "main",
+      "projects",
+      "840x60+420+256"
+    ],
+    "pick-tabs-pill": [
+      "main",
+      "projects",
+      "840x46+180+336"
+    ],
+    "pick-filter-pill": [
+      "main",
+      "marketplace",
+      "840x46+24+259"
+    ],
+    "pick-segmented": [
+      "main",
+      "settings-sound",
+      "840x48+300+314"
+    ],
+    "pick-icons": [
+      "main",
+      "projects",
+      "840x30+420+392"
+    ],
+    "second-outlined-small": [
+      "main",
+      "tags-note-popover",
+      "840x44+100+72"
+    ],
+    "second-outlined-header": [
+      "main",
+      "marketplace",
+      "840x44+600+5"
+    ],
+    "second-filled-grey": [
+      "main",
+      "library",
+      "840x44+600+5"
+    ],
+    "second-text-cancel": [
+      "overlays",
+      "projects-add-project",
+      "840x44+300+558"
+    ],
+    "second-outlined-full": [
+      "main",
+      "settings-appearance",
+      "840x44+300+568"
+    ]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Popups and side panels",
+      "path": "The top-right corner of Sound, Tags & note, Games and a Marketplace item's Details",
+      "headline": "Popups close three different ways. Which should every popup and side panel use?",
+      "notice": "You already picked the shared popup title for every popup; this decides its close control. Esc closes every popup whichever you pick.",
+      "risk": "Plain text takes more room in the title line than an ✕, so long titles would shorten sooner.",
+      "variants": [
+        {
+          "id": "icon-x",
+          "label": "✕ button",
+          "crop": "close-dialog",
+          "summary": "Sound (and most popups). A drawn ✕ with a soft hover square.",
+          "measured": "28px square"
+        },
+        {
+          "id": "icon-x-tags",
+          "label": "✕, Tags & note",
+          "crop": "close-tags",
+          "summary": "Tags & note. The same ✕, moved over by the last session.",
+          "measured": "28px square"
+        },
+        {
+          "id": "glyph-x",
+          "label": "Small × letter",
+          "crop": "close-games",
+          "summary": "Games. A typed × character, smaller and fainter than the ✕.",
+          "measured": "12px letter"
+        },
+        {
+          "id": "esc-text",
+          "label": "Esc · Close text",
+          "crop": "close-escape-text",
+          "summary": "Marketplace Details and the file viewer. Words instead of a symbol, matching Esc · Back to chat on full screens."
+        }
+      ]
+    },
+    {
+      "id": "B-2",
+      "surface": "Everywhere",
+      "path": "Main buttons in popups, setup and Projects",
+      "headline": "Buttons come in two shapes: rounded rectangles and fully rounded pills. Where should pills be used?",
+      "notice": "Almost every button is a rounded rectangle. Pills appear in first-run setup and on Tags & note's Done. The last line of each summary says what changes if that picture becomes the standard.",
+      "variants": [
+        {
+          "id": "rect-full",
+          "label": "Rectangles, full width",
+          "crop": "shape-full-rect",
+          "summary": "Themes popup. A plain outlined button and a filled one, both full width with gently rounded corners.",
+          "measured": "8px corners"
+        },
+        {
+          "id": "rect-big",
+          "label": "Rectangle, large",
+          "crop": "shape-big-rect",
+          "summary": "Projects. The large filled New Conversation button — the same shape, bigger.",
+          "measured": "8px corners"
+        },
+        {
+          "id": "pill-full",
+          "label": "Pill, full width",
+          "crop": "shape-full-pill",
+          "summary": "Tags & note. The only full-width pill outside setup. Picking rectangles would make it match Themes.",
+          "measured": "fully round, 999px"
+        },
+        {
+          "id": "pill-setup",
+          "label": "Pills in setup",
+          "crop": "shape-setup-pill",
+          "summary": "First-run sign-in. Five stacked pills; today's rule allows pills only here.",
+          "measured": "fully round, 999px"
+        }
+      ]
+    },
+    {
+      "id": "B-3",
+      "surface": "Projects, Marketplace, Sound",
+      "path": "Controls that switch between views or filters",
+      "headline": "\"Pick one\" controls come in three looks. Which should switch views and filters everywhere?",
+      "pick": "several",
+      "notice": "Tabs and filter strips are pills with a filled choice; Sound uses a boxed two-part switch; Project Files switches grid and list with two bare icons. Pick more than one if different jobs deserve different looks.",
+      "variants": [
+        {
+          "id": "pill-tabs",
+          "label": "Pill tabs",
+          "crop": "pick-tabs-pill",
+          "summary": "Projects: Files 17 · Conversations 2 · Instructions & Memories 3. A rounded strip with the chosen one filled."
+        },
+        {
+          "id": "pill-filters",
+          "label": "Pill filters",
+          "crop": "pick-filter-pill",
+          "summary": "Marketplace: All · Plugins · Skills… The same pill strip used for filtering."
+        },
+        {
+          "id": "segmented",
+          "label": "Boxed switch",
+          "crop": "pick-segmented",
+          "summary": "Sound: Needs Attention / Response Ready. A full-width box split in two, the chosen half filled."
+        },
+        {
+          "id": "bare-icons",
+          "label": "Bare icons",
+          "crop": "pick-icons",
+          "summary": "Project Files: grid and list icons on the right, with only a faint square on the chosen one."
+        }
+      ]
+    },
+    {
+      "id": "B-4",
+      "surface": "Chat cards, popups and full screens",
+      "path": "The less important button beside a main one",
+      "headline": "Secondary buttons come in five styles. Which should a less important action use?",
+      "pick": "several",
+      "notice": "Examples: Preview beside Resume, Cancel beside Create, Your Library beside Back to chat. Pick one if a single style should do this job everywhere.",
+      "variants": [
+        {
+          "id": "outlined-small",
+          "label": "Outlined, small",
+          "crop": "second-outlined-small",
+          "summary": "Chat cards: Preview beside a filled Resume."
+        },
+        {
+          "id": "outlined-header",
+          "label": "Outlined, header",
+          "crop": "second-outlined-header",
+          "summary": "Marketplace: Your Library, an outlined button beside the way back to chat."
+        },
+        {
+          "id": "filled-grey",
+          "label": "Filled grey",
+          "crop": "second-filled-grey",
+          "summary": "Your Library: Marketplace, the same job as the left picture but a filled grey button."
+        },
+        {
+          "id": "text-only",
+          "label": "Text only",
+          "crop": "second-text-cancel",
+          "summary": "Add a project: Cancel is plain text with no box at all."
+        },
+        {
+          "id": "outlined-full",
+          "label": "Outlined, full width",
+          "crop": "second-outlined-full",
+          "summary": "Themes: Browse Theme Marketplace, outlined and full width above the filled main button."
+        }
+      ]
+    }
+  ]
+}
