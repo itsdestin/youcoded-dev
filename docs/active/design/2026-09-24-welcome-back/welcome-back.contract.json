@@ -1,0 +1,186 @@
+{
+  "title": "Welcome back — contract",
+  "key": "welcome-back-contract",
+  "out": "welcome-back.contract.html",
+  "stage": "contract",
+  "themes": ["midnight"],
+  "branch": "session/session-resume-20260924",
+  "sources": {
+    "welcome-back-questions": "welcome-back.questions.json",
+    "welcome-back-review": "welcome-back.review.json",
+    "welcome-back-review-2": "welcome-back.review-2.json",
+    "welcome-back-review-3": "welcome-back.review-3.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Welcome back screen",
+      "path": "Appears when you open the app after it closed with sessions open",
+      "headline": "This is what done means for Welcome back.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Only sessions where you sent at least one message appear on the Welcome back screen.",
+          "checkedBy": "live-app",
+          "threshold": "empty sessions are excluded, confirmed in a dev instance",
+          "source": "welcome-back-questions#S-sent"
+        },
+        {
+          "id": "R2",
+          "statement": "Closing the app with sessions open lets you choose, with a toggle, whether they come back next launch.",
+          "checkedBy": "live-app",
+          "threshold": "toggle is present and controls reopening, confirmed in a dev instance",
+          "source": "welcome-back-questions#Q-quit",
+          "note": "\"Reopen on next launch?\" with toggle, otherwise all crashes/unexpected exits"
+        },
+        {
+          "id": "R3",
+          "statement": "Closing a session with its X removes it from Welcome back for good; it stays in the Resume browser.",
+          "checkedBy": "live-app",
+          "threshold": "X'd sessions never reappear on Welcome back, confirmed in a dev instance",
+          "source": "welcome-back-questions#S-x"
+        },
+        {
+          "id": "R4",
+          "statement": "Each computer only offers back the sessions that were open on that same computer.",
+          "checkedBy": "live-app",
+          "threshold": "a session open elsewhere doesn't appear on this computer's Welcome back, confirmed with two devices",
+          "source": "welcome-back-questions#S-device"
+        },
+        {
+          "id": "R5",
+          "statement": "Opening the app after it closed with sessions open shows a full Welcome back screen instead of the start screen.",
+          "checkedBy": "live-app",
+          "threshold": "Welcome back replaces the start screen until you choose, confirmed in a dev instance",
+          "source": "welcome-back-questions#Q-where"
+        },
+        {
+          "id": "R6",
+          "statement": "Every session on the Welcome back list starts ticked, ready to resume.",
+          "checkedBy": "live-app",
+          "threshold": "all rows start ticked on open, confirmed in a dev instance",
+          "source": "welcome-back-questions#Q-ticks"
+        },
+        {
+          "id": "R7",
+          "statement": "Each session row on Welcome back has a Mark complete button, meaning the same as in the Resume browser.",
+          "checkedBy": "live-app",
+          "threshold": "Mark complete hides the row there and in the Resume browser, confirmed in a dev instance",
+          "source": "welcome-back-questions#Q-actions"
+        },
+        {
+          "id": "R8",
+          "statement": "Sessions you leave unticked are forgotten; they won't reappear on Welcome back next launch.",
+          "checkedBy": "live-app",
+          "threshold": "unticked rows are gone next launch but still in the Resume browser, confirmed in a dev instance",
+          "source": "welcome-back-questions#Q-leftover"
+        },
+        {
+          "id": "R9",
+          "statement": "Resuming a session from Welcome back reuses its last model automatically instead of asking which one to use.",
+          "checkedBy": "live-app",
+          "threshold": "no model picker appears when the model is available, confirmed in a dev instance",
+          "source": "welcome-back-questions#Q-model"
+        },
+        {
+          "id": "R10",
+          "statement": "This ships on the desktop app first; nothing changes on the Android app.",
+          "checkedBy": "human",
+          "threshold": "no Android-facing changes shipped with this feature",
+          "source": "welcome-back-questions#S-phone"
+        },
+        {
+          "id": "R11",
+          "statement": "Each session's tags and folder line sit under its name, not under the tick box.",
+          "checkedBy": "deck",
+          "threshold": "matches the approved picture, re-shot from the built branch",
+          "source": "welcome-back-review#L-1"
+        },
+        {
+          "id": "R13",
+          "statement": "That reopen tick box starts unticked, so quitting without touching it does not bring sessions back.",
+          "checkedBy": "live-app",
+          "threshold": "toggle is off by default, confirmed in a dev instance",
+          "source": "welcome-back-review#Q-default"
+        },
+        {
+          "id": "R14",
+          "statement": "A crash, power loss, shutdown, restart, or quitting from the menu always brings your sessions back.",
+          "checkedBy": "live-app",
+          "threshold": "sessions return after each of these closing methods, confirmed in a dev instance",
+          "source": "welcome-back-review#S-other-quit"
+        },
+        {
+          "id": "R15",
+          "statement": "The Welcome back screen has no search box, filters, or 'Show complete' switch.",
+          "checkedBy": "human",
+          "threshold": "none of those controls appear on the built screen",
+          "source": "welcome-back-review#S-trim"
+        },
+        {
+          "id": "R16",
+          "statement": "Escape and clicking outside do nothing on Welcome back; it closes itself once every row is resumed.",
+          "checkedBy": "live-app",
+          "threshold": "Escape/outside click don't dismiss it, and it auto-closes when empty, confirmed in a dev instance",
+          "source": "welcome-back-review#S-out"
+        },
+        {
+          "id": "R17",
+          "statement": "Resume and Start fresh appear as two full-width, stacked buttons, like the app's other pop-ups.",
+          "checkedBy": "deck",
+          "threshold": "matches the approved 'stacked' picture, re-shot from the built branch",
+          "source": "welcome-back-review-2#C-1"
+        },
+        {
+          "id": "R18",
+          "statement": "The quit warning's reopen switch is labeled 'Resume on Next Launch?'; the window itself keeps the plainer title 'Close window'.",
+          "checkedBy": "human",
+          "threshold": "switch label and window title match, checked against the built branch",
+          "source": "welcome-back-review-3#Q-label"
+        },
+        {
+          "id": "R24",
+          "statement": "A bold header line above the quit warning's message states how many sessions are open and asks 'proceed?'.",
+          "checkedBy": "human",
+          "threshold": "header text matches, checked against the built branch",
+          "source": "welcome-back-review-2#B-quit"
+        },
+        {
+          "id": "R19",
+          "statement": "The quit warning's body says closing ends your sessions and asks if you want the option to resume them next launch.",
+          "checkedBy": "human",
+          "threshold": "body text matches, checked against the built branch",
+          "source": "welcome-back-review-2#B-quit"
+        },
+        {
+          "id": "R20",
+          "statement": "The reopen toggle sits in line with the Close window button, even if the window has to widen.",
+          "checkedBy": "human",
+          "threshold": "toggle and button share a row, checked against the built branch",
+          "source": "welcome-back-review-2#B-quit"
+        },
+        {
+          "id": "R21",
+          "statement": "Resuming a session always defaults to its last model; only Welcome back skips the click needed to confirm it.",
+          "checkedBy": "live-app",
+          "threshold": "confirmed by resuming from both surfaces in a dev instance",
+          "source": "welcome-back-review-2#S-model"
+        },
+        {
+          "id": "R22",
+          "statement": "Welcome back lets you preview, tag, add notes to, rename and complete each session before reopening it, like the Resume browser.",
+          "checkedBy": "live-app",
+          "threshold": "each action available on Welcome back rows, confirmed in a dev instance",
+          "source": "welcome-back-review-3#S-parity"
+        },
+        {
+          "id": "R23",
+          "statement": "The quit warning is a YouCoded window styled like 'Close session,' not your computer's own pop-up.",
+          "checkedBy": "live-app",
+          "threshold": "quit warning renders as an in-app window, confirmed in a dev instance",
+          "source": "welcome-back-review-3#S-inapp"
+        }
+      ]
+    }
+  ]
+}
