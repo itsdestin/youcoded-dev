@@ -1,0 +1,219 @@
+{
+  "_comment": "Decisions 34-36 mockups (workbench, fake backend). UX review 1 triaged in docs/active/reviews/2026-09-24-plans-spending-ux-review-1.md. Before = the branch before the spending rework; After = feat/specialists-plans-ui at db8761b84.",
+  "title": "Plans — spending without per-step budgets",
+  "key": "specialists-plans-spending-review",
+  "out": "specialists-plans.spending.review.html",
+  "images": "images/specialists-plans.spending.review",
+  "runs": {
+    "before": "runs/spend-before",
+    "after": "runs/spend-after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "themes": [
+    "midnight",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "sp-proposed": [
+      "spending",
+      "01-proposed",
+      "724x204+24+226"
+    ],
+    "sp-local": [
+      "spending",
+      "05-proposed-local",
+      "724x204+24+226"
+    ],
+    "sp-running": [
+      "spending",
+      "06-running",
+      "724x316+24+112"
+    ],
+    "sp-paused": [
+      "spending",
+      "09-paused-at-limit",
+      "724x362+24+112"
+    ],
+    "sp-running-limit": [
+      "spending",
+      "07-running-limit",
+      "724x316+24+112"
+    ],
+    "sp-new-limit": [
+      "spending",
+      "10-paused-at-limit-new-limit-open",
+      "724x362+24+112"
+    ],
+    "sp-limit-low": [
+      "spending",
+      "11-settings-limit-low",
+      "700x180+46+450"
+    ],
+    "sp-settings-popup": [
+      "spending",
+      "02-proposed-settings-popup",
+      "880x560+10+230"
+    ],
+    "sp-settings-inline": [
+      "spending",
+      "03-proposed-settings-inline",
+      "880x560+10+230"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat · plan card",
+      "path": "A plan waiting for your approval",
+      "crop": "sp-proposed",
+      "headline": "The card shows what a plan usually costs instead of a worst-case limit, with a small gear for plan settings.",
+      "changed": "\"Up to about $0.12 (40,000 tokens) · specialists run on Claude Sonnet 4.6\" becomes \"Usually $0.40–$2\", worked out from past runs of these kinds of specialists on these models. A gear button now sits left of Comment and Approve.",
+      "notice": "You see a realistic cost before approving, and pressing Approve starts the plan with no limit. The range is an estimate, so a big plan can still cost more than its high end.",
+      "highlight": {
+        "box": [
+          4,
+          71,
+          34,
+          11
+        ]
+      }
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat · plan card",
+      "path": "A plan waiting for approval that runs on a model on your computer",
+      "crop": "sp-local",
+      "headline": "A plan that isn't charged per word shows its rough size in tokens, and says why there's no dollar figure.",
+      "changed": "The old worst-case line becomes \"About 300,000 tokens · runs on your computer\" (or \"· included in your ChatGPT plan\" when signed in with ChatGPT).",
+      "notice": "You can tell a plan costs nothing extra, and still see roughly how big it is.",
+      "highlight": {
+        "box": [
+          4,
+          71,
+          62,
+          11
+        ]
+      }
+    },
+    {
+      "id": "R-3",
+      "surface": "Chat · plan card",
+      "path": "A plan that is running",
+      "crop": "sp-running",
+      "headline": "A running plan shows what it has spent so far, and the small limit on each step is gone.",
+      "changed": "\"Spent $0.03 (11,200 tokens) of the $0.12 limit (40,000 tokens)\" becomes \"Spent $0.03\". The \"up to 9,000 tokens\" on each step and the \"Limits\" section inside an open step are removed; the open step names its model instead.",
+      "notice": "Specialists no longer stop on a small per-step allowance. Stop the plan is always there, beside the gear for plan settings. With no limit set, only Stop keeps an expensive plan from finishing.",
+      "highlight": {
+        "box": [
+          4,
+          86,
+          20,
+          9
+        ]
+      }
+    },
+    {
+      "id": "R-4",
+      "surface": "Chat · plan card",
+      "path": "A plan that reached the spending limit you set",
+      "crop": "sp-paused",
+      "headline": "A plan only pauses at the one limit you set, and continues when you give it a new one — no more Add budget.",
+      "changed": "\"Paused — step 1 hit its 27,000-token limit\" with Ask the assistant · Stop · Add budget becomes one row: \"Reached your $5 limit.\" with Stop and Continue.",
+      "notice": "This only happens if you set a limit. The spending line above it is gone, because the row already says it. Ask the assistant is not on this row. It still appears for every other kind of pause.",
+      "highlight": {
+        "box": [
+          4,
+          77,
+          60,
+          13
+        ]
+      }
+    },
+    {
+      "id": "B-1",
+      "surface": "Chat · plan card",
+      "path": "A running plan you set a $5 limit on",
+      "crop": "sp-running-limit",
+      "runs": [
+        "after"
+      ],
+      "headline": "With a limit set, the running card shows spending against it.",
+      "changed": "\"Spent $0.03 of $5\". Without a limit it reads just \"Spent $0.03\".",
+      "notice": "You can watch how close the plan is to your limit while it works.",
+      "highlight": {
+        "box": [
+          4,
+          86,
+          22,
+          9
+        ]
+      }
+    },
+    {
+      "id": "B-2",
+      "surface": "Chat · plan card",
+      "path": "A plan that reached its limit, after pressing Continue",
+      "crop": "sp-new-limit",
+      "runs": [
+        "after"
+      ],
+      "headline": "Continue asks for a new total limit right in the row.",
+      "changed": "Continue opens a \"New limit $\" box, with Cancel and Continue. The number is the new total, not an amount added on top.",
+      "notice": "One step to keep going. You can also raise or remove the limit in plan settings.",
+      "highlight": {
+        "box": [
+          46,
+          77,
+          28,
+          11
+        ]
+      }
+    },
+    {
+      "id": "B-3",
+      "surface": "Chat · plan settings",
+      "path": "Plan settings, with a limit lower than the plan usually costs",
+      "crop": "sp-limit-low",
+      "runs": [
+        "after"
+      ],
+      "headline": "A limit below the plan's usual cost gets a one-line warning before you approve.",
+      "changed": "Under the amount: \"Below what this plan usually costs, so it may pause before it finishes.\" The empty box shows the usual high cost as a grey example.",
+      "notice": "You find out a low limit will probably stop the plan partway before it happens, not after.",
+      "highlight": {
+        "box": [
+          4,
+          46,
+          69,
+          13
+        ]
+      }
+    },
+    {
+      "id": "C-1",
+      "surface": "Chat · plan settings",
+      "path": "A plan waiting for approval, after pressing the gear (or the Plan settings row)",
+      "headline": "Where should a plan's settings open: a popup over the chat, or a section inside the plan card?",
+      "notice": "Either way it holds the same things: the optional spending limit, and a model for each step, set to that specialist's default until you change it. The outside tester preferred the in-card version because the popup covers the plan it is changing.",
+      "variants": [
+        {
+          "id": "popup",
+          "label": "Popup",
+          "crop": "sp-settings-popup",
+          "summary": "The gear opens a small window over the chat. Close it to see the plan again.",
+          "risk": "Covers the plan's steps while you choose models for them."
+        },
+        {
+          "id": "inline",
+          "label": "Inside the card",
+          "crop": "sp-settings-inline",
+          "summary": "A Plan settings row under the buttons opens the same fields inside the card, beneath the steps.",
+          "risk": "The card gets taller while it is open."
+        }
+      ]
+    }
+  ]
+}

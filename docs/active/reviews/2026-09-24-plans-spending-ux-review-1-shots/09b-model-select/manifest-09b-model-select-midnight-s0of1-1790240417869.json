@@ -1,0 +1,28 @@
+[
+  {
+    "theme": "midnight",
+    "name": "09b-model-selected",
+    "run": null,
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "PERMISSION UNKNOWN",
+        "ratio": 4.11,
+        "need": 4.5,
+        "size": 10,
+        "fg": "rgb(221, 68, 68)",
+        "bg": "rgb(22,27,34)",
+        "path": "div.chrome-wrapper.chrome-wrapper--bottom.bg-canvas > div.status-bar.flex.flex-wrap > button.px-1.5.py-0.5.rounded-sm > span.hidden.sm:inline",
+        "x": 160,
+        "y": 878,
+        "w": 108,
+        "h": 14
+      }
+    ],
+    "rmseVsBaseline": 0.216654,
+    "dump": [],
+    "file": "/home/destin/youcoded-dev/worktrees/specialists-plans-decisions/docs/active/reviews/2026-09-24-plans-spending-ux-review-1-shots/09b-model-select/midnight/09b-model-selected.png"
+  }
+]

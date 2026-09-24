@@ -1,0 +1,16 @@
+[
+  {
+    "theme": "midnight",
+    "name": "29-model-list-scrolled",
+    "run": null,
+    "verified": false,
+    "reasons": [
+      "scrollDialog: no scrollable region"
+    ],
+    "errors": [],
+    "contrastFails": [],
+    "rmseVsBaseline": 0.216775,
+    "dump": [],
+    "file": "/home/destin/youcoded-dev/worktrees/specialists-plans-decisions/docs/active/reviews/2026-09-24-plans-spending-ux-review-1-shots/29-model-scroll/midnight/_unverified/29-model-list-scrolled.png"
+  }
+]
