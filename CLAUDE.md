@@ -1,8 +1,6 @@
 # CLAUDE.md
 
 Shared workspace guidance for assistants working on YouCoded, whether running in Claude Code or YouCoded's native runtime. **Start non-trivial project work at `docs/MAP.md`**: subsystem entry points, rules, depth docs, tests, screen names and on-disk state. When the session-start report's "Where things are" block is present, it already covers the subsystem index, Hot paths and On-disk state; open MAP.md only for a row's depth docs/rules/tests, or a missing block — never assume it ran in a native session.
-<!-- WHY (2026-09-23): the hook generates that block FROM MAP.md; re-reading MAP.md when it's already there is pure repeated cost. -->
-
 
 **Before any development edit, including docs:** `node scripts/workspace-start.mjs --session <stable-key> [repo…]`. Use its returned absolute paths and read that workspace's instructions. Never edit shared checkouts first.
 
