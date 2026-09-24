@@ -1,0 +1,73 @@
+{
+  "title": "Card text order",
+  "key": "ui-element-review-card-anatomy",
+  "out": "card-anatomy.live.html",
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "live": {
+    "worktree": "ui-consistency-audit",
+    "paneWidth": 880
+  },
+  "steps": [
+    {
+      "id": "CA-1",
+      "surface": "Marketplace, Library, Pages",
+      "path": "Any grid of things you can open or install",
+      "hint": "Three different kinds of thing — a plugin, a Library skill, a Page — each put through the same card layout. Try a dark theme too.",
+      "headline": "What order should a card show its name, details and numbers in?",
+      "notice": "Today about 16 kinds of card each use their own order. Whichever you pick becomes the one order for all of them. Every version already uses your raised card and tinted status pill.",
+      "live": {
+        "surface": "card-anatomy",
+        "round": 1
+      },
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today (Marketplace)",
+          "candidate": "today",
+          "summary": "Capitals badge, pills for trust and author, numbers split left and right."
+        },
+        {
+          "id": "quiet-footer",
+          "label": "Details at the bottom",
+          "candidate": "quiet-footer",
+          "summary": "Name and status, the description, then one grey line: kind · who · numbers."
+        },
+        {
+          "id": "meta-under-title",
+          "label": "Who under the name",
+          "candidate": "meta-under-title",
+          "summary": "Name with kind · who under it, the description, numbers at the bottom right."
+        }
+      ]
+    },
+    {
+      "id": "CA-2",
+      "surface": "Resume, Projects, chat",
+      "path": "A conversation you can reopen",
+      "headline": "Where should a conversation card show its date?",
+      "notice": "Today the three conversation cards each put the date somewhere different.",
+      "live": {
+        "surface": "card-anatomy",
+        "round": 2
+      },
+      "variants": [
+        {
+          "id": "date-top",
+          "label": "Date top right",
+          "candidate": "date-top",
+          "summary": "On the name line, at the right."
+        },
+        {
+          "id": "date-end",
+          "label": "Date with the details",
+          "candidate": "date-end",
+          "summary": "At the end of the grey details line."
+        }
+      ]
+    }
+  ]
+}
