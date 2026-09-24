@@ -94,15 +94,3 @@ chat-data).
       this repro — `~/.claude/settings.json` also had 12 dangling hook paths at the time, so
       hooks could not fire; re-verify with healthy hooks before concluding
       `desktop` `needs-verify` `checked 2026-09-16` `needs-repro`
-
-- [ ] The sub-agent watcher keeps two 5-second timers per open Claude Code session for the
-      session's whole life (one prunes an index, one `readdirSync`s the subagents folder), plus
-      one file watch per helper the session ever ran — never released until the session closes,
-      so a session that ran fifty helpers holds fifty watches and fifty buffers. At five open
-      sessions that is two synchronous directory listings a second, forever. Found by the
-      2026-09-16 smoothness sweep (C10), not built: the directory poll should stop once its
-      watcher is attached, and a settled helper's file watch should close with it
-      (`subagent-watcher.ts`). 2026-09-17: simplification phase 2 (youcoded#503) did the timer
-      half — the prune and directory polls now arm on demand and the safety-net poll runs on
-      Windows only; the per-helper file watches still stay open until the session closes
-      `desktop` `confirmed` `checked 2026-09-18` `performance`

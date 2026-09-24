@@ -155,10 +155,3 @@ produced and the panel that shows them (files).
       rewritten on `session/sync-safety-audit-20260908` — convert both after that lands
       `desktop` `confirmed` `checked 2026-09-16` `performance`
 
-- [ ] The 30-minute conversation reconcile lists every transcript ever written and lstat +
-      tail-reads each one, synchronously — a stall every half hour that grows for as long as
-      the app has been used (`conversations/reconciler.ts`; its own note measured 2.8 s at 600
-      records before the last fix). Found by the 2026-09-16 smoothness sweep (C10), not built:
-      the fix is the same fs.promises recipe the click paths got, with the walk bounded per tick
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
-
