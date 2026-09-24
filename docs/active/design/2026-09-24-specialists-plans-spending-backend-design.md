@@ -277,3 +277,44 @@ journals retired silently.
 **Open questions — for Destin (product):** 1 change a step's model during a run — design allows
 it only for steps that haven't started; 3 auto-start for plans with no dollar price — proposed:
 never.
+
+## Revision 1 — after design review 1 (`docs/active/reviews/2026-09-24-plans-spending-design-review-1.md`)
+
+- **D1 (one source for both totals).** The plan total and the conversation's Cost chip must read
+  the SAME events. For plan children, the harness's per-step usage report is the single source:
+  `afterReply` feeds the journal AND `runPlanChild`'s chip accumulation (which stops summing
+  `turn-complete`/`session-error`/`user-interrupt` usage for plan children, to avoid double
+  counting; `compact-summary` usage goes through `afterReply` too). Per-step, not per-turn,
+  because a plan child's whole run is often one turn and the limit must be checked between
+  requests. New test `plan-spend-chip-parity.test.ts`: plan `usedUsd` == the chip's added cost on
+  a clean finish, a provider error mid-turn, a user interrupt, and a compaction.
+- **D2 (local engine capacity).** The local engine's one context pool is split across its slots,
+  so a token-pool check is replaced by the equivalent headcount: at most `totalSlots` local-engine
+  plan specialists run at once (the host's slot reservation is extended to count local-engine
+  children against the engine's slot count), and each local child's context window is the
+  per-slot window read from the engine (`/props`), so compaction triggers correctly. A wave that
+  can't get a slot waits, as today's `local-engine full → wait and retry` (decision 13). Test:
+  4 local steps on a 2-slot engine never run more than 2 at once.
+- **D3 (last-write failure).** `pending` always carries a `.catch` that records the failure on the
+  run (`run.spendWriteFailed`) and logs it; the executor awaits the attempt's `pending` before
+  committing the attempt, and a failed write marks the attempt for recovery instead of commit —
+  never an unhandled rejection in the main process. Test: a lock-exhaustion on the final write.
+- **D4 (task order).** T4 now runs after T2 (both touch `plan-host-bridge.ts` `launch()`); T5
+  still parallel with T2. Order: T1 → T2 → {T3, T4, T5 in parallel, T3/T4 touching distinct
+  files — T4 owns `launch()`'s manifest lookup, T3 does not touch it} → T6 → T7.
+- **D5 (removing `plans:add-budget` everywhere).** T7 removes it from `PlansBridge.kt`
+  `CHANNELS` (24–32), `SessionService.kt` routing, `remote-shim.ts`, `remote-server.ts`,
+  `preload.ts`, `ipc-handlers.ts`, `plan-requests.ts` `PLAN_REQUEST_CHANNELS`, `shared/types.ts`
+  constants, `mock-shim.ts`, and every test naming it; `ipc-channels.test.ts` proves absence.
+- **D6 (named recovery test).** `plan-executor.test.ts` gains: "after a crash, a launched attempt
+  whose transcript ends in an unanswered EXTERNAL tool call is never re-run automatically — it
+  goes to the assistant exactly as before", plus the read-only and local-change variants.
+- **D7 (history cache size and blocking).** Capped at the most recent 1,000 runs (≈150 KB); parsed
+  once at host start (not on a timer); written with `fs.promises.writeFile` of the in-memory
+  object, debounced, never read back on the timer path. Added to the blocking-call ratchet test.
+- **D8 (images in plan specialists).** Recorded as an intended consequence: with nothing bounded
+  in advance, plan specialists can see images like any other specialist. Told to Destin; revert
+  only if he objects.
+- **D9 (retry blind spot).** WHY comment at the plan-child `withRetry` site, and a test pinning
+  that a retried request with no reported usage adds nothing to either total (the known,
+  accepted gap — a widening would fail it).
