@@ -2,7 +2,9 @@
   "title": "Project skills and plugin controls — contract",
   "key": "project-plugin-controls-contract",
   "out": "project-plugin-controls.contract.html",
-  "themes": ["midnight"],
+  "themes": [
+    "midnight"
+  ],
   "branch": "session/plugin-project-controls",
   "sources": {
     "project-plugin-controls-questions": "project-plugin-controls.questions.json",
@@ -184,6 +186,34 @@
           "checkedBy": "human",
           "threshold": "pass/fail",
           "source": "project-plugin-controls-build-questions#B-1"
+        },
+        {
+          "id": "R25",
+          "statement": "Installing a plugin from its Marketplace card also opens the project setup step, so you can choose which projects use it.",
+          "checkedBy": "live-app",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U2"
+        },
+        {
+          "id": "R26",
+          "statement": "The built-in plugins heading reads 'Built in', so it can't be mistaken for the name of a project.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U4"
+        },
+        {
+          "id": "R27",
+          "statement": "An outside tool connection, like Linear, is labelled without the developer term 'MCP server' in what you see.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U5"
+        },
+        {
+          "id": "R28",
+          "statement": "The setup dialog's missing-connection explanation reads clearly, without repeating 'set up' twice in one sentence.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U7"
         }
       ]
     }
