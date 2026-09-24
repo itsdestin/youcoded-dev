@@ -1,8 +1,9 @@
 {
+  "_why": "R19 grading pass (2026-09-24): inbox-after-install's expect now also asserts the just-installed plugin's toggle reads OFF (aria-checked=false) — a new download starts inactive everywhere, no grandfathering. This used to only check that the setup panel opened, which passed even while the workbench fixture hardcoded the toggle on.",
   "base":"http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
   "ready":"/civic report|no plugins/i.test(document.body.textContent)",
   "shots":[
     {"name":"inbox-before-install","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":900}],"expect":"js:!![...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')"},
-    {"name":"inbox-after-install","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":900},{"click":"js:[...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')","settle":1700}],"expect":"js:document.body.textContent.includes('Choose where the assistant can use it automatically')"}
+    {"name":"inbox-after-install","actions":[{"click":"[title='Browse skills']","settle":800},{"click":"[title='Open marketplace']","settle":1800},{"click":"[data-marketplace-card='youcoded-inbox']","settle":900},{"click":"js:[...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')","settle":1700}],"expect":"js:document.body.textContent.includes('Choose where the assistant can use it automatically') && (()=>{const t=document.querySelector('[aria-label=\"Inbox in this project\"]');return !!t && t.getAttribute('aria-checked')==='false';})()"}
   ]
 }

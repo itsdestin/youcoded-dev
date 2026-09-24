@@ -1,7 +1,18 @@
 {
-  "_why": "The real ProjectSetupPanel (T6) gives every project the SAME generic toggle aria-label ('Inbox in this project') — proving two projects hold independent choices needs document-order indexing, not a per-project aria-label the old mockup used to have.",
+  "_why": "The real ProjectSetupPanel (T6) gives every project the SAME generic toggle aria-label ('Inbox in this project') — proving two projects hold independent choices needs document-order indexing, not a per-project aria-label the old mockup used to have. R19 grading pass (2026-09-24): the original single shot here only asserted the post-toggle split (false/true), which reads identically whether the starting state was correctly off->on or (the actual bug) already-on toggled on->off — it never independently proved the STARTING state. Split into a pre-toggle shot that pins 'off everywhere' before anything is clicked, then the post-toggle shot with its expectation corrected to match that real starting state (click affects only the clicked project's toggle).",
   "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
   "shots": [
+    {
+      "name": "two-project-choices-start-off",
+      "actions": [
+        { "click": "[title='Browse skills']", "settle": 800 },
+        { "click": "[title='Open marketplace']", "settle": 1800 },
+        { "click": "[data-marketplace-card='youcoded-inbox']", "settle": 900 },
+        { "click": "js:[...document.querySelectorAll('button')].find(x=>x.textContent.trim()==='Install')", "settle": 1700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(x=>x.textContent.includes('wecoded-themes'))", "settle": 700 }
+      ],
+      "expect": "js:(()=>{const t=[...document.querySelectorAll('[aria-label=\"Inbox in this project\"]')];return t.length>=2 && t.every(x=>x.getAttribute('aria-checked')==='false');})()"
+    },
     {
       "name": "two-project-choices",
       "actions": [
@@ -12,7 +23,7 @@
         { "click": "js:[...document.querySelectorAll('button')].find(x=>x.textContent.includes('wecoded-themes'))", "settle": 700 },
         { "click": "js:[...document.querySelectorAll('[aria-label=\"Inbox in this project\"]')][0]", "settle": 300 }
       ],
-      "expect": "js:(()=>{const t=[...document.querySelectorAll('[aria-label=\"Inbox in this project\"]')];return t.length>=2 && t[0].getAttribute('aria-checked')==='false' && t[1].getAttribute('aria-checked')==='true';})()"
+      "expect": "js:(()=>{const t=[...document.querySelectorAll('[aria-label=\"Inbox in this project\"]')];return t.length>=2 && t[0].getAttribute('aria-checked')==='true' && t[1].getAttribute('aria-checked')==='false';})()"
     }
   ]
 }
