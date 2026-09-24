@@ -14,7 +14,7 @@ date: 2026-09-23
 
 ## Approved contract and constraints
 
-- UI authority: `docs/active/design/2026-09-23-handoff-freshness/inline-direction.md`; F-10/F-11/F-12 all approved 2026-09-23 10:20. Do not redesign the notices.
+- UI authority: `docs/archive/design/2026-09-23-handoff-freshness/inline-direction.md`; F-10/F-11/F-12 all approved 2026-09-23 10:20. Do not redesign the notices.
 - Wait text: **Still syncing recent messages, this may take a moment.** Recovery text: **This conversation may have newer messages on your other computer.**
 - Full-width floating chat notice; **Continue with these messages** immediately left of **Try again**. Draft survives retry; Send, Enter and form submission stay blocked until a real session is admitted. Never automatically send the draft.
 - Ordinary offline opening is unchanged. Freshness applies only to explicit handoff. Older/unreachable peers yield incomplete confirmation, not false success.

@@ -12,13 +12,13 @@ audit: docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 The independent audit rejected the branch's renderer-owned claim/release lifecycle. Destin authorized a bounded repair and asked for the smallest robust implementation that fits the existing code. This revision supersedes the original implementation description; the original deck decisions remain authoritative.
 
-Implementation plan: `docs/active/plans/2026-09-23-conversation-admission-repair.md`.
-Visual review: `docs/active/design/2026-09-23-conversation-admission/admission-repair.json`.
+Implementation plan: `docs/archive/plans/2026-09-23-conversation-admission-repair.md`.
+Visual review: `docs/archive/design/2026-09-23-conversation-admission/admission-repair.json`.
 
 ## Decisions preserved
 
 - **Q-1:** claim before starting a resumed writer; keep offline access when the hub cannot confirm. Actual click-to-ready / claim latency still requires measurement on isolated devices. `c1b5e8f4` added elapsed-ms logging; instrumentation is NOT completion of that measurement.
-- **Q-2, revised by Destin 2026-09-23:** a lost admission race shows a message and Try again / Leave it. Try again repeats admission once; another denial opens the existing explicit takeover confirmation for the latest denying device. Only confirming Take over requests handoff; retry alone is never takeover consent. Destin approved the small-change route in chat; visual follow-up: `docs/active/design/2026-09-23-conversation-admission/escalation-review.json`.
+- **Q-2, revised by Destin 2026-09-23:** a lost admission race shows a message and Try again / Leave it. Try again repeats admission once; another denial opens the existing explicit takeover confirmation for the latest denying device. Only confirming Take over requests handoff; retry alone is never takeover consent. Destin approved the small-change route in chat; visual follow-up: `docs/archive/design/2026-09-23-conversation-admission/escalation-review.json`.
 - **Q-3:** the waking device yields by default. Its existing MovedGate action starts the normal resume flow, which directly asks for handoff when the other computer holds it. There is no automatic take-back.
 - **Q-4:** no new offline warning.
 - **Q-5/Q-7/Q-9:** short explanation, “couldn't confirm” rather than invented delivery/response certainty, and an honest desktop-only handoff disclosure.
