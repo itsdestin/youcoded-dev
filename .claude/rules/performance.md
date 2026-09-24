@@ -41,7 +41,8 @@ main-process blocking-call ratchet** (`desktop/tests/main-blocking-calls.test.ts
 2. **Hidden means idle.** A mounted-but-hidden tab, pane or terminal does zero work: no
    timers, no `window`/`document` listeners, no drawing (xterm does not see `visibility:hidden`
    — pause it explicitly), no subscriptions to other sessions' events, and its own chat state read paused
-   (`useChatState(id, { paused: !visible })`). A kept-mounted tab is
+   (`useChatState(id, { paused: !visible })`, which catches up once a second — freezing
+   outright moves all the drawing into the click that shows the tab). A kept-mounted tab is
    `hidden` prop AND `React.memo` AND stable props AND no context read of its own — memo cannot
    stop a context reader, so the parent passes the one value down (FilesTab). **Why:** ten
    background sessions were ~40 React updates/s into invisible trees; hidden terminals kept
