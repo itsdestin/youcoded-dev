@@ -14,7 +14,7 @@ topic: Where the remaining hiccups and freezes come from — a five-angle code s
 > change that needs Destin's call on a clip). The rig now has `native-stream` and
 > `native-resume` phases, so the next batch lands with a number in front of it.
 >
-> **Status 2026-09-23 — "many tabs" batch** (branch `session/perf-many-tabs-20260923`, both
+> **Status 2026-09-23 — "many tabs" batch** (youcoded#561 + youcoded-dev#193, both
 > repos). Built: all of **Batch B** (B1 hidden terminals stop drawing via
 > `xterm-render-pause.ts`; B2 per-entry Tooltip → `TimelineEntryHint`; B3 permission-mode
 > scan diffed + prefiltered; B4 thinking/seconds clocks pause in hidden chats; B5 window
