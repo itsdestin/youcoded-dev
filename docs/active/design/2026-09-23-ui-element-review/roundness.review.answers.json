@@ -1,0 +1,15 @@
+{
+ "deck": "ui-element-review-roundness",
+ "started": "2026-09-24T06:04:35.654Z",
+ "submitted": "2026-09-24T06:05:54Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "v": "pick",
+   "pick": "round",
+   "seconds": 78,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
