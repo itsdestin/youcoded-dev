@@ -1,0 +1,46 @@
+{
+  "title": "Project skills & tools — inside Projects",
+  "key": "project-plugin-controls-real-projects-review",
+  "out": "project-plugin-controls.real-projects-review.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.real-projects-review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["midnight"],
+  "crops": {
+    "projects-skills-wide": ["project-plugin-controls-context", "projects-skills-wide", "1080x260+180+330"],
+    "projects-skills-phone": ["project-plugin-controls-phone", "projects-skills-phone", "390x744+0+0"]
+  },
+  "live": { "worktree": "plugin-project-controls", "offset": 230, "base": "http://127.0.0.1:5403" },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Projects",
+      "path": "Projects → a project → Skills & tools",
+      "crop": "projects-skills-wide",
+      "headline": "A fourth tab puts skills and tools alongside the selected project's files and instructions.",
+      "changed": "The existing project header and tab strip stay in place. The new tab groups included plugins, locally installed plugins and items needing attention on this device; each plugin can open to show its parts.",
+      "notice": "Choose a project in the existing project switcher, then manage automatic availability for that project. Changes are described as applying to new conversations.",
+      "risk": "Visual proposal only: these sample switches do not save, and the screenshots do not show Your Assistant's locked bundled switches or the marketplace install flow."
+    },
+    {
+      "id": "R-2",
+      "surface": "Projects on a phone",
+      "path": "Projects → Skills & tools at phone width",
+      "crop": "projects-skills-phone",
+      "highlight": { "box": [35, 60, 61, 9] },
+      "headline": "At phone width, all four tabs remain reachable and the selected tab keeps its label.",
+      "changed": "The added tab follows the existing narrow tab strip: the selected tab names itself while the other tabs keep their labelled icons for assistive technology.",
+      "notice": "The project header scrolls away; you can scroll down to the plugin switches and the local setup actions without sideways clipping.",
+      "risk": "On a phone, the inactive tabs show icons rather than visible names. The controls and full lower-page state need a separate interactive check."
+    },
+    {
+      "id": "R-3",
+      "surface": "Projects",
+      "path": "Open Projects → Skills & tools; expand Research Kit and scroll to the missing-device rows",
+      "headline": "Try the grouped settings in the real Projects screen; does this feel like the right home?",
+      "notice": "The project header, four-tab strip, plugin groups and local setup rows are all part of the real screen. Try narrowing the pane too.",
+      "risk": "This runs against a fake backend; toggles are sample local state and the Add/Set up actions are not connected. Your Assistant and the command drawer still need their own review.",
+      "live": { "app": "default" }
+    }
+  ]
+}

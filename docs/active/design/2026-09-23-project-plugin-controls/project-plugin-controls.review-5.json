@@ -1,0 +1,19 @@
+{
+  "title": "Project plugins — attached groups",
+  "key": "project-plugin-controls-review-5",
+  "out": "project-plugin-controls.review-5.html",
+  "stage": "review",
+  "live": { "worktree": "plugin-project-controls", "offset": 342, "paneWidth": 820 },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Projects",
+      "path": "Marketplace → Download → configure in projects",
+      "headline": "Do the attached groups and leaf cards match what you meant?",
+      "changed": "Each project is a collapsible card. Its plugin is an attached collapsible group inside it. Each bottom-level skill or server is its own card under that plugin, with left and right edges aligned.",
+      "notice": "Collapse Research Kit without closing Your Assistant; then open Personal to see the same hierarchy in another project.",
+      "risk": "UI-only layout preview using illustrative project and plugin names. Controls do not save yet, and the full Projects screen is not wired.",
+      "live": { "surface": "project-plugin-controls", "round": 5, "candidate": "project-first-stacked" }
+    }
+  ]
+}

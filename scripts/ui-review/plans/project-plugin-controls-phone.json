@@ -1,0 +1,27 @@
+{
+  "_why": "Verify the fourth real Projects tab and nested controls fit a 390px phone width.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "width": 390,
+  "height": 744,
+  "shots": [
+    {
+      "name": "projects-skills-phone",
+      "actions": [
+        { "click": "[aria-label='Open menu']", "settle": 500 },
+        { "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))", "settle": 1000 },
+        { "click": "[aria-label='Skills & tools']", "settle": 500 }
+      ],
+      "expect": "js:!!document.querySelector('[aria-label=\"Installed plugins\"]')"
+    },
+    {
+      "name": "projects-skills-phone-bottom",
+      "actions": [
+        { "click": "[aria-label='Open menu']", "settle": 500 },
+        { "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))", "settle": 1000 },
+        { "click": "[aria-label='Skills & tools']", "settle": 500 },
+        { "eval": "document.querySelector('[aria-label=\"Items needing setup on this device\"]').scrollIntoView({block:'end'})", "settle": 300 }
+      ],
+      "expect": "js:!!document.querySelector('[aria-label=\"Items needing setup on this device\"]') && document.querySelector('[aria-label=\"Items needing setup on this device\"]').getBoundingClientRect().bottom <= innerHeight"
+    }
+  ]
+}

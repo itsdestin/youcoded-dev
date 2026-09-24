@@ -1,0 +1,26 @@
+{
+ "deck": "project-plugin-controls-combined-review-2",
+ "started": "2026-09-24T06:54:29.159Z",
+ "submitted": "2026-09-24T06:55:20Z",
+ "cur": 2,
+ "answers": {
+  "M-1": {
+   "v": "yes",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 17,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "K-1": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

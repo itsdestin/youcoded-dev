@@ -1,0 +1,38 @@
+{
+  "title": "Skill drawer — status chips and setup route",
+  "key": "project-plugin-controls-drawer-review-2",
+  "out": "project-plugin-controls.drawer-review-2.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.drawer-review-2",
+  "runs": { "before": "runs/drawer-color-before", "after": "runs/drawer-color-after" },
+  "labels": { "before": "Round 1 — neutral labels", "after": "Round 2 — colored chips" },
+  "themes": ["midnight"],
+  "crops": {
+    "drawer-statuses": ["project-plugin-drawer", "skills-drawer", "1440x300+0+600"],
+    "projects-setup": ["project-plugin-drawer-route", "unavailable-opens-project-setup", "1080x510+180+380"]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Skills drawer",
+      "path": "Chat → Browse skills",
+      "crop": "drawer-statuses",
+      "headline": "Are these green, amber and red chips the status treatment you meant?",
+      "changed": "The cards now borrow the session switcher's tinted chip, colored dot and plain text: green for Automatic, amber for Manual use, red for Unavailable. The text stays readable without depending on color alone.",
+      "notice": "The unavailable card remains greyed out but is clickable; it no longer tries to run the missing skill.",
+      "risk": "The statuses are sample data until project availability is implemented."
+    },
+    {
+      "id": "C-2",
+      "surface": "Projects",
+      "path": "Browse skills → unavailable Writing helper → Projects → Skills & tools",
+      "crop": "projects-setup",
+      "runs": ["after"],
+      "highlight": { "box": [0, 60, 100, 39] },
+      "headline": "Clicking the unavailable card opens its project's setup section.",
+      "changed": "The drawer closes and Projects opens on Skills & tools, scrolled to the missing personal skill and server rows rather than the top of the page.",
+      "notice": "The available action is Add locally for a personal skill, or Set up locally for a server; missing files and credentials are not silently installed or synced.",
+      "risk": "This navigation is workbench-only. The Add/Set up buttons and per-project lookup still need real implementation."
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+ "title": "Project skills and plugin controls \u2014 contract \u2014 acceptance",
+ "key": "project-plugin-controls-contract-acceptance",
+ "out": "project-plugin-controls.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/plugin-project-controls",
+ "sources": {
+  "project-plugin-controls-questions": "project-plugin-controls.questions.json",
+  "project-plugin-controls-remaining-questions": "project-plugin-controls.remaining-questions.json",
+  "project-plugin-controls-review-6": "project-plugin-controls.review-6.json",
+  "project-plugin-controls-real-projects-review": "project-plugin-controls.real-projects-review.json",
+  "project-plugin-controls-real-projects-review-2": "project-plugin-controls.real-projects-review-2.json",
+  "project-plugin-controls-drawer-review": "project-plugin-controls.drawer-review.json",
+  "project-plugin-controls-drawer-review-2": "project-plugin-controls.drawer-review-2.json",
+  "project-plugin-controls-combined-review": "project-plugin-controls.combined-review.json",
+  "project-plugin-controls-combined-review-2": "project-plugin-controls.combined-review-2.json",
+  "project-plugin-controls-build-questions": "project-plugin-controls.build-questions.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Projects",
+   "path": "Projects \u2192 a project \u2192 Skills & tools, the skill drawer, and Marketplace install",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "An automatically enabled skill lets the assistant know it exists, and it reads that skill's full instructions only when it's actually used.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-questions#Q-1"
+    },
+    {
+     "id": "R2",
+     "statement": "A skill you add yourself outside the marketplace keeps behaving the way it does today, with no extra step required to enable it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-questions#Q-2"
+    },
+    {
+     "id": "R3",
+     "statement": "Turning on a plugin's server or hook automatically shows a risk warning; an automatically discoverable skill alone does not trigger that warning.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-questions#Q-3"
+    },
+    {
+     "id": "R4",
+     "statement": "An existing project's switches first show which skills and tools already work there today, rather than starting from a blank default.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-remaining-questions#Q-1"
+    },
+    {
+     "id": "R5",
+     "statement": "A personal skill missing on this device shows the saved choice and explains it needs to be added here; syncing the file is later work.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-remaining-questions#Q-2"
+    },
+    {
+     "id": "R6",
+     "statement": "An item installed from outside the marketplace and missing here stays visible with an explanation that it needs local setup, instead of disappearing.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-remaining-questions#Q-3"
+    },
+    {
+     "id": "R7",
+     "statement": "These project switches control only YouCoded's own assistant for now; Claude Code's settings are left untouched.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-remaining-questions#Q-4"
+    },
+    {
+     "id": "R8",
+     "statement": "Each project and its plugin use the app's own collapsible-card style, with each skill and the server as its own card inside, evenly padded.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-review-6#P-1",
+     "note": "good enough for now.",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-controls-context.json <out>/shots-project-plugin-controls-context midnight \u2014 ok. Full frame: docs/active/design/2026-09-23-project-plugin-controls/runs/graded/shots-project-plugin-controls-context/midnight/projects-skills-wide.png; expanded-Research-Kit probe: /tmp/research-expanded-3.png (reproducible via scripts/ui-probe.mjs against http://127.0.0.1:5523). review-6#P-1 approved no static image (it was a live interactive round, answers file project-plugin-controls.review-6.answers.json shows 'yes / good enough for now'), so graded against its 'changed' text: project and plugin use the app's shared collapsible-card header + inset body, with skills/server as separate, evenly-padded cards inside. The built Skills & tools tab matches: Research Kit is a card with a header row and expand chevron; expanded, 'Web digest' / 'Citation check' / 'Research sources' render as separate inset cards with consistent left/right padding inside the same bordered container, matching the app's existing card style used elsewhere (e.g. Files/Instructions tabs)."
+    },
+    {
+     "id": "R9",
+     "statement": "At phone width, all four project tabs stay reachable; the open tab shows its name while the others keep their icons.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-real-projects-review#R-2",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-controls-phone.json <out>/shots-project-plugin-controls-phone midnight \u2014 ok (projects-skills-phone). Compared runs/graded/crops/R9-projects-skills-phone.png against images/project-plugin-controls.real-projects-review/projects-skills-phone--midnight--after.png (both 390x744). Both show the same 4-tab strip at phone width: Files/Conversations/Instructions & Memories tabs collapse to icon-only, the open 'Skills & tools' tab keeps its name and icon. Body copy/heading differ (approved shows a later round's 'ABOUT SKILLS & TOOLS' box \u2014 see R11), but that is outside this row's statement, which is only about tab reachability/labeling."
+    },
+    {
+     "id": "R10",
+     "statement": "Managing which skills and tools are automatic lives inside the Projects screen you already use, alongside its other tabs, not a separate page.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-real-projects-review#R-3"
+    },
+    {
+     "id": "R11",
+     "statement": "The Skills & tools tab fills the same width as the project's Files and Instructions & Memories tabs, with matching group headings and full-width rows.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-real-projects-review-2#V-1",
+     "verdict": "pass",
+     "evidence": "Re-graded 2026-09-24 per coordinator correction: project-plugin-controls.real-projects-review-2.answers.json's V-1 answer is 'yes' WITH note 'drop the about header/bubble' \u2014 the boxed ABOUT explainer (and its jump link) was removed at Destin's own request, not an unauthorized regression. Confirmed the later, approved combined-review round already reflects the box-free layout: runs/combined-after/shots-project-plugin-controls-phone/midnight/projects-skills-phone-bottom.png's scroll offset (matching R21's approved setup-rows-phone crop, geometry 390x250+0+494) only reaches the needs-setup section at that y-offset if the page is AS SHORT as the box-free built version \u2014 consistent, not contradictory. With the box excluded, re-compared runs/graded/crops/R11-projects-top.png (WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-controls-context.json ... midnight \u2014 ok) against the corrected approved intent: the Skills & tools tab fills the same width as Files/Instructions & Memories (same tab strip), and uses matching small-caps group headings ('BUILT IN', 'ADDED ON THIS DEVICE', 'PERSONAL SKILLS & TOOLS', 'NEEDS SETUP ON THIS DEVICE') with full-width rows throughout \u2014 exactly what the row's statement requires. Passes."
+    },
+    {
+     "id": "R12",
+     "statement": "On a phone, a plugin shows as one full-width row with its skills and server inset below; a missing item uses the same shape.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-real-projects-review-2#V-2",
+     "verdict": "pass",
+     "evidence": "Same run as R9 (projects-skills-phone-bottom), cropped to runs/graded/crops/R12-projects-bottom-phone.png vs images/project-plugin-controls.real-projects-review-2/projects-bottom-phone--midnight--after.png. Base crop shows Research Kit collapsed and 'Writing helper'/'Linear' as full-width needs-setup rows. Followed up with scripts/ui-probe.mjs (see /tmp/research-expanded-3.png) clicking 'Expand Research Kit items': confirms Research Kit renders as one full-width row with 'Web digest', 'Citation check' and 'Research sources' inset beneath it, and the two missing items ('Writing helper', 'Linear') use the same full-width row silhouette (icon, name, description, action on the right) as the plugin/skill rows \u2014 matches the row's statement."
+    },
+    {
+     "id": "R13",
+     "statement": "On a narrow phone screen, each skill's automatic, manual or unavailable status stays readable beside its plugin badge.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-drawer-review#D-2",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-drawer-phone.json <out>/shots-project-plugin-drawer-phone midnight \u2014 ok (skills-drawer-phone-scroll), cropped to runs/graded/crops/R13-drawer-phone.png vs images/project-plugin-controls.drawer-review/drawer-phone--midnight--after.png. The approved image is drawer-review round 1 (plain 'Manual use'/'Automatic' text, before the colored-chip round drawer-review-2 and combined-review#R-1/R18 which the contract also carries forward); the built drawer instead shows the later, approved colored dot+text chips ('\u25cf Manual use' amber, '\u25cf Automatic' green). Both are fully legible beside the plugin source badge ('Superpowers', 'Civic Report') at 390px with no truncation or overlap \u2014 the row's actual requirement (status stays readable beside the badge) holds under the later-approved styling."
+    },
+    {
+     "id": "R14",
+     "statement": "Clicking an unavailable skill's card closes the drawer and opens Projects on Skills & tools, scrolled to that missing item's row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-drawer-review-2#C-2",
+     "verdict": "pass",
+     "evidence": "Re-graded 2026-09-24 after app commit a1ddc4022 ('Fix R14 scroll-to-row race...' \u2014 replaced the one-shot requestAnimationFrame with a bounded per-frame retry that waits for the row to actually exist before scrolling; added desktop/tests/ProjectView.test.tsx pinning the old-race regression). Confirmed the workbench on :5523 is on this commit (git -C youcoded log -1 = a1ddc4022) and re-shot with the strengthened plan (scripts/ui-review/plans/project-plugin-drawer-route.json, now asserting the specific row is FULLY inside the viewport, not just 'reachable'): WB_PORT=5523 node scripts/ui-review/shot.mjs ... midnight \u2014 ok, expect satisfied. Independently confirmed via scripts/ui-probe.mjs with the same click sequence: '#project-tools-needing-setup-item-self:writing-helper' now measures {top:741.5, bottom:794, fullyInView:true} in the 900px panel (previously {top:854.5, bottom:907}, off the bottom edge). Updated crop runs/graded/crops/R14-projects-setup.png shows the needs-setup rows scrolled into full view, matching the approved images/project-plugin-controls.drawer-review-2/projects-setup--midnight--after.png's intent (page scrolled so the missing item's row is visible, not left at the top). Passes."
+    },
+    {
+     "id": "R15",
+     "statement": "An already-open conversation keeps showing the skill availability it started with; a note explains that a changed switch applies to your next new conversation.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review#Q-2"
+    },
+    {
+     "id": "R16",
+     "statement": "'Set up here' offers to ask the assistant to fix a missing item, or choose the file yourself for a missing personal skill.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review#Q-3"
+    },
+    {
+     "id": "R18",
+     "statement": "Each skill's status chip sits at the card's right edge, colored like the session switcher; clicking the chip or its dimmed card opens its setup.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review#R-1",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-drawer.json <out>/shots-project-plugin-drawer midnight \u2014 ok (skills-drawer). The deck's own crop (1440x225+0+650, runs/graded/crops/R18-drawer-chips.png) lands on the Favorites row, which in this fixture ('default' scenario) has no unavailable card, unlike images/project-plugin-controls.combined-review/drawer-chips--midnight--after.png's 5th 'Writing helper' favorite \u2014 a fixture-placement difference, not a missing feature. Located the actual unavailable card via scripts/ui-probe.mjs (screenshot /tmp/writing-helper-unavail.png): it renders in its own 'NEEDS SETUP HERE' section as a dimmed full-width card with 'Personal skill' on the left and a red dot 'Unavailable' chip flush to the card's right edge, using the same chip treatment as the green/amber chips elsewhere in the drawer (session-switcher style). Clicking the chip (confirmed in the R14 probe, which clicked this exact 'Unavailable' span) opens the project's setup section, matching the row's statement."
+    },
+    {
+     "id": "R19",
+     "statement": "After you install a plugin, the same window lists your projects so you can turn it on only where you want; it starts off everywhere.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review-2#M-1",
+     "verdict": "pass",
+     "evidence": "Re-graded 2026-09-24 after app commit a1ddc4022 fixed the workbench fixture: desktop/src/renderer/dev/workbench/fixtures/project-extensions.ts's inboxGroup() now returns on:false/paused:true (was hardcoded on:true), matching installedPluginGroup()'s already-correct default and the real desktop/src/main/project-extensions/resolve.ts rule; a new desktop/tests/project-extensions-workbench-fixture.test.ts pins both fixture helpers' starting state off. Re-shot with the strengthened plans: scripts/ui-review/plans/project-plugin-marketplace-install.json (inbox-after-install) now shows 'youcoded \u2014 Automatic use off in new conversations' / 'Inbox \u2014 Automatic use off' / 'Process inbox \u2014 Paused with plugin' \u2014 matches images/project-plugin-controls.combined-review-2/inbox-flow--midnight--after.png. scripts/ui-review/plans/project-plugin-marketplace-choices.json was split into a pre-toggle 'two-project-choices-start-off' shot (asserts BOTH youcoded's and wecoded-themes' 'Inbox in this project' toggles are aria-checked=false before anything is clicked) and the original post-toggle 'two-project-choices' shot (now correctly expecting off\u2192on for the clicked project, off for the untouched one) \u2014 both ran ok. Updated crop runs/graded/crops/R19-inbox-flow-substitute.png confirms visually. 'It starts off everywhere' now holds."
+    },
+    {
+     "id": "R20",
+     "statement": "On a phone, the marketplace install panel opens with the first project already expanded, so its plugin and skill show without an extra tap.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review#M-2",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-marketplace-install-phone.json <out>/shots-project-plugin-marketplace-install-phone midnight \u2014 ok (inbox-install-phone), cropped to runs/graded/crops/R20-install-phone.png vs images/project-plugin-controls.combined-review/install-phone--midnight--after.png. Panel opens with 'youcoded' (the first project) already expanded showing its Inbox plugin and Process inbox skill without any extra tap, matching the row's statement; other projects (wecoded-themes/wecoded-marketplace/recipes) stay collapsed. (The toggle states shown are wrong per R19's failure above, but that is a separate row.)"
+    },
+    {
+     "id": "R21",
+     "statement": "On a phone, a setup row's description wraps onto a second line instead of cutting off, and both buttons say Set up here.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review#S-1",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-controls-phone.json <out>/shots-project-plugin-controls-phone midnight \u2014 ok (projects-skills-phone-bottom), cropped to runs/graded/crops/R21-setup-rows-phone.png vs images/project-plugin-controls.combined-review/setup-rows-phone--midnight--after.png. Both 'Writing helper' and 'Linear' rows wrap their second description line ('Not on / this device') instead of being cut off, and both action buttons read 'Set up here', matching the row's statement. (Approved shows 'Library search' / 'Tool connection (MCP server)' \u2014 sample-name and R27-driven wording differences, not a layout regression.)"
+    },
+    {
+     "id": "R22",
+     "statement": "Pressing 'Set up here' for something missing on this device opens a popup explaining why, instead of expanding inside the card.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review-2#S-2",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-setup-rows-phone.json <out>/shots-project-plugin-setup-rows-phone midnight \u2014 ok (setup-open-phone, expect condition satisfied: a role=dialog containing 'sign-in stay on the device' text), cropped to runs/graded/crops/R22-setup-popup-phone.png vs images/project-plugin-controls.combined-review-2/setup-popup-phone--midnight--after.png. Pressing 'Set up here' opens a popup (title 'Set up Linear', close X, body explanation, one 'Ask assistant to set it up' button) instead of expanding inline in the card, matching the row. Wording differs from the approved copy in the direction of the accepted R28 finding (avoids repeating 'set up' twice: 'so connect it here too' vs the older 'so it needs setting up here too')."
+    },
+    {
+     "id": "R23",
+     "statement": "Switching on a plugin that can reach outside services shows a popup first, naming those connections, before it actually turns on.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-combined-review-2#K-1",
+     "verdict": "pass",
+     "evidence": "WB_PORT=5523 node scripts/ui-review/shot.mjs scripts/ui-review/plans/project-plugin-risk-confirm.json <out>/shots-project-plugin-risk-confirm midnight \u2014 ok (risk-confirm, expect condition satisfied: dialog contains 'Turn on Research Kit' and 'Research sources'), cropped to runs/graded/crops/R23-risk-popup.png vs images/project-plugin-controls.combined-review-2/risk-popup--midnight--after.png. Near pixel match: same title 'Turn on Research Kit?', bullet naming the tool connection ('Research sources'), same warning paragraph (generalized to 'where it came from' instead of naming the plugin twice), Cancel/Turn on buttons. Matches the row's statement exactly."
+    },
+    {
+     "id": "R24",
+     "statement": "A conversation started in a folder that isn't one of your projects gets no skills or tools turned on automatically.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "project-plugin-controls-build-questions#B-1"
+    },
+    {
+     "id": "R25",
+     "statement": "Installing a plugin from its Marketplace card also opens the project setup step, so you can choose which projects use it.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U2",
+     "found": "review"
+    },
+    {
+     "id": "R26",
+     "statement": "The built-in plugins heading reads 'Built in', so it can't be mistaken for the name of a project.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U4",
+     "found": "review"
+    },
+    {
+     "id": "R27",
+     "statement": "An outside tool connection, like Linear, is labelled without the developer term 'MCP server' in what you see.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U5",
+     "found": "review"
+    },
+    {
+     "id": "R28",
+     "statement": "The setup dialog's missing-connection explanation reads clearly, without repeating 'set up' twice in one sentence.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "review:../../reviews/2026-09-24-project-plugin-controls-ux-review-2.md#U7",
+     "found": "review"
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "An automatically enabled skill lets the assistant know it exists, and it reads that skill's full instructions only when it's actually used.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R2",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "A skill you add yourself outside the marketplace keeps behaving the way it does today, with no extra step required to enable it.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "Turning on a plugin's server or hook automatically shows a risk warning; an automatically discoverable skill alone does not trigger that warning.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R4",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "An existing project's switches first show which skills and tools already work there today, rather than starting from a blank default.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R5",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "A personal skill missing on this device shows the saved choice and explains it needs to be added here; syncing the file is later work.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R6",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "An item installed from outside the marketplace and missing here stays visible with an explanation that it needs local setup, instead of disappearing.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R7",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "These project switches control only YouCoded's own assistant for now; Claude Code's settings are left untouched.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R10",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "Managing which skills and tools are automatic lives inside the Projects screen you already use, alongside its other tabs, not a separate page.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R15",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "An already-open conversation keeps showing the skill availability it started with; a note explains that a changed switch applies to your next new conversation.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R16",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "'Set up here' offers to ask the assistant to fix a missing item, or choose the file yourself for a missing personal skill.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R24",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "A conversation started in a folder that isn't one of your projects gets no skills or tools turned on automatically.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R25",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "Installing a plugin from its Marketplace card also opens the project setup step, so you can choose which projects use it.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R26",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "The built-in plugins heading reads 'Built in', so it can't be mistaken for the name of a project.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R27",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "An outside tool connection, like Linear, is labelled without the developer term 'MCP server' in what you see.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R28",
+   "words": true,
+   "surface": "Projects",
+   "path": "Acceptance",
+   "headline": "The setup dialog's missing-connection explanation reads clearly, without repeating 'set up' twice in one sentence.",
+   "changed": "Found in review after the build, not on a deck you saw \u2014 veto it here if you disagree. ",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

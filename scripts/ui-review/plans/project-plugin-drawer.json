@@ -1,0 +1,4 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "shots": [{ "name": "skills-drawer", "actions": [{ "click": "[title='Browse skills']", "settle": 900 }], "expect": "[title='Open marketplace']" }]
+}

@@ -1,0 +1,80 @@
+[
+  {
+    "theme": "midnight",
+    "name": "skills-drawer-phone",
+    "run": "1790251926028",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "|",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 35,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.02,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 185,
+        "w": 7,
+        "h": 16
+      }
+    ],
+    "rmseVsBaseline": 0.266718,
+    "dump": [],
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/docs/active/design/2026-09-23-project-plugin-controls/runs/built/shots-project-plugin-drawer-phone/midnight/skills-drawer-phone.png"
+  },
+  {
+    "theme": "midnight",
+    "name": "skills-drawer-phone-scroll",
+    "run": "1790251926028",
+    "verified": true,
+    "reasons": [],
+    "errors": [],
+    "contrastFails": [
+      {
+        "text": "|",
+        "ratio": 2.51,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(13,17,23)",
+        "path": "div.assistant-bubble.max-w-[85%].break-words > div.mt-2.rounded-lg.border > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 81,
+        "y": 35,
+        "w": 7,
+        "h": 16
+      },
+      {
+        "text": "|",
+        "ratio": 2.02,
+        "need": 4.5,
+        "size": 12,
+        "fg": "rgb(78, 85, 94)",
+        "bg": "rgb(33,38,45)",
+        "path": "div.my-0.5.space-y-0.5.mt-1.5 > div.border.border-edge.rounded-lg > button.w-full.flex.items-center > span.text-fg-faint.text-xs.select-none",
+        "x": 79,
+        "y": 185,
+        "w": 7,
+        "h": 16
+      }
+    ],
+    "rmseVsBaseline": 0.268232,
+    "dump": [],
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/docs/active/design/2026-09-23-project-plugin-controls/runs/built/shots-project-plugin-drawer-phone/midnight/skills-drawer-phone-scroll.png"
+  }
+]

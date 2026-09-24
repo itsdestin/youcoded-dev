@@ -1,0 +1,22 @@
+{
+ "deck": "project-plugin-controls-review-1",
+ "started": "2026-09-23T09:34:04.338Z",
+ "submitted": "2026-09-23T09:35:58Z",
+ "cur": 1,
+ "answers": {
+  "P-1": {
+   "note": "these chevrons/dropdowns/buttons don't match standard youcoded app ui. fix it.",
+   "v": "other",
+   "seconds": 51,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "P-2": {
+   "note": "gray/dull the unchangeable buttons in the on position. with hover tooltip.",
+   "v": "other",
+   "seconds": 61,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

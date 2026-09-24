@@ -1,0 +1,38 @@
+{
+  "title": "Skills & tools — make it feel like Projects",
+  "key": "project-plugin-controls-real-projects-review-2",
+  "out": "project-plugin-controls.real-projects-review-2.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.real-projects-review-2",
+  "runs": { "before": "runs/rework-before", "after": "runs/rework-after" },
+  "labels": { "before": "Round 1 — rejected", "after": "Round 2 — revised" },
+  "themes": ["midnight"],
+  "crops": {
+    "projects-top": ["project-plugin-controls-context", "projects-skills-wide", "1080x290+180+330"],
+    "projects-bottom-phone": ["project-plugin-controls-phone", "projects-skills-phone-bottom", "390x744+0+0"]
+  },
+  "steps": [
+    {
+      "id": "V-1",
+      "surface": "Projects → Skills & tools",
+      "path": "Selected project → fourth tab",
+      "crop": "projects-top",
+      "headline": "Does this revised tab now look like the other three Projects tabs?",
+      "changed": "Removed the narrow settings column, duplicate screen heading and stacked wells. The tab now fills the same width as Files and Instructions & Memories, with one explainer, the same small group headings and full-width rows.",
+      "notice": "The fourth tab and project switcher are unchanged. Bundled items now read as rows in the same rhythm as the instructions tab; their automatic-use state is visible under each name.",
+      "risk": "Still a visual prototype with sample entries; these switches do not save.",
+      "highlight": "auto"
+    },
+    {
+      "id": "V-2",
+      "surface": "Projects on a phone",
+      "path": "Skills & tools → expanded plugin and items needing setup",
+      "crop": "projects-bottom-phone",
+      "headline": "Does the revised plugin grouping and missing-device section fit the tab's style?",
+      "changed": "Research Kit uses a full-width Projects row, with its skills and server inset beneath it. Missing personal skills and server connections use the same row shape rather than a separate settings box.",
+      "notice": "The previously approved four-tab phone behavior stays. The explainer links to the items that need setup; the lower rows remain reachable by scrolling.",
+      "risk": "The Add locally and Set up locally buttons are visual placeholders. No device files or connections are changed.",
+      "highlight": "auto"
+    }
+  ]
+}

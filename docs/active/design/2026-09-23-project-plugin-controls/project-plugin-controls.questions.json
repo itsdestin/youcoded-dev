@@ -1,0 +1,116 @@
+{
+  "title": "Project skills and plugins — decisions still open",
+  "key": "project-plugin-controls-questions",
+  "out": "project-plugin-controls.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Project skills",
+      "path": "Projects → plugin controls",
+      "headline": "What should an automatically enabled skill give your assistant at the start of a conversation?",
+      "today": "The assistant can see a list of installed skills and read a skill's full instructions when it uses that skill. You chose project-level controls for which skills are available automatically.",
+      "problem": "'Enabled automatically' could mean knowing a skill exists or reading all of its instructions at the start. Those behave differently when many skills are installed.",
+      "proposal": "Choose what the assistant gets by default in a project. A skill used manually still stays in that conversation's history; this choice does not change that.",
+      "options": [
+        {
+          "id": "discover-on-demand",
+          "label": "Know, then read",
+          "pros": ["The assistant knows when the skill might help without reading every full skill up front."],
+          "cons": ["It must take a separate step to read the skill when needed."]
+        },
+        {
+          "id": "read-at-start",
+          "label": "Read at start",
+          "pros": ["The skill's full instructions are available immediately."],
+          "cons": ["Every enabled skill adds its full text to the start of every conversation."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Personal skills",
+      "path": "Projects → plugin controls",
+      "headline": "How should a new skill added outside the marketplace behave before you configure it?",
+      "today": "YouCoded discovers skills you put in your personal skill folder or a project's skill folder without a marketplace download. Existing items should keep working when these controls arrive.",
+      "problem": "A file added later could begin appearing automatically even though a freshly downloaded marketplace plugin begins inactive everywhere.",
+      "proposal": "Choose the default for newly discovered personal and project skill files. Existing files keep their current behavior either way.",
+      "options": [
+        {
+          "id": "keep-current",
+          "label": "Keep current behavior",
+          "pros": ["A skill you add yourself works the way it does today without another setup step."],
+          "cons": ["Marketplace downloads and hand-added skills have different defaults."]
+        },
+        {
+          "id": "require-enable",
+          "label": "Require enabling",
+          "pros": ["All newly added skills wait for an explicit project choice."],
+          "cons": ["Adding a skill file alone would no longer make it automatically available."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Plugin confirmation",
+      "path": "Projects → enable a plugin or one of its parts",
+      "headline": "Which automatic plugin behaviors should trigger the risk confirmation?",
+      "today": "You decided that enabling automatic parts should show one confirmation each time, listing all affected parts when a whole plugin is enabled.",
+      "problem": "A skill the assistant can choose to read, a server it connects to, and a hook that runs commands can carry different risks. Warning on everything may make real warnings easy to ignore.",
+      "proposal": "Pick the threshold for that confirmation. The dialog's exact wording and layout can wait for UI review.",
+      "options": [
+        {
+          "id": "executable-only",
+          "label": "Active behaviors",
+          "pros": ["Warns when enabling things that can connect or run by themselves, such as servers and hooks."],
+          "cons": ["Automatically discoverable skills would not get this warning."]
+        },
+        {
+          "id": "every-auto",
+          "label": "Every automatic item",
+          "pros": ["One consistent confirmation rule for everything made automatic."],
+          "cons": ["Frequent warnings for ordinary skills may dilute the more serious ones."]
+        },
+        {
+          "id": "risk-based",
+          "label": "Based on risk",
+          "pros": ["The warning can focus on actions that deserve attention."],
+          "cons": ["We would need to agree on a clear rule for which items count as risky before building it."]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Projects across devices",
+      "path": "Projects → plugin controls on another device",
+      "headline": "What should happen to a personally added skill when its project's choices reach a device without that file?",
+      "today": "You decided project choices should sync but plugins should not install automatically. Marketplace plugins missing on another device will show an Install action; credentials and device-specific settings will not sync.",
+      "problem": "A hand-added skill might not have a marketplace copy to install, even though the project remembers its setting.",
+      "proposal": "Choose how to represent a missing hand-added skill. It cannot run on the second device without its file.",
+      "options": [
+        {
+          "id": "show-missing",
+          "label": "Show missing",
+          "pros": ["The project still shows the choice you made and explains that the file needs to be added here."],
+          "cons": ["You may have to copy the file yourself to use that skill on this device."]
+        },
+        {
+          "id": "sync-file",
+          "label": "Sync skill file",
+          "pros": ["A hand-added skill can work on another device without manually copying it."],
+          "cons": ["The skill's contents would travel between devices, unlike the marketplace install-only approach."]
+        },
+        {
+          "id": "local-only",
+          "label": "Local-only choice",
+          "pros": ["A device without the skill does not show an unusable entry."],
+          "cons": ["The project has different skill settings on different devices."]
+        }
+      ]
+    }
+  ]
+}

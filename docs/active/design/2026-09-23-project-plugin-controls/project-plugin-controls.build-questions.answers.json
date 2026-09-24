@@ -1,0 +1,21 @@
+{
+ "deck": "project-plugin-controls-build-questions",
+ "started": "2026-09-24T07:05:04.209Z",
+ "submitted": "2026-09-24T07:06:01Z",
+ "cur": 0,
+ "answers": {
+  "B-1": {
+   "v": "pick",
+   "pick": "none-outside",
+   "seconds": 28,
+   "theme": "morning-rounds"
+  },
+  "B-2": {
+   "note": "",
+   "v": "pick",
+   "pick": "later",
+   "seconds": 28,
+   "theme": "morning-rounds"
+  }
+ }
+}

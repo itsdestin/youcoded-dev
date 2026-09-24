@@ -1,0 +1,21 @@
+{
+ "deck": "project-plugin-controls-drawer-review",
+ "started": "2026-09-23T12:09:45.400Z",
+ "submitted": "2026-09-23T12:12:50Z",
+ "cur": 1,
+ "answers": {
+  "D-1": {
+   "note": "i think i want green/yellow/red chips like from the session switcher at the bottom right. clicking a disabled card (greyed out with red chip) should open the relevant configuration screen",
+   "v": "other",
+   "seconds": 178,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "D-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

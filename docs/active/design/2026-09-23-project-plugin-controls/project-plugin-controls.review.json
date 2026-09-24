@@ -1,0 +1,29 @@
+{
+  "title": "Project plugins — first layout review",
+  "key": "project-plugin-controls-review-1",
+  "out": "project-plugin-controls.review.html",
+  "stage": "review",
+  "live": { "worktree": "plugin-project-controls", "offset": 342, "paneWidth": 820 },
+  "steps": [
+    {
+      "id": "P-1",
+      "surface": "Projects",
+      "path": "Marketplace → Download → configure across projects",
+      "headline": "After downloading, can you set up this plugin across several projects without losing track?",
+      "changed": "The newly installed plugin appears once inside each project's expandable card. All three projects start with it off; turning it on offers the skill and server switches.",
+      "notice": "Choose different parts for Your Assistant, Personal and School notes. Closing the page leaves the download installed, even if every project stays off.",
+      "risk": "This is a layout preview using an illustrative Research Kit, not a real download. Its switches and confirmation are local examples; they save nothing yet. The surrounding Projects screen is not rendered here.",
+      "live": { "surface": "project-plugin-controls", "round": 1, "candidate": "project-first-stacked" }
+    },
+    {
+      "id": "P-2",
+      "surface": "Projects",
+      "path": "Projects → Personal → skills and tools",
+      "headline": "For an existing project, can you tell what is automatic and what you can change?",
+      "changed": "The project lists installed plugins with their automatic-use switches. Chat Search, Page Builder and Marketplace Publisher start on; Theme Builder and a new download start off.",
+      "notice": "Open a plugin to inspect its individual items. Changing a switch affects new conversations, not a conversation already open.",
+      "risk": "This preview isolates the controls, not the full Projects page or command drawer. It uses sample data, and nothing you click saves or changes the running app.",
+      "live": { "surface": "project-plugin-controls", "round": 1, "candidate": "project-library" }
+    }
+  ]
+}

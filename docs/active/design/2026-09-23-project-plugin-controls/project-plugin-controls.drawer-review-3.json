@@ -1,0 +1,23 @@
+{
+  "title": "Skill drawer — chips on the right",
+  "key": "project-plugin-controls-drawer-review-3",
+  "out": "project-plugin-controls.drawer-review-3.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.drawer-review-3",
+  "runs": { "before": "runs/drawer-right-before", "after": "runs/drawer-right-after" },
+  "labels": { "before": "Round 2", "after": "Round 3" },
+  "themes": ["midnight"],
+  "crops": { "drawer-chips": ["project-plugin-drawer", "skills-drawer", "1440x225+0+650"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Skills drawer",
+      "path": "Chat → Browse skills",
+      "crop": "drawer-chips",
+      "headline": "Are the chips in the right place now?",
+      "changed": "Each status chip sits at the right edge of its skill card. The red Unavailable chip no longer has a separate 'Set up in Projects' caption beside it. Its green, amber, and red backgrounds and dots now use the same color definitions as the session switcher.",
+      "notice": "Click the red chip or the rest of its muted card to open the saved project's setup rows. Hover brightens the chip and card; keyboard focus remains visible. The missing skill still cannot run.",
+      "risk": "These are still workbench sample statuses, not project policy. I verified that clicking the red chip itself reaches Projects; no live settings changed."
+    }
+  ]
+}

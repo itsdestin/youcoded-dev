@@ -1,0 +1,104 @@
+{
+ "deck": "project-plugin-controls-contract-acceptance",
+ "started": "2026-09-24T19:50:16.248Z",
+ "submitted": "2026-09-24T19:50:47Z",
+ "cur": 15,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R1": {
+   "v": "yes",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R2": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R3": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R4": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R5": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R6": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R7": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R10": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R15": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R16": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R24": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R25": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R26": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R27": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R28": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
