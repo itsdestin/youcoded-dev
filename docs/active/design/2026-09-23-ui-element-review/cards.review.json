@@ -1,0 +1,393 @@
+{
+  "title": "Cards — the same screens four ways",
+  "key": "ui-element-review-cards",
+  "out": "cards.review.html",
+  "images": "images/cards.review",
+  "runs": {
+    "today": "runs/cards"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "today-library": [
+      "c",
+      "today-library",
+      "1440x560+0+100"
+    ],
+    "raised-library": [
+      "c",
+      "raised-library",
+      "1440x560+0+100"
+    ],
+    "outlined-library": [
+      "c",
+      "outlined-library",
+      "1440x560+0+100"
+    ],
+    "filled-library": [
+      "c",
+      "filled-library",
+      "1440x560+0+100"
+    ],
+    "today-marketplace": [
+      "c",
+      "today-marketplace",
+      "1440x470+0+320"
+    ],
+    "raised-marketplace": [
+      "c",
+      "raised-marketplace",
+      "1440x470+0+320"
+    ],
+    "outlined-marketplace": [
+      "c",
+      "outlined-marketplace",
+      "1440x470+0+320"
+    ],
+    "filled-marketplace": [
+      "c",
+      "filled-marketplace",
+      "1440x470+0+320"
+    ],
+    "today-projects": [
+      "c",
+      "today-projects",
+      "1100x230+180+425"
+    ],
+    "raised-projects": [
+      "c",
+      "raised-projects",
+      "1100x230+180+425"
+    ],
+    "outlined-projects": [
+      "c",
+      "outlined-projects",
+      "1100x230+180+425"
+    ],
+    "filled-projects": [
+      "c",
+      "filled-projects",
+      "1100x230+180+425"
+    ],
+    "today-resume-browser": [
+      "c",
+      "today-resume-browser",
+      "430x380+215+250"
+    ],
+    "raised-resume-browser": [
+      "c",
+      "raised-resume-browser",
+      "430x380+215+250"
+    ],
+    "outlined-resume-browser": [
+      "c",
+      "outlined-resume-browser",
+      "430x380+215+250"
+    ],
+    "filled-resume-browser": [
+      "c",
+      "filled-resume-browser",
+      "430x380+215+250"
+    ],
+    "today-skills-drawer": [
+      "c",
+      "today-skills-drawer",
+      "1440x280+0+620"
+    ],
+    "raised-skills-drawer": [
+      "c",
+      "raised-skills-drawer",
+      "1440x280+0+620"
+    ],
+    "outlined-skills-drawer": [
+      "c",
+      "outlined-skills-drawer",
+      "1440x280+0+620"
+    ],
+    "filled-skills-drawer": [
+      "c",
+      "filled-skills-drawer",
+      "1440x280+0+620"
+    ],
+    "today-pages-library": [
+      "c",
+      "today-pages-library",
+      "1140x460+150+60"
+    ],
+    "raised-pages-library": [
+      "c",
+      "raised-pages-library",
+      "1140x460+150+60"
+    ],
+    "outlined-pages-library": [
+      "c",
+      "outlined-pages-library",
+      "1140x460+150+60"
+    ],
+    "filled-pages-library": [
+      "c",
+      "filled-pages-library",
+      "1140x460+150+60"
+    ],
+    "today-games-picker": [
+      "c",
+      "today-games-picker",
+      "440x340+1000+80"
+    ],
+    "raised-games-picker": [
+      "c",
+      "raised-games-picker",
+      "440x340+1000+80"
+    ],
+    "outlined-games-picker": [
+      "c",
+      "outlined-games-picker",
+      "440x340+1000+80"
+    ],
+    "filled-games-picker": [
+      "c",
+      "filled-games-picker",
+      "440x340+1000+80"
+    ]
+  },
+  "steps": [
+    {
+      "id": "K-1",
+      "surface": "Your Library",
+      "path": "Marketplace → Your Library",
+      "headline": "Your Library: which card look is best here?",
+      "notice": "Look at: Plugin cards. Today they carry a big shadow. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-library",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-library",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-library",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-library",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ],
+      "risk": "Picking differently on different screens is a real answer: it tells the guide which kinds of cards should stand out and which should stay quiet."
+    },
+    {
+      "id": "K-2",
+      "surface": "Marketplace",
+      "path": "Marketplace, scrolled to the picks",
+      "headline": "Marketplace: which card look is best here?",
+      "notice": "Look at: The rows of plugin cards. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-marketplace",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-marketplace",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-marketplace",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-marketplace",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ]
+    },
+    {
+      "id": "K-3",
+      "surface": "Projects",
+      "path": "Project Files",
+      "headline": "Projects: which card look is best here?",
+      "notice": "Look at: File and folder cards. Today they are flat with a border. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-projects",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-projects",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-projects",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-projects",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ]
+    },
+    {
+      "id": "K-4",
+      "surface": "Resume Session",
+      "path": "The session list",
+      "headline": "Resume Session: which card look is best here?",
+      "notice": "Look at: One card per conversation. Today they are tinted with a border. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-resume-browser",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-resume-browser",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-resume-browser",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-resume-browser",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ]
+    },
+    {
+      "id": "K-5",
+      "surface": "Chat",
+      "path": "The skills drawer ( / )",
+      "headline": "Chat: which card look is best here?",
+      "notice": "Look at: Skill tiles. Today flat with a border. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-skills-drawer",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-skills-drawer",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-skills-drawer",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-skills-drawer",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ]
+    },
+    {
+      "id": "K-6",
+      "surface": "Pages",
+      "path": "Manage pages",
+      "headline": "Pages: which card look is best here?",
+      "notice": "Look at: Page cards. Today flat with a border. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-pages-library",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-pages-library",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-pages-library",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-pages-library",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ]
+    },
+    {
+      "id": "K-7",
+      "surface": "Games",
+      "path": "The Games panel",
+      "headline": "Games: which card look is best here?",
+      "notice": "Look at: Game tiles. Today a darker tint. Only the cards change; every version already uses Round corners and a 12px gap between cards.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "today-games-picker",
+          "summary": "Today's mix, already with the Round corners you picked."
+        },
+        {
+          "id": "raised",
+          "label": "Raised",
+          "crop": "raised-games-picker",
+          "summary": "Every card: panel color, thin border and a soft shadow."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "outlined-games-picker",
+          "summary": "Every card: panel color and a thin border, no shadow."
+        },
+        {
+          "id": "filled",
+          "label": "Filled",
+          "crop": "filled-games-picker",
+          "summary": "Every card: a lightly tinted fill, no border, no shadow."
+        }
+      ]
+    }
+  ]
+}
