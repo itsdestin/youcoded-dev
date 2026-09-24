@@ -162,6 +162,8 @@ git worktree list --porcelain | sed -n 's/^worktree //p' | while read -r w; do
 done
 ```
 
+For a fuller inventory across every OLD worktree, not just this session's own, `node scripts/prune-worktrees.mjs` reports which are actually safe to delete (clean, merged, unused) — dry run only; never run its `--apply` without Destin naming the exact ones.
+
 **Secrets-scan any branch before its first push to a PUBLIC repo — including swept ones you
 never read.** `youcoded` and `youcoded-dev` are public; `youcoded-admin` is not.
 

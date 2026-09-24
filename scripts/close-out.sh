@@ -214,6 +214,10 @@ if [[ "$MERGED" == yes ]]; then
     [[ $nested_worktree == 1 ]] && continue
     fail "unregistered leftover directory: ${d%/}"
   done
+  # This loop only ever looks at $BRANCH's own worktree. For every OTHER accumulated
+  # worktree (this workspace's, and every component repo's), `node scripts/prune-worktrees.mjs`
+  # is the dry-run tool that reports which ones are actually safe to delete.
+  note "other worktrees: node scripts/prune-worktrees.mjs (dry run; --apply <key> needs Destin naming the exact ones)"
 else
   if git -C "$REPO_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
     pass "pushed to origin — a reviewer can see it"

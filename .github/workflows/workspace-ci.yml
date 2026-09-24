@@ -104,14 +104,21 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test scripts/workspace-start.test.mjs
 
-      # workspace-sync.mjs backs the same startup tool, but its ~70 tests include a
-      # large-inventory case that alone takes on the order of minutes (measured: 500
-      # changed files ≈3s, 3,000 ≈27s, 14,000 ≈150s scaling from a per-file lookup) — too
-      # slow to pay on every push without a stated job timeout. It still needs to run
-      # SOMEWHERE automatic (same "nobody catches a break here" reasoning as above), so it
-      # rides the existing daily cron and workflow_dispatch instead of push/PR.
-      - name: Test workspace-sync (slow — nightly/manual only)
-        if: ${{ !cancelled() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
+      # prune-worktrees.mjs is the tool that decides which of the ~60 accumulated worktrees
+      # are safe to delete — a wrong "safe" verdict here destroys someone's unpushed work, so
+      # its classification (merged/dirty/unmerged/unpushed/nested-dirty-component/missing-dir/
+      # ignored-scratch shapes) and its refusal to apply anything unsafe or unnamed both need
+      # a red build if they ever regress, same reasoning as workspace-start above.
+      - name: Test prune-worktrees
+        if: ${{ !cancelled() }}
+        run: node --test scripts/prune-worktrees.test.mjs
+
+      # workspace-sync.mjs backs the same startup tool and can fast-forward the shared
+      # checkout. Its suite once took minutes (a per-file git lookup made one 14,000-path
+      # test run ~150-280s), so it briefly ran nightly only; the 2026-09-23 batching rewrite
+      # brought the whole suite to ~30s, so it runs on every push/PR like the others.
+      - name: Test workspace-sync
+        if: ${{ !cancelled() }}
         run: node --test scripts/workspace-sync.test.mjs
 
       - name: Test the workbench boot check
