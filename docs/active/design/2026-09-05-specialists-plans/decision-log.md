@@ -362,3 +362,15 @@ Also found in the same test: a ChatGPT-sign-in plan's note read "no published pr
 "included in your ChatGPT plan" (decision 34 Q-5) — fixing; and the assistant set a step's model
 ("GPT-6-Sol", source `document`) — decision 35.4 wording in propose_plan being strengthened;
 asked Destin whether he requested it.
+
+## Decision 39 — a combine/check step can read several steps (live test, 2026-09-24)
+
+Destin's screenshots: a plan with three separate research steps and a combine step "← from step 1";
+the combine specialist said "I only received Result 1 (Mechanical keyboards)" and the final answer
+was keyboards-only. Two causes: (1) the assistant wrote independent work as consecutive steps
+instead of one split step, so it also ran 3× slower; (2) `of` could name only ONE step. Fixes:
+`of` on verify/combine accepts several earlier steps (card: "← from steps 1, 2 and 3") — this
+supersedes decision 33's derived fact that every link names exactly one step, and is the first
+piece of stage 2's results-between-steps; and propose_plan guidance says independent work goes in
+ONE split step and a combine lists every step it needs. Also confirmed working in the same test:
+decision 38's one-line "underway" reply and the completion reply.
