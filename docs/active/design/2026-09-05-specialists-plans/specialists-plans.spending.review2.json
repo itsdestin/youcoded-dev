@@ -1,0 +1,54 @@
+{
+  "_comment": "Decision 37 follow-up: C-1 popup restyled to the app's Dialog pattern (ModelPickerPopup / LocalModelsSection), named after the plan; B-2 new-limit state lightened. Before = round 1 After (runs/spend-after), After = feat/specialists-plans-ui at the popup fix.",
+  "title": "Plans — plan settings popup and the new-limit box, redone",
+  "key": "specialists-plans-spending-review2",
+  "out": "specialists-plans.spending.review2.html",
+  "images": "images/specialists-plans.spending.review2",
+  "runs": {
+    "before": "runs/spend-after",
+    "after": "runs/spend-after2"
+  },
+  "labels": {
+    "before": "What you saw",
+    "after": "Now"
+  },
+  "themes": ["midnight", "halftone-dimension"],
+  "crops": {
+    "popup": ["spending", "02-proposed-settings-popup", "440x440+230+280"],
+    "new-limit": ["spending", "10-paused-at-limit-new-limit-open", "724x362+24+112"],
+    "popup-low": ["spending", "11-popup-limit-low-hint", "440x440+230+280"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat · plan settings",
+      "path": "A plan waiting for approval, after pressing the gear",
+      "crop": "popup",
+      "headline": "Plan settings is now built like the app's other popups, and its title names the plan.",
+      "changed": "Same header, close button, spacing and rows as the Model & Effort popup. Under \"Plan settings\" it names the plan. Each step is one row, with the step on the left and its model on the right; \"Default model\" or \"Your choice\" sits under the step's name.",
+      "notice": "It looks like part of the app, and the model names are no longer cut off. The inside-the-card version is gone.",
+      "highlight": {"box": [2, 2, 96, 20]}
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat · plan card",
+      "path": "A plan that reached its limit, after pressing Continue",
+      "crop": "new-limit",
+      "headline": "Pressing Continue at the limit now shows just an amount box, Continue and a small close button.",
+      "changed": "\"New limit $ [box] Cancel Continue\" becomes \"$ [box] Continue ×\". Escape also closes it.",
+      "notice": "Fewer words and buttons. The row still says which limit was reached.",
+      "highlight": {"box": [55, 77, 44, 13]}
+    },
+    {
+      "id": "B-1",
+      "surface": "Chat · plan settings",
+      "path": "Plan settings with a limit turned on",
+      "crop": "popup-low",
+      "runs": ["after"],
+      "headline": "Turning on a limit opens the amount box and the low-limit warning inside the popup.",
+      "changed": "\"Set a limit\" with its switch, then \"$ [amount]\", then the warning when the amount is below what the plan usually costs.",
+      "notice": "The same warning you approved last round, now in the popup.",
+      "highlight": {"box": [2, 18, 96, 30]}
+    }
+  ]
+}
