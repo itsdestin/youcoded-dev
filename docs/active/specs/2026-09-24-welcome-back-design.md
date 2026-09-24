@@ -56,8 +56,10 @@ metadata (the old attempt's real fault).
   missing/corrupt file = empty (never throws). **The store exposes a `ready` promise and every
   handler (`reopen-list`, `forget-reopen`, track/untrack) awaits it** (review 1, D5) — no
   reliance on boot timing; `createWindow()` builds the window synchronously first.
-- `app.on('before-quit')` / shutdown path: flush pending write (awaited, bounded 1 s) so a menu
-  quit right after a first message still records it.
+- Flush the in-flight write (awaited, bounded 1 s) at the top of `shutdownApp()` — the ONE
+  function every exit route passes through, including SIGTERM/SIGINT which skip
+  `before-quit` (review 3, D10) — so a quit or OS shutdown right after a first message
+  still records it.
 
 New module `desktop/src/main/welcome-back-store.ts` (pure state + injected fs, unit-tested).
 
