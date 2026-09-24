@@ -1,190 +1,119 @@
 ---
 status: active
 date: 2026-09-21
-revised: 2026-09-22
+revised: 2026-09-24
 owner: Destin (taste and acceptance) / assistant (research, proposals and implementation)
-related: docs/active/design/2026-08-25-ui-design-guide.md, docs/roadmap/user-interface.md
+related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, decks, guide draft); docs/active/design/2026-08-25-ui-design-guide.md (old guide, to be archived)
 ---
 
-# Rebuild the UI design guide and align the app
+# A real design language for YouCoded — guide and app
 
-## Outcome
+## Goals
 
-Produce **both** (1) a concise design guide that future sessions can use to reliably
-match Destin's taste and (2) approved improvements to inconsistent or unappealing app
-surfaces. Every normative visual/UX instruction in the replacement guide must be shown
-in its final wording and explicitly approved or edited by Destin. Current UI, prior
-answers and the existing guide are inputs for proposals, not automatic authority.
+1. **A new design guide** that lets anyone building a new screen, popup or Page make it
+   look like Destin designed it. General rules and build instructions, with real screens
+   named only as examples — not a description of every existing screen. It completely
+   replaces the old AI-written guide (`2026-08-25-ui-design-guide.md`), which is archived.
+2. **Every rule in it comes from Destin's own choices**, made by comparing real screens
+   side by side (Today vs. proposals), never from word-only questions or from the old guide.
+3. **Nothing important left out:** every kind of element and every screen of the app is
+   covered — how things look *and* how they are arranged (spacing, text order, button
+   placement, layout).
+4. **The app brought into line** with the guide, in small batches Destin sees before and
+   after, plus the real bugs found along the way.
+5. **Proof the guide works:** fresh builders given only the guide make three mock Pages
+   (smart home, code review, messaging) that Destin judges as his taste.
 
-Do not put technical safety, accessibility or functional correctness up for an aesthetic
-vote. Existing contrast, keyboard, mobile-reachability and platform constraints still
-apply. Keep the current guide available until the replacement is approved and its
-consumers have switched; then archive it.
+## How decisions are made (lessons from this effort)
 
-## Outputs
+- Show **whole real screens** under each option, captured from the test copy of the app
+  with style proposals switched on (`?proposal=` in the workbench; files in
+  `youcoded/desktop/src/renderer/dev/workbench/proposals/`). Never ask about looks in words.
+- Label which option is **today**; never show two identical options unlabelled; one question
+  per slide; re-ask anything answered "confused".
+- Record every answer in `decisions.md` with its source (`<deck>#<step>`). Only those rows
+  may become guide rules. A rule carried over from how the app already works is shown to
+  Destin marked as such.
+- Answers are saved only on Submit. Commit and push after every step.
 
-- **Evidence inventory** in `docs/active/design/`: verified captures, app patterns,
-  counterexamples, coverage limits and known UI issues. This is research, not rules.
-- **Rule ledger** in `docs/active/design/`: one stable ID and revision per proposed rule,
-  exact wording, examples, conflicting surfaces, exceptions, impacts, decision status
-  and the submitted answer that approved the final revision.
-- **Small visual decision decks** with tracked `.answers.json`: Destin can accept,
-  reject or edit each rule and independently decide what should happen to affected UI.
-- **Replacement** `docs/active/design/2026-08-25-ui-design-guide.md`: approved
-  principles, useful role-specific recipes, app examples, exceptions and a short
-  builder checklist. No unapproved normative text.
-- **Accepted app changes** with before/after decks and narrow, effective regression
-  checks where a behaviour can actually be pinned.
+## Status (2026-09-24)
 
-## Execution
+**Done**
+- Backup: all work from the previous session and this one committed and pushed on
+  `session/ui-consistency-audit` (workspace and app), merged with current master.
+- Element inventory — six groups (buttons/controls, headers/text, cards/rows/spacing,
+  menus/search/fields, notifications/status, popups/screens/icons): `inventory/`.
+- Decided by Destin (`decisions.md`): full-screen titles; popup titles and ✕; heading
+  ladder with no capitals and underlined reading-section labels; counts; way back to chat;
+  control shape follows the theme at the **Round** level; **raised** cards with a medium
+  shadow; boxed Settings rows and plain menu rows; tinted status pills; tinted warning
+  boxes; outlined secondary buttons.
+- Guide draft written from those decisions: `guide-draft.md` (not yet approved — its
+  approval page was paused because the second audit showed it is incomplete).
+- Second audit (`audit/`): contradictions between the app and the draft; every Settings
+  screen; button placement; spacing and text composition.
 
-### 1. Gather current evidence
+**In progress**
+- Completeness check — every component and every screen mapped against what is covered, to
+  find missing categories (`audit/completeness-components.md`, `audit/completeness-screens.md`).
 
-Resume the isolated workspace with
-`node scripts/workspace-start.mjs --session ui-consistency-audit youcoded`; use its
-returned app worktree. Read `docs/MAP.md`, relevant path rules, the app instructions,
-`scripts/ui-review/README.md` and `.claude/rules/{feature-flow,review-deck}.md`.
-Inspect every normative claim in the existing guide, including its unnumbered prose,
-checklists and exceptions. Look up prior answers, UI findings, components, guards and
-`docs/roadmap/user-interface.md` when they help establish what exists or avoid
-reopening an already settled issue. An old claim or implementation is not approval
-of its wording for the new guide.
+**Known gaps the guide does not yet cover** (from the second audit)
+- Button placement: order (Destin: dark button right, light directly left), single button
+  full width, when to stack, destructive placement; chat cards currently do the opposite.
+- Settings anatomy: one layout for label + hint + control; how choices are offered; no box
+  inside a box; one popup padding; no duplicate section labels.
+- Spacing: no set scale today (proposed 4 / 8 / 12 / 16 / 24 with named uses).
+- Card and text composition: one order for item cards; one date position; flat helper cards.
+- Smaller categories: menu containers, bottom sheets, full-screen content area, loading
+  spinners, toasts, icons, tooltips, exact status colours.
+- Plus anything the completeness check adds.
 
-Run one baseline Workbench sweep from the **app worktree** with
-`bash scripts/ui-review/run-review.sh <absolute-app-worktree> <absolute-output-dir> midnight,light,halftone-dimension,meadow-mist,creme,dark`.
-Read the new run's `coverage.md` before judging pictures; unverified screens remain
-unreviewed. Record desktop, shared Android renderer, narrow remote layout and
-platform-specific limits honestly. Inspect motion, hover and touch with an operable
-isolated dev/Workbench surface where needed; static images do not prove them.
-Never inspect or modify the running built app through DevTools or IPC.
+**Bugs found (to fix in the app batches)**
+- Add a project and Import file popups have no close button.
+- Hovered and selected rows look identical (session drawer, project switcher, session list).
+- Two Marketplace error messages use a colour that does not exist (not red).
+- Unsaved-changes popup shows Cancel / Discard / Save as three identical dark buttons.
+- Destructive confirmations disagree on which side the red button sits.
+- Uninstall is outlined for skills but plain text for themes.
+- Permissions page shows its section title twice; Development popup has doubled padding;
+  Remote Access "Keep awake" has five options where the app's own rule says four.
+- Workbench-only change from the previous session to review: title weight, duplicated fade
+  code, test-file layout (see the code review in chat history; to be re-checked in the final
+  review).
 
-### 2. Identify patterns and propose rules
+## Remaining steps
 
-Review by *visual role*: hierarchy/type, depth and containers, cards versus rows,
-buttons and states, headers, menus, dividers, motion, themes and narrow layouts.
-For each role, compare a strong existing example with an inconsistent or less
-appealing one and any intentional exception. Cite screen, theme, capture and source
-path. Search the app worktree before claiming a pattern is universal or absent.
-Use independent read-only reviews by role if useful, then deduplicate findings;
-run the cross-theme check on the merged findings, not in parallel with discovery.
-
-Draft a **new, compact set of principles and role recipes**, not a renamed copy of
-the old guide. For every candidate, record:
-
-1. Stable ID/revision, exact actionable wording and why it should help.
-2. Real app example and credible counterexample, with capture and code reference.
-3. Named existing surfaces it would change; what might stay as an explicit exception;
-   theme, mobile and accessibility consequences. If no conflicting surface was found,
-   record the actual search and capture scope rather than claiming none exists.
-4. Proposed treatment for each conflict: change UI, narrow the rule, allow an
-   intentional exception or reject the rule. Keep this choice distinct from the
-   rule's approval.
-5. Status `proposed | needs-revision | approved | rejected | deferred`, answer
-   source `<deck-key>#<step-id>` and implementation status separately.
-
-If a rule needs many arbitrary exceptions, soften, split or discard it. Do not invent
-a universal `Card` or `Divider` merely to reduce class-name variety. Taste rules
-may be valuable even when only a visual review can enforce them; guards are for
-precisely testable behaviours.
-
-### 3. Get Destin's decision on every rule and visible change
-
-Begin with a **small calibration deck** covering headers/type, separators and
-cards/rows; improve the presentation based on his feedback before making more
-decks. Use one independently editable step per rule. Each step shows exact final
-wording, a real app example, a contradictory surface, the practical effect of Yes
-and No, and any proposed exception. Use Choice/Decide/Live/Clip for a visual choice
-and Question for a policy choice. Do not present taste as a measured defect.
-Group related steps into short decks rather than one overwhelming questionnaire.
-Preview each deck and read its contact sheet before serving it. Preserve submitted
-answer files; never rebuild an answered deck in place.
-
-A Yes approves only the wording and consequences shown in that step, **not all
-possible UI refactors**. If a note or an `Other` answer changes the meaning, draft
-a new revision and ask again. Do not include unanswered, rejected or deferred
-rules in the guide. Show Destin the assembled final wording, examples and
-exceptions and ask whether the guide works as a whole; this sign-off does not
-substitute for the individual rule decisions.
-
-### 4. Check that the guide transfers to new work
-
-Before guide-level sign-off, ask fresh builders to make **three review-only
-YouCoded Pages UI prototypes**, each from a fixed brief and realistic fixture data:
-
-| Prototype | Required content | Taste probe |
-|---|---|---|
-| Smart home | Rooms, device controls, a scene and an alert | Calm density, status colour and action safety |
-| Git / PR / branches | Branches, a PR awaiting review, changed files and a risky action | Technical hierarchy, rows/cards and action priority |
-| Social / messaging | Conversations, unread state, thread, compose and an empty/error state | Warmth, message rhythm and narrow layout |
-
-Give each builder only the **candidate guide**, Pages style kit/runtime instructions
-and its brief/fixture—not the rule ledger, earlier prototypes or Destin's private
-feedback. Preserve first attempts. Render the results **inside an isolated themed
-Workbench Pages frame**, in contrasting dark/light and wallpaper themes and at phone
-width; check meaningful interaction and overflow. These are prototypes, not installed
-sample Pages: no real devices, GitHub or messaging connections, persistent Pages,
-marketplace entries or changes to Destin's running app.
-
-In a review deck, let Destin judge each prototype separately: **does this look like
-his taste, and does its layout work for the task?** Distinguish a guide failure
-from a missing fixture or broken implementation. For a taste mismatch, identify
-the missing/ambiguous/wrong rule, propose exact revised wording, get his approval,
-and have a fresh builder retry the affected brief unaided. Recheck other examples
-if the revised rule applies broadly. Do not manually polish a failed prototype
-and call it a successful guide test. Keep verdicts and first-pass results; discard
-prototypes afterwards unless a separate product decision authorizes shipping them.
-
-### 5. Publish the guide and improve existing UI
-
-Publish only after every normative line matches an approved ledger revision, the
-three prototype verdicts are resolved, and Destin approves the assembled guide.
-Include an opening taste summary, compact principles, role recipes, **do/avoid**
-app examples, justified exceptions and a usable before-review checklist. Link to
-current primitives and tokens instead of copying their source. Have a fresh
-reviewer apply the guide to held-out app screens; reopen any rule it misreads.
-Archive a copy of the old guide, replace the active guide at its existing path,
-then verify references in `docs/MAP.md`, `.claude/rules/feature-flow.md`, the
-UI-review README and other actual consumers. Update only pointers that need it;
-no draft is presented as published authority.
-
-Turn approved rule impacts and separately approved UI decisions into **small fix
-batches**, starting where a shared component genuinely governs several surfaces.
-Preserve different treatments for different jobs rather than enforcing visual
-uniformity for its own sake. Include these concrete decisions in the review:
-
-- **Session Files:** compare its current file rows with Project Files preview cards;
-  decide the shape from the available content and task, and decide separately if
-  the phone's `RemoteFileCard` should change.
-- **Separators:** show Settings and representative cards/dialogs with inset-stop,
-  tapered and no-line alternatives. Separate decorative rules from structural
-  boundaries and Markdown content before setting a general rule.
-- **Button placement:** show the proposed rule with real cards/dialogs and ask
-  Destin to approve its final wording and affected screens.
-
-For each batch use the workspace feature flow: mockups and review deck, answered
-contract, reviewed implementation and before/after acceptance. Capture affected
-themes and narrow width; test real behaviour in an isolated dev instance when the
-Workbench is insufficient. Run `bash scripts/verify.sh <app-worktree>` for desktop
-changes and applicable Android checks. A new guard must fail when its **real**
-guarded site is broken; avoid broad source rules that cannot distinguish a
-decorative border from a structural one. Link known roadmap issues rather than
-re-reporting them, and file genuinely deferred work using the roadmap's Filing test.
+1. **Finish the completeness check** and add every missing category to the gap list.
+2. **Visual decision pages** for the gaps, each on real screens: button placement → Settings
+   anatomy → card and text composition (with the spacing scale shown as tidied screens) →
+   smaller categories. Pure cleanups (status colour values, icon sizes, spinner count) are
+   decided by the assistant and listed for Destin rather than asked.
+3. **Complete the guide** from all decisions; Destin approves it section by section and as a
+   whole.
+4. **Bring the Pages style kit in line** so the transfer test is fair.
+5. **Transfer test:** three fresh builders, guide only, build smart home / code review /
+   messaging mock Pages; shown in light, dark and wallpaper themes and at phone width; Destin
+   judges each. A miss changes the guide (approved), and a fresh builder retries.
+6. **Publish:** replace the old guide at its path, archive the old one, update pointers
+   (MAP, feature-flow rule, UI-review README, Pages builder).
+7. **App fix batches** — shared components first, then hand-built screens, then the bugs;
+   each batch shown before/after in light, dark, wallpaper and phone width, with tests and
+   `scripts/verify.sh`.
+8. **Final review:** fresh code reviewer over the whole branch, full desktop suite, Android
+   tests if the SDK is present, a final screenshot sweep; then Destin decides on merging.
 
 ## Completion gates
 
-1. **Evidence:** current coverage and gaps are stated; candidates have real app
-   examples, counterexamples and named affected surfaces.
-2. **Rules:** every final normative instruction and exception has a submitted
-   answer for its exact revision; no unresolved candidate is silently included.
-3. **Transfer:** Destin has reviewed all three blind Pages prototypes; guide-level
-   taste failures have an approved revision and fresh independent retry.
-4. **Guide:** Destin accepts the assembled reference; held-out review shows no
-   unresolved contradiction; consumers point to the replacement.
-5. **App:** each agreed fix batch has verified before/after evidence, relevant
-   platform checks and a submitted acceptance answer. Do not call the entire app
-   consistent while agreed batches remain open.
+- Every guide rule traces to a submitted answer in `decisions.md` (or is marked carried-over
+  and approved as such).
+- The completeness check lists no uncovered category.
+- The three transfer prototypes are judged as Destin's taste.
+- Every fix batch has a submitted before/after acceptance.
+- Nothing merges without Destin's word.
 
-An unanswered decision pauses only its rule or change, not independent research.
-If implementation exposes a counterexample to an approved rule, show it and ask
-again before changing the rule's meaning. Do not merge, push, deploy, touch the
-live app or run paid evaluations as a side effect of this plan.
+## Superseded
+
+`docs/active/design/2026-09-22-ui-guide-rebuild/` (rules.md ledger, word-only decks) and
+`docs/active/plans/2026-09-23-ui-guide-selected-screen-treatments.md` are the previous
+session's approach. Their accepted screen treatments are already on the branch and are
+re-checked against the new decisions in the fix batches.
