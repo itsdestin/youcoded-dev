@@ -39,6 +39,15 @@ date: 2026-09-23
 - Destin chose a **fourth “Skills & tools” tab in the actual Projects screen** over a hero-panel entry or a standalone all-projects page (chat, 2026-09-23). In `project-plugin-controls.real-projects-review.answers.json` he approved its home and phone behavior but rejected the narrow settings stack as visually out of place. In `project-plugin-controls.real-projects-review-2.answers.json` he approved the revised full-width grouping and phone rows **with one correction: drop the About header/bubble**. The workbench-only revision removes it. This approves the tab's visual direction, not the unreviewed install flow or backend.
 - **The install-flow card grouping in rounds 1–5 was rejected.** Destin: it “disregarded how all app pages/settings menus group and arrange items.” Round 6 changed only grouping/collapsing/styling to follow an existing YouCoded collapsible-card pattern: a project contains a plugin group, and the plugin contains individual setting cards. Destin approved **that grouping direction only** in `project-plugin-controls.review-6.answers.json` (“good enough for now”). This does **not** approve the standalone mockup as the full install-flow layout, its sample data, the command drawer, or backend behavior. Do not copy `youcoded/desktop/src/renderer/dev/workbench/mockups/ProjectPluginControls.tsx` wholesale as an implementation contract; review the feature in the actual Projects/settings screen before building it.
 
+## Combined review, 2026-09-24 (`project-plugin-controls.combined-review.answers.json`)
+
+- **Q-1 `ordinary-first`:** the first build covers ordinary projects; Your Assistant's locked bundled switches are added when that project exists. Until then bundled plugins can be switched off in any project.
+- **Q-2 `this-conversation`:** drawer chips show the open conversation's own availability (fixed at its start); when the project's setting differs, one quiet line says changes apply to the next new conversation.
+- **Q-3 `assistant-and-file`:** a missing item's setup offers "Ask assistant to set it up", plus "Choose skill file" for a skill. No tool-connection settings screen in the first build.
+- **Q-4 `show-with-note`:** on Android the Skills & tools tab is shown and editable, with one line saying phone conversations aren't affected yet.
+- **Approved:** R-1 right-aligned drawer chips with direct red-chip click; M-2 post-install setup on a phone; S-1 wrapping phone descriptions.
+- **Reworked, re-review pending (`combined-review-2`):** M-1 was "hard to understand" (re-asked with a two-step picture); S-2 "dont want this inside the card. maybe a popup" and K-1 "confused" → both are now popups using the app's Dialog.
+
 ## Still open before a build contract
 
 1. Visual sign-off on the in-context Marketplace post-install step, the drawer's round-3 right-aligned chips, and the locked rows inside Your Assistant's Projects tab. The local-MCP and missing-device actions still need their own full-context review; **the round-6 grouping direction alone did not approve the whole feature**.

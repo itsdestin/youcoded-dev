@@ -1,0 +1,18 @@
+ok    parent frame (toolbar)
+ok    app · default
+ok    app · empty
+ok    app · no-providers
+ok    app · refused
+ok    app · stress
+ok    app · scenario=site
+ok    tool gallery
+ok    comparisons
+ok    live candidate index
+ok    assistant settings
+ok    attachment chip mock-ups
+ok    session status pills
+ok    parent frame · stalled toggle on
+ok    app · default + stalled turn
+ok    app · first-run wizard
+
+All 16 workbench routes mount cleanly.

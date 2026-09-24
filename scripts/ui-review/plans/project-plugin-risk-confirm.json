@@ -5,12 +5,20 @@
     {
       "name": "risk-confirm",
       "actions": [
-        { "click": "[title=Projects]", "settle": 1000 },
-        { "click": "[aria-label='Skills & tools']", "settle": 500 },
-        { "click": "js:document.querySelector('[aria-label^=\"Research Kit in \"]')", "settle": 300 },
-        { "eval": "document.querySelector('[role=alertdialog]').scrollIntoView({block:'center'})", "settle": 300 }
+        {
+          "click": "[title=Projects]",
+          "settle": 1000
+        },
+        {
+          "click": "[aria-label='Skills & tools']",
+          "settle": 500
+        },
+        {
+          "click": "js:document.querySelector('[aria-label^=\"Research Kit in \"]')",
+          "settle": 300
+        }
       ],
-      "expect": "js:!!document.querySelector('[role=alertdialog]') && /Research sources can connect/.test(document.querySelector('[role=alertdialog]').textContent)"
+      "expect": "js:[...document.querySelectorAll('[role=dialog]')].some(d=>/Turn on Research Kit/.test(d.textContent) && /Research sources/.test(d.textContent))"
     }
   ]
 }

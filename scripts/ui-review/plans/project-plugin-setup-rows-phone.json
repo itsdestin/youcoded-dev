@@ -7,13 +7,24 @@
     {
       "name": "setup-open-phone",
       "actions": [
-        { "click": "[aria-label='Open menu']", "settle": 500 },
-        { "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))", "settle": 1000 },
-        { "click": "[aria-label='Skills & tools']", "settle": 500 },
-        { "click": "js:[...document.querySelectorAll('[aria-label=\"Items needing setup on this device\"] button')].filter(b=>b.textContent.trim()==='Set up here')[1]", "settle": 300 },
-        { "eval": "document.querySelector('[aria-label=\"Items needing setup on this device\"]').scrollIntoView({block:'end'})", "settle": 300 }
+        {
+          "click": "[aria-label='Open menu']",
+          "settle": 500
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button,[role=menuitem]')].find(b=>/^Projects/.test(b.textContent.trim()))",
+          "settle": 1000
+        },
+        {
+          "click": "[aria-label='Skills & tools']",
+          "settle": 500
+        },
+        {
+          "click": "js:[...document.querySelectorAll('[aria-label=\"Items needing setup on this device\"] button')].filter(b=>b.textContent.trim()==='Set up here')[1]",
+          "settle": 300
+        }
       ],
-      "expect": "js:/sign-in stay on the device/.test(document.body.textContent) && document.querySelector('[aria-label=\"Items needing setup on this device\"]').getBoundingClientRect().bottom <= innerHeight"
+      "expect": "js:[...document.querySelectorAll('[role=dialog]')].some(d=>/sign-in stay on the device/.test(d.textContent))"
     }
   ]
 }

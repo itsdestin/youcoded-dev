@@ -1,0 +1,93 @@
+{
+  "title": "Project skills & tools — three redone slides",
+  "key": "project-plugin-controls-combined-review-2",
+  "out": "project-plugin-controls.combined-review-2.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.combined-review-2",
+  "runs": {
+    "before": "runs/round2-before",
+    "after": "runs/round2-after"
+  },
+  "labels": {
+    "before": "1. You press Install",
+    "after": "2. What you see next"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "crops": {
+    "inbox-flow": [
+      "project-plugin-marketplace-install",
+      "inbox-flow",
+      "880x470+280+60"
+    ],
+    "setup-popup-phone": [
+      "project-plugin-setup-rows-phone",
+      "setup-open-phone",
+      "360x215+15+265"
+    ],
+    "risk-popup": [
+      "project-plugin-risk-confirm",
+      "risk-confirm",
+      "400x300+520+300"
+    ]
+  },
+  "steps": [
+    {
+      "id": "M-1",
+      "surface": "Marketplace plugin details",
+      "path": "Marketplace → Inbox → Install",
+      "crop": "inbox-flow",
+      "headline": "After you install a plugin, the same window asks which of your projects should use it. Good?",
+      "changed": "Today, a plugin you install is instantly on in every project. With this, it starts off everywhere, and right after Install the window lists your projects so you can switch it on only where you want it.",
+      "notice": "Pick as many projects as you like, or none. Press Done or close it; the plugin stays installed either way, and you can change this later in Projects → Skills & tools.",
+      "risk": "Sample projects; nothing is saved in this preview."
+    },
+    {
+      "id": "S-2",
+      "surface": "Projects → Skills & tools on a phone",
+      "path": "Projects → a synced project → Skills & tools → Set up here",
+      "crop": "setup-popup-phone",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      },
+      "headline": "'Set up here' now opens a popup instead of a box inside the card. Better?",
+      "changed": "Pressing 'Set up here' on something missing from this device opens a small popup: why it's missing, and 'Ask assistant to set it up' (plus 'Choose skill file' for a skill).",
+      "notice": "The card itself no longer grows. Close the popup with the X or by tapping outside it. The buttons in the popup do nothing in this preview.",
+      "labels": {
+        "after": "Now"
+      }
+    },
+    {
+      "id": "K-1",
+      "surface": "Projects → Skills & tools",
+      "path": "Projects → a project → Skills & tools → flip the Research Kit switch",
+      "crop": "risk-popup",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          2,
+          2,
+          96,
+          96
+        ]
+      },
+      "headline": "When you switch on a plugin that can reach outside services, this popup asks first. Clear enough?",
+      "changed": "Flipping the switch for a plugin that can talk to websites or accounts outside YouCoded shows this popup first. It names those connections and says what switching on means.",
+      "notice": "Cancel leaves it off. Plugins with only skills turn on with no popup.",
+      "labels": {
+        "after": "Now"
+      }
+    }
+  ]
+}
