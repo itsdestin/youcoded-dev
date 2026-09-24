@@ -1,0 +1,16 @@
+{
+ "_why": "Float chrome, round 6: every surface beyond the chat screen (Session Files, Games, Projects, Pages, terminal) as it looks in float today — the Before for the surfaces pass.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "shots": [
+  {"name": "files", "actions": [{"click": "[aria-label='Session Files']", "settle": 1200}]},
+  {"name": "games", "actions": [{"click": "[title='Games']", "settle": 1200}]},
+  {"name": "games-flappy", "actions": [{"click": "[title='Games']", "settle": 900}, {"clickText": "Flappy", "settle": 900}]},
+  {"name": "projects", "actions": [{"click": "[title=Projects]", "settle": 1500}]},
+  {"name": "pages", "actions": [{"click": "[aria-label='Open Pages']", "settle": 1200}]},
+  {"name": "pages-page", "actions": [{"click": "[aria-label='Open Pages']", "settle": 700}, {"click": "js:[...document.querySelectorAll('[data-rail-page]')].find(b=>b.textContent.includes('Week planner'))", "settle": 1500}]},
+  {"name": "terminal", "actions": [{"click": "js:[...document.querySelectorAll('.wide-view-toggle button')].find(b=>/terminal/i.test(b.getAttribute('aria-label')||b.textContent))", "settle": 1500}]}
+ ]
+}
