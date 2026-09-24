@@ -1,0 +1,29 @@
+{
+ "deck": "minimalist-round7",
+ "started": "2026-09-24T06:30:22.903Z",
+ "submitted": "2026-09-24T06:31:53Z",
+ "cur": 2,
+ "answers": {
+  "R7-1": {
+   "note": "we need to make this fade/scroll effect match the new effect we're using elsewhere. just a smidge less transparent on the panel.",
+   "v": "other",
+   "seconds": 53,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R7-2": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "R7-3": {
+   "note": "low",
+   "v": "pick",
+   "pick": "low",
+   "seconds": 22,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
