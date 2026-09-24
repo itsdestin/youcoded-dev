@@ -24,6 +24,13 @@ searched or resumed (chat-data).
       of "no results". Builds on the Stage 2 item just above
       `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
 
+- [ ] Document comments, like Google Docs or Word: highlight text in the file viewer, leave
+      notes, reply, resolve them (you or the assistant) and see the history, then have the
+      assistant work through every open comment; "Ask about this" becomes a pill inside your
+      sentence instead of pasted text. The look is settled in a preview (2026-09-24); nothing
+      is saved yet and the assistant cannot see comments
+      `files-panel` `desktop` `in-flight` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
+
 - [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
       but still a visible pause. What is left is the sheer number of elements syntax
       highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576

@@ -196,10 +196,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       links and file pills only)
       `desktop` `needs-verify` `checked 2026-09-01`
 
-- [ ] "Ask about this" native treatment (lift the message to screen centre, dim the window,
-      trace the selection) — built on draft PR youcoded#263, still open; Destin 2026-07-28:
-      decent for messages, "janky af" for the file viewer, needs more work before integrating
-      `desktop` `parked` `checked 2026-09-01`
 
 - [ ] The project-folder picker should be a dropdown with recently used folders like every
       other dropdown — but the app keeps no recents list at all yet (2026-07-24)

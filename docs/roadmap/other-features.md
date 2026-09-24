@@ -4,6 +4,12 @@ has passed ~8 items — graduate it to its own file.
 
 ## accounts
 
+- [ ] Share a document with someone through your YouCoded account, with its comments and
+      their history coming along (Destin, 2026-09-24). Needs online file storage and
+      permissions that do not exist yet; the comments feature keeps its records
+      account-ready so this can follow
+      `all` `parked` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
+
 - [ ] One rejected server call quietly signs you out of your account, with no notice. Friends
       then see you offline forever and you only find out by opening the friends panel. The LOG
       half shipped 2026-09-02 (youcoded#386) so it is diagnosable; the user-facing notice is

@@ -1,5 +1,7 @@
 ---
-status: active
+status: superseded
+superseded_by: docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
+superseded_on: 2026-09-24 (Destin discarded this design; draft youcoded PR #263 not built on)
 parked: 2026-07-28
 date: 2026-07-26
 owner: Destin (decisions) / Claude (spec)
