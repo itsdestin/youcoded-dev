@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: the remote server hand-rolls ~16 preference handlers that duplicate ipc-handlers.ts and have drifted
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Remote server's hand-rolled preference handlers have drifted from the desktop's
 

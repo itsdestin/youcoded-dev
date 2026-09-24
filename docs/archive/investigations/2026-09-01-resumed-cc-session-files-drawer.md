@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: A resumed Claude Code conversation's files list is keyed by a desktop session id that changes on every resume
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Resumed Claude Code conversation: files from before the resume are missing from its files list
 

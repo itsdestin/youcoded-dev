@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: a phone on remote access reports the HOST's platform, so touch adaptations are off
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # `isTouchDevice()` is false on remote browsers, including phones
 
