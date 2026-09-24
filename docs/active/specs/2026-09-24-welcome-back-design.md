@@ -47,7 +47,10 @@ metadata (the old attempt's real fault).
 - `session:forget-reopen(ids)` removes those conversation ids from `offer`.
 - Writes: in-memory state, coalesced async write (~200 ms), temp-file + rename. Never `*Sync`
   on a hot path (performance rule 1; `main-blocking-calls.test.ts`). The startup read is one
-  `fs.promises.readFile` before `createWindow`; a missing/corrupt file = empty (never throws).
+  `fs.promises.readFile` started in `app.whenReady()` before `createWindow()` is called; a
+  missing/corrupt file = empty (never throws). **The store exposes a `ready` promise and every
+  handler (`reopen-list`, `forget-reopen`, track/untrack) awaits it** (review 1, D5) — no
+  reliance on boot timing; `createWindow()` builds the window synchronously first.
 - `app.on('before-quit')` / shutdown path: flush pending write (awaited, bounded 1 s) so a menu
   quit right after a first message still records it.
 
@@ -70,10 +73,14 @@ Keyed by DESKTOP session id; the conversation id is updated whenever the mapping
 
 `untrack` must NOT live in `SessionManager.destroySession` or the `session-exit` handler —
 both run on quit too (explore report: every path ends in `destroySession`, exit code 0).
-Other non-user destroys (pending-handoff cleanup `App.tsx:355`, holder takeover) go through
-`SESSION_DESTROY`? → **verify in build**; a takeover moving the conversation to another device
-should untrack (it is no longer open HERE). A process that died on its own (exit) stays
-tracked: it was open in the strip.
+
+**Holder takeover untracks (review 1, D1).** `conversations/takeover.ts:141` and `:225-232`
+call `sessionManager.destroySession` directly, bypassing `SESSION_DESTROY`. The conversation
+now lives on another device, so it is not "open here": add `untrack(desktopId)` at those
+call sites (injected dep), with a test that a takeover-destroyed id leaves `open` while a
+crash-exit id stays. The renderer's pending-handoff cleanup (`App.tsx:355`) goes through
+`session.destroy` → `SESSION_DESTROY` and untracks like an X — correct, the conversation was
+handed off. A process that died on its own (exit) stays tracked: it was open in the strip.
 
 ## 3. IPC surface
 
@@ -83,6 +90,7 @@ tracked: it was open in the strip.
 | `session:forget-reopen` | `(ids: string[]) → {ok}` | handler | invoke | answers `{ok:true}` |
 | `window:close-request` (push, main→renderer) | `{ requestId, sessions: number }` | `webContents.send` | none (Electron-only `window` ns) | — |
 | `window:answer-close` | `{ requestId, close, reopen? }` | handler | none | — |
+| `window:close-request-cancelled` (push) | `{ requestId }` | `webContents.send` | none | — |
 
 `window.claude.window` is the documented Electron-only namespace (PITFALLS: IPC parity), so the
 close pair lives there and needs no shim/Android twin. Names byte-identical across files;
@@ -99,11 +107,20 @@ the existing `missingProject`/`notSyncedYet` fields; ids with no row at all simp
 1. `ev.preventDefault()`; send `window:close-request {requestId, sessions: owned.length}` to
    THAT window's webContents.
 2. Await `window:answer-close` for that requestId, **timeout 5 s** (B-quit risk card: a frozen
-   renderer cannot draw it). Timeout → close, and keep the sessions tracked (not a deliberate
-   "don't resume" — same as a crash).
+   renderer cannot draw it). Timeout → run the SAME destroy + `releaseSession` loop and close,
+   but skip `untrack` — sessions stay tracked, as after a crash (review 1, D4: no orphaned
+   processes behind a closed window).
 3. `close:false` → nothing. `close:true` → if `!reopen`, `untrack` each owned id; then the
    existing destroy + `releaseSession` loop + `confirmedClose = true; win.close()`.
 4. A second close press while a request is pending re-uses the pending request (no stacking).
+5. **Whole-app quit wins over a pending prompt (review 1, D2).** `before-quit` fires before
+   any window's `close` and runs `shutdownApp()` → `destroyAll()`. So: the close handler
+   returns immediately (lets the window close, asks nothing) once `shuttingDown` is set; and
+   `before-quit` first settles every pending close request as "keep tracked" (resolve with
+   `{close:true, reopen:true}` semantics — no `untrack`) and pushes
+   `window:close-request-cancelled {requestId}` so the renderer drops its prompt. A late
+   answer for a settled request is ignored. Menu quit / SIGTERM / OS shutdown therefore never
+   downgrade to "don't resume" (S-other-quit).
 
 Renderer (already mocked): `App.tsx` subscribes to `window.onCloseRequest`, renders
 `QuitSessionsPrompt`, answers via `window.answerClose`; ✕/Escape = `{close:false}`. The
@@ -115,9 +132,10 @@ sessions already destroyed by step 3; `open` is correct by then.
 ## 5. Renderer gating (mostly built)
 
 - Ask `reopenList` once, when `isFirstRun === false && sessionListLoaded && !remoteCatchingUp`
-  and the strip is empty. **Add:** skip in remote mode (`isRemoteMode()`), on Android, and in
-  any window that is not the leader main window (detached windows, buddy). Only one window
-  may show Welcome back.
+  and the strip is empty. **Launch-blocking (review 1, D3):** skip in remote mode
+  (`isRemoteMode()`), on Android, and in any window whose id is not the directory's
+  `leaderWindowId` (detached windows, buddy). Only one window may show Welcome back; the
+  mockup's effect has no such check yet.
 - Batch resume reuses `handleResumeSession`; native rows need a binding from
   `resolveNativeBinding` (prefill rule), else they are left for a manual Resume (picker).
 - `onDone` → `forgetReopen(ids)` with the ids shown.
