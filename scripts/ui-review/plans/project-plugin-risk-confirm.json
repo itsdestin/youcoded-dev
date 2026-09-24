@@ -1,0 +1,16 @@
+{
+  "_why": "The one confirmation shown when turning on a plugin whose parts connect to outside services.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=150&scenario=default",
+  "shots": [
+    {
+      "name": "risk-confirm",
+      "actions": [
+        { "click": "[title=Projects]", "settle": 1000 },
+        { "click": "[aria-label='Skills & tools']", "settle": 500 },
+        { "click": "js:document.querySelector('[aria-label^=\"Research Kit in \"]')", "settle": 300 },
+        { "eval": "document.querySelector('[role=alertdialog]').scrollIntoView({block:'center'})", "settle": 300 }
+      ],
+      "expect": "js:!!document.querySelector('[role=alertdialog]') && /Research sources can connect/.test(document.querySelector('[role=alertdialog]').textContent)"
+    }
+  ]
+}

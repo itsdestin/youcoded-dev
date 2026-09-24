@@ -1,0 +1,315 @@
+{
+  "title": "Project skills & tools — the remaining sign-offs",
+  "key": "project-plugin-controls-combined-review",
+  "out": "project-plugin-controls.combined-review.html",
+  "stage": "review",
+  "images": "images/project-plugin-controls.combined-review",
+  "runs": {
+    "before": "runs/combined-before",
+    "after": "runs/combined-after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "crops": {
+    "drawer-chips": [
+      "project-plugin-drawer",
+      "skills-drawer",
+      "1440x225+0+650"
+    ],
+    "plugin-detail": [
+      "project-plugin-marketplace-install",
+      "inbox-before-install",
+      "840x510+300+75"
+    ],
+    "install-phone": [
+      "project-plugin-marketplace-install-phone",
+      "inbox-install-phone",
+      "390x720+0+10"
+    ],
+    "setup-rows-phone": [
+      "project-plugin-controls-phone",
+      "projects-skills-phone-bottom",
+      "390x250+0+494"
+    ],
+    "setup-open-phone": [
+      "project-plugin-setup-rows-phone",
+      "setup-open-phone",
+      "390x340+0+400"
+    ],
+    "risk-confirm": [
+      "project-plugin-risk-confirm",
+      "risk-confirm",
+      "1080x330+180+380"
+    ]
+  },
+  "steps": [
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Projects → Skills & tools",
+      "path": "Projects → any project → Skills & tools",
+      "headline": "Build the controls for ordinary projects first, and add Your Assistant's locked switches once that project exists?",
+      "today": "Every skill and tool connection you install is on in every project. The planned built-in Your Assistant project does not exist in the app yet; it is separate work scheduled for release 1.3.1.",
+      "problem": "Your decisions say the four built-in plugins are always on and locked in Your Assistant. Building that part now would mean waiting for Your Assistant, or faking it.",
+      "proposal": "Ship per-project switches for ordinary projects first. When Your Assistant is built, its locked, dimmed built-in switches (already mocked) are added then. You approved this in chat; this records it.",
+      "options": [
+        {
+          "id": "ordinary-first",
+          "label": "Ordinary projects first",
+          "recommended": true,
+          "pros": [
+            "You get project controls without waiting on unrelated work",
+            "The locked-switch design is kept, just added later"
+          ],
+          "cons": [
+            "Until Your Assistant exists, the built-in plugins can be switched off in any project — only by your choice"
+          ]
+        },
+        {
+          "id": "wait",
+          "label": "Wait for Your Assistant",
+          "pros": [
+            "Everything arrives together"
+          ],
+          "cons": [
+            "This feature waits on a separate project with no firm date"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Skill drawer",
+      "path": "Chat → Browse skills (or type /)",
+      "headline": "If you change a project's switches while a conversation is open, which status should that conversation's skill chips show?",
+      "today": "The drawer mockup shows green Automatic, amber Manual use and red Unavailable chips. Your decision says switch changes only affect NEW conversations.",
+      "problem": "An already-open conversation keeps what it started with. If its chips showed the new setting, a green Automatic chip could appear on a skill the assistant in that conversation cannot actually see.",
+      "proposal": "The chips show what THIS conversation has. When the project's setting differs, the drawer adds one quiet line: 'Project settings changed — they apply in your next new conversation.'",
+      "options": [
+        {
+          "id": "this-conversation",
+          "label": "What this conversation has",
+          "recommended": true,
+          "pros": [
+            "Chips always tell the truth about what the assistant can use right now",
+            "The note explains why a switch you just flipped hasn't taken effect"
+          ],
+          "cons": [
+            "Right after changing a switch, the chips don't match the Projects screen until you start a new conversation"
+          ]
+        },
+        {
+          "id": "new-setting",
+          "label": "The new setting",
+          "pros": [
+            "Chips always match the Projects screen"
+          ],
+          "cons": [
+            "Chips can say Automatic for a skill the assistant can't see in this conversation, which is misleading"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Projects → Skills & tools → Needs setup on this device",
+      "path": "Projects → a synced project → Skills & tools → Set up here",
+      "headline": "For something turned on in a project but missing on this device, what should 'Set up here' offer in the first version?",
+      "today": "Nothing in the app lets you set up a tool connection (MCP server) by hand, and personal skill files don't sync between devices yet.",
+      "problem": "A project synced from another device can have a skill or tool connection turned on that isn't installed here. The button needs a real next step, not a promise it can't keep.",
+      "proposal": "The button opens a short explanation of why it's missing, plus 'Ask assistant to set it up' (starts a conversation that walks you through it) and, for a skill, 'Choose skill file'. Shown on the setup slides below.",
+      "options": [
+        {
+          "id": "assistant-and-file",
+          "label": "Assistant plus file picker",
+          "recommended": true,
+          "pros": [
+            "Works for every kind of missing item on day one",
+            "Picking a file is quick when you already have the skill file"
+          ],
+          "cons": [
+            "Setting up a tool connection goes through a conversation rather than a form"
+          ]
+        },
+        {
+          "id": "assistant-only",
+          "label": "Assistant only",
+          "pros": [
+            "One clear button, smallest to build"
+          ],
+          "cons": [
+            "No quick path when you already have the skill file"
+          ]
+        },
+        {
+          "id": "settings-screen",
+          "label": "A real setup screen",
+          "pros": [
+            "A form for tool connections, no conversation needed"
+          ],
+          "cons": [
+            "A whole new screen to design and review first, which delays the feature"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Projects → Skills & tools on Android",
+      "path": "Android app → Projects → a project → Skills & tools",
+      "headline": "Conversations started on your phone run through Claude Code, which these switches can't control yet. What should the phone show?",
+      "today": "On Android, conversations run through Claude Code rather than YouCoded's own assistant. Your decision keeps Claude Code untouched unless you opt in later.",
+      "problem": "If the phone shows the same switches with no note, flipping one appears to do something but changes nothing for conversations started on the phone.",
+      "proposal": "Show the tab on Android so the project's choices are visible and editable, with one line: 'These apply to conversations on your computer. Phone conversations aren't affected yet.'",
+      "options": [
+        {
+          "id": "show-with-note",
+          "label": "Show, with a note",
+          "recommended": true,
+          "pros": [
+            "You can still manage a synced project's choices from your phone",
+            "Honest about what the switches do there"
+          ],
+          "cons": [
+            "One more line of text on the phone"
+          ]
+        },
+        {
+          "id": "hide-on-android",
+          "label": "Hide on Android",
+          "pros": [
+            "Nothing on the phone that doesn't apply there"
+          ],
+          "cons": [
+            "You can't change a project's choices from your phone at all"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-1",
+      "surface": "Skill drawer",
+      "path": "Chat → Browse skills",
+      "crop": "drawer-chips",
+      "headline": "Are the chips in the right place now?",
+      "changed": "Each status chip sits at the right edge of its skill card. The red Unavailable chip no longer has a separate 'Set up in Projects' caption, and the chip colors come from the same source as the session switcher's.",
+      "notice": "Clicking the red chip, or anywhere on its dimmed card, opens that project's setup rows. Hover brightens it; the missing skill still can't run.",
+      "risk": "The statuses are sample data; nothing real is decided by them yet.",
+      "highlight": {
+        "box": [
+          91,
+          40,
+          8,
+          20
+        ]
+      }
+    },
+    {
+      "id": "M-1",
+      "surface": "Marketplace plugin details",
+      "path": "Marketplace → Inbox → Install",
+      "crop": "plugin-detail",
+      "headline": "After Install finishes, should this panel turn into 'choose your projects'?",
+      "changed": "A new download starts off in every project. The same panel switches to a project list: open a project, turn Inbox on, and choose its skills. Do as many projects as you like.",
+      "notice": "Done or closing keeps the download installed even if nothing was turned on; you can finish later in Projects. Choices now stay put if you close and reopen during the preview, and show up in that project's Skills & tools tab.",
+      "risk": "Sample projects and a fake install; nothing is saved to disk yet.",
+      "highlight": {
+        "box": [
+          4,
+          34,
+          92,
+          18
+        ]
+      }
+    },
+    {
+      "id": "M-2",
+      "surface": "Marketplace on a phone",
+      "path": "Marketplace → Inbox → Install",
+      "crop": "install-phone",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          7,
+          18,
+          87,
+          53
+        ]
+      },
+      "headline": "Do the project list, switches and Done button fit on your phone?",
+      "changed": "The same panel on a phone: the first project opens so the plugin and its skill are visible without another tap, and the list scrolls if it grows.",
+      "notice": "Each project opens separately. The plugin's main switch pauses automatic use but remembers which skills you picked.",
+      "risk": "Preview only; no project settings are saved yet."
+    },
+    {
+      "id": "S-1",
+      "surface": "Projects → Skills & tools on a phone",
+      "path": "Projects → a project → Skills & tools → scroll to the bottom",
+      "crop": "setup-rows-phone",
+      "headline": "On a phone, the instructions under each row now wrap instead of being cut off. Keep it?",
+      "changed": "Row descriptions wrap onto a second line on narrow screens. The last round cut 'Add the skill file here…' off mid-word. Both buttons now read 'Set up here'.",
+      "notice": "Rows are a little taller on phones; on a computer nothing changes because the text already fits.",
+      "risk": "A very long plugin name could make a row three lines tall.",
+      "highlight": {
+        "box": [
+          18,
+          32,
+          50,
+          28
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Projects → Skills & tools on a phone",
+      "path": "Projects → a synced project → Skills & tools → Set up here",
+      "crop": "setup-open-phone",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          6,
+          57,
+          88,
+          38
+        ]
+      },
+      "headline": "Does 'Set up here' explain what's missing and offer a real next step?",
+      "changed": "The button used to do nothing. It now opens a short box saying why the item is missing on this device, with 'Ask assistant to set it up' (and 'Choose skill file' for a personal skill).",
+      "notice": "Pressing the button again closes the box. Which buttons ship is the question on the earlier page; this shows the recommended option.",
+      "risk": "The buttons inside the box do nothing in this preview."
+    },
+    {
+      "id": "K-1",
+      "surface": "Projects → Skills & tools",
+      "path": "Projects → a project → Skills & tools → turn on Research Kit",
+      "crop": "risk-confirm",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          2,
+          57,
+          96,
+          37
+        ]
+      },
+      "headline": "Is this the right warning before turning on a plugin that connects to outside services?",
+      "changed": "Turning on a plugin with a tool connection shows one confirmation that names every part that can connect or run by itself. The plugin stays off unless you press Enable.",
+      "notice": "It appears every time you turn such a part on, as you decided. Plugins with only skills turn on with no warning.",
+      "risk": "The wording is new and hasn't been shown to you before."
+    }
+  ]
+}

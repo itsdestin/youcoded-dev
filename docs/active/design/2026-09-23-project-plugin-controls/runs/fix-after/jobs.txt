@@ -1,0 +1,4 @@
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-controls-context.json project-plugin-controls-context midnight 0/1 43901
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-controls-phone.json project-plugin-controls-phone midnight 0/1 43902
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-risk-confirm.json project-plugin-risk-confirm midnight 0/1 43903
+/home/destin/youcoded-dev/worktrees/sessions/plugin-project-controls/scripts/ui-review/plans/project-plugin-setup-rows-phone.json project-plugin-setup-rows-phone midnight 0/1 43904
