@@ -1,5 +1,5 @@
 ---
-status: draft
+status: shipped
 date: 2026-09-22
 owner: Destin (product decisions) / YouCoded Assistant (engineering proposals)
 component: youcoded/desktop

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: superseded
 date: 2026-09-17
 owner: Destin (product decisions) / YouCoded Assistant (design)
 component: youcoded/desktop

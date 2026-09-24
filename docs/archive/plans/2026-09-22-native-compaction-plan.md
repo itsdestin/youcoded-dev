@@ -1,10 +1,10 @@
 ---
-status: active
+status: shipped
 date: 2026-09-22
 revised: 2026-09-23
 component: youcoded/desktop
 related:
-  - docs/active/specs/2026-09-22-native-compaction-design.md
+  - docs/archive/specs/2026-09-22-native-compaction-design.md
   - docs/roadmap/native-harness.md
 ---
 
