@@ -1,11 +1,26 @@
 ---
-status: draft
+status: active
 created: 2026-08-11
 type: spec
 ---
 
 # Presence self-healing: no gate may be clearable only by an OS event
 
+> ## Status 2026-09-24 — Parts 1 and 2 BUILT (youcoded#562); Part 3's log lines built; the friends-panel status line and Part 4 still open
+>
+> What shipped differs from §Part 1 below on purpose (youcoded `533ede75a`, review F1): the
+> suspend latch is released by `powerMonitor` `resume`, `unlock-screen` (macOS AND Windows),
+> `user-did-become-active` (macOS), or a real key press, click, tap or scroll delivered to a
+> YouCoded window at least 60 s after the suspend (`presence-socket.ts` `wakeEvidence`,
+> `social-handlers.ts`). **The "Fresh input via `getSystemIdleTime()`" and "Wall-clock gap"
+> signals below were DROPPED**: neither is proven on every OS (a lid-shut maintenance wake can
+> reset the idle clock), and a wrongly-Online closed laptop is the bug this latch exists to
+> prevent. The gap threshold and the gap-detector test plan below are therefore superseded;
+> the tests now prove those two signals can NOT release the latch
+> (`tests/presence-socket.test.ts`, `tests/social-handlers-wake.test.ts`). The stall repair
+> (Part 2) is the poll's "wanted, no socket, no retry scheduled" check (`reconnecting-ws.ts`
+> `isStalled`). The 2026-08-26 status below is kept as history; its line references are stale.
+>
 > ## Status 2026-08-26 — NOT BUILT; all four parts still open, defect re-verified on master
 >
 > Verified against `youcoded` `origin/master` (`dbbb9139`) on 2026-08-26:
