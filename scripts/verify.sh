@@ -169,6 +169,29 @@ for f in "${CHANGED[@]:-}"; do
   REL+=("${f#desktop/}")
 done
 
+# Tests that read a changed or DELETED non-code file by name. `vitest related`
+# follows imports only, and the lists above skip deletions entirely, so a test
+# that does readFileSync('…/review-roster.json') is invisible to both. 2026-09-23:
+# deleting desktop/test-engine/review-roster.json printed "tests: none" here, then
+# 26 harness-eval tests went red on the PR's Linux CI.
+mapfile -t GONE_OR_DATA < <(
+  { git -C "$CHECKOUT" diff --name-only --diff-filter=D "$BASE...HEAD" 2>/dev/null
+    git -C "$CHECKOUT" diff --name-only --diff-filter=D HEAD 2>/dev/null
+    printf '%s\n' "${CHANGED[@]:-}" | grep -vE '\.(ts|tsx|js|jsx)$'
+  } | grep '^desktop/' | grep -vE '^desktop/(tests|src)/.*\.(snap|md)$' | sort -u || true)
+DATA_TESTS=()
+for f in "${GONE_OR_DATA[@]:-}"; do
+  [[ -n "$f" ]] || continue
+  # The stem too (a test may spell it `review-roster\.json` in a regex), but only
+  # when it is long enough not to match half the suite ("index", "main").
+  base=$(basename "$f"); stem=${base%.*}; pats=(-e "$base"); (( ${#stem} >= 8 )) && pats+=(-e "$stem")
+  while IFS= read -r t; do [[ -n "$t" ]] && DATA_TESTS+=("$t"); done < <(cd "$DESKTOP" && grep -rlF "${pats[@]}" tests --include='*.test.ts' --include='*.test.tsx' 2>/dev/null || true)
+done
+if [[ ${#DATA_TESTS[@]} -gt 0 ]]; then
+  mapfile -t DATA_TESTS < <(printf '%s\n' "${DATA_TESTS[@]}" | sort -u)
+  REL+=("${DATA_TESTS[@]}")
+fi
+
 # Source-scanning guards — the `*-authority` suites and their relatives — read
 # the source tree at RUNTIME (guard-scope, or their own join(__dirname,'..','src')).
 # `vitest related` walks the IMPORT graph, so it can never relate one of them to a
@@ -213,7 +236,7 @@ elif [[ -n "$BROAD_HIT" ]]; then
 elif [[ ${#REL[@]} -eq 0 ]]; then
   echo "  tests: none — no changed TS/JS files under desktop/"
 else
-  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards"
+  echo "  tests: related to ${#CHANGED[@]} changed file(s) + ${#SCANNERS[@]} source-scanning guards${DATA_TESTS:+ + ${#DATA_TESTS[@]} naming a changed/deleted data file}"
 fi
 echo ""
 
