@@ -412,6 +412,37 @@ dev-workspace).
   types), not measured on a handset — the SDK was absent that day.
   `n/a` `needs-verify` `checked 2026-09-13`
 
+- **Lease handoff is desktop-only: a phone using the app on-device can open a conversation its
+  other machine is live in with no warning, no takeover dialog, no handoff** (2026-09-21). The
+  lease/takeover RPCs are stubbed desktop-only in `SessionService.kt` (4311–4318), the shared
+  renderer gate treats that reject as "no protection here" and proceeds, and `session:create`
+  drops `resumeSessionId` (935–954), so the phone's local "resume" doesn't actually resume the
+  selected conversation. An on-device session has no lease protection or SyncHub participation.
+  A paired phone driving the desktop remotely is different — the desktop stays the holder and its
+  remote server supports the lease RPCs. Decide Android's place in "cross-device" before calling
+  the feature that: explicitly exclude it in copy, or add parity in the rebuild. Lease/handoff
+  audit finding H6. **Decided 2026-09-21 (lease-handoff deck Q-9): copy says so** — the (i) popup
+  and the dialog state plainly that live handoffs work between desktops, and the phone joins when
+  its rebuild lands; no new scope on the rebuild.
+  `n/a` `needs-verify` `checked 2026-09-21` →
+  docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
+- **Google Play would likely refuse the app as built: it downloads programs after install**
+  (2026-09-23). Play's Device and Network Abuse policy forbids downloading executable code
+  (native `.so`/ELF, dex, JAR) from anywhere but Play; interpreted code (JavaScript, Python) run
+  by an interpreter shipped in the app is allowed as long as it breaks no other policy.
+  `Bootstrap.kt` fetches bash, Node, git and the rest from `packages.termux.dev` at first run —
+  the exact pattern that kept Termux off Play. Claude Code's `cli.js` and the harness JS are on
+  the allowed side. Direction for the rebuild, to weigh in its design, not decided: ship a
+  fixed set of native programs inside the APK (the native-library directory is executable,
+  which also retires the linker64 / LD_PRELOAD W^X workarounds and eases the target-SDK
+  bump), and pick "asset" over "install at bootstrap" for the harness's dependencies (§7a
+  step 7). User-facing cost: a bigger download (roughly 100–200 MB, unmeasured) and no
+  on-demand `pkg install` by the assistant; optional extras could come as Play feature
+  modules. Expect a possible human-review argument even so. Policy text:
+  https://support.google.com/googleplay/android-developer/answer/16559646
+  `android` `confirmed` `checked 2026-09-23`
+
 ### From android-only.md (19)
 
 1. Android keeps enforcing the old "approve protected requests" overrides after the desktop

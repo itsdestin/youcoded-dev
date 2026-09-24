@@ -4,8 +4,6 @@ paths:
   - "**/desktop/test-engine/harness-eval.mjs"
   - "**/desktop/test-engine/harness-eval-worker.mjs"
   - "**/desktop/test-engine/eval-plans/**"
-  - "**/desktop/test-engine/review-harness.mjs"
-  - "**/desktop/test-engine/review-roster.json"
   # Also fires on the code the evaluator EVALUATES, not just the evaluator — the person
   # changing a tool is the one who should be offered a run. Four live rounds found nine
   # defects here that 4,500 passing tests missed, because every test drives a scripted
@@ -57,9 +55,9 @@ free and needs no key; a real run needs `--key-file`.
   passes worker config over **stdin** — never argv, never env, because `delete process.env.X`
   never rewrites `/proc/<pid>/environ`, which every same-uid descendant can read. No key file
   exists on the machine and the app's copy is `safeStorage`-encrypted: ask Destin to write one
-  (`umask 077`), pass `--key-file`, delete it after. **`review-harness.mjs` still has the bug**
-  (a `decision` in `docs/roadmap/dev-workspace.md`). Guard: `harness-eval-key-leak.test.ts`,
-  whose negative control must report LEAKED.
+  (`umask 077`), pass `--key-file`, delete it after. **`review-harness.mjs` had this bug;
+  retired 2026-09-23** — `harness-battery` reproduces its review in its report, so nothing
+  unique was lost. Guard: `harness-eval-key-leak.test.ts`, negative control must report LEAKED.
 
 - **Every judge grade must quote the answer verbatim or be discarded**, and contradiction
   warnings only warn — never adjust a score. They match tool ids, not prose; keying them on

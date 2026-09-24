@@ -1,0 +1,135 @@
+{
+  "title": "Pages that connect — follow-up: a page that may reach everything",
+  "key": "youcoded-pages-connections-questions-2",
+  "out": "youcoded-pages-connections-2.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "The open-internet page",
+      "intro": "You chose to block everything unapproved, and added: \"we need to add an option for some pages to basically allow everything… what if i want to create a basic web browser\". You are right that the first proposal had no room for that. These three settle how it works."
+    },
+    {
+      "id": "Q-open",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval screen for a page",
+      "headline": "Should a page be able to ask for the whole internet, as one blunt approval?",
+      "today": "Under what you just approved, a page lists each place it reaches and everything else is blocked. A feed reader that follows any link, a link previewer or a search page cannot list its places in advance.",
+      "problem": "Without a way to ask for everything, a whole family of pages cannot be made at all. With one, the approval has to be honest that nothing limits where that page sends what it sees.",
+      "proposal": "A page may ask for \"any website\". Its approval screen says so in plain words: \"Can reach any website. Anything shown in this page, or typed into it, could be sent anywhere.\" Pages that do not ask stay fully blocked.",
+      "options": [
+        {
+          "id": "open-allowed",
+          "label": "Yes, as its own blunt approval",
+          "pros": [
+            "Browsers, feed readers, link previewers and search pages become possible.",
+            "Blocking stays the default, so an ordinary page is still held to its list.",
+            "The plain-list wording you chose handles it: it is just one very wide line."
+          ],
+          "cons": [
+            "For that page, the app no longer protects what is on screen. The wording has to carry the whole warning.",
+            "When the marketplace arrives, an open-internet page from a stranger needs the most careful review."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "open-own-only",
+          "label": "Yes, but only for pages you made",
+          "summary": "Installed pages from other people could never ask for everything.",
+          "pros": [
+            "A stranger's page can never have the wide approval."
+          ],
+          "cons": [
+            "Nobody could share a feed reader or browser page in the marketplace.",
+            "\"Made by you\" gets blurry once pages are edited and shared."
+          ]
+        },
+        {
+          "id": "open-no",
+          "label": "No, keep every page to a list",
+          "pros": [
+            "Every approval screen stays specific."
+          ],
+          "cons": [
+            "The pages you described cannot exist."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-open-mix",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval screen for a page that wants both",
+      "headline": "May one page have the whole internet and also use one of your keys or sign-ins?",
+      "today": "Not applicable yet. You approved that keys and sign-ins are held by the app and never shown to the page. The page does see the information that comes back.",
+      "problem": "A page with both could read your private information with a key, then send it to any website. The key itself stays safe; what it unlocks does not.",
+      "proposal": "Pick whether the two can be combined.",
+      "options": [
+        {
+          "id": "mix-never",
+          "label": "Never both on one page",
+          "summary": "A page is either open-internet, or it uses your keys and sign-ins with a fixed list. The creator skill splits a request that needs both into two pages.",
+          "pros": [
+            "A simple rule you can hold in your head: the page with your accounts cannot wander, and the page that wanders has none of your accounts.",
+            "No frightening combined warning is ever needed."
+          ],
+          "cons": [
+            "A browser page that also shows your GitHub notifications is not possible as one page."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "mix-warn",
+          "label": "Allow it, with a stronger warning",
+          "summary": "The approval adds: \"This page can read from your accounts AND reach any website, so it could send what it reads anywhere.\"",
+          "pros": [
+            "Nothing is impossible to build."
+          ],
+          "cons": [
+            "The most dangerous combination is one press away, protected only by a sentence.",
+            "Marketplace review for such a page would have to be very strict."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-browser",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page that shows other websites inside itself",
+      "headline": "A real web browser page needs one more building block. Include it in this phase, or later?",
+      "today": "Open-internet access lets a page fetch information and pictures from anywhere. It does not let a page display other websites inside itself: most large sites (Google, GitHub, YouTube, banks) refuse to be shown inside another page, and that refusal is theirs, not ours.",
+      "problem": "A browser page built with open-internet access alone would show blank boxes for most popular sites and look broken.",
+      "proposal": "A true browser needs the app to give pages a \"website view\" piece, the same kind of thing the app itself is built from, with its own back and forward, its own approval wording, and its own answer for your phone (where it likely cannot work). That is a feature in its own right.",
+      "options": [
+        {
+          "id": "browser-later",
+          "label": "Later, as its own item",
+          "pros": [
+            "This phase stays about information: dashboards, feeds, look-ups, which is what your dashboard needs.",
+            "The website view gets its own questions and design instead of being rushed.",
+            "Open-internet pages that do not display whole sites (feed readers, link previews, search) still ship now."
+          ],
+          "cons": [
+            "No browser page until a later phase."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "browser-now",
+          "label": "In this phase",
+          "pros": [
+            "The browser page is possible as soon as connections ship."
+          ],
+          "cons": [
+            "Noticeably more to design and build before your dashboard can ship.",
+            "Probably desktop only, so the phone would need a \"not available here\" state designed too."
+          ]
+        }
+      ]
+    }
+  ]
+}

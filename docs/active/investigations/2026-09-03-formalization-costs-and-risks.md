@@ -12,7 +12,28 @@ the outside world came from a September 2026 web search (sources at the end).
 Nothing here is legal advice — it is the map to bring to a one-hour lawyer
 conversation, so that hour is spent on decisions instead of discovery.
 
-## Status as of 2026-09-03, evening (read this first)
+## Status as of 2026-09-23 (read this first)
+
+**Since 2026-09-03.** The D-U-N-S number arrived 2026-09-10 (value in the private worksheet), so
+the Apple and Google Play accounts are no longer waiting on it. The trade name is still in the
+mail. None of the bank, Azure, Apple, Play or trademark steps below is recorded as started.
+Before applying to Apple, check that the D&B record matches the legal name and address letter for
+letter (the IRS record already lacks the unit number).
+
+**Windows signing plan changed (found 2026-09-23).** Microsoft's Public Trust *organisation*
+validation requires 3+ years of verifiable business history
+([Microsoft Q&A, Aug 2026](https://learn.microsoft.com/en-us/answers/questions/5977141/azure-artifact-signing-trusted-signing-is-a-us-llc)),
+so the LLC cannot pass it until about 2029-09. Destin has not chosen a route. Options:
+*individual* validation on the same service (US allowed, $9.99/mo, installers name Destin
+as publisher; recommended), an OV certificate from a commercial CA (~$200–400/yr, company name,
+more setup), or staying unsigned.
+
+**Store rules on downloaded code (found 2026-09-23).** Google Play bans downloading compiled
+programs after install, which the phone's first-run Termux setup does; Apple bars starting other
+programs at all. Both are recorded as design constraints for the mobile rebuild: the Android
+rebuild item and the iOS item in `docs/roadmap/other-features.md`.
+
+## Status as of 2026-09-03, evening (superseded above where they differ)
 
 **Done, all on 2026-09-03.** The company exists: **Destin's Adventures, LLC**, Arizona Business
 ID 25117372, member-managed, Destin sole member and statutory agent, Active / In Good Standing.

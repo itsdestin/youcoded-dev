@@ -55,7 +55,6 @@ Target: `v1.3.1`
 - marketplace: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
 - native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested and not thought through…
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
-- native-harness: A local model forgets the user's request halfway through a long first request, goes silent, then answers the…
 - native-harness: Native Runtime Parity Program
 - native-harness: The one object that runs a native conversation is 4,756 lines because it also orchestrates the helper agents…
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does not have it…
@@ -72,16 +71,16 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 102 | 33 | 3 | 9 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 11 | 5 | 23 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 32 | 3 | 9 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 12 | 5 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 41 | 16 | 2 | 6 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 40 | 10 | 1 | 4 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 38 | 8 | 1 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 8 | 2 | 2 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 24 | 6 | 0 | 9 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 5 | 6 | 5 |
+| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 22 | 7 | 7 | 5 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 21 | 10 | 0 | 4 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 19 | 5 | 3 | 5 |
-| [sync](docs/roadmap/sync.md) — moving your stuff between devices | 18 | 6 | 3 | 6 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 6 | 1 | 4 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 16 | 7 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 14 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |

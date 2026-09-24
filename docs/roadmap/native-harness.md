@@ -46,18 +46,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       handle each one — deck ready to serve, nothing answered. Parked 2026-09-09 to finish the
       session-context panel first
       `desktop` `parked` `checked 2026-09-16` → docs/active/investigations/2026-09-09-small-model-context-truncation.md
-- [ ] **v1.3.1 release blocker.** A local model forgets the user's request halfway through a long
-      first request, goes silent, then answers the next message as if the chat had just started
-      (Destin, 2026-09-16, two Qwen 9B chats). The conversation is silently cut to fit the model's memory, and the cut also
-      makes the engine re-read everything every step. Revised direction agreed 2026-09-22:
-      Pi-like near-limit triggering, one substantial summary with a small recent tail, preserve
-      the user's request and actual approvals, and keep compaction after reopening. One shared
-      cloud/local mechanism replaces the local-only draft's prune/drop ladder; exact budgets
-      and implementation details are still proposals. The older draft remains incident evidence,
-      not a second implementation track. Goes with the cloud context-management item under cost
-      and the skill/rule shortening item above; not implemented yet
-      `chat` `desktop` `confirmed` `checked 2026-09-22` `v1.3.1` → docs/active/specs/2026-09-22-native-compaction-design.md
-
 - [ ] Project startup reminders and before/after-action checks should work in native chats too,
       with approval before scripts run and clear reports when a check fails or times out
       `desktop` `parked` `checked 2026-09-05` `security` → docs/active/investigations/2026-09-05-native-guidance-followups.md
@@ -304,12 +292,10 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 - [ ] Cloud model context management and cache/token efficiency improvements — one item so the
       fixes below are specced together. Combined 2026-09-17 from three earlier entries (each kept
       below with its filing date) plus gaps found the same day comparing the app with Claude
-      Code, Hermes Agent and Pi. Revised compaction direction agreed 2026-09-22 is specified in
-      docs/active/specs/2026-09-22-native-compaction-design.md with a linked implementation-planning
-      draft: near-limit triggering, one durable handoff, bounded recent context, and no separate
-      prune-only stage. This now shares the local-model fix under sessions rather than keeping
-      cloud unchanged. Budget/storage details and UI review remain before implementation; the
-      new spec does not close every cache-efficiency follow-up below. Competitor detail for the cache half:
+      Code, Hermes Agent and Pi. Native compaction shipped 2026-09-23 (youcoded#559;
+      docs/archive/specs/2026-09-22-native-compaction-design.md): near-limit triggering, one
+      durable handoff, bounded recent context, overflow retry, restore on reopen. It closed the
+      compaction sub-items that were listed here; the remaining ones below are still open. Competitor detail for the cache half:
       docs/active/investigations/2026-09-09-cache-efficiency-competitor-survey.md
       - Cache efficiency (filed 2026-09-10) — cloud and local sessions leave cache hits on the
         table, especially after reopening a conversation: OpenRouter turns can drift between
@@ -333,31 +319,20 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
         surprise misses (four layouts in the survey, a deck for Destin), and a measurement pass
         in a dev instance — nothing reads the recorded local reuse count yet, and whether
         OpenRouter honours the top-level cache field and the session pin is asserted only
-        against a stubbed network
+        against a stubbed network. 2026-09-23: the ChatGPT-plan measurement pass is done
+        (live rig, docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md): follow-up
+        replies missed the cache a third of the time because one routing label was missing
+        (fix on a branch, 13/20 → 18/20); with it, restart + resume and compaction kept the
+        cache on every request. The date/git snapshot now sits last in the opening prompt so
+        conversations in one folder share the rest (branch). OpenRouter and local remain
+        unmeasured; llama.cpp's chunk reuse is unsupported by every offered local model
       - The context chip keeps the OLD model's window after a model swap or a resume (filed
         2026-09-16) — swap a 1M model for a small local one and the chip can read "97%
         remaining" on a window the very next message overflows; it only corrects once a turn
         finishes. The session-context panel's "Context window" row and its small-window warning
         have the same lag
-      - Reopening a compacted conversation the next day can silently restore the whole
-        pre-compaction history (filed 2026-09-16) — the saved checkpoint is rejected because the
-        system prompt carries today's date and a live git snapshot, so the conversation is
-        rebuilt from the raw record while the chip still shows the post-compaction figure
-      - (2026-09-17) When a provider rejects a request as too long, nothing compacts and
-        retries — the turn just fails
-      - (2026-09-17) A summary can't be made inside a user's first request (it needs two user
-        messages), so the silent per-request trim (`fitToContext`) takes over, and its
-        pair-safe front trim can drop everything back to the newest message — including the
-        user's original request
-      - (2026-09-17) Compaction judges how full the conversation is from the request size after
-        trimming, not before
-      - (2026-09-17) The summary is free-form. Consider fixed sections, updating the previous
-        summary instead of starting over, and a running list of files read and modified (as Pi
-        does)
       - (2026-09-17) Nothing is restored after compaction; Claude Code re-reads the files the
         assistant was recently working in
-      - (2026-09-17) No guard against compacting again and again without freeing enough room
-        (Claude Code calls this "thrashing"; Hermes guards it too)
       - (2026-09-17) Tool output caps are fixed numbers (Read 100k characters, the others 30k)
         rather than a share of the model's window. The narrower Bash-output item under tools
         stays separate
@@ -371,6 +346,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Helpers start from scratch and pay full price for their whole opening every time the
+      assistant hands off work, even though the main conversation's opening is already stored by
+      the provider. Investigate letting a helper start from the main conversation's stored opening
+      (Claude Code "forks" helpers this way); likely to be dropped — it changes what a helper sees,
+      and on ChatGPT a helper can still miss the parent's copy
+      `desktop` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md
+
 - [ ] Audit every place YouCoded recommends or automatically chooses a model, then build one
       maintained recommendation system so those choices do not go stale as model generations change
       `settings/defaults` `all` `confirmed` `checked 2026-09-15`

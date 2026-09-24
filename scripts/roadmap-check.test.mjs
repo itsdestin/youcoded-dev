@@ -320,6 +320,16 @@ test('an index row for a missing file, or a file with no row, is drift that --fi
   assert.deepEqual(diffIndex(loadRoadmap(root)), []);
 });
 
+// 2026-09-23: a lone `<<<<<<< HEAD` survived weeks in ROADMAP.md because the row parser
+// skips non-row lines, so structure read "clean" and --fix carried it forward.
+test('checkStructure: a leftover merge-conflict marker is an error', () => {
+  const root = withFixture(r => write(r, 'ROADMAP.md', read(r, 'ROADMAP.md').replace('| Area |', '<<<<<<< HEAD\n| Area |')));
+  const errs = checkStructure(loadRoadmap(root));
+  assert.equal(errs.length, 1);
+  assert.equal(errs[0].file, 'ROADMAP.md');
+  assert.match(errs[0].message, /merge-conflict marker/);
+});
+
 test('checkStructure: missing index, missing shipped.md', () => {
   const root = withFixture(r => { fs.rmSync(path.join(r, 'ROADMAP.md')); fs.rmSync(path.join(r, 'docs/roadmap/shipped.md')); });
   const msgs = checkStructure(loadRoadmap(root)).map(e => e.message);

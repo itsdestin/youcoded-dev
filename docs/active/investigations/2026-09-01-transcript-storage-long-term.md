@@ -17,8 +17,11 @@ Parked for a proper design pass. This report preserves the measurements so the p
 
 **(3) Large transcripts are effectively unsyncable, and the UX for that would lie.** `MAX_SYNC_FILE_BYTES` is 50 MB (`youcoded/desktop/src/main/sync-spaces/guards.ts`), so today everything rides — but content is concentrated: **68 transcripts (4% of files) hold 736 MB**, nine over 20 MB, one at 43 MB, while all 1,673 conversation *records* total **1 MB**. Metadata is nearly free; transcripts are the whole cost. Lowering the cap is blocked by copy: a record whose transcript is absent renders as "Not synced to this device yet" (`session-browser.ts` `fs.existsSync` probe → `notSyncedYet` → disabled row in `ResumeBrowser.tsx`). That wording is built for a *temporary* gap; a size-excluded transcript never arrives, so it would name a false cause — exactly what `docs/error-message-standards.md` forbids.
 
-The "yet" wording is still what the resume browser shows for an absent transcript:
-<!-- claim: {"path": "youcoded/desktop/src/renderer/components/ResumeBrowser.tsx", "contains": "'Not synced to this device yet'"} -->
+The "yet" wording is still what the resume browser shows for an absent transcript. Re-verified
+2026-09-23: the row itself moved out of `ResumeBrowser.tsx` into an extracted
+`SessionCardDetails.tsx` component (shared with the Projects tab's card preview) during the
+2026-09 performance/preview work; the wording did not change.
+<!-- claim: {"path": "youcoded/desktop/src/renderer/components/SessionCardDetails.tsx", "contains": "'Not synced to this device yet'"} -->
 
 Related asymmetry: the backend resume refusal ("This conversation hasn't synced to this device yet") exists only in the native lane (`ipc-handlers.ts`); the CC lane relies on the UI gate alone.
 

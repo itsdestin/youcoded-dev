@@ -1,0 +1,41 @@
+{
+  "title": "Native compaction — contract",
+  "key": "native-compaction-release2-contract",
+  "out": "native-compaction.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/native-compaction-implementation-20260923",
+  "sources": {
+    "native-compaction-release2": "native-compaction.review.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Chat and model picker",
+      "path": "A conversation after a native summary, or when choosing a smaller model",
+      "headline": "This is what done means for the new summary behavior.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Older messages summarized natively are dimmed, while recent messages kept alongside the summary remain at normal contrast.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "native-compaction-release2#B-1"
+        },
+        {
+          "id": "R2",
+          "statement": "A model that fits switches directly; an overfull chat asks to summarize on the current model, switching only if that summary fits.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "native-compaction-release2#B-2"
+        },
+        {
+          "id": "R3",
+          "statement": "At phone width, the summarize-or-dismiss choice fits, and X or Esc leaves my chat and current model unchanged.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "native-compaction-release2#B-3"
+        }
+      ]
+    }
+  ]
+}

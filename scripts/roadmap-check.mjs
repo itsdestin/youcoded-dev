@@ -370,6 +370,20 @@ export function checkStructure(rm) {
   else for (const e of rm.index.errors) errors.push({ file: INDEX_FILE, line: e.line, message: e.message });
   if (!rm.shipped) errors.push({ file: `${ROADMAP_DIR}/${SHIPPED_FILE}`, line: 0, message: `${ROADMAP_DIR}/${SHIPPED_FILE} is missing` });
   else for (const e of rm.shipped.errors) errors.push({ file: `${ROADMAP_DIR}/${SHIPPED_FILE}`, line: e.line, message: e.message });
+  // WHY (2026-09-23): a lone `<<<<<<< HEAD` sat above the ROADMAP.md backlog table for
+  // weeks after a half-finished conflict repair (a3cd5cae). The row parser skips any
+  // non-row line, so the check read "clean" and every --fix rewrite carried the debris
+  // forward. Conflict markers are never legitimate in these files — make them an error.
+  const files = [INDEX_FILE, `${ROADMAP_DIR}/${SHIPPED_FILE}`, ...rm.areas.map(areaFile)];
+  for (const rel of files) {
+    const abs = path.join(rm.root, rel);
+    if (!fs.existsSync(abs)) continue;
+    fs.readFileSync(abs, 'utf8').split('\n').forEach((text, i) => {
+      if (/^(<{7}|={7}|>{7})( |$)/.test(text)) {
+        errors.push({ file: rel, line: i + 1, message: `leftover merge-conflict marker: ${text.slice(0, 20)}` });
+      }
+    });
+  }
   return errors;
 }
 

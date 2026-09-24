@@ -28,11 +28,14 @@ Design: `docs/active/specs/2026-09-01-feature-flow-design.md`. Order: questions 
 UX tester 1 → review deck(s) → contract → design + capped review → build → code reviewer +
 UX tester 2 → triage → grader → acceptance deck → Destin's merge call.
 
+**Full-route cost, 3 tasks: ~13 subagents** — UX tester ×2, contract ×1, design-review ×1–3,
+builder+reviewer ×2/task, code reviewer ×1, grader ×1. Short route: 0.
+
 ## Short route for small work
 **Invariant:** small changes, features or bug fixes with clear direction may skip every step
-but the UI review deck, his first sight of the work. Ask Destin before skipping. **Why:** "just
+but the UI review deck. Ask first. **Why:** "just
 show them to me. this is a simple feature" (2026-09-10). "Wait on the deck" = keep building,
-no captures, no deck until he asks. **Guard:** none — candidate.
+no deck until he asks. **Guard:** none — candidate.
 
 ## Questions before drawing
 **Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
@@ -41,8 +44,8 @@ answer is not a source; a row must resolve to an answered step. **Guard:** `test
 
 ## The UX tester runs before the first deck and after the build
 **Invariant:** a fresh subagent given ONLY `scripts/ui-review/ux-tester.md`'s briefing and
-`scripts/ui-review/tester-kit.md` — nothing else from the workspace — drives the mockups before
-the first review deck and the built branch after the code review; each finding is triaged
+`scripts/ui-review/tester-kit.md` drives the mockups before
+the first deck and the built branch after the code review; each finding is triaged
 `accepted` / `rejected` / `already handled`.
 **Why:** a tester who read the design doc is not a beta tester.
 **Guard:** none — candidate.
@@ -84,12 +87,12 @@ rejected / already handled; stop on a round accepting nothing, cap three) → ta
 ## Two reviewers, a stranger grades, then the deck
 **Invariant:** after the build, a code reviewer (`scripts/ui-review/code-reviewer.md`) and the
 UX tester's second run report in parallel to
-`docs/active/reviews/<date>-<feature>-code-review.md` / `-ux-review-<run>.md`, each under a budget. The implementing
+`docs/active/reviews/<date>-<feature>-code-review.md` / `-ux-review-<run>.md`. The implementing
 session triages; accepted findings become `review:` rows. A fresh grader
 (`scripts/ui-review/grader.md`) writes `<feature>.contract.verdicts.json`, failing a `mechanical`
 row whose test exists but tests something else. The acceptance deck shows every verdict, tags
 `review:` rows **found in review**, and asks one yes/no per `human` row. Destin opens no review
 session; nothing merges without his word.
-**Why:** the builder is the worst reviewer of its branch; an existing guard is not a checked
+**Why:** the builder is the worst reviewer of its branch; an existing guard isn't a checked
 criterion.
 **Guard:** `review-cards.py acceptance` refuses ungraded rows; `test_contract.py` (AcceptanceTests).

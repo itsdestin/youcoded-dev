@@ -504,17 +504,6 @@ seen-on is always n/a here.
       records rounds, Destin-seconds, reopens and rows that failed at acceptance
       `n/a` `in-flight` `checked 2026-09-02` → docs/active/plans/2026-09-01-feature-flow-plan.md
 
-- [ ] Opening Settings → Backup & Sync in the workbench takes the whole thing down to "YouCoded
-      failed to start"; the boot check cannot see it and the review sweep counts the error state
-      as covered
-      `n/a` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-workbench-sync-panel-crash.md
-
-- [ ] The old review-harness script still lets the model it runs read the OpenRouter key (its
-      env scrub does not work); the native evaluator fixed this properly — retire the old script,
-      or port the three fixes to it?
-      Destin 2026-09-02: retire it — after checking nothing real is lost; reconsider if so
-      `n/a` `confirmed` `checked 2026-09-02` `security` → docs/active/investigations/2026-09-01-review-harness-key-leak.md
-
 - [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
       identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%
       first recorded and larger than the 6.38% a real candidate change produced against the same
@@ -904,8 +893,11 @@ seen-on is always n/a here.
 
 - [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
       The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
-      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads
-      `n/a` `blocked` `checked 2026-09-03` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads.
+      Windows needs a decision first (2026-09-23): Microsoft will not validate a company under
+      3 years old, so sign as Destin personally, buy a commercial certificate, or stay unsigned
+      — options in the report's Status block
+      `n/a` `blocked` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is

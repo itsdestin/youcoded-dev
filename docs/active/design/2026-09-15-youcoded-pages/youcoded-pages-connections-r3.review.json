@@ -1,0 +1,70 @@
+{
+ "title": "Pages that connect \u2014 the screens, round 3",
+ "key": "youcoded-pages-connections-r3",
+ "out": "youcoded-pages-connections-r3.review.html",
+ "images": "images/youcoded-pages-connections-r3.review",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "labels": {
+  "before": "Round 2",
+  "after": "Round 3"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "stage": "review",
+ "crops": {
+  "k": [
+   "pages-connections",
+   "approve-key-step",
+   "620x460+535+232"
+  ],
+  "ch": [
+   "pages-connections",
+   "approve-change",
+   "620x460+535+232"
+  ],
+  "ph": [
+   "pages-connections",
+   "approve-on-phone",
+   "620x460+535+232"
+  ]
+ },
+ "steps": [
+  {
+   "id": "E-1",
+   "surface": "Pages",
+   "path": "Task board \u2192 Continue",
+   "crop": "k",
+   "headline": "The line under the key box now says how the key is stored, not what the page can see.",
+   "changed": "\"Your key is stored encrypted on this computer only. It isn't backed up or synced, and YouCoded sends it only to api.todoist.com.\" Close to your wording, with one correction: the key does go to the one service it belongs to, so \"not accessible to outside services\" would not be true.",
+   "notice": "Every part of the sentence is something the app actually does: it is encrypted with the computer's own keychain, never kept unencrypted, and never synced.",
+   "risk": ""
+  },
+  {
+   "id": "E-2",
+   "surface": "Pages",
+   "path": "Pages \u2192 Headlines, after an edit added a second feed",
+   "crop": "ch",
+   "headline": "The new permission and what was already allowed now share one box.",
+   "changed": "The new line leads under a small \"New\" label; a hairline, then \"Already allowed\" with the older lines in smaller text.",
+   "notice": "One box answers \"what could this page do\" in full.",
+   "risk": ""
+  },
+  {
+   "id": "E-3",
+   "surface": "Pages over remote access",
+   "path": "The Task board card, opened from your phone",
+   "crop": "ph",
+   "headline": "On the phone, the reason now sits inside the greyed button.",
+   "changed": "\"Finish on your computer\", and under it in smaller text, \"Adding a key isn't supported on the phone yet. Open this page on your computer to set it up.\"",
+   "notice": "The one control where Allow would be carries its own explanation.",
+   "risk": "Long text in a greyed button is harder to read than the same text beside it."
+  }
+ ]
+}

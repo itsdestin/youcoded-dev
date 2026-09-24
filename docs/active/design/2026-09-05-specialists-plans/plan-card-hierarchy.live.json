@@ -1,0 +1,51 @@
+{
+  "title": "The plan card \u2014 three ways to lay it out",
+  "key": "plan-card-hierarchy",
+  "out": "plan-card-hierarchy.live.html",
+  "live": {
+    "worktree": "specialists-plans",
+    "paneWidth": 400
+  },
+  "steps": [
+    {
+      "id": "H-1",
+      "surface": "Chat",
+      "path": "A plan the assistant has proposed, waiting for your approval",
+      "headline": "Which of these lets you see what the plan will do without reading it?",
+      "notice": "All three show the same plan: three helpers read the changed files at once, one checks their notes, one writes the ranked list. Every row is the app's own row \u2014 click one and it opens in place, the way a Settings section does.",
+      "risk": "This is the waiting-for-approval state only. Whichever you pick, I fit the running, paused and finished states to it afterwards \u2014 so judge the layout, not the coverage.",
+      "live": {
+        "surface": "plan-card-hierarchy",
+        "round": 2,
+        "paneWidth": 400,
+        "height": 625
+      },
+      "variants": [
+        {
+          "id": "nested",
+          "label": "Nested",
+          "candidate": "nested",
+          "summary": "The three helpers sit inside the step as their own cards, visible before you approve instead of hidden behind the arrow. The same nesting the card already uses once a plan is running.",
+          "measured": "20 words of my own copy, against 22 on the card today",
+          "risk": "The tallest by about 40%, and it stays tall \u2014 eight helpers means eight cards you cannot fold away."
+        },
+        {
+          "id": "rows",
+          "label": "Rows",
+          "candidate": "rows",
+          "summary": "Nothing but the app's universal row: the step's sentence, what feeds it underneath, the count as a badge, the standard chevron. Invents nothing at all.",
+          "measured": "20 words of my own copy, against 22 on the card today",
+          "risk": "The fan-out is only a number until you click. The least different from what you are looking at today."
+        },
+        {
+          "id": "bar",
+          "label": "Bar",
+          "candidate": "bar",
+          "summary": "The same rows, under a segmented bar whose widths are the plan's shape \u2014 three at once, then one, then one. The bar becomes the progress bar once the plan runs.",
+          "measured": "20 words of my own copy, against 22 on the card today",
+          "risk": "The bar says the shape but not who does what. On pale themes it is a thin outline that could read as a divider."
+        }
+      ]
+    }
+  ]
+}

@@ -82,8 +82,14 @@ has passed ~8 items — graduate it to its own file.
       downloaded executable code would refuse), a pair-to-desktop-only app, or a proper web
       client over an encrypted remote connection. Wanted: a written comparison of cost, App Store
       constraints and what each option can and cannot do, before any build. The website's iOS
-      popup says we are exploring this (2026-09-10)
-      `n/a` `decision` `checked 2026-09-10`
+      popup says we are exploring this (2026-09-10). Constraint to design around (2026-09-23):
+      an iPhone app cannot start other programs at all, and App Store rule 2.5.2 bars
+      downloading code that adds features — so no bash, git or Claude Code on the phone, bundled
+      or not. The likely shape: the built-in assistant running inside the app with its file
+      tools rebuilt in-app (reusing the Android harness work), plus "connect to my computer" for
+      Claude Code and commands. Running AI-written code locally (a-Shell-style WebAssembly) is a
+      gray area Apple once threatened to remove; leave for later
+      `n/a` `decision` `checked 2026-09-23`
 
 - [ ] Nothing in the app or on youcoded.ai points to r/youcoded, the community Destin opened on
       2026-09-10 for bug reports, feature ideas, themes and things people make with the app.
@@ -98,20 +104,53 @@ has passed ~8 items — graduate it to its own file.
 - [ ] YouCoded Pages: let people create and install their own native-looking pages, from dashboards
       and paint studios to specialized assistants, and pin favorites beside Projects. Scope approved:
       live themes, personal/project pages, marketplace pages and custom services, controlled outside
-      access and optional computer programs; desktop + paired remote first. Phased: the shell
-      (icon, library, pins, isolated themed page, creator skill) is being built first; permissions,
-      connections, model tasks and marketplace follow, each an open question until its phase.
+      access and optional computer programs; desktop + paired remote first. Phased: the shell and
+      connections are built; model tasks, files and marketplace follow, each an open question
+      until its phase.
       Later: chat-alongside visual editing with drag/reorganize/resize, independent Android and durable automation.
       2026-09-17: Phase 1 (the shell, the page view, pins, the creator skill, page data, floating
-      themes) is built and verified on `session/youcoded-pages-spec`; the contract was skipped on
-      Destin's call. Phases 2–4 remain open questions in the plan.
-      `window-chrome` `all` `in-flight` `checked 2026-09-17` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+      themes) shipped to master; the contract was skipped on Destin's call.
+      2026-09-23: Phase 2 (connections and refresh) merged (youcoded#552, cbc793a6f); Destin tested a live
+      dashboard and a keyed weather page end to end. Next: a home-network connection for a Home
+      Assistant page, then Phases 3–4 in the plan.
+      `window-chrome` `all` `in-flight` `checked 2026-09-23` → docs/active/plans/2026-09-16-youcoded-pages-phasing.md
+
+- [ ] Publish the page-builder skill's connections update once an app release carries Pages
+      Phase 2. It is finished and held on wecoded-marketplace `session/youcoded-pages-phase2`
+      (plugin 0.2.0): merging it before that release gives everyone a skill that builds connected
+      pages their app cannot run. Merge it in the same step as the release.
+      `window-chrome` `all` `blocked` `checked 2026-09-23`
+
+- [ ] A page that manages a device on the home network: "one idea i had for a page is an explicit
+      home assistant integration/management page" (2026-09-23, on the Phase 2 security deck). Pages
+      are blocked from every home-network address today, including for "any website" pages, and
+      the manifest refuses ports and address literals. Needs its own connection kind approved per
+      device (for example `homeassistant.local:8123`), allowed past the private-address block for
+      that exact device only, with the device's access token held like any other key, and its own
+      approval wording. The blanket block stays for everything else.
+      `window-chrome` `desktop` `decision` `checked 2026-09-23`
+
+- [ ] A page allowed "any website" can, rarely, still reach a device on the home network: the app
+      checks the address a name points to, then connects by name, and a hostile name server can
+      answer differently the second time. Closing it means connecting to the address that was
+      checked, which needs the `undici` package added to the app — a dependency change, so it waits
+      for Destin's OK (Phase 2 design review finding 15; `net-guard.ts` HONESTY LIMIT).
+      `window-chrome` `desktop` `decision` `checked 2026-09-23`
+
+- [ ] A web browser as a page: "what if i want to create a basic web browser or something within
+      youcoded?" An open-internet page can fetch from anywhere, but most large sites refuse to be
+      shown inside another page, so a real browser needs the app to supply pages a website view
+      (back/forward, its own approval wording, an answer for the phone where it likely cannot
+      work). Deferred to its own round on the Phase 2 follow-up deck (2026-09-19).
+      `window-chrome` `desktop` `decision` `checked 2026-09-19`
 
 - [ ] Pages on a phone: the page view opens with the list always beside the page and the same band
       as on desktop, and nobody has designed what that becomes at phone width — on a narrow remote
       browser it will be cramped or unusable. Needs its own small round (collapse the list, or hide
-      it behind a button only on phones).
-      `window-chrome` `remote` `decision` `checked 2026-09-17`
+      it behind a button only on phones). Connected pages (Phase 2) have also never been tried over
+      remote access: requests should run on the computer and a key cannot be added from the phone,
+      both covered by tests only.
+      `window-chrome` `remote` `decision` `checked 2026-09-23`
 
 - [ ] A page deleted (through chat) while it is open in the page view stays in the frame until
       another page is picked; it should fall back to "No page selected".
