@@ -1,0 +1,143 @@
+{
+  "title": "Appearance panel — your own Look over any theme",
+  "key": "appearance-panel-review",
+  "out": "appearance-panel.review.html",
+  "images": "images/appearance-panel.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/ap-before",
+    "after": "runs/ap-after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "top": [
+      "ap",
+      "top",
+      "440x600+500+150"
+    ],
+    "look": [
+      "ap",
+      "look",
+      "440x600+500+150"
+    ],
+    "finetune": [
+      "ap",
+      "finetune",
+      "440x600+500+150"
+    ],
+    "bottom": [
+      "ap",
+      "bottom",
+      "440x600+500+150"
+    ],
+    "override": [
+      "ap",
+      "override",
+      "1440x900+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "AR-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance, top",
+      "crop": "top",
+      "highlight": {
+        "box": [
+          2,
+          8,
+          96,
+          60
+        ]
+      },
+      "headline": "Your favorite themes now sit in a box two rows tall that scrolls inside itself, under a Themes heading.",
+      "changed": "The panel is titled Appearance, not Themes. Favorites are in a box that shows 4 themes; the rest scroll inside it. Browse and Build sit side by side, shortened to \"Browse Marketplace\" and \"✦ Build New Theme\". The pencil shows only on themes you built yourself.",
+      "measured": "4 themes visible, 208 px tall box",
+      "notice": "The settings below the themes no longer get pushed down as you star more themes. If the theme you're using is further down the list, the box scrolls to show it when you open the panel.",
+      "risk": "Scrolling with the mouse over the box scrolls the box, not the panel; move the pointer off it to scroll the panel. The pencil is gone from built-in and marketplace themes, because there is nothing left to edit on them."
+    },
+    {
+      "id": "AR-2",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Look",
+      "crop": "look",
+      "headline": "A new Look section lets you pick layout, glass, bubble shape, message box and roundness for every theme.",
+      "changed": "Layout is four small pictures: Theme's choice (it names which one the theme uses), Framed, Floating bars and Minimalist. Glass is one row: Theme's, Clear, Frosted, Solid. Bubble shape and message box are dropdowns whose first entry says what the theme uses. Roundness is Theme's choice or Custom, which reveals a slider.",
+      "notice": "Everything starts on Theme's choice, so nothing changes until you pick something. A \"Reset everything to Theme's choice\" button appears once you've changed anything.",
+      "risk": "Some combinations a theme wasn't designed for may look off, for example Minimalist on a theme whose custom styling assumes a frame. Setting it back is one tap."
+    },
+    {
+      "id": "AR-3",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Look → Glass → Fine-tune",
+      "crop": "finetune",
+      "headline": "Glass sliders moved out of each theme's pencil menu into one Fine-tune list that applies to every theme.",
+      "changed": "Today the sliders live behind a theme's pencil and change only that theme. Now Fine-tune opens seven sliders in place: panel and bubble blur and see-through, plus the terminal's. Moving any slider switches Glass to a fifth choice, Custom, starting from what's on screen so nothing jumps.",
+      "notice": "One set of values for every theme with a wallpaper. On a theme without a wallpaper a line says glass has no effect there.",
+      "risk": "As decided, glass tweaks people already made per theme are dropped on update: those themes go back to their author's glass."
+    },
+    {
+      "id": "AR-4",
+      "surface": "Chat",
+      "path": "Any chat, after picking Minimalist, Pill bubbles and Solid glass in Look",
+      "crop": "override",
+      "headline": "Your Look choices apply to whichever theme is active: here Minimalist, pill bubbles and solid glass, over Meadow Mist and Midnight.",
+      "changed": "Before, each theme's own layout. After, the same themes with your picks laid over them: floating controls, round bubbles, and on Meadow Mist thicker, less see-through panels.",
+      "notice": "Switching themes keeps your picks; the new theme's colors and wallpaper come with them.",
+      "risk": "The first moment after launch uses your saved picks straight away, so there is no flash of the theme's own layout. If the settings file can't be read, everything falls back to Theme's choice."
+    },
+    {
+      "id": "AR-5",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance, bottom",
+      "crop": "bottom",
+      "headline": "Reduce Visual Effects and Message Timestamps sit under their own \"Effects & chat\" heading at the bottom.",
+      "changed": "Same two switches, same behavior, now under a heading.",
+      "notice": "Nothing about how they work has changed."
+    },
+    {
+      "id": "AR-6",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "Now that you can see it, keep one scrolling page with three headed sections?",
+      "today": "You left this open on the questions page (\"not sure yet\"). What's built is one page: Themes, Look, then Effects & chat.",
+      "problem": "The page is longer than before, because Look adds about a screen of settings.",
+      "proposal": "Pick whether to keep this shape or try the other layout.",
+      "options": [
+        {
+          "id": "keep-sections",
+          "label": "Keep sections",
+          "summary": "Leave it as built.",
+          "pros": [
+            "Everything reachable by scrolling, with headings to show where you are."
+          ],
+          "cons": [
+            "About two screens tall."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "try-tabs",
+          "label": "Try tabs",
+          "summary": "Themes | Look | Effects across the top, one showing at a time; I'd show you pictures next round.",
+          "pros": [
+            "Each tab fits on one screen."
+          ],
+          "cons": [
+            "Settings on other tabs are out of sight.",
+            "Tabs inside a popup appear nowhere else in the app."
+          ]
+        }
+      ]
+    }
+  ]
+}
