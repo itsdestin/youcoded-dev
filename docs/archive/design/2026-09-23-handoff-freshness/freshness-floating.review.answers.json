@@ -1,0 +1,22 @@
+{
+ "deck": "handoff-freshness-floating-review",
+ "started": "2026-09-23T09:53:05.935Z",
+ "submitted": "2026-09-23T09:54:00Z",
+ "cur": 1,
+ "answers": {
+  "F-8": {
+   "v": "yes",
+   "note": "make it take the full width of the chat window, kinda like the context banner at the top of a new session. same for the local model loading floater thing",
+   "seconds": 33,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-9": {
+   "note": "continue with these messages should be directly to the left of try again.",
+   "v": "other",
+   "seconds": 21,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

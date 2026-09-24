@@ -412,6 +412,21 @@ dev-workspace).
   types), not measured on a handset — the SDK was absent that day.
   `n/a` `needs-verify` `checked 2026-09-13`
 
+- **Lease handoff is desktop-only: a phone using the app on-device can open a conversation its
+  other machine is live in with no warning, no takeover dialog, no handoff** (2026-09-21). The
+  lease/takeover RPCs are stubbed desktop-only in `SessionService.kt` (4311–4318), the shared
+  renderer gate treats that reject as "no protection here" and proceeds, and `session:create`
+  drops `resumeSessionId` (935–954), so the phone's local "resume" doesn't actually resume the
+  selected conversation. An on-device session has no lease protection or SyncHub participation.
+  A paired phone driving the desktop remotely is different — the desktop stays the holder and its
+  remote server supports the lease RPCs. Decide Android's place in "cross-device" before calling
+  the feature that: explicitly exclude it in copy, or add parity in the rebuild. Lease/handoff
+  audit finding H6. **Decided 2026-09-21 (lease-handoff deck Q-9): copy says so** — the (i) popup
+  and the dialog state plainly that live handoffs work between desktops, and the phone joins when
+  its rebuild lands; no new scope on the rebuild.
+  `n/a` `needs-verify` `checked 2026-09-21` →
+  docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
+
 - **Google Play would likely refuse the app as built: it downloads programs after install**
   (2026-09-23). Play's Device and Network Abuse policy forbids downloading executable code
   (native `.so`/ELF, dex, JAR) from anywhere but Play; interpreted code (JavaScript, Python) run
