@@ -1,0 +1,45 @@
+{
+ "deck": "doc-comments-questions",
+ "started": "2026-09-24T23:40:56.302Z",
+ "submitted": "2026-09-24T23:46:49Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "hidden-project-folder",
+   "note": "but again, doc/excel comments that can be natively stored in the file/metadata should be stored that way.",
+   "seconds": 70,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "picks",
+   "picks": [
+    "reply",
+    "resolve",
+    "add",
+    "edit"
+   ],
+   "note": "for leaving it's own comments, it should explicitly be instructed to only comment sparsely and only on items that obviously require user action or attention. this is not a tool for the assistant to narrate how it built the document or it's own processes/thoughts. for D, that is largely the entire point of this system. i go through a doc, leave a bunch of edits/suggestions/etc, then the assistant acts on those and fixes the doc in response to my comments. the comments still need to remain on the doc, either repointed or resolved or something. not sure how exactly this will work.",
+   "seconds": 70,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "seconds": 70,
+   "theme": "meadow-mist",
+   "pick": "now-tap-opens-list"
+  },
+  "Q-4": {
+   "v": "other",
+   "seconds": 70,
+   "theme": "meadow-mist",
+   "note": "i want this to work fully natively/complete. show comments left in Word/Google Docs, add/reply/etc, have those comments appear in both youcoded and docs/word. fine if we need to phase this a little, but this should all fundamentally be merged as a single pr."
+  },
+  "Q-5": {
+   "v": "pick",
+   "seconds": 70,
+   "theme": "meadow-mist",
+   "pick": "close"
+  }
+ }
+}
