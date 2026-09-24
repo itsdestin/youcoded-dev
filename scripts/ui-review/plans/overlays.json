@@ -301,8 +301,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "scrollDialog": "bottom"
@@ -320,8 +324,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "scrollDialog": "bottom"
@@ -341,8 +349,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "scrollDialog": "bottom"
@@ -357,21 +369,25 @@
   },
   {
    "name": "local-models-resuming",
+   "_why": "`clickText: \"Resume\"` searches the WHOLE page (shot.mjs textExpr), not just the dialog — with the Model Providers popup gone, this now sits over the resume browser's own session cards, some of which ALSO say exactly 'Resume', and the smallest-element tie can pick the wrong one. Found live-testing this repair (2026-09-24): the shot closed the dialog instead of resuming a download. Scoped to `[role=dialog] button` via eval instead.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "scrollDialog": "bottom"
     },
     {
-     "clickText": "Resume",
-     "tag": "button",
+     "eval": "[...document.querySelectorAll('[role=dialog] button')].filter(b=>b.textContent.trim()==='Resume').sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]?.click()",
      "settle": 1200
     }
    ],
@@ -379,26 +395,29 @@
   },
   {
    "name": "local-models-paused",
+   "_why": "Same page-wide clickText ambiguity as local-models-resuming (2026-09-24, capture repair) — both clicks scoped to `[role=dialog] button`.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "scrollDialog": "bottom"
     },
     {
-     "clickText": "Resume",
-     "tag": "button",
+     "eval": "[...document.querySelectorAll('[role=dialog] button')].filter(b=>b.textContent.trim()==='Resume').sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]?.click()",
      "settle": 1200
     },
     {
-     "clickText": "Pause",
-     "tag": "button",
+     "eval": "[...document.querySelectorAll('[role=dialog] button')].filter(b=>b.textContent.trim()==='Pause').sort((a,b)=>a.querySelectorAll('*').length-b.querySelectorAll('*').length)[0]?.click()",
      "settle": 900
     }
    ],
@@ -412,8 +431,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "scrollDialog": "bottom"
@@ -433,7 +456,11 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Permissions\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Permissions\")",
      "settle": 900
     },
     {

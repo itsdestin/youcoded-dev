@@ -19,14 +19,19 @@
     },
     {
       "name": "providers-local-scrolled",
+      "_why": "Model Providers was folded into Assistant settings (2026-09-05) — Local models is now its own page.",
       "actions": [
         {
           "click": "[title=Settings]",
           "settle": 700
         },
         {
-          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
           "settle": 900
+        },
+        {
+          "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+          "settle": 1200
         },
         {
           "scrollDialog": "bottom"
@@ -35,7 +40,7 @@
           "wait": 600
         }
       ],
-      "expect": "[role=dialog]"
+      "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Local models'"
     },
     {
       "name": "resume-browser",

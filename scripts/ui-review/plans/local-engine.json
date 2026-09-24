@@ -1,6 +1,6 @@
 {
  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
- "_why": "Local-engine upgrades (docs/archive/design/2026-09-04-local-engine-upgrades). The new controls do not exist on master, so every After-only click is an `eval` that finds nothing on the Before run and simply does not fire \u2014 both runs then capture the SAME shot name at the SAME scroll position (scrollIntoView on an element both runs have), which is what a Before | After deck needs. `expect` names an element both runs have.",
+ "_why": "Local-engine upgrades (docs/archive/design/2026-09-04-local-engine-upgrades). Model Providers was folded into the wide Assistant settings dialog (2026-09-05, AssistantSettings.tsx) — every shot below now opens Settings → Assistant settings → the Local models page, where EngineCard.tsx still renders the same 'Local engine' card and its nested 'Advanced' row (fixed 2026-09-24, capture repair).",
  "shots": [
   {
    "name": "local-engine-card",
@@ -10,8 +10,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
@@ -24,14 +28,25 @@
   },
   {
    "name": "local-engine-rocm-guide",
+   "_why": "The optional ROCm build now renders INSIDE the 'Advanced' disclosure (EngineCard.tsx: optionalOptions.map(backendOptionRow) sits below the Advanced toggle) — Advanced must be opened before 'Set up' exists to click. The Advanced button's OWN class carries `rounded-lg` (SettingRow.tsx SETTING_ROW_BASE), so `.closest('.rounded-lg')` FROM the button self-matches instead of reaching the Local-engine card — found live-testing this repair (2026-09-24): the click silently no-op'd and both '-advanced' and '-rocm-guide' screenshotted the collapsed card. Fixed by scoping the button search to the card's own descendants instead.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
+    },
+    {
+     "eval": "[...([...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').querySelectorAll('button'))].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
+    },
+    {
+     "wait": 500
     },
     {
      "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Set up')?.click()"
@@ -50,17 +65,22 @@
   },
   {
    "name": "local-engine-advanced",
+   "_why": "Same `.closest('.rounded-lg')` self-match bug as local-engine-rocm-guide — fixed 2026-09-24 (capture repair) by scoping the button search to the card instead of climbing from it.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
     },
     {
-     "eval": "[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Advanced') && b.closest('.rounded-lg')?.textContent.includes('Local engine'))?.click()"
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
+    },
+    {
+     "eval": "[...([...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').querySelectorAll('button'))].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
     },
     {
      "wait": 700
@@ -82,8 +102,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "wait": 600
@@ -105,8 +129,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "wait": 600
@@ -140,8 +168,12 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
      "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
+     "settle": 1200
     },
     {
      "wait": 900

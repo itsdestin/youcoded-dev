@@ -49,7 +49,7 @@
      "settle": 600
     }
    ],
-   "expect": "js:document.body.textContent.includes('without asking you')"
+   "expect": "[role=dialog][aria-label='Skip Permissions Mode']"
   }
  ]
 }

@@ -4,20 +4,25 @@
  "shots": [
   {
    "name": "providers-chatgpt-signed-in",
+   "_why": "Model Providers was folded into the wide Assistant settings dialog (2026-09-05) — its Cloud providers page holds this same ChatGPT card.",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
-     "settle": 1200
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Cloud providers\")",
+     "settle": 900
     }
    ],
    "measure": [
-    "[role=dialog][aria-label='Model Providers']"
+    "[role=dialog][aria-label='Assistant settings']"
    ],
-   "expect": "[role=dialog][aria-label='Model Providers']",
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Cloud providers'",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&planUsage=1"
   },
   {
@@ -29,14 +34,18 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
-     "settle": 1200
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Cloud providers\")",
+     "settle": 900
     }
    ],
    "measure": [
-    "[role=dialog][aria-label='Model Providers']"
+    "[role=dialog][aria-label='Assistant settings']"
    ],
-   "expect": "[role=dialog][aria-label='Model Providers']"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Cloud providers'"
   },
   {
    "name": "providers-chatgpt-waiting",
@@ -47,14 +56,18 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
-     "settle": 1200
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Cloud providers\")",
+     "settle": 900
     }
    ],
    "measure": [
-    "[role=dialog][aria-label='Model Providers']"
+    "[role=dialog][aria-label='Assistant settings']"
    ],
-   "expect": "[role=dialog][aria-label='Model Providers']"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Cloud providers'"
   },
   {
    "name": "providers-chatgpt-blocked",
@@ -65,14 +78,18 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
-     "settle": 1200
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Cloud providers\")",
+     "settle": 900
     }
    ],
    "measure": [
-    "[role=dialog][aria-label='Model Providers']"
+    "[role=dialog][aria-label='Assistant settings']"
    ],
-   "expect": "[role=dialog][aria-label='Model Providers']"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Cloud providers'"
   },
   {
    "name": "providers-local-models",
@@ -83,7 +100,11 @@
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Local models\")",
      "settle": 1200
     },
     {
@@ -92,9 +113,9 @@
     }
    ],
    "measure": [
-    "[role=dialog][aria-label='Model Providers']"
+    "[role=dialog][aria-label='Assistant settings']"
    ],
-   "expect": "[role=dialog][aria-label='Model Providers']"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Local models'"
   },
   {
    "name": "first-run-sign-in",

@@ -92,17 +92,22 @@
   },
   {
    "name": "permissions",
+   "_why": "Permissions was folded into Assistant settings (2026-09-05).",
    "actions": [
     {
      "click": "[title=Settings]",
      "settle": 700
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()===\"Permissions\")",
      "settle": 900
     }
    ],
-   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+   "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Permissions'"
   }
  ]
 }

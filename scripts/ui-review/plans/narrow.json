@@ -52,6 +52,7 @@
   },
   {
    "name": "settings-providers",
+   "_why": "Model Providers was folded into Assistant settings (2026-09-05); phone width shows the page list first, then the picked page (narrowPage state, AssistantSettings.tsx).",
    "actions": [
     {
      "click": "[aria-label='Open menu']",
@@ -62,11 +63,15 @@
      "settle": 1000
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Model Providers\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes(\"Cloud providers\"))",
      "settle": 900
     }
    ],
-   "expect": "[role=dialog]"
+   "expect": "[role=dialog] [aria-label=Back]"
   },
   {
    "name": "projects",
@@ -227,6 +232,7 @@
   {
    "name": "stress-permissions",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
+   "_why": "Permissions was folded into Assistant settings (2026-09-05).",
    "actions": [
     {
      "click": "[aria-label='Open menu']",
@@ -237,11 +243,15 @@
      "settle": 1000
     },
     {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Assistant settings\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes(\"Permissions\"))",
      "settle": 900
     }
    ],
-   "expect": "[role=dialog]"
+   "expect": "[role=dialog] [aria-label=Back]"
   }
  ]
 }
