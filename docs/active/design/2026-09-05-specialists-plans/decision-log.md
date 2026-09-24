@@ -324,3 +324,15 @@ Open details went to a questions deck: `specialists-plans.spending.questions.jso
    reviewers … builders … UX beta testers … and then a final consolidated PR reviewer … any kind of
    research task."* He floated an explorer step that hands back to the primary assistant to write
    the remaining steps' prompts, or a coordinator step that amends later steps. Under discussion.
+
+## Decision 36 — staging, re-approval, parallel copies (chat 2026-09-23)
+
+1. **Build in stages** (*"yeah"*): (1) spending rework of decisions 34–35; (2) results passed
+   between steps + a coordinator step that can rewrite later steps; (3) parallel builders in
+   separate project copies, and saved reusable plans.
+2. **A coordinator's rewrite asks again only when the plan GROWS** (*"fine with asking when it
+   grows"*): it continues by itself when the rewritten plan uses no more specialists than
+   approved and is not likely to pass a limit the user set; otherwise it pauses and shows the new
+   version for approval.
+3. **Parallel builders each get their own copy of the project** (*"yes probably?"*) — stage 3.
+   Start with version-controlled (git) projects; bringing the winner back is the hard part.
