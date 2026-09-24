@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Artifact records whose path escapes the project root with `..` are refused at every resolution site and never repaired
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Records that escaped the project root with `..` are refused, never repaired
 

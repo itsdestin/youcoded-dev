@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: A resumed native session with no stored title shows "Resuming…" until its next completed turn
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Resumed native sessions with no *stored* title stay on `Resuming…`
 

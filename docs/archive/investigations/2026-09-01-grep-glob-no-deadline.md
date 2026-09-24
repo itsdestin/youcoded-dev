@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: Native Grep/Glob have no deadline and default to the conversation cwd, so a broad search from $HOME can hang a turn for hours
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Native Grep/Glob — no deadline, wrong default root
 

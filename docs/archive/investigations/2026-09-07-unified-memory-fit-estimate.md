@@ -1,8 +1,10 @@
 ---
-status: active
+status: shipped
 date: 2026-09-07
 area: local-models
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed.
 
 # Every local model is mislabelled on a shared-memory machine
 

@@ -15,41 +15,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       causes it found were fixed that day
       `chat` `remote` `confirmed` `checked 2026-09-11`
 
-- [ ] On the phone, files attached to a message in a YouCoded-runtime (native) session are dropped:
-      only the text reaches the computer. Spotted by the 2026-09-11 message-order investigation;
-      belongs with the native-sessions-on-a-phone batch
-      `remote` `needs-verify` `checked 2026-09-11`
-
-- [ ] After a phone's connection drops and comes back, some screens can still stay empty or wrong
-      until they are reopened: the model list, the native provider list in the new-session form,
-      Project View's projects and conversations, the Themes tab in the marketplace, the Remote
-      Access settings panel and the "incognito" choice for presence. A file preview that failed
-      once stays failed until the page reloads, and a specialist list that failed stays failed
-      until Settings is opened. Found by the 2026-09-11 reliability sweep; the project picker,
-      skills and commands, signed-in state, session defaults and tags were fixed the same day
-      `remote` `confirmed` `checked 2026-09-11`
-
-- [ ] After a reconnect the phone repeats a few requests (skills, commands, remote settings, file
-      lists) whose answers nothing on screen uses; the screens reload for themselves now.
-      Wasted traffic on every reconnect. Found 2026-09-11
-      `remote` `confirmed` `checked 2026-09-11`
-
-- [ ] The Android app's terminal was reported blank when the app is paired to a desktop (batch
-      2/3 design review, R2-18, 2026-09-10). The mechanism that review gave does not hold on
-      master: the host broadcasts the raw terminal stream to every client, the Android app has
-      had no terminal of its own since 2026-04-26, and its paired path feeds that stream to the
-      same terminal view a phone browser uses. Needs a look on a real phone before anything is
-      changed
-      `terminal` `android` `needs-verify` `checked 2026-09-16` `needs-repro`
-
-- [ ] In the Android app's Settings, removing a paired computer while the app is connected to
-      one does nothing: the row goes away, but the saved pairing (address and password) stays on
-      the phone, so the computer is still trusted and comes back. While connected, the app's
-      Remove call is answered "done" without touching the saved list (`remote-shim.ts`
-      `removePairedDevice`). Found by the batch 3 build, 2026-09-10; checked in the code, not yet
-      on a phone
-      `settings` `android` `confirmed` `checked 2026-09-10`
-
 - [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything
       actionable for the user, when tailscale might just not be enabled on their phone" — the
       phone gets the browser's own cannot-reach screen. Fix: install a service worker on the
@@ -72,12 +37,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       related to YouCoded Mesh and Cloud fallback in the native-harness backlog, but connecting
       to a device is distinct from choosing where an automation runs. Hosting/privacy design open.
       `remote` `parked` `checked 2026-09-08` `v1.4`
-
-- [ ] Saving a permission setting over remote access does not refresh what the app is enforcing
-      until something local reads the settings again — harmless today because nothing writes
-      those values any more. (The other half, replacing the whole stored block instead of
-      merging into it, was fixed in youcoded `7b206b3a`)
-      `settings/permissions` `remote` `needs-verify` `checked 2026-09-16`
 
 - [ ] Over remote access the assistant-settings model picker offers models the browser cannot
       actually run, so choosing one saves a default that quietly does nothing there
@@ -114,10 +73,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       batches — nothing is bridged automatically
       `remote` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
 
-- [ ] Remote: "+ Add file" in the files panel uploads the file to the desktop, then the
-      import fails — the upload has already landed on the host (found 2026-07-23)
-      `files-panel` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-unbridged-channels.md
-
 - [ ] First connect from a phone sits on a white screen for seconds, then the chat takes a
       further beat to fill in; the July byte-shaving merge changed nothing Destin could feel
       on LAN. ~2.5 s of it is scripted waiting; the white part is unmeasured on a real phone
@@ -139,14 +94,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
       after the milestone's batches 2 and 3
       `remote` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
-
-- [ ] A phone browser on remote access behaves like a desktop in the terminal view — touch
-      adaptations off, soft keyboard and scrolling wrong (found 2026-07-20 on Chrome/Android)
-      `terminal` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-shim-overwrites-device-platform.md
-
-- [ ] Settings read over remote access can disagree with what the desktop shows for the same
-      file — defaults, folders, permission overrides (from the 2026-07-10 review)
-      `settings` `remote` `confirmed` `checked 2026-09-01` → docs/active/investigations/2026-09-01-remote-pref-handlers-drift.md
 
 - [ ] Formalize the remote protocol: version the WebSocket API, add a lifecycle event bus,
       and reconcile Android's separate Kotlin runtime with it — the server can already drive
@@ -251,8 +198,9 @@ Filing test: reaching the app from another device — the protocol, the browser 
       the / commands asked twice (the shim's re-ask list AND each screen's own reconnect listener).
       Cheapest first step: replay only open asks and drop the duplicate pair. Found 2026-09-11 in
       the speed/sync review (`docs/archive/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
-      Destin: "it currently feels unresponsive and lags behind desktop sometimes."
-      `remote` `confirmed` `checked 2026-09-11` `performance`
+      Destin: "it currently feels unresponsive and lags behind desktop sometimes." The duplicate
+      skills/commands pair was removed 2026-09-23 (youcoded#562); the full replay remains
+      `remote` `confirmed` `checked 2026-09-23` `performance`
 
 - [ ] Buttons on the phone wait for the computer before anything on screen changes: Stop (it only
       sends Escape and waits for Claude Code to record the interruption), a permission answer (the
@@ -276,14 +224,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       this per session; nothing else does. Would also let a request cut off mid-flight be answered
       from the computer's record instead of asked about. Big — file behind the cheaper items above.
       `remote` `confirmed` `checked 2026-09-11` `performance`
-
-- [ ] A YouCoded-runtime ("native") session started from a phone never starts: the host's
-      `session:create` calls `sessionManager.createSession` only — no `nativeHost.create`/`resume`,
-      unlike the desktop's own handler — so messages then fail as `not-live`. Belongs with the
-      native-sessions-on-a-phone batch; found 2026-09-11 while fixing the create flow. (The
-      "No folder opens in the home folder" half was fixed 2026-09-16: the phone's create now
-      runs the desktop's No-folder rewrite)
-      `remote` `confirmed` `checked 2026-09-16`
 
 - [ ] Batches 2 (conversation restoration) and 3 (file reading) merged 2026-09-11 without any phone
       ever using the fixed build — the dev window served a day-old copy all day, so every phone
@@ -311,3 +251,10 @@ Filing test: reaching the app from another device — the protocol, the browser 
       C's `remote-` test cluster merges, alone — nothing else may edit the two door files the
       plan names while it runs. Goes before the Android rebuild, not inside it
       `remote` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+
+- [ ] A real-phone pass is owed for the 2026-09-23 remote fixes: the phone-browser touch
+      terminal (smaller text; a finger drag now scrolls instead of selecting; typing goes through
+      the input bar, so a tablet with a keyboard also loses direct typing into the terminal), the
+      paired Android app's terminal, removing a paired computer on Android and its error message,
+      screens refilling after a reconnect, and files attached from the phone
+      `remote` `needs-verify` `checked 2026-09-23`

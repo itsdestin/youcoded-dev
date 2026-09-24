@@ -1,9 +1,11 @@
 ---
 date: 2026-09-01
-status: active
+status: shipped
 type: investigation
 topic: The secret-path hard-deny covers the file tools but not Bash — and there is no sandbox behind the permission engine
 ---
+
+> **ARCHIVED 2026-09-23.** Fixed in youcoded#562; its roadmap entry is closed. Shapes the new command checks still miss are tracked on the parked sandboxing item in docs/roadmap/native-harness.md.
 
 # `cat ~/.ssh/id_rsa` works through Bash while `Read` refuses it
 

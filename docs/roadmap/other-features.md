@@ -4,11 +4,6 @@ has passed ~8 items — graduate it to its own file.
 
 ## accounts
 
-- [ ] A friend's row read "Last seen 7/26/2026" on 2026-08-11 while they were still using the
-      app on a MacBook — signed in, not incognito. Their presence never came back until a full
-      quit-and-relaunch; nothing short of that restores it.
-      `desktop` `needs-verify` `checked 2026-09-02` → docs/active/investigations/2026-09-01-presence-suspended-latch.md
-
 - [ ] One rejected server call quietly signs you out of your account, with no notice. Friends
       then see you offline forever and you only find out by opening the friends panel. The LOG
       half shipped 2026-09-02 (youcoded#386) so it is diagnosable; the user-facing notice is
@@ -58,6 +53,11 @@ has passed ~8 items — graduate it to its own file.
       renders the mascot alone because its window has no room for them (2026-07-16). Needs a
       padded-window design that keeps drag, docking and click-through working.
       `buddy-window` `desktop` `parked` `checked 2026-09-01`
+
+- [ ] The buddy window's Allow button for Claude's multiple-choice questions may do nothing,
+      the same way its Allow button for plans did. Plans now say "Review the plan in the main
+      window" instead; questions have not been checked (found 2026-09-23)
+      `buddy-window` `desktop` `needs-verify` `checked 2026-09-23`
 
 ## onboarding
 
@@ -151,10 +151,6 @@ has passed ~8 items — graduate it to its own file.
       remote access: requests should run on the computer and a key cannot be added from the phone,
       both covered by tests only.
       `window-chrome` `remote` `decision` `checked 2026-09-23`
-
-- [ ] A page deleted (through chat) while it is open in the page view stays in the frame until
-      another page is picked; it should fall back to "No page selected".
-      `window-chrome` `desktop` `confirmed` `checked 2026-09-17`
 
 - [ ] Pages went accent-coloured once: on Golden Sunbreak "hello timer and snake are both a weird
       yellow shade instead of the background shade used in project view", and in Halftone the same
