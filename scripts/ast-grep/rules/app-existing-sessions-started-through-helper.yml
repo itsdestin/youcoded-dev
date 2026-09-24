@@ -1,0 +1,24 @@
+id: app-existing-sessions-started-through-helper
+language: tsx
+severity: error
+message: >-
+  App.tsx marks a listed session "initialized" without asking whether the host
+  says it is still on its startup dialogs. Use startedIds(list)
+  (state/startup-dialog-store.ts) — a window or phone connecting while a
+  session sits on its trust / bypass / MCP dialog must keep its chat gated and
+  its safety net on.
+note: |
+  Found in the dev instance 2026-09-24: a phone browser connecting to a session
+  on the multi-server MCP dialog was told "already running", so its chat box
+  was enabled onto the live dialog and no safety net showed. The host now
+  reports SessionInfo.awaitingStart; this pins that App's list handlers read
+  it (a test cannot mount App).
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/app-existing-sessions-started-through-helper.tsx"
+rule:
+  kind: call_expression
+  has:
+    field: function
+    regex: "^setInitializedSessions$"
+  regex: "(list\\.map\\(\\(s\\) => s\\.id\\)|for \\(const s of list\\))"
