@@ -1,0 +1,221 @@
+{
+ "title": "Pages that connect \u2014 the screens, round 1",
+ "key": "youcoded-pages-connections-r1",
+ "out": "youcoded-pages-connections-r1.review.html",
+ "images": "images/youcoded-pages-connections-r1.review",
+ "runs": {
+  "after": "runs/after"
+ },
+ "labels": {
+  "after": "Mockup"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "stage": "design",
+ "crops": {
+  "c-newkey": [
+   "pages-connections",
+   "approve-new-key-full",
+   "1100x450+300+240"
+  ],
+  "c-savedkey": [
+   "pages-connections",
+   "approve-saved-key",
+   "1100x450+300+240"
+  ],
+  "c-change": [
+   "pages-connections",
+   "approve-change",
+   "1100x450+300+240"
+  ],
+  "c-open": [
+   "pages-connections",
+   "approve-open-internet",
+   "1100x450+300+240"
+  ],
+  "c-phone": [
+   "pages-connections",
+   "approve-on-phone",
+   "1100x450+300+240"
+  ],
+  "c-fresh": [
+   "pages-connections",
+   "connected-fresh",
+   "1440x240+0+0"
+  ],
+  "c-failed": [
+   "pages-connections",
+   "connected-failed",
+   "1440x240+0+0"
+  ],
+  "c-cards": [
+   "pages-connections",
+   "library-cards",
+   "1180x300+140+55"
+  ],
+  "c-dialog": [
+   "pages-connections",
+   "card-connections",
+   "900x380+270+245"
+  ],
+  "c-remove": [
+   "pages-connections",
+   "card-connections-remove",
+   "900x420+270+245"
+  ],
+  "c-settings": [
+   "pages-connections",
+   "settings-saved-keys",
+   "900x340+270+285"
+  ]
+ },
+ "steps": [
+  {
+   "id": "C-1",
+   "surface": "Pages",
+   "path": "Pages \u2192 Task board, the first time it opens",
+   "crop": "c-newkey",
+   "headline": "A connected page opens on an approval card first: one plain sentence per thing it reaches, then Allow and open.",
+   "changed": "The card takes the page's place, so nothing in the page runs before you agree. It names the exact address, says what the page could do there, and has the key box inside it. Allow stays greyed until a key is typed.",
+   "notice": "Every new connected page costs one press. This one shows the blunter sentence for a page that can change things, not just look them up.",
+   "risk": "\"It can do whatever that key allows\" is deliberately blunt; a harmless page with full access will read as serious.",
+   "highlight": {
+    "selector": "[data-page-approval] [data-page-connection]"
+   }
+  },
+  {
+   "id": "C-2",
+   "surface": "Pages",
+   "path": "Pages \u2192 Weather, the first time it opens",
+   "crop": "c-savedkey",
+   "headline": "When a key for that service is already saved, the card offers it and still asks.",
+   "changed": "No key box: the line says \"Uses your saved OpenWeather key\" with a quiet \"Paste a different one\" beside it. This is the look-up-only sentence, ending \"Cannot send changes.\"",
+   "notice": "A second weather page is one press, not another paste.",
+   "risk": "",
+   "highlight": {
+    "selector": "[data-page-approval] [data-page-connection]"
+   }
+  },
+  {
+   "id": "C-3",
+   "surface": "Pages",
+   "path": "Pages \u2192 Headlines, after an edit added a second feed",
+   "crop": "c-change",
+   "headline": "After an edit adds a connection, the card says the page wants one more thing and shows only the new line on top.",
+   "changed": "The heading changes to \"This page changed\". The new line sits in the box; what you already allowed is listed underneath, which I added so the new line is read in context. It was not on the questions deck.",
+   "notice": "Restyling a page never shows this. Only a new address or a wider access does.",
+   "risk": "A page with many approved connections makes this card tall.",
+   "highlight": {
+    "selector": "[data-page-approval] [data-page-connection]"
+   }
+  },
+  {
+   "id": "C-4",
+   "surface": "Pages",
+   "path": "Pages \u2192 Link reader, the first time it opens",
+   "crop": "c-open",
+   "headline": "A page that asks for the whole internet gets its own blunt card.",
+   "changed": "One line: \"Reach any website. Anything shown in this page, or typed into it, could be sent anywhere.\" The reassurance \"everything else stays blocked\" is removed here because it would not be true.",
+   "notice": "This is the only card without that last reassuring line, which is what makes it stand out.",
+   "risk": "It is the same card and the same button as a harmless feed. If you want it to look more serious (a different button colour, a second confirm), say so.",
+   "highlight": {
+    "selector": "[data-page-approval] [data-page-connection]"
+   }
+  },
+  {
+   "id": "C-5",
+   "surface": "Pages over remote access",
+   "path": "The same Task board card, opened from your phone",
+   "crop": "c-phone",
+   "headline": "On your phone, a page that needs a new key says to finish on your computer and offers no Allow.",
+   "changed": "The key box is replaced by \"Needs a Todoist key. Finish setting this up on your computer.\" and only Not now remains. Pages needing no new key show the normal card with Allow.",
+   "notice": "A key is never typed on the phone.",
+   "risk": "Shown here at desktop width; the phone-width layout of the whole page view is still undesigned.",
+   "highlight": {
+    "selector": "[data-page-approval] [data-page-connection]"
+   }
+  },
+  {
+   "id": "C-6",
+   "surface": "Pages",
+   "path": "Pages \u2192 YouCoded analytics, already approved",
+   "crop": "c-fresh",
+   "headline": "A connected page shows \"Updated 2 min ago\" and a refresh button beside its name in the band.",
+   "changed": "Small and muted, after a dot, only on connected pages. The refresh button spins and the words read \"Updating\u2026\" while it fetches.",
+   "notice": "Same place on every page, including when a pinned page is open edge to edge.",
+   "risk": "The band's centre gets longer; a long page name truncates sooner.",
+   "highlight": {
+    "text": "Updated 2 min ago"
+   }
+  },
+  {
+   "id": "C-7",
+   "surface": "Pages",
+   "path": "Pages \u2192 Trip board, after an update failed",
+   "crop": "c-failed",
+   "headline": "A failed update says \"Couldn't update \u00b7 last 3 h ago\" in the band, and the page keeps its old numbers.",
+   "changed": "No error takes over the page and no cause is guessed. The refresh button becomes \"Try again\".",
+   "notice": "You can always tell how old what you are looking at is.",
+   "risk": "It is quiet on purpose; someone not looking at the band could miss that the numbers are stale.",
+   "highlight": {
+    "text": "Couldn't update"
+   }
+  },
+  {
+   "id": "C-8",
+   "surface": "Manage pages",
+   "path": "Pages \u2192 Manage pages",
+   "crop": "c-cards",
+   "headline": "In the library, only connected pages gain a quiet \"1 connection\" link at the end of the card's bottom line.",
+   "changed": "No badge and no level. Pages that reach nothing (Focus timer) look exactly as before.",
+   "notice": "The library stays calm; the link is there when you go looking.",
+   "risk": "It is small; it may be too easy to miss as the only way into a page's connections.",
+   "highlight": {
+    "text": "1 connection"
+   }
+  },
+  {
+   "id": "C-9",
+   "surface": "Manage pages",
+   "path": "Manage pages \u2192 a card's \"2 connections\" link",
+   "crop": "c-dialog",
+   "headline": "The link opens that page's connections: the same sentences, a Remove beside each approved one.",
+   "changed": "A line still waiting for your OK is marked so. A footnote points to where saved keys live.",
+   "notice": "The words here are word-for-word the ones you approved.",
+   "risk": "",
+   "highlight": {
+    "text": "Waiting for your OK"
+   }
+  },
+  {
+   "id": "C-10",
+   "surface": "Manage pages",
+   "path": "A page's connections \u2192 Remove",
+   "crop": "c-remove",
+   "headline": "Remove confirms in place and says plainly that it only stops future use.",
+   "changed": "\"This stops future use. It cannot undo anything the page already sent or received. The page will ask again next time it opens.\" The removed line stays listed as waiting, so reopening the page asks again.",
+   "notice": "Removing is never silent and never oversold.",
+   "risk": "The removed line does not disappear from the list. If removed connections should vanish until the page asks again, say so.",
+   "highlight": {
+    "selector": "[data-remove-confirm]"
+   }
+  },
+  {
+   "id": "C-11",
+   "surface": "Settings",
+   "path": "Settings \u2192 Account \u2192 Connected accounts",
+   "crop": "c-settings",
+   "headline": "Connected accounts gains \"Keys saved for pages\": each key, its address, which pages use it, and Delete.",
+   "changed": "Below GitHub. Delete confirms in place, stops those pages using the key, and says it does not cancel the key with the service. The section is absent when no key is saved.",
+   "notice": "One place to see every key and cut one off everywhere at once.",
+   "risk": "There is no Replace button yet; replacing means Delete, then paste again on the page's card.",
+   "highlight": {
+    "text": "Keys saved for pages"
+   }
+  }
+ ]
+}

@@ -1,0 +1,60 @@
+{
+ "deck": "release-1.3.1-triage",
+ "started": "2026-09-23T20:46:54.641Z",
+ "submitted": "2026-09-23T20:53:00Z",
+ "cur": 4,
+ "answers": {
+  "Q-1": {
+   "note": "1.3.0 was already kind of our launch release. 1.3.1 is mostly additional refinements and a few new features.",
+   "v": "pick",
+   "pick": "launch-plus",
+   "seconds": 79,
+   "theme": "midnight"
+  },
+  "Q-2": {
+   "v": "no",
+   "note": "these should remain an official 1.3.1 blocker",
+   "seconds": 30,
+   "theme": "midnight"
+  },
+  "Q-3": {
+   "v": "picks",
+   "picks": [
+    "file-search",
+    "assistant-project",
+    "marketplace-tool",
+    "parity"
+   ],
+   "seconds": 43,
+   "theme": "midnight"
+  },
+  "Q-4": {
+   "v": "picks",
+   "picks": [
+    "errors",
+    "tooltips",
+    "ci-speed",
+    "helper-files"
+   ],
+   "note": "i think a and g are resolved already",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "S-1": {
+   "v": "yes",
+   "seconds": 78,
+   "theme": "midnight"
+  },
+  "Q-5": {
+   "v": "no",
+   "seconds": 29,
+   "theme": "midnight"
+  },
+  "Q-6": {
+   "v": "wrote",
+   "text": "we should probably keep \"likely safe\", but improve the actual utility of our scans. maybe just use an llm or jev or something to evaluate for certain criteria.",
+   "seconds": 29,
+   "theme": "midnight"
+  }
+ }
+}

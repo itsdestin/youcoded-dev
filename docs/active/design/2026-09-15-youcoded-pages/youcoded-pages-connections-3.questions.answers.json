@@ -1,0 +1,33 @@
+{
+ "deck": "youcoded-pages-connections-questions-3",
+ "started": "2026-09-23T20:35:24.466Z",
+ "submitted": "2026-09-23T20:38:04Z",
+ "cur": 0,
+ "answers": {
+  "Q-lookup": {
+   "v": "pick",
+   "pick": "both",
+   "note": "This connection can not change your device directly, but the page determines what information is sent to this address.",
+   "seconds": 40,
+   "theme": "devils-garden"
+  },
+  "Q-home-network": {
+   "v": "pick",
+   "seconds": 40,
+   "theme": "devils-garden",
+   "pick": "add-line",
+   "note": "do we actually even entirely want this protection? one idea i had for a page is an explicit home assistant integration/management page..."
+  },
+  "Q-code-change": {
+   "v": "pick",
+   "seconds": 40,
+   "theme": "devils-garden",
+   "pick": "quiet-note"
+  },
+  "S-popups": {
+   "v": "yes",
+   "seconds": 40,
+   "theme": "devils-garden"
+  }
+ }
+}

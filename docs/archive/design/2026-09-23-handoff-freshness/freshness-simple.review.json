@@ -1,0 +1,38 @@
+{
+  "title": "Simpler resume prompts",
+  "key": "handoff-freshness-simple-review",
+  "out": "freshness-simple.review.html",
+  "themes": ["midnight", "light"],
+  "images": "images/freshness-simple.review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/freshness-simple/before",
+    "after": "../../../../scratch/lease-handoff/freshness-simple/after"
+  },
+  "labels": {"before": "Previous proposal", "after": "Simplified"},
+  "crops": {
+    "waiting": ["freshness", "waiting", "620x560+410+180"],
+    "incomplete": ["freshness", "incomplete", "620x560+410+180"]
+  },
+  "steps": [
+    {
+      "id": "F-4",
+      "surface": "Resume a conversation",
+      "path": "Take over → waiting for recent messages",
+      "crop": "waiting",
+      "headline": "Just the syncing message.",
+      "changed": "Removed the duplicate conversation preview and Leave it button.",
+      "notice": "The normal close control remains; closing opens nothing here.",
+      "risk": "UI proposal only. Controls above the prompt belong to the workbench, not the app."
+    },
+    {
+      "id": "F-5",
+      "surface": "Incomplete handoff",
+      "path": "Recent messages could not be confirmed",
+      "crop": "incomplete",
+      "headline": "One sentence, two actions.",
+      "changed": "Replaced the repeated explanations with one short warning.",
+      "notice": "Try again checks for recent messages. Open saved copy uses what is already here.",
+      "risk": "UI proposal only. Opening a saved copy will still require ownership checks."
+    }
+  ]
+}

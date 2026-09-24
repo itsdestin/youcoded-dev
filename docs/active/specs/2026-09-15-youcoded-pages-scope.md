@@ -129,7 +129,12 @@ Entry points inspected by the architecture explorer: `youcoded/desktop/src/rende
 ## Next stage
 
 Build order lives in `docs/active/plans/2026-09-16-youcoded-pages-phasing.md` (2026-09-16).
-Only Phase 1, the shell, is pinned; the permission model and everything after it stay open
-questions answered per phase. Destin reviews decks himself; the automated UX tester, code
+Phases 1 (the shell) and 2 (connections) are built; files, model tasks and the marketplace stay
+open questions answered per phase.
+
+**Where later decisions changed this scope** (each recorded in the plan with its deck):
+§3 — there is no separate draft: an edit goes live and git history is the undo (2026-09-17).
+§4 and §6 — outside access is now enforced by the app, as this scope asked (Phase 2).
+§12 — "pages fit small screens" is not true yet; the phone layout is an open roadmap item. Destin reviews decks himself; the automated UX tester, code
 reviewer and grader are not used. Conversation approval here is product scope, not a signed UI
 contract, and does not authorize shipping.

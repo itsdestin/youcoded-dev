@@ -1,0 +1,33 @@
+{
+  "title": "Pages — first-run message where Pages opens",
+  "key": "pages-empty-placement",
+  "out": "pages-empty-placement.review.html",
+  "images": "images/pages-empty-placement.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "pages-landing": ["pages-empty-placement", "landing", "1200x680+120+90"],
+    "pages-manage": ["pages-empty-placement", "manage", "1200x680+120+90"]
+  },
+  "steps": [
+    {
+      "id": "1",
+      "surface": "Pages",
+      "path": "Click Pages in the top left with no pages yet",
+      "crop": "pages-landing",
+      "headline": "The first-run explanation now appears as soon as you open Pages.",
+      "changed": "The existing explanation and Make a page button move into the main page area, replacing the bare No page selected message for an empty library.",
+      "notice": "You can learn what a page is and start making one without going through Manage pages. On a phone, the empty sidebar steps aside so the card fits."
+    },
+    {
+      "id": "2",
+      "surface": "Manage pages",
+      "path": "Pages → Manage pages with no pages yet",
+      "crop": "pages-manage",
+      "headline": "Manage pages no longer repeats the first-run message.",
+      "changed": "Manage pages keeps its header and Make a page action, but the onboarding card belongs on the first screen.",
+      "notice": "The management list is empty until you make a page. Back returns to the explanation.",
+      "risk": "Manage pages is a blank list when there are no pages; its header still offers Make a page."
+    }
+  ]
+}

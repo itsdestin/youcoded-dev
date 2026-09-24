@@ -4,6 +4,15 @@ terminal pane, the PTY, fake keystrokes, hooks the app plants, install and login
 here: the app's own agent (native-harness); chat bubbles shared by both (user-interface /
 chat-data).
 
+- [ ] "Very rarely a message I send appears twice in chat, more often with very long messages."
+      One cause is fixed (a pasted tab, 2026-09-23). A second remains: on four long messages
+      (168–220 characters) Claude Code saved the message, never answered it, then saved it again
+      as a fresh send 7–49 s later. The second send lines up with the app's automatic 8-second
+      "press Enter again" retry; what put the text back in Claude Code's box is unproven
+      (suspected: a cancel before the reply started). Next step: reproduce in a dev instance with
+      the keystroke trace on (found 2026-09-23 from transcripts 1b802f05, 327bd6e1)
+      `chat` `desktop` `needs-verify` `checked 2026-09-23` `needs-repro`
+
 - [ ] When `~/.claude/settings.json` could not be read at launch (a stray comma, a half-written
       save), the app now quietly moves it aside as `settings.json.corrupt-<time>` and writes a
       fresh one so its hooks keep working — but it only says so in its log. Anything the user had

@@ -279,8 +279,8 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
 
 - [ ] After picking a wide "Always allow" (any `npm run`, pushing to one branch), a later
       command that looks covered still raises the permission card with no reason — it reads
-      as the app forgetting the approval
-      `tool-cards` `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
+      as the app forgetting the approval. Re-checked 2026-09-23: still true — the Always-allow menu now states its limits up front, but the card raised later still gives no reason
+      `tool-cards` `desktop` `confirmed` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-01-permission-near-miss-silent.md
 
 - [ ] Sessions on local/OpenRouter models have no "Skip Permissions" — the toggle is hidden on
       create and resume, and the permission chip stops at Full Auto
@@ -333,7 +333,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
         surprise misses (four layouts in the survey, a deck for Destin), and a measurement pass
         in a dev instance — nothing reads the recorded local reuse count yet, and whether
         OpenRouter honours the top-level cache field and the session pin is asserted only
-        against a stubbed network
+        against a stubbed network. 2026-09-23: the ChatGPT-plan measurement pass is done
+        (live rig, docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md): follow-up
+        replies missed the cache a third of the time because one routing label was missing
+        (fix on a branch, 13/20 → 18/20); with it, restart + resume and compaction kept the
+        cache on every request. The date/git snapshot now sits last in the opening prompt so
+        conversations in one folder share the rest (branch). OpenRouter and local remain
+        unmeasured; llama.cpp's chunk reuse is unsupported by every offered local model
       - The context chip keeps the OLD model's window after a model swap or a resume (filed
         2026-09-16) — swap a 1M model for a small local one and the chip can read "97%
         remaining" on a window the very next message overflows; it only corrects once a turn
@@ -371,6 +377,13 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `settings/defaults` `desktop` `confirmed` `checked 2026-09-05`
 
 ## specialists
+- [ ] Helpers start from scratch and pay full price for their whole opening every time the
+      assistant hands off work, even though the main conversation's opening is already stored by
+      the provider. Investigate letting a helper start from the main conversation's stored opening
+      (Claude Code "forks" helpers this way); likely to be dropped — it changes what a helper sees,
+      and on ChatGPT a helper can still miss the parent's copy
+      `desktop` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-23-chatgpt-cache-affinity.md
+
 - [ ] Audit every place YouCoded recommends or automatically chooses a model, then build one
       maintained recommendation system so those choices do not go stale as model generations change
       `settings/defaults` `all` `confirmed` `checked 2026-09-15`

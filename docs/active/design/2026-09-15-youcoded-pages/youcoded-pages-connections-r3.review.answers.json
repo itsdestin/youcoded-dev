@@ -1,0 +1,27 @@
+{
+ "deck": "youcoded-pages-connections-r3",
+ "started": "2026-09-19T09:39:11.681Z",
+ "submitted": "2026-09-19T09:40:04Z",
+ "cur": 2,
+ "answers": {
+  "E-1": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-2": {
+   "v": "yes",
+   "note": "not quite what i meant. want two separate boxes under the two separate new/already allowed sections",
+   "seconds": 39,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "E-3": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
