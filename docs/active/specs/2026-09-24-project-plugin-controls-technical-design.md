@@ -77,10 +77,20 @@ An item with no entry in the record resolves by rule, evaluated on the device:
 1. Bundled plugins: Chat Search, Page Builder, Marketplace Publisher → on. Theme Builder →
    off (a project that existed before the feature already has an explicit `on` from
    seeding, below, so this only affects new projects).
-2. A marketplace plugin (and its skills / tool connections) whose `installedAt` is AFTER the
-   project's `seededAt` → **off**. `installedAt` is an ISO string in `youcoded-skills.json`;
-   it is parsed with `Date.parse` and a missing or unparseable value counts as "before"
-   (so a damaged record can only keep something on, never turn it off) (new downloads start inactive; the setup flow writes `on`).
+2. A marketplace plugin (and its skills / tool connections) whose `installedAt` is AFTER
+   `featureFirstRunAt` → **off** (new downloads start inactive; the setup flow writes `on`).
+   `featureFirstRunAt` is a per-device timestamp recorded ONCE, the first time a build with
+   this feature runs — written asynchronously at app startup, before any seeding can run —
+   and stored locally (a sibling of `project-extensions.local.json` under `~/.youcoded/`),
+   never synced (installs are per-device). This is the ONLY reference the rule compares
+   against — never a project's own `seededAt` or a saved folder's `addedAt`: a project's or
+   folder's age has no relationship to when a plugin was installed into it, and comparing
+   against either turned OFF an ordinary, already-working install merely because the folder
+   predated it (fixed 2026-09-24, review F1). `installedAt` is an ISO string in
+   `youcoded-skills.json`; it is parsed with `Date.parse`, and a missing/unparseable
+   `installedAt` OR an unwritten `featureFirstRunAt` both count as "before" (so a damaged
+   record, or a device that hasn't recorded the instant yet, can only keep something on,
+   never turn it off).
 3. Everything else (earlier installs, personal/project skills, user-added or adopted tool
    connections) → **on**, which is today's behaviour.
 
