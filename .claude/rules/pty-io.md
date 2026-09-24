@@ -31,7 +31,7 @@ verify:
 
 # PTY I/O: submit, resize, ESC routing, launch env
 
-**Mechanism: `youcoded/desktop/test-conpty/README.md`; depth: `youcoded/docs/pty-io.md`. Constants are CC-CLI-version-coupled — re-run `test-conpty/cc-snapshot.mjs` on each CC bump.**
+Writing into Claude Code's Ink input bar is a stack of undocumented behaviors. **Mechanism: `youcoded/desktop/test-conpty/README.md`; depth: `youcoded/docs/pty-io.md`. Constants are CC-CLI-version-coupled — re-run `test-conpty/cc-snapshot.mjs` on each CC bump.**
 
 `session-manager.ts` also owns the `'shell'` provider, a PTY with no assistant. **A "Run in terminal" command is TYPED onto the prompt, never run:** `prepareRunInTerminal` refuses every character that would submit the line. Detail: `test-engine/probe-shell-command.mjs`.
 
