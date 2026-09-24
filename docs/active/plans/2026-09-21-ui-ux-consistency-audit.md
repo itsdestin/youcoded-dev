@@ -53,9 +53,8 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
 - Second audit (`audit/`): contradictions between the app and the draft; every Settings
   screen; button placement; spacing and text composition.
 
-**In progress**
-- Completeness check — every component and every screen mapped against what is covered, to
-  find missing categories (`audit/completeness-components.md`, `audit/completeness-screens.md`).
+- Completeness check (`audit/completeness-components.md`, `audit/completeness-screens.md`):
+  every component and every capturable screen mapped against what is covered.
 
 **Known gaps the guide does not yet cover** (from the second audit)
 - Button placement: order (Destin: dark button right, light directly left), single button
@@ -66,7 +65,18 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
 - Card and text composition: one order for item cards; one date position; flat helper cards.
 - Smaller categories: menu containers, bottom sheets, full-screen content area, loading
   spinners, toasts, icons, tooltips, exact status colours.
-- Plus anything the completeness check adds.
+- **Never reviewed at all** (completeness check): the message box (composer); the file
+  viewers (spreadsheet, document, PDF, image, code) and their table grids; the terminal
+  view; the code-change (diff) viewer and Git file review; the buddy floater windows and
+  mascot; the game boards; the guided-tour popups; drag-and-drop zones, thumbnails, share
+  sheets, charts (cleanup-level).
+- **Unwritten conventions to put in words:** animation timing, the keyboard focus outline,
+  and how button labels and titles are worded (Title Case vs sentence case, verbs).
+- **Screens never captured:** buddy window content (the capture tool skips it), Git file
+  review, the Android look, the phone-browser login, and the real built app (all review so
+  far used the test copy). About 15 Settings capture paths are stale since Settings was
+  reorganised and photograph the Settings menu instead of their screen; many "missed"
+  shots are stale checks, not missing pictures.
 
 **Bugs found (to fix in the app batches)**
 - Add a project and Import file popups have no close button.
@@ -83,10 +93,13 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
 
 ## Remaining steps
 
-1. **Finish the completeness check** and add every missing category to the gap list.
+1. **Repair screen capture** so every screen above can be pictured: fix the stale Settings
+   paths, capture buddy windows, Git review, Android and phone-login views, and triage the
+   "missed" list. Nothing is judged from a missing or wrong picture.
 2. **Visual decision pages** for the gaps, each on real screens: button placement → Settings
    anatomy → card and text composition (with the spacing scale shown as tidied screens) →
-   smaller categories. Pure cleanups (status colour values, icon sizes, spinner count) are
+   the never-reviewed surfaces (composer, file viewers, terminal, diff/Git review, buddy,
+   games, guided tour) → smaller categories and unwritten conventions. Pure cleanups (status colour values, icon sizes, spinner count) are
    decided by the assistant and listed for Destin rather than asked.
 3. **Complete the guide** from all decisions; Destin approves it section by section and as a
    whole.
