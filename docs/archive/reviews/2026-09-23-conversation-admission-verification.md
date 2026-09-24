@@ -66,7 +66,7 @@ Fresh checks after the change:
 - `bash scripts/verify.sh <app-worktree> --base 436ec10e8`: exit 0, all seven desktop gates passed (existing 47 test-type exclusions unchanged).
 - Independent focused run: `resume-lease-gate`, `BuddyResumeList`, and `takeover-dialog-copy`: **3 files / 30 tests passed**, exit 0.
 - Actual renderer at this session's isolated workbench on 5234: clicked Resume → Resume Session → Try again and verified Take over in Midnight and Light, with 150 ms simulated latency. Before screenshots reuse the earlier reviewed denial state; the attempted fresh before capture encountered the already-updated flow and was not used as before evidence.
-- Preview/contact sheet read in both themes at three viewport sizes. Review: `docs/active/design/2026-09-23-conversation-admission/escalation-review.json`, new step R-4; the submitted R-2 record is preserved.
+- Preview/contact sheet read in both themes at three viewport sizes. Review: `docs/archive/design/2026-09-23-conversation-admission/escalation-review.json`, new step R-4; the submitted R-2 record is preserved.
 - Android and Worker were not rerun for this renderer-only follow-up. Earlier results above are not presented as fresh platform runs. Cross-device limits remain unchanged.
 
 Logs: `/tmp/admission-escalation-verify.log`, `/tmp/admission-escalation-focused.log`; screenshot logs under `scratch/lease-handoff/escalation-runs/after/`. No commit, push, deployment, or production-app interaction.
