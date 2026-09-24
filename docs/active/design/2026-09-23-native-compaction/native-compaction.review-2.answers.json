@@ -1,0 +1,35 @@
+{
+ "deck": "native-compaction-release2-built",
+ "started": "2026-09-24T00:08:55.490Z",
+ "submitted": "2026-09-24T00:10:25Z",
+ "cur": 3,
+ "answers": {
+  "A-1": {
+   "v": "yes",
+   "note": "make sure our hover tooltips are still accurate for compact/archived messages and non-archived messages.",
+   "seconds": 34,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-2": {
+   "v": "yes",
+   "note": "since this is a single button, it should take the full width of the popup/modal.",
+   "seconds": 25,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-3": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "A-4": {
+   "note": "this seems like a state users should never hit. this would just be the app not working correctly atp",
+   "v": "other",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
