@@ -18,10 +18,10 @@ youcoded wecoded-marketplace wecoded-themes`. Every repo uses the branch
 
 | Repo | What it carries | PR |
 |---|---|---|
-| youcoded | the Minimalist (`chrome-style: 'float'`) style; the global Look settings and the reorganised Appearance panel; the contrast rule (vendored); the phone fix | youcoded PR (see branch) |
-| wecoded-marketplace | theme builder offers Minimalist (Kit preset, preview CSS, template, SKILL.md; plugin 1.0.1 → 1.0.2); canonical contrast rule | marketplace PR |
-| wecoded-themes | the vendored contrast rule | themes PR — **merge after the marketplace PR** (its drift check compares against marketplace master) |
-| youcoded-dev (workspace) | review decks + answers, reviews, rules, roadmap item, this handoff | workspace PR |
+| youcoded | the Minimalist (`chrome-style: 'float'`) style; the global Look settings and the reorganised Appearance panel; the contrast rule (vendored); the phone fix | itsdestin/youcoded#569 |
+| wecoded-marketplace | theme builder offers Minimalist (Kit preset, preview CSS, template, SKILL.md; plugin 1.0.1 → 1.0.2); canonical contrast rule | itsdestin/wecoded-marketplace#104 |
+| wecoded-themes | the vendored contrast rule | itsdestin/wecoded-themes#35 — **merge after #104** (its drift check compares against marketplace master) |
+| youcoded-dev (workspace) | review decks + answers, reviews, rules, roadmap item, this handoff | itsdestin/youcoded-dev#201 |
 
 ## What the next session is for
 
