@@ -13,7 +13,8 @@
     "project-plugin-controls-drawer-review": "project-plugin-controls.drawer-review.json",
     "project-plugin-controls-drawer-review-2": "project-plugin-controls.drawer-review-2.json",
     "project-plugin-controls-combined-review": "project-plugin-controls.combined-review.json",
-    "project-plugin-controls-combined-review-2": "project-plugin-controls.combined-review-2.json"
+    "project-plugin-controls-combined-review-2": "project-plugin-controls.combined-review-2.json",
+    "project-plugin-controls-build-questions": "project-plugin-controls.build-questions.json"
   },
   "steps": [
     {
@@ -136,13 +137,6 @@
           "source": "project-plugin-controls-combined-review#Q-3"
         },
         {
-          "id": "R17",
-          "statement": "On Android, the Skills & tools tab stays visible and editable, with a note that its switches don't affect phone conversations yet.",
-          "checkedBy": "human",
-          "threshold": "pass/fail",
-          "source": "project-plugin-controls-combined-review#Q-4"
-        },
-        {
           "id": "R18",
           "statement": "Each skill's status chip sits at the card's right edge, colored like the session switcher; clicking the chip or its dimmed card opens its setup.",
           "checkedBy": "deck",
@@ -183,6 +177,13 @@
           "checkedBy": "deck",
           "threshold": "pass/fail",
           "source": "project-plugin-controls-combined-review-2#K-1"
+        },
+        {
+          "id": "R24",
+          "statement": "A conversation started in a folder that isn't one of your projects gets no skills or tools turned on automatically.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "project-plugin-controls-build-questions#B-1"
         }
       ]
     }

@@ -105,7 +105,10 @@ turns all parts on and sets `partsChosen=true`.
   folder whose canonical path equals the cwd, or else the LONGEST saved folder that
   contains it (a conversation started in a subfolder of a project belongs to it). No
   existing helper does ancestor matching, so this is new code with its own unit table
-  (exact, subfolder, sibling-prefix `proj` vs `project`, case on Windows, none), computes availability at
+  (exact, subfolder, sibling-prefix `proj` vs `project`, case on Windows, none). Project
+  View's own `matchProjectByPath` stays exact-match and is not changed in this build, so a
+  conversation in a project's subfolder gets that project's skills but Project View does not
+  highlight it as the active project — a known, visible-only difference, noted not fixed, computes availability at
   `create()`, and passes a filtered `list()` into the session catalog alongside the preset
   allowlist (intersection). `load()` stays open, matching the allowlist precedent — manual
   `/skill` keeps working through the unfiltered host path.
@@ -114,7 +117,8 @@ turns all parts on and sets `partsChosen=true`.
   server is never spawned for that session. The existing per-model budget drop then runs
   on the remaining list unchanged. `allowIds` undefined (every current caller) keeps
   today's behaviour exactly.
-- **Frozen per conversation (Q-2):** the resolved `{skillIds, mcpIds}` is written into the
+- **Frozen per conversation (Q-2):** written for EVERY native session, including those
+  outside a project (empty set, per B-1). the resolved `{skillIds, mcpIds}` is written into the
   native session header at create. `resume()` reuses the stored set, not the current
   setting, so reopening an old conversation keeps what it started with. Sessions with no
   stored set (created before this build) resolve as "everything on", i.e. today.
@@ -146,16 +150,30 @@ backend and get the full feature.
   change includes a tool connection; one popup per change naming every such part.
 - **Needs setup:** rows for items on in the project but absent here — a synced marketplace
   plugin not installed (Install), a personal skill missing (Q-3: Ask assistant / Choose skill
-  file), a tool connection with `missingSecrets` (Ask assistant). "Ask assistant" starts a
+  file — a personal skill is a FOLDER, so the picker selects its `SKILL.md` and the whole
+  containing folder is copied with async `fs.promises.cp(…, {recursive})` into
+  `~/.claude/skills/<name>/`, refusing to overwrite an existing folder), a tool connection with `missingSecrets` (Ask assistant). "Ask assistant" starts a
   new conversation in that project with a prefilled request; "Choose skill file" opens the
   existing file picker and copies the file into `~/.claude/skills/<name>/`.
-- **Drawer chips:** from `for-session`: green Automatic (in frozen set), amber Manual use
-  (installed, not in set), red Unavailable (on in project, missing here; click opens the
-  tab at the needs-setup section). One quiet line when the project setting differs from
-  the frozen set (Q-2).
-- **Marketplace post-install:** after a successful install the detail overlay switches to
-  the approved project list (existing overlay, `targetKey` reset); every toggle writes
-  through `project-extensions:set`, so Done/close keep choices.
+- **Drawer chips:** `CommandDrawer` is mounted once at the App shell with no session id, so
+  App passes the active session id down as a plain prop (no new context). A small hook
+  `useSessionAvailability(sessionId, open)` fetches `for-session` ONLY while the drawer is
+  open, and again when the session id changes while open — same gating as the sibling
+  `useMarketplace(open)` (perf rules 2–4). Chips: green Automatic (in the frozen set), amber
+  Manual use (installed, not in the set), red Unavailable. `SkillCard`'s status type gains
+  `'unavailable'`. Unavailable items are not in `SkillContext.installed`, so `for-session`
+  returns them as `missing[]` ({key, displayName, kind, projectKey}) and the drawer renders
+  them as their own dimmed cards after the installed grid (the approved shape); clicking
+  one closes the drawer and opens Projects → Skills & tools for that project, scrolled to
+  its row. One quiet line when the project setting differs from the frozen set (Q-2).
+- **Marketplace post-install (net-new, the largest renderer piece):** a production
+  `ProjectSetupPanel` replaces the workbench demo. It takes the installed plugin's id and
+  its parts (skills + tool connections from the install result) and lists every project
+  from `artifacts:list-projects-index`, each an expandable row of the approved anatomy;
+  toggles write through `project-extensions:set` (with the risk popup), so Done/close keep
+  choices. `MarketplaceDetailOverlay` shows it after `installSkill` resolves successfully
+  for a plugin that has parts — for every plugin, not a fixture id — and resets on target
+  change (`targetKey`). Themes and prompt-only skills keep today's post-install view.
 
 ## 6. Tests (pinning what must not regress)
 
@@ -165,8 +183,11 @@ backend and get the full feature.
 - Host: a turned-off skill is absent from the Skill tool list but `/skill` still loads it;
   a turned-off server gets no tools and is not acquired; resume uses the stored set.
 - IPC parity test covers the three channels; `bundled-plugins-parity` unaffected.
-- Renderer: tab rows from a fixture view; chips per status; busy-app render budget stays
-  green (the tab and chips must not subscribe to chat state).
+- Renderer: tab rows from a fixture view; chips per status including a `missing[]` card;
+  `useSessionAvailability` fetches nothing while the drawer is closed (pin: a session switch
+  with the drawer closed makes zero `for-session` calls); a new case in
+  `busy-app-render-budget.test.tsx` — streaming into a hidden tab redraws neither the drawer
+  nor the Skills & tools tab.
 
 ## Resolved by Destin (`project-plugin-controls.build-questions.answers.json`, 2026-09-24)
 
