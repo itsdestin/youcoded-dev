@@ -1,0 +1,136 @@
+{
+  "title": "Last three details",
+  "key": "ui-element-review-final",
+  "out": "final.review.html",
+  "images": "images/final.review",
+  "runs": {
+    "today": "runs/final"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "light",
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "ul-none": [
+      "f",
+      "ul-none",
+      "420x330+510+200"
+    ],
+    "ul-text": [
+      "f",
+      "ul-text",
+      "420x330+510+200"
+    ],
+    "ul-rule": [
+      "f",
+      "ul-rule",
+      "420x330+510+200"
+    ],
+    "sec-text": [
+      "f",
+      "sec-text",
+      "420x150+510+460"
+    ],
+    "sec-outlined": [
+      "f",
+      "sec-outlined",
+      "420x150+510+460"
+    ],
+    "sh-soft": [
+      "f",
+      "sh-soft",
+      "1440x460+0+100"
+    ],
+    "sh-medium": [
+      "f",
+      "sh-medium",
+      "1440x460+0+100"
+    ],
+    "sh-heavy": [
+      "f",
+      "sh-heavy",
+      "1440x460+0+100"
+    ]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "About",
+      "path": "Settings → About",
+      "headline": "Should small section labels in longer reading sections be underlined?",
+      "notice": "Look at \"Disclaimer\" and \"Privacy\". This would apply to labels heading sections of reading text, like About; short settings groups would stay plain.",
+      "variants": [
+        {
+          "id": "none",
+          "label": "No underline",
+          "crop": "ul-none",
+          "summary": "The plain small label you already chose."
+        },
+        {
+          "id": "text",
+          "label": "Underlined words",
+          "crop": "ul-text",
+          "summary": "A soft underline under the label's words only."
+        },
+        {
+          "id": "rule",
+          "label": "Line under the row",
+          "crop": "ul-rule",
+          "summary": "A thin line running the full width under the label."
+        }
+      ]
+    },
+    {
+      "id": "F-2",
+      "surface": "Projects",
+      "path": "Projects → Add a project",
+      "headline": "Should a Cancel-type button be plain text or outlined?",
+      "notice": "Look at Cancel in the bottom right. Whichever you pick applies to every less-important button next to a main one (Cancel, Preview, Not now).",
+      "variants": [
+        {
+          "id": "text",
+          "label": "Plain text",
+          "crop": "sec-text",
+          "summary": "Today: just the word, no box."
+        },
+        {
+          "id": "outlined",
+          "label": "Outlined",
+          "crop": "sec-outlined",
+          "summary": "A thin outline, like Preview beside Resume on chat cards."
+        }
+      ]
+    },
+    {
+      "id": "F-3",
+      "surface": "Your Library",
+      "path": "Marketplace → Your Library",
+      "headline": "How strong should the shadow under cards be?",
+      "notice": "You asked for something between today and the soft version. Look at the plugin cards; everything else is identical.",
+      "variants": [
+        {
+          "id": "soft",
+          "label": "Soft",
+          "crop": "sh-soft",
+          "summary": "The Raised version you saw before: a light shadow."
+        },
+        {
+          "id": "medium",
+          "label": "Medium",
+          "crop": "sh-medium",
+          "summary": "Between the two: a clearer shadow, still soft at the edges."
+        },
+        {
+          "id": "heavy",
+          "label": "Today",
+          "crop": "sh-heavy",
+          "summary": "Today's Marketplace shadow: deep and wide."
+        }
+      ]
+    }
+  ]
+}
