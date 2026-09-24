@@ -1,0 +1,78 @@
+{
+ "title": "Native compaction \u2014 contract \u2014 acceptance",
+ "key": "native-compaction-release2-contract-acceptance",
+ "out": "native-compaction.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/native-compaction-implementation-20260923",
+ "sources": {
+  "native-compaction-release2": "native-compaction.review.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Chat and model picker",
+   "path": "A conversation after a native summary, or when choosing a smaller model",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "Older messages summarized natively are dimmed, while recent messages kept alongside the summary remain at normal contrast.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "native-compaction-release2#B-1"
+    },
+    {
+     "id": "R2",
+     "statement": "A model that fits switches directly; an overfull chat asks to summarize on the current model, switching only if that summary fits.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "native-compaction-release2#B-2"
+    },
+    {
+     "id": "R3",
+     "statement": "At phone width, the summarize-or-dismiss choice fits, and X or Esc leaves my chat and current model unchanged.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "native-compaction-release2#B-3"
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "Chat and model picker",
+   "path": "Acceptance",
+   "headline": "Older messages summarized natively are dimmed, while recent messages kept alongside the summary remain at normal contrast.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R2",
+   "words": true,
+   "surface": "Chat and model picker",
+   "path": "Acceptance",
+   "headline": "A model that fits switches directly; an overfull chat asks to summarize on the current model, switching only if that summary fits.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "Chat and model picker",
+   "path": "Acceptance",
+   "headline": "At phone width, the summarize-or-dismiss choice fits, and X or Esc leaves my chat and current model unchanged.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

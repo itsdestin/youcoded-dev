@@ -55,7 +55,6 @@ Target: `v1.3.1`
 - marketplace: The "Likely safe" badge claims more than the scan checks: it only looks for leaked secrets and file shapes
 - native-harness: The "No folder" choice on the new-session form (shipped 2026-09-11) was never tested and not thought through…
 - native-harness: Every install should come with a built-in project, "Your Assistant" (name not final), in the Projects list…
-- native-harness: A local model forgets the user's request halfway through a long first request, goes silent, then answers the…
 - native-harness: Native Runtime Parity Program
 - native-harness: The one object that runs a native conversation is 4,756 lines because it also orchestrates the helper agents…
 - native-harness: The assistant cannot search the WeCoded marketplace, so when it needs a capability it does not have it…
@@ -73,7 +72,7 @@ Target: `v1.3.1`
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 99 | 32 | 3 | 9 |
-| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 64 | 12 | 5 | 23 |
+| [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 63 | 12 | 5 | 23 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 37 | 7 | 1 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 25 | 8 | 2 | 2 |
