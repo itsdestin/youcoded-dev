@@ -34,6 +34,12 @@ but the UI review deck, his first sight of the work. Ask Destin before skipping.
 show them to me. this is a simple feature" (2026-09-10). "Wait on the deck" = keep building,
 no captures, no deck until he asks. **Guard:** none — candidate.
 
+## Prior art before drawing
+**Invariant:** before designing any new screen, popup or element, read the design guide AND
+open two or three existing app surfaces that do the same (or the nearest) job; build from
+them and name them when showing the work. **Why:** new UI kept missing the app's feel even
+when it followed the written rules (Destin, 2026-09-24). **Guard:** none — candidate.
+
 ## Questions before drawing
 **Invariant:** step-2 questions are a words-only deck (`<feature>.questions.json`), submitted
 before any UI is drawn, with the fields `.claude/rules/review-deck.md` requires. **Why:** a chat

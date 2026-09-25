@@ -17,9 +17,18 @@ screen, open it as the example: copy the look, not blindly the code.
 
 1. Name the job: "a popup with a main action", "a list of settings", "a card for something
    you can install".
-2. Find that job's recipe below and copy its sizes, order and placement exactly, checking
-   the example screen it names.
-3. If no recipe fits, stop and ask Destin for one. Do not invent a look.
+2. **Before designing anything, find two or three places in the app that already do the
+   same job** (or the closest one) and open them. Use them as your reference for the feel —
+   spacing, weight, how busy it is — and name them when you show your work. Prefer the
+   examples this guide names; if two references disagree, the guide decides.
+3. Find that job's recipe below. Build it from the shared piece the recipe names, and copy
+   its order and placement.
+4. If no recipe fits, stop and ask Destin for one. Do not invent a look.
+
+**Rules, not examples.** Each recipe is a general rule for a *kind* of job; the screens it
+names are illustrations, not the limit of where it applies. Exact sizes live in the shared
+pieces (`components/ui/`), not here — use the piece and you get them. If a rule seems wrong
+for a new situation, ask rather than bending it or copying one screen's quirk.
 
 ## Principles
 
@@ -55,12 +64,10 @@ screen, open it as the example: copy the look, not blindly the code.
 - Big groups on the screen use the *Large* heading.
 
 ### Popups and side panels
-- One shared shell for every popup and side panel (Settings, Session Files, file viewers,
-  Git review, Games, buddy windows): **16px semibold one-line title**, the **✕ close
-  button** at the right (28px, soft hover square), a **tapered line** under the header
-  (inset 16px, fading over its first and last 8%). Every popup has the ✕ and closes on Esc.
-- When the body scrolls, fade the content at the hidden edge (42px, softened 4% at the
-  sides); no fade when nothing is hidden; never paint a solid strip.
+- Every popup and side panel uses the shared popup (`Dialog`): a **one-line 16px semibold
+  title**, the **✕** at the right, a **tapered line** under the header. Every popup has the
+  ✕ and closes on Esc. Examples: Settings, Session Files, Git review.
+- When the body scrolls, the content fades at the hidden edge; never a solid strip.
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide**
   popups are larger.
 
@@ -78,7 +85,8 @@ underline under its words. Labels over short settings groups stay plain.
 - Body text: 14px, main text colour.
 - Hints, descriptions, dates and other secondary text: 12px in the one grey used for
   secondary text. The faintest grey is only for disabled things.
-- Nothing a user has to read is smaller than 11px.
+- Smallest text: **open question** — the app's smallest step is 10px (used for most hints);
+  whether that stays or grows to 11px is Destin's call.
 - A count beside a label or tab is the word then a smaller, fainter number: "Files 17". In a
   summary line it is a bold number then a grey word: "17 files". Never "(17)" and never a
   number in a bubble.
@@ -101,7 +109,10 @@ underline under its words. Labels over short settings groups stay plain.
   side by side, on top when stacked.
 - Close is always the ✕ button, never a letter or the word.
 - **A text box with its own action** (a password's Set, a search's filter, send) keeps that
-  action **inside the box, at the right** — like the message box and the search boxes.
+  action **inside the box, at the right, as a small filled button** — like the message box.
+- **A follow-up action under a group** ("Back up all now") is a **full-width outlined
+  button**. Never underlined text as a button; underlined text is only a link inside a
+  sentence.
 - Switching views or filters uses the shared tab strip and filter chips, following the same
   roundness.
 
@@ -114,18 +125,21 @@ underline under its words. Labels over short settings groups stay plain.
   No box inside a box.
 - Rows use the shared setting row: title, hint under it in the left column, control at the
   right.
+- **Anything that folds open** (a log, advanced options, details) is a **boxed row like a
+  setting, arrow on the right**. One fold-out style everywhere.
+- **"I understand" before a risky action:** the whole line is a tappable box, tick box on
+  the left, lighting up when ticked; the action stays disabled until it is ticked.
 
 ### Cards
 - Anything you open, install or pick from a grid is a **raised card**: panel colour, thin
   border, a **medium shadow**, the theme's card corner, 12px between cards. Reference: Your
   Library.
-- **Text order:** name with its status pill and star on the top line → **one row of chips
-  right under the name** (trust, who made it, kind, numbers) → the description (two lines at
-  most).
+- **Text order:** name with its status on the top line → **one row of chips right under the
+  name** for the short facts about it (who made it, what kind, numbers) → the description
+  (two lines at most).
 - The chip row **never wraps**: one line that fades out at its end.
-- **Conversation cards** (Resume, Projects, chat references): name on top with the **tag and
-  note buttons at the top right**; the **date at the bottom right**, at the end of the details
-  line.
+- **Quick actions on a card** (tag, note, favourite) sit at its **top right**; a **date** goes
+  at the **bottom right**, at the end of the details line. Example: conversation cards.
 
 ### Lists and menus
 - **Settings-style lists** (each row opens or changes a setting): **boxed rows** — each row a
@@ -136,8 +150,13 @@ underline under its words. Labels over short settings groups stay plain.
 ### Status and notices
 - A status label is a **small tinted pill in its status colour, normal case** ("Installed").
   A live status (a session Working / Inactive) carries its **coloured dot inside the pill**.
-- A passive warning, info or danger notice is a **tinted box with a matching border**.
-  Reference: Backup & Sync → "conversations too big to sync".
+- **Every warning, error or info notice is the one tinted box with a matching border**
+  (Reference: Backup & Sync → "conversations too big to sync"). Its text is the normal grey
+  and black; only the box and its title carry the colour — **never red or coloured body
+  text, never a coloured strip**.
+- A notice **about one thing sits inside that thing** — inside the setting's or the list
+  item's own box — and **its buttons (Try again, Resume, Show details) go inside the notice,
+  at the right**.
 - Errors follow `docs/error-message-standards.md`.
 
 ### Building a Page
@@ -153,7 +172,10 @@ view**, which stays exactly as it is.
 
 ## Before you show Destin
 
-- [ ] Every element matches a recipe here; nothing invented.
+- [ ] Two or three existing screens that do the same job were used as references, and are
+      named when showing the work.
+- [ ] Every element matches a recipe here and is built from its shared piece; nothing invented.
+- [ ] Checked in its hard states too: error, empty, loading, very long text.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only.
 - [ ] No spaced-out capitals; headings from the three levels.
 - [ ] Actions on the right; one filled button; nothing filled alone at the bottom-left.
