@@ -255,6 +255,7 @@ if [[ $DRY -eq 1 ]]; then
     printf '  npx vitest related --run%s\n' "$(printf ' %s' "${REL[@]}")"
   fi
   echo "  bash $ROOT/scripts/ast-grep/check.sh $DESKTOP/src"
+  printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' && echo "  node $ROOT/scripts/shoot/shoot.mjs --check (renderer changed)"
   exit 0
 fi
 
@@ -299,9 +300,21 @@ fi
 # worktree's source is the whole point of passing a checkout argument.
 start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" "$DESKTOP/src"
 
+# Screens: open every screen in the list once, in the photo-only build, and fail
+# on any that does not show (scripts/shoot/, spec 2026-09-24-shoot-and-explore).
+# WHY only on renderer changes: nothing else can move a screen, and the check
+# builds the app and starts browsers (~5 s for Settings, measured 2026-09-25).
+# It compares no pictures, so run-to-run image differences cannot fail it.
+# Skipped, not failed, without Chrome or on a checkout older than the screen list.
+if [[ -f "$DESKTOP/src/renderer/dev/workbench/screens/index.ts" ]] \
+  && printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' \
+  && command -v google-chrome-stable >/dev/null 2>&1; then
+  start screens "screens open (shoot --check)" node "$ROOT/scripts/shoot/shoot.mjs" --check --worktree "$CHECKOUT" --out "$LOGDIR/shoot"
+fi
+
 FAILED=0
 FAILED_KEYS=()
-for key in types testtypes tests knip lint design invariants; do
+for key in types testtypes tests knip lint design invariants screens; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then
