@@ -111,6 +111,15 @@ annotation and form-filling, so "Edit" on a PDF would open it there. Full PDF *r
 
 ## The one real decision: license
 
+> **DECIDED 2026-09-24 (Destin): Option A — YouCoded stays MIT; the editors ship as a separate
+> AGPL add-on (own public repo, downloaded on first use, sealed frame, files + messages only).**
+> Theming is unaffected by this choice: our look changes live in the add-on's public copy.
+> Target look: colours, fonts, corners, see-through/glass toolbars, OnlyOffice's own header and
+> tabs hidden in favour of YouCoded's; the file-viewer compact editor gets a YouCoded-drawn
+> toolbar that drives the editor through our in-editor plugin. Icons, dialog layouts and the
+> canvas-drawn grid/page stay OnlyOffice's (recoloured only). Top ongoing risk: upstream updates
+> breaking our styling/plugin hooks — pin the version and update deliberately with a test pass.
+
 OnlyOffice's editors are AGPL — "you may use this, but anything you build it *into* must also
 be shared under AGPL". YouCoded is MIT. Three ways through:
 
@@ -217,7 +226,7 @@ nothing is new invention; every piece has a working example to copy.
 
 ## Open questions for Destin
 
-1. Licence route: separate add-on (A), relicense to AGPL (B), or buy a licence (C)?
+1. ~~Licence route~~ — decided: A (see above).
 2. Euro-Office or original OnlyOffice as the base?
 3. Is "a one-time ~100–150 MB download the first time you open Office" acceptable, or should
    Office be in the main download?
