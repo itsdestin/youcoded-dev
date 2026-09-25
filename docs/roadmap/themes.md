@@ -2,6 +2,15 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
+- [ ] Themes you build yourself still get the old DRAWN preview picture (a mock chat page
+      made from the theme's colours), while the built-in and community themes now show a
+      real screenshot of the app (2026-09-24, `scripts/ui-review/theme-previews.py`). So on
+      the Appearance cards and in the Marketplace, your own theme looks different from the
+      rest. Three places still draw the old way: the desktop app when you share or publish
+      a theme (`main/theme-preview-generator.ts`), the theme builder's optional preview step
+      (`generate-previews.js`), and Android, which makes no preview at all
+      `settings/themes` `all` `confirmed` `checked 2026-09-24`
+
 - [ ] Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it
       gives every small button its own blur, and on Windows a screen full of separately
       blurred cards has twice stopped drawing (blank cards). Destin chose to ship it as is
