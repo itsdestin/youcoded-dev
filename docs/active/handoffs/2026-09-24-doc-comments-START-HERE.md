@@ -46,8 +46,8 @@ Chat answers, not deck answers — the contract step still has to ratify them on
   after edits). `.docx`: real Word comments (the format Word and Google Docs both import and
   export). The two convert to each other.
 - **Reading mode (default):** comments are tinted, underlined highlights; hover shows that
-  comment and its replies; the pointer can move onto the card and reply there (Destin, later
-  on 2026-09-24) — resolve/edit stay in Comments mode. A half-typed reply keeps the card open
+  comment and its replies; the pointer can move onto the card and reply or resolve there (Destin,
+  later on 2026-09-24) — editing stays in Comments mode. A half-typed reply keeps the card open
   until Esc or a click outside. Clicking a highlight opens Comments mode focused on it.
 - **Adding:** releasing a text selection in the file viewer opens the SAME right-click menu
   (Ask about this / Add comment / Copy / Select all); chat keeps right-click only. Add
@@ -94,6 +94,11 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
   opened in Google Docs. A live link to a Google Drive document is a separate, later project.
 - **PR #263 (Q-5):** closed without merging, 2026-09-24.
 
+## Process decisions
+
+- **No UX tester runs** (Destin, 2026-09-24: "we will skip the ui/ux auto tester. my manual
+  review makes that mostly unnecessary"). Skip both the pre-deck run and the post-build run.
+
 ## What the build found (infrastructure survey, 2026-09-24)
 
 - Accounts: GitHub sign-in through the marketplace Worker (D1). No per-user document
@@ -135,13 +140,13 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
 ## What remains
 
 1. ~~Decisions from Destin~~ — answered above.
-2. ~~Design the new surfaces~~ — Word, Excel and phone mocked (see Known gaps). Then **polish** the less-reviewed parts above; UX tester run 1; UI review deck; contract.
+2. ~~Design the new surfaces~~ — Word, Excel and phone mocked (see Known gaps). Then **polish** the less-reviewed parts above; UI review deck; contract.
 3. **Build** — persistence with history in Web Annotation shape (account-ready ids);
    re-anchoring after edits with a "detached" state; assistant read/reply/resolve tools
    (native + MCP, desktop and Android), including repoint; Word (.docx comments.xml + range
    markers) and Excel (cell notes) read/write with backup; the Ask-about and Ask-Your-Assistant message
    formats sent to the assistant.
-4. **Review** — code reviewer, UX tester run 2, grader, acceptance deck.
+4. **Review** — code reviewer, grader, acceptance deck (no UX tester, see Process decisions).
 5. **Cleanup** — delete mockup-only code; retire branches/worktrees `comments-mock-b/-c` and
    `-a-v1`. (PR #263 closed 2026-09-24.)
 6. **Later, separate projects** — comments syncing across devices; sharing documents with
