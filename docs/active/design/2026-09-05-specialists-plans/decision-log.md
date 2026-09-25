@@ -374,3 +374,14 @@ supersedes decision 33's derived fact that every link names exactly one step, an
 piece of stage 2's results-between-steps; and propose_plan guidance says independent work goes in
 ONE split step and a combine lists every step it needs. Also confirmed working in the same test:
 decision 38's one-line "underway" reply and the completion reply.
+
+## Decision 40 — how the rest gets reviewed (chat 2026-09-24)
+
+- Live rerun passed: *"it ran them all in parallel and the final compiler got all the different stuff"*.
+- Correctness the assistant can check itself (costs especially) is verified without Destin —
+  *"make sure that the costs all work properly and don't bug out. … I really just don't want to
+  click through the menus"*.
+- UI review happens ONCE, at the very end before merge: *"a single … deck … I want to be able to
+  click through this UI … a deck with like the click throughable like full UI elements"* — i.e. a
+  Live deck of real panes covering every plan-card / plan-settings / Settings state. No interim
+  UI decks.
