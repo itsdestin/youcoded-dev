@@ -120,3 +120,12 @@ searched or resumed (chat-data).
       comma-separated text instead of the grid (Destin expected in-grid editing, 2026-09-03;
       the promo video was filmed with the assistant doing the edits instead)
       `files-panel` `all` `confirmed` `checked 2026-09-03`
+
+- [ ] A full office suite inside the app — Word/Excel/PowerPoint-class editing of documents,
+      spreadsheets and slides, "almost on par with OnlyOffice or Microsoft Office", as its own
+      pinned Office page, with the session and Project View file viewers getting a slimmer
+      editor that can hand a file over to the full one (Destin, 2026-09-24). Investigation
+      recommends borrowing OnlyOffice/Euro-Office's editors whole as a download-on-first-use
+      add-on; blocked on Destin's licence decision (the editors are AGPL, the app is MIT).
+      Would also resolve the look-only spreadsheet item above
+      `files-panel` `all` `decision` `checked 2026-09-24` → docs/active/investigations/2026-09-24-office-suite.md

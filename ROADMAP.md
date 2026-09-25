@@ -78,7 +78,7 @@ Target: `v1.3.1`
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 22 | 5 | 6 | 5 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 21 | 6 | 2 | 2 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 17 | 4 | 0 | 9 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 18 | 4 | 1 | 9 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
