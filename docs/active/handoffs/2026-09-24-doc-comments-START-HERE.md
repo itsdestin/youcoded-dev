@@ -53,7 +53,11 @@ Chat answers, not deck answers — the contract step still has to ratify them on
   (Ask about this / Add comment / Copy / Select all); chat keeps right-click only. Add
   comment opens a small box anchored at the selection.
 - **Ask about this:** a pill INSIDE the sentence in the composer (deletes as one unit), shown
-  the same in the sent bubble. Destin wanted to evaluate it visually before fully committing.
+  the same in the sent bubble. Reworked 2026-09-24 after Destin found the caret misplaced and
+  the chip off-style: TagChip-style accent chip, no icon, the quote in curly quotes; the
+  composer holds a display-sized token so the caret lines up (compose-ref.ts "Draft tokens").
+  **Build note:** the SENT text still carries the URL-encoded JSON marker — the backend stage
+  must define what the assistant actually receives.
 - **Comments mode:** entered with a floating **Comments** button left of the floating
   **Edit** button (same pill shape, pops in/out with the file list exactly like Edit, stays in
   place when pressed, sits over the document — never over the comment pane). Entering folds
@@ -125,7 +129,7 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
   portaled above the composer); no hover card on touch; a long-press selection opens the menu
   after it settles. Checked at 390px in headless Chrome only — not on a real Android WebView,
   where the native selection toolbar may also appear.
-- Still not polished: the Ask-about pill (composer + sent bubble), the Ask-Your-Assistant sent
+- Still not polished: the Ask-Your-Assistant sent
   message, code-file comments, Meadow Mist, the Projects screen (no floating buttons → no Ask
   Your Assistant). Halftone checked for Word + Excel only.
 - Spreadsheet cell comments name the cell only ("C4"), not the sheet; a comment on another
