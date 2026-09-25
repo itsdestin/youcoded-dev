@@ -4,12 +4,14 @@ status: draft
 type: spec
 topic: Replace the screenshot/UI-review tooling with two simple tools on one engine — `shoot` (open named screens directly and photograph them, no clicking) and `explore` (a live click-through for AI reviewers) — plus a small set of saved journeys
 origin: Destin, 2026-09-24 — "the simplest possible version of the system that works as fast as possible, that has the fewest possible error cases, that requires the least thinking … from the model"; keep click paths for AI reviewers as a separate path
+revision: 2 — independent review folded in (see "What changed from revision 1")
 related: docs/active/investigations/2026-09-24-screenshot-infra-speed.md
 ---
 
 # `shoot` and `explore`: one engine, two jobs
 
-Evidence for every number here is in `docs/active/investigations/2026-09-24-screenshot-infra-speed.md`.
+Evidence for every measured number here is in `docs/active/investigations/2026-09-24-screenshot-infra-speed.md`.
+Anything marked *estimate* is measured in phase 1 before anyone relies on it.
 
 ## The two jobs
 
@@ -18,30 +20,58 @@ Evidence for every number here is in `docs/active/investigations/2026-09-24-scre
 | Who uses it | Destin's review decks, before/after, theme checks | AI UX testers, graders, anyone checking menus, stacking, drag |
 | How screens open | By name, directly. **No clicks.** | Step by step, like a person: click, hover, type, drag |
 | What is saved | Nothing but the pictures | Nothing, unless a journey is saved on purpose |
-| Can it go stale? | No: the screen list is part of the app and checked on every verify run | No: nothing is stored, the model looks at the screen each step |
+| Can it go stale? | No: each screen marks itself, and the list is checked when screen code changes | No: nothing is stored, the model looks at the screen each step |
 
 Both run on one engine that the model never configures.
 
 ## The engine (shared, invisible)
 
-1. **It builds a packaged copy of the practice app** from the worktree it is given
-   (`VITE_WORKBENCH=1 vite build`, about 1.5 s) and **serves it on a port the computer picks**.
-   There are no offsets, no fixed ports and no "wrong worktree" refusal, because it can
-   only serve what it just built. Measured: pages load in 0.25 s alone and 1.4 s with 24
-   loading at once (13.4 s on today's development server).
-2. **It never waits a fixed time.** It waits for the thing it needs (the element exists,
-   the network is quiet, animations have finished), capped by a time limit. **Every step
-   has a time limit**, so a stuck screen fails alone with a reason and never hangs the run.
-3. **One shared queue feeds a few browsers with a few tabs each.** The count comes from the
-   computer's core count and backs off when it is busy. It is not a setting. Measured: 3–4×
-   faster than today, with about half the computer left free (today: 0% free at worst).
-4. **Each tab is a clean, separate profile**, so no screen inherits another's saved state.
-5. **Rebuild check:** if the source changed since the last build, it rebuilds first (1.5 s).
-   A picture is never taken of stale code.
+1. **It builds a photo-only copy of the practice app** from the worktree it is given.
+   This is a third build, next to the real app and the landing page's demo, switched on by
+   its own flag (`VITE_SHOOT=1`, which also implies `VITE_WORKBENCH=1`). Takes ~1.5 s.
+   - **Why a third build:** today some screens only fill in under the development server,
+     because they check `isWorkbenchMode()`, which is off in any packaged build. Those are:
+     - the terminal's sample screen (`TerminalView.tsx`, `fixtures/terminal-screen.ts`)
+     - voice input (`hooks/useVoiceInput.ts`)
+     - page connections (`components/pages/page-connections.tsx`)
+     
+     The photo-only build turns those on, and the "open me" hooks (below). The landing
+     page's build does **not**, so strangers on the website can never reach them. The real
+     app turns on none of it.
+   - **The guard (new, built in phase 1 — none exists today):** a test builds the real app
+     and the landing-page demo, then fails if either contains the workbench's fake backend,
+     any "open me" hook, or the `VITE_SHOOT` code. Today only code comments promise this. The
+     only related check (`ast-grep` rule `workbench-document-checks-vite-workbench`) is about
+     the microphone gate.
+2. **It serves that copy on a port the computer picks.** There are no offsets, no fixed ports
+   and no "wrong worktree" refusal, because it can only serve what it just built. Measured:
+   0.25 s per page alone, 1.4 s with 24 loading at once (13.4 s on today's development
+   server).
+3. **It never waits a fixed time.** It waits for the thing it needs (the screen's own
+   marker, a quiet network, finished animations), capped by a time limit. **Every browser
+   command has a time limit.** A stuck screen fails alone with a reason and never hangs
+   the run. The prototype had three screens hang forever without this; today's tool lost
+   16 of 303 jobs the same way.
+4. **One shared queue feeds a few browsers with a few tabs each.** The count comes from the
+   core count and backs off when the computer is busy. It is not a setting.
+5. **Every tab is its own private session.** Each tab gets its own browser context, like a
+   separate private window (`Target.createBrowserContext`), so saved settings, including
+   the theme, can never leak from one tab to another. The prototype already works this way.
+   A pinned test runs two tabs with different themes on one address and checks each
+   picture's theme.
+6. **Rebuild check:** if the source changed since the last build, it rebuilds first. A
+   picture is never taken of stale code.
+7. **It cleans up after itself.** Every browser it starts is recorded in a small file with
+   its process id. The next run stops any leftover from a crashed run. `explore` sessions
+   also shut down on their own after **10 minutes idle**.
 
-The engine replaces: the workbench launch inside `run-review.sh`, `cdp-ports.sh`,
-`probe-ports.sh`, the sharding and `UI_REVIEW_JOBS` settings, and the fixed boot waits in
-`shot.mjs`.
+Deliberately left out, to keep it simple:
+- **Repaint in place** (swap themes without reloading). About 2× faster for theme sweeps,
+  but measured to differ from a fresh load on 16 of 263 pictures.
+- **A warm engine** (browsers kept open between runs). One more background process to
+  manage.
+
+Either can be added later if speed is not enough.
 
 ## Tool 1: `shoot`
 
@@ -54,46 +84,68 @@ shoot --list                                       every screen name with its ta
 shoot --all                                        everything (the old "full sweep")
 ```
 
-- **Default themes: light and dark.** `--themes all` or a named list for more. Contrast
-  scanning runs only with `--contrast`.
-- **Output:** one folder, `<name>/<theme>.png`, plus a contact sheet. Review decks read
-  from it directly (the same crop, measure and highlight data decks use today).
-- **Before/after** builds each side from its own worktree/branch. The same screen names mean
-  the same screens on both sides.
-- **Proof a picture is right**, checked automatically:
-  - Every screen names one thing only it has (its title or heading). The picture fails if
-    that thing is missing.
-  - Two different screen names that produce the same picture are both flagged. Today 26 such
-    pairs pass silently.
-  - A failed screen is never shown as a picture. The summary lists it with the reason.
+- **Default themes: light and dark** (open question 1). `--themes all` or a named list for
+  more. The contrast scan runs only with `--contrast`.
+- **Output:** one folder, `<name>/<theme>.png`, plus a contact sheet. Review decks read from
+  it directly (the same crop, measure and highlight data decks use today).
+- **Before/after** builds each side from its own worktree or branch.
+  - A screen missing on one side shows a clear **"not on the before side"** card, never a
+    blank or a wrong picture.
+  - Until phase 1 is merged, `master` has no screen list at all. Before/after against
+    `master` keeps using today's tool (`record-pair.sh`, `montage-ab.sh`) until then.
+- **Expected speed** (*estimates*, to be measured in phase 1; they assume a cold start and
+  no repaint-in-place):
+  - a small named set in two themes: 5–10 s
+  - every screen in light and dark: under 1 minute
+  - every screen in every theme: 2–3 minutes
+  
+  For comparison, today's tool measured 14.4 minutes for three themes of every plan.
+
+### How a screen proves it is showing
+
+- **Each screen marks itself.** When a screen (or one state of it) is on screen, its root
+  element carries `data-screen="<name>"`, for example `settings/assistant/cloud` or
+  `marketplace/detail#load-failed`.
+  - A **state** (error, empty, loading) sets its own marker on the part that differs, such
+    as the error message. That way two states of one screen can't pass as each other.
+  - Markers are not words, so changing a button's text never fails a check.
+  - Markers exist only in the photo-only build (engine step 1).
+- **The picture fails** if its marker is missing, hidden, or covered by another layer.
+- **Look-alike flag:** two different screen names that produce the same picture are both
+  flagged. Today 26 such pairs pass silently. A pair that is *meant* to look the same is
+  listed once, with a reason, in the screen list (`sameAs: "<other name>", why: "..."`).
+  Anything not listed is a real warning.
+- A failed screen is never shown as a picture. The summary lists it with the reason.
 
 ### The screen list (why it can't drift)
 
 - **Where it lives:** in the app repo (`desktop/src/renderer/dev/workbench/screens/`), one
   file per area (settings, marketplace, projects, chat, games…). Each entry has:
-  - a name (`settings/assistant/cloud`)
+  - a name
   - tags (`settings`, `dialog`, `error-state`, `narrow`…)
   - the practice-app scenario it needs (`default`, `empty`, `stress`, a fail switch…)
   - how it opens
-  - the thing only it shows
+  - any expected look-alike
 - **How a screen opens without clicking:**
   - Screens driven by shared app state open by setting that state.
-  - About 108 components keep "am I open" inside themselves. Each of those gets a
-    one-line, dev-only "open me" hook, registered by the component itself. It moves with
-    the component and is stripped from the real app, like the existing workbench code.
-  - Opening by label-clicks inside an entry is allowed only as a temporary step while
-    hooks are being added, and those entries are marked `temporary` so they stay visible.
+  - Screens that keep "am I open" inside the component get a small "open me" hook,
+    registered by the component itself. It moves with the component and exists only in the
+    photo-only build.
+  - How many components need a hook is **counted in phase 1**, not assumed. It is at most
+    one per distinct screen, and the investigation found ~200–250 distinct pictures across
+    all plans.
+  - Opening by label-clicks inside an entry is allowed only while hooks are being added,
+    and those entries are marked `temporary` so they stay visible.
 - **The drift check:** `shoot --check` opens every screen once, in one theme, and fails on
-  any that doesn't open or doesn't show its own thing. It runs inside `scripts/verify.sh`
-  when Chrome is installed (estimate 10–20 s), and says "skipped: no browser" otherwise.
-  A change that breaks a screen fails in that same change, not weeks later.
-- **A source test** pins that every "open me" hook has a screen-list entry and every entry
-  points at a real hook. A deleted component can't leave a dead entry behind.
-
-**Expected speed** (estimate, verify in phase 1):
-- A small named set: 2–3 s.
-- Every screen × light and dark: about 15 s.
-- Every screen × every theme: about 30 s.
+  any that doesn't open or whose marker is missing.
+  - It runs from `scripts/verify.sh` **only when the change touches renderer code**
+    (`desktop/src/renderer/**`), and says "skipped: no browser" when Chrome is missing.
+  - It compares no pictures, only "did it open and show its marker". So the
+    run-to-run image differences (5 of 263, the marketplace theme cards) can't fail it.
+  - *Estimate:* 15–30 s. If it runs slower than that, it narrows to the screens whose
+    files changed.
+- **A source test** pins that every hook has a screen-list entry and every entry points at a
+  real hook. A deleted component can't leave a dead entry behind.
 
 ## Tool 2: `explore`
 
@@ -119,13 +171,17 @@ explore stop
   The model never writes selectors or plans. It reads the list and picks a number, like a
   person looking at the screen.
 - **Stacking and sub-menus** come from `stack`: which dialogs, drawers, menus and popovers
-  are open, in order, and which one has focus. That is the thing reviewers need for "menu
-  inside a dialog inside a drawer" problems.
+  are open, in order, and which one has focus.
 - **Real input:** mouse, keys and drag go through the browser's real input events, with
-  hover and fine-pointer enabled (today's lesson in `cdp-helpers.mjs` carries over).
-- **It can also attach to an isolated dev app** started by `run-dev.sh`, for the few checks
-  that need the real app process. It never attaches to Destin's running app. The tool
-  refuses any target it did not start or that `run-dev.sh` did not label.
+  hover and fine-pointer enabled (the lesson in today's `cdp-helpers.mjs` carries over).
+- **Clean-up:** one session per worktree. It shuts down after 10 minutes idle, and a new
+  `start` stops any leftover (engine step 7).
+- **Attaching to an isolated dev app** (the few checks that need the real app process):
+  - `run-dev.sh` gets a real marker. It writes a small file in its own profile folder
+    naming its debugging port and process id.
+  - `explore` attaches only when that file exists and matches a live process.
+  - Destin's running app never has that file, so it can never be attached to. Today
+    `run-dev.sh` only sets a window title, which is not safe to trust.
 
 Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
 `drag-fuzz.mjs`.
@@ -133,61 +189,102 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
 ## Saved journeys (small, optional)
 
 - A journey is a saved `explore` session. Controls are identified by **their spoken label
-  and role** ("button: Settings"), never by page position or style classes. A layout change
-  doesn't break them; only a renamed or removed control does.
+  and role** ("button: Settings"), never by page position or style classes.
 - `explore replay <journey>` re-runs one. When a step fails, it reports the step, the label
-  it looked for, and the controls that *were* on screen, so the fix is obvious.
+  it looked for, and the controls that *were* on screen.
 - **Keep about 10**, for core flows: first run, send a message, permission ask, open
-  Settings, marketplace install, project open. They run with `shoot --check`.
+  Settings, marketplace install, project open.
+- **Journeys are not part of `verify.sh`.** Changed wording would fail them for unrelated
+  work. They run on request, and before a release.
+
+## Review decks: the two lost-answer fixes (added in revision 2)
+
+1. **Every click shows "saved ✓" or "NOT saved — retrying".** A refused save (the server's
+   409) or a dead server counts as NOT saved, never as silently fine.
+2. **Each deck keeps one address for its whole life.**
+   - The port comes from the deck's name. If that port is busy, the next free one is used
+     and remembered next to the answers file.
+   - Restarting a deck reopens the same address, so the page's backup copy of the answers
+     (already kept in the browser) is found again.
+   - On load, the page merges that backup with the answers file, so a crash between click
+     and save loses nothing.
+3. **Live panes come from the deck's own server.** The deck serves the photo-only practice
+   app under its own address (`/app/`) instead of pointing at fixed port 5513. Live panes
+   then survive restarts along with the deck.
+   - Old decks' pictures keep working.
+   - Old decks' **live panes** still point at 5513, so they are rebuilt once when reopened
+     (the deck says so rather than showing an empty pane).
 
 ## What happens to what exists today
 
 | Today | Becomes |
 |---|---|
-| `shot.mjs` + 80 `plans/*.json` | screen-list entries (still-wanted screens), journeys (real flows), or archived (one-offs: `assistant-settings-r2…r6`, `*-before`, design-variant plans) |
+| `shot.mjs` + 80 `plans/*.json` | screen-list entries (still-wanted screens), journeys (real flows), or archived (one-offs, open question 2) |
 | `run-review.sh` | `shoot --all`, plus the existing contrast, coverage and gallery reports |
 | `coverage.mjs`, `contrast-report.mjs`, montage scripts, `make-gallery.py` | kept, fed by `shoot`'s output |
-| `dom-size-sweep.mjs` | kept; opens its screens through the screen list (`--scenario stress`) |
+| `dom-size-sweep.mjs` | kept; opens its screens through the screen list (`stress` scenario) |
 | `ui-probe.mjs`, `drag-probe.mjs`, `drag-fuzz.mjs` | `explore` |
-| `record.mjs`, `record-pair.sh` | kept for demo clips, moved onto the engine (free port, no fixed waits) |
+| `record.mjs`, `record-pair.sh` | kept for demo clips, moved onto the engine; `record-pair.sh` stays the before/after tool until `master` has the screen list |
 | `cdp-ports.sh`, `probe-ports.sh`, `UI_REVIEW_JOBS`, offsets 300/340 | removed |
-| Review decks (`review-cards.py`, `deck/`) | unchanged, except they read `shoot` output; live panes use the engine's server instead of fixed port 5513 |
+| Review decks | read `shoot` output; the lost-answer fixes above; live panes served by the deck itself |
 | `tester-kit.md`, `ux-tester.md`, `grader.md`, README | rewritten for `explore`/`shoot` |
-
-Old decks keep working: they point at picture files, not plans.
 
 ## Order of work
 
 1. **Engine + `shoot` for the Settings area only.**
-   - Packaged build, free port, ready-waits, time limits, shared queue.
-   - Settings entries and their open hooks.
-   - `shoot --check` wired into `verify.sh`.
-   - Measure it against today's numbers. Destin sees a before/after deck of Settings
-     pictures, taken by the old tool and the new one.
-2. **The rest of the screen list**, area by area. Retire each plan as its screens move over.
-   Archive the one-offs.
-3. **`explore`.** Rewrite `tester-kit.md` and try it with the context-free UX tester on
-   one real task.
-4. **Journeys**, about 10.
-5. **Move decks, `record`, the DOM-size sweep and the reports onto the engine.** Delete the
+   - The photo-only build and its guard test (no practice code in the real app or the
+     landing page).
+   - Free port, ready-waits, time limits, private tab sessions and their theme test,
+     leftover clean-up.
+   - Settings entries, their markers and hooks. Count the hooks the whole app will need.
+   - `shoot --check` wired into `verify.sh` (renderer changes only).
+   - Measure speed against today's numbers.
+   - Destin sees a before/after deck: the old tool's Settings pictures next to the new
+     tool's.
+2. **Deck lost-answer fixes.** Small and independent, so they can ship alongside phase 1.
+3. **The rest of the screen list**, area by area. Retire each plan as its screens move
+   over, and archive the one-offs.
+4. **`explore`**, plus the `run-dev.sh` marker file. Rewrite `tester-kit.md` and try it with
+   the context-free UX tester on one real task.
+5. **Journeys**, about 10.
+6. **Move decks' live panes, `record` and the DOM-size sweep onto the engine.** Delete the
    port scripts and the retired tools.
 
-Each phase ends with the tools working and nothing half-moved. Phases 2–5 each ship
-separately.
+Each phase ends with the tools working and nothing half-moved.
 
 ## Risks
 
-- **A screen that looks different when opened directly than when clicked to.** Mitigation:
-  phase 1's before/after deck compares old click-path pictures with direct-open pictures for
-  every Settings screen, and any difference is explained before continuing.
-- **Dev-only hooks leaking into the real app.** Mitigation: they sit behind the same flag as
-  the rest of the workbench code, and the existing check that workbench code never ships
-  covers them.
-- **The packaged build behaving differently from the development server.** Measured on the
-  `main` plan: it verified more screens, not fewer. Anything that only works in
-  development mode gets found in phase 1.
-- **Size of the job:** phase 2 touches many components (one line each), so it is spread over
-  areas and never done in one sweep.
+- **A screen looks different opened directly than clicked to.** Phase 1's deck compares
+  old click-path pictures with direct-open pictures for every Settings screen. Any
+  difference is explained before continuing.
+- **Photo-only code leaking into the real app or the website.** The phase 1 guard test
+  builds both and fails on any trace of it.
+- **The photo-only build behaving differently from the development server.** The known
+  cases (terminal, voice input, page connections) are switched on by the new flag. The
+  phase 1 comparison deck catches any others.
+- **Size of the job:** phase 3 touches many components, so it is spread over areas and
+  never done in one sweep.
+
+## What changed from revision 1
+
+An independent review found these gaps. Each was checked against the code before being
+folded in:
+- A third, photo-only build instead of the landing-page build. Three screens depend on
+  development-only code, and hooks must never reach the website.
+- The guard test is new work, not an existing check.
+- Private sessions per tab are named and tested.
+- Before/after against `master` falls back to today's tool until phase 1 merges.
+- `explore` cleans up after itself.
+- `shoot --check` runs only on renderer changes, compares no pictures, and journeys stay
+  out of `verify.sh`.
+- The speed estimates are corrected: revision 1's "30 s for everything" assumed
+  repaint-in-place, which this plan does not use.
+- Per-state markers replace "the one thing only it has".
+- Expected look-alikes are listed with a reason.
+- The deck lost-answer fixes are added, and live panes move to the deck's own server.
+- Repaint-in-place and the warm engine are left out on purpose.
+- The unsourced "108 components" figure is replaced by a real count in phase 1.
+- `explore` attaches only to a dev app that wrote a marker file.
 
 ## Decisions still open (for Destin)
 
