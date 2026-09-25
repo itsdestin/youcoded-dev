@@ -76,7 +76,7 @@ Either can be added later if speed is not enough.
 ## Tool 1: `shoot`
 
 ```
-shoot settings/*                                   every Settings screen, light + dark
+shoot settings/*                                   every Settings screen, meadow-mist + halftone-dimension
 shoot settings/* marketplace/detail --themes all   any mix of names, all themes
 shoot settings/* --before master --after my-branch side-by-side before/after
 shoot --tag error-state --width 390                every error state, phone width
@@ -84,7 +84,9 @@ shoot --list                                       every screen name with its ta
 shoot --all                                        everything (the old "full sweep")
 ```
 
-- **Default themes: light and dark** (open question 1). `--themes all` or a named list for
+- **Default themes: meadow-mist and halftone-dimension** (Destin, 2026-09-24). They are the
+  hardest themes (wallpaper, glass, heavy effects) and 2–4× slower to draw than flat themes,
+  so the estimates below assume them. `--themes all` or a named list for
   more. The contrast scan runs only with `--contrast`.
 - **Output:** one folder, `<name>/<theme>.png`, plus a contact sheet. Review decks read from
   it directly (the same crop, measure and highlight data decks use today).
@@ -95,8 +97,8 @@ shoot --all                                        everything (the old "full swe
     `master` keeps using today's tool (`record-pair.sh`, `montage-ab.sh`) until then.
 - **Expected speed** (*estimates*, to be measured in phase 1; they assume a cold start and
   no repaint-in-place):
-  - a small named set in two themes: 5–10 s
-  - every screen in light and dark: under 1 minute
+  - a small named set in the two default themes: 5–15 s
+  - every screen in the two default themes: 1–2 minutes
   - every screen in every theme: 2–3 minutes
   
   For comparison, today's tool measured 14.4 minutes for three themes of every plan.
@@ -219,7 +221,7 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
 
 | Today | Becomes |
 |---|---|
-| `shot.mjs` + 80 `plans/*.json` | screen-list entries (still-wanted screens), journeys (real flows), or archived (one-offs, open question 2) |
+| `shot.mjs` + 80 `plans/*.json` | screen-list entries (still-wanted screens), journeys (real flows), or archived (one-offs — approved by Destin 2026-09-24; archived plans stay runnable by name) |
 | `run-review.sh` | `shoot --all`, plus the existing contrast, coverage and gallery reports |
 | `coverage.mjs`, `contrast-report.mjs`, montage scripts, `make-gallery.py` | kept, fed by `shoot`'s output |
 | `dom-size-sweep.mjs` | kept; opens its screens through the screen list (`stress` scenario) |
@@ -286,9 +288,8 @@ folded in:
 - The unsourced "108 components" figure is replaced by a real count in phase 1.
 - `explore` attaches only to a dev app that wrote a marker file.
 
-## Decisions still open (for Destin)
+## Decisions
 
-1. Default themes for `shoot`: **light + dark** (proposed), or all themes every time?
-2. May the one-off and duplicate plans be archived (still runnable by name)?
-3. Should the real installed app be photographed at release time (through an isolated dev
-   copy)? That is not proposed here.
+1. Default themes: **meadow-mist + halftone-dimension** (Destin, 2026-09-24).
+2. One-off and duplicate plans: **clean up and archive** (Destin, 2026-09-24).
+3. Photographing the real installed app at release time: still open. Not part of this plan.
