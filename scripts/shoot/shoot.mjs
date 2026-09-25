@@ -106,6 +106,7 @@ async function waitFor(tab, expr, ms) {
 }
 
 // Is the screen's mark on screen? Its surface is the nearest dialog / layer / drawer around it.
+// Returns the panel's box when it is, or the reason it is not.
 const MARK_CHECK = (name) => `(() => {
   const m = document.querySelector('[data-screen="${name.replace(/"/g, '')}"]');
   if (!m) return 'its mark is not on the page';
@@ -117,7 +118,9 @@ const MARK_CHECK = (name) => `(() => {
   const x = Math.min(Math.max(r.left + r.width / 2, 1), innerWidth - 2), y = Math.min(Math.max(r.top + Math.min(r.height / 2, 60), 1), innerHeight - 2);
   const hit = document.elementFromPoint(x, y);
   if (!hit || !s.contains(hit)) return 'its panel is covered by ' + (hit ? hit.tagName.toLowerCase() + (hit.getAttribute('aria-label') ? ' "' + hit.getAttribute('aria-label') + '"' : '') : 'nothing');
-  return 'ok';
+  // The panel's box, clipped to the window: review decks draw their highlight from it.
+  const x0 = Math.max(0, r.left), y0 = Math.max(0, r.top);
+  return { panel: { x: Math.round(x0), y: Math.round(y0), w: Math.round(Math.min(innerWidth, r.right) - x0), h: Math.round(Math.min(innerHeight, r.bottom) - y0) } };
 })()`;
 
 const THUMB = (b64) => `(async () => { const img = new Image(); img.src = 'data:image/png;base64,${b64}'; await img.decode();
@@ -140,9 +143,10 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     for (const t1 = Date.now(); Date.now() - t1 < 6000;) {
       await tab.still(1500);
       why = await tab.evaluate(MARK_CHECK(screen.name), 5000);
-      if (why === 'ok') break;
+      if (why?.panel) break;
     }
-    if (why !== 'ok') throw new Error(`not showing: ${why}`);
+    if (!why?.panel) throw new Error(`not showing: ${why}`);
+    r.panel = why.panel;
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
