@@ -69,6 +69,30 @@ Chat answers, not deck answers — the contract step still has to ratify them on
 - Alternatives shown and not chosen: margin-aligned cards, pins & tray (B), inline threads
   (C), four other pane framings (`?commentsPane=column|sheet|margin|titled`).
 
+## Decided by Destin (questions deck, 2026-09-24)
+
+Deck `docs/active/design/2026-09-24-doc-comments/doc-comments.questions.json`, answers beside it.
+Three follow-ups were answered in chat (marked *chat*) — the contract deck must ratify them.
+
+- **Storage (Q-1):** a hidden comments folder inside each project. Files with native comments
+  (Word, Excel) keep their comments IN the file.
+- **Assistant (Q-2):** may reply, resolve, leave its own comments, and edit the file. Its own
+  comments must be sparse — only items that clearly need Destin's action or attention, never
+  narration of its process. Editing on comments is "largely the entire point": Destin marks up,
+  the assistant fixes the doc, and the comments stay on the doc afterwards.
+- **After a fix (*chat*):** the assistant decides per situation — reply, resolve, and/or repoint
+  the comment to the new text. The tools must allow all three; nothing vanishes silently
+  (unresolved comments whose text is gone show "text no longer found").
+- **Phone (Q-3):** in this version; tapping a highlight opens the comment list on it.
+- **Word (Q-4):** full two-way now — show comments left in Word/Google Docs, add/reply/resolve in
+  YouCoded, and they appear in Word/Google Docs. May be built in phases but merges as ONE PR.
+  Backup before every write; verify the file still opens.
+- **Excel (*chat*):** yes, same as Word — cell comments read from and written into the .xlsx
+  (exceljs, already a dependency, reads/writes notes).
+- **Google Docs (*chat*):** the file only — a .docx keeps its comments when uploaded to Drive /
+  opened in Google Docs. A live link to a Google Drive document is a separate, later project.
+- **PR #263 (Q-5):** closed without merging, 2026-09-24.
+
 ## What the build found (infrastructure survey, 2026-09-24)
 
 - Accounts: GitHub sign-in through the marketplace Worker (D1). No per-user document
@@ -94,16 +118,16 @@ Chat answers, not deck answers — the contract step still has to ratify them on
 
 ## What remains
 
-1. **Decisions from Destin** (questions deck): where comments are saved (hidden app folder
-   vs a file beside each document); what the assistant may do (reply / resolve / edit the
-   file); phone support now or later and what a tap does; Word comments now or later.
-2. **Polish** the less-reviewed parts above; UX tester run 1; UI review deck; contract.
+1. ~~Decisions from Destin~~ — answered above.
+2. **Design the new surfaces** (not mocked yet): comments on Word documents (incl. existing
+   Word comments), cell comments on spreadsheets, phone/touch. Then **polish** the less-reviewed parts above; UX tester run 1; UI review deck; contract.
 3. **Build** — persistence with history in Web Annotation shape (account-ready ids);
    re-anchoring after edits with a "detached" state; assistant read/reply/resolve tools
-   (native + MCP, desktop and Android); the Ask-about and Ask-Your-Assistant message
+   (native + MCP, desktop and Android), including repoint; Word (.docx comments.xml + range
+   markers) and Excel (cell notes) read/write with backup; the Ask-about and Ask-Your-Assistant message
    formats sent to the assistant.
 4. **Review** — code reviewer, UX tester run 2, grader, acceptance deck.
 5. **Cleanup** — delete mockup-only code; retire branches/worktrees `comments-mock-b/-c` and
-   `-a-v1`; close draft youcoded PR #263 (outward action: ask Destin first).
+   `-a-v1`. (PR #263 closed 2026-09-24.)
 6. **Later, separate projects** — comments syncing across devices; sharing documents with
    other people through the account (roadmap: other-features → accounts).
