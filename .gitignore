@@ -113,6 +113,8 @@ perf-reports/shots/
 # Deck answers (*.answers.json) are Destin's decisions and are COMMITTED (feature-flow design §2).
 # Throwaway decks live in scratch/, which is ignored above. `*.serve.json` is a runtime lock.
 *.serve.json
+# `*.serve-port` is the address a deck last served on (deck/serve.py preferred_ports) — per machine.
+*.serve-port
 # `review-cards.py preview` writes one PNG per page x window size x theme, plus a contact
 # sheet, into a `preview/` folder beside the spec. They are a session's own look at the deck
 # before Destin sees it — regenerated on demand, never the record — and one deck's set is

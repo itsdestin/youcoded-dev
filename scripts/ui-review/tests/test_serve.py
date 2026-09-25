@@ -4,7 +4,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from fixture import make_fixture
 from deck.spec import load_spec
-from deck.serve import answers_path, make_server, rotate_submitted, serve, summary, wait_for_submit, write_atomic
+from deck.serve import answers_path, make_server, preferred_ports, rotate_submitted, serve, summary, wait_for_submit, write_atomic
 
 def post(url, obj):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(), headers={'content-type': 'application/json'}, method='POST')
@@ -62,6 +62,33 @@ class ServeTests(unittest.TestCase):
         post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}})
         t.join(5); self.assertEqual(result['code'], 0); self.assertTrue(any('3 skipped' in l for l in out))
         self.assertFalse(os.path.exists(os.path.join(self.spec['_base'], 'deck.serve.json')))
+    def _serve_once(self):
+        """Serve the fixture, submit at once, return the address it printed."""
+        out = []
+        t = threading.Thread(target=lambda: serve(self.spec, port=0, timeout_min=1, log=out.append), daemon=True); t.start()
+        for _ in range(50):
+            if any(l.startswith('[deck] http') for l in out): break
+            time.sleep(0.1)
+        url = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1]
+        post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}})
+        t.join(5)
+        return url
+    def test_a_deck_comes_back_on_the_same_address(self):
+        # The browser keeps its backup of the answers per address; a new address per serve hid it.
+        first = self._serve_once(); second = self._serve_once()
+        self.assertEqual(first, second)
+        self.assertIn(int(first.split(':')[2].split('/')[0]), preferred_ports(self.spec)[:1])
+    def test_a_busy_home_port_moves_to_the_next_and_is_remembered(self):
+        import socket
+        home = preferred_ports(self.spec)[0]
+        blocker = socket.socket(); blocker.bind(('127.0.0.1', home)); blocker.listen(1)
+        try:
+            url = self._serve_once()
+            port = int(url.split(':')[2].split('/')[0])
+            self.assertNotEqual(port, home)
+            self.assertEqual(preferred_ports(self.spec)[0], port)   # remembered: the next serve tries it first
+        finally:
+            blocker.close()
     def test_second_serve_of_same_spec_refuses(self):
         json.dump({'pid': os.getpid(), 'url': 'http://127.0.0.1:1/x'}, open(os.path.join(self.spec['_base'], 'deck.serve.json'), 'w'))
         out = []; self.assertEqual(serve(self.spec, port=0, timeout_min=1, log=out.append), 3); self.assertTrue(any('REFUSING' in l for l in out))

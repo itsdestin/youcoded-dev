@@ -97,6 +97,31 @@ class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
 
 
+def port_path(spec):
+    return os.path.join(spec['_base'], spec['_stem'] + '.serve-port')
+
+
+def preferred_ports(spec):
+    """The ports a deck tries, in order: the one it used last, then its own home port and the
+    49 after it. WHY a steady address (2026-09-25): the page keeps a backup of every answer in
+    the browser, and a browser keys that backup by address. A random port per `serve` put a
+    restarted deck on a new address, where the backup from before a crash could not be read —
+    one of the three ways answers were lost on 2026-09-23."""
+    import zlib
+    home = 20000 + zlib.crc32(os.path.abspath(os.path.join(spec['_base'], spec['_stem'])).encode()) % 20000
+    ports = [home + i for i in range(50)]
+    try:
+        with open(port_path(spec)) as f:
+            last = int(f.read().strip())
+        if last not in ports:
+            ports.insert(0, last)
+        else:
+            ports.remove(last); ports.insert(0, last)
+    except (OSError, ValueError):
+        pass
+    return ports
+
+
 def make_server(spec, port, on_submit):
     apath = answers_path(spec)
     # One dev window per try-it slide, so pressing the button twice does not leave two apps
@@ -479,7 +504,25 @@ def serve(spec, port=0, timeout_min=240, log=print, live=True):
         # thread that runs serve_forever (the handler thread is one of its children in
         # ThreadingMixIn) would deadlock — it must run on a throwaway thread.
         threading.Thread(target=holder['srv'].shutdown, daemon=True).start()
-    srv, url = make_server(spec, port, on_submit)
+    if port:
+        srv, url = make_server(spec, port, on_submit)
+    else:
+        # A steady address per deck (preferred_ports); a busy one moves to the next, and the
+        # one it lands on is remembered so the next serve comes back to it.
+        srv = url = None
+        for p in preferred_ports(spec):
+            try:
+                srv, url = make_server(spec, p, on_submit)
+                break
+            except OSError:
+                continue
+        if srv is None:
+            srv, url = make_server(spec, 0, on_submit)
+        try:
+            with open(port_path(spec), 'w') as f:
+                f.write(str(srv.server_address[1]))
+        except OSError:
+            pass
     holder['srv'] = srv
     with open(lock, 'w') as f:
         json.dump({'pid': os.getpid(), 'url': url}, f)

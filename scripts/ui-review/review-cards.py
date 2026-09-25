@@ -147,7 +147,10 @@ def main(argv):
         # WHY before the try below: selfie has no `spec` argument to load — the review deck is
         # its OUTPUT. `finish` is main() again, so the deck it writes is built and served by
         # exactly the code path a session would type next, with no second copy of either.
-        out = a.out or tempfile.mkdtemp(prefix='deck-selfie-')
+        # WHY abspath (2026-09-25): selfie runs git and the builders from other folders, so a
+        # relative --out was read against each of them — the paths doubled up, nothing built,
+        # and the older copy's git worktree landed in the SHARED checkout instead of this one.
+        out = os.path.abspath(a.out) if a.out else tempfile.mkdtemp(prefix='deck-selfie-')
         print('[selfie] working folder: ' + out)
         try:
             return run_selfie(a.before, out, log=lambda m: print('[selfie] ' + m),
