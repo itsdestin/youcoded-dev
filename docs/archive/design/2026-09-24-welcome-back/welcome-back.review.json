@@ -1,0 +1,114 @@
+{
+  "title": "Welcome back — try the screen",
+  "key": "welcome-back-review",
+  "out": "welcome-back.review.html",
+  "stage": "design",
+  "live": {
+    "worktree": "session/session-resume-20260924"
+  },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Welcome back screen",
+      "path": "Opening YouCoded after it closed with sessions open",
+      "headline": "Try it: reopen some sessions, finish one, and leave. Is this the screen you want?",
+      "changed": "After a crash or quit, YouCoded opens on this instead of the empty start screen. It is the Resume browser, limited to what was open: tick boxes, preview, tags, notes, rename and complete all work.",
+      "notice": "Everything starts ticked. Resume all opens them; Start fresh leaves them in the Resume browser. One row says its model isn't on this computer, so Resume opens its model picker. Reload this page to see the screen again.",
+      "risk": "Nothing here is saved: it runs on pretend data, so resumed sessions are empty and reloading brings the list back.",
+      "live": {
+        "app": "welcome-back"
+      },
+      "yes": "Yes, build this",
+      "no": "No, change it"
+    },
+    {
+      "id": "S-dialog",
+      "words": true,
+      "surface": "Quit warning",
+      "path": "Closing the app window while sessions are open",
+      "headline": "The quit warning gains one tick box: 'Reopen these sessions next time YouCoded starts'.",
+      "changed": "The existing warning keeps its buttons (Cancel, Close & Kill Sessions) and gets that tick box under its message. It is your computer's own pop-up, so it looks like your other system dialogs, not like the app.",
+      "notice": "Leave it ticked and they come back on the Welcome back screen. Untick it and the next launch opens on the normal start screen.",
+      "yes": "Looks right",
+      "no": "Change it"
+    },
+    {
+      "id": "Q-default",
+      "words": true,
+      "surface": "Quit warning",
+      "path": "Closing the app window while sessions are open",
+      "headline": "Should that tick box start ticked or unticked?",
+      "today": "The warning has no tick box; closing ends the sessions and nothing reopens them.",
+      "problem": "Whatever it starts as is what happens when you click through without reading.",
+      "proposal": "Pick its starting state. It remembers nothing between quits, so it starts the same way every time.",
+      "options": [
+        {
+          "id": "ticked",
+          "label": "Starts ticked",
+          "pros": [
+            "Clicking straight through never loses your place.",
+            "Matches crashes, which always come back."
+          ],
+          "cons": [
+            "To skip the Welcome back screen you must untick it each time."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "unticked",
+          "label": "Starts unticked",
+          "pros": [
+            "A deliberate quit stays a clean slate unless you ask."
+          ],
+          "cons": [
+            "Clicking through without reading means nothing comes back."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-other-quit",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Any way the app closes without that warning",
+      "headline": "Every other way YouCoded closes counts as 'bring them back'.",
+      "changed": "Stated, not asked: a crash, power loss, the computer shutting down or restarting, or quitting from the menu all show no warning, so their sessions always return.",
+      "notice": "Only two things keep a session off the list: its own X, or unticking the box in the quit warning.",
+      "yes": "Agreed",
+      "no": "Disagree"
+    },
+    {
+      "id": "S-model",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Resuming a session that ran on a local or non-Claude model",
+      "headline": "Reusing the last model applies only here; the Resume browser keeps asking every time.",
+      "changed": "Stated, not asked: you once ruled that resuming such a session always asks for a model. Your deck answer (reuse the last model) applies to this screen only, so one press can reopen everything.",
+      "notice": "If that model isn't on this computer, the row says so up front and Resume opens its model picker.",
+      "yes": "Agreed",
+      "no": "Ask here too"
+    },
+    {
+      "id": "S-trim",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "The top of the screen",
+      "headline": "This screen has no search box, filters or 'Show complete' switch.",
+      "changed": "Stated, not asked: the list is only what was open, usually a handful, so there is nothing to narrow down. Marking one complete unticks it and it stays visible until you leave.",
+      "notice": "A shorter screen with the list right under the heading.",
+      "yes": "Agreed",
+      "no": "Keep search"
+    },
+    {
+      "id": "S-out",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Leaving the screen",
+      "headline": "Escape and clicking outside do nothing here; only Resume or Start fresh leave it.",
+      "changed": "Stated, not asked: you chose a screen that takes the start screen's place until you decide, so it cannot be waved away by accident.",
+      "notice": "Once every row is resumed, the screen closes by itself.",
+      "yes": "Agreed",
+      "no": "Allow Escape"
+    }
+  ]
+}

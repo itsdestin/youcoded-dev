@@ -1,0 +1,45 @@
+{
+  "title": "Welcome back — try it in a test window",
+  "key": "welcome-back-tryit",
+  "out": "welcome-back.tryit.html",
+  "stage": "review",
+  "steps": [
+    {
+      "words": true,
+      "id": "T-1",
+      "surface": "Welcome back screen",
+      "path": "A test window of YouCoded, separate from yours",
+      "headline": "Open two sessions, type in both, close the window with the switch ON, reopen: are both offered back?",
+      "dev": { "worktree": "session/session-resume-20260924", "label": "Welcome back test", "offset": 140, "profile": "welcomeback" },
+      "changed": "The test window runs the finished feature for real. Sessions you start in it are real conversations and sync like any other, so keep them short (e.g. 'hi').",
+      "notice": "Close the window, turn on 'Resume on Next Launch?', press Close window, then press Open the dev window again. Welcome back should list both, ticked; Resume all reopens them.",
+      "risk": "It is a second window on your desktop; your own YouCoded is not touched.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-2",
+      "surface": "Quit warning",
+      "path": "The same test window",
+      "headline": "Close one session with its X, then close the window with the switch OFF, reopen: does it open on the normal start screen?",
+      "dev": { "worktree": "session/session-resume-20260924", "label": "Welcome back test", "offset": 140, "profile": "welcomeback" },
+      "changed": "Two ways a session is deliberately let go: its own X, and closing the window with the switch left off.",
+      "notice": "No Welcome back screen this time; the sessions are still in Resume Session.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    },
+    {
+      "words": true,
+      "id": "T-3",
+      "surface": "Welcome back screen",
+      "path": "A second test window with its own separate settings",
+      "headline": "With sessions left open in the first test window, open this second one: does it NOT offer them?",
+      "dev": { "worktree": "session/session-resume-20260924", "label": "Welcome back — other computer", "offset": 160, "profile": "welcomeback2" },
+      "changed": "This window stands in for your other computer: it keeps its own list, so it must not offer the first window's sessions.",
+      "notice": "Leave a session open in the first test window and quit it from its menu (or let it be), then open this one: it opens on the normal start screen.",
+      "yes": "Yes, it works",
+      "no": "No, it does not"
+    }
+  ]
+}
