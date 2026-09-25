@@ -64,6 +64,7 @@ ignores:
   - "**/components/artifact-views/**"
   - "**/components/assistant-settings/**"
   - "**/components/buddy/**"
+  - "**/components/comments/**"
   - "**/components/context-menu/**"
   - "**/components/diff/**"
   - "**/components/first-run/**"

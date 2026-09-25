@@ -105,22 +105,36 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
 
 ## Known gaps in the mockup
 
-- The Ask-about pill (composer + sent bubble), the Ask-Your-Assistant sent message, code-file
-  comments, phone/touch (no hover there), Halftone / Meadow Mist, and the Projects screen
-  (no floating buttons → no Ask Your Assistant) have not had the late design-guide polish.
-- "SHOW RESOLVED" is 10px text (copied from Show Complete; below the 11px floor, G-5).
+- **Word + Excel + phone mocked (2026-09-24, after the deck).** Shared layout
+  `comments/CommentableDocument.tsx` (MarkdownView, DocxView, XlsxView). Word: text highlights
+  like markdown; fixture `docs/launch-brief.docx` is a REAL .docx with REAL Word comments
+  (`dev/workbench/fixtures/docs/make.mjs`), but the mockup shows them from store seeds —
+  mammoth drops comments.xml, so reading/writing it is build work. Excel: a comment belongs to
+  a CELL (`DocComment.cell`) — Office-red corner triangle (fixed colour: the sheet paper is
+  always light), same hover card / click → pane, right-click a cell → Ask about this / Add
+  comment, card header shows the cell ("· C4"); fixture `reports/q3-sales-by-rep.xlsx`.
+  Colleague authors are `person:<name>` ("Priya Shah"). Screenshots:
+  `docs/active/design/2026-09-24-doc-comments/shots-word-excel/` (untracked).
+- Phone: markdown/Word/Excel all show the marker rail; a tap opens that comment's sheet (now
+  portaled above the composer); no hover card on touch; a long-press selection opens the menu
+  after it settles. Checked at 390px in headless Chrome only — not on a real Android WebView,
+  where the native selection toolbar may also appear.
+- Still not polished: the Ask-about pill (composer + sent bubble), the Ask-Your-Assistant sent
+  message, code-file comments, Meadow Mist, the Projects screen (no floating buttons → no Ask
+  Your Assistant). Halftone checked for Word + Excel only.
+- Spreadsheet cell comments name the cell only ("C4"), not the sheet; a comment on another
+  sheet tab is listed but has no mark until that tab is shown.
 - Quote matching is first-occurrence, whitespace-insensitive; a repeated phrase lands on
   the first copy.
-- The narrow (marker-rail) comment mode was not screenshot-verified at phone width.
 - Mockup-only code to delete once settled: `comments/pane-variant.ts` and the four losing
   framings, `CommentsModeToggle` (Projects-screen fallback row), the "Resolve as Claude"
-  style stand-ins in the seed data.
+  style stand-ins in the seed data. SessionDrawer.tsx's line budget was raised to 1591 for
+  this mockup — lower it when that code goes.
 
 ## What remains
 
 1. ~~Decisions from Destin~~ — answered above.
-2. **Design the new surfaces** (not mocked yet): comments on Word documents (incl. existing
-   Word comments), cell comments on spreadsheets, phone/touch. Then **polish** the less-reviewed parts above; UX tester run 1; UI review deck; contract.
+2. ~~Design the new surfaces~~ — Word, Excel and phone mocked (see Known gaps). Then **polish** the less-reviewed parts above; UX tester run 1; UI review deck; contract.
 3. **Build** — persistence with history in Web Annotation shape (account-ready ids);
    re-anchoring after edits with a "detached" state; assistant read/reply/resolve tools
    (native + MCP, desktop and Android), including repoint; Word (.docx comments.xml + range
