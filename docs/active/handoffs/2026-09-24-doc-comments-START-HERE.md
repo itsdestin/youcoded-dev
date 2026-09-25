@@ -45,9 +45,10 @@ Chat answers, not deck answers — the contract step still has to ratify them on
 - **Standards.** Plain files: W3C Web Annotation (quoted text + surrounding text, re-found
   after edits). `.docx`: real Word comments (the format Word and Google Docs both import and
   export). The two convert to each other.
-- **Reading mode (default):** comments are tinted, underlined highlights; hover shows only
-  that comment (author, time, text — no reply count, no buttons); clicking a highlight opens
-  Comments mode focused on it.
+- **Reading mode (default):** comments are tinted, underlined highlights; hover shows that
+  comment and its replies; the pointer can move onto the card and reply there (Destin, later
+  on 2026-09-24) — resolve/edit stay in Comments mode. A half-typed reply keeps the card open
+  until Esc or a click outside. Clicking a highlight opens Comments mode focused on it.
 - **Adding:** releasing a text selection in the file viewer opens the SAME right-click menu
   (Ask about this / Add comment / Copy / Select all); chat keeps right-click only. Add
   comment opens a small box anchored at the selection.
