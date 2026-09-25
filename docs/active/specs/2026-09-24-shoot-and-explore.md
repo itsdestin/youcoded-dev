@@ -292,4 +292,5 @@ folded in:
 
 1. Default themes: **meadow-mist + halftone-dimension** (Destin, 2026-09-24).
 2. One-off and duplicate plans: **clean up and archive** (Destin, 2026-09-24).
-3. Photographing the real installed app at release time: still open. Not part of this plan.
+3. Photographing the real installed app at release time: **skipped for now** (Destin,
+   2026-09-24). `explore` can attach to an isolated dev copy when a specific check needs it.
