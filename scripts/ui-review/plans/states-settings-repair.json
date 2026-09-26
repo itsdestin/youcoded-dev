@@ -1,0 +1,59 @@
+{
+  "_why": "UI consistency audit (2026-09-24): three real hard states named by the task brief had zero capture anywhere, confirmed by reading source (not guessed) — SyncPanel.tsx's 'Show details' disclosure on a sync error, its separate collapsible 'Sync log' section (claude.sync.getLog fixture returns 3 real lines, so this shows a populated log, not empty), and the real Remote Access popup's setup/not-set-up/error states (SettingsPanel.tsx renderPreviewSetup, driven by the existing `remotePreview=` workbench switch documented in scripts/ui-review/README.md — not the separate dev/workbench/mockups/RemoteSetup.tsx design-comparison demo, which is a different, disconnected surface). sync-oversize-fix.json already covers the error banner itself and the oversize-file disclosure, but never opens 'Show details' or 'Sync log'; no existing plan sets `remotePreview=` at all.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "pre": [
+    {
+      "eval": "if(new URLSearchParams(location.search).get('mode')!=='workbench'||!new URLSearchParams(location.search).has('child')) throw new Error('Mock injection requires child workbench'); for(const ns of ['syncSpaces']){const original=window.claude[ns], overrides={};window.claude[ns]=new Proxy(original,{get:(t,k)=>Object.hasOwn(overrides,k)?overrides[k]:Reflect.get(t,k),set:(_t,k,v)=>{overrides[k]=v;return true;}});} window.failPersonal=()=>{const o=window.claude.syncSpaces.status; window.claude.syncSpaces.status=async()=>{const s=await o(); return {...s, recentEvents:[...s.recentEvents.filter(e=>e.type!=='error'),{type:'error',spaceId:'personal',at:Date.now()-30000,message:'Sync push failed for personal: error: RPC failed; curl 28 Operation too slow. Less than 2000 bytes/sec transferred the last 20 seconds\\nsend-pack: unexpected disconnect while reading sideband packet\\nfatal: the remote end hung up unexpectedly'}]};};};"
+    }
+  ],
+  "shots": [
+    {
+      "name": "sync-show-details",
+      "actions": [
+        { "eval": "window.failPersonal();" },
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 },
+        { "click": "js:[...document.querySelectorAll('[role=dialog] summary')].find(s=>s.textContent.trim()==='Show details')", "settle": 500 }
+      ],
+      "expect": "js:!!document.querySelector('[role=dialog] details[open] pre')"
+    },
+    {
+      "name": "sync-log-open",
+      "actions": [
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 900 },
+        { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Sync log')", "settle": 700 }
+      ],
+      "expect": "js:document.body.textContent.includes('pulled personal')"
+    },
+    {
+      "name": "remote-access-setup-checking",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=checking",
+      "actions": [
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900 }
+      ],
+      "expect": "js:document.body.textContent.includes('Checking this computer')"
+    },
+    {
+      "name": "remote-access-not-set-up",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=not-installed",
+      "actions": [
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900 }
+      ],
+      "expect": "js:document.body.textContent.includes('Install Tailscale')"
+    },
+    {
+      "name": "remote-access-error",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=error",
+      "actions": [
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900 }
+      ],
+      "expect": "js:document.body.textContent.includes('Unable to check the connection')"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "_why": "Task: 'one fresh, complete set of screenshots ... INCLUDING hard states' (2026-09-24), priority list names 'Remote Access incl. set-up/not-set-up/error'. remote-phone.json only captures the PAIRED post-login phone state; main.json's settings-remote-access opens the default (disconnected, no Tailscale switch) desktop panel. Neither exercises the `?remotePreview=<state>` switch (README's Workbench switches list; consumed for real by SettingsPanel.tsx:1623 `previewApi`, NOT just the dev-only RemoteSetup.tsx mockup) that drives every stage createRemoteAccessPreview knows about: setup/not-installed/sign-in-required (three distinct 'not set up' reasons), consent, checking, checked/checked-failed/checked-silent (three distinct outcomes of the end-of-setup check), ready, conflict, error, disabled. Each shot's own `url` overrides the plan `base` with its state (shot.mjs: `s.url ?? plan.base`), so one plan file can hit every stage without per-shot query juggling. Click path matches main.json's `settings-remote-access`: gear -> the 'Remote Access' settings row.",
+ "width": 1440,
+ "height": 900,
+ "pre": [
+  { "click": "[title=Settings]", "settle": 700 },
+  { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900 }
+ ],
+ "shots": [
+  {
+   "name": "remote-not-set-up",
+   "_why": "prerequisite='not-installed' (SettingsPanel.tsx renderPreviewSetup): 'Not set up yet.' + Install Tailscale button — the true never-configured state.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=not-installed",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Install Tailscale')"
+  },
+  {
+   "name": "remote-sign-in-required",
+   "_why": "prerequisite='sign-in-required': Tailscale installed but the user never signed in — a different 'not set up' reason from remote-not-set-up, with its own copy and button.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=sign-in-required",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes(\"you're not signed in yet\")"
+  },
+  {
+   "name": "remote-setup",
+   "_why": "stage='setup': the plain not-set-up-yet screen reached once Tailscale IS installed and signed in (no prerequisite blocker) — the row subtitle for this stage is 'Set up secure access' (SettingsPanel.tsx previewLabels).",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=setup",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Remote Access')"
+  },
+  {
+   "name": "remote-consent",
+   "_why": "stage='consent': the public-record consent screen for the optional browser-encryption level — the one place this consent copy appears (act.advanced branch).",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=consent",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Remote Access')"
+  },
+  {
+   "name": "remote-checking",
+   "_why": "stage='checking': in-progress/loading state — 'Checking this computer's connection…' busy strip, before the end-of-setup check resolves.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=checking",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes(\"Checking this computer\")"
+  },
+  {
+   "name": "remote-checked-listening",
+   "_why": "checked+listening:true: the success answer of the end-of-setup check, with a real address.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=checked",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('is listening at')"
+  },
+  {
+   "name": "remote-checked-failed",
+   "_why": "checked+listening:false+reason set (EADDRINUSE): the check's failure WITH a cause, plainReason()-translated per error-message-standards.md, Retry offered.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=checked-failed",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('already using that address')"
+  },
+  {
+   "name": "remote-checked-silent",
+   "_why": "checked+listening:false+reason:null: the check's failure WITHOUT a cause — deliberately a different screen from checked-failed (ErrorState general, Report bug + Diagnose, per docs/error-message-standards.md's 'never invent an error cause').",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=checked-silent",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes(\"isn't listening yet\")"
+  },
+  {
+   "name": "remote-ready",
+   "_why": "stage='ready': fully working, paired-capable state (devices list populated) — the panel's normal/happy path, for contrast against every hard state above.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=ready",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Remote Access')"
+  },
+  {
+   "name": "remote-conflict",
+   "_why": "stage='conflict': the address is already in use by another service on this machine — a distinct error from checked-failed's generic EADDRINUSE (this one names the real cause instead of a check's silent failure).",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=conflict",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('already using this address for another service')"
+  },
+  {
+   "name": "remote-error",
+   "_why": "stage='error': the setup process itself failed with no reason to show, per docs/error-message-standards.md — Report bug + Diagnose, never a fabricated cause.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=error",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Unable to check the connection')"
+  },
+  {
+   "name": "remote-disabled",
+   "_why": "stage='disabled': remote access explicitly turned off — the panel's own idle/off state, distinct from never-set-up.",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=disabled",
+   "actions": [],
+   "expect": "js:document.body.textContent.includes('Remote access is off')"
+  }
+ ]
+}

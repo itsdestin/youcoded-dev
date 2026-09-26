@@ -1,0 +1,26 @@
+{
+  "_why": "Phone-width (390px) variant of states-settings-repair.json's two settings-dialog hard states, per the audit's phone-width requirement — same source-verified states, same selectors, just the narrow viewport.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "width": 390,
+  "height": 844,
+  "shots": [
+    {
+      "name": "sync-log-open-narrow",
+      "actions": [
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 900 },
+        { "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim()==='Sync log')", "settle": 700 }
+      ],
+      "expect": "js:document.body.textContent.includes('pulled personal')"
+    },
+    {
+      "name": "remote-access-not-set-up-narrow",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&remotePreview=not-installed",
+      "actions": [
+        { "click": "[title=Settings]", "settle": 700 },
+        { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Remote Access'))", "settle": 900 }
+      ],
+      "expect": "js:document.body.textContent.includes('Install Tailscale')"
+    }
+  ]
+}
