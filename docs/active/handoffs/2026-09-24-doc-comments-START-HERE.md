@@ -56,6 +56,9 @@ Chat answers, not deck answers — the contract step still has to ratify them on
   the same in the sent bubble. Reworked 2026-09-24 after Destin found the caret misplaced and
   the chip off-style: TagChip-style accent chip, no icon, the quote in curly quotes; the
   composer holds a display-sized token so the caret lines up (compose-ref.ts "Draft tokens").
+  Hovering a chip (composer or sent) tints its source text in an open viewer; clicking scrolls
+  there and flashes it, opening the file first if closed (use-ref-source-highlight.ts). Not
+  wired for code files (CodeMirror view) yet.
   **Build note:** the SENT text still carries the URL-encoded JSON marker — the backend stage
   must define what the assistant actually receives.
 - **Comments mode:** entered with a floating **Comments** button left of the floating
