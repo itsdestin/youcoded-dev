@@ -43,8 +43,8 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
   a core file while it holds the password. Then it connects to `$YOUCODED_ASKPASS_SOCKET`, sends one JSON line
   `{v:1, pid: process.pid}`, reads one line back: `{ok:true, password}` → writes password +
   `\n` to stdout, overwrites its buffer, exits 0; `{ok:false}` or a closed socket → exits 1
-  with nothing on stdout (sudo then fails with "no password was provided"). It never
-  receives sudo's prompt argument over the wire (it ignores `argv[2]`, R14).
+  with nothing on stdout (sudo then fails with "no password was provided"). The wrapper
+  never passes sudo's prompt argument on at all (R14).
 - `electron-builder.yml` `asarUnpack` gains `node_modules/koffi/**` (review 3, F1: an unpacked
   script cannot resolve a module packed inside `app.asar` — proven with this repo's own
   asar + electron); a packaged-layout test builds the unpacked tree and loads koffi from the
