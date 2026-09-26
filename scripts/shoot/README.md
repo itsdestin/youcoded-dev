@@ -46,9 +46,36 @@ screen's panel box, page errors), and a contact sheet per theme.
    changes) fails until it opens.
 
 Moments that need a pointer, a drag, typing or a game played out (the magnifier lens, a Flappy
-crash, a result after a click) are not screens — they belong to `explore` (spec phase 4).
+crash, a result after a click) are not screens — they belong to `explore`, below.
 
 Measured 2026-09-26: 162 screens; `--check` ~13 s; every screen in the two default themes
 ~77 s; all six themes (972 pictures) ~2.5 min. The old click-plan sweep took 14.4 min for three.
+
+# explore — click through the app one step at a time
+
+```
+node scripts/shoot/explore.mjs start [--scenario empty] [--screen settings] [--width 390] [--dev]
+node scripts/shoot/explore.mjs click 7 | right-click 7 | hover 7 | type 7 "hi" | key Escape
+node scripts/shoot/explore.mjs drag 4 to 9 | scroll down | back | stack | errors | stop
+node scripts/shoot/explore.mjs save <name>  ·  explore replay <name>
+```
+
+Every step answers with a picture (and a copy with a number on every control), the numbered
+controls — the top layer's first — and the open layers, top first. The model picks a number;
+it never writes a selector or a plan. `explore --help` has every command; the AI reviewers'
+guide is `scripts/ui-review/tester-kit.md`.
+
+- **What the page is asked** lives in `explore-page.mjs`: what counts as a control (roles,
+  real controls, pointer-cursor elements), what counts as a layer (layer roles, the overlay
+  system's `data-layer`, anything fixed to the window at z-index 30+), and the check that a
+  click lands on its control. Before any click the page must stop moving (two equal readings),
+  and the point is re-checked: a late row once pushed the message box under a quick chip.
+- **A background helper** holds the app between steps (one per workspace worktree; `start`
+  replaces it; it stops after 10 minutes idle). `back` starts a fresh private tab and replays
+  the other steps by label and role — the same way a saved journey (`journeys/`) replays.
+- **`--dev`** attaches to a window `bash scripts/run-dev.sh` started, and only through the
+  marker it writes (`desktop/.dev-instances/<offset>.json`, naming its own live pid). The
+  installed app never runs run-dev.sh, so it can never be attached to. `back` and `save` are
+  refused there (a real app cannot be reset).
 
 Spec: `docs/active/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.

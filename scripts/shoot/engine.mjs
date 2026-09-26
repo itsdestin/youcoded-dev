@@ -153,7 +153,13 @@ async function launchBrowser(width, height, record) {
     try { port = Number(readFileSync(join(profile, 'DevToolsActivePort'), 'utf8').split('\n')[0]); } catch { await sleep(100); }
   }
   if (!port) { proc.kill('SIGKILL'); throw new Error('Chrome did not start within 10 s'); }
-  const ver = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json();
+  const conn = await connect(port);
+  return { ...conn, close: () => { conn.close(); proc.kill('SIGKILL'); rmSync(profile, { recursive: true, force: true, maxRetries: 3 }); } };
+}
+
+/** One DevTools connection to a browser's debugging port: `send` with a time limit, per-tab event routing. */
+async function connect(port) {
+  const ver = await (await fetch(`http://127.0.0.1:${port}/json/version`, { signal: AbortSignal.timeout(5000) })).json();
   const ws = new WebSocket(ver.webSocketDebuggerUrl);
   await new Promise((r, j) => { ws.onopen = r; ws.onerror = () => j(new Error('could not connect to Chrome')); });
   let id = 0; const pending = new Map(); const sessions = new Map();
@@ -170,7 +176,7 @@ async function launchBrowser(width, height, record) {
     pending.set(i, { res: (v) => { clearTimeout(timer); res(v); }, rej: (e) => { clearTimeout(timer); rej(e); } });
     ws.send(JSON.stringify({ id: i, method, params, ...(sessionId ? { sessionId } : {}) }));
   });
-  return { send, sessions, close: () => { try { ws.close(); } catch { /* gone */ } proc.kill('SIGKILL'); rmSync(profile, { recursive: true, force: true, maxRetries: 3 }); } };
+  return { send, sessions, close: () => { try { ws.close(); } catch { /* gone */ } } };
 }
 
 // "Still": no fetch in flight, no finite animation running, every image on the page finished
@@ -184,52 +190,113 @@ const STILL = (cap) => `new Promise((res) => { const t0 = performance.now(); con
 const INFLIGHT = `(() => { if (window.__shootInflight !== undefined) return; window.__shootInflight = 0;
   const f = window.fetch; window.fetch = function (...a) { window.__shootInflight++; return f.apply(this, a).finally(() => window.__shootInflight--); }; })();`;
 
+// One tab on a connected browser, attached to `targetId`. `ownContext` is the tab's private
+// browser context when the engine made it (closed with the tab); an attached dev window has none.
+async function makeTab(b, targetId) {
+  const { sessionId } = await b.send('Target.attachToTarget', { targetId, flatten: true });
+  let errors = []; const listeners = new Set();
+  b.sessions.set(sessionId, (m) => {
+    if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text ?? '?');
+    for (const f of listeners) f(m);
+  });
+  const send = (method, params, ms) => b.send(method, params, sessionId, ms);
+  await send('Runtime.enable'); await send('Page.enable');
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: INFLIGHT });
+  await send('Runtime.evaluate', { expression: INFLIGHT }).catch(() => {});
+  const evaluate = async (expression, ms) => {
+    const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, ms);
+    if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
+    return r.result?.value;
+  };
+  let themeScript = null; let size = '';
+  return {
+    send, evaluate,
+    /** Every protocol event for this tab (console messages, navigations…). Returns an unsubscribe. */
+    on: (f) => { listeners.add(f); return () => listeners.delete(f); },
+    still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
+    takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
+    async prepare({ theme, width: w, height: h }) {
+      if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); size = `${w}x${h}`; }
+      if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
+      themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` })).identifier;
+    },
+    navigate: (url) => send('Page.navigate', { url }),
+    png: async (params = {}) => Buffer.from((await send('Page.captureScreenshot', { format: 'png', ...params }, 30_000)).data, 'base64'),
+    detach: () => { b.sessions.delete(sessionId); return b.send('Target.detachFromTarget', { sessionId }).catch(() => {}); },
+  };
+}
+
+// A new tab in its own private browser context — like a separate private window.
+async function privateTab(b) {
+  const { browserContextId } = await b.send('Target.createBrowserContext', { disposeOnDetach: true });
+  const { targetId } = await b.send('Target.createTarget', { url: 'about:blank', browserContextId });
+  const tab = await makeTab(b, targetId);
+  return { ...tab, close: () => b.send('Target.disposeBrowserContext', { browserContextId }).catch(() => {}) };
+}
+
+function pidRecord() {
+  sweepLeftovers();
+  const recFile = join(PIDS, `${process.pid}.json`);
+  return { owner: process.pid, browsers: [], file: recFile, save() { writeFileSync(recFile, JSON.stringify({ owner: this.owner, browsers: this.browsers })); } };
+}
+
 /**
  * A pool of tabs across a few browsers. Every tab is its own browser context — like a
  * separate private window — so saved settings (the theme above all) never leak
  * between tabs that load the same address.
  */
 export async function openPool({ tabs, browsers, width = 1440, height = 900 }) {
-  sweepLeftovers();
-  const recFile = join(PIDS, `${process.pid}.json`);
-  const record = { owner: process.pid, browsers: [], save() { writeFileSync(recFile, JSON.stringify({ owner: this.owner, browsers: this.browsers })); } };
+  const record = pidRecord();
   const bs = await Promise.all(Array.from({ length: browsers }, () => launchBrowser(width, height, record)));
-  const makeTab = async (i) => {
-    const b = bs[i % bs.length];
-    const { browserContextId } = await b.send('Target.createBrowserContext', { disposeOnDetach: true });
-    const { targetId } = await b.send('Target.createTarget', { url: 'about:blank', browserContextId });
-    const { sessionId } = await b.send('Target.attachToTarget', { targetId, flatten: true });
-    let errors = [];
-    b.sessions.set(sessionId, (m) => {
-      if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text ?? '?');
-    });
-    const send = (method, params, ms) => b.send(method, params, sessionId, ms);
-    await send('Runtime.enable'); await send('Page.enable');
-    await send('Page.addScriptToEvaluateOnNewDocument', { source: INFLIGHT });
-    const evaluate = async (expression, ms) => {
-      const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, ms);
-      if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
-      return r.result?.value;
-    };
-    let themeScript = null; let size = '';
-    return {
-      evaluate,
-      still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
-      takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
-      async prepare({ theme, width: w, height: h }) {
-        if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); size = `${w}x${h}`; }
-        if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
-        themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` })).identifier;
-      },
-      navigate: (url) => send('Page.navigate', { url }),
-      png: async (params = {}) => Buffer.from((await send('Page.captureScreenshot', { format: 'png', ...params }, 30_000)).data, 'base64'),
-    };
-  };
-  const pool = await Promise.all(Array.from({ length: tabs }, (_, i) => makeTab(i)));
+  const pool = await Promise.all(Array.from({ length: tabs }, (_, i) => privateTab(bs[i % bs.length])));
   return {
     tabs: pool,
-    close() { for (const b of bs) b.close(); rmSync(recFile, { force: true }); },
+    close() { for (const b of bs) b.close(); rmSync(record.file, { force: true }); },
   };
+}
+
+/** One browser that hands out fresh private tabs on request — `explore` starts over with a new one on `back`. */
+export async function openBrowser({ width = 1440, height = 900 } = {}) {
+  const record = pidRecord();
+  const b = await launchBrowser(width, height, record);
+  return { newTab: () => privateTab(b), close() { b.close(); rmSync(record.file, { force: true }); } };
+}
+
+/**
+ * The dev window `run-dev.sh` started from `checkout`, from the marker it leaves in
+ * desktop/.dev-instances/. It is the ONLY way to a real app: the marker must name a live
+ * run-dev.sh process. Destin's installed app is never started by run-dev.sh, so it never
+ * has one. Throws, naming the command to start one, when none qualifies.
+ */
+export function findDevWindow(checkout) {
+  const dir = join(checkout, 'desktop', '.dev-instances');
+  for (const f of existsSync(dir) ? readdirSync(dir).filter((x) => x.endsWith('.json')) : []) {
+    let m; try { m = JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { continue; }
+    if (!m.pid || !alive(m.pid) || !m.devtoolsPort || !m.vitePort) continue;
+    let cmd = null; try { cmd = readFileSync(`/proc/${m.pid}/cmdline`, 'utf8'); } catch { /* no /proc (Windows): the live pid is the check */ }
+    if (cmd !== null && !cmd.includes('run-dev.sh')) continue;
+    return m;
+  }
+  // run-dev.sh takes a branch or worktree name, not a path.
+  let branch = checkout; try { branch = execFileSync('git', ['-C', checkout, 'rev-parse', '--abbrev-ref', 'HEAD'], { encoding: 'utf8' }).trim(); } catch { /* the path it is */ }
+  throw new Error(`no dev window is running from ${checkout} — start one with: bash scripts/run-dev.sh ${branch} --label "<what you test>" (explore attaches only to a window run-dev.sh started)`);
+}
+
+/**
+ * Attaches to the page of an already-running isolated dev app on `port`, whose address
+ * starts with `urlPrefix`. Nothing is launched and nothing is closed: `close` only detaches.
+ * The caller must have proved the port belongs to a dev app (explore's marker check).
+ */
+export async function attachPage(port, urlPrefix) {
+  const b = await connect(port);
+  const { targetInfos } = await b.send('Target.getTargets');
+  // The main window's address EXACTLY: the buddy floater is its own page at the same
+  // address plus `?mode=buddy-mascot`, and a starts-with match could pick it.
+  const pages = targetInfos.filter((t) => t.type === 'page');
+  const page = pages.find((t) => t.url === `${urlPrefix}/` || t.url === urlPrefix) ?? pages.find((t) => t.url.startsWith(urlPrefix) && !t.url.includes('mode='));
+  if (!page) { b.close(); throw new Error(`no window at ${urlPrefix} on port ${port}`); }
+  const tab = await makeTab(b, page.targetId);
+  return { ...tab, close: async () => { await tab.detach(); b.close(); } };
 }
 
 /** Runs `work(tab, job)` over every job with the pool's tabs, backing off when the computer is busy. */

@@ -243,7 +243,15 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
   (Flappy crash, Connect 4 result), results after a click (sync retry, uninstall failed…), the
   per-row local-model states. Measured: `--check` ~13 s; two default themes ~77 s; six themes
   ~2.5 min.
-- Phases 4–6 not started.
+- **Phase 4 built (2026-09-26)** — `explore` (`scripts/shoot/explore.mjs`, `explore-page.mjs`),
+  `run-dev.sh`'s marker (`desktop/.dev-instances/<offset>.json`), attach tested against a real
+  dev window; `tester-kit.md`, `ux-tester.md`, `grader.md` rewritten. Added beyond the spec:
+  `scroll`, `double-click`, `open <screen>`/`screens`, a "NOTHING ON SCREEN CHANGED" line, and a
+  settle-then-recheck before every click (a late quick-chip row once took a click meant for the
+  message box). While building it, `explore` found two app bugs (not fixed here — reported):
+  the Rename session dialog ignores Escape, and "Filter and sort" in the Model & Effort dialog
+  does nothing (its popover is positioned from a trigger the inline layout never draws).
+- Phases 5–6 not started.
 
 ## Order of work
 

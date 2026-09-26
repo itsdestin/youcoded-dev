@@ -4,81 +4,67 @@ You are testing **YouCoded**, a desktop AI-assistant app. This file is everythin
 open it, click around, type, take screenshots, and read errors. It is deliberately the only
 project document you get: you are meant to see the app the way a new user does.
 
-The app is **already running** at the address in your briefing. You do not start or stop it.
-
 ## What you are looking at
 
 - **A page in a browser.** The app's real screens run inside a normal web page, either
-  against a **simulated backend** ("workbench" — the assistant, files and other people are
-  fakes that answer instantly and always the same way) or against the **real app** (a
-  development copy). Your briefing says which. On the workbench, fake-looking data
-  (the same reply every time, a friend who is always online) is *by design* — do not report
-  it. Anything else is fair game.
-- On the workbench there is a **toolbar above the app** that is not part of the product: it
-  switches the fake scenario (`default`, `empty`, `no-providers`, `refused`, `stress`), adds
-  fake delay, and narrows the window. Use it; do not review it.
+  against a **simulated backend** (the "practice app" — the assistant, files and other people
+  are fakes that answer instantly and always the same way) or against a **development copy**
+  of the real app. Your briefing says which. In the practice app, fake-looking data (the same
+  reply every time, a friend who is always online) is *by design* — do not report it.
+  Anything else is fair game.
 
-## The one tool: a scripted click-through with screenshots
+## The one tool: `explore`
 
-`scripts/ui-review/shot.mjs` opens the app in its own headless Chrome, runs a list of actions
-you write, checks the thing you said should appear, and saves a screenshot. Write a small
-JSON plan and run it:
+`explore` opens the app and keeps it open. You act on it one step at a time, like a person.
+Every step answers with the same three things:
 
-```bash
-node scripts/ui-review/shot.mjs my-plan.json out-dir
-```
+1. **Two pictures**: the screen, and the same screen with a yellow number on everything you
+   can click. Look at them (open the path) — the reviewer reading your report will too.
+2. **The numbered list** of what you can click, type in or drag right now: its kind
+   (`button`, `textbox`, `menuitem`, `switch`…), its label, its state (`disabled`, `on`,
+   `open`, `holds "…"`, `tooltip "…"`) and where it is. When a menu or dialog is open, its
+   controls come first, under its name; controls hidden behind it are left out (you could not
+   reach them) and counted.
+3. **The layers**: what is open on top of what — `menu "Rename… / Move…" › over dialog
+   "Settings" › over the app` — and what has keyboard focus.
 
-```json
-{ "base": "<the address from your briefing>", "boot": 3500, "width": 1440, "height": 900,
-  "shots": [
-    { "name": "open-settings",
-      "actions": [ {"clickText": "Settings", "tag": "button", "settle": 600} ],
-      "expect": "js:document.body.textContent.includes('Appearance')" },
-    { "name": "what-can-i-click",
-      "actions": [ {"dump": true} ],
-      "sameAsBaseline": true, "expect": "body" }
-  ] }
-```
-
-- Actions, in the order you list them: `{"click": "<css selector>"}` (a real mouse click at
-  the element's centre), `{"clickText": "Exact label", "tag": "button"}`,
-  `{"rightClick": …}`, `{"hover": …}`, `{"type": "text"}` (types at the focused field),
-  `{"key": "Escape"}`, `{"wait": 500}`, `{"eval": "<javascript>"}`. Every action accepts
-  `"settle": <ms>` to pause after it.
-- `{"dump": true}` **lists every clickable control on the current screen** into the
-  manifest file in `out-dir` — for each one its tag, `aria-label`, `title`, visible text and
-  position. Start every new screen with a dump: it is how you learn what to click. Prefer an
-  `aria-label` or `title` selector (`[aria-label='Send']`, `[title='Settings']`) over visible
-  text; text changes.
-- `expect` is required: a selector or `js:` expression that must be true after the actions.
-  If it is not, the shot is filed under `out-dir/<theme>/_unverified/` and the run's summary
-  says so. **A shot that failed to open is not evidence** — say "could not open X" rather
-  than describing what you did not see. If you meant to screenshot the unchanged page, say
-  `"sameAsBaseline": true`.
-- Screenshots land in `out-dir/<theme>/<name>.png` — the default theme is `midnight`, so
-  `out-dir/midnight/open-settings.png`. Look at them; the reviewer reading your report will too.
-- To test at a phone-like width, add `"width": 390`. To test other themes, pass a comma list
-  as the third argument, for example `light,halftone-dimension`.
-- **If your briefing says you are testing the real development copy**, it also gives you a
-  port number. Run the tool as `ATTACH_PORT=<that port> node scripts/ui-review/shot.mjs …`
-  so it drives the running app instead of opening its own browser tab. Without that
-  variable you would be looking at a bare page with no app behind it.
-
-Two things this tool cannot yet do, so do not claim to have tested them: touch input, and
-a high-density screen (the app's owner runs at 1.5× scale with a touchscreen). Say so in
-your report if a finding might depend on either.
-
-## One-off questions about the page
-
-For a single quick check with no click sequence:
+It also says `NOTHING ON SCREEN CHANGED after this step.` when a click did nothing visible,
+and lists any error the page logged.
 
 ```bash
-node scripts/ui-probe.mjs "<address>" --wait 'document.body.textContent.length > 0' \
-  --eval "document.title" --shot /tmp/probe.png
+node scripts/shoot/explore.mjs start                     # the app, as a new user first sees it
+node scripts/shoot/explore.mjs click 7                   # click control 7 from the last list
+node scripts/shoot/explore.mjs type 12 "hello"           # click control 12, then type
+node scripts/shoot/explore.mjs key Escape                # also: Enter, Tab, Ctrl+K, ArrowDown…
+node scripts/shoot/explore.mjs stop                      # when you are done
 ```
 
-It prints what the expression returned, saves the screenshot, and prints any errors the
-page logged to its console. Add `--size 390x844` for a narrow view.
+| Command | What it does |
+|---|---|
+| `start [--scenario X] [--width 390] [--theme light]` | Opens a fresh app. Your briefing names the scenario. `--width 390` is phone width. |
+| `look [--all]` | The pictures and list again, without doing anything. `--all` also lists controls scrolled out of view. |
+| `click N` · `double-click N` · `right-click N` · `hover N` | A real mouse, at control N's middle. Hover shows tooltips and hover styles. |
+| `type "text"` · `type N "text"` | Types into whatever has focus, or clicks N first. |
+| `key K` | One key or combination: `Escape`, `Enter`, `Tab`, `Backspace`, `ArrowDown`, `Ctrl+K`, `Shift+Tab`… |
+| `drag N to M` | Presses on N, moves to M with hover on the way, lets go. |
+| `scroll down [N]` · `scroll up [N]` | The mouse wheel, over control N or the middle of the window. |
+| `back` | Undoes your last step (the app starts over and replays the others). |
+| `stack` | Just the layers and focus, no pictures. |
+| `errors` | Every error the page logged this session. |
+| `screens` · `open <name>` | The app's named screens, and a jump straight to one — only when your briefing tells you to use it; a new user gets there by clicking. |
+
+Numbers change after every step: always use the list from your **latest** step. If a number
+no longer matches, the tool says what *is* on screen instead of clicking the wrong thing.
+
+The session stops itself after 10 minutes of nothing; `start` again opens a fresh one.
+
+**If your briefing says you are testing the development copy**, start with
+`node scripts/shoot/explore.mjs start --dev`. It connects to the window already running; there
+is no `back` (it is a real app — undo by hand), and `--scenario`/`--width` do not apply.
+
+Two things this tool cannot do, so do not claim to have tested them: touch input, and a
+high-density screen (the app's owner runs at 1.5× scale with a touchscreen). Say so in your
+report if a finding might depend on either.
 
 ## What to report, and how
 
@@ -86,20 +72,25 @@ Write your findings to the file named in your briefing, **one finding per line**
 exact shape, numbered from `U1`:
 
 ```
-- U1 — <what you expected> / <what happened instead> — <screen> — <screenshot path>
+- U1 — <what you expected> / <what happened instead> — <screen> — <picture path>
 ```
+
+**A step that failed is not evidence.** If the tool could not do what you asked, say "could
+not open X" rather than describing what you did not see.
 
 Report, in order of how much they would bother a first-time user:
 
 1. **Errors and dead ends** — anything that fails, hangs, or leaves you with no way forward.
-2. **Expected-one-thing, got-another** — a button that does not do what its label says, a
-   setting that does not stick, a flow that needs more steps than it should.
+   A key that should close something and does not (Escape on a dialog) counts.
+2. **Expected-one-thing, got-another** — a button that does not do what its label says
+   (`NOTHING ON SCREEN CHANGED` is often this), a setting that does not stick, a flow that
+   needs more steps than it should.
 3. **Wording** — every label, button, hint and error you read. If it uses more words than the
    idea needs, quote it and propose the shorter version on the same line. Words a college
-   student would not know are a finding by themselves.
+   student would not know are a finding by themselves. A control listed with `(no label)` is
+   one a screen reader cannot name — a finding too.
 4. **Visual inconsistencies** — alignment, spacing, colours or sizes that differ between
    screens for no reason; anything clipped or overlapping; anything unreadable in a theme.
 
-Do not report the fake data, the toolbar above the app, or how the code works. You never
-read code. If you ran out of budget before finishing the task in your briefing, say exactly
-where you stopped.
+Do not report the fake data or how the code works. You never read code. If you ran out of
+budget before finishing the task in your briefing, say exactly where you stopped.

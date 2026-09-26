@@ -173,17 +173,21 @@ git -C youcoded branch -D dev-profile
 
 ## Driving the desktop dev app via CDP (headless verification)
 
-(A tester with no workspace context gets `scripts/ui-review/tester-kit.md` instead of this
-section; the implementing session does steps 1–2 below and hands over the address.)
+**To click through a dev window, use `node scripts/shoot/explore.mjs start --dev`**
+(`scripts/shoot/README.md`): numbered controls, pictures and layers per step, attached only
+through the marker `run-dev.sh` writes. A tester with no workspace context gets
+`scripts/ui-review/tester-kit.md`; the implementing session starts the dev window first. The
+raw recipe below is for evaluating code in the page (preload calls, state), which `explore`
+deliberately does not offer.
 
 For programmatic UI verification of the DESKTOP dev instance (the Android recipe in
 CLAUDE.md uses adb; this is the desktop equivalent, first used for the Phase 2 Plan A
 live-acceptance run):
 
-1. Launch Electron directly with a debugging port (run-dev's npm chain doesn't forward
-   Chromium flags): from `<worktree>/desktop`, with Vite already running,
-   `YOUCODED_NATIVE=1 YOUCODED_PORT_OFFSET=50 YOUCODED_PROFILE=dev ./node_modules/electron/dist/electron.exe . --remote-debugging-port=9222`
-2. `curl http://127.0.0.1:9222/json` lists page targets. Gotchas: the buddy floater is its
+1. `bash scripts/run-dev.sh <branch>` opens the debugging port by default (9222 + offset, 9272
+   at the default offset 50; `--no-devtools` turns it off) and records it, with its own pid,
+   in `desktop/.dev-instances/<offset>.json`.
+2. `curl http://127.0.0.1:9272/json` lists page targets. Gotchas: the buddy floater is its
    own page at `?mode=buddy-mascot` — match the main window by EXACT url
    `http://localhost:5223/`, not a substring; DevTools windows also appear as pages.
 3. Evaluate via `Runtime.evaluate` (awaitPromise) + `Page.captureScreenshot` over the
