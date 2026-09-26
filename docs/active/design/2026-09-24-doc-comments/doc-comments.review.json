@@ -4,6 +4,7 @@
   "out": "doc-comments.review.html",
   "stage": "review",
   "themes": ["midnight"],
+  "theme": "fixed",
   "live": { "worktree": "comments-mock-a" },
   "steps": [
     {
