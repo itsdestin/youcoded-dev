@@ -71,6 +71,10 @@ export async function ensureBuild(checkout, log = () => {}) {
     }
   }
   try {
+    // WHY re-check after taking the lock (2026-09-26): shoot --check and journeys start
+    // together in verify.sh; the second waited for the first's build, then rebuilt anyway —
+    // and --emptyOutDir wiped the folder the first was already serving (ENOENT index.html).
+    if (existsSync(join(dist, 'index.html')) && existsSync(stampFile) && readFileSync(stampFile, 'utf8') === want) return dist;
     log(`building the photo-only copy of ${checkout}`);
     const t0 = Date.now();
     const vite = join(desktop, 'node_modules', 'vite', 'bin', 'vite.js');
