@@ -13,11 +13,10 @@
 // Files search (11,242), Marketplace (58,706) and model search (24,679); after them all
 // seven surfaces sit between ~900 and ~3,300 (investigation doc §1, "after" table).
 //
-// WHERE IT RUNS: as the last step of scripts/ui-review/run-review.sh, which already
-// serves a workbench and runs without a human; over budget fails that run. It is NOT
-// in scripts/verify.sh ON PURPOSE: verify.sh has no browser, and this guard measures
-// what a real renderer draws. Do not move it there — the per-surface stress pins
-// (vitest) are verify.sh's half of this guard.
+// WHERE IT RUNS: on request (it was the old sweep's last step until that sweep was
+// retired, 2026-09-26); over budget exits 1. Not in scripts/verify.sh: at ~30 s with
+// 2,000 rows per list it would nearly double that check's browser time for a guard the
+// per-surface stress pins (vitest, in verify.sh) already cover list by list.
 //
 // HOW IT OPENS SURFACES (rewritten onto the `shoot`/`explore` engine,
 // docs/active/specs/2026-09-24-shoot-and-explore.md): it builds and serves its own

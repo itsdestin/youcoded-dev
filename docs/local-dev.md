@@ -137,8 +137,9 @@ This is intentional — isolating these would mean dev can't test against your r
   9977; on 2026-08-25 two sessions collided on both: one boot check hung 40 minutes attached to
   the other's Chrome, and a screenshot sweep "reused" the other session's workbench and shot the
   wrong worktree. Never reuse a server you did not start without checking what it serves
-  (`ss -ltnp 'sport = :5233'` → pid → `readlink /proc/<pid>/cwd`); the review rig now does this
-  itself and runs on its own port (5473). Pass `YOUCODED_PORT_OFFSET` per session.
+  (`ss -ltnp 'sport = :5233'` → pid → `readlink /proc/<pid>/cwd`); the review tools no longer
+  share servers at all (`scripts/shoot/` builds and serves on a free port per run). Pass
+  `YOUCODED_PORT_OFFSET` per session for `run-dev.sh` / `run-workbench.sh`.
 - **Second dev run fails noisily.** `strictPort: true` in `vite.config.ts` means if the dev port is already taken, Vite errors instead of silently picking the next one. Kill the stale process or bump `YOUCODED_PORT_OFFSET`. To find what's holding the port: `netstat -ano | grep ":5223 "` (substitute your chosen Vite port).
 - **No dev instance with sync on beside the installed app until the next release after beta.80.** A dev copy syncing the same `~/YouCoded` folder raced the size-cap step and stuck sync for nine days (youcoded#483/#485 fixed it, but the installed build predates the fix).
 - **If dev crashes, close only the dev window.** The built app is unaffected.

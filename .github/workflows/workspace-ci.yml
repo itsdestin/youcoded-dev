@@ -222,11 +222,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/resolve-checkout.test.sh
 
-      # run-review.sh took `--help` as a worktree and started a workbench for it (2026-09-16).
-      - name: run-review.sh refuses a target that is not a folder
-        if: ${{ !cancelled() }}
-        run: bash scripts/ui-review/tests/run-review-args.test.sh
-
       # The pre-merge report must say whether the branch still merges cleanly — two branches
       # passed every check on 2026-09-04 and conflicted on the generated roadmap table at merge.
       - name: close-out.sh reports a merge conflict before anyone asks "ready to merge?"

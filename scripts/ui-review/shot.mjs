@@ -31,7 +31,7 @@
 //   UI_REVIEW_RUN=<id>           stamped on every entry as `run` (coverage.mjs merges by it)
 //
 // <outDir> must already END IN shots-<plan> if a review deck is going to read
-// these — run-review.sh passes "$OUT/shots-$plan" and a deck's crops resolve
+// these — site-assets.sh passes "$OUT/shots-$plan" and a deck's crops resolve
 // <run>/shots-<plan>/<theme>/<shot>.png. Called with a bare directory the shots
 // land one level too high, and the deck reports every crop "not captured"
 // rather than failing (2026-09-10).
