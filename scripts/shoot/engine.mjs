@@ -173,9 +173,12 @@ async function launchBrowser(width, height, record) {
   return { send, sessions, close: () => { try { ws.close(); } catch { /* gone */ } proc.kill('SIGKILL'); rmSync(profile, { recursive: true, force: true, maxRetries: 3 }); } };
 }
 
-// "Still": no fetch in flight, no finite animation running, two frames painted — capped.
+// "Still": no fetch in flight, no finite animation running, every image on the page finished
+// loading, two frames painted — capped. WHY images: theme cards drew blank when a picture was
+// taken before their previews arrived — the run-to-run differences the investigation measured.
 const STILL = (cap) => `new Promise((res) => { const t0 = performance.now(); const tick = () => {
-  const busy = document.getAnimations().some((a) => a.playState === 'running' && isFinite(a.effect?.getComputedTiming?.().endTime ?? Infinity));
+  const busy = document.getAnimations().some((a) => a.playState === 'running' && isFinite(a.effect?.getComputedTiming?.().endTime ?? Infinity))
+    || [...document.images].some((i) => !i.complete);
   if ((!busy && (window.__shootInflight | 0) === 0) || performance.now() - t0 > ${cap}) requestAnimationFrame(() => requestAnimationFrame(() => res(Math.round(performance.now() - t0))));
   else setTimeout(tick, 16); }; tick(); })`;
 const INFLIGHT = `(() => { if (window.__shootInflight !== undefined) return; window.__shootInflight = 0;
