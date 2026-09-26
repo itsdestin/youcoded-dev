@@ -45,6 +45,10 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
   `\n` to stdout, overwrites its buffer, exits 0; `{ok:false}` or a closed socket → exits 1
   with nothing on stdout (sudo then fails with "no password was provided"). It never
   receives sudo's prompt argument over the wire (it ignores `argv[2]`, R14).
+- `electron-builder.yml` `asarUnpack` gains `node_modules/koffi/**` (review 3, F1: an unpacked
+  script cannot resolve a module packed inside `app.asar` — proven with this repo's own
+  asar + electron); a packaged-layout test builds the unpacked tree and loads koffi from the
+  helper.
 - Installed read-only for pacman/deb/rpm (`/opt/YouCoded/resources/app.asar.unpacked/…`,
   root-owned) and inside the read-only AppImage mount. In dev it is the worktree file.
 
@@ -98,8 +102,10 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
   returns allow for a call whose command visibly runs `sudo` (shell-words, §4), the session
   asks for the password BEFORE spawning: same `PasswordAsk` card, `command` = the approved
   command text (sudo and its options stripped), no `via`. The password is held in main as a
-  `Buffer` keyed by toolCallId, and the first verified askpass connection from that call
-  gets it without a card. Wiped on first use, on call exit, and on Skip/Stop.
+  `Buffer` keyed by toolCallId, and it is handed over only to a verified askpass connection
+  from that call **whose sudo's own command line matches the approved command's sudo line**
+  (review 3, F2); any other sudo in the call — a hidden one inside a downloaded script — gets
+  the mid-command card instead. Wiped on first use, on call exit, and on Skip/Stop.
 - If that password is wrong, sudo runs the helper again (same sudo pid) → a card with
   `triesLeft` (§6).
 
@@ -247,3 +253,22 @@ the signal to its command). A daemon that fully detaches is outside the process 
 ## 10. Out of scope
 
 API keys / `.env` (next project), GitHub/SSH logins, Windows elevation, Android.
+
+## 11. Build order (each task: builder subagent, then a reviewer; both check `.claude/rules/performance.md`)
+
+1. **Admin floor** — `harness/tools/admin-command.ts` + step 3b wiring (sudo → band, never
+   remembered; doas/su/pkexec/run0 → refused with a message) + `admin-command.test.ts`.
+2. **Helper + packaging** — `scripts/askpass/youcoded-askpass` (0755) + `askpass.cjs`
+   (non-dumpable first, TracerPid check), `asarUnpack` koffi, packaged-layout test.
+3. **AskpassServer** — socket dir/permissions, startup self-test, kernel peer pid via koffi,
+   verification chain with pinning (§3), `RunningCalls`, fakes-based `askpass-verify.test.ts`
+   + real-socket `askpass-server.test.ts`. macOS path behind an off switch.
+4. **Broker + events + IPC + renderer** — `PendingAsk.kind`, `PasswordRequest/Resolved`,
+   `native:submit-admin-password` on five surfaces + parity test, reducer actions, real
+   `onSubmit`, withdrawn state, buddy strip text, mock shim entries moved from MOCK_ONLY.
+5. **Bash integration** — env vars (after `shellEnvIn`, never persisted, NODE_OPTIONS-class
+   drop), `RunningCalls` registration incl. hand-off, up-front flow with argv match, forget
+   Set + `sudo -K`, `ShellRunView.admin`, Bash description text, `bash-env.test.ts`.
+6. **Leak test + real sudo end to end** — `admin-password-leak.test.ts`; a docker container
+   with a throwaway user and known password runs the helper + a real sudo against a
+   headless AskpassServer harness. Never Destin's account.
