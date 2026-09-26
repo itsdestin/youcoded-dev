@@ -408,8 +408,15 @@ seen-on is always n/a here.
       Measuring what Destin actually sees would need a real display with a compositor, which
       means putting windows on his screen while he works. Deliberately not attempted; filed so
       the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
-      GPU" should cite this
-      `n/a` `confirmed` `checked 2026-09-10` `performance`
+      GPU" should cite this. 2026-09-26 (Destin approved one 30 s window on his screen): the
+      software renderer MISATTRIBUTED an idle welcome screen's cost — on Xvfb the frosted blur
+      looked like all of it (99% -> 5% with blur off), on his real GPU the blur was a minority
+      and the mascot's full-refresh motion was most of it (36% -> 8% hidden). A question deck
+      framed on the Xvfb reading got the wrong answer and had to be reopened. Recipe that
+      worked: `launchApp({ display: process.env.DISPLAY })`, GPU busy from
+      `/sys/class/drm/card1/device/gpu_busy_percent`, CPU by process type from CDP
+      `SystemInfo.getProcessInfo` — nothing drawing a frame counter while measuring idle
+      `n/a` `confirmed` `checked 2026-09-26` `performance`
 
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time

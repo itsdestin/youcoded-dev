@@ -371,8 +371,12 @@ export async function startXvfb(display = ':99', { timeoutMs = 8000 } = {}) {
   let spawnError = null;
   let exit = null;
   const xvfbBin = resolveXvfbBin();
+  // WHY cwd '/' (2026-09-26): Xvfb is left running between runs (see the end of
+  // this function), and a child inherits the caller's working directory — so it
+  // sat inside the session worktree that first started it, and
+  // prune-worktrees.mjs refused to remove that finished worktree as "in-use".
   const proc = spawn(xvfbBin, [display, '-screen', '0', '1600x1000x24', '-nolisten', 'tcp'], {
-    stdio: ['ignore', 'ignore', 'pipe'],
+    stdio: ['ignore', 'ignore', 'pipe'], cwd: '/',
   });
   proc.on('error', (err) => { spawnError = err; });           // explicit: an ENOENT here must not be an unhandled rejection
   proc.on('exit', (code, signal) => { exit = { code, signal }; });
