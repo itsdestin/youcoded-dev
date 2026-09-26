@@ -293,6 +293,19 @@ Cold-boots the packaged app `--runs` times and reads the instrumented marks.
 app is usable. `blankWindowMs` (how long a user stares at a created-but-empty window)
 is the second one.
 
+**At real scale: `real-scale-startup.mjs`** (standalone, not a `run.mjs` phase). The fixture
+above is ~600 tiny transcripts; launch and Resume costs only show at the size of a real
+history. This boots the same packaged app against a `cp --reflink` COPY of this machine's
+history (never the real folders — the launch repair moves files; no sync remote; plugin
+registry paths rewritten into the copy) and reports every `bg:*` mark (store start, slug
+repair and its stages, reconcile, materialize, each Resume scan split into native list /
+transcripts / store), first and settled Resume opens, and main-process stalls from a 100 ms
+IPC heartbeat. `--profile` records a whole launch instead (main CPU profile from its first
+line via `--inspect-brk`, window profile, long tasks, frame gaps, idle CPU by process type,
+running animations, programs started); `--real-look` adds the real theme and plugins;
+`--profile-browse` profiles a settled open. Needs btrfs (reflink). Results and numbers:
+`docs/active/investigations/2026-09-26-startup-resume-real-scale.md`.
+
 ### `scenario-history.mjs` — how long a conversation takes to come back
 Resumes each of the three fixture transcripts and splits the cost so you know which
 side to fix: `ipcLast10Ms` / `ipcAllMs` are main-process cost (read the `.jsonl`, parse

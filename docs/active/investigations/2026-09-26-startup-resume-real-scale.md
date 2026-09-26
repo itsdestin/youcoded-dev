@@ -3,6 +3,11 @@ status: active
 ---
 # Startup lag and the slow first Resume open, measured at real scale
 
+**Status (2026-09-26): the fixes below SHIPPED** — youcoded#573 (launch, Resume, the 30/s
+mascot) and youcoded-dev#205/#206. "What this changes in the plan" is the record of what was
+planned, not open work. This report stays active only because two roadmap items point here:
+"Resume loads forever" (needs-repro, chat-data) and mascot companions at full refresh (themes).
+
 **Asked (Destin, 2026-09-25):** "the app sometimes really lags on startup, and the first
 launch of the resume browser can seemingly load indefinitely."
 
