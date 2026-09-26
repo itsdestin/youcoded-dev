@@ -8,9 +8,12 @@ message: >-
   callout wears — K4's whole spec is "3 geometries", and matching that SHAPE
   rather than a list of known-bad recipes is what found the app's actual
   drift: a second red tint at a different border opacity, and a green
-  success block the three named tones cannot even express. If the block
-  carries a button it is a K5 status strip, a different kit entry — add a
-  file-level exemption with the reason rather than hand-rolling either one.
+  success block the three named tones cannot even express. A notice WITH
+  buttons is still a `<Callout>` — pass them as `actions` and they sit inside
+  the box at the right (decisions.md P-2/P-4, 2026-09-25; the old "a block
+  with a button is a K5 status strip" split is superseded). Only a control's
+  own state tint (a hover fill, a selected row) is a legitimate exemption —
+  add a file-level one with the reason rather than hand-rolling a notice.
 note: |
   Invariant source: tests/callout-authority.test.tsx (Plan B, 2026-09-16;
   "no in-scope file grows a new hand-rolled callout" — case 2 of the

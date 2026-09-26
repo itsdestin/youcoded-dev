@@ -58,6 +58,9 @@ counts and eyebrows `text-2xs` (11px) · **nothing below `text-2xs` may carry in
 `text-3xs`/`text-4xs` (10/9px) exist for decorative glyphs. The **status bar is the one
 documented exception** that carries information at `text-3xs`: raising it to 11px was proposed
 (P-10) and Destin rejected it on 2026-08-26 — keep it at 10px and do not re-propose.
+**Superseded 2026-09-26:** Destin approved "smallest text 11px" on the real screens
+(`ui-element-review-pieces#T-1`/`#T-2`); `text-3xs` is now 11px everywhere, status bar
+included. See `2026-09-23-ui-element-review/guide-draft.md` → Text and numbers.
 
 ---
 

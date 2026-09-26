@@ -377,7 +377,9 @@ fi
 # 2026-09-18 (render-cost consolidation): +1 for filestab-memoized (FilesTab exported as a
 #   plain function) and +3 for filestab-no-artifact-context (useArtifact(),
 #   useArtifactOptional() and useContext(ArtifactContext), one fixture line each) — 423 (419 on master + these 4).
-EXPECTED_VIOLATIONS=423
+# 2026-09-26 (UI fix batch 2): +1 for no-hand-rolled-callout-tint — a hand-rolled notice
+#   WITH buttons, which the superseded "a notice with a button is a K5 strip" rule excused.
+EXPECTED_VIOLATIONS=424
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
