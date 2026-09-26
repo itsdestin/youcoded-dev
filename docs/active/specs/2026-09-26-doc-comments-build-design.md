@@ -25,6 +25,24 @@ changelog:
     for `.docx`/`.xlsx`, same precedent as Git); plain-text/markdown comments remain fully real on
     Android as already designed. This is a technical scope call, not a change to any signed contract
     row — flagged to Destin for awareness, not blocking.
+  - 2026-09-26: revised for reopen-1 (full phone support). Destin reopened R7 via
+    `docs/active/design/2026-09-24-doc-comments/doc-comments.reopen-1.json`/`.answers.json` and picked
+    "Full support on the phone": read, add, reply and resolve Word/Excel comments work the same on
+    Android as on desktop. This **supersedes the desktop-only scope decision the previous revision
+    made while resolving F1** (§3.2, §4.3, §1.6, §9, §10, §0/R7) — that decision is no longer in
+    effect for `.docx`/`.xlsx` mutation; it still stands for `docComments:watch`/`:unwatch` (a
+    separate, file-type-independent gap: Android has no `FileObserver`-based watch for anything).
+    Android gets a real Kotlin implementation using `java.util.zip` (read+rewrite the archive, same
+    load-mutate-rewrite shape JSZip already uses on desktop — Android has no in-place zip editor
+    either) plus the platform's built-in `javax.xml.parsers`/`javax.xml.transform` DOM API (a
+    `DOMParser`/`XMLSerializer`-equivalent already on every Android device, no new Gradle dependency),
+    living in Kotlin/`SessionService.kt`-owned code rather than the WebView's JS — the same "not
+    scoped to an open tab" reasoning that moved this logic out of the renderer on desktop (F1) applies
+    here too, since Android's assistant path (the MCP script, §9) and a backgrounded PTY session must
+    be able to mutate a comment with no WebView attached or foregrounded. New tasks T16-T21 (§8) cover
+    Android docx read/write, xlsx read/write, the Android half of the MCP pending-mutation queue, and
+    the golden-fixture parity test proving desktop and Android produce/read equivalent
+    `comments.xml`/`commentsExtended.xml`/xlsx-note output.
 ---
 
 # Document comments — build-stage technical design
@@ -55,7 +73,7 @@ approved mockup already satisfies it; the build's job is to feed it real data, n
 | R4 | Assistant's own comments are sparse, never narration | §5 (tool description text) |
 | R5 | Assistant edits the file via existing edit tools/approval | §5 (explicitly: no new mechanism) |
 | R6 | After a fix: reply, resolve, and/or repoint — nothing silently lost | §2, §5 |
-| R7 | Phone: tap opens the comment sheet | UI-already-done (`CommentsMargin.tsx`, review R-9) — needs only real data (§1, §7) |
+| R7 | Phone: tap opens the comment sheet | UI-already-done (`CommentsMargin.tsx`, review R-9) — needs only real data (§1, §7, §3.2a, §4.3a). **Reopen-1 (Destin, `doc-comments.reopen-1.answers.json`, "full-phone"): the phone gets the SAME Word/Excel comment operations as desktop — read, add, reply, resolve — not just read-only tap-to-view. This supersedes the "desktop-only" scope note the review-1 revision of this document added while resolving F1 (§3.2, §4.3, §1.6, §9, §10); that note no longer applies to `.docx`/`.xlsx` mutation.** |
 | R8 | Spreadsheet comments live in the cell, in the file | §4 |
 | R9 | Word comments two-way with Word/Google Docs | §3 |
 | R10 | A commented .docx keeps its comments in Google Docs | §3.5 |
@@ -308,20 +326,25 @@ New channels, named `docComments:*`, added to **all five surfaces** the ipc-brid
 | `docComments:watch` / `:unwatch` | subscribe | `{path, projectRoot?}` | `{ok:false, error:'not-implemented-on-mobile'}` via an explicit Kotlin branch — the SAME shape `SessionService.kt`'s real `artifacts:watch-project`/`artifacts:unwatch-project` branch already returns (`SessionService.kt:4077-4080`; **not** `{unsupported:true}` — review 1, F10 — that shape is `MessageRouter.buildUnsupportedResponse`'s no-branch-at-all catch-all, a different mechanism per `.claude/rules/ipc-bridge.md`) |
 | `docComments:changed` | push | `{path}` (client re-lists; no diff payload, same reasoning `pages:changed` uses) | n/a (no watch) |
 
-Android's `docComments:list/add/reply/resolve/reopen/move` are **real Kotlin implementations**
-(`java.io.File` read/write) for **plain-text/markdown `PersistedComment` targets**, not stubs —
-exactly the precedent `artifacts:get/save/read-binary` already set (SessionService.kt). For a
-`.docx`/`.xlsx` target specifically, these same channels answer `not-implemented-on-mobile` (§3.2's
-Android scope decision, review 1 F1's follow-on) — Word/Excel comment mutation needs
-JSZip/exceljs/a Node-XML-library, none of which have a Kotlin equivalent worth building for this
-build, and the contract names no Android requirement for it. This is exactly unlike plain-text
-files, and exactly like Git, which the app simply doesn't have on mobile at all. The one piece that
-follows Git's "absent, not reimplemented" precedent for EVERY file type, not just docx/xlsx, is
-**watching**: Android has no `FileObserver`-based watch today (`artifacts:watch-project` already
-answers not-implemented-on-mobile), and building one is out of scope here. Practically: the comments
-pane re-`list()`s on mount and after every local mutation; on Android/remote it simply never gets an
-unprompted nudge when something changes from elsewhere. That is an accepted gap, not a silent one —
-`docComments:watch` refuses honestly rather than pretending to subscribe.
+**Reopen-1 supersedes this subsection's earlier desktop-only scope call** (Destin, "full-phone"
+support, `doc-comments.reopen-1.answers.json`). Android's
+`docComments:list/add/reply/resolve/reopen/move` are **real Kotlin implementations for every
+target type**, not stubs, and not restricted to plain text: for a plain-text/markdown
+`PersistedComment` target this is `java.io.File` read/write, exactly the precedent
+`artifacts:get/save/read-binary` already set (SessionService.kt); for a `.docx`/`.xlsx` target it is
+the new Kotlin zip+XML implementation §3.2a/§4.3a specify. Word/Excel comment reading and mutation
+is **no longer desktop-only** — the `not-implemented-on-mobile` answer that the review-1 revision of
+this document gave for `.docx`/`.xlsx` (citing the Git precedent) is retired for those six channels;
+it never applied to `docComments:watch`/`:unwatch`, which stays refused for an unrelated,
+file-type-independent reason. **Watching** is the one piece that still follows Git's "absent, not
+reimplemented" precedent, for EVERY file type: Android has no `FileObserver`-based watch today
+(`artifacts:watch-project` already answers not-implemented-on-mobile), and building one is out of
+scope here — this is a general Android platform gap, not a Word/Excel-specific one, so reopen-1's
+"full phone support" answer (about reading/adding/replying/resolving comments) doesn't touch it.
+Practically: the comments pane re-`list()`s on mount and after every local mutation; on
+Android/remote it simply never gets an unprompted nudge when something changes from elsewhere. That
+is an accepted gap, not a silent one — `docComments:watch` refuses honestly rather than pretending
+to subscribe.
 
 Unlike `artifacts:watch-project` (whose caller today tolerates `{ok:false}` itself and is therefore
 not currently in `remote-shim.ts`'s `REJECT_ON_NOT_OK` set), `docComments:watch`/`:unwatch` are new
@@ -332,9 +355,12 @@ value a comments pane could misread as "subscribed, no changes yet" (review 1, F
 **Kotlin's own file-locking**: Android doesn't share `~/.claude/` with a second concurrent
 YouCoded process the way desktop's dev-instance-plus-built-app does (PITFALLS.md's cross-process
 hazard is desktop-only), so Kotlin's write path can use a plain in-process mutex plus a
-temp-then-rename (still crash-safe) rather than porting the mkdir-lock protocol. See §9 for why
-this is one of three separate implementations of "write this JSON safely" the design accepts
-rather than fights.
+temp-then-rename (still crash-safe) rather than porting the mkdir-lock protocol. This holds for
+`.docx`/`.xlsx` writes too (§3.2a/§4.3a): the same in-process mutex serializes a Kotlin-originated
+write against a pending-mutation-queue-originated write (§9's Android extension, T20) — Android
+never needs the desktop main process's cross-process mkdir-lock, only ordinary in-process exclusion.
+See §9 for why this is one of several separate implementations of "write this safely" the design
+accepts rather than fights.
 
 ## 2. Re-anchoring after edits
 
@@ -458,19 +484,79 @@ main writes the mutated bytes straight to disk itself (§3.3). Reading the doc's
 (mammoth's `convertToHtml` in `DocxView.tsx`, unrelated to comments.xml) is untouched by this
 change — only comment parsing/mutation moves.
 
-**Android scope (review 1, F1's own follow-on question, resolved as an explicit design decision, not
-a contract change):** §3.2's original text argued Android needed no Kotlin port because "Android's
-WebView runs the same bundle." That reasoning no longer holds once this logic is main-only, and
-porting a full OOXML comment editor to Kotlin (`java.util.zip` + `javax.xml.parsers`, no equivalent
-of mammoth/exceljs/JSZip's convenience layer) is a large, separately-risky undertaking the contract
-never asked for — R9/R10's own thresholds are phrased as "in a dev instance" (desktop) and name no
-Android requirement. This design now follows the SAME precedent already accepted for Git ("the app
-simply doesn't have on mobile," §1.6): Word/Excel comment reading and mutation is **desktop-only**
-for this build. Android's `docComments:*` handlers (T4) answer `not-implemented-on-mobile` (§1.6's
-shape) specifically for `.docx`/`.xlsx` targets, while continuing to give REAL Kotlin
-read/write for every plain-text/markdown `PersistedComment` file, exactly as already planned. This
-narrows what Android users get from this build (no Word/Excel comment editing on the phone yet) —
-worth Destin's awareness, though it changes no signed contract row.
+**Android scope — superseded by reopen-1 (full phone support):** the review-1 revision of this
+design argued Android needed no Kotlin port ("Android's WebView runs the same bundle"), then, once
+F1 moved this logic main-only, reversed to "desktop-only for this build," citing Git's "the app
+simply doesn't have on mobile" precedent. **Destin reopened R7 and picked full phone support**
+(`doc-comments.reopen-1.answers.json`, "full-phone": *"Read, add, reply and reopen Word and Excel
+comments on the phone too... keeps the promise you signed; the phone behaves exactly like
+desktop"*). Word/Excel comment reading and mutation is therefore **real on Android**, not
+`not-implemented-on-mobile` — §3.2a below is the Kotlin equivalent of this section; §4.3a is Excel's.
+
+### 3.2a Android: a real Kotlin implementation
+
+Why this can be built at all without a large new dependency: unlike Git (a whole external binary
+and protocol Android genuinely lacks), the two pieces this module needs — reading/writing a ZIP
+container, and parsing/serializing XML — are **already part of every Android device**, no new
+Gradle dependency required:
+
+- **ZIP**: `java.util.zip.ZipFile` (random-access read of named entries — `comments.xml`,
+  `commentsExtended.xml`, `document.xml`, `document.xml.rels`, `[Content_Types].xml`) and
+  `java.util.zip.ZipOutputStream` (write a whole new archive). Neither supports in-place editing —
+  which is fine, because JSZip doesn't either: desktop's algorithm already loads the full archive
+  into memory, mutates the in-memory representation, and writes the whole thing back out (§3.2/§3.3),
+  so Kotlin's load-mutate-rewrite shape needs no new algorithm design, only a new implementation of
+  the same one.
+- **XML**: `javax.xml.parsers.DocumentBuilderFactory`/`DocumentBuilder` (parses into a standard
+  `org.w3c.dom.Document` — the same DOM shape `@xmldom/xmldom` gives desktop's algorithm, per §3.2's
+  own note that an `@xmldom/xmldom`-shaped design "barely changes shape from an originally
+  renderer-shaped design") and `javax.xml.transform.TransformerFactory`/`Transformer` to serialize
+  back to bytes. Both are part of the JDK class library Android ships, not a third-party dependency —
+  no `app/build.gradle.kts` change, no APK size cost, no new R8/proguard surface beyond what already
+  applies to any DOM-consuming Kotlin code (`docs/android-runtime.md`'s R8 rule is about
+  *reflection against app-authored code*; calling into the platform's own `javax.xml`/`org.w3c.dom`
+  classes isn't that — `./gradlew :app:assembleReleaseTest` (§8, new task) is still the check that
+  confirms it).
+
+**Why Kotlin/`SessionService.kt`, not the WebView's JS** (an alternative considered and rejected,
+for the same reason §3.2's F1 correction rejected the desktop renderer): Android's WebView *does*
+have a real `DOMParser`, and the same bundle already ships mammoth/exceljs/JSZip for read-only
+display (`DocxView.tsx`/`XlsxView.tsx`), so reusing that JS instead of writing new Kotlin was a real
+option. It fails the identical test F1 already established: a headless assistant action (the MCP
+script, §9 — Android has no "native harness" concept at all; every assistant tool call on Android
+goes through the real `claude` CLI plus this app's MCP server, `ClaudeCodeMcp.kt`/
+`claude-code-mcp.ts`) must be able to mutate a comment with **no WebView attached or foregrounded** —
+a backgrounded PTY session continuing a long-running turn has no live `WebView` to call
+`evaluateJavascript` against, and even when one exists, Android can suspend or destroy a
+backgrounded `WebView` independently of the Kotlin service keeping the PTY alive. Routing a
+same-process Kotlin call out to a WebView instance that might not exist right now and back is not a
+more workable architecture on Android than it was on desktop.
+
+New Kotlin files, mirroring the desktop module boundary, under
+`app/src/main/kotlin/com/youcoded/app/doccomments/` (new package, alongside the existing
+`com.youcoded.app.artifacts`/`com.youcoded.app.config` convention): `DocxComments.kt` (this
+section's read + §3.3's write) and `XlsxComments.kt` (§4.3a). Both are called from
+`SessionService.kt`'s `docComments:*` `when` branches (§1.6) exactly like `artifacts:read-binary`/
+`artifacts:save` already call into `com.youcoded.app.artifacts` helpers, and from the Android half
+of the MCP pending-mutation queue (§9, T20).
+
+**The algorithm is pre-written, not re-derived**: `DocxComments.kt`'s read function walks
+`comments.xml`/`commentsExtended.xml` exactly as §3.2 above specifies (same fields: author, text,
+`w15:done` → `resolved`, `w15:paraIdParent` chains → `replies`, `TextQuoteSelector`'s
+exact/prefix/suffix built straight from `document.xml`'s own surrounding text, same as desktop —
+neither platform needs mammoth's rendered HTML at this step). `resolveSelector` itself — matching
+that selector against the CURRENT rendered document to decide `anchored`/`detached` (§2.2) — needs no
+Kotlin port at all: it runs downstream, in the WebView, over the same shared
+`doc-comments-anchor.ts` the plain-text path already uses, once the WebView has the raw comment
+records back from `docComments:list`. Its write functions mirror §3.3's five steps verbatim: id uniqueness scanned from the file as it
+stands (never assumed monotonic), an 8-hex-digit `w15:paraId` generated the same way, **backup before
+write** (a sibling `.docx.bak-<timestamp>`), and **verify after write with automatic rollback** — a
+Kotlin `DocumentBuilder` re-parse of the just-written bytes confirming the comment round-trips and
+the same `r:id`/content-types relationship sanity check §3.3 step 5 (F17) specifies, renaming the
+backup back over the target on any verify failure before surfacing a specific `<ErrorState>`, never
+leaving a possibly-corrupted file live. T16/T17 (§8) build these two halves; the same fixtures T10/T11
+use (gapped/non-sequential `w:id`s, no-`commentsExtended.xml`-part case) apply unchanged, because the
+algorithm — not just the wire format — is shared.
 
 Output: one `PersistedComment`-shaped record per `w:comment` (author from `w:author`, text from
 its paragraphs, `resolved` from a matching `commentsExtended.xml` entry's `w15:done`, `replies`
@@ -610,8 +696,10 @@ runs in plain Node exactly as well as in the renderer, so this module lives in
 reason docx's parse/mutate logic moved: T8's native tools and T9's MCP queue must be able to mutate
 an Excel comment with no renderer window open on that file, and no new binary IPC channel is needed
 because `fs` is already local. `XlsxView.tsx`'s own read-only rendering of cell VALUES for display is
-untouched — only the comment-note read/write path moves. Android scope follows §3.2's decision:
-desktop-only for `.xlsx` comment mutation this build, `not-implemented-on-mobile` on Kotlin.
+untouched — only the comment-note read/write path moves. **Android scope — superseded by reopen-1**:
+§3.2's now-retired "desktop-only" decision would have made `.xlsx` comment mutation
+`not-implemented-on-mobile` on Kotlin; reopen-1's "full phone support" answer means Excel comments get
+a real Kotlin implementation too, §4.3a below.
 
 Read: alongside a load of the workbook via ExcelJS in main. Write: backup-before-write, apply via
 ExcelJS's normal save API (`workbook.xlsx.writeBuffer()`), **verify-after-write with automatic
@@ -620,6 +708,44 @@ rollback on failure** by re-loading the buffer and re-reading the note (review 1
 `<ErrorState>`, never leave a possibly-corrupted file as the user's live document) — exactly §3.3's
 five-step shape, minus the range-marker step (a note has no separate "range start/end," it's a cell
 property).
+
+### 4.3a Android: a real Kotlin implementation, and why it's riskier than Word's
+
+Same tools as §3.2a (`java.util.zip` + `javax.xml.parsers`/`javax.xml.transform`, no new Gradle
+dependency), new file `XlsxComments.kt` alongside `DocxComments.kt` in
+`app/src/main/kotlin/com/youcoded/app/doccomments/` — but **legacy Notes are a bigger OOXML surface
+than Word's comment model**, and the size of that surface is hidden from this design today because
+desktop doesn't hand-roll it: `exceljs`'s `cell.note` setter (confirmed by reading
+`desktop/node_modules/exceljs/lib/xlsx/xlsx.js` and `lib/xlsx/xform/comment/`) writes **four**
+coordinated pieces per sheet with a note — `xl/comments<N>.xml` (the note text, keyed by cell ref,
+via `CommentsXform`), `xl/drawings/vmlDrawing<N>.vml` (the VML shape that gives the note its visible
+position/size — via `VmlNotesXform`, written unconditionally alongside the comments part), the
+worksheet's own `<legacyDrawing r:id="…"/>` element plus a `comments`
+relationship, and the matching `xl/worksheets/_rels/sheet<N>.xml.rels` + `[Content_Types].xml`
+entries for both new parts. None of that OOXML shape is written down anywhere in this design (§4.1
+only specifies the note **text** — the "Priya Shah: …" transcript format), because exceljs's API
+means desktop's own `xlsx-comments.ts` never has to construct or even see this wiring itself. Kotlin
+has no equivalent library, so it must construct all four pieces by hand — this is closer to writing a
+tiny OOXML library than to §3.2a's docx work, where desktop's own algorithm was already fully
+specified and directly portable.
+
+**Pre-written reference, not left for T18/T19 to reverse-engineer**: before either Android xlsx task
+starts, a short spike (part of T18, not a separate task) writes a note with the CURRENT desktop
+`xlsx-comments.ts`/exceljs against a fixture workbook, unzips the result, and captures the literal
+`comments<N>.xml`/`vmlDrawing<N>.vml`/relationship/content-types shape exceljs actually produces as
+a checked-in reference (`shared-fixtures/doc-comments/xlsx-note-reference/`) — Kotlin's writer target
+is "produce OOXML matching this reference's shape for a new note," not "produce OOXML that happens to
+open in Excel," which is a much easier bar to hand off to a task than an open-ended spec would be.
+Read is the lower-risk half (parsing `comments<N>.xml` for text and `vmlDrawing<N>.vml` only if a
+prior write needs to preserve an existing shape's position on edit — the parity guard, T21, is what
+actually proves Kotlin's output is equivalent, not just individually valid).
+
+Write mirrors §4.3's shape: backup-before-write, apply the four-part mutation, **verify-after-write
+with automatic rollback** (re-parse the just-written archive with the same read path, confirm the
+note round-trips; on failure, rename the backup back over the target before surfacing the same
+`<ErrorState>` desktop uses). The resolve marker (§4.1's `​[[yc:resolved]]` token) is plain text
+inside the note body, so `ResolveComment`/`ReopenComment`'s string manipulation is identical Kotlin
+logic to the TS version — no extra OOXML risk there, only in the four-part note-creation wiring.
 
 ## 5. Assistant tools
 
@@ -816,14 +942,24 @@ reads (`DocCommentsApi`: `comments`, `focusId`, `showResolved`, `setShowResolved
 Sized for one subagent each. "Pre-written" means the schema/algorithm should be nailed down and
 handed to the task rather than left for the subagent to invent — needed wherever three separate
 runtimes (TS main, the dependency-free MCP script, Kotlin) have to agree on a wire/file format
-without a shared import to enforce it.
+without a shared import to enforce it. **Reopen-1 (Destin: full Word/Excel comment support on the
+phone, `doc-comments.reopen-1.answers.json`) adds T16-T21** — Android gets a real Kotlin
+implementation of the same docx/xlsx read/write/backup/verify/rollback algorithm §3.2a/§4.3a specify,
+plus its own half of the MCP pending-mutation queue and the cross-platform golden-fixture test that
+proves the two implementations actually agree (§9.2/§9.3). This raises "three separate runtimes" to
+four load-bearing agreement points for docx/xlsx specifically (TS main and Kotlin both now parse/write
+the OOXML; the MCP script and its Android twin both now need a pending-mutation queue reaching a
+capable runtime) — the estimate Destin was shown when reopening this ("roughly two to three more
+build tasks") undercounts what a byte-identical, verified two-platform OOXML writer actually takes;
+six tasks (T16-T21) is the honest count once xlsx's hand-rolled four-part OOXML wiring (§4.3a) is
+accounted for.
 
 | # | Task | Depends on | Pre-written or description | Pinning test(s) | Key risk |
 |---|---|---|---|---|---|
 | T1 | `desktop/src/shared/doc-comments-types.ts` + main-process store (`list`/mutate via `mutateFileUnderLock`, project-relative + fallback path resolution, **path containment check** — review 1 F3) | — | **Pre-written schema** (§1.1's TS shape ships as the task's spec, not invented mid-task); **pre-written containment algorithm** (§1.5: realpath the project root, `path.relative` escape check, refuse never clamp) | new unit tests: read-modify-write, concurrent-lock behavior, missing-file default, fallback path for a project-less file, **`../../etc/passwd`-shaped and absolute-path containment refusal (F3)**, **lock-path canonicalization + a TRUE concurrent-write test, not just sequential (F4)** | Getting this schema wrong is expensive — T4/T8/T9a/T10/T12 all build on it. Freeze it before parallel work starts. A missed containment check is a path-traversal write bug, not a style nit. |
 | T2 | `desktop/src/shared/doc-comments-anchor.ts` (`resolveSelector`) | T1 (types) | Pre-written algorithm (§2.2), **including the closest-scoring fallback for an out-of-range `occurrence` and the position-closest tie-break rule (review 1, F9a/F9b)** | exact match; moved text (prefix/suffix intact, position shifted); ambiguous repeated phrase; not-found → `'detached'`; cell-not-found; **occurrence-index-out-of-range resolves to the best-scoring remaining candidate, never a fixed clamp (F9a)**; **a scoring tie resolves deterministically by closest position, not array order (F9b)** | Anchoring correctness is the feature's whole trust model — under-test this and "text no longer found" fires on text that IS still there. §2.2 also flags mammoth-render stability as a documented, watched risk (F9c) rather than a test to build now. |
 | T3 | IPC surface: `docComments:*` on preload/ipc-handlers/remote-shim/remote-server + chokidar watcher + `docComments:changed` broadcast; **register `docComments:watch`/`:unwatch` in `remote-shim.ts`'s `REJECT_ON_NOT_OK` (review 1, F10)** | T1 | Description | `ipc-channels.test.ts` additions; `main-blocking-calls.test.ts` stays clean; a watcher-debounce test; **path-containment refusal test at the IPC payload surface (F3)**; **a `REJECT_ON_NOT_OK` regression test for `docComments:watch`/`:unwatch` (F10)** | Forgetting a surface (5, not 4 — ipc-bridge.md's own correction) breaks remote silently. Skipping the `REJECT_ON_NOT_OK` registration lets a failed watch read as "subscribed, no changes yet." |
-| T4 | Android `SessionService.kt` parity for `docComments:*` (plain-text files only — real Kotlin read/write); `.docx`/`.xlsx` targets and `watch`/`unwatch` answer **`{ok:false, error:'not-implemented-on-mobile'}` via an explicit branch (review 1, F10 — corrected from the earlier `{unsupported:true}` citation, which is a different no-branch-at-all mechanism)** | T3 (needs final channel/payload shapes) | **Pre-written wire format** (T1's schema doc, not re-derived); **pre-written response shape for the two refusal cases** (§1.6/§3.2) | shared JSON fixture both platforms round-trip; ipc parity guard; **an exact-JSON-shape test for the not-implemented-on-mobile response (F10)** | A schema drift here is invisible until an Android build actually runs — flag as needing a real Android build check (CLAUDE.md's own "CHECK, don't assume" rule on SDK presence). |
+| T4 | Android `SessionService.kt` parity for `docComments:*` on **plain-text `PersistedComment` files** (real Kotlin `java.io.File` read/write, dispatching to `DocxComments.kt`/`XlsxComments.kt` for `.docx`/`.xlsx` targets — T16/T17/T18/T19 below, not this task); `watch`/`unwatch` answer **`{ok:false, error:'not-implemented-on-mobile'}` via an explicit branch (review 1, F10 — corrected from the earlier `{unsupported:true}` citation, which is a different no-branch-at-all mechanism)** for every file type, unchanged by reopen-1 | T3 (needs final channel/payload shapes) | **Pre-written wire format** (T1's schema doc, not re-derived); **pre-written response shape for the watch refusal** (§1.6) | shared JSON fixture both platforms round-trip; ipc parity guard; **an exact-JSON-shape test for the `docComments:watch` not-implemented-on-mobile response (F10)** | A schema drift here is invisible until an Android build actually runs — flag as needing a real Android build check (CLAUDE.md's own "CHECK, don't assume" rule on SDK presence). |
 | T5 | Renderer: rewrite `doc-comments-store.ts` internals against real IPC, keep `DocCommentsApi` unchanged, move seeds to `mock-shim.ts`, add/remove `MOCK_ONLY` rows as channels land | T3 | Description | existing comment component tests keep passing unmodified (proves the interface didn't move); a workbench fixture-state test | Any interface drift here silently breaks the ALREADY-APPROVED UI — treat every `comments/*.tsx` test as a regression gate, not just new tests |
 | T6 | "Text no longer found" UI on `CommentCard.tsx` (small, additive) | T2 | Description | a detached-state render test | Small enough to qualify for feature-flow's short route — confirm with Destin before skipping a review deck for it |
 | T7 | `compose-ref.ts` wire-format rewrite (§6.2/6.3), **including the draft-token layer** (`makeDraftToken`/`splitDraftTokens`/`expandDraftTokens`/`draftTokenRanges` — review 1, F11) | T1 (comment ids exist) | Pre-written grammar (§6.2's three forms, **underscore-joined structural separators, no literal space in the delimiter syntax this design controls — F12**) | encode/decode round-trip per ref kind; a "no percent-encoding or JSON braces, and no literal space in the structural syntax" snapshot test; **a test that types a reference through as a draft token, sends it, and confirms `expandDraftTokens` produces the new grammar correctly (F11)**; **an end-to-end test that sends a message containing the new marker through the actual PTY submit path and confirms it arrives byte-identical (F12)** | Must not regress hover/click-to-source (`use-ref-source-highlight.ts`) — run its existing tests, don't just add new ones. A structural-separator regression to literal spaces is invisible in a pure-function test, only in the PTY e2e test. |
@@ -837,25 +973,41 @@ without a shared import to enforce it.
 | T13 | Xlsx write: `.note` add/reply/resolve as a formatted transcript, **using a fixed non-natural-language resolve marker instead of a plain "— resolved" string (review 1, F7)**, backup-before-write, verify-after-write **with automatic rollback on failure (F5)** | T12 | Description | round-trip; multi-reply formatting; backup+verify; **`ReopenComment` strips the marker's exact trailing line and nothing else in the body (F7)**; **a reply body containing resolve-like natural-language text is NOT read as resolved (F7)**; **a verify-failure test asserts the target file is byte-identical to the pre-write original (F5)** | Getting the marker's strip regex slightly wrong either leaves marker fragments visible or eats real trailing content — test both directions explicitly. |
 | T14 | Wire real backend into `CommentableDocument`/`DocxView`/`XlsxView` (dispatch by file type: `PersistedComment` store for plain files, `docx-comments.ts` for `.docx`, `xlsx-comments.ts` for `.xlsx`); remove workbench-only seeds from the product path | T5, **T10 AND T11**, **T12 AND T13** (review 1, F16 — corrected from "T10 or T11, T12 or T13", which allowed starting on a read-only half-built lifecycle) | Description | full comment-lifecycle test per file type, run against the real (non-mock) store | The integration point where a wrong file-type dispatch silently sends a plain-file comment write at a `.docx`'s sidecar instead of into the file |
 | T15 | Process cleanup: close PR #263 (R11); confirm with Destin, then delete the three rejected mock branches/worktrees (R21) | none | Description (not a build task — a closing-session step) | n/a | Do not delete without explicit go-ahead, per the handoff's own step 5 |
+| T16 | **(reopen-1)** Android docx read: `DocxComments.kt` (§3.2a) parses `comments.xml`/`commentsExtended.xml` via `java.util.zip.ZipFile` + `javax.xml.parsers`, into the SAME `PersistedComment`-shaped record §3.2/T10 produces | T1, T4 | **Pre-written algorithm** (§3.2's field mapping, ported verbatim — same author/text/`resolved`/`replies` extraction, same `TextQuoteSelector` construction from `document.xml`'s own surrounding text, no mammoth/rendered-HTML dependency needed at read time) | parse the SAME `docs/launch-brief.docx` fixture T10 uses, asserting the SAME `PersistedComment[]` shape (not just "doesn't crash"); `w15:paraIdParent` reply reconstruction; a docx with no `comments.xml` part doesn't crash; a JVM unit test, not an instrumented/on-device test, proving this runs in plain `./gradlew test` | Reusing T10's exact fixture (not a separate Android-only one) is what makes T21's cross-read guard meaningful — a fixture drift here would silently make the "parity" test compare two different inputs. |
+| T17 | **(reopen-1)** Android docx write: add/reply/resolve into `comments.xml`/`commentsExtended.xml` via `java.util.zip.ZipOutputStream` + `javax.xml.transform`, mirroring §3.3's five steps (backup-before-write, id/`paraId` uniqueness scanned fresh from the file, **verify-after-write with automatic rollback**, the same `r:id`/content-types relationship sanity check as F17) | T16 | Pre-written (§3.2a: "mirror §3.3's five steps verbatim") | round-trip add/reply/resolve against T10/T16's shared fixture; backup file created; a verify-failure test asserts the target file is byte-identical to the pre-write original; a fixture with gapped/non-sequential existing `w:id`s; every `r:id` the new run references resolves in `document.xml.rels` and has a `[Content_Types].xml` override; (manual, dev-instance build, not CI) a `.docx` this writes opens correctly in the desktop app's own DocxView | The riskiest code in the whole reopen — a Kotlin write bug corrupts a user's real Word file. Hold this task to the same "byte-identical rollback on verify failure" bar T11 was held to, not a lighter one because it's "just the phone." |
+| T18 | **(reopen-1)** Android xlsx read, plus the exceljs-output-capture spike: write a note with desktop's current `xlsx-comments.ts` against a fixture workbook, unzip it, and check the literal `comments<N>.xml`/`vmlDrawing<N>.vml`/relationship/content-types shape into `shared-fixtures/doc-comments/xlsx-note-reference/` as T19's pre-written target (§4.3a); then `XlsxComments.kt`'s read half parses `comments<N>.xml` into the SAME cell-record shape T12 produces | T1, T4, T12 (needs T12's fixture workbook to exist) | Spike output is itself pre-written for T19, not re-derived there; read algorithm mirrors T12's field mapping | parse a workbook fixture with a `.note` set, asserting the SAME shape T12 produces; multi-sheet cell targeting; the captured reference fixture is checked in and referenced (not regenerated) by T19/T21 | The spike is the highest-value/lowest-code part of this task — getting the reference capture wrong (e.g., capturing it from a hand-edited rather than exceljs-written file) undermines T19 and T21 both. |
+| T19 | **(reopen-1)** Android xlsx write: hand-construct `comments<N>.xml` + `vmlDrawing<N>.vml` + the worksheet's `<legacyDrawing>`/relationship + `[Content_Types].xml` entries to match T18's captured reference shape, note-body transcript formatting and the `​[[yc:resolved]]` marker identical to §4.1/T13, backup-before-write, **verify-after-write with automatic rollback** | T18 | Description, target shape pre-written by T18's spike | round-trip against T12/T18's shared fixture; multi-reply formatting; backup+verify; `ReopenComment` strips the marker's exact trailing line and nothing else; a reply body containing resolve-like natural-language text is NOT read as resolved; a verify-failure test asserts byte-identical rollback; (manual, dev-instance build) a `.xlsx` this writes opens correctly with a visible, correctly-positioned note in the desktop app's own XlsxView and in real Excel/Google Sheets if available | **The single riskiest task in the whole reopen.** Four hand-rolled OOXML parts with no library help on either platform to fall back on if T18's captured reference is subtly wrong — this is where a review round should look hardest, and where slipping the "roughly two to three more tasks" estimate the reopen question gave Destin is most likely. |
+| T20 | **(reopen-1)** Android half of the MCP pending-mutation queue: the byte-identical MCP asset (T9c) writes the SAME `.youcoded/comments/.pending/<uuid>.json` request shape T9b defines; a Kotlin coroutine polling loop inside `SessionService` (not `FileObserver` — see §9.2) applies it via `DocxComments.kt`/`XlsxComments.kt` and writes the same result-file shape back | T9c, T17, T19 | Description; request/result JSON shape pre-written by T9b (unchanged) | queue round-trip on Android (request written → Kotlin applies it → result appears → MCP script reads it); the same bounded-timeout test as T9b (~3s, never hangs) | Two independently-written watchers (chokidar vs. a Kotlin polling loop) for the identical request/result contract — a Kotlin-side field-naming slip is invisible until an Android build actually exercises this path. |
+| T21 | **(reopen-1)** Cross-platform golden-fixture parity test: desktop writes a docx/xlsx mutation, Android reads it and produces the identical `PersistedComment[]`; Android writes, desktop reads it back the same way; both platforms' verify-after-write rollback is exercised against a deliberately-corrupted intermediate write (§9.3) | T11, T13, T17, T19 | Description; fixtures live in `shared-fixtures/doc-comments/` (the workspace's established cross-runtime fixture convention — `shared-fixtures/artifacts/`, `shared-fixtures/attention-classifier/` are the precedent, though both of those are JSON-only; this is the first binary+JSON pair in that directory) | the four-part test §9.3 describes, run in CI on the desktop side and via `./gradlew test` on the Android side against the SAME checked-in fixture bytes | This is the ONLY thing that catches "each side passes its own tests but the two are subtly incompatible" — treat a passing T17/T19 alone as unproven parity, not done, until this lands. |
 
 **Suggested batching**: T1 alone first (everything downstream reads its frozen schema and its
 containment/lock-canonicalization algorithms). Then in parallel: T2, T7, T10, T12, and the desktop
 half of T3. Then: T4, T5, T8, T9a (T9a last within this batch — it has real surface area and should
 start once T1/T2 are truly stable, not while they might still shift), T11 (after T10), T13 (after
-T12). Then T9b (needs T10/T12's main-process write paths), then T9c (needs T9a). Then T14 (needs
-BOTH halves of each format's read/write pair, per F16). T6 can land any time after T2. T15 is
+T12), T16 (after T10, needs its fixture), T18 (after T12, needs its fixture and workbook). Then T9b
+(needs T10/T12's main-process write paths), T17 (after T16), T9c (needs T9a). Then T19 (after T18's
+spike), T20 (needs T9c and T17/T19). Then T14 (needs BOTH halves of each format's read/write pair, per
+F16) and T21 (needs T11/T13's desktop write paths and T17/T19's Android ones — necessarily last,
+since it reads what every other docx/xlsx task produced). T6 can land any time after T2. T15 is
 independent and low-priority.
 
-## 9. Cross-cutting risk: three implementations of "write this JSON safely"
+## 9. Cross-cutting risk: multiple implementations of "write this safely"
+
+Two separate multi-implementation risks live here: the plain-text `.youcoded/comments/<path>.json`
+sidecar (three implementations — unchanged by reopen-1) and, **new since reopen-1**, `.docx`/`.xlsx`
+OOXML mutation (now two real implementations, where the review-1 revision of this document had
+arranged for there to be only one).
+
+### 9.1 The JSON sidecar: three implementations
 
 This design accepts, rather than architects away, three separate places that read/write the same
 `.youcoded/comments/<path>.json` file format:
 
 1. **TS main process** (`desktop/src/main/doc-comments/doc-comments-store.ts`, T1/T3) — uses the
    real `mutateFileUnderLock` from `cas-write.ts`, in-process, no duplication risk. As of §3.2/§4.3's
-   revision, this is also the ONLY implementation with JSZip/a Node-XML-library/exceljs available —
-   docx/xlsx parse+mutate lives here now too, resolving the earlier renderer/main contradiction
-   (review 1, F1/F2).
+   revision, this was also (until reopen-1) the ONLY implementation with JSZip/a Node-XML-library/
+   exceljs available — docx/xlsx parse+mutate lives here, resolving the earlier renderer/main
+   contradiction (review 1, F1/F2).
 2. **The Claude Code MCP script** (T9a) — a plain `node` process Claude Code spawns per session,
    with **zero `node_modules` beside it on either platform** (`claude-code-mcp.ts`'s own header
    comment: "this file is executed by a PLAIN node process… it has no node_modules beside it on
@@ -867,8 +1019,9 @@ This design accepts, rather than architects away, three separate places that rea
    poll loop as real, shipped precedent for the same shape (review 1, F8).
 3. **Kotlin** (`SessionService.kt`, T4) — a plain-mutex-plus-atomic-rename implementation (simpler
    than #1/#2 because Android has no concurrent second-process hazard, per §1.6) — for plain-text
-   `PersistedComment` files only; `.docx`/`.xlsx` targets answer `not-implemented-on-mobile` per
-   §3.2's Android scope decision.
+   `PersistedComment` files. (Kotlin's SEPARATE docx/xlsx write path, real as of reopen-1, is §9.2,
+   not this three-way JSON story — a `.docx`/`.xlsx` file never touches the JSON sidecar at all,
+   per §1.1.)
 
 **Lock-path canonicalization must match across #1 and #2 (review 1, F4 — restated from §1.5):**
 `cas-write.ts`'s existing lock derivation (`target + '.lock'`, no `realpath` first) is fine for its
@@ -880,31 +1033,72 @@ each other — a torn or lost write on the exact file R6 depends on. The pinning
 concurrency test (both writers racing the same file simultaneously, asserting nothing is lost), not
 only the sequential round-trip below.
 
-Since #1 now has JSZip/a Node-XML-library/exceljs for `.docx`/`.xlsx` writes, and #2 (the MCP script)
-still has neither (no `node_modules`, no DOM, on either platform), this design still routes Word/Excel
-comment mutations from the MCP path through a small file-based queue rather than a third from-scratch
-XML editor (T9b): the MCP tool writes a pending mutation request into
-`.youcoded/comments/.pending/<uuid>.json` (using the SAME dependency-free lock primitive as #2 above,
-since it's a plain JSON write, not XML), then polls (bounded, ~3s, matching other native tool
-timeouts) for a result file the main-process watcher (§1.5, already watching `.youcoded/comments/`)
-writes once it applies the mutation using its real JSZip/Node-XML-library/exceljs-capable code.
-Plain-file `PersistedComment` mutations from the MCP path skip the queue entirely — JSON
-read-modify-write is simple and low-risk enough for the script to do directly (T9a).
+### 9.2 docx/xlsx OOXML mutation: now two real implementations, and Android's own queue
 
-**T9 split into three (review 1, F8 — major):** the original single T9 bundled six MCP tool
-definitions, a from-scratch dependency-free lock port, an entirely new cross-process pending-mutation
-queue, and Android byte-identical asset parity — four independently risky, independently testable
-pieces the design's own "sized for one subagent each" rule argues against combining. Split into:
-- **T9a** — the six MCP tool JSON-RPC definitions plus the dependency-free plain-file store (point 2
-  above), citing `chatsearch.js` as the pattern to copy.
-- **T9b** — the docx/xlsx pending-mutation queue (blocked on §3.2/§4.3's F1/F2 fix landing first).
+Before reopen-1, only implementation #1 (TS main) had ZIP+XML capability, so this design routed
+EVERY other write source at that one capable runtime: the renderer's IPC calls reach main directly;
+the Claude Code MCP script (T9a) — which has neither `node_modules` nor a DOM, on either platform —
+goes through a small file-based pending-mutation queue (T9b) instead of a third from-scratch XML
+editor: the MCP tool writes a pending mutation request into `.youcoded/comments/.pending/<uuid>.json`
+(the SAME dependency-free lock primitive as #2 above, since this part is a plain JSON write, not
+XML), then polls (bounded, ~3s, matching other native tool timeouts) for a result file the
+main-process watcher (§1.5, already watching `.youcoded/comments/`) writes once it applies the
+mutation with its real JSZip/Node-XML-library/exceljs-capable code. Plain-file `PersistedComment`
+mutations from the MCP path skip the queue entirely — JSON read-modify-write is simple and low-risk
+enough for the script to do directly (T9a). Android's MCP script (T9c: a byte-identical asset) was
+covered "for free" before reopen-1 because there was no Android docx/xlsx capability of any kind for
+it to reach.
+
+**Reopen-1 gives Android its own real ZIP+XML capability** (§3.2a/§4.3a's `DocxComments.kt`/
+`XlsxComments.kt`) — but Android's MCP script is STILL the same zero-dependency, no-DOM plain node
+process (T9c's whole point is that it stays byte-identical to desktop's), so it still cannot do the
+mutation itself. Android therefore needs its OWN pending-mutation queue (T20), mirroring T9b's
+request/result JSON shape exactly but with a **Kotlin coroutine polling loop inside `SessionService`**
+as the applier instead of the TS main process's chokidar watcher — not `FileObserver`: §1.6's "no
+`FileObserver`-based watch" is about the UI-facing `docComments:watch` push (a different, still
+out-of-scope concern, unaffected by reopen-1); this internal queue only needs `SessionService`,
+which is already running for the whole PTY session, to notice its own `.pending/` directory on a
+short interval (~250ms, comfortably under T9b's ~3s bound). This is genuinely new work (T20) — landing
+T9b on desktop does not cover it, because the two platforms' watchers are different code, even though
+the request/result JSON shape and the MCP script's polling logic (T9c's byte-identical asset) are
+unchanged.
+
+There are now genuinely **two** real, independent implementations reading/writing the same
+`comments.xml`/`commentsExtended.xml`/xlsx-note formats (TS main via a Node-XML-library, Kotlin via
+`javax.xml.parsers`/`javax.xml.transform`), where before reopen-1 there was only one. §9.3 is the
+guard that proves they actually agree, not just that each independently works.
+
+**T9 split into three (review 1, F8 — major, unchanged by reopen-1):** the original single T9 bundled
+six MCP tool definitions, a from-scratch dependency-free lock port, an entirely new cross-process
+pending-mutation queue, and Android byte-identical asset parity — four independently risky,
+independently testable pieces the design's own "sized for one subagent each" rule argues against
+combining. Split into:
+- **T9a** — the six MCP tool JSON-RPC definitions plus the dependency-free plain-file store (§9.1
+  point 2), citing `chatsearch.js` as the pattern to copy.
+- **T9b** — the docx/xlsx pending-mutation queue, desktop side (blocked on §3.2/§4.3's F1/F2
+  architecture fix landing first).
 - **T9c** — Android byte-identical asset parity + its own parity test, citing `ClaudeCodeMcp.kt` /
   `claude-code-mcp.ts`'s existing `SendUserLink` deploy as precedent.
+- **T20 (reopen-1)** — the docx/xlsx pending-mutation queue, Android side (§9.2 above; not part of
+  the original F8 split, added because reopen-1 gave Android a runtime T9b's desktop watcher can't
+  reach on its own).
 
-**Recommended pinning test** (called out per-task above, worth restating together): a shared-fixture
-round-trip test — implementation #1 writes a comment, #2 (or a Node harness standing in for it)
-reads and adds a reply, #1 reads the result and confirms both are present in the expected shape.
-This is the test that catches format drift between the three before it reaches a real session.
+### 9.3 The parity guards
+
+- **JSON sidecar** (unchanged from review 1): a shared-fixture round-trip test — implementation #1
+  writes a comment, #2 (or a Node harness standing in for it) reads and adds a reply, #1 reads the
+  result and confirms both are present in the expected shape. Catches JSON format drift between the
+  three before it reaches a real session.
+- **docx/xlsx, new for reopen-1 (T21):** a shared fixture set under `shared-fixtures/doc-comments/`
+  (the docx/xlsx fixtures T10/T12 already use, plus the xlsx-note-reference capture §4.3a's spike
+  produces) drives a test that: (1) desktop writes an add+reply+resolve sequence into a fixture copy
+  and Android reads the result, producing the identical `PersistedComment[]` shape (same ids, text,
+  `resolved`, reply order); (2) the same in reverse — Android writes, desktop reads; (3) both
+  platforms' own verify-after-write logic is exercised against a deliberately-corrupted intermediate
+  write, confirming both roll back to a byte-identical original. This is what actually proves
+  "equivalent output," not merely "each side's own tests are green" — two implementations can each
+  pass their own suite while producing subtly incompatible XML (e.g., a different but
+  individually-valid relationship-id scheme) that only a real cross-read catches.
 
 ## 10. What this design deliberately does not change
 
@@ -917,10 +1111,15 @@ This is the test that catches format drift between the three before it reaches a
   and whatever §9's real-backend-data plumbing surfaces that the mockup's seed data already
   demonstrated (colleague names, resolved history, etc. — the cards already render these fields,
   they just need real values).
-- **New this revision (review 1, F1's follow-on):** real Word/Excel comment reading and mutation is
-  desktop-only for this build. Android's `docComments:*` answers `not-implemented-on-mobile` for
-  `.docx`/`.xlsx` targets specifically (§3.2, §1.6), the same precedent already accepted for Git.
-  Plain-text/markdown comments remain fully real on Android, unaffected. No contract row promises
-  Android Word/Excel support — R9/R10's thresholds are phrased as desktop dev-instance checks — so
-  this changes no signed row, but it is a real capability gap this build leaves for Android users
-  that the original draft didn't call out explicitly. Worth Destin's awareness.
+- **Superseded by reopen-1 — retained here only as history:** the review-1 revision of this document
+  made Word/Excel comment reading and mutation desktop-only, with Android's `docComments:*` answering
+  `not-implemented-on-mobile` for `.docx`/`.xlsx` targets (the same precedent accepted for Git).
+  **Destin reopened this (`doc-comments.reopen-1.json`/`.answers.json`) and picked full phone
+  support**: Android now gets a real Kotlin implementation with the same read/add/reply/resolve
+  operations as desktop (§3.2a, §4.3a, §1.6, §9.2, T16-T21). Nothing about this bullet's original
+  "no contract row required it" reasoning was wrong — R9/R10's thresholds genuinely are phrased as
+  desktop dev-instance checks — but Destin's own signed answer to R7's reopen question now DOES ask
+  for it, so this is no longer something the design leaves out. The one piece that's still true and
+  unaffected: `docComments:watch`/`:unwatch` stays `not-implemented-on-mobile` on Android for every
+  file type (§1.6) — a general "no `FileObserver`-based push" gap, not a Word/Excel-specific one, and
+  reopen-1's answer was about reading/adding/replying/resolving, not live-watching.
