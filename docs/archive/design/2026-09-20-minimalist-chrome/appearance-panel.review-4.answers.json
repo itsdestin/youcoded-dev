@@ -1,0 +1,43 @@
+{
+ "deck": "appearance-panel-review-4",
+ "started": "2026-09-24T19:57:03.025Z",
+ "submitted": "2026-09-24T20:00:57Z",
+ "cur": 4,
+ "answers": {
+  "AR4-1": {
+   "note": "reduce the gap between the very last theme at the bottom of scroll and the buttons. ",
+   "v": "yes",
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "AR4-2": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "AR4-3": {
+   "v": "yes",
+   "note": "all of the submenus should exist within the \"customize look\" container when expanded.",
+   "seconds": 139,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "AR4-4": {
+   "v": "pick",
+   "pick": "remove",
+   "note": "the message box setting should just be tied to the frame setting",
+   "seconds": 30,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  },
+  "AR4-5": {
+   "v": "pick",
+   "pick": "guidelines",
+   "seconds": 11,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

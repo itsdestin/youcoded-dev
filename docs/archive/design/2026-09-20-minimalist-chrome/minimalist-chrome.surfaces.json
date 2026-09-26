@@ -1,0 +1,128 @@
+{
+  "title": "Float style — the side panel, Projects, Pages and the terminal",
+  "key": "minimalist-surfaces",
+  "out": "minimalist-chrome.surfaces.html",
+  "images": "images/minimalist-chrome.surfaces",
+  "runs": {
+    "before": "runs/surf-before",
+    "after": "runs/surf-after"
+  },
+  "labels": {
+    "before": "Today (float)",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "golden-sunbreak",
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "files": [
+      "surf",
+      "files",
+      "1440x900+0+0"
+    ],
+    "games": [
+      "surf",
+      "games",
+      "1440x900+0+0"
+    ],
+    "projects": [
+      "surf",
+      "projects",
+      "1440x900+0+0"
+    ],
+    "pages": [
+      "surf",
+      "pages",
+      "1440x900+0+0"
+    ],
+    "pages-page": [
+      "surf",
+      "pages-page",
+      "1440x900+0+0"
+    ],
+    "terminal": [
+      "surf",
+      "terminal",
+      "1440x900+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S6-1",
+      "surface": "Chat",
+      "path": "Session Files panel (right)",
+      "crop": "files",
+      "highlight": {
+        "box": [
+          65,
+          4,
+          34,
+          84
+        ]
+      },
+      "headline": "Session Files is now a frosted panel floating over the wallpaper, like the message box, instead of a solid block.",
+      "changed": "The panel lets the blurred wallpaper through and has the same thin edge and soft shadow as the other controls. It sits a little clear of the header and the quick buttons instead of touching them. The search box and file rows have no solid fill of their own any more.",
+      "notice": "The panel is thicker than the buttons on purpose. At the buttons' thickness the file names became unreadable over dark wallpaper, so it uses the same thickness the theme gives its chat messages. Midnight has no wallpaper, so there the panel is plain.",
+      "risk": "Over a very busy wallpaper the file list may read slightly less crisply than on a solid panel."
+    },
+    {
+      "id": "S6-2",
+      "surface": "Chat",
+      "path": "Games panel (right)",
+      "crop": "games",
+      "highlight": {
+        "box": [
+          69,
+          4,
+          30,
+          84
+        ]
+      },
+      "headline": "The Games panel gets the same frosted panel, and its game cards get the buttons' light see-through surface.",
+      "changed": "Same panel as Session Files. The four game cards were solid; now they are faint frosted cards with a thin edge.",
+      "notice": "Game boards themselves (chess, Connect 4) are not in these pictures; they keep their own look inside the panel."
+    },
+    {
+      "id": "S6-3",
+      "surface": "Projects",
+      "path": "Projects screen",
+      "crop": "projects",
+      "headline": "Projects no longer covers the wallpaper: the screen is a frosted sheet, and its header buttons float like the chat header's.",
+      "changed": "The solid background is gone. The main area is one frosted sheet. The project card, tabs, search box and file tiles use the light see-through surface. The Projects button (top left) shows the same bright selected pill as Files and Chat. \"Back to chat\" takes the header's wallpaper-matched text colour.",
+      "risk": "The file tiles' small grey captions (\"2 items\") are faint over the darker lower wallpaper on Golden Sunbreak.",
+      "notice": "The project card, tabs and tiles are faint frosted cards on the frosted sheet. Switch themes to compare a light wallpaper, a dark one and Midnight (no wallpaper)."
+    },
+    {
+      "id": "S6-4",
+      "surface": "Pages",
+      "path": "Pages screen — list and empty page",
+      "crop": "pages",
+      "headline": "Pages gets the same treatment: the page list and the page area are two frosted sheets over the wallpaper.",
+      "changed": "Both sheets replace solid blocks. The Pages button shows the bright selected pill.",
+      "notice": "The tooltip under the top-left button is the screenshot tool hovering; it is not part of the design."
+    },
+    {
+      "id": "S6-5",
+      "surface": "Pages",
+      "path": "Pages screen — a page open",
+      "crop": "pages-page",
+      "headline": "An open page keeps its own background inside the frosted frame.",
+      "changed": "Only the list and the frame around the page changed. Each page draws its own background, which is left alone so pages look the same everywhere.",
+      "risk": "The page's solid rectangle sits inside a see-through frame, so the frame's edge shows as a thin frosted border around it.",
+      "notice": "The page shown is the sample Week planner."
+    },
+    {
+      "id": "S6-6",
+      "surface": "Terminal",
+      "path": "Terminal view",
+      "crop": "terminal",
+      "headline": "The terminal becomes a floating frosted card with rounded corners, a thin edge and a soft shadow, clear of the header and the window edges.",
+      "changed": "It was already see-through (a pre-blurred copy of the wallpaper), but it ran edge to edge behind the header. Now it is inset on all four sides like the other panels, with the blurred wallpaper lined up behind it. The tint fills the card to its edge (the gaps you spotted are fixed).",
+      "notice": "The text area is about the same size as before, and stays the same size in chat and terminal views, so switching views does not redraw it. Desktop only: phones keep today's terminal.",
+      "risk": "Not tried on a phone. The phone terminal is untouched, but that means it won't match the desktop's card look."
+    }
+  ]
+}

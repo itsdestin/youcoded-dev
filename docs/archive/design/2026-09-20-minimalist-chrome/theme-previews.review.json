@@ -1,0 +1,42 @@
+{
+  "_why": "Destin, theme-cards-review TC-1: previews should be screenshots of the theme in a window, and the framed-picture card with a much thinner strip. Scope and contents chosen in chat 2026-09-24: built-in + community now, whole window.",
+  "title": "Theme previews — real screenshots, and the slimmer card",
+  "key": "theme-previews-review",
+  "out": "theme-previews.review.html",
+  "images": "images/theme-previews.review",
+  "stage": "review",
+  "runs": { "before": "runs/pv-before", "after": "runs/pv-after" },
+  "labels": { "before": "Old previews", "after": "New previews" },
+  "themes": ["dark"],
+  "theme": "fixed",
+  "crops": {
+    "sheet": ["pv", "sheet", "1438x680+0+0"],
+    "cards": ["cards", "card-top", "430x330+505+455"]
+  },
+  "steps": [
+    {
+      "id": "TP-1",
+      "surface": "Theme previews",
+      "path": "Appearance cards, Marketplace cards and theme pages",
+      "crop": "sheet",
+      "headline": "Every built-in and community theme's preview is now a screenshot of the real app in that theme.",
+      "changed": "Before, each preview was a drawn mock page with a 'Theme Preview' badge. Now it's the actual app window in that theme: the real header, a short sample conversation, the message box and the status bar, with wallpaper, glass and mascots as they really look. Order: Light, Dark, Midnight, Crème, then the 8 community themes.",
+      "measured": "12 previews, 800 × 500 each",
+      "notice": "The same pictures show on the Marketplace cards and theme pages, not only in Appearance.",
+      "risk": "The community pictures reach the Marketplace only after the themes library update is merged. Themes you build yourself still get the old drawn preview; that's filed on the roadmap."
+    },
+    {
+      "id": "TP-2",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Themes",
+      "crop": "cards",
+      "runs": ["after"],
+      "labels": { "after": "Now" },
+      "highlight": { "box": [4, 12, 92, 42] },
+      "headline": "The card is the framed picture, with a much thinner strip under it for the name and star.",
+      "changed": "The picture now fills most of the card at the preview's own shape, so almost the whole window shows. The strip beneath is one small line: the name, 'Active' when it's the current theme, and the star (plus the pencil on themes you built).",
+      "notice": "Community themes installed on your computer now show a picture too. Installing a theme never downloaded its preview, so those cards used to show only a colour gradient; they now borrow the theme library's copy.",
+      "risk": "Halftone Dimension here still shows its OLD drawn preview: the library's copy updates only when its change merges."
+    }
+  ]
+}

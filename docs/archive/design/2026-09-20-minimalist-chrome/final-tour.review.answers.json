@@ -1,0 +1,76 @@
+{
+ "deck": "final-tour",
+ "started": "2026-09-26T05:26:53.222Z",
+ "submitted": "2026-09-26T05:51:27Z",
+ "cur": 10,
+ "answers": {
+  "FT-1": {
+   "note": "",
+   "v": "yes",
+   "seconds": 1310,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FT-2": {
+   "v": "yes",
+   "note": "",
+   "seconds": 76,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FT-3": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FT-4": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FT-5": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "FT-6": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "FT-7": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "FT-8": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "FT-9": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "FT-10": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "FT-11": {
+   "v": "yes",
+   "seconds": 23,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

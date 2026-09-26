@@ -1,0 +1,66 @@
+{
+ "_why": "Float chrome round 7 (2026-09-24): the session menu's surface, the scroll bars, and how far down messages stay visible.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chrome=float",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "shots": [
+  {
+   "name": "menu",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('.session-strip button')].find(b=>b.querySelector('path[d=\"M19 9l-7 7-7-7\"]'))",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "scrolled",
+   "actions": [
+    {
+     "eval": "(()=>{const s=document.querySelector('.chat-scroll');s.scrollTop=s.scrollTop-170;return true})()"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "fade-today",
+   "actions": [
+    {
+     "eval": "(()=>{const st=document.createElement('style');st.textContent=\"[data-chrome-style='float'] .chat-edge-fade{--float-fade-lift:24px !important}\";document.head.append(st);const s=document.querySelector('.chat-scroll');s.scrollTop=s.scrollTop-170;return true})()"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "fade-low",
+   "actions": [
+    {
+     "eval": "(()=>{const st=document.createElement('style');st.textContent=\"[data-chrome-style='float'] .chat-edge-fade{--float-fade-lift:84px !important}\";document.head.append(st);const s=document.querySelector('.chat-scroll');s.scrollTop=s.scrollTop-170;return true})()"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "menu-scrolled",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('.session-strip button')].find(b=>b.querySelector('path[d=\"M19 9l-7 7-7-7\"]'))",
+     "settle": 900
+    },
+    {
+     "eval": "(()=>{const l=document.querySelector('.session-menu .scroll-fade');l.scrollTop=60;l.dispatchEvent(new Event('scroll'));return true})()"
+    },
+    {
+     "wait": 600
+    }
+   ]
+  }
+ ]
+}

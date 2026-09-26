@@ -1,0 +1,13 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+  "width": 1440,
+  "height": 900,
+  "boot": 2800,
+  "shots": [{
+    "name": "tuned-ink",
+    "actions": [],
+    "expect": "js:!!document.querySelector('#theme-bg') && document.body.dataset.headerLens==='cushion'",
+    "sameAsBaseline": true,
+    "probe": false
+  }]
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Minimalist header — three ways to make it visible",
+  "key": "minimalist-header-visibility-choice",
+  "out": "minimalist-chrome.visibility-choice.html",
+  "images": "images/minimalist-chrome.visibility-choice",
+  "runs": { "today": "runs/visibility-options" },
+  "themes": ["meadow-mist", "midnight"],
+  "theme": "fixed",
+  "crops": {
+    "soft-tiles": ["options", "soft-tiles", "1440x50+0+0"],
+    "vivid-glyphs": ["options", "vivid-glyphs", "1440x50+0+0"],
+    "sculpted-glass": ["options", "sculpted-glass", "1440x50+0+0"]
+  },
+  "steps": [{
+    "id": "C-1",
+    "surface": "Chat",
+    "path": "Header over wallpaper",
+    "headline": "Which approach makes the header easier to see without looking harsh?",
+    "notice": "The full-width veil stays off. The selected session remains more transparent. These are temporary visual options in the real renderer; none has been made the default.",
+    "variants": [
+      {
+        "id": "soft-tiles",
+        "label": "Soft glass cushions",
+        "crop": "soft-tiles",
+        "summary": "A faint neutral tint lives inside each button and the session switcher, leaving the wallpaper visible between them. The dots get a stronger same-color glow.",
+        "risk": "Individual buttons read more like small surfaces than pure glass."
+      },
+      {
+        "id": "vivid-glyphs",
+        "label": "Colored glyph glow",
+        "crop": "vivid-glyphs",
+        "summary": "Buttons stay clear; icon colors borrow some of the theme accent and glow more. Status dots glow in their own colors.",
+        "risk": "The brighter dots and icons can feel too luminous on dark themes."
+      },
+      {
+        "id": "sculpted-glass",
+        "label": "Sculpted edges",
+        "crop": "sculpted-glass",
+        "summary": "No button tint: subtle inner highlights and deeper local shadows reveal each shape. Dot glows become a little stronger without a white ring.",
+        "risk": "Visible edges may feel too much like outlined buttons."
+      }
+    ]
+  }]
+}
