@@ -52,13 +52,11 @@ ignores:
   # tests/setting-row-authority.test.tsx; check.sh fails if this block and that table differ.
   - "**/components/SessionStrip.tsx"
   - "**/components/SettingsPanel.tsx"
-  - "**/components/SyncPanel.tsx"
   - "**/components/ProvidersSection.tsx"
   - "**/components/SyncSetupWizard.tsx"
   - "**/components/ResumeBrowser.tsx"
   - "**/components/ResumeOptions.tsx"
   - "**/components/CloseSessionPrompt.tsx"
-  - "**/components/QuitSessionsPrompt.tsx"
   # out of the guard's scope
   - "**/components/development/*/**"
   - "**/components/ui/*/**"
