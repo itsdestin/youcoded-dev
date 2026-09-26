@@ -42,7 +42,7 @@ approved mockup already satisfies it; the build's job is to feed it real data, n
 | R17 | Word/Excel share the panel; colleague names; cell corner mark | UI-already-done to render; real data from §3, §4 |
 | R18 | Code files: same panel, chips light lines | UI-already-done (`CodeCommentsRail.tsx`, `ref-line-highlight.ts`) |
 | R19 | Projects screen: Comments header button | UI-already-done |
-| R20 | Projects → Ask Your Assistant opens new-chat dialog w/ project+model | UI decision (confirm S-8); **flagged in §9** — the wiring found in this repo (`SessionDrawer.tsx:1313`) only covers the in-chat file drawer, not the Projects screen. Confirm before build starts. |
+| R20 | Projects → Ask Your Assistant opens new-chat dialog w/ project+model | **UI-already-done** (youcoded `488df318c`): FilesTab raises `youcoded:ask-in-new-session`, App opens PageCreateDialog in the file's project with the request in the composer. Build only needs the message format (§6) to flow through `initialInput`. |
 | R21 | Rejected mock branches/worktrees deleted | §8, T15 (process, ask Destin first per handoff) |
 
 ## 1. Storage + history
