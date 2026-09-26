@@ -147,13 +147,18 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
     await tab.still(3000);
-    const opened = await tab.evaluate(`window.__youcodedScreens.open(${JSON.stringify(screen.name)})`, 20_000);
-    if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
+    // Up to 3 presses of "open": a screen whose content arrives late (the first conversation
+    // in a list that is still loading) has nothing to open on the first press. Openers are
+    // idempotent, so a second press on an open screen changes nothing.
     let why = '';
-    for (const t1 = Date.now(); Date.now() - t1 < 6000;) {
-      await tab.still(1500);
-      why = await tab.evaluate(MARK_CHECK(screen.name.split('#')[0]), 5000);   // a #state is marked as its plain screen
-      if (why?.panel) break;
+    for (let attempt = 0; attempt < 3 && !why?.panel; attempt++) {
+      const opened = await tab.evaluate(`window.__youcodedScreens.open(${JSON.stringify(screen.name)})`, 20_000);
+      if (!opened?.ok) throw new Error(opened?.reason ?? 'open failed');
+      for (const t1 = Date.now(); Date.now() - t1 < 2500;) {
+        await tab.still(1500);
+        why = await tab.evaluate(MARK_CHECK(screen.name.split('#')[0]), 5000);   // a #state is marked as its plain screen
+        if (why?.panel) break;
+      }
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     r.panel = why.panel;
