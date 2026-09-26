@@ -56,7 +56,10 @@ parent-directory-realpath-then-join fallback `write-authorization.ts` already us
 not-yet-existing file (needed for `AddComment` creating a brand-new sidecar). Apply this to every
 one of T1/T3/T8/T9a's containment checks, not just T1's.
 
-Triage:
+Triage: accepted — verified directly: `git-service.ts:55-56` realpaths only `projectRoot`, then
+joins the unresolved relative path with no further realpath; `write-authorization.ts:108`
+realpaths the FULL joined path. §1.5's algorithm is verbatim `git-service.ts`'s shallower shape,
+not `write-authorization.ts`'s deeper one. Fixed in §1.5/§1.4 and T1/T3/T8/T9a below.
 
 ### F2 — [blocker] The compose-ref rewrite (T7, §6.2) has no wire form for `kind: 'chat'` references — breaks a shipped, contract-covered feature (R15)
 
@@ -77,7 +80,10 @@ Fix: add a fourth grammar form for `kind:'chat'` refs (entryKey-based, no path �
 `⦃chat_<entryKey>_"<quote>"⦄`), add it to T7's scope, and add a pinning test that a chat-message/
 code-block "Ask about this" still round-trips and still resolves via `chat-ref-highlight.ts`.
 
-Triage:
+Triage: accepted — verified directly: `compose-ref.ts:24,26` defines `kind: 'doc' | 'chat'` with
+`path?` marked "doc kind only"; `build-menu.ts:293,423` construct real `kind:'chat'` refs;
+`chat-ref-highlight.ts:29-30` resolves purely by `entryKey`, no path. §6.2's three forms are all
+path-requiring. Fixed in §6.2 with a fourth grammar form; added to T7's scope and tests.
 
 ### F3 — [major] F4's own canonicalization fix ("realpath, fall through to the raw path on ENOENT") reopens the alias trap specifically on the first-write race it exists to catch
 
@@ -99,7 +105,11 @@ the relative sidecar suffix onto the already-canonical root — never attempt to
 possibly-nonexistent leaf sidecar path itself. This closes the gap for both existing and
 about-to-be-created sidecars.
 
-Triage:
+Triage: accepted — verified directly: `cas-write.ts:170,227` derives `lock = target + '.lock'` with
+no realpath, confirming round 1's diagnosis; `write-authorization.ts:109-110` actually FAILS CLOSED
+on ENOENT (`{ok:false, reason:'missing'}`), it does not fall through to the raw path — so F4's
+original fix text contradicts the very precedent it cites, not just risks a logical gap. Fixed in
+§1.5/§9.1 by canonicalizing the project root only and joining the relative suffix.
 
 ### F4 — [major] §4.3a's "four coordinated pieces" undersells the real xlsx OOXML surface — two relationship entries, a non-`+xml` content type, and an element-ordering constraint, none captured in the design's own framing
 
@@ -126,7 +136,10 @@ vml Content-Types `Default` entry's exact (non-`+xml`) content type string, (d) 
 entries in the same relative order exceljs emits them — not just "comments<N>.xml +
 vmlDrawing<N>.vml + a relationship + content-types."
 
-Triage:
+Triage: accepted — verified byte-for-byte against `exceljs/lib/xlsx/xlsx.js:572-580`,
+`worksheet-xform.js:170-179,345-351`, and `content-types-xform.js:73-76`: two distinct relationship
+entries, `legacyDrawing` after `extLst`, and a non-`+xml` vml content type are all real and none
+were named in §4.3a. Fixed in §4.3a and T18/T19.
 
 ### F5 — [major] T21's cross-platform golden-fixture guard is two independently-scheduled CI jobs compared against static fixture bytes, not a live cross-implementation round trip — and nothing catches the fixture going stale
 
@@ -155,7 +168,10 @@ sides vs. a shared golden fixture, not a live comparison), and (2) add a self-ch
 side that fails loudly if freshly-generated output no longer matches the committed golden fixture,
 so fixture staleness is caught before it silently defeats the whole guard's purpose.
 
-Triage:
+Triage: accepted — verified: `android-ci.yml`/desktop's CI workflow are independent jobs, both
+triggering on `pull_request`; `shared-fixtures/{artifacts,attention-classifier}/` hold only static
+JSON pairs, no live cross-process handoff exists anywhere in the repo today. Fixed in §9.3/T21 with
+reworded framing plus a staleness self-check.
 
 ### F6 — [major] §1.6's "Android/remote... never gets an unprompted nudge" wrongly extends Android's real watch gap to remote browsers, which already have a working precedent for exactly this
 
@@ -175,7 +191,10 @@ Fix: split the claim — Android stays `not-implemented-on-mobile` (real gap, pe
 fix); remote-server.ts should get a real `docComments:watch`/`:unwatch` relay mirroring
 `artifacts:watch-project`'s pattern, added explicitly to T3's scope.
 
-Triage:
+Triage: accepted — verified: `remote-server.ts:3768-3796`'s `artifacts:watch-project`/
+`:unwatch-project` are real, refcounted, chokidar-backed relays to a WS-connected remote browser
+today (`project-watcher.ts` imports and calls chokidar directly) — a working precedent §1.6
+wrongly implied didn't apply. Fixed in §1.6 and T3's scope.
 
 ### F7 — [major] The new wire grammar's positional/quoted syntax has no escaping — both an embedded `"` in a quote and an underscore in a real path or quote can break the parser, a regression from the JSON encoding it replaces
 
@@ -207,7 +226,11 @@ backslash-escape an interior `"`; require the parser to find the LAST `"` before
 trailing suffix or `⦄` rather than the first one after the opening quote) and add pinning tests for
 both an embedded-quote-mark case and an underscore-in-path/quote case.
 
-Triage:
+Triage: accepted — verified: today's `encodeRefMarker` is exactly
+`encodeURIComponent(JSON.stringify(ref))`, fully escaped by construction; the proposed replacement
+grammar specifies no escape mechanism, so an embedded `"` or a real underscore in a path/quote is a
+genuine, structural parse collision, not a hypothetical edge case. Fixed in §6.2 with an escape rule
+and both pinning tests added to T7.
 
 ### F8 — [major] No permission/approval gate is specified for the six new comment tools, even though for Word/Excel targets they write directly into the user's real document bytes — a materially different risk than the "no new mechanism" reasoning in §5.2 covers
 
@@ -240,7 +263,23 @@ with the tradeoff named so Destin can weigh in if it affects how often he's prom
 decision is "stay ungated everywhere, backup/rollback is enough," say so in §5.2 explicitly rather
 than by omission.
 
-Triage:
+Triage: accepted, gap is real and confirmed — verified directly: `NativeTool<A>.permissionSubject`
+(`types.ts:357`) is a required (non-optional) field, so T8's implementer would have had to invent a
+default with no guidance. `Edit`/`Write` gate on `a.file_path` (`edit.ts:82`, `write.ts:70`) and fall
+through `decidePermission`'s "safe default: ask" when nothing else matches (`permission-engine.ts`'s
+own comment). `send-user-file.ts:44`'s `permissionSubject: () => undefined` is this codebase's ONE
+precedent for opting out, and only for a tool that sends an already-approved file, never writes.
+**The specific default is left to Destin, not decided here** (see design §5.2): closing the gap by
+gating every comment mutation the same as Edit/Write would add an approval prompt to comment actions
+Destin's own reopen-1/contract wording ("reply, resolve, add sparingly... and edit the file
+following its existing edit-approval rules") reads as frictionless, distinct from "edit the file."
+That reading only holds for the plain-text sidecar (inert app metadata); for a Word/Excel target,
+`AddComment`/`MoveComment` etc. write directly into the live document's own XML — functionally an
+Edit of that file with no Edit call and no gate. Since either resolution (gate everything the same
+as Edit/Write, gate only Word/Excel targets, or leave ungated) changes what he experiences from what
+he signed off on, §5.2 states the technical recommendation (gate only when the target is Word/Excel,
+since that's the only case that writes real document bytes) but flags it as **needing Destin's
+decision**, not silently baked in.
 
 ### F9 — [major] The optimistic-UI / async-IPC error path is unspecified: comment-id authority and rollback-to-UI wiring are both missing
 
@@ -265,7 +304,11 @@ Fix: T1/T5 must specify id authority explicitly (recommend: renderer mints
 rollback-to-UI contract (revert the optimistic entry, surface `<ErrorState>` with `onRetry` wired to
 replay the same mutation) for every write that can fail after being shown.
 
-Triage:
+Triage: accepted — verified: `doc-comments-store.ts:337-344`'s `addComment` synchronously mints an id
+and publishes with no error path; `resolveComment`/`reopenComment`/`addReply` are `void`-returning
+and mutate+publish synchronously; `states.tsx`'s `ErrorState` really does take `message`+`onRetry`.
+The plumbing exists, only the contract connecting a main-side rollback to it was missing. Fixed in
+§1.1/§7/T1/T5 with renderer-minted ids and an explicit rollback-to-UI contract.
 
 ### F10 — [major] T10's "promote jszip to a direct dependency" step doesn't address this workspace's hardlinked-`node_modules` worktree hazard
 
@@ -285,7 +328,10 @@ Fix: T10 must explicitly route the dependency-promotion step through the workspa
 safe path (the shared checkout, or a `setup.sh` re-run) rather than a bare `npm install` inside a
 linked worktree, citing PITFALLS.md directly.
 
-Triage:
+Triage: accepted — verified: `docs/PITFALLS.md` documents the `cp -al` hardlink-farm hazard and two
+real dated incidents (a script and a lockfile written in place, corrupting sibling
+worktrees/checkouts) almost verbatim to the review's citation. Fixed in T10 with an explicit
+safe-install pointer.
 
 ### F11 — [major] §8's "suggested batching" instructs parallel task subagents with no mention of per-task worktree isolation — inviting a documented, dated data-loss hazard
 
@@ -313,7 +359,11 @@ sequential-within-one-session despite the "suggested batching" language, say so 
 build session doesn't read "in parallel" as license for concurrent write-capable subagents sharing
 one checkout.
 
-Triage:
+Triage: accepted — verified: `docs/PITFALLS.md` documents the dated 2026-09-06 incident (a
+reviewer's mutation battery erased a builder's saved work with a clean `git status`) verbatim to the
+review's citation, and CLAUDE.md's "do not assume multiple write-capable specialists can run
+concurrently" line is quoted accurately. §8's batching language never said each batch gets its own
+worktree. Fixed in §8 with an explicit per-task-worktree sentence.
 
 ### F12 — [major] T9a's cited concurrency precedent (`chatsearch.js`) solves an easier problem than T1/T9a actually have — the mkdir-lock port is more novel than the design implies
 
@@ -339,7 +389,11 @@ not ported — cite `chatsearch.js` only for the atomic-write mechanics — and 
 accordingly (a genuine two-process contention stress test, not just the existing sequential
 round-trip, before this is trusted as F4's fix).
 
-Triage:
+Triage: accepted — verified: `LINK_SERVER_JS`'s embedded script body has zero `fs` calls (all `fs`
+calls live in the main-process deploy function, never the deployed script); `chatsearch.js`'s
+`submitRequest` generates a fresh uuid-named file per call and polls a DIFFERENT ack path — no two
+writers ever race the same file, no mutex exists in it at all. Citing it for the lock/mutex half
+oversold the precedent. Fixed in T9a/§9.1 with reworded citation scope and a heavier review budget.
 
 ### F13 — [major] The ~3s pending-mutation timeout (T9b/T20) matches no real precedent in this codebase and may not survive chokidar's own default latency, risking spurious failures on the assistant-replies-to-a-Word-comment path
 
@@ -371,7 +425,12 @@ benchmark against a representative fixture (a multi-MB `.docx` with images) befo
 timeout into a task's pinning-test spec. A timeout tuned to fail routine successful operations is
 worse than a longer one that fails only genuine hangs.
 
-Triage:
+Triage: accepted — verified: `bash.ts`'s `DEFAULT_TIMEOUT_MS = 120_000`/`MAX_TIMEOUT_MS = 600_000`,
+`registry.ts`'s `SEARCH_TIMEOUT_MS = 180_000` — no 3-second precedent anywhere; chokidar's own
+default `awaitWriteFinish.stabilityThreshold` is 2000ms; `git-watcher.ts`'s cited 300ms
+`DEBOUNCE_MS` never combines with `awaitWriteFinish` in that file, confirming this design stacks two
+delays never before combined. Fixed in §1.5/§9.2/T9b/T20 with a corrected citation and a widened,
+explicitly-set timeout.
 
 ### F14 — [minor] The anchoring tie-break rule's "position" metric is undefined, and becomes ill-posed when combined with the out-of-range fallback
 
@@ -392,7 +451,10 @@ that minimizes total edit distance of prefix+suffix, subsuming both F9a and F9b 
 function rather than two separately-stated rules that can conflict). Add a test exercising both
 conditions at once (out-of-range occurrence AND a tie among the remaining candidates).
 
-Triage:
+Triage: accepted — confirmed by re-reading §2.2: "position" is used only in prose with no concrete
+metric, and the interaction is genuinely ill-posed (occurrence=3 at creation, 2 matches remain post-edit
+has no natural reading). Fixed in §2.2/T2 with one scoring function (edit-distance-minimizing offset)
+subsuming both fallbacks, plus the combined test case.
 
 ### F15 — [minor] Zero existing precedent anywhere in this Kotlin codebase for `javax.xml.parsers`/`org.w3c.dom`/`TransformerFactory`/`ZipOutputStream` — mitigated by CI's existing release-R8 build, but not named in any task's own tests
 
@@ -412,7 +474,10 @@ Fix: add one line to T17/T19's pinning-test column noting the release-R8 build i
 existing `android-ci.yml` job (not a new check to build), so the coverage is visible from the task
 table alone.
 
-Triage:
+Triage: accepted — verified: no file under `app/src/main/kotlin/` uses `javax.xml`/`org.w3c.dom`/
+`DocumentBuilder`/`TransformerFactory`; `Bootstrap.kt`'s only zip usage is read-only
+`ZipInputStream` extraction; `android-ci.yml` does run `./gradlew assembleReleaseTest` (R8-minified)
+on every push/PR. Fixed with a one-line pinning-test-column note on T17/T19.
 
 ### F16 — [minor] No memory/size guard for Android's load-whole-archive-into-memory approach, where phone heap limits are materially tighter than desktop Electron's
 
@@ -428,7 +493,10 @@ limit (e.g., "detect files over N MB and route to a specific, honest `<ErrorStat
 OOM crash") the same way F9c documented the mammoth-version risk as accepted-but-watched rather than
 silently absent.
 
-Triage:
+Triage: accepted — confirmed by re-reading §3.2a/§4.3a: no size guard, streaming fallback, or
+heap-ceiling acknowledgment appears anywhere; the omission is real, not merely under-emphasized.
+Fixed in §3.2a/§4.3a with a documented, watched file-size limit and a specific `<ErrorState>` for
+files over it.
 
 ### F17 — [minor] The xlsx-note-reference capture (T18) carries the same dependency-version-drift risk review 1's F9c accepted for mammoth, without the same explicit "documented, watched risk" treatment
 
@@ -446,7 +514,10 @@ capture, or confirm T18/T19's own re-run of desktop's writer against the fixture
 re-diffs against the checked-in reference, so drift fails loudly at test time rather than only being
 caught by intuition.
 
-Triage:
+Triage: accepted — confirmed by re-reading §2.2 (F9c's "documented, watched risk" framing) against
+§4.3a's T18 spike description, which carries no equivalent risk language at all despite an identical
+risk shape (a captured library output snapshot a later dependency bump can silently invalidate).
+Fixed in §4.3a with F9c-equivalent risk language plus a re-diff-on-drift self-check.
 
 ### F18 — [minor] Internal inconsistency: §2.3 names assistant tools that don't exist in §5's tool table
 
@@ -460,7 +531,8 @@ reasonably wonder whether a tool is missing from the spec rather than just misna
 
 Fix: correct §2.3's citation to `ReadFileComments` (the one tool that actually exists).
 
-Triage:
+Triage: accepted — confirmed by grep: §2.3 names `ReadComments`/`ReadCommentThread`, §5's table
+defines only six tools, neither of those names among them. Fixed in §2.3 with the correct citation.
 
 ### F19 — [minor] T15 ("close PR #263... delete the three rejected mock branches/worktrees") appears to already be fully done, and the task table doesn't reflect it
 
@@ -476,7 +548,10 @@ Fix: mark T15 done/no-op in the task table rather than leaving it as a pending d
 but worth correcting before a build session spends a turn re-verifying or re-doing already-finished
 cleanup.
 
-Triage:
+Triage: already handled — verified: `gh pr view 263` → CLOSED; `git branch -a`/`git ls-remote
+--heads origin` show no `comments-mock-a-v1`/`comments-mock-b`/`comments-mock-c` locally or
+remotely; no leftover `worktrees/sessions/comments-mock-{b,c}` directories. R11/R21 are both already
+satisfied. T15 marked done/no-op in the task table.
 
 ### F20 — [minor] The pending-mutation queue's `.pending/` subdirectory isn't specified to be excluded from `docComments:changed` chokidar broadcasts
 
@@ -494,7 +569,9 @@ Fix: have the chokidar watcher ignore the `.pending/` subdirectory explicitly (c
 `ignored` option), or state why it's unnecessary if the existing debounce already coalesces it to a
 no-op.
 
-Triage:
+Triage: accepted — confirmed by re-reading §1.5/§9.2: the watcher covers `.youcoded/comments/` with
+no exclusions named, and `.pending/<uuid>.json` sits inside that same tree. Fixed in §1.5 with an
+explicit chokidar `ignored` pattern for `.pending/`.
 
 ### F21 — [minor] Confirmed correct, no action needed (recorded so a later round doesn't re-spend research budget)
 
@@ -510,11 +587,20 @@ foreground service with a `PARTIAL_WAKE_LOCK` held during a session, so T20's ~2
 architecturally safe from Doze/background throttling (a citable precedent the design doesn't
 currently name, but not a defect).
 
-Triage:
+Triage: already handled — spot-checked 4 of the bucket's sub-claims directly (`guards.ts:36`'s
+`DEFAULT_IGNORES` includes `.youcoded/`; `git-watcher.ts:16`'s `DEBOUNCE_MS = 300`; `SessionService.kt:724`'s
+`PARTIAL_WAKE_LOCK`; `remote-server.ts`'s real chokidar-backed watch) — all confirmed real, no false
+claims found. No design change needed.
 
 ## Summary
 
 **21 findings: 2 blocker, 11 major, 8 minor.**
+
+**Triage: 18 accepted, 2 already handled (F19, F21), 1 accepted-but-needs-Destin's-decision on the
+specific default (F8 — a permission-gate default for the six new comment tools; see design §5.2 for
+the options and tradeoffs).** Every finding was independently re-verified against the real code in
+this session (not re-read from the review's own prose) before being triaged; evidence is inline with
+each finding above. All 19 non-F8 accepted findings are fixed in the revised design below.
 
 Top five:
 1. F1 [blocker] — the path-containment fix (round 1's F3) mirrors `git-service.ts`'s shallower

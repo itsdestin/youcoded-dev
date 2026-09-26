@@ -43,6 +43,46 @@ changelog:
     Android docx read/write, xlsx read/write, the Android half of the MCP pending-mutation queue, and
     the golden-fixture parity test proving desktop and Android produce/read equivalent
     `comments.xml`/`commentsExtended.xml`/xlsx-note output.
+  - 2026-09-26: revised after review 2 (docs/active/reviews/2026-09-26-doc-comments-design-review-2.md)
+    — 18/21 findings accepted, 2 already handled (F19: PR #263/branch cleanup already done — T15
+    marked no-op; F21: a bucket of spot-checked non-findings, no change needed), 1 (F8, the
+    permission-gate default for the six new comment tools) accepted-as-a-real-gap but its SPECIFIC
+    default is flagged for Destin's decision rather than picked silently, since either resolution
+    changes what he experiences from what he approved (§5.2a). Fixes: corrected the path-containment
+    algorithm to realpath the FULL joined path, not just the project root — the round-1 fix had
+    mirrored git-service.ts's shallower check instead of write-authorization.ts's deeper one, leaving
+    a symlink-inside-the-project escape (§1.5, F1); corrected the lock-path canonicalization to
+    realpath the project root only and join the relative suffix, since realpathing a not-yet-existing
+    leaf sidecar falls through to the raw path on ENOENT on exactly a file's first comment — the case
+    the concurrency test is built to catch (§1.5/§9.1, F3); added a fourth, pathless compose-ref
+    grammar form for kind:'chat' references so shipped chat-message/code-block "Ask about this"
+    doesn't break (§6.2, F2); added an escape rule for an embedded quote mark and a
+    structural-separator character inside a real quote/path (§6.2, F7); named all four of the xlsx
+    OOXML surface's actually-hand-rolled pieces — two relationship entries, the non-"+xml" vml
+    content type, and the legacyDrawing-after-extLst ordering constraint, not just "four pieces"
+    (§4.3a, F4); reworded T21/§9.3 to state precisely that the cross-platform parity test proves both
+    sides match a shared golden fixture, not a live round trip, and added a staleness self-check
+    (§9.3/T21, F5); split the "no unprompted nudge" claim — Android's gap is real, but remote-server.ts
+    already has a working chokidar-backed relay for exactly this and gets one for docComments too
+    (§1.6/T3, F6); specified renderer-minted comment ids and an explicit rollback-to-UI contract for a
+    mutation that fails after being shown optimistically (§7, F9); routed the jszip/XML-library
+    dependency promotion through the workspace's safe path, not a bare npm install inside a
+    hardlinked worktree (T10, F10); added a per-task-worktree sentence to §8's batching guidance
+    (§8, F11); corrected the T9a/chatsearch.js citation to cover only the atomic-write mechanics —
+    the mutual-exclusion half is novel, not ported (§9.1, T9a, F12); replaced the unsupported
+    "~3s, matching other native tool timeouts" citation with a benchmarked, explicitly-set value and
+    a non-default (500ms) chokidar stabilityThreshold for the comments watcher specifically (§1.5,
+    §9.2, T9b/T20, F13); unified the anchoring tie-break/out-of-range rules into one edit-distance
+    scoring function, since stated separately they could produce an ill-posed combination (§2.2, F14);
+    noted that T17/T19's release-R8 build already rides the existing android-ci.yml job for free
+    (T17/T19, F15); added a documented, watched file-size guard for Android's load-whole-archive
+    approach (§3.2a/§4.3a, F16); extended F9c's "documented, watched risk" framing to the
+    xlsx-note-reference capture, plus a re-diff-on-drift check (§4.3a, F17); corrected §2.3's tool
+    citation to ReadFileComments, the one tool that actually exists (§2.3, F18); marked T15 done/no-op
+    — PR #263 is closed and the three rejected mock branches/worktrees are already gone (§8, F19);
+    excluded the pending-mutation queue's .pending/ subdirectory from chokidar's watch (§1.5, F20);
+    F21 needed no design change. Self-consistency pass: every task-table row, §0's coverage table, and
+    the changelog above were re-read together to confirm no fix left a dangling cross-reference.
 ---
 
 # Document comments — build-stage technical design
@@ -258,18 +298,28 @@ it (a roadmap item, not a build blocker).
 New module `desktop/src/main/doc-comments/doc-comments-store.ts`, following the shape of
 `artifact-store.ts` and `pages-service.ts`, not `page-fetch.ts`'s per-call pattern:
 
-- **Path containment (review 1, F3 — blocker):** every entry point (`list`/`add`/`reply`/`resolve`/
-  `reopen`/`move`) resolves `path` to a sidecar location by first computing
-  `realProject = fs.promises.realpath(projectRoot)` (mirroring `git-service.ts:55`'s fallback to the
-  raw root on ENOENT), then `abs = path.resolve(realProject, path)`, then requires `abs` to equal or
-  be strictly inside `realProject` (`path.relative(realProject, abs)` must not start with `..` and
-  must not be absolute — `git-service.ts:56-60`'s exact test). A `path` that fails this check is
-  **refused** (a typed error the caller surfaces honestly), never silently clamped into the root.
-  This runs before the sidecar path is even built, so `.youcoded/comments/<relative>.json` can never
-  be templated from an escaping value. Every one of T1's new unit tests includes a
-  `../../etc/passwd`-shaped and an absolute-path case, and T3/T8/T9 each add the same shape of test
-  at their own surface (IPC payload, native tool args, MCP tool args) since all three are reachable
-  by model-controlled input, not just the renderer.
+- **Path containment (review 1, F3; corrected in review 2, F1 — blocker):** every entry point
+  (`list`/`add`/`reply`/`resolve`/`reopen`/`move`) resolves `path` to a sidecar location using the
+  STRONGER of this design's own two cited precedents. Round 1's fix mirrored `git-service.ts`'s
+  `locate()` — realpaths only `projectRoot`, then joins the unresolved relative path with no further
+  realpath (`git-service.ts:55-56`, confirmed) — which review 2 (F1) caught as the WEAKER of the two
+  precedents this design itself cites: `write-authorization.ts`'s `judgeRelativeRecord()` realpaths
+  the FULL joined path (`write-authorization.ts:108`), exactly because a symlink inside the project
+  root (a `notes.md` → `~/.ssh/config`) would dodge a root-only check while the actual read/write
+  follows the symlink to an arbitrary target. **Corrected algorithm**: `realProject =
+  fs.promises.realpath(projectRoot)`, `abs = path.resolve(realProject, path)`, then realpath `abs`
+  ITSELF (`fs.promises.realpath(abs)`) and test THAT resolved path against `realProject` — not the
+  unresolved `abs`. For a path that doesn't exist yet (an `AddComment` creating a brand-new sidecar,
+  or the first comment on a file), walk up to the nearest existing ancestor directory, realpath THAT,
+  and join the remaining unresolved suffix back on before the same containment test — mirroring how
+  `write-authorization.ts` handles a not-yet-existing file, except that it fails closed on ENOENT
+  (`write-authorization.ts:109-110`, confirmed) rather than falling through to the raw path (see F3's
+  own fix below for why "fall through on ENOENT" is unsafe specifically for a lock path). A `path`
+  that fails this check is **refused** (a typed error the caller surfaces honestly), never silently
+  clamped into the root. Every one of T1's new unit tests includes a `../../etc/passwd`-shaped, an
+  absolute-path, AND a symlink-inside-the-project case (review 2, F1), and T3/T8/T9a each add the
+  same shape of test at their own surface (IPC payload, native tool args, MCP tool args) since all
+  three are reachable by model-controlled input, not just the renderer.
 - **Read**: `mutateFileUnderLock`-free plain read for `list(path)` — a GET has nothing to lock.
   Missing file → `{ version: 1, comments: [] }`, never an error (a file with zero comments is the
   overwhelmingly common case).
@@ -279,29 +329,46 @@ New module `desktop/src/main/doc-comments/doc-comments-store.ts`, following the 
   an `fs.mkdir`-based lock with atomic tmp-then-rename (`cas-write.ts:133-150`), the same primitive
   already trusted for cross-process safety between a dev instance and the built app sharing
   `~/.claude/`/`~/YouCoded/` (PITFALLS.md → "Shared state"). No new locking primitive is invented.
-  **Lock-path canonicalization (review 1, F4 — major):** `cas-write.ts`'s own `mutateFileUnderLock`/
-  `casWrite` derive the lock path as `target + '.lock'` with no `realpath` first
-  (`cas-write.ts:170,227`) — fine for `cas-write.ts`'s existing single-process-family callers, but
-  this feature adds a SECOND, independent implementation of the same algorithm (§9's MCP script) that
-  must exclude the first one. Both `sidecarPath` derivations (main's real one, the MCP script's
-  reimplementation) canonicalize the target file's absolute path (`fs.realpath`, falling through to
-  the raw path on ENOENT for a file that doesn't exist yet) BEFORE appending `.lock` — not just
+  **Lock-path canonicalization (review 1, F4; corrected in review 2, F3 — major):** `cas-write.ts`'s
+  own `mutateFileUnderLock`/`casWrite` derive the lock path as `target + '.lock'` with no `realpath`
+  first (`cas-write.ts:170,227`) — fine for `cas-write.ts`'s existing single-process-family callers,
+  but this feature adds a SECOND, independent implementation of the same algorithm (§9's MCP script)
+  that must exclude the first one. Round 1's fix said to canonicalize "the target file's absolute
+  path (`fs.realpath`, falling through to the raw path on ENOENT for a file that doesn't exist
+  yet)" — review 2 (F3) found this reopens the exact trap it closes, on precisely the case its own
+  concurrency test is built to exercise: a sidecar's FIRST-EVER write (the single most common case —
+  the very first comment on a file) has no file to realpath yet, `fs.promises.realpath` throws ENOENT
+  on the non-existent leaf, and BOTH racing writers fall through to the raw, non-canonical path,
+  silently reopening the alias trap for first-writes specifically. (This also contradicted its own
+  cited precedent: `write-authorization.ts:109-110` FAILS CLOSED on ENOENT rather than falling
+  through.) **Corrected algorithm**: canonicalize the PROJECT ROOT only (`fs.promises.realpath(
+  projectRoot)` — this always exists, since it's an open project) and join the relative sidecar
+  suffix (`.youcoded/comments/<relative>.json`) onto the already-canonical root before appending
+  `.lock` — never realpath the possibly-nonexistent leaf sidecar path itself. Both `sidecarPath`
+  derivations (main's real one, the MCP script's reimplementation) do this identically, not just
   before comparing paths for containment above, a separate step, because a symlinked project
   directory or a case-difference between how Electron resolves `projectRoot` and how a Claude Code
   CLI session's cwd is set would otherwise let the two lock schemes silently stop excluding each
   other (the exact alias trap `git-service.ts:44-54` documents for a different subsystem). The
-  pinning test for this is a TRUE concurrency test — both writers racing the same file
-  simultaneously, asserting no write is lost — not just the sequential round-trip §9 already lists.
+  pinning test for this is a TRUE concurrency test — both writers racing to create the SAME sidecar
+  for the first time, asserting no write is lost — not just the sequential round-trip §9 already
+  lists.
 - **Non-blocking** (performance.md rule 1): every fs call is the `fs.promises`/async form; no
   `*Sync`, no whole-file synchronous parse on a path an IPC call or click reaches. `main-blocking-calls.test.ts`'s
   allowlist gets no new entry — that test failing on this module is a real defect, not
   something to permit.
 - **Watching**: chokidar on `.youcoded/comments/` per open project (same library `pages-service.ts`
-  already depends on — no new dependency), `awaitWriteFinish` to avoid reading a half-written file,
-  its own ~300ms debounce (matches `git-watcher.ts`'s `DEBOUNCE_MS`) before dispatching a change.
-  This is what lets a comment the assistant just added over the MCP path (§5, §9 — a separate
-  process writing the same file) show up in an already-open comments pane without the user doing
-  anything.
+  already depends on — no new dependency), with `ignored: '**/.pending/**'` (review 2, F20 — the MCP
+  pending-mutation queue's request/result files, §9.2, live inside this SAME watched tree; without
+  this exclusion every assistant mutation's create-then-delete cycle fires a needless
+  `docComments:changed` broadcast that costs a pointless re-`list()` in every open comments pane, the
+  kind of per-event chattiness `performance.md` rule 4 flags). `awaitWriteFinish` avoids reading a
+  half-written file, with its `stabilityThreshold` **explicitly set to 500ms, not chokidar's own
+  2000ms default** (review 2, F13 — the default alone would already consume most of the
+  pending-mutation queue's response-time budget before any docx/xlsx work starts; see §9.2), plus its
+  own ~300ms debounce (matches `git-watcher.ts`'s `DEBOUNCE_MS`) before dispatching a change. This is
+  what lets a comment the assistant just added over the MCP path (§5, §9 — a separate process writing
+  the same file) show up in an already-open comments pane without the user doing anything.
 - **Broadcast scope**: comments are file/project-scoped, not session-scoped, so there is no
   `sendForSession`-style single owner the way transcript events have one. Follow `pages:changed`'s
   pattern instead — broadcast to every `webContents` plus `remoteServer?.broadcast` (performance.md
@@ -341,10 +408,18 @@ reimplemented" precedent, for EVERY file type: Android has no `FileObserver`-bas
 (`artifacts:watch-project` already answers not-implemented-on-mobile), and building one is out of
 scope here — this is a general Android platform gap, not a Word/Excel-specific one, so reopen-1's
 "full phone support" answer (about reading/adding/replying/resolving comments) doesn't touch it.
-Practically: the comments pane re-`list()`s on mount and after every local mutation; on
-Android/remote it simply never gets an unprompted nudge when something changes from elsewhere. That
-is an accepted gap, not a silent one — `docComments:watch` refuses honestly rather than pretending
-to subscribe.
+Practically: the comments pane re-`list()`s on mount and after every local mutation; on **Android**
+that's the whole story — `docComments:watch` refuses honestly rather than pretending to subscribe.
+**Remote is a different case, corrected in review 2 (F6 — major):** `remote-server.ts:3768-3796`'s
+`artifacts:watch-project`/`:unwatch-project` are already a real, refcounted, chokidar-backed relay
+(`project-watcher.ts` calls chokidar directly) from a project's file changes to a WS-connected remote
+browser — the exact same "watch a project's files" shape this feature needs, already built and
+shipped for the adjacent Files/artifacts feature. An earlier draft of this subsection conflated
+Android's real gap with remote, wrongly implying remote also gets no push. `docComments:watch`/
+`:unwatch` get the same relay treatment in `remote-server.ts` (T3's scope): a remote browser's
+comments pane DOES get an unprompted push when something changes elsewhere, exactly as it already
+does for artifacts. Only Android is the accepted, honestly-refused gap — a general `FileObserver`
+absence, not a Word/Excel-specific or remote-specific one.
 
 Unlike `artifacts:watch-project` (whose caller today tolerates `{ok:false}` itself and is therefore
 not currently in `remote-shim.ts`'s `REJECT_ON_NOT_OK` set), `docComments:watch`/`:unwatch` are new
@@ -395,17 +470,26 @@ machinery, swapped to call `resolveSelector` first for a character range instead
 substring search) and the assistant's `MoveComment` tool (§5), so the two paths can never disagree
 about whether a comment is still anchored.
 
-**Two fallback gaps closed (review 1, F9a/F9b):**
+**One scoring function subsumes both fallback gaps (review 1, F9a/F9b; unified in review 2, F14):**
+stated as two separate rules, F9a/F9b can interact in an ill-posed way — if `sel.occurrence` was 3 at
+creation time and an edit reduces the document to 2 matches, "where index 3 would place it in the
+CURRENT set of matches" (F9b's own wording) has no natural reading, since index 3 doesn't exist in a
+2-element set ordinally or otherwise. The fix: define "position" concretely and use ONE metric for
+both cases — score every occurrence of `sel.exact` currently in `fullText` by the character offset
+that minimizes total edit distance between (`sel.prefix` + `sel.exact` + `sel.suffix`) and the
+document text surrounding that candidate. This single scoring function replaces the two
+separately-stated rules:
 - **`sel.occurrence` out of range** (the quote's 4th match at creation time, but an edit reduced the
   document to 2 matches): never clamp to a fixed index (the last match, index 0) — that produces a
   different, differently-wrong answer depending on which clamp you'd picked. Score every remaining
-  occurrence by prefix/suffix match same as any other candidate and take the best one; only
-  `'detached'` is returned when there are zero occurrences to score, never an out-of-range index
-  error.
+  occurrence by the metric above and take the best one; only `'detached'` is returned when there are
+  zero occurrences to score, never an out-of-range index error.
 - **A tie between equally-scoring candidates** (the same edit touched text near two occurrences
-  identically): deterministic tie-break is the candidate whose position is closest to where
-  `sel.occurrence`'s original index would place it in the CURRENT set of matches — never array
-  order, which is an implementation detail, not a rule.
+  identically): the SAME metric breaks the tie deterministically, since it is one real-valued score,
+  not a separate ordinal rule that can conflict with F9a — the lower-edit-distance candidate wins; on
+  a genuine exact tie (a literal duplicate edit at two positions), the earlier document position wins,
+  a fixed, documented rule rather than array order. T2's tests add a case exercising both conditions
+  at once (an out-of-range `occurrence` AND a tie among the remaining candidates).
 
 **A documented, watched risk, not a blocker (review 1, F9c):** `resolveSelector` and prefix/suffix
 capture both operate on `DocxView.tsx`'s rendered DOM text — mammoth's docx→HTML output, re-run
@@ -436,9 +520,10 @@ When `resolveSelector` returns `'detached'` for a comment, the renderer sets tha
   a redesign — it fills the gap `CommentsMargin.tsx:265` already leaves for exactly this case.
 - The card stays visible and repliable/resolvable (R6: nothing is silently lost) — resolving a
   detached comment is a legitimate way to say "this no longer applies."
-- The assistant's `ReadComments`/`ReadCommentThread` tools (§5) report `status: 'detached'`
-  explicitly, so the assistant can decide whether to reply, resolve, or re-anchor (`MoveComment`)
-  rather than silently failing to find the text itself.
+- The assistant's `ReadFileComments` tool (§5; corrected review 2, F18 — the design previously named
+  two tools, `ReadComments`/`ReadCommentThread`, that don't exist in §5's table) reports
+  `status: 'detached'` explicitly, so the assistant can decide whether to reply, resolve, or
+  re-anchor (`MoveComment`) rather than silently failing to find the text itself.
 
 ## 3. Word (.docx) two-way
 
@@ -716,18 +801,31 @@ dependency), new file `XlsxComments.kt` alongside `DocxComments.kt` in
 `app/src/main/kotlin/com/youcoded/app/doccomments/` — but **legacy Notes are a bigger OOXML surface
 than Word's comment model**, and the size of that surface is hidden from this design today because
 desktop doesn't hand-roll it: `exceljs`'s `cell.note` setter (confirmed by reading
-`desktop/node_modules/exceljs/lib/xlsx/xlsx.js` and `lib/xlsx/xform/comment/`) writes **four**
-coordinated pieces per sheet with a note — `xl/comments<N>.xml` (the note text, keyed by cell ref,
-via `CommentsXform`), `xl/drawings/vmlDrawing<N>.vml` (the VML shape that gives the note its visible
-position/size — via `VmlNotesXform`, written unconditionally alongside the comments part), the
-worksheet's own `<legacyDrawing r:id="…"/>` element plus a `comments`
-relationship, and the matching `xl/worksheets/_rels/sheet<N>.xml.rels` + `[Content_Types].xml`
-entries for both new parts. None of that OOXML shape is written down anywhere in this design (§4.1
-only specifies the note **text** — the "Priya Shah: …" transcript format), because exceljs's API
-means desktop's own `xlsx-comments.ts` never has to construct or even see this wiring itself. Kotlin
-has no equivalent library, so it must construct all four pieces by hand — this is closer to writing a
-tiny OOXML library than to §3.2a's docx work, where desktop's own algorithm was already fully
-specified and directly portable.
+`desktop/node_modules/exceljs/lib/xlsx/xlsx.js` and `lib/xlsx/xform/sheet/worksheet-xform.js`/
+`content-types-xform.js`) writes a coordinated OOXML surface per sheet with a note that review 2
+(F4) found is bigger than this design's earlier "four pieces" framing named: `xl/comments<N>.xml`
+(the note text, keyed by cell ref, via `CommentsXform`), `xl/drawings/vmlDrawing<N>.vml` (the VML
+shape that gives the note its visible position/size — via `VmlNotesXform`, written unconditionally
+alongside the comments part, with a mandatory `o:shapelayout`/`v:shapetype` preamble plus three fixed
+namespace declarations, `xmlns:v`/`xmlns:o`/`xmlns:x`, emitted before any per-comment `v:shape`),
+**TWO separate worksheet-rels entries** (a `Comments`-type relationship and a distinct
+`VmlDrawing`-type relationship — not one combined entry, `worksheet-xform.js:170-179`), the
+worksheet's own `<legacyDrawing r:id="…"/>` element written **only after `<extLst>`** in
+`sheet<N>.xml` — element order is schema-load-bearing here (`worksheet-xform.js:345-351`) — and a
+`[Content_Types].xml` `Default` entry for the `.vml` extension whose content type is
+`application/vnd.openxmlformats-officedocument.vmlDrawing`, **with no `+xml` suffix**, unlike every
+other XML part in the same file (`content-types-xform.js:73-76`) — an easy silent mismatch for a
+from-scratch Kotlin writer to introduce by analogy with the other Overrides. None of this OOXML shape
+was written down anywhere in this design's earlier draft (§4.1 only specifies the note **text** —
+the "Priya Shah: …" transcript format), because exceljs's API means desktop's own
+`xlsx-comments.ts` never has to construct or even see this wiring itself. Kotlin has no equivalent
+library, so it must construct all of the above by hand — this is closer to writing a tiny OOXML
+library than to §3.2a's docx work, where desktop's own algorithm was already fully specified and
+directly portable. **T18's spike and T19's Kotlin writer target must capture and match, explicitly,
+all four of** (review 2, F4 — corrected from the earlier undercounted "four pieces" framing, which
+named none of these specifically): (a) the VML preamble/namespaces verbatim, (b) `legacyDrawing`'s
+required position after `extLst`, (c) the vml Content-Types `Default` entry's exact non-`+xml`
+content type string, (d) both worksheet-rels entries in the same relative order exceljs emits them.
 
 **Pre-written reference, not left for T18/T19 to reverse-engineer**: before either Android xlsx task
 starts, a short spike (part of T18, not a separate task) writes a note with the CURRENT desktop
@@ -740,12 +838,35 @@ Read is the lower-risk half (parsing `comments<N>.xml` for text and `vmlDrawing<
 prior write needs to preserve an existing shape's position on edit — the parity guard, T21, is what
 actually proves Kotlin's output is equivalent, not just individually valid).
 
-Write mirrors §4.3's shape: backup-before-write, apply the four-part mutation, **verify-after-write
-with automatic rollback** (re-parse the just-written archive with the same read path, confirm the
-note round-trips; on failure, rename the backup back over the target before surfacing the same
-`<ErrorState>` desktop uses). The resolve marker (§4.1's `​[[yc:resolved]]` token) is plain text
-inside the note body, so `ResolveComment`/`ReopenComment`'s string manipulation is identical Kotlin
-logic to the TS version — no extra OOXML risk there, only in the four-part note-creation wiring.
+**A documented, watched risk, same class as F9c (review 2, F17):** the captured reference above is a
+point-in-time snapshot of the installed `exceljs`'s OOXML output. If `exceljs` is later bumped and
+its output shape changes even slightly (a different but still-valid attribute order), T19's Kotlin
+target silently stops matching what desktop's CURRENT `xlsx-comments.ts` actually produces — the same
+risk shape §2.2's F9c already accepted for mammoth, but without F9c's explicit "documented, watched"
+treatment until now. As with F9c, building a pinning-test fixture against multiple exceljs versions
+is disproportionate to add now; instead, T18/T19's own re-run of desktop's writer against the fixture
+workbook **re-diffs its output against the checked-in reference every time it runs**, so drift fails
+loudly at test time (a mismatch means either exceljs changed and the reference needs regenerating, or
+Kotlin's writer needs the update) rather than only being caught by intuition.
+
+Write mirrors §4.3's shape: backup-before-write, apply the (now fully-specified, F4) mutation,
+**verify-after-write with automatic rollback** (re-parse the just-written archive with the same read
+path, confirm the note round-trips; on failure, rename the backup back over the target before
+surfacing the same `<ErrorState>` desktop uses). The resolve marker (§4.1's `​[[yc:resolved]]` token)
+is plain text inside the note body, so `ResolveComment`/`ReopenComment`'s string manipulation is
+identical Kotlin logic to the TS version — no extra OOXML risk there, only in the note-creation
+wiring above.
+
+**A documented, watched memory risk, not a blocker (review 2, F16):** §3.2a/§4.3a's Kotlin approach
+loads the whole archive into memory, mutates it, and rewrites it whole — reasonable on desktop
+Electron, which has no comparable per-process heap ceiling to a phone app sandbox's, but never
+acknowledged for Android specifically until now. This design does not add a streaming rewrite
+(disproportionate for what are typically small `.docx`/`.xlsx` files) but does add a size guard:
+`DocxComments.kt`/`XlsxComments.kt` check the archive's uncompressed size before loading it fully, and
+a file over a documented threshold (a task-time number, benchmarked against low-end device heap
+limits — a starting point to benchmark against, not a frozen constant) routes to a specific, honest
+`<ErrorState>` ("this file is too large to edit comments on from the phone") rather than risking an
+OOM crash. Same accepted-but-watched treatment as F9c/F17, not a test built now.
 
 ## 5. Assistant tools
 
@@ -801,6 +922,58 @@ touches editing is `MoveComment`/R6: once an edit lands, the assistant decides �
 judgment any reply/resolve/move already requires — whether to call `ReplyToComment`, `ResolveComment`,
 `MoveComment`, or some combination, on the comment whose text it just changed.
 
+### 5.2a The six comment tools' OWN permission gate — needs Destin's decision (review 2, F8)
+
+§5.2 above correctly covers R5's own scope (Edit/Write for CONTENT changes), but review 2 (F8) found
+a separate, real gap this design left silent: the six comment tools THEMSELVES have no specified
+`permissionSubject`. `NativeTool<A>.permissionSubject` (`types.ts:357`) is a REQUIRED field — a T8
+implementer building `AddComment` etc. without this spec would have had to invent a default with no
+guidance, and `decidePermission()`'s own safe default when nothing matches is `ask`, never
+silent-allow (`permission-engine.ts`). These tools are not uniformly low-risk the way
+`send-user-file.ts:44`'s `permissionSubject: () => undefined` precedent is — that tool sends an
+already-approved file, it never writes:
+
+- For a **plain-text/markdown target**, a comment mutation only ever touches the inert
+  `.youcoded/comments/<path>.json` sidecar (§1.1) — never the source file's own bytes. This is
+  internal app metadata, the same class of write the artifacts sidecar already makes without going
+  through `decidePermission` at all.
+- For a **Word/Excel target**, `AddComment`/`MoveComment`/`ReplyToComment`/`ResolveComment`/
+  `ReopenComment` write DIRECTLY into the live document's own XML (§3.3 step 2: "insert
+  `w:commentRangeStart`/`End`... into `document.xml`"; §4.3a's OOXML wiring touches the worksheet's
+  own `<legacyDrawing>` relationship). This is functionally an edit of that file's real content —
+  the exact thing R5 says should follow "existing edit-approval rules" — but reaches disk with no
+  `Edit`/`Write` call and, unless gated here, no approval prompt at all. F5/F17's automatic
+  backup+verify+rollback protects against data LOSS from a bad write; it does nothing about CONSENT
+  to make the write in the first place.
+
+**This is flagged for Destin's decision, not decided silently, because either resolution changes
+what he experiences from what he signed off on.** His reopen-1/contract wording — "the assistant can
+reply, resolve, add sparingly, and edit the file following its existing edit-approval rules" — reads
+comment actions as separate from, and more frictionless than, "edit the file." The options:
+
+1. **Gate only Word/Excel-targeted mutations** at the same approval tier as `Edit`/`Write`
+   (`permissionSubject: (a) => a.path`, the comment's backing file), leave plain-text/markdown
+   sidecar mutations ungated. *Pro:* matches the risk difference exactly — a gate exists precisely
+   where real document bytes change; plain comments (the common case) stay as frictionless as
+   Destin's "sparingly" wording implies. *Con:* the assistant now gets an approval prompt the FIRST
+   time it replies to or resolves a Word/Excel comment — a behavior Destin hasn't specifically seen
+   or approved. **This is the technically recommended default** — it treats "writes to your real
+   file" and "writes to an app-only reply log" differently, exactly how `Edit`/`Write` already treat
+   a file's content versus everything else in this codebase.
+2. **Gate every comment mutation the same as `Edit`/`Write`, for every target type.** *Pro:* simplest
+   rule, no dispatch-by-file-type logic. *Con:* adds an approval prompt to the plain-text case too,
+   which is pure internal app metadata today and was likely understood as friction-free "sparingly"
+   commenting — a bigger UX change than Destin asked for.
+3. **Leave every comment tool ungated** (`permissionSubject: () => undefined`, matching
+   `SendUserFile`'s one precedent). *Pro:* zero new approval prompts, matches how the mockup behaves
+   today. *Con:* the assistant can autonomously rewrite a live Word/Excel file's internal XML with no
+   consent step at all — a real, silent asymmetry with how the SAME class of write (an `Edit` call on
+   that file) already requires approval.
+
+Whichever option Destin picks, T8/T9a specify the chosen `permissionSubject` explicitly rather than
+leaving it for a build subagent to invent. This decision does not block starting T1/T2/T10/T12 — only
+T8/T9a's `permissionSubject` wiring waits on it.
+
 ### 5.3 MCP tool definitions
 
 `claude-code-mcp.ts`'s `SendUserLink` (`desktop/src/main/claude-code-mcp.ts:59-88`) is the
@@ -855,8 +1028,20 @@ parser locates them structurally (the quote by its `"…"` marks, the path/suffi
 recognizable prefixes), never by splitting on whitespace, so this fix touches only the syntax this
 design invents, not the user's own file paths or quoted text:
 
+**Escaping (review 2, F7 — the earlier draft of this grammar had no escape rule at all):** today's
+`encodeURIComponent(JSON.stringify(ref))` is fully escaped by construction — nothing in a real quote
+or path can break it. The grammar below needs its own explicit rule to keep that property: a literal
+`"` inside the quoted text is written as `\"` (backslash-escaped), and the parser locates a quote's
+closing mark as the LAST `"` that is immediately followed by a recognized trailing token (`_`, a
+path character, or `⦄`) — never the first `"` after the opening one. This resolves both gaps F7
+found: an embedded quote (`He said "stop it" and left` → `⦃"He said \"stop it\" and left"_docs/foo.md⦄`)
+parses correctly because the parser isn't fooled by the first interior `"`, and an underscore inside
+a real path or quote (`2026_09_24_plan.md`) is never mistaken for a structural separator because the
+parser finds the quote's end and the path's start by their `"`/`⦄` markers, not by blindly splitting
+on `_`. T7's tests add an embedded-quote-mark case and an underscore-in-path/quote case explicitly.
+
 - **A quoted-text reference** (`kind: 'doc'`, no `commentId`/`commentIds` — an ephemeral "Ask
-  about this," not a saved comment): `⦃"<exact quote>"_<path>[_L<start>-<end>|_cell_<C>_<S>]⦄`
+  about this," not a saved comment): `⦃"<exact quote, \" escaped>"_<path>[_L<start>-<end>|_cell_<C>_<S>]⦄`
   e.g. `⦃"Today's first-run flow shows five screens before the composer is reachable"_docs/active/plans/2026-09-24-onboarding-redesign.md⦄`.
   A model reading this sees a normal quoted excerpt and a file path — it can act on it with its
   existing Read/Grep tools without needing any new tool at all, because the quote text IS enough
@@ -865,6 +1050,15 @@ design invents, not the user's own file paths or quoted text:
   single-comment case of "Send to assistant"): adds the id so the assistant can call
   `ReplyToComment`/`ResolveComment` directly instead of re-finding the text:
   `⦃comment_c-<id>_"<quote>"_<path>⦄`.
+- **A chat/code-block reference** (`kind: 'chat'`, no `path` — added review 2, F2): `compose-ref.ts`'s
+  `ComposeRef` has a live, shipped `kind: 'chat'` variant, pathless, keyed by `entryKey`
+  (`build-menu.ts:293,423` construct these today for "Ask about this" on a chat message or an
+  in-chat code block; `chat-ref-highlight.ts:29-30` resolves hover/click-to-source purely off
+  `entryKey`). The three forms above are all `path`-requiring and would silently break every existing
+  chat-message/code-block "Ask about this" — a regression of a shipped, R15-covered feature — if
+  shipped as the only forms. A fourth, pathless form closes this: `⦃chat_<entryKey>_"<quote>"⦄`. T7
+  adds a pinning test that a chat-message/code-block "Ask about this" still round-trips and still
+  resolves via `chat-ref-highlight.ts`.
 - **The Ask Your Assistant summary chip** (`commentIds` set, §5's whole reason for existing):
   `⦃<N>_open_comments_<path>_use_ReadFileComments_to_read_them⦄`. This one deliberately does
   NOT inline every comment's text (`CommentsFloatingActions.tsx`'s own comment: *"The comments
@@ -920,6 +1114,20 @@ reads (`DocCommentsApi`: `comments`, `focusId`, `showResolved`, `setShowResolved
   reconciling on the `docComments:changed` push (or the response of its own just-issued mutation,
   optimistically, the same way most other IPC-backed stores in this app already update
   optimistically then reconcile).
+
+  **Id authority and rollback-to-UI, specified explicitly (review 2, F9 — major):** the renderer
+  mints a comment's id (`c-${randomUUID()}`, §1.2's own shape) and passes it to `docComments:add`;
+  main never re-mints one — this keeps `addComment`'s existing synchronous string-return contract
+  intact even once the call becomes a real async IPC round trip underneath, since the id shown
+  optimistically is always the id that lands. For every mutation whose backing write can fail AFTER
+  being shown optimistically (add/reply/resolve/reopen/move on a Word/Excel target, whose write goes
+  through §3.3/§4.3's verify-after-write-with-automatic-rollback), `docComments:*`'s response carries
+  an explicit failure shape (`{ok:false, error}`), and `useDocComments`'s internals revert the
+  optimistic entry to its pre-mutation state and surface `<ErrorState>` (`components/ui/states.tsx`,
+  `message` + `onRetry` — `error-message-standards.md`'s `mode="recoverable"` copy fits) with
+  `onRetry` wired to replay the exact same mutation. This is new wiring, not new UI —
+  `CommentCard.tsx` already has a place to render an error state for the detached case (§2.3); a
+  failed mutation reuses it.
 - `removeComment` (line 399-401) has no contract row asking for permanent deletion (the closest is
   resolve, which is reversible) — keep the function for the mock/workbench path only; the real
   store does not expose a delete IPC channel unless a later contract row asks for one.
@@ -956,29 +1164,36 @@ accounted for.
 
 | # | Task | Depends on | Pre-written or description | Pinning test(s) | Key risk |
 |---|---|---|---|---|---|
-| T1 | `desktop/src/shared/doc-comments-types.ts` + main-process store (`list`/mutate via `mutateFileUnderLock`, project-relative + fallback path resolution, **path containment check** — review 1 F3) | — | **Pre-written schema** (§1.1's TS shape ships as the task's spec, not invented mid-task); **pre-written containment algorithm** (§1.5: realpath the project root, `path.relative` escape check, refuse never clamp) | new unit tests: read-modify-write, concurrent-lock behavior, missing-file default, fallback path for a project-less file, **`../../etc/passwd`-shaped and absolute-path containment refusal (F3)**, **lock-path canonicalization + a TRUE concurrent-write test, not just sequential (F4)** | Getting this schema wrong is expensive — T4/T8/T9a/T10/T12 all build on it. Freeze it before parallel work starts. A missed containment check is a path-traversal write bug, not a style nit. |
-| T2 | `desktop/src/shared/doc-comments-anchor.ts` (`resolveSelector`) | T1 (types) | Pre-written algorithm (§2.2), **including the closest-scoring fallback for an out-of-range `occurrence` and the position-closest tie-break rule (review 1, F9a/F9b)** | exact match; moved text (prefix/suffix intact, position shifted); ambiguous repeated phrase; not-found → `'detached'`; cell-not-found; **occurrence-index-out-of-range resolves to the best-scoring remaining candidate, never a fixed clamp (F9a)**; **a scoring tie resolves deterministically by closest position, not array order (F9b)** | Anchoring correctness is the feature's whole trust model — under-test this and "text no longer found" fires on text that IS still there. §2.2 also flags mammoth-render stability as a documented, watched risk (F9c) rather than a test to build now. |
-| T3 | IPC surface: `docComments:*` on preload/ipc-handlers/remote-shim/remote-server + chokidar watcher + `docComments:changed` broadcast; **register `docComments:watch`/`:unwatch` in `remote-shim.ts`'s `REJECT_ON_NOT_OK` (review 1, F10)** | T1 | Description | `ipc-channels.test.ts` additions; `main-blocking-calls.test.ts` stays clean; a watcher-debounce test; **path-containment refusal test at the IPC payload surface (F3)**; **a `REJECT_ON_NOT_OK` regression test for `docComments:watch`/`:unwatch` (F10)** | Forgetting a surface (5, not 4 — ipc-bridge.md's own correction) breaks remote silently. Skipping the `REJECT_ON_NOT_OK` registration lets a failed watch read as "subscribed, no changes yet." |
+| T1 | `desktop/src/shared/doc-comments-types.ts` + main-process store (`list`/mutate via `mutateFileUnderLock`, project-relative + fallback path resolution, **path containment check** — review 1 F3, corrected review 2 F1) | — | **Pre-written schema** (§1.1's TS shape ships as the task's spec, not invented mid-task); **pre-written containment algorithm** (§1.5: realpath the project root AND the full joined path — `write-authorization.ts`'s `judgeRelativeRecord()` shape, not `git-service.ts`'s shallower one; a not-yet-existing leaf walks up to the nearest existing ancestor first — review 2, F1) | new unit tests: read-modify-write, concurrent-lock behavior, missing-file default, fallback path for a project-less file, **`../../etc/passwd`-shaped, absolute-path, AND symlink-inside-the-project containment refusal (F3; symlink case added review 2, F1)**, **lock-path canonicalization (project root only, never the possibly-nonexistent leaf — review 2, F3) + a TRUE concurrent-write test, not just sequential (F4)** | Getting this schema wrong is expensive — T4/T8/T9a/T10/T12 all build on it. Freeze it before parallel work starts. A missed containment check is a path-traversal write bug, not a style nit. |
+| T2 | `desktop/src/shared/doc-comments-anchor.ts` (`resolveSelector`) | T1 (types) | Pre-written algorithm (§2.2), **one edit-distance-minimizing scoring function subsuming the out-of-range-`occurrence` fallback and the tie-break rule (review 1, F9a/F9b; unified review 2, F14 — "position" is now one concrete metric, not two rules that can conflict)** | exact match; moved text (prefix/suffix intact, position shifted); ambiguous repeated phrase; not-found → `'detached'`; cell-not-found; **occurrence-index-out-of-range resolves to the best-scoring remaining candidate, never a fixed clamp (F9a)**; **a scoring tie resolves deterministically by the same scoring metric, not array order (F9b)**; **a combined case — out-of-range occurrence AND a tie among the remaining candidates — in one test (F14)** | Anchoring correctness is the feature's whole trust model — under-test this and "text no longer found" fires on text that IS still there. §2.2 also flags mammoth-render stability as a documented, watched risk (F9c) rather than a test to build now. |
+| T3 | IPC surface: `docComments:*` on preload/ipc-handlers/remote-shim/remote-server + chokidar watcher (`ignored: '**/.pending/**'` — review 2, F20) + `docComments:changed` broadcast; **register `docComments:watch`/`:unwatch` in `remote-shim.ts`'s `REJECT_ON_NOT_OK` (review 1, F10)**; **a real `docComments:watch`/`:unwatch` chokidar-backed relay in `remote-server.ts`, mirroring `artifacts:watch-project`'s existing pattern — remote is NOT the same gap as Android (review 2, F6)** | T1 | Description | `ipc-channels.test.ts` additions; `main-blocking-calls.test.ts` stays clean; a watcher-debounce test; **path-containment refusal test at the IPC payload surface, including a symlink case (F3/F1)**; **a `REJECT_ON_NOT_OK` regression test for `docComments:watch`/`:unwatch` (F10)**; **a remote-server relay test proving a WS-connected browser gets an unprompted push on a comment change (F6)**; **a `.pending/`-directory-churn test proving no `docComments:changed` fires for pending-mutation-queue file churn (F20)** | Forgetting a surface (5, not 4 — ipc-bridge.md's own correction) breaks remote silently. Skipping the `REJECT_ON_NOT_OK` registration lets a failed watch read as "subscribed, no changes yet." Conflating Android's real gap with remote's non-gap (F6) would silently regress remote-browser UX below the adjacent Files feature. |
 | T4 | Android `SessionService.kt` parity for `docComments:*` on **plain-text `PersistedComment` files** (real Kotlin `java.io.File` read/write, dispatching to `DocxComments.kt`/`XlsxComments.kt` for `.docx`/`.xlsx` targets — T16/T17/T18/T19 below, not this task); `watch`/`unwatch` answer **`{ok:false, error:'not-implemented-on-mobile'}` via an explicit branch (review 1, F10 — corrected from the earlier `{unsupported:true}` citation, which is a different no-branch-at-all mechanism)** for every file type, unchanged by reopen-1 | T3 (needs final channel/payload shapes) | **Pre-written wire format** (T1's schema doc, not re-derived); **pre-written response shape for the watch refusal** (§1.6) | shared JSON fixture both platforms round-trip; ipc parity guard; **an exact-JSON-shape test for the `docComments:watch` not-implemented-on-mobile response (F10)** | A schema drift here is invisible until an Android build actually runs — flag as needing a real Android build check (CLAUDE.md's own "CHECK, don't assume" rule on SDK presence). |
 | T5 | Renderer: rewrite `doc-comments-store.ts` internals against real IPC, keep `DocCommentsApi` unchanged, move seeds to `mock-shim.ts`, add/remove `MOCK_ONLY` rows as channels land | T3 | Description | existing comment component tests keep passing unmodified (proves the interface didn't move); a workbench fixture-state test | Any interface drift here silently breaks the ALREADY-APPROVED UI — treat every `comments/*.tsx` test as a regression gate, not just new tests |
 | T6 | "Text no longer found" UI on `CommentCard.tsx` (small, additive) | T2 | Description | a detached-state render test | Small enough to qualify for feature-flow's short route — confirm with Destin before skipping a review deck for it |
-| T7 | `compose-ref.ts` wire-format rewrite (§6.2/6.3), **including the draft-token layer** (`makeDraftToken`/`splitDraftTokens`/`expandDraftTokens`/`draftTokenRanges` — review 1, F11) | T1 (comment ids exist) | Pre-written grammar (§6.2's three forms, **underscore-joined structural separators, no literal space in the delimiter syntax this design controls — F12**) | encode/decode round-trip per ref kind; a "no percent-encoding or JSON braces, and no literal space in the structural syntax" snapshot test; **a test that types a reference through as a draft token, sends it, and confirms `expandDraftTokens` produces the new grammar correctly (F11)**; **an end-to-end test that sends a message containing the new marker through the actual PTY submit path and confirms it arrives byte-identical (F12)** | Must not regress hover/click-to-source (`use-ref-source-highlight.ts`) — run its existing tests, don't just add new ones. A structural-separator regression to literal spaces is invisible in a pure-function test, only in the PTY e2e test. |
-| T8 | Native tools: `ReadFileComments`, `ReplyToComment`, `ResolveComment`, `ReopenComment`, `AddComment`, `MoveComment` in `desktop/src/main/harness/tools/` | T1, T2 | Description (tool descriptions themselves are pre-written, §5.1/§5's table — copy verbatim, don't paraphrase) | per-tool execute tests; `tool-registry-manifest.test.ts` update; **a path-containment refusal test at the tool-argument surface, since a tool's `path` is model-controlled input (F3)** | `AddComment`'s description drifting from the exact "sparingly" wording is how R4 quietly regresses later |
-| T9a | Claude Code MCP: extend `claude-code-mcp.ts`'s deployed server with the six tools' JSON-RPC definitions, dependency-free plain-file store read/write (§9), citing `chatsearch.js`'s atomic tmp-write+rename and outbox/receipt poll loop as the pattern to copy (review 1, F8) | T1, T2 | **Pre-written**: T1's frozen JSON schema, §9's "no Electron API, plain `fs` only" constraint, and the `chatsearch.js` precedent to copy rather than invent | mirrors `claude-code-mcp.test.ts`'s own style: JSON-RPC handler tests, a round-trip test (native tool writes → MCP script reads the same file, and back); **path-containment refusal test at the MCP tool-argument surface (F3)**; **lock-path canonicalization + true-concurrency test against T1's implementation (F4)** | Porting `cas-write.ts`'s Windows-specific `EPERM`/`EACCES`/`EBUSY` contention handling is easy to drop in a "simplified" reimplementation — test it explicitly. |
-| T9b | The docx/xlsx pending-mutation queue: MCP tool writes `.youcoded/comments/.pending/<uuid>.json`, main's watcher applies it via its real JSZip/Node-XML-library/exceljs code and writes a result file the MCP script polls for (§9) — split out because it is blocked on §3.2/§4.3's F1/F2 architecture fix landing first (review 1, F8) | T9a, T10, T12 (needs the main-process docx/xlsx write path to exist) | Description | queue round-trip (request written → result appears → MCP script reads it); a bounded-timeout test (no result file within ~3s surfaces a specific failure, never hangs) | This piece is genuinely new (no direct precedent) — keep it isolated from T9a/T9c's lower-risk, precedented work so a review can weigh it on its own. |
+| T7 | `compose-ref.ts` wire-format rewrite (§6.2/6.3), **including the draft-token layer** (`makeDraftToken`/`splitDraftTokens`/`expandDraftTokens`/`draftTokenRanges` — review 1, F11); **a fourth, pathless grammar form for `kind:'chat'` refs (review 2, F2)**; **an escape rule for an embedded `"` and a structural-separator character inside a real quote/path (review 2, F7)** | T1 (comment ids exist) | Pre-written grammar (§6.2's now-FOUR forms, **underscore-joined structural separators, no literal space in the delimiter syntax this design controls — F12**; **backslash-escaped interior `"`, closing quote located as the LAST `"` before a recognized trailing token — F7**) | encode/decode round-trip per ref kind (now including `kind:'chat'`, F2); a "no percent-encoding or JSON braces, and no literal space in the structural syntax" snapshot test; **a test that types a reference through as a draft token, sends it, and confirms `expandDraftTokens` produces the new grammar correctly (F11)**; **an end-to-end test that sends a message containing the new marker through the actual PTY submit path and confirms it arrives byte-identical (F12)**; **a chat-message/code-block "Ask about this" round-trips and still resolves via `chat-ref-highlight.ts` (F2)**; **an embedded-quote-mark case and an underscore-in-path/quote case both parse correctly (F7)** | Must not regress hover/click-to-source (`use-ref-source-highlight.ts`) — run its existing tests, don't just add new ones. A structural-separator regression to literal spaces is invisible in a pure-function test, only in the PTY e2e test. Shipping the grammar as three path-only forms (its pre-review-2 shape) breaks every live chat-message/code-block reference — a regression of a shipped, R15-covered feature, not a new-feature edge case. |
+| T8 | Native tools: `ReadFileComments`, `ReplyToComment`, `ResolveComment`, `ReopenComment`, `AddComment`, `MoveComment` in `desktop/src/main/harness/tools/`, **each with an explicit `permissionSubject` per whichever option Destin picks in §5.2a (review 2, F8) — not left for this task to invent** | T1, T2 | Description (tool descriptions themselves are pre-written, §5.1/§5's table — copy verbatim, don't paraphrase) | per-tool execute tests; `tool-registry-manifest.test.ts` update; **a path-containment refusal test at the tool-argument surface, including a symlink case, since a tool's `path` is model-controlled input (F3/F1)**; **a permission-gate test confirming the chosen `permissionSubject` actually routes through `decidePermission()` for Word/Excel-targeted mutations (F8)** | `AddComment`'s description drifting from the exact "sparingly" wording is how R4 quietly regresses later. Do not start this task's `permissionSubject` wiring until §5.2a's decision is back from Destin — everything else in this row is unaffected. |
+| T9a | Claude Code MCP: extend `claude-code-mcp.ts`'s deployed server with the six tools' JSON-RPC definitions, dependency-free plain-file store read/write (§9), citing `chatsearch.js`'s atomic tmp-write+rename **ONLY** for the write mechanics — **the mutual-exclusion/lock half is novel, not ported; `chatsearch.js` has no mutex anywhere in it (review 2, F12 corrects the original citation)** | T1, T2 | **Pre-written**: T1's frozen JSON schema, §9's "no Electron API, plain `fs` only" constraint, and the `chatsearch.js` precedent to copy for atomic-write mechanics only | mirrors `claude-code-mcp.test.ts`'s own style: JSON-RPC handler tests, a round-trip test (native tool writes → MCP script reads the same file, and back); **path-containment refusal test at the MCP tool-argument surface, including a symlink case (F3/F1)**; **lock-path canonicalization (project root only — F3) + a genuine two-process contention STRESS test against T1's implementation, not just the sequential round-trip (F4, budget widened per F12)** | Porting `cas-write.ts`'s Windows-specific `EPERM`/`EACCES`/`EBUSY` contention handling is easy to drop in a "simplified" reimplementation — test it explicitly. The lock/mutex half of this task has no precedent anywhere in this codebase to copy from — budget review time accordingly (F12). |
+| T9b | The docx/xlsx pending-mutation queue: MCP tool writes `.youcoded/comments/.pending/<uuid>.json`, main's watcher applies it via its real JSZip/Node-XML-library/exceljs code and writes a result file the MCP script polls for (§9) — split out because it is blocked on §3.2/§4.3's F1/F2 architecture fix landing first (review 1, F8) | T9a, T10, T12 (needs the main-process docx/xlsx write path to exist) | Description; **the poll bound is corrected from an unsupported "~3s, matching other native tool timeouts" citation (no such precedent exists — real native-tool timeouts are 120-600s) to an explicitly-set, benchmarked value, with the comments watcher's own `awaitWriteFinish.stabilityThreshold` set to 500ms, not chokidar's 2000ms default, since the default alone would consume most of a 3s budget before any docx/xlsx work starts (review 2, F13)** | queue round-trip (request written → result appears → MCP script reads it); **a bounded-timeout test using the corrected, benchmarked value (no result file within it surfaces a specific failure, never hangs) — benchmarked against a representative multi-MB `.docx` with images before the number is frozen (F13)** | This piece is genuinely new (no direct precedent) — keep it isolated from T9a/T9c's lower-risk, precedented work so a review can weigh it on its own. A timeout tuned to fail routine successful operations is worse than a longer one that only fails genuine hangs (F13). |
 | T9c | Android byte-identical MCP asset + its own parity test, citing `ClaudeCodeMcp.kt`/`claude-code-mcp.ts`'s existing `SendUserLink` deploy as precedent (review 1, F8) | T9a | Description, citing the existing `SendUserLink` deploy pattern verbatim | desktop-string-equals-Android-asset parity test (same shape as `claude-code-mcp.test.ts`'s existing one) | Low risk given the precedent — keep scope to parity, not new protocol design. |
-| T10 | Docx read: `docx-comments.ts` (now `desktop/src/main/doc-comments/docx-comments.ts` — review 1, F1) parses `comments.xml`/`commentsExtended.xml` via a Node-compatible XML library (`@xmldom/xmldom` or `fast-xml-parser`, spike to confirm which), merges into `CommentableDocument`; promote `jszip` and the chosen XML library to direct dependencies | T1 | Description | parse `docs/launch-brief.docx` fixture; `w15:paraIdParent` reply reconstruction; a docx with no `comments.xml` part doesn't crash; **runs under plain Node in a test, not a renderer/jsdom test environment, proving the main-process placement (F1)** | JSZip's hoisted-not-declared status (§3.2) — confirm the direct-dependency bump doesn't change the resolved version underfoot. Confirm the chosen XML library's API maps cleanly enough from a `DOMParser`-shaped design that §3.2's algorithm doesn't need a rewrite, only a swap. |
+| T10 | Docx read: `docx-comments.ts` (now `desktop/src/main/doc-comments/docx-comments.ts` — review 1, F1) parses `comments.xml`/`commentsExtended.xml` via a Node-compatible XML library (`@xmldom/xmldom` or `fast-xml-parser`, spike to confirm which), merges into `CommentableDocument`; promote `jszip` and the chosen XML library to direct dependencies **through the workspace's documented safe path (the shared checkout, or a `setup.sh` re-run) — never a bare `npm install` inside this session's hardlinked worktree, per `docs/PITFALLS.md`'s worktree/node_modules hazard (review 2, F10)** | T1 | Description | parse `docs/launch-brief.docx` fixture; `w15:paraIdParent` reply reconstruction; a docx with no `comments.xml` part doesn't crash; **runs under plain Node in a test, not a renderer/jsdom test environment, proving the main-process placement (F1)** | JSZip's hoisted-not-declared status (§3.2) — confirm the direct-dependency bump doesn't change the resolved version underfoot. Confirm the chosen XML library's API maps cleanly enough from a `DOMParser`-shaped design that §3.2's algorithm doesn't need a rewrite, only a swap. **A bare `npm install` inside a `cp -al`-hardlinked worktree silently corrupts sibling worktrees/checkouts (F10) — route through the safe path, not around it.** |
 | T11 | Docx write: add/reply/resolve into `comments.xml`/`commentsExtended.xml` (main process), backup-before-write, verify-after-write **with automatic rollback on failure (review 1, F5)**, **id/paraId uniqueness (F6)**, **a minimal OOXML relationship/content-types sanity check in the verify step (F17)** | T10 | Description | round-trip add/reply/resolve against the fixture; backup file created; **a verify-failure test asserts the target file is byte-identical to the pre-write original, not just that an error surfaced (F5)**; **a fixture with gapped/non-sequential existing `w:id`s (F6)**; **every `r:id` the new run references resolves in `document.xml.rels`, and every referenced part has a `[Content_Types].xml` override (F17)**; (manual, dev-instance, not CI) Word-and-Google-Docs-open check | OOXML relationship/content-type wiring is exactly the class of bug that "opens in Word but Google Docs silently drops it" — R10's manual check is not optional, and F17's automated check now catches part of that class before the manual gate. |
 | T12 | Xlsx read: exceljs `.note` → `PersistedComment`-shaped cell records, in `desktop/src/main/doc-comments/xlsx-comments.ts` (review 1, F1) | T1 | Description; **author placement is committed now — first line of the note body, no distinct author field exists in the installed exceljs version (review 1, F15, hedge removed)** | parse a workbook fixture with a `.note` set; multi-sheet cell targeting | None beyond confirming the direct-dependency exceljs version stays pinned. |
 | T13 | Xlsx write: `.note` add/reply/resolve as a formatted transcript, **using a fixed non-natural-language resolve marker instead of a plain "— resolved" string (review 1, F7)**, backup-before-write, verify-after-write **with automatic rollback on failure (F5)** | T12 | Description | round-trip; multi-reply formatting; backup+verify; **`ReopenComment` strips the marker's exact trailing line and nothing else in the body (F7)**; **a reply body containing resolve-like natural-language text is NOT read as resolved (F7)**; **a verify-failure test asserts the target file is byte-identical to the pre-write original (F5)** | Getting the marker's strip regex slightly wrong either leaves marker fragments visible or eats real trailing content — test both directions explicitly. |
 | T14 | Wire real backend into `CommentableDocument`/`DocxView`/`XlsxView` (dispatch by file type: `PersistedComment` store for plain files, `docx-comments.ts` for `.docx`, `xlsx-comments.ts` for `.xlsx`); remove workbench-only seeds from the product path | T5, **T10 AND T11**, **T12 AND T13** (review 1, F16 — corrected from "T10 or T11, T12 or T13", which allowed starting on a read-only half-built lifecycle) | Description | full comment-lifecycle test per file type, run against the real (non-mock) store | The integration point where a wrong file-type dispatch silently sends a plain-file comment write at a `.docx`'s sidecar instead of into the file |
-| T15 | Process cleanup: close PR #263 (R11); confirm with Destin, then delete the three rejected mock branches/worktrees (R21) | none | Description (not a build task — a closing-session step) | n/a | Do not delete without explicit go-ahead, per the handoff's own step 5 |
+| T15 | **DONE, no-op (review 2, F19)** — Process cleanup: close PR #263 (R11); confirm with Destin, then delete the three rejected mock branches/worktrees (R21). Verified 2026-09-26: `gh pr view 263` → CLOSED; `git branch -a`/`git ls-remote --heads origin` show `comments-mock-a-v1`/`comments-mock-b`/`comments-mock-c` no longer exist locally or on the app repo's remote; no leftover `worktrees/sessions/comments-mock-{b,c}` directories. | none | n/a — already satisfied | n/a | None — kept as a row only so a build session doesn't re-verify or re-do finished cleanup. |
 | T16 | **(reopen-1)** Android docx read: `DocxComments.kt` (§3.2a) parses `comments.xml`/`commentsExtended.xml` via `java.util.zip.ZipFile` + `javax.xml.parsers`, into the SAME `PersistedComment`-shaped record §3.2/T10 produces | T1, T4 | **Pre-written algorithm** (§3.2's field mapping, ported verbatim — same author/text/`resolved`/`replies` extraction, same `TextQuoteSelector` construction from `document.xml`'s own surrounding text, no mammoth/rendered-HTML dependency needed at read time) | parse the SAME `docs/launch-brief.docx` fixture T10 uses, asserting the SAME `PersistedComment[]` shape (not just "doesn't crash"); `w15:paraIdParent` reply reconstruction; a docx with no `comments.xml` part doesn't crash; a JVM unit test, not an instrumented/on-device test, proving this runs in plain `./gradlew test` | Reusing T10's exact fixture (not a separate Android-only one) is what makes T21's cross-read guard meaningful — a fixture drift here would silently make the "parity" test compare two different inputs. |
-| T17 | **(reopen-1)** Android docx write: add/reply/resolve into `comments.xml`/`commentsExtended.xml` via `java.util.zip.ZipOutputStream` + `javax.xml.transform`, mirroring §3.3's five steps (backup-before-write, id/`paraId` uniqueness scanned fresh from the file, **verify-after-write with automatic rollback**, the same `r:id`/content-types relationship sanity check as F17) | T16 | Pre-written (§3.2a: "mirror §3.3's five steps verbatim") | round-trip add/reply/resolve against T10/T16's shared fixture; backup file created; a verify-failure test asserts the target file is byte-identical to the pre-write original; a fixture with gapped/non-sequential existing `w:id`s; every `r:id` the new run references resolves in `document.xml.rels` and has a `[Content_Types].xml` override; (manual, dev-instance build, not CI) a `.docx` this writes opens correctly in the desktop app's own DocxView | The riskiest code in the whole reopen — a Kotlin write bug corrupts a user's real Word file. Hold this task to the same "byte-identical rollback on verify failure" bar T11 was held to, not a lighter one because it's "just the phone." |
+| T17 | **(reopen-1)** Android docx write: add/reply/resolve into `comments.xml`/`commentsExtended.xml` via `java.util.zip.ZipOutputStream` + `javax.xml.transform`, mirroring §3.3's five steps (backup-before-write, id/`paraId` uniqueness scanned fresh from the file, **verify-after-write with automatic rollback**, the same `r:id`/content-types relationship sanity check as F17); **a size guard before loading the archive fully (review 2, F16)** | T16 | Pre-written (§3.2a: "mirror §3.3's five steps verbatim") | round-trip add/reply/resolve against T10/T16's shared fixture; backup file created; a verify-failure test asserts the target file is byte-identical to the pre-write original; a fixture with gapped/non-sequential existing `w:id`s; every `r:id` the new run references resolves in `document.xml.rels` and has a `[Content_Types].xml` override; **an over-size-threshold file routes to the specific `<ErrorState>`, not an OOM (F16)**; (manual, dev-instance build, not CI) a `.docx` this writes opens correctly in the desktop app's own DocxView. **The release-R8 build is exercised for free by the existing `android-ci.yml` job's `assembleReleaseTest` step — no new R8 check needed here (review 2, F15).** | The riskiest code in the whole reopen — a Kotlin write bug corrupts a user's real Word file. Hold this task to the same "byte-identical rollback on verify failure" bar T11 was held to, not a lighter one because it's "just the phone." |
 | T18 | **(reopen-1)** Android xlsx read, plus the exceljs-output-capture spike: write a note with desktop's current `xlsx-comments.ts` against a fixture workbook, unzip it, and check the literal `comments<N>.xml`/`vmlDrawing<N>.vml`/relationship/content-types shape into `shared-fixtures/doc-comments/xlsx-note-reference/` as T19's pre-written target (§4.3a); then `XlsxComments.kt`'s read half parses `comments<N>.xml` into the SAME cell-record shape T12 produces | T1, T4, T12 (needs T12's fixture workbook to exist) | Spike output is itself pre-written for T19, not re-derived there; read algorithm mirrors T12's field mapping | parse a workbook fixture with a `.note` set, asserting the SAME shape T12 produces; multi-sheet cell targeting; the captured reference fixture is checked in and referenced (not regenerated) by T19/T21 | The spike is the highest-value/lowest-code part of this task — getting the reference capture wrong (e.g., capturing it from a hand-edited rather than exceljs-written file) undermines T19 and T21 both. |
-| T19 | **(reopen-1)** Android xlsx write: hand-construct `comments<N>.xml` + `vmlDrawing<N>.vml` + the worksheet's `<legacyDrawing>`/relationship + `[Content_Types].xml` entries to match T18's captured reference shape, note-body transcript formatting and the `​[[yc:resolved]]` marker identical to §4.1/T13, backup-before-write, **verify-after-write with automatic rollback** | T18 | Description, target shape pre-written by T18's spike | round-trip against T12/T18's shared fixture; multi-reply formatting; backup+verify; `ReopenComment` strips the marker's exact trailing line and nothing else; a reply body containing resolve-like natural-language text is NOT read as resolved; a verify-failure test asserts byte-identical rollback; (manual, dev-instance build) a `.xlsx` this writes opens correctly with a visible, correctly-positioned note in the desktop app's own XlsxView and in real Excel/Google Sheets if available | **The single riskiest task in the whole reopen.** Four hand-rolled OOXML parts with no library help on either platform to fall back on if T18's captured reference is subtly wrong — this is where a review round should look hardest, and where slipping the "roughly two to three more tasks" estimate the reopen question gave Destin is most likely. |
-| T20 | **(reopen-1)** Android half of the MCP pending-mutation queue: the byte-identical MCP asset (T9c) writes the SAME `.youcoded/comments/.pending/<uuid>.json` request shape T9b defines; a Kotlin coroutine polling loop inside `SessionService` (not `FileObserver` — see §9.2) applies it via `DocxComments.kt`/`XlsxComments.kt` and writes the same result-file shape back | T9c, T17, T19 | Description; request/result JSON shape pre-written by T9b (unchanged) | queue round-trip on Android (request written → Kotlin applies it → result appears → MCP script reads it); the same bounded-timeout test as T9b (~3s, never hangs) | Two independently-written watchers (chokidar vs. a Kotlin polling loop) for the identical request/result contract — a Kotlin-side field-naming slip is invisible until an Android build actually exercises this path. |
-| T21 | **(reopen-1)** Cross-platform golden-fixture parity test: desktop writes a docx/xlsx mutation, Android reads it and produces the identical `PersistedComment[]`; Android writes, desktop reads it back the same way; both platforms' verify-after-write rollback is exercised against a deliberately-corrupted intermediate write (§9.3) | T11, T13, T17, T19 | Description; fixtures live in `shared-fixtures/doc-comments/` (the workspace's established cross-runtime fixture convention — `shared-fixtures/artifacts/`, `shared-fixtures/attention-classifier/` are the precedent, though both of those are JSON-only; this is the first binary+JSON pair in that directory) | the four-part test §9.3 describes, run in CI on the desktop side and via `./gradlew test` on the Android side against the SAME checked-in fixture bytes | This is the ONLY thing that catches "each side passes its own tests but the two are subtly incompatible" — treat a passing T17/T19 alone as unproven parity, not done, until this lands. |
+| T19 | **(reopen-1)** Android xlsx write: hand-construct `comments<N>.xml` + `vmlDrawing<N>.vml` (with its mandatory preamble/namespaces) + the worksheet's `<legacyDrawing>` element (positioned after `<extLst>`) + BOTH worksheet-rels entries + the non-`+xml` `[Content_Types].xml` `Default` entry (review 2, F4 — all four made explicit, not just "four pieces") to match T18's captured reference shape, note-body transcript formatting and the `​[[yc:resolved]]` marker identical to §4.1/T13, backup-before-write, **verify-after-write with automatic rollback**; **a size guard before loading the archive fully (review 2, F16)** | T18 | Description, target shape pre-written by T18's spike, **explicit about all four of §4.3a's named pieces (F4)** | round-trip against T12/T18's shared fixture; multi-reply formatting; backup+verify; `ReopenComment` strips the marker's exact trailing line and nothing else; a reply body containing resolve-like natural-language text is NOT read as resolved; a verify-failure test asserts byte-identical rollback; **an over-size-threshold file routes to the specific `<ErrorState>`, not an OOM (F16)**; **T18/T19's own re-run of desktop's writer re-diffs against the checked-in xlsx-note-reference fixture every time, failing loudly on drift (review 2, F17)**; (manual, dev-instance build) a `.xlsx` this writes opens correctly with a visible, correctly-positioned note in the desktop app's own XlsxView and in real Excel/Google Sheets if available. **The release-R8 build is exercised for free by the existing `android-ci.yml` job's `assembleReleaseTest` step — no new R8 check needed here (review 2, F15).** | **The single riskiest task in the whole reopen.** Hand-rolled OOXML parts with no library help on either platform to fall back on if T18's captured reference is subtly wrong — this is where a review round should look hardest, and where slipping the "roughly two to three more tasks" estimate the reopen question gave Destin is most likely. |
+| T20 | **(reopen-1)** Android half of the MCP pending-mutation queue: the byte-identical MCP asset (T9c) writes the SAME `.youcoded/comments/.pending/<uuid>.json` request shape T9b defines; a Kotlin coroutine polling loop inside `SessionService` (not `FileObserver` — see §9.2) applies it via `DocxComments.kt`/`XlsxComments.kt` and writes the same result-file shape back | T9c, T17, T19 | Description; request/result JSON shape pre-written by T9b (unchanged) | queue round-trip on Android (request written → Kotlin applies it → result appears → MCP script reads it); the same bounded-timeout test as T9b using the corrected, benchmarked value, not the retracted ~3s figure (review 2, F13, never hangs) | Two independently-written watchers (chokidar vs. a Kotlin polling loop) for the identical request/result contract — a Kotlin-side field-naming slip is invisible until an Android build actually exercises this path. |
+| T21 | **(reopen-1)** Cross-platform golden-fixture parity test — **precisely worded (review 2, F5): desktop's CI and Android's CI are two independently-scheduled jobs (a Node process and a JVM process never run inside the same test), so this proves "both sides match a shared, checked-in golden fixture," not a live hand-off between the two processes in one run** — desktop writes a docx/xlsx mutation into a fixture copy and checks its output against the checked-in golden bytes; Android reads the SAME golden bytes and produces the identical `PersistedComment[]`; the same in reverse for a Kotlin-written fixture; both platforms' verify-after-write rollback is exercised against a deliberately-corrupted intermediate write (§9.3) | T11, T13, T17, T19 | Description; fixtures live in `shared-fixtures/doc-comments/` (the workspace's established cross-runtime fixture convention — `shared-fixtures/artifacts/`, `shared-fixtures/attention-classifier/` are the precedent, though both of those are JSON-only; this is the first binary+JSON pair in that directory); **desktop's own CI adds a self-check that fails loudly if its freshly-generated output no longer matches the committed golden fixture (review 2, F5) — otherwise fixture staleness lets desktop's CI stay green while silently drifting from the bytes Android's still-green test actually reads** | the four-part test §9.3 describes, run in CI on the desktop side and via `./gradlew test` on the Android side against the SAME checked-in fixture bytes; **a staleness self-check: desktop's writer output is re-diffed against the committed golden fixture on every run, failing loudly on drift instead of only on the next manual regeneration (F5)** | This is the ONLY thing that catches "each side passes its own tests but the two are subtly incompatible" — treat a passing T17/T19 alone as unproven parity, not done, until this lands. It proves both sides match a shared golden fixture, not that the two live implementations agree with each other right now (F5) — that's the best achievable structure across a Node/JVM split, not a shortcut. |
+
+**Every task in a parallel batch below gets its OWN worktree (review 2, F11)** — per
+`.claude/rules/using-git-worktrees`, never two write-capable subagents sharing one checkout.
+`docs/PITFALLS.md` dates a real 2026-09-06 incident where exactly this erased a builder's saved,
+type-checked work with a clean `git status` and no error; CLAUDE.md states directly "do not assume
+multiple write-capable specialists can run concurrently." "In parallel" below means "in parallel,
+each in its own worktree," never a shared checkout.
 
 **Suggested batching**: T1 alone first (everything downstream reads its frozen schema and its
 containment/lock-canonicalization algorithms). Then in parallel: T2, T7, T10, T12, and the desktop
@@ -1014,9 +1229,13 @@ This design accepts, rather than architects away, three separate places that rea
    either platform, and on Android it runs under Termux. Zero dependencies is the only shape that
    works in both places"). It cannot `import` `cas-write.ts` or any bundled dependency — it needs a
    small, dependency-free reimplementation of the SAME mkdir-lock-plus-atomic-rename algorithm,
-   embedded the same way `LINK_SERVER_JS` is a self-contained `String.raw` template, and citing
-   `chatsearch.js`'s own atomic tmp-write+rename (`chatsearch.js:812-814`) and bounded outbox/receipt
-   poll loop as real, shipped precedent for the same shape (review 1, F8).
+   embedded the same way `LINK_SERVER_JS` is a self-contained `String.raw` template. **Corrected
+   citation (review 2, F12):** `chatsearch.js`'s own atomic tmp-write+rename (`chatsearch.js:812-814`)
+   is real, shipped precedent for the atomic-write mechanics ONLY — its `submitRequest` generates a
+   fresh uuid-named file per call and polls a DIFFERENT ack path, so no two writers ever race the same
+   file, and it contains no mutex anywhere. The mutual-exclusion half of T9a (truly excluding a second
+   writer from the SAME file) has no precedent anywhere in this codebase to copy from — it is novel
+   work, not a port, and T9a's review budget (§8's task table) is set accordingly.
 3. **Kotlin** (`SessionService.kt`, T4) — a plain-mutex-plus-atomic-rename implementation (simpler
    than #1/#2 because Android has no concurrent second-process hazard, per §1.6) — for plain-text
    `PersistedComment` files. (Kotlin's SEPARATE docx/xlsx write path, real as of reopen-1, is §9.2,
@@ -1041,8 +1260,12 @@ the Claude Code MCP script (T9a) — which has neither `node_modules` nor a DOM,
 goes through a small file-based pending-mutation queue (T9b) instead of a third from-scratch XML
 editor: the MCP tool writes a pending mutation request into `.youcoded/comments/.pending/<uuid>.json`
 (the SAME dependency-free lock primitive as #2 above, since this part is a plain JSON write, not
-XML), then polls (bounded, ~3s, matching other native tool timeouts) for a result file the
-main-process watcher (§1.5, already watching `.youcoded/comments/`) writes once it applies the
+XML), then polls (bounded, explicitly set and benchmarked — review 2, F13 retracted the earlier "~3s,
+matching other native tool timeouts" citation, since no such precedent exists: real native-tool
+timeouts are 120-600s, and chokidar's own 2000ms default `awaitWriteFinish.stabilityThreshold` alone
+would consume most of a 3s budget; §1.5 sets 500ms for the comments watcher specifically) for a
+result file the main-process watcher (§1.5, already watching `.youcoded/comments/`) writes once it
+applies the
 mutation with its real JSZip/Node-XML-library/exceljs-capable code. Plain-file `PersistedComment`
 mutations from the MCP path skip the queue entirely — JSON read-modify-write is simple and low-risk
 enough for the script to do directly (T9a). Android's MCP script (T9c: a byte-identical asset) was
@@ -1058,7 +1281,8 @@ as the applier instead of the TS main process's chokidar watcher — not `FileOb
 `FileObserver`-based watch" is about the UI-facing `docComments:watch` push (a different, still
 out-of-scope concern, unaffected by reopen-1); this internal queue only needs `SessionService`,
 which is already running for the whole PTY session, to notice its own `.pending/` directory on a
-short interval (~250ms, comfortably under T9b's ~3s bound). This is genuinely new work (T20) — landing
+short interval (~250ms, comfortably under T9b's corrected, benchmarked bound — review 2, F13; the
+originally-cited ~3s "matching other native tool timeouts" figure had no such precedent). This is genuinely new work (T20) — landing
 T9b on desktop does not cover it, because the two platforms' watchers are different code, even though
 the request/result JSON shape and the MCP script's polling logic (T9c's byte-identical asset) are
 unchanged.
@@ -1074,7 +1298,8 @@ pending-mutation queue, and Android byte-identical asset parity — four indepen
 independently testable pieces the design's own "sized for one subagent each" rule argues against
 combining. Split into:
 - **T9a** — the six MCP tool JSON-RPC definitions plus the dependency-free plain-file store (§9.1
-  point 2), citing `chatsearch.js` as the pattern to copy.
+  point 2), citing `chatsearch.js` for its atomic-write mechanics only — the mutual-exclusion/lock
+  half is novel work, not a port (review 2, F12).
 - **T9b** — the docx/xlsx pending-mutation queue, desktop side (blocked on §3.2/§4.3's F1/F2
   architecture fix landing first).
 - **T9c** — Android byte-identical asset parity + its own parity test, citing `ClaudeCodeMcp.kt` /
@@ -1095,10 +1320,19 @@ combining. Split into:
   and Android reads the result, producing the identical `PersistedComment[]` shape (same ids, text,
   `resolved`, reply order); (2) the same in reverse — Android writes, desktop reads; (3) both
   platforms' own verify-after-write logic is exercised against a deliberately-corrupted intermediate
-  write, confirming both roll back to a byte-identical original. This is what actually proves
-  "equivalent output," not merely "each side's own tests are green" — two implementations can each
-  pass their own suite while producing subtly incompatible XML (e.g., a different but
-  individually-valid relationship-id scheme) that only a real cross-read catches.
+  write, confirming both roll back to a byte-identical original. **Precisely worded (review 2, F5):**
+  this proves "both sides match a shared, checked-in golden fixture," NOT a live hand-off between the
+  two processes in one CI run — `android-ci.yml` and desktop's own CI are two independently-scheduled
+  jobs, and a Node process and a JVM process never run inside the same test. That's the best
+  achievable structure across a Node/JVM split, not a shortcut — but it means a future change to
+  desktop's `docx-comments.ts` output shape that isn't accompanied by regenerating the checked-in
+  fixture could let desktop's own CI (checking its own fresh output against its own expectations)
+  stay green while silently drifting from the golden bytes Android's still-green test reads.
+  **Desktop's CI therefore adds a self-check that fails loudly if freshly-generated output no longer
+  matches the committed golden fixture**, so staleness is caught immediately rather than only the
+  next time someone remembers to regenerate it. Two implementations can each pass their own suite
+  while producing subtly incompatible XML (e.g., a different but individually-valid relationship-id
+  scheme) that only this golden-fixture comparison catches.
 
 ## 10. What this design deliberately does not change
 
