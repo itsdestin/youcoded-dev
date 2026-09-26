@@ -1,0 +1,15 @@
+{
+ "deck": "minimalist-glass-structure",
+ "started": "2026-09-23T03:49:44.745Z",
+ "submitted": "2026-09-23T03:50:24Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "note": "i think we should do what we did for the session switcher with all of the buttons, just remove the gradient/color altogether",
+   "v": "yes",
+   "seconds": 37,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

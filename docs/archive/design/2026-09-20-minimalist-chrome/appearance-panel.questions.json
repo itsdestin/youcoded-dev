@@ -1,0 +1,342 @@
+{
+  "title": "Appearance panel — your own style over any theme",
+  "key": "appearance-panel-questions",
+  "out": "appearance-panel.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "AP-1",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "How should you choose a layout style that overrides the theme's own?",
+      "today": "Each theme decides its own layout: Framed (bars joined into a frame), Floating bars (each bar is its own rounded card) or the new Minimalist (every button floats alone). You cannot change it; only the theme's author can.",
+      "problem": "If you like one theme's colors but another theme's layout, there is no way to combine them.",
+      "proposal": "A Layout choice on the Appearance panel. Its first option follows each theme; the others apply your pick to every theme.",
+      "options": [
+        {
+          "id": "one-picker",
+          "label": "One picker",
+          "summary": "Four small pictures in a row: Theme's choice, Framed, Floating bars, Minimalist.",
+          "pros": [
+            "One tap, and you see what each looks like before choosing.",
+            "Going back to normal is the same tap: Theme's choice."
+          ],
+          "cons": [
+            "Four pictures take a row of the panel."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "switch-then-picker",
+          "label": "Switch, then picker",
+          "summary": "A switch named \"Use my own layout for every theme\"; turning it on reveals three pictures.",
+          "pros": [
+            "The panel stays shorter for people who never touch it."
+          ],
+          "cons": [
+            "Two steps instead of one.",
+            "Turning the switch off hides your pick, so it is less obvious what you had chosen."
+          ]
+        },
+        {
+          "id": "per-theme",
+          "label": "Per theme only",
+          "summary": "The layout choice goes in each theme's pencil menu and changes only that theme.",
+          "pros": [
+            "Mix freely: one theme framed, another minimalist."
+          ],
+          "cons": [
+            "No way to set it once for every theme.",
+            "Hidden behind the pencil, where people rarely look."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AP-2",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "Should glass settings also have one setting for every theme?",
+      "today": "Themes with a wallpaper let you tune four glass sliders (panel blur, panel see-through, bubble blur, bubble see-through), but only inside each theme's pencil menu, and only for that one theme.",
+      "problem": "Someone who wants every theme a little more solid has to find the pencil and drag four sliders on each theme, one at a time.",
+      "proposal": "A Glass setting on the main panel that applies to every theme with a wallpaper. Its first option follows the theme.",
+      "options": [
+        {
+          "id": "presets-plus-sliders",
+          "label": "Presets, sliders on request",
+          "summary": "Theme's choice / Clear / Frosted / Solid, plus a \"Fine-tune\" link that opens the four sliders.",
+          "pros": [
+            "Most people get what they want in one tap without learning what blur means.",
+            "The sliders are still there for anyone who wants them."
+          ],
+          "cons": [
+            "Three presets are our guess at what people want; some will still need the sliders."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "sliders-only",
+          "label": "Theme's choice or sliders",
+          "summary": "A switch between Theme's choice and Custom; Custom shows the same four sliders, applied to every theme.",
+          "pros": [
+            "Full control right away."
+          ],
+          "cons": [
+            "Four technical sliders is a lot to face for \"a bit more solid\"."
+          ]
+        },
+        {
+          "id": "keep-per-theme",
+          "label": "Keep it per theme",
+          "summary": "No global setting; the active theme's four sliders simply move out of the pencil onto the main panel.",
+          "pros": [
+            "Easier to find than today, and no new rules about which setting wins."
+          ],
+          "cons": [
+            "Still has to be redone for every theme."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AP-3",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → a theme's pencil menu",
+      "headline": "When your global glass setting is on, what happens to a theme you already tuned with its pencil?",
+      "today": "Glass tweaks made through a theme's pencil are saved for that theme and come back every time you switch to it.",
+      "problem": "Once there is also a setting for every theme, the two can disagree, and the app has to pick one.",
+      "proposal": "Pick which one wins.",
+      "options": [
+        {
+          "id": "global-wins-kept",
+          "label": "Global wins, tweaks kept",
+          "summary": "While a global glass setting is on it applies everywhere; set it back to Theme's choice and each theme's old tweaks return.",
+          "pros": [
+            "The global setting always does what it says.",
+            "Nothing you tuned earlier is lost."
+          ],
+          "cons": [
+            "The pencil's glass sliders are greyed while the global one is on, with a line saying why."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "theme-tweak-wins",
+          "label": "Theme tweak wins",
+          "summary": "A theme you tuned by hand keeps its tweak; the global setting covers the rest.",
+          "pros": [
+            "Hand-tuned themes stay exactly as you left them."
+          ],
+          "cons": [
+            "Changing the global setting sometimes seems to do nothing, and it is hard to tell why."
+          ]
+        },
+        {
+          "id": "no-per-theme",
+          "label": "Drop per-theme tweaks",
+          "summary": "Glass is set only globally; pencil glass sliders go away.",
+          "pros": [
+            "Only one place to look, ever."
+          ],
+          "cons": [
+            "Anyone who tuned a theme loses that tuning."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AP-4",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "Which other theme choices should you be able to override for every theme?",
+      "today": "Besides layout and glass, a theme also decides the message bubble shape, the message box style, falling particles and corner roundness. For themes you did not make, you can change none of these.",
+      "problem": "Each one you cannot change is another reason to give up on a theme you otherwise like.",
+      "proposal": "Pick any you want as \"Theme's choice or yours\" settings. Each one you pick adds one row to the panel; leave them all unpicked to keep only layout and glass.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "bubbles",
+          "label": "Bubble shape",
+          "summary": "Normal, pill, flat or outlined message bubbles.",
+          "pros": ["Very visible, easy to understand."],
+          "cons": ["Some themes' look depends on their bubble shape."]
+        },
+        {
+          "id": "composer",
+          "label": "Message box style",
+          "summary": "How the box you type in sits: normal, floating, minimal or terminal-like.",
+          "pros": ["Pairs naturally with the layout choice."],
+          "cons": ["Some combinations with a layout look odd, and would need checking."]
+        },
+        {
+          "id": "particles",
+          "label": "Particles",
+          "summary": "None, rain, dust, embers or snow falling over the wallpaper.",
+          "pros": ["Fun, and a quick way to turn off a theme's particles without turning off all effects."],
+          "cons": ["Reduce visual effects already turns them all off."]
+        },
+        {
+          "id": "roundness",
+          "label": "Roundness",
+          "summary": "How rounded corners are, from square to fully round.",
+          "pros": ["A single slider everyone understands."],
+          "cons": ["Can clash with a theme drawn around sharp or round shapes."]
+        }
+      ]
+    },
+    {
+      "id": "AP-S1",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "Every new setting starts on Theme's choice, so nobody's app changes until they change it.",
+      "changed": "Stated, not asked: the new settings default to following each theme, and existing pencil tweaks are kept as they are.",
+      "notice": "After the update every theme looks exactly as it does today. Only the panel's arrangement is new.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "AP-P2",
+      "page": "How the panel is arranged",
+      "intro": "The first page decided what you can change. These decide where it sits."
+    },
+    {
+      "id": "AP-5",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "How should the Appearance panel be organized?",
+      "today": "One column: your favorite themes as big cards, then Browse Theme Marketplace, Build New Theme, Reduce visual effects and Message timestamps, with no headings. Glass is hidden in each theme's pencil.",
+      "problem": "Adding layout and glass settings to that column makes a long list with no signposts, and the theme cards push everything else below the fold.",
+      "proposal": "Pick a structure.",
+      "options": [
+        {
+          "id": "sections",
+          "label": "One page, headed sections",
+          "summary": "Themes (favorites, Browse, Build) · Look (layout, glass, any extras) · Effects & chat (Reduce effects, timestamps).",
+          "pros": [
+            "Everything visible by scrolling; headings tell you where you are.",
+            "Same shape as the rest of Settings."
+          ],
+          "cons": [
+            "Still one scrolling page, though shorter with a smaller favorites box."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "tabs",
+          "label": "Tabs at the top",
+          "summary": "Themes | Look | Effects, one tab showing at a time.",
+          "pros": [
+            "Each tab is short."
+          ],
+          "cons": [
+            "Settings on other tabs are out of sight, so people miss them.",
+            "Tabs inside a popup are a pattern the app does not use elsewhere."
+          ]
+        },
+        {
+          "id": "customize-view",
+          "label": "Customize button",
+          "summary": "The panel stays as today; a \"Customize look\" button opens a second view with the new settings.",
+          "pros": [
+            "The main panel barely changes."
+          ],
+          "cons": [
+            "The new settings are one more click away and easy to miss."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AP-6",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Favorited Themes",
+      "headline": "How should the favorite themes list shrink?",
+      "today": "Favorites show as big cards, two per row, and the list grows with every theme you star, so ten favorites push everything else far down.",
+      "problem": "The settings below the cards are hard to reach once you have many favorites.",
+      "proposal": "Put the favorites in a smaller container.",
+      "options": [
+        {
+          "id": "box-two-rows",
+          "label": "Box, two rows tall",
+          "summary": "Same cards, in a box about two rows tall that scrolls inside itself.",
+          "pros": [
+            "Four themes visible at a glance; the settings below never move.",
+            "Cards keep their preview pictures."
+          ],
+          "cons": [
+            "A scroll area inside a scrolling page can catch the scroll wheel when you meant to scroll the page."
+          ],
+          "measured": "4 cards visible before scrolling",
+          "recommended": true
+        },
+        {
+          "id": "row-sideways",
+          "label": "One row, sideways",
+          "summary": "A single row of cards you scroll left and right.",
+          "pros": [
+            "Takes the least height."
+          ],
+          "cons": [
+            "Sideways scrolling is awkward with a mouse wheel.",
+            "Only two or three themes visible at once."
+          ]
+        },
+        {
+          "id": "smaller-cards",
+          "label": "Smaller cards",
+          "summary": "Three smaller cards per row, no box, list still grows.",
+          "pros": [
+            "No scroll-inside-a-scroll."
+          ],
+          "cons": [
+            "Previews get too small to judge a theme.",
+            "Many favorites still push everything down."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AP-7",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "How much review should this get before it merges?",
+      "today": "The float style itself went through many picture rounds with you and two independent code reviews.",
+      "problem": "This change adds saved settings that touch every theme, so a mistake could change how someone's app looks without them asking.",
+      "proposal": "Pick how much checking to do.",
+      "options": [
+        {
+          "id": "full",
+          "label": "Full route",
+          "summary": "Picture mockups for you, a fresh tester, a written definition of done you sign, two reviewers, then a final acceptance page.",
+          "pros": [
+            "Strongest protection for the \"nobody's app changes\" promise.",
+            "You sign off on exactly what done means."
+          ],
+          "cons": [
+            "Slower, and about a dozen helper runs."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "short",
+          "label": "Short route",
+          "summary": "Picture mockups for you, I build, then one before/after review page.",
+          "pros": [
+            "Much faster."
+          ],
+          "cons": [
+            "Fewer independent eyes on the saved-settings logic."
+          ]
+        }
+      ]
+    }
+  ]
+}

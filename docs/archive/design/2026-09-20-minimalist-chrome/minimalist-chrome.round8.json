@@ -1,0 +1,23 @@
+{
+  "title": "Float style — session menu, second pass",
+  "key": "minimalist-round8",
+  "out": "minimalist-chrome.round8.html",
+  "images": "images/minimalist-chrome.round8",
+  "runs": {"before": "runs/r8-before", "after": "runs/r8-after"},
+  "labels": {"before": "Last round", "after": "Now"},
+  "themes": ["meadow-mist", "golden-sunbreak", "midnight"],
+  "theme": "fixed",
+  "crops": {"menu": ["r8", "menu-scrolled", "560x560+440+20"]},
+  "steps": [
+    {
+      "id": "R8-1",
+      "surface": "Chat",
+      "path": "Header — the arrow at the end of the session switcher, list scrolled a little",
+      "crop": "menu",
+      "headline": "The session list's rows now fade out cleanly at the top and bottom, and the menu is a little less see-through.",
+      "changed": "The list used to fade under a band painted in the theme's panel colour, which showed as a dark stripe on the see-through menu. Now the rows themselves fade to clear, like messages under the bottom controls. The menu's fill went from 16% to 24%.",
+      "notice": "Midnight (no wallpaper) keeps a solid menu: with nothing to blur, the chat behind showed through the rows sharply. The list is scrolled a little in every picture so both fades show.",
+      "risk": "Over busy wallpaper, blurred chat bubbles still show faintly through the menu."
+    }
+  ]
+}

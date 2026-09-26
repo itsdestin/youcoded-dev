@@ -1,0 +1,22 @@
+{
+ "deck": "minimalist-unified-built",
+ "started": "2026-09-23T23:27:19.090Z",
+ "submitted": "2026-09-23T23:29:11Z",
+ "cur": 1,
+ "answers": {
+  "W-1": {
+   "note": "better. i want to see this applied in a few different existing themes to ensure it looks good with different background and color pallettes and such. want to frost/blur a bit more agressively on the input area.",
+   "v": "other",
+   "seconds": 56,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "W-2": {
+   "note": "it's hard to tell that there is an inner selection container. this doesn't quite read as selected to me. try again",
+   "v": "other",
+   "seconds": 56,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

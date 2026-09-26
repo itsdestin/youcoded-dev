@@ -1,0 +1,34 @@
+{
+  "title": "Wallpaper-aware header ink — theme and status tuning",
+  "key": "minimalist-header-ink-tuning",
+  "out": "minimalist-chrome.ink-tuning.html",
+  "images": "images/minimalist-chrome.ink-tuning",
+  "runs": { "before": "runs/ink-before", "after": "runs/ink-tuned" },
+  "labels": { "before": "Current clear controls", "after": "Measured theme ink — prototype" },
+  "themes": ["meadow-mist", "cotton-candy-sky", "golden-sunbreak", "devils-garden", "kuromi-dreamer", "strawberry-kitty"],
+  "theme": "fixed",
+  "crops": {
+    "header": ["ink", "tuned-ink", "1440x50+0+0"],
+    "sessions": ["ink", "tuned-ink", "550x45+445+0"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "Header · six wallpaper themes",
+      "crop": "header",
+      "headline": "Icons take a readable tint from their theme, instead of turning pure white.",
+      "changed": "The Workbench prototype samples the actual image under the header. Where the existing theme ink is too dim, it uses the theme's panel hue, adding only enough brightness and saturation for a 3:1 non-text icon target. Clear space between controls remains clear. Themes that already meet that target keep their colors.",
+      "notice": "Use the six theme tabs to judge this as a system, not just in Meadow Mist. This is an isolated visual experiment; only image wallpapers were sampled. Gradient/pattern backgrounds and live resizing still need implementation and testing."
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat",
+      "path": "Session switcher · six wallpaper themes",
+      "crop": "sessions",
+      "headline": "Active status keeps its hue and no longer fades nearly away; idle stays quiet.",
+      "changed": "Working green and Needs Input red stay within their original hues against the actual strip area. Their existing breathing had dropped opacity to 30%, erasing even readable colors at the low point; the prototype raises that low point to 80%. Neutral idle gray is adjusted just enough to read without becoming a white dot. Other status hues are covered by the prototype but not shown by this fixture.",
+      "notice": "Meadow Mist sample: icon ink is tinted mint at 3.19:1; Working green 3.07:1, Needs Input red 3.11:1, idle gray 2.12:1 at full opacity. Idle remains quieter intentionally. These are source-image estimates, not a claim about every effect layer or viewport."
+    }
+  ]
+}
