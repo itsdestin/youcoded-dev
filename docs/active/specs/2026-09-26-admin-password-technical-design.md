@@ -172,14 +172,68 @@ For a connection claiming pid P, ALL must hold, else refuse:
    which can't be parsed unambiguously (review 2, E2/E3). An unreadable result refuses. **The
    Mac half ships switched off until KERN_PROCARGS2 is proven on a real Mac with SIP on.**
    P's TracerPid (Linux) must be 0.
-2. **P's parent is a genuine setuid sudo** (review 1, D5 — trusted by properties, not a path
-   list, so Nix's `/run/wrappers/bin/sudo` and similar work): the parent's real executable
-   has basename `sudo`, is a regular file owned by uid 0 with the setuid bit, not
-   group/other-writable, and every directory from it up to `/` is root-owned and not
-   group/other-writable. A fake `sudo` in `~/bin` fails this (a); a script that runs our
-   helper itself fails it (b); a model-supplied `SUDO_ASKPASS` never reaches us (c). At
-   startup the server checks that the `sudo` on the app's PATH qualifies and logs plainly
-   when none does (the feature then can't work, and the Bash description says so).
+2. **P's parent is a genuine setuid sudo** — REDESIGNED 2026-09-26 (Destin found on his real
+   machine: every real sudo call was refused, `reason:"proc-read-failed"`, right here).
+
+   **Why the original check could never pass.** It read `/proc/<parent>/exe` (Linux
+   `readlink`) to get the parent's real executable, then stat'd THAT path. sudo runs
+   setuid-root, and the kernel clears the "dumpable" flag on any process that elevates
+   privilege via a privileged exec — `/proc/<pid>/exe`, `/proc/<pid>/environ` and
+   `/proc/<pid>/maps` all become `EACCES` to a reader whose EFFECTIVE uid differs from the
+   target's, and this holds even when the reader's REAL uid matches (our own case exactly:
+   we and sudo share a real uid, but sudo's effective uid is 0 and ours isn't). Confirmed
+   empirically against `/proc/1` (always root-owned, always present, no sudo needed to
+   check it): `readlink /proc/1/exe` and `cat /proc/1/environ` both fail `EACCES`, while
+   `/proc/1/status`, `/proc/1/comm`, `/proc/1/cmdline` and `/proc/1/stat` of the SAME pid
+   all stay readable. So this check, as originally written, could never observe a genuine
+   sudo's exe path in production — it worked only in the fakes-based test suite, which never
+   modeled the EACCES a real kernel enforces here. Pinned by `tests/proc-info.test.ts`
+   (`createProcReader('linux')` against pid 1) and by `tests/askpass-verify.test.ts`'s
+   `goodProcs()` fixture, which now deliberately fakes the parent's own exe/environ as
+   unreadable (`null`) precisely so the accept-path tests can never regress into depending
+   on a read that will not exist in reality.
+
+   **What it checks now**, using only what stays readable for a setuid process we did not
+   create:
+   - `/proc/<parent>/status`'s `Uid:` line: **effective uid must be 0** (the kernel sets this
+     ONLY via `execve()` of an actual root-owned setuid regular file — unforgeable by an
+     attacker without root), and **real uid must be OURS** (otherwise this euid-0 process
+     belongs to a different user and has nothing to do with our call).
+   - `/proc/<parent>/comm` must read `sudo` — set by the KERNEL from the EXECUTED FILE's own
+     basename at exec time, never from the caller-supplied `argv[0]`, which is what keeps
+     this a meaningful identity signal despite (a) below.
+   - `/proc/<parent>/cmdline`'s `argv[0]`: attacker-choosable at exec time (a caller of
+     `execve()` picks the new process's argv independently of which file actually gets
+     mapped), so it is NEVER trusted as identity by itself — only, when it happens to be
+     absolute, as a candidate PATH to run the SAME ownership/setuid/writability/directory-
+     chain check item 2 always required. A bare name (the common case — a shell passes
+     `argv[0]` exactly as typed, not the path its own PATH lookup resolved) falls back to a
+     FIXED, never-PATH-derived list of well-known install locations
+     (`/usr/bin/sudo`, `/usr/local/bin/sudo`, `/bin/sudo` today), using whichever one this
+     machine actually has and passes those same checks. **Never a PATH lookup performed by
+     us** — repeating the shell's own lookup is exactly attack (a) (a fake `sudo` earlier in
+     `PATH`), and effective-uid-0 already rules out anything that isn't a real root-owned
+     setuid file regardless.
+
+   **Why this is still sound without reading the real exe path.** Achieving effective uid 0
+   is a kernel-enforced fact, not a claim: it requires having `execve()`'d an actual
+   root-owned setuid regular file, and an attacker without root privileges cannot create,
+   relocate or retroactively bless one. Once such a file IS exec'd, the attacker's own code
+   is gone — the new image's real code is what runs from that instant, so it cannot then
+   call `prctl(PR_SET_NAME, "sudo")` or otherwise fake being sudo; only the REAL sudo binary
+   (or another genuine setuid-root program that happens to be named `sudo` and sits under the
+   fixed list — which nobody but root can arrange) satisfies `comm == 'sudo'` post-exec.
+
+   **Accepted residual weakening vs. the original design** (stated rather than silently
+   accepted, matching this section's own posture elsewhere): the original readlink-based
+   check bound the ownership/setuid/writability chain to the EXACT file the kernel executed;
+   this redesign binds it to either (i) an attacker-influenceable `argv[0]` string (when
+   absolute) or (ii) a location WE chose in advance (when bare) — in either case, a real
+   improvement over trusting nothing, but not the same cryptographic tightness as reading the
+   kernel's own resolved path. A distro installing `sudo` somewhere outside the fixed list
+   needs an entry added there or the feature refuses every real sudo on that machine (loud
+   and logged — never a silent bypass, same "sudo fails as it does today" posture §2.2
+   already commits to).
 3. **P is inside a registered Bash call**: walking P's ancestors (Linux `/proc/*/stat`
    ppid; macOS `ps -o ppid=`) reaches a root pid in `RunningCalls` within 64 steps.
 4. **The pid is the kernel's** (§2.2), so (d) — another process claiming a waiting
