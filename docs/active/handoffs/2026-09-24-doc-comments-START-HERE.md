@@ -106,6 +106,24 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
 - **No UX tester runs** (Destin, 2026-09-24: "we will skip the ui/ux auto tester. my manual
   review makes that mostly unnecessary"). Skip both the pre-deck run and the post-build run.
 
+## Review deck (2026-09-26)
+
+`docs/active/design/2026-09-24-doc-comments/doc-comments.review.json`, answers beside it.
+R-1, R-2, R-4, R-6–R-9 approved as shown. Changed after review:
+- **R-3:** Show Resolved sits under the title divider; the panel has a × that leaves
+  Comments mode.
+- **R-5:** Ask Your Assistant and the floating Edit/Save are opaque on wallpaper themes;
+  sending leaves Comments mode so the sent message is visible; ONE summary chip
+  ("2 comments · file.md", hover lights every highlight) replaces one chip per comment.
+- **Q-1:** from the Projects screen, Ask Your Assistant opens the new-session dialog
+  (Create a page's) in the file's project, request waiting in the composer.
+- **Q-2:** practice branches `comments-mock-a-v1`, `-b`, `-c` deleted (local + GitHub);
+  their screenshots kept in this worktree's `scratch/mock-{b,c}-shots/`.
+Also fixed during review: stray full-width comment sheet on desktop (phone-only now;
+narrow desktop pane → popover by the marker), comments re-opening after resize/close,
+deck one-pane live steps clipping the app (Meadow Mist blur), deck panes ignoring their
+theme. Deck-page CSS change needs a selfie before/after before merge.
+
 ## What the build found (infrastructure survey, 2026-09-24)
 
 - Accounts: GitHub sign-in through the marketplace Worker (D1). No per-user document
