@@ -108,7 +108,10 @@
   },
   {
    "name": "composer-attachments",
-   "measure": ["js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement?.parentElement", "js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement"],
+   "measure": [
+    "js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement?.parentElement",
+    "js:document.querySelector(\"[aria-label^='Remove']\")?.parentElement"
+   ],
    "actions": [
     {
      "dispatch": {
@@ -335,11 +338,12 @@
      "scrollDialog": "bottom"
     },
     {
-     "click": "js:[...document.querySelectorAll('div')].filter(d=>/^Download interrupted$/i.test(d.textContent.trim()))[0]?.parentElement?.querySelector('button:last-of-type')",
+     "click": "js:[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Delete'&&(b.parentElement?.parentElement?.textContent||'').includes('Download interrupted'))[0]",
      "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('Delete 74.2 GB?')"
+   "expect": "js:document.body.textContent.includes('Delete 74.2 GB?')",
+   "_why": "Repaired 2026-09-26 (fix batch 2): the interrupted state is now a notice box inside the card, so the Delete button is found by its box text, not the old strip."
   },
   {
    "name": "local-models-delete-confirm",
@@ -369,7 +373,7 @@
   },
   {
    "name": "local-models-resuming",
-   "_why": "`clickText: \"Resume\"` searches the WHOLE page (shot.mjs textExpr), not just the dialog — with the Model Providers popup gone, this now sits over the resume browser's own session cards, some of which ALSO say exactly 'Resume', and the smallest-element tie can pick the wrong one. Found live-testing this repair (2026-09-24): the shot closed the dialog instead of resuming a download. Scoped to `[role=dialog] button` via eval instead.",
+   "_why": "`clickText: \"Resume\"` searches the WHOLE page (shot.mjs textExpr), not just the dialog \u2014 with the Model Providers popup gone, this now sits over the resume browser's own session cards, some of which ALSO say exactly 'Resume', and the smallest-element tie can pick the wrong one. Found live-testing this repair (2026-09-24): the shot closed the dialog instead of resuming a download. Scoped to `[role=dialog] button` via eval instead.",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -395,7 +399,7 @@
   },
   {
    "name": "local-models-paused",
-   "_why": "Same page-wide clickText ambiguity as local-models-resuming (2026-09-24, capture repair) — both clicks scoped to `[role=dialog] button`.",
+   "_why": "Same page-wide clickText ambiguity as local-models-resuming (2026-09-24, capture repair) \u2014 both clicks scoped to `[role=dialog] button`.",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -424,7 +428,7 @@
    "expect": "js:/Download interrupted/i.test(document.body.textContent) && [...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Resume')"
   },
   {
-   "name": "local-models-damaged-why",
+   "name": "local-models-damaged",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -440,13 +444,10 @@
     },
     {
      "scrollDialog": "bottom"
-    },
-    {
-     "click": "[aria-label='Why this download is damaged']",
-     "settle": 500
     }
    ],
-   "expect": "js:document.body.textContent.includes('kept track of where downloads come from')"
+   "expect": "js:document.body.textContent.includes('Damaged download')",
+   "_why": "Repurposed 2026-09-26 (fix batch 2): the damaged explanation is no longer hidden behind an (i); it is written inside the notice box, so this shot pictures the box."
   },
   {
    "name": "permissions-scrolled",
