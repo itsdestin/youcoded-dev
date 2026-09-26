@@ -7,7 +7,7 @@ status: active
 launch of the resume browser can seemingly load indefinitely."
 
 **How measured.** `scripts/perf-lab/real-scale-startup.mjs` boots the packaged app
-(branch `session/startup-perf-20260926`, app marks added there) against a
+(youcoded#573, which also added the app-side marks) against a
 `cp --reflink` copy of this machine's history — 1,096 Claude Code transcripts (6.7 GB),
 2,615 conversation records, 1,018 native session files, 4.8 GB of synced copies — in a
 throwaway HOME with no sync configured. Boot 1 is cold (copied files are not in the OS

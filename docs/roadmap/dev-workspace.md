@@ -83,14 +83,6 @@ seen-on is always n/a here.
       --workload-repeats 1` on a quiet machine; expect blank frames on most switches
       `n/a` `needs-verify` `checked 2026-09-18`
 
-- [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
-      never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
-      pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
-      hour. Nothing about the code changed between the green and red runs, so it is the runner's
-      Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
-      is recognised, but the fix is a longer or retried launch in the perf-lab harness
-      `n/a` `needs-verify` `checked 2026-09-10`
-
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
       phase opens the drawer but types into an editor rather than receiving a reply, so a

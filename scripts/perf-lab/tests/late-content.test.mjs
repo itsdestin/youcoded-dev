@@ -1,10 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { connect, listTargets } from '../cdp.mjs';
+import { spawnSync } from 'node:child_process';
+import { rmSync } from 'node:fs';
+import { connect } from '../cdp.mjs';
+import { startLiveChrome } from './live-chrome.mjs';
 import {
   formatLateContentLine,
   scrollAndCount,
@@ -128,23 +127,13 @@ const haveChrome = spawnSync('sh', ['-c', `command -v ${CHROME}`], { encoding: '
 
 test('LIVE: pop-in is caught, and an eager re-render is not', { skip: haveChrome ? false : `${CHROME} not on PATH` }, async () => {
   const port = 9784;
-  const profile = mkdtempSync(join(tmpdir(), 'perf-lab-late-'));
-  const chrome = spawn(CHROME, [
-    '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
-    '--no-first-run', '--no-default-browser-check', '--window-size=900,800', 'about:blank',
-  ], { stdio: ['ignore', 'ignore', 'pipe'] });
-  // WHY: CI could find Chrome on PATH but saw no debugging port. Preserve its
-  // launch error instead of reporting only a generic timeout on both live proofs.
-  let chromeError = '';
-  chrome.stderr.on('data', (chunk) => { chromeError = (chromeError + chunk).slice(-8192); });
-  chrome.on('error', (error) => { chromeError = `${chromeError}\n${error.message}`; });
+  // A slow runner gets a longer wait and one fresh retry (live-chrome.mjs).
+  let chrome = null;
+  let profile = null;
   let cdp = null;
   try {
-    let targets = null;
-    for (let i = 0; i < 60 && !targets; i++) {
-      try { targets = await listTargets(port); } catch { await new Promise((r) => setTimeout(r, 200)); }
-    }
-    assert.ok(targets, `Chrome never opened its debugging port (exit=${chrome.exitCode}, signal=${chrome.signalCode}): ${chromeError}`);
+    let targets;
+    ({ chrome, profile, targets } = await startLiveChrome(CHROME, port, ['--window-size=900,800'], 'perf-lab-late-'));
     cdp = await connect(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
 
     // `lazy` reproduces the app's shape: entries far from the viewport lose their
@@ -213,11 +202,11 @@ test('LIVE: pop-in is caught, and an eager re-render is not', { skip: haveChrome
     // AFTER every assertion above had passed. A leftover directory in the OS temp dir
     // is not a test failure; reporting one as though the instrument were broken is.
     await new Promise((done) => {
-      if (chrome.exitCode !== null || chrome.signalCode !== null) return done();
+      if (!chrome || chrome.exitCode !== null || chrome.signalCode !== null) return done();
       const t = setTimeout(done, 5000);
       chrome.once('exit', () => { clearTimeout(t); done(); });
       chrome.kill();
     });
-    try { rmSync(profile, { recursive: true, force: true }); } catch { /* the OS will reap it */ }
+    if (profile) try { rmSync(profile, { recursive: true, force: true }); } catch { /* the OS will reap it */ }
   }
 });
