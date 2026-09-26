@@ -223,6 +223,24 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
+- [ ] Admin (sudo) commands can't run from chat: approving one fails because it has no way to
+      ask for your password, and a script that needs admin partway through fails silently.
+      In design 2026-09-25: an in-chat password card (never saved, never shown to the
+      assistant, asks every time, works from the paired phone too) — questions deck answered
+      `desktop` `decision` `checked 2026-09-25` `security` → docs/active/design/2026-09-25-admin-password/admin-password.questions.json
+
+- [ ] Idea (Destin, 2026-09-25): the assistant should be able to ask you for an API key or a
+      `.env` value in a secure box, so it's used without being saved in chat history or shown to
+      the assistant: "the model can ask for .env stuff, api keys, etc." Sequenced after the admin
+      password card and meant to reuse its plumbing. Where a key goes, whether it's remembered,
+      and stopping the assistant reading it back later all need design
+      `desktop` `parked` `checked 2026-09-25` `security`
+
+- [ ] Idea (Destin, 2026-09-25): commands that ask for a GitHub, SSH or other login password
+      mid-run fail from chat. Deferred behind the admin card and keys: the app can't reliably
+      tell who is asking, so a command could trick you into typing the wrong password
+      `desktop` `parked` `checked 2026-09-25` `security`
+
 - [ ] In Auto-edit, a hired specialist runs any shell command that isn't on the always-ask list
       with no prompt, although the main assistant itself would have to ask first — the launch
       "envelope" (`envelopeGranted: true`, `native-session-host.ts` buildSpecialistSession →
