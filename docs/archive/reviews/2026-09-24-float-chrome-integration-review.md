@@ -4,7 +4,7 @@ Read-only review of `session/theme-minimal-chrome` (`git diff origin/master...HE
 scoped to the questions the requesting session asked: consistency with existing
 chrome styles, reduced-effects/accessibility behaviour, primitive reuse, plausible
 breakage, and what's still missing for `float` to be a shippable, user-selectable
-option. A separate prior review (`docs/active/reviews/2026-09-24-float-chrome-code-review.md`)
+option. A separate prior review (`docs/archive/reviews/2026-09-24-float-chrome-code-review.md`)
 already covers `use-wallpaper-header-ink.ts` performance (F1–F5, all "accepted, fixed
 in `e720e771e`" per that doc's own triage) — confirmed still true by reading the
 current hook (coalesced resize, band-limited `getImageData`, cached decode, gated

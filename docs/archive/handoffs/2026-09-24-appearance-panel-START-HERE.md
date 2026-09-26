@@ -1,6 +1,6 @@
 ---
 date: 2026-09-24
-status: active
+status: shipped
 type: handoff
 topic: Minimalist chrome + global Look settings — built and in PR; next is refining the Appearance panel before merge
 ---
@@ -75,7 +75,7 @@ App (`youcoded/desktop/`):
 - Tests: `tests/look-overrides.test.ts`, `tests/ThemeProvider.test.tsx` (Look throttle), `tests/theme-builtin-sources.test.ts` (Minimalist outline), `tests/float-chrome-pops.test.ts`, `tests/theme-build-button.test.tsx`
 - Docs: `docs/theme-spec.md` (chrome styles, Look), `desktop/CLAUDE.md` (persistence line)
 
-Decisions (workspace, `docs/active/design/2026-09-20-minimalist-chrome/`):
+Decisions (workspace, `docs/archive/design/2026-09-20-minimalist-chrome/`):
 - `appearance-panel.questions.json` + `.answers.json` — AP-1 one picker; AP-2 presets + Fine-tune;
   AP-3 global wins **and** "get rid of theme-specific tweaks"; AP-4 bubble shape, message box,
   roundness; AP-S1 nothing changes until changed; AP-5 undecided → AR-6 kept sections; AP-6
@@ -88,8 +88,8 @@ Decisions (workspace, `docs/active/design/2026-09-20-minimalist-chrome/`):
   workbench on another port — see below).
 - Minimalist style decks: `minimalist-chrome.*` rounds up to 9 and `.surfaces`.
 
-Reviews: `docs/active/reviews/2026-09-24-float-chrome-code-review.md`,
-`docs/active/reviews/2026-09-24-float-chrome-integration-review.md` (with a follow-up section).
+Reviews: `docs/archive/reviews/2026-09-24-float-chrome-code-review.md`,
+`docs/archive/reviews/2026-09-24-float-chrome-integration-review.md` (with a follow-up section).
 
 ## Known limits and open items
 

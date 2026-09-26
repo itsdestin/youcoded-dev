@@ -3,7 +3,7 @@ date: 2026-09-22
 status: superseded
 type: handoff
 topic: Minimalist chrome style — what Destin asked for, what is built, and where the last session lost him
-superseded_by: docs/active/handoffs/2026-09-24-appearance-panel-START-HERE.md
+superseded_by: docs/archive/handoffs/2026-09-24-appearance-panel-START-HERE.md
 ---
 
 # Minimalist chrome — START HERE
@@ -182,7 +182,7 @@ else touches that checkout. They are not covered by `verify.sh`.
 
 ## 3. WHERE THE DECKS AND ANSWERS LIVE
 
-`worktrees/sessions/theme-minimal-chrome/docs/active/design/2026-09-20-minimalist-chrome/`
+`worktrees/sessions/theme-minimal-chrome/docs/archive/design/2026-09-20-minimalist-chrome/`
 
 | Deck | Ran | Destin answered? |
 |---|---|---|

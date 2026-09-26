@@ -4,7 +4,7 @@ Fresh, read-only review per `scripts/ui-review/code-reviewer.md`. Scope: `youcod
 (branch `session/theme-minimal-chrome`, 57 files / ~3.7k lines), `wecoded-marketplace` PR #104
 (7 files), `wecoded-themes` PR #35 (preview.png swaps + vendored `contrast-rules.js` + a comment),
 workspace PR #201 (docs/decks/scripts, skimmed). Contract read:
-`docs/active/design/2026-09-20-minimalist-chrome/minimalist-chrome.ink-tuning.contract.json`
+`docs/archive/design/2026-09-20-minimalist-chrome/minimalist-chrome.ink-tuning.contract.json`
 (rows R1/R2, both `checkedBy: deck`, signed `yes` for theme `midnight` in
 `minimalist-chrome.ink-tuning.contract.answers.json`).
 
