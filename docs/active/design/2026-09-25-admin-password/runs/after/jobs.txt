@@ -1,0 +1,4 @@
+/home/destin/youcoded-dev/worktrees/sessions/sudo-prompt/scripts/ui-review/plans/admin-password.json admin-password midnight 0/1 45101
+/home/destin/youcoded-dev/worktrees/sessions/sudo-prompt/scripts/ui-review/plans/admin-password.json admin-password light 0/1 45102
+/home/destin/youcoded-dev/worktrees/sessions/sudo-prompt/scripts/ui-review/plans/admin-password.json admin-password halftone-dimension 0/1 45103
+/home/destin/youcoded-dev/worktrees/sessions/sudo-prompt/scripts/ui-review/plans/admin-password.json admin-password meadow-mist 0/1 45104
