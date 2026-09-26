@@ -2,6 +2,13 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
+
+- [ ] A theme whose mascot has companions (sun, motes, sparkles around it on the welcome
+      screen) still animates them smoothly at the screen's full refresh rate. The mascot
+      itself moved to 30 redraws a second on 2026-09-26 (youcoded#573: idle welcome screen
+      36% -> ~12-17% of the graphics chip on Destin's 180 Hz screen); the companions are the same
+      kind of cost, unmeasured because his theme has none. Measure a companion theme first
+      `all` `needs-verify` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
 - [ ] Themes you build yourself still get the old DRAWN preview picture (a mock chat page
       made from the theme's colours), while the built-in and community themes now show a
       real screenshot of the app (2026-09-24, `scripts/ui-review/theme-previews.py`). So on

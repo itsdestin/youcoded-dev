@@ -359,8 +359,10 @@ seen-on is always n/a here.
       runner (a CI box's software renderer says nothing about a 180 Hz panel): launch a dev
       instance nightly, run the idle probe at three times its baseline, run the startup marks
       and append one line per night, with a sanity floor because the rig has twice reported
-      clean while measuring nothing
-      `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
+      clean while measuring nothing. 2026-09-26: `scripts/perf-lab/real-scale-startup.mjs` now
+      takes the startup marks (and the detached launch work, Resume scans, main-process stalls)
+      against a copy of the REAL history, by hand — the nightly line is still missing
+      `n/a` `confirmed` `checked 2026-09-26` → docs/active/investigations/2026-09-16-simplification-audit.md
 
 - [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
       remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one

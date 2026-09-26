@@ -40,7 +40,7 @@ harness and the local engine.
 
 ## Next release
 Target: `v1.3.1`
-- chat-data: Four smaller reads left over from cycle 2 still do more work than they need to: listing past conversations…
+- chat-data: Smaller reads left over from cycle 2 still do more work than they need to: two reads take whole files where…
 - dev-workspace: Waiting on CI runs eats whole sessions
 - dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
 - dev-workspace: Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56…
@@ -76,14 +76,14 @@ Target: `v1.3.1`
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 39 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 29 | 6 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 26 | 10 | 8 | 5 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 22 | 5 | 6 | 5 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 21 | 6 | 2 | 2 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 17 | 4 | 0 | 9 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
-| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 9 | 3 | 0 | 3 |
+| [themes](docs/roadmap/themes.md) — how the app looks under a theme | 10 | 4 | 0 | 3 |
 | [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 0 | 0 | 0 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
 
