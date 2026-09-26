@@ -1,0 +1,100 @@
+{
+ "deck": "ui-four-kinds-trial",
+ "started": "2026-09-26T21:29:03.307Z",
+ "submitted": "2026-09-26T21:34:31Z",
+ "cur": 13,
+ "answers": {
+  "K-1": {
+   "note": "this looks significantly worse. somehow more cluttered and inconsitent feeling than it was before. the old top-level sync card with the warning inside was much better. i don't like the transparent/see-through styling here.",
+   "v": "other",
+   "seconds": 74,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-2": {
+   "v": "other",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-3": {
+   "v": "other",
+   "note": "significantly worse",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-4": {
+   "v": "other",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-5": {
+   "note": "worse.",
+   "v": "other",
+   "seconds": 27,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-6": {
+   "v": "other",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-7": {
+   "v": "other",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-8": {
+   "note": "worse. you seem to have completely misunderstood my tastes and intentions, despite us having spent days working on this. the previouse page had clear grouping and visual heirarchy, and i could easily glance and tell how the various elements related to one another. now everything looks like a separate setting/menu, despite \"models\" being a single concept/idea.",
+   "v": "other",
+   "seconds": 91,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-9": {
+   "v": "other",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-10": {
+   "v": "other",
+   "note": "worse. you just completely destroyed visual heirarchy on all of these pages.",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-11": {
+   "v": "other",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-16": {
+   "v": "other",
+   "note": "this seems the same?",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-22": {
+   "v": "other",
+   "note": "unsure what changed",
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "K-RULE": {
+   "note": "you fucked this, so no",
+   "v": "other",
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
