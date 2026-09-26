@@ -13,6 +13,33 @@ topic: Where the remaining hiccups and freezes come from — a five-angle code s
 > **E** (file opens), and A5 (streaming-bubble markdown re-parse throttle — a visible
 > change that needs Destin's call on a clip). The rig now has `native-stream` and
 > `native-resume` phases, so the next batch lands with a number in front of it.
+>
+> **Status 2026-09-23 — "many tabs" batch** (youcoded#561 + youcoded-dev#193, both
+> repos). Built: all of **Batch B** (B1 hidden terminals stop drawing via
+> `xterm-render-pause.ts`; B2 per-entry Tooltip → `TimelineEntryHint`; B3 permission-mode
+> scan diffed + prefiltered; B4 thinking/seconds clocks pause in hidden chats; B5 window
+> listeners only in the visible chat — which also fixed ArrowUp un-sticking every hidden
+> chat), A3/A4 remainders (reducer copy-on-write in five cases; `useSessionAttention`
+> per-session cache), **E4**, **E5**, C10 (reconciler async + unchanged-file skip; settled
+> helpers release their watch), the ArtifactContext split into a selector store (+ closed
+> sessions freed), the slash filter out of App state, unchanged root CSS-var writes
+> skipped, and three things the new busy-app test found: hidden `ChatView` re-rendered per
+> word (now `useChatState(id, { paused })`), `TerminalView` was unmemoised, and each
+> terminal added its own resize listener. **Dropped, with reasons:** D3 `@property`
+> registration (kills `var(--x, fallback)` fallbacks, which differ per call site — visible
+> shift, no scoping gain with `inherits`); InputBar autosize caching (no measurable gain,
+> identical-pixel proof impossible); `specialists/catalog.ts` async (made Stop ignorable
+> before a turn starts; measured ~35 µs); draft-store cap (would silently discard unsaved
+> typing). **Still open:** A5 (Destin's call on a clip), C7 (behind the conversation-store
+> rewrite), D1/D2/D4/D5 (wallpaper themes only), E1–E3, the remote per-client broadcast,
+> and the per-word redraw of every entry in the VISIBLE chat. General guards added in the
+> same batch: `.claude/rules/performance.md`, `tests/busy-app-render-budget.test.tsx`,
+> `tests/main-blocking-calls.test.ts` (replaced 14 per-file ast-grep rules).
+>
+> **Status 2026-09-24:** A5 shipped without a visible change (youcoded#566): finished
+> markdown groups render once while a reply streams, only the live tail re-parses; the
+> visible chat no longer redraws non-reply entries per word; six main-process blocking-call
+> batches shipped (see `2026-09-24-main-blocking-calls-triage.md`).
 
 Session key `perf-smoothness-20260916`. Read-only sweep of `origin/master` at `18cc8cbc` (workspace) /
 the fetched app master, from five angles: main-process blocking work, renderer click paths, the
@@ -124,7 +151,7 @@ documented theme-author API.
    Provable with render-count tests like the file-pane work, and the rig's workload phase
    (long tasks, frame gaps) is the gate.
 2. **Batch C, items C1–C5** — the remaining "everything freezes at once" moments on paths a click
-   reaches. Each is one function; the `main-hot-path-no-sync-fs` guard test extends to cover them.
+   reaches. Each is one function; the main-process sync-fs guard (now `tests/main-blocking-calls.test.ts`, 2026-09-23) covers them.
    C9 is one line (cap the Home watcher) and answers a roadmap mystery.
 3. **Batch B** — the per-tab tax. B1 (pause hidden terminals) is probably the single biggest GPU
    win for a user with several sessions running.

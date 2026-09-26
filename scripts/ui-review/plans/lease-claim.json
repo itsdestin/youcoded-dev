@@ -1,0 +1,76 @@
+{
+  "_why": "Claim-before-open states for the lease-handoff review deck (2026-09-21). ?lease=held:<device> makes the mock's leaseClaim DENY (the Q-2 moment before any session exists) and leaseTakeover acquires, so 'Try again' reaches the takeover dialog. Route: header Projects button -> ProjectView -> Conversations row -> preview pane -> Resume. Fresh page per shot; nothing real is touched. Base port 5233 is rewritten to WB_PORT by shot.mjs.",
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0",
+  "width": 1440,
+  "height": 900,
+  "shots": [
+    {
+      "name": "projectview-row",
+      "actions": [
+        {
+          "click": "[aria-label='Open Projects']",
+          "settle": 1200
+        },
+        {
+          "clickText": "Conversations",
+          "settle": 1200
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b => (b.getAttribute('title')||'').includes('fix chat scroll stick'))",
+          "settle": 1200
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('Resume Session')"
+    },
+    {
+      "name": "claim-denied-dialog",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&lease=held:Devins%20laptop",
+      "actions": [
+        {
+          "click": "[aria-label='Open Projects']",
+          "settle": 1200
+        },
+        {
+          "clickText": "Conversations",
+          "settle": 1200
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b => (b.getAttribute('title')||'').includes('fix chat scroll stick'))",
+          "settle": 1200
+        },
+        {
+          "clickText": "Resume Session",
+          "settle": 1600
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('moved to') && document.body.innerText.includes('Devins laptop') && document.body.innerText.includes('Try again')"
+    },
+    {
+      "name": "takeover-after-try-again",
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&lease=held:Devins%20laptop",
+      "actions": [
+        {
+          "click": "[aria-label='Open Projects']",
+          "settle": 1200
+        },
+        {
+          "clickText": "Conversations",
+          "settle": 1200
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b => (b.getAttribute('title')||'').includes('fix chat scroll stick'))",
+          "settle": 1200
+        },
+        {
+          "clickText": "Resume Session",
+          "settle": 1600
+        },
+        {
+          "clickText": "Try again",
+          "settle": 1800
+        }
+      ],
+      "expect": "js:document.body.innerText.includes('Take over') || document.body.innerText.includes('active on')"
+    }
+  ]
+}

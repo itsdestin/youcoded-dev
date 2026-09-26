@@ -162,6 +162,8 @@ git worktree list --porcelain | sed -n 's/^worktree //p' | while read -r w; do
 done
 ```
 
+For a fuller inventory across every OLD worktree, not just this session's own, `node scripts/prune-worktrees.mjs` reports which are actually safe to delete (clean, merged, unused) — dry run only; never run its `--apply` without Destin naming the exact ones.
+
 **Secrets-scan any branch before its first push to a PUBLIC repo — including swept ones you
 never read.** `youcoded` and `youcoded-dev` are public; `youcoded-admin` is not.
 
@@ -174,8 +176,8 @@ bash scripts/close-out.sh <branch> [<repo>]     # repo: a sub-repo name, or `wor
 
 **Finish every line it reports.** A `TODO` is yours to do now. A `--` line is a judgement it
 deliberately refuses to make — make it: close the roadmap item **if the work actually
-shipped** (delete it from its area file, one line in `docs/roadmap/shipped.md`, archive its
-report, `node scripts/roadmap-check.mjs --fix`); give the subsystem a `docs/MAP.md` row
+shipped** (`node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`, then archive its
+report); give the subsystem a `docs/MAP.md` row
 ("no rule" is an answer, "no row" is not); move `status: shipped` docs to `docs/archive/`
 and repoint cross-links — but a doc describing work still in review stays in `docs/active/`,
 or it goes invisible to the reviewing session.

@@ -1,0 +1,40 @@
+{
+  "title": "Resume inside the conversation",
+  "key": "handoff-freshness-inline-review",
+  "out": "freshness-inline.review.html",
+  "themes": ["midnight", "light"],
+  "images": "images/freshness-inline.review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/freshness-inline/focused/before",
+    "after": "../../../../scratch/lease-handoff/freshness-inline/focused/after"
+  },
+  "labels": {"before": "Previous: separate prompt", "after": "Proposed: inside the conversation"},
+  "crops": {
+    "waiting": ["freshness", "waiting", "800x330+0+0"],
+    "incomplete": ["freshness", "incomplete", "800x330+0+0"]
+  },
+  "steps": [
+    {
+      "id": "F-6",
+      "surface": "Resume a conversation",
+      "path": "Take over → conversation tab",
+      "crop": "waiting",
+      "headline": "Read and draft while recent messages sync.",
+      "changed": "The conversation opens first. Syncing status sits above the input instead of in a separate prompt.",
+      "notice": "Saved messages remain visible. You can draft, but sending waits.",
+      "risk": "UI prototype only; this does not transfer a conversation between computers.",
+      "highlight": {"box": [0, 50, 100, 48]}
+    },
+    {
+      "id": "F-7",
+      "surface": "Syncing could not be confirmed",
+      "path": "Conversation tab → above the input",
+      "crop": "incomplete",
+      "headline": "Retry, or continue with the messages you can see.",
+      "changed": "The same strip explains that newer messages may be on the other computer.",
+      "notice": "Try again checks for newer messages. Continue with these messages uses the visible history.",
+      "risk": "UI prototype only. Actual continuation will still require backend ownership checks.",
+      "highlight": {"box": [0, 50, 100, 48]}
+    }
+  ]
+}

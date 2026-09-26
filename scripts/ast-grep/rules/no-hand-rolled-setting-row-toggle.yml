@@ -58,6 +58,7 @@ ignores:
   - "**/components/ResumeBrowser.tsx"
   - "**/components/ResumeOptions.tsx"
   - "**/components/CloseSessionPrompt.tsx"
+  - "**/components/QuitSessionsPrompt.tsx"
   # out of the guard's scope
   - "**/components/development/*/**"
   - "**/components/ui/*/**"

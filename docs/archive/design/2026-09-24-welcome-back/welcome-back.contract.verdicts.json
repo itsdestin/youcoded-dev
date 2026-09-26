@@ -1,0 +1,26 @@
+{
+  "R11": {
+    "verdict": "pass",
+    "evidence": "Re-shot http://127.0.0.1:5260/?mode=workbench&child=1&view=app&scenario=welcome-back at 1440x900 (scratch/grader/r11-r17-welcome-back.png) vs approved docs/active/design/2026-09-24-welcome-back/images/welcome-back.review-2/stacked--midnight--after.png: every row's tags (e.g. Priority/bug, idea/work) and folder/model/size/date line sit under the session name, to the right of the tick box, matching the approved picture exactly."
+  },
+  "R17": {
+    "verdict": "pass",
+    "evidence": "Same re-shot (scratch/grader/r11-r17-welcome-back.png) vs approved docs/active/design/2026-09-24-welcome-back/images/welcome-back.review-2/stacked--midnight--after.png: 'Resume all 4' and 'Start fresh' render as two full-width buttons stacked vertically, identical layout to the approved 'stacked' variant chosen in review-2 (C-1, pick: stacked)."
+  },
+  "R25": {
+    "verdict": "pass",
+    "evidence": "npx vitest run tests/holder-takeover.test.ts (youcoded/desktop) — 29 passed, incl. both pinned-snapshot Claude Code untrack tests ('pinned-snapshot path: untracks Welcome back for a Claude Code writer once stop is proven' and '...even when the stop is unproven'); read takeover.ts:155-163 — the else-if (provider === 'claude') branch now calls deps.untrackWelcomeBack?.(id) unconditionally, matching the native branch."
+  },
+  "R26": {
+    "verdict": "pass",
+    "evidence": "npx vitest run tests/ipc-handlers.test.ts (youcoded/desktop) — 49 passed, incl. 'rejects and tears down a resumed id without a native harness' which asserts welcomeBackStore.untrack toHaveBeenCalledWith('ghost-native-1') after a failed native resume; read ipc-handlers.ts:1008-1024 — the catch block's successful-teardown path now calls untrackWelcomeBack(info.id) when opts.resumeSessionId is set."
+  },
+  "R27": {
+    "verdict": "pass",
+    "evidence": "npx vitest run tests/ResumeBrowser-welcome-back.test.tsx (youcoded/desktop) — 19 passed, incl. \"opening a row's Organize sheet scrolls that row into view\" which asserts scrollIntoView({ block: 'nearest', behavior: 'smooth' }) is called on the row when its Organize sheet opens."
+  },
+  "R28": {
+    "verdict": "pass",
+    "evidence": "npx vitest run tests/ResumeBrowser-welcome-back.test.tsx (youcoded/desktop) — 19 passed, incl. 'a partial Resume press says how many reopened and that the rest need a model' and 'pluralizes the status line for more than one row left', which assert the partial-resume status line text."
+  }
+}

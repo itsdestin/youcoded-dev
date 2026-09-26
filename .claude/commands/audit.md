@@ -103,8 +103,7 @@ under `## Roadmap`. Then:
   report's anchor.
 - **For Destin**: hand him the list as is — decisions first, then symptoms unconfirmed for
   60+ days grouped by area. Yes / no / don't know per item. Apply his answers: yes →
-  re-stamp `checked` (and `needs-verify` → `confirmed`); no → move to `shipped.md` with
-  "no longer reproduces"; don't know → `needs-verify`.
+  re-stamp `checked` (and `needs-verify` → `confirmed`); no → `node scripts/roadmap-check.mjs --close <area>:<line> --ref "no longer reproduces"`; don't know → `needs-verify`.
 - **Index**: already rewritten by `--fix`.
 
 Dedup near-identical items across area files by hand (one entry, one report, keep the

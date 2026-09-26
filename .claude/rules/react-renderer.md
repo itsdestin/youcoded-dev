@@ -1,7 +1,7 @@
 ---
 paths:
   - "**/desktop/src/renderer/**"
-last_verified: 2026-09-18
+last_verified: 2026-09-23
 verify:
   - path: youcoded/desktop/src/renderer/App.tsx
   - path: youcoded/desktop/src/renderer/components/HeaderBar.tsx
@@ -10,8 +10,6 @@ verify:
   - path: youcoded/desktop/src/renderer/styles/globals.css
     contains: "chrome-glass"
   - path: youcoded/desktop/src/renderer/components/RemoteSnapshotExporter.tsx
-  - path: youcoded/desktop/src/renderer/hooks/useSessionAttention.ts
-    contains: "useSyncExternalStore"
   - path: scripts/ui-review/run-review.sh
   - path: scripts/ui-review/shot.mjs
     contains: "identical to baseline"
@@ -33,13 +31,13 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 ## Node vs browser boundary
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
 - **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
-- **Perf:** memoize every Context value; the reducer preserves `toolCalls`/`toolGroups` Map refs — don't clone them. Lists, timelines, hidden tabs: `renderer-lists.md`.
-- **Render-path chat state goes through a cached selector, never the whole map.** `state/chat-context.ts` is a `useSyncExternalStore` store: `useChatState(id)` for one session; cached-selector hooks for derived values. **`useChatStateMap()` is banned on the render path** (no production caller since 2026-09-10); **never `store.getState()` during render** (tears).
+- **Performance** (subscriptions, hidden tabs, per-event cost, layout/paint): `performance.md`; lists and timelines: `renderer-lists.md`.
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
 - **ONE backdrop-filter, ever** — the frame chrome is a single `<div class="chrome-glass">` clipped via `clip-path: polygon()`; per-element backdrop-filters seam at non-100% zoom.
 - **`destination-out` is NOT a valid `mix-blend-mode`** — silently ignored (black chat area). Cut shapes with `clip-path`.
-- **`chrome-glass` is `display:none` in floating-chrome modes**; `.chrome-wrapper` must stay `background: transparent !important`; drawer-pane sits ABOVE chrome-glass (`z-index:11`).
+- **`chrome-glass` is `display:none` in floating-chrome modes** (`'float'` instead collapses its clip-path — depth doc); `.chrome-wrapper` stays `background: transparent !important`; drawer-pane sits ABOVE chrome-glass (`z-index:11`).
+- **Blur only through theme-engine's glass sheet**, never a static `backdrop-filter` — else Reduced effects can't remove it · guard: `float-chrome-pops.test.ts`.
 - **Compound attribute selectors must be same-element:** `data-wallpaper` is on `<html>`, `data-chrome-style` on `<body>` — descendant combinator, never `[a][b]`.
 - **The right slot holds EITHER the artifact drawer OR the games panel** — both read `var(--right-pane-width)`; `chrome-glass--drawer-open` gates on `activeDrawerOpen || gameState.panelOpen`. Don't hardcode the width.
 

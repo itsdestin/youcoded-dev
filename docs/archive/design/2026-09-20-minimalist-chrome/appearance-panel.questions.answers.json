@@ -1,0 +1,60 @@
+{
+ "deck": "appearance-panel-questions",
+ "started": "2026-09-24T08:31:03.573Z",
+ "submitted": "2026-09-24T08:33:50Z",
+ "cur": 1,
+ "answers": {
+  "AP-1": {
+   "v": "pick",
+   "pick": "one-picker",
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "AP-2": {
+   "v": "pick",
+   "pick": "presets-plus-sliders",
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "AP-3": {
+   "v": "pick",
+   "pick": "global-wins-kept",
+   "note": "i think we should get rid of theme-specific tweaks, and just keep global user-specific tweaks. themes will just have one set of settings, to be overridden by global tweak.",
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "AP-4": {
+   "v": "picks",
+   "picks": [
+    "bubbles",
+    "composer",
+    "roundness"
+   ],
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "AP-S1": {
+   "v": "yes",
+   "seconds": 21,
+   "theme": "morning-rounds"
+  },
+  "AP-5": {
+   "note": "not sure yet..",
+   "v": "other",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "AP-6": {
+   "v": "pick",
+   "pick": "box-two-rows",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "AP-7": {
+   "v": "pick",
+   "pick": "short",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  }
+ }
+}

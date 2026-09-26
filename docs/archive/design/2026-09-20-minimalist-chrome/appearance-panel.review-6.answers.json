@@ -1,0 +1,15 @@
+{
+ "deck": "appearance-panel-review-6",
+ "started": "2026-09-24T20:17:07.722Z",
+ "submitted": "2026-09-24T20:18:47Z",
+ "cur": 0,
+ "answers": {
+  "AR6-1": {
+   "note": "okay put layout section below themes section. then this is good. framed in the layout mockup doesn't quite look right, it looks like just two top bars instead of hte proper full frame.",
+   "v": "other",
+   "seconds": 99,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

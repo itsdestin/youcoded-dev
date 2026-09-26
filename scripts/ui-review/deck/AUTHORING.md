@@ -11,6 +11,17 @@ Copy a template from `scripts/ui-review/templates/` — one per kind, every fiel
 explained in place. `_comment` keys (at any depth, including `_comment_<field>`) are stripped
 when the deck is built, so leave them or delete them as you like.
 
+## Start here
+
+| Want to… | Read |
+|---|---|
+| Build and serve any deck, start to finish | "Order of work" (bottom of this file) |
+| Ask Destin 4+ questions at once | "Question — words only", "Page markers" |
+| Pick which step kind fits | `.claude/rules/review-deck.md`'s table, then "The step kinds" |
+| Get a field or refusal exactly right | "Deck-level fields", "What the builder refuses" |
+| Know what a submission writes | "The answers file", "What he sees when he submits" |
+| Run `build`/`preview`/`serve`/etc. | "Commands" |
+
 ## Where a deck lives, and what it is called
 
 A feature's decks sit in `docs/active/design/<date>-<feature>/` **of the session's workspace
@@ -130,7 +141,9 @@ he should DRIVE, use Live instead.
 
 ### Live — panes of the running app (`live.json`)
 
-Deck-level `live.worktree` names the build. A pane shows one of two things:
+Deck-level `live.worktree` names the build — a checkout holding `desktop/`, so for a session
+worktree it is `sessions/<key>/youcoded`, not `sessions/<key>` (that fails serve with "not a
+checkout with a desktop/ folder"). A pane shows one of two things:
 
 | A pane's `live` (or a variant's) | What it shows |
 |---|---|

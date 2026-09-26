@@ -1,0 +1,40 @@
+{
+ "title": "Pages that connect \u2014 round 4: the re-ask, two boxes",
+ "key": "youcoded-pages-connections-r4",
+ "out": "youcoded-pages-connections-r4.review.html",
+ "images": "images/youcoded-pages-connections-r4.review",
+ "runs": {
+  "before": "runs/before",
+  "after": "runs/after"
+ },
+ "labels": {
+  "before": "Round 3",
+  "after": "Round 4"
+ },
+ "themes": [
+  "midnight",
+  "light",
+  "halftone-dimension",
+  "meadow-mist"
+ ],
+ "stage": "review",
+ "crops": {
+  "ch": [
+   "pages-connections",
+   "approve-change",
+   "620x460+535+232"
+  ]
+ },
+ "steps": [
+  {
+   "id": "F-1",
+   "surface": "Pages",
+   "path": "Pages \u2192 Headlines, after an edit added a second feed",
+   "crop": "ch",
+   "headline": "The re-ask now has two boxes: New, then Already allowed, each with its own label above it.",
+   "changed": "Round 3 put both inside one box with a divider. This is your reading: two separate sections, each in its own container.",
+   "notice": "A first-time approval is unchanged \u2014 one box, no labels, because nothing has been allowed yet.",
+   "risk": ""
+  }
+ ]
+}

@@ -1,0 +1,63 @@
+{
+  "title": "Minimalist chrome \u2014 one light look, built",
+  "key": "minimalist-unified-built",
+  "out": "minimalist-chrome.unified-built.html",
+  "images": "images/minimalist-chrome.unified-built",
+  "runs": {
+    "before": "runs/built-before",
+    "after": "runs/built-after"
+  },
+  "labels": {
+    "before": "Two looks (before)",
+    "after": "One light look"
+  },
+  "themes": [
+    "meadow-mist",
+    "midnight"
+  ],
+  "crops": {
+    "whole": [
+      "built",
+      "built",
+      "1440x354+0+0"
+    ],
+    "files": [
+      "built",
+      "files-open",
+      "1440x354+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "W-1",
+      "surface": "Chat",
+      "path": "Header, message box, quick buttons, status buttons",
+      "crop": "whole",
+      "headline": "Every floating control, including the message box, now shares the light frosted look you picked.",
+      "changed": "Top: header buttons, session switcher and Chat/Terminal switch. Bottom: quick buttons, their edit button, the message box, the status buttons (including Priority) and their edit button. The window buttons became one pill, like Chat/Terminal. Bottom text now takes a pale colour read from the wallpaper behind it; Sonnet keeps its orange.",
+      "notice": "Each picture is the top of the window, a white gap, then the bottom \u2014 two views of one screen, not a bar.",
+      "risk": "The quick-buttons edit button is now a small rounded square, matching the status bar's edit button, instead of a pale green circle."
+    },
+    {
+      "id": "W-2",
+      "surface": "Chat",
+      "path": "Header \u2192 Session Files open",
+      "crop": "files",
+      "runs": [
+        "after"
+      ],
+      "headline": "An open Files or Games panel shows as selected: a lifted, lighter pill, matching the selected Chat segment.",
+      "changed": "The solid accent fill used to vanish under the light look. Selected Files/Games and the selected Chat segment now share one selected style.",
+      "notice": "Files is open in this picture (top right). Compare it with the Chat segment on the left.",
+      "risk": "The selected Chat segment is slightly more defined than before, because it now matches Files and Games.",
+      "highlight": {
+        "box": [
+          84,
+          1,
+          5,
+          9
+        ]
+      }
+    }
+  ]
+}

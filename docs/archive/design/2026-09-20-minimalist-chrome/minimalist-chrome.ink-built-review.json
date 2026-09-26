@@ -1,0 +1,33 @@
+{
+  "title": "Wallpaper-aware header — built in the app",
+  "key": "minimalist-header-ink-built-review",
+  "out": "minimalist-chrome.ink-built-review.html",
+  "images": "images/minimalist-chrome.ink-built-review",
+  "runs": { "before": "runs/ink-before", "after": "runs/ink-built" },
+  "themes": ["meadow-mist", "cotton-candy-sky", "golden-sunbreak", "devils-garden", "kuromi-dreamer", "strawberry-kitty"],
+  "theme": "fixed",
+  "crops": {
+    "header": ["ink", "tuned-ink", "1440x50+0+0"],
+    "sessions": ["ink", "tuned-ink", "550x45+445+0"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Chat",
+      "path": "Header · six wallpaper themes",
+      "crop": "header",
+      "headline": "The app now tints each clear header icon to suit the wallpaper behind it.",
+      "changed": "The real renderer reads the wallpaper where each icon appears and derives a legible color from that theme. This handles Golden Sunbreak's bright edges and dark center without painting a full-width veil. The selected session's translucent cushion and approved content surfaces are unchanged.",
+      "notice": "Before is the unchanged clear header; after is the built app with no screenshot CSS injection. Try all six themes. Flat and gradient themes retain their previous colors, and settings for reduced motion are respected. This comparison is visual review, not a claim of guaranteed contrast against every layered effect."
+    },
+    {
+      "id": "B-2",
+      "surface": "Chat",
+      "path": "Session switcher · six wallpaper themes",
+      "crop": "sessions",
+      "headline": "Each working or attention dot keeps its status hue; idle gray stays subdued.",
+      "changed": "The renderer checks wallpaper behind each dot separately, including sessions that arrive later. Active dots no longer fade to 30% opacity; their lowest breathing point is 80%. Idle dots are neutral and still. Theme switching and resizing replace the sampled colors instead of leaving stale ink.",
+      "notice": "This built result is being checked on desktop and Android. The samples come from each theme's source image; wallpaper opacity, pattern overlays and moving pixels can change displayed contrast. Use the theme tabs to judge the actual appearance."
+    }
+  ]
+}

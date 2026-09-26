@@ -1,0 +1,15 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+  "width": 1440,
+  "height": 900,
+  "boot": 1300,
+  "sameThreshold": 0.001,
+  "shots": [{
+    "name": "local-contrast",
+    "actions": [{
+      "eval": "(()=>{const s=document.createElement('style');s.id='local-wallpaper-contrast';s.textContent=\"[data-header-lens='cushion'][data-chrome-style='float'] :is(.header-bar > :first-child > button, .header-bar > :first-child > div:not(.wide-view-toggle) > button, .header-bar > :last-child > div > button, .header-bar .wide-view-toggle)::before {background:color-mix(in srgb,var(--panel) 76%,transparent) !important;filter:blur(2px)} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip::before {background:color-mix(in srgb,var(--panel) 54%,transparent) !important;filter:blur(3px)} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip [data-session-id].bg-panel {background-color:color-mix(in srgb,var(--panel) 42%,transparent)} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip .session-dot {box-shadow:0 0 4px 1px color-mix(in srgb,currentColor 78%,transparent)} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip .session-dot[data-status='gray'] {background-color:color-mix(in srgb,currentColor 35%,var(--fg) 65%);opacity:1 !important;box-shadow:none}\";document.head.append(s);return !!document.querySelector('.session-dot')})()"
+    }],
+    "expect": "js:document.querySelector('#local-wallpaper-contrast') && document.body.dataset.headerLens==='cushion'",
+    "probe": false
+  }]
+}

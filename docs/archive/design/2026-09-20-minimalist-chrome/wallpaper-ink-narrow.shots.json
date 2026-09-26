@@ -1,0 +1,16 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+  "width": 1280,
+  "height": 800,
+  "boot": 2800,
+  "sameThreshold": 0.001,
+  "shots": [{
+    "name": "tuned-ink",
+    "actions": [{
+      "eval": "new Promise((resolve, reject) => { const ready = () => !!document.querySelector('.header-bar[data-wallpaper-ink] .session-strip .session-dot[data-status=gray][data-wallpaper-dot-ink]'); if (ready()) return resolve(true); const observer = new MutationObserver(() => { if (ready()) { observer.disconnect(); clearTimeout(timer); resolve(true); } }); observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['data-wallpaper-ink','data-wallpaper-dot-ink'] }); const timer = setTimeout(() => { observer.disconnect(); reject(new Error('narrow wallpaper ink did not load')); }, 8000); })"
+    }],
+    "expect": "js:document.querySelectorAll('.header-bar button[data-wallpaper-control-ink]').length > 0",
+    "sameAsBaseline": false,
+    "probe": false
+  }]
+}

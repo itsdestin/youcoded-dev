@@ -1,0 +1,135 @@
+{
+ "_why": "Appearance panel with the global Look settings (2026-09-24): the top, the Look section, Fine-tune open, and a Minimalist override applied.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "shots": [
+  {
+   "name": "panel-top",
+   "actions": [
+    {
+     "eval": "window.__workbenchAppearanceSync({lookOverrides:{}})",
+     "settle": 300
+    },
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "panel-look",
+   "actions": [
+    {
+     "eval": "window.__workbenchAppearanceSync({lookOverrides:{}})",
+     "settle": 300
+    },
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "eval": "(()=>{const h=[...document.querySelectorAll('[role=dialog] h3')].find(e=>e.textContent==='Look');h.scrollIntoView({block:'start'});return true})()"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "panel-finetune",
+   "actions": [
+    {
+     "eval": "window.__workbenchAppearanceSync({lookOverrides:{}})",
+     "settle": 300
+    },
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Fine-tune'))",
+     "settle": 500
+    },
+    {
+     "eval": "(()=>{const h=[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Fine-tune'));h.scrollIntoView({block:'start'});return true})()"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "minimalist-applied",
+   "actions": [
+    {
+     "eval": "window.__workbenchAppearanceSync({lookOverrides:{}})",
+     "settle": 300
+    },
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=radio]')].find(b=>b.textContent.startsWith('Minimalist'))",
+     "settle": 900
+    },
+    {
+     "eval": "(()=>{const h=[...document.querySelectorAll('[role=dialog] h3')].find(e=>e.textContent==='Look');h.scrollIntoView({block:'start'});return true})()"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "override-chat",
+   "actions": [
+    {
+     "eval": "window.__workbenchAppearanceSync({lookOverrides:{chromeStyle:'float',bubbleStyle:'pill',glass:'solid'}})",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "panel-bottom",
+   "actions": [
+    {
+     "eval": "window.__workbenchAppearanceSync({lookOverrides:{}})",
+     "settle": 300
+    },
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "eval": "(()=>{let e=[...document.querySelectorAll('[role=dialog] h3')].pop();while(e&&!(e.scrollHeight>e.clientHeight+4&&getComputedStyle(e).overflowY!=='visible'))e=e.parentElement;if(e)e.scrollTop=e.scrollHeight;return true})()"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  }
+ ]
+}

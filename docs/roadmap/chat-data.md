@@ -9,14 +9,6 @@ produced and the panel that shows them (files).
       matching the two cards, 2026-09-16)
       `projects` `desktop` `confirmed` `checked 2026-09-16`
 
-- [ ] Once the Organize (tags and note) sheet has been opened and closed on a row, the Resume
-      browser no longer closes on Escape — three presses and it stays open; clicking the backdrop
-      still closes it (seen in the workbench while filming the promo, 2026-09-03). Same cause as
-      the 2026-09-10 code-review finding that a SECOND Escape can fall through to the chat: the
-      layered Escape handling pops the browser's entry after the first press and nothing puts it
-      back (`use-esc-close.tsx` re-pushes only when `open` or the store changes)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-16`
-
 - [ ] Priority shows as a tag on every card and in the per-card tag picker, but the Tags filter
       cannot narrow to it; the note marker looks like a tag too and cannot be filtered
       `resume-browser` `all` `confirmed` `checked 2026-09-10`
@@ -44,10 +36,6 @@ produced and the panel that shows them (files).
       Session button sits in the preview's foot; a beta tester expected the name to open it
       `resume-browser` `all` `confirmed` `checked 2026-09-16`
 
-- [ ] Resuming a conversation that is already open in a tab made a second tab with the same name
-      instead of switching to it (seen in the workbench, 2026-09-10)
-      `resume-browser` `desktop` `needs-verify` `checked 2026-09-10`
-
 - [ ] At phone width the Resume browser's expanded row details truncate to unreadable stubs
       ("wecoded-m…", "qwen3-coder-30…"). (The Skip Permissions switch it also showed is not a
       phone-only difference: desktop's preview foot renders the same options, gated only on the
@@ -60,19 +48,13 @@ produced and the panel that shows them (files).
 - [ ] Chat Search phase 3 — per-conversation digests (resolved / open / abandoned / unclear) behind an
       off-by-default preference and a model picker, so the open marker and the "open" state filter in
       search results stop answering "cannot be determined yet"; phases 1 and 2 shipped, phase 3 is
-      unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is)
-      `desktop` `needs-verify` `checked 2026-09-01` `v1.3.1`
+      unbuilt; open question whether digests should be user-editable (claude.ai's memory summary is). Taken off 1.3.1 in Destin's triage 2026-09-23
+      `desktop` `needs-verify` `checked 2026-09-01`
 
 - [ ] A conversation's name in the store and in Claude Code's topic file disagreed for the same chat
       (desktop, 2026-07-26); re-checked 2026-08-12 the same pair agreed again with no code change —
       needs a fresh sighting before anything is touched
       `resume-browser` `desktop` `needs-verify` `checked 2026-08-12` `needs-repro`
-
-- [ ] "Welcome back" on cold start — after a window close, crash or OS kill, list the chats that were
-      still open in the strip with checkboxes, Resume-all and Start-fresh. Scoping is decided
-      (Destin 2026-09-02: this device only — chats left open on one machine must not pop up on
-      another; discard any old branch and build it fresh); nothing is built and no milestone is set
-      `desktop` `confirmed` `checked 2026-09-16` → docs/active/investigations/2026-09-01-resume-on-startup-welcome-back.md
 
 - [ ] A conversation you renamed by hand cannot be handed back to automatic naming. Review 3
       removed the reset action from the dialog ("get rid of that button. it's dumb"), so the
@@ -121,44 +103,29 @@ produced and the panel that shows them (files).
       up to search older ones"
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
-- [ ] **v1.3.1 release blocker.** Four smaller reads left over from cycle 2 still do more work than they need to: listing
-      past conversations re-reads about 25 MB every time the list opens and runs without a
-      concurrency cap, two more reads take whole files where the tail would do, the catalog
-      fetches the same thing several times at once instead of once, and per-session file
-      tracking is never cleaned up. Individually small, all on paths the user waits on.
-      Deferred at the time by scope decision; carried over from the cycle-3 handoff when that
-      document was archived 2026-09-10, where they existed only inside a shipped entry.
-      2026-09-16 (smoothness sweep C6, MERGED youcoded#501): the NATIVE half of the Resume
-      listing — every session file listed and 256 KB of each head-read synchronously — now
-      reads off the main thread; the Claude Code half (the 25 MB re-read, no concurrency cap)
-      and the other three are still as described. The 2026-09-16 simplification audit measured
-      the same Resume scan (W1): every open re-reads every conversation file — about 260 MB on
-      this machine — with nothing cached, and Project View pays the same scan just to count
-      files per folder; a folder's nickname-to-path lookup is redone on every browse and, when
-      nothing matches, reads every conversation in the folder in full (W6); and a history-replay
-      path that reads a whole conversation into memory (a 112 MB file becomes a 224 MB string)
-      is still wired up with nothing calling it (W5). Wanted: a size-and-date cache in front of
-      the per-file reader so an unchanged history opens without reading a file, the lookup
-      remembered and its fallback capped, the dead replay path deleted, and the replayed-turn
-      record's type made unambiguous (D11) — simplification phase 5's chat-data share. Resume
-      opens faster on a big history; nothing else changes. On hold since 2026-09-18 (Destin):
-      resumes after phase 4, with the rest of phase 5
-      `desktop` `blocked` `checked 2026-09-18` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+- [ ] **v1.3.1 release blocker.** Smaller reads left over from cycle 2 still do more work than
+      they need to: two reads take whole files where the tail would do, the catalog fetches the
+      same thing several times at once instead of once, per-session file tracking is never
+      cleaned up, a history-replay path that reads a whole conversation into memory (a 112 MB
+      file becomes a 224 MB string) is still wired up with nothing calling it (W5), and the
+      replayed-turn record's type is ambiguous (D11). 2026-09-26 (youcoded#573, Destin asked
+      for the Resume work ahead of phase 5): the Resume scan now remembers every conversation
+      file by size and date across restarts, native and Claude Code halves (W1), and a folder's
+      nickname lookup is remembered until the folder changes (W6) — settled open 1.7 s -> 0.3 s
+      on a 2,600-conversation history. The rest resumes with phase 5
+      `desktop` `blocked` `checked 2026-09-26` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
-- [ ] Every conversation record write and read first lists the whole conversations directory,
-      synchronously (`conversation-store.ts` heal-on-write/read — one `readdirSync` over a file
-      per conversation ever recorded, per turn per live session), and starring, tagging or
-      renaming a chat kicks off a full search-index rebuild three seconds later that lists,
-      stats and chunk-reads every conversation on the main thread (`chatsearch-index`). Neither
-      is on a click path a user waits on directly; both are stalls with no visible cause.
-      Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` is being
-      rewritten on `session/sync-safety-audit-20260908` — convert both after that lands
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
+- [ ] Starring, tagging or renaming a chat kicks off a full search-index rebuild three seconds
+      later that lists, stats and chunk-reads every conversation on the main thread
+      (`chatsearch-index`) — a stall with no visible cause. (The other half of this item, every
+      conversation record read and heal listing the whole directory synchronously, shipped in
+      youcoded#573, 2026-09-26: reads are async and heal shares one listing per second.)
+      `desktop` `confirmed` `checked 2026-09-26` `performance`
 
-- [ ] The 30-minute conversation reconcile lists every transcript ever written and lstat +
-      tail-reads each one, synchronously — a stall every half hour that grows for as long as
-      the app has been used (`conversations/reconciler.ts`; its own note measured 2.8 s at 600
-      records before the last fix). Found by the 2026-09-16 smoothness sweep (C10), not built:
-      the fix is the same fs.promises recipe the click paths got, with the walk bounded per tick
-      `desktop` `confirmed` `checked 2026-09-16` `performance`
+- [ ] The first Resume open after launch "can seemingly load indefinitely" (Destin,
+      2026-09-25). Never reproduced: on a copy of his 2,600-conversation history the worst was
+      4.2 s before youcoded#573 and ~1.5 s after, and it now says "Still loading" with Try again
+      after 6 s. Next time it happens, note the time; `~/.claude/desktop.log` around it is the
+      next evidence
+      `desktop` `needs-verify` `checked 2026-09-26` `needs-repro` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
 

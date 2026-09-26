@@ -1,0 +1,61 @@
+id: artifact-provider-stable-store
+language: tsx
+severity: error
+message: >-
+  App must hand <ArtifactProvider> the artifact store it created ONCE —
+  `store={artifactStore}`, declared as
+  `const [artifactStore] = useState(() => createArtifactStore())` — and no
+  `value` prop. A value object (or a store rebuilt per render) is a new context
+  identity on every artifact change, which redraws every artifact reader in
+  every open session (each ChatView, each tool card) — and React.memo cannot
+  stop a context redraw.
+note: |
+  Invariant source: tests/artifact-store-selectors.test.tsx (perf, 2026-09-23 —
+  "a dispatch touching session A does not re-render session B"). Replaces
+  artifact-provider-value-memoized (Plan B, 2026-09-16), which pinned the older
+  shape — a memoised `{ state, dispatch }` value — that still changed identity
+  on every artifact dispatch. Readers now select their slice from the store
+  (useArtifactSelector); the context value itself must never change.
+  Branches, on App.tsx:
+    1. an <ArtifactProvider> tag, open or self-closing, that does not pass
+       exactly `store={artifactStore}`, or that passes a `value` prop at all;
+    2. the whole file when no <ArtifactProvider> tag exists (a comment or a
+       string spelling it does not count);
+    3. the whole file when `const [artifactStore] = useState(() =>
+       createArtifactStore(…))` is missing — a store built in the render body
+       would be a new identity every render.
+  The provider's `value` prop is still accepted by the component itself, for
+  tests and workbench mockups that script a fixed state; only App is held to
+  the store.
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/artifact-provider-stable-store*.tsx"
+utils:
+  provider-tag:
+    any:
+      - kind: jsx_opening_element
+      - kind: jsx_self_closing_element
+    has: { field: name, regex: "^ArtifactProvider$" }
+rule:
+  any:
+    # 1a. the provider is handed the once-created store
+    - matches: provider-tag
+      not:
+        has:
+          kind: jsx_attribute
+          all:
+            - has: { kind: property_identifier, regex: "^store$" }
+            - has:
+                kind: jsx_expression
+                regex: "^\\{\\s*artifactStore\\s*\\}$"
+    # 1b. …and no value prop beside it
+    - matches: provider-tag
+      has:
+        kind: jsx_attribute
+        has: { kind: property_identifier, regex: "^value$" }
+    # 2. the provider is rendered at all
+    - kind: program
+      not: { has: { stopBy: end, matches: provider-tag } }
+    # 3. the store is created once
+    - kind: program
+      not: { has: { stopBy: end, pattern: "const [artifactStore] = useState(() => createArtifactStore($$$ARGS))" } }

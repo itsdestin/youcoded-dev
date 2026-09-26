@@ -1,0 +1,514 @@
+{
+  "title": "Pages that connect — the questions before anything is drawn",
+  "key": "youcoded-pages-connections-questions",
+  "out": "youcoded-pages-connections.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "What a page is allowed to reach",
+      "intro": "Running example all the way through: your analytics dashboard as a page. It needs to read numbers from YouCoded's own service, using your YouCoded sign-in. A second example: a weather page that needs a key you paste in."
+    },
+    {
+      "id": "Q-block",
+      "words": true,
+      "surface": "Pages",
+      "path": "Any page open in the app",
+      "headline": "Should a page be stopped from reaching the internet unless you approved that exact place?",
+      "today": "A page cannot touch your files or accounts, but nothing stops it from talking to any website. We chose that in the first phase to avoid extra work. A page can already send out anything typed into it.",
+      "problem": "Asking permission for connections means nothing if a page can quietly reach the internet anyway. A page with your analytics numbers on screen could send them anywhere, and an approval screen that lists one service would be a half-truth.",
+      "proposal": "The app becomes the only way out. A page reaches only the places you approved, and everything else is blocked. The cost: a page can no longer pull a charting library, a font or a picture straight from the web. The assistant would save those into the page's own folder when it builds the page.",
+      "options": [
+        {
+          "id": "block-all",
+          "label": "Block everything unapproved",
+          "pros": [
+            "The approval screen is the whole truth: what it lists is all the page can reach.",
+            "A page you install later from someone else cannot send your information anywhere you did not agree to.",
+            "Libraries and fonts saved inside the page keep working with no internet."
+          ],
+          "cons": [
+            "A page that shows pictures from the web (news thumbnails, album art) needs that website approved like any other connection.",
+            "Pages get a little bigger on disk because libraries are saved inside them.",
+            "Any page already built that loads something from the web stops loading it until the assistant fixes it. Your three current pages do not do this."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "block-requests-only",
+          "label": "Block requests, allow pictures and libraries",
+          "summary": "Pages may still load pictures, fonts and libraries from anywhere; only data requests need approval.",
+          "pros": [
+            "Web pictures and ready-made libraries work with no approval step.",
+            "Nothing already built can break."
+          ],
+          "cons": [
+            "Loading a picture is itself a way to send information out, so a badly behaved page still has a back door.",
+            "The approval screen would have to say \"and it can load pictures from anywhere\", which weakens every promise on it."
+          ]
+        },
+        {
+          "id": "leave-open",
+          "label": "Leave it open for now",
+          "pros": [
+            "No extra work; connections ship sooner."
+          ],
+          "cons": [
+            "Approvals only control which keys a page can use, not where your information goes.",
+            "Has to be fixed before the marketplace phase anyway, and fixing it later breaks more pages."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-levels",
+      "words": true,
+      "surface": "Pages",
+      "path": "The Pages library and the approval screen",
+      "headline": "How should the app describe what a page can reach?",
+      "today": "Every page is the same kind of thing, so the library says nothing about access. The scope document lists eight kinds of access a page might one day have. An earlier review suggested three simple levels instead.",
+      "problem": "Eight kinds is a wall of checkboxes nobody reads. But a single word like \"Connected\" hides the part that matters: connected to what, using which of your accounts.",
+      "proposal": "Pick how access is shown on a page's card and on its approval screen.",
+      "options": [
+        {
+          "id": "plain-list",
+          "label": "A plain list, no levels",
+          "summary": "Each page shows one line per thing it reaches: \"Reads from api.youcoded.ai using your YouCoded sign-in\". A page with nothing shows nothing.",
+          "pros": [
+            "Says exactly what is true, in a sentence you can check.",
+            "Nothing to learn; no level names to remember.",
+            "Still works when files and assistant tasks arrive later: they are just more lines."
+          ],
+          "cons": [
+            "No at-a-glance badge for scanning a long library.",
+            "A page with many connections shows a long list."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "three-levels",
+          "label": "Three levels plus the list",
+          "summary": "A badge on every card (\"Just a page\", \"Connected\", later \"Computer\") with the plain list underneath when you look closer.",
+          "pros": [
+            "Scanning the library shows at once which pages reach outside.",
+            "\"Computer\" would stand out as the serious one when it arrives."
+          ],
+          "cons": [
+            "\"Connected\" lumps a weather page in with one that uses your bank key.",
+            "A badge on every card adds clutter to a library you asked to keep quiet."
+          ]
+        },
+        {
+          "id": "eight-kinds",
+          "label": "The eight kinds from the scope",
+          "pros": [
+            "Most precise."
+          ],
+          "cons": [
+            "Reads like a phone's permission settings; most people stop reading.",
+            "Six of the eight do not exist yet, so the screen would be mostly empty rows."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-own-pages",
+      "words": true,
+      "surface": "Pages",
+      "path": "Opening a page for the first time after the assistant builds it",
+      "headline": "Should a page you made yourself in chat still ask before it connects?",
+      "today": "You ask the assistant for a page and it appears, ready to use. There is nothing to approve because pages reach nothing.",
+      "problem": "You asked for the page, so an approval can feel like a pointless speed bump. But you have not read its code, and the assistant can get an address wrong or add a connection you did not ask for.",
+      "proposal": "The approval screen appears once, in place of the page, the first time it opens. It appears again only if the list of connections changes. The question is whether your own pages skip it.",
+      "options": [
+        {
+          "id": "always-ask",
+          "label": "Always ask, one press",
+          "pros": [
+            "One rule for every page, so the marketplace phase needs no new behaviour.",
+            "You see the exact address before your key or sign-in is used with it.",
+            "It is a single button when nothing looks wrong."
+          ],
+          "cons": [
+            "One extra press on every new connected page you make."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "skip-own",
+          "label": "Skip it for pages made in your chats",
+          "pros": [
+            "A page you asked for works the moment it is built."
+          ],
+          "cons": [
+            "A mistake by the assistant uses your sign-in with no check.",
+            "The app has to decide what counts as \"your own\" once pages are shared and edited, and a wrong guess is a silent approval."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-change",
+      "words": true,
+      "surface": "Pages",
+      "path": "A page whose connections changed after an edit",
+      "headline": "When an edit adds a connection, the page pauses and asks only about the new one.",
+      "changed": "Stated, not asked: removing a connection never asks. Adding one, or changing an address, shows the approval screen again with just the new line marked as new.",
+      "notice": "Asking the assistant to restyle a page never interrupts you. Asking it to add a second service shows one short approval the next time the page opens.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "P-2",
+      "page": "Which connections come first",
+      "intro": "The first page decided the rules. These decide what a page can actually connect to in this phase, and how honest the wording has to be."
+    },
+    {
+      "id": "Q-first",
+      "words": true,
+      "pick": "several",
+      "surface": "Pages",
+      "path": "The approval screen for a page",
+      "headline": "Which kinds of connection should this phase include? Pick all you want.",
+      "today": "None exist. The app already knows how to keep a pasted key safely (it does this for model providers), and it already holds your YouCoded sign-in and your GitHub sign-in.",
+      "problem": "Every kind added is more to build and more approval wording to get right. Too few, and the only page worth making is your dashboard.",
+      "proposal": "Pick the set. Sign-in with Google and similar services stay for later whatever you choose: each one needs YouCoded registered with that company first.",
+      "options": [
+        {
+          "id": "youcoded-account",
+          "label": "Your YouCoded sign-in",
+          "summary": "A page can read from YouCoded's own service as you. This is what the analytics dashboard needs; your existing sign-in already has the right to see those numbers.",
+          "pros": [
+            "Nothing to paste: you are already signed in.",
+            "We control both ends, so \"read-only\" can be a real promise here."
+          ],
+          "cons": [
+            "Only useful for YouCoded's own information."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "paste-key",
+          "label": "Services that take a pasted key",
+          "summary": "Weather, stock prices, a task manager, most developer-style services. You paste the key into a YouCoded box once; the page never sees it.",
+          "pros": [
+            "Covers a very large number of services with one mechanism.",
+            "Reuses the key box and safe storage the app already has."
+          ],
+          "cons": [
+            "Getting a key from a service is a fiddly step for non-technical people.",
+            "The app cannot know what a given key is able to do on that service."
+          ]
+        },
+        {
+          "id": "public",
+          "label": "Public information, no key",
+          "summary": "News feeds, public weather, exchange rates, a sports score. Still approved by address, but nothing to paste.",
+          "pros": [
+            "The easiest pages to make and share: nothing secret involved.",
+            "Going through the app also fixes the common \"this website refuses requests from pages\" failure."
+          ],
+          "cons": [
+            "One more line of wording on the approval screen."
+          ]
+        },
+        {
+          "id": "github",
+          "label": "Your GitHub sign-in",
+          "summary": "A page could list your repositories, issues or pull requests using the GitHub sign-in the app already holds.",
+          "pros": [
+            "Useful to you right away (a release board, an issues page)."
+          ],
+          "cons": [
+            "That sign-in can change your repositories, not just read them, so the approval wording has to be blunt.",
+            "Of interest mainly to developers, who are not the app's main audience."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-readonly",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval screen for a page that uses a pasted key",
+      "headline": "What should the app promise about a page only reading, never changing, your account?",
+      "today": "Nothing is promised because nothing connects. With a pasted key, the app has no way to know what that key can do on the service.",
+      "problem": "\"Read-only\" is the phrase people want to see. But the app can only control what kind of request a page sends, not what the service does with it. A few services change things even on a request that looks like a look-up.",
+      "proposal": "Pick how far the wording goes.",
+      "options": [
+        {
+          "id": "lookup-or-full",
+          "label": "Two kinds: look-up only, or full",
+          "summary": "A page asks for one or the other. Look-up only is enforced by the app and worded: \"Can look things up on api.example.com with your key. Cannot send changes.\" Full is worded: \"Can look up and change things.\"",
+          "pros": [
+            "Most pages (dashboards, feeds) only need look-ups, so most approvals are the calmer kind.",
+            "The app really does block the other kinds of request, so the sentence is true as written."
+          ],
+          "cons": [
+            "On a rare badly built service a look-up can still change something, so we must never shorten it to \"read-only\" or \"safe\".",
+            "Two kinds is one more thing to understand."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "blunt",
+          "label": "One blunt sentence for all",
+          "summary": "Every pasted-key connection says: \"Can do anything your key allows on api.example.com.\"",
+          "pros": [
+            "Always true; nothing to misread.",
+            "Simplest to build."
+          ],
+          "cons": [
+            "A harmless weather page reads as alarming as a page that can delete your tasks.",
+            "People learn to ignore a warning that is the same every time."
+          ]
+        },
+        {
+          "id": "promise-own-only",
+          "label": "Promise read-only for YouCoded's own service only",
+          "summary": "Your YouCoded sign-in says \"read-only\" because we control that service. Everything else gets the blunt sentence.",
+          "pros": [
+            "The phrase \"read-only\" appears only where it is guaranteed."
+          ],
+          "cons": [
+            "Same alarm problem as the blunt option for every outside service."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-key-entry",
+      "words": true,
+      "surface": "Pages",
+      "path": "The approval screen for a page that needs a key",
+      "headline": "A key is typed only into YouCoded's own approval screen, never into chat and never into the page.",
+      "changed": "Stated, not asked: the approval screen shows the service's address in full, a box for the key, and the app keeps the key in the computer's secure storage, where model provider keys already live. The assistant never sees it.",
+      "notice": "If a page itself ever shows a box asking for a key, that is the page misbehaving, and the creator skill is told never to build one.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "Q-key-reuse",
+      "words": true,
+      "surface": "Pages",
+      "path": "A second page that wants a service you already gave a key for",
+      "headline": "When a second page wants a service you already set up, what should happen?",
+      "today": "Not applicable yet. For comparison, model provider keys are entered once and used everywhere in the app.",
+      "problem": "Pasting the same weather key into every page is tedious. But a saved key that every page may use silently means one approval quietly covers pages you have not seen yet.",
+      "proposal": "Pick how a saved key is shared.",
+      "options": [
+        {
+          "id": "ask-reuse",
+          "label": "Offer the saved key, still ask",
+          "summary": "The approval screen says \"Use your saved OpenWeather key\" with one press, or lets you paste a different one.",
+          "pros": [
+            "No retyping, and no page uses a key without you saying so once.",
+            "Matches the approved scope: sharing an account does not approve every page."
+          ],
+          "cons": [
+            "Still one press per page."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "per-page",
+          "label": "Every page gets its own key",
+          "pros": [
+            "Removing a page removes its key; nothing shared to think about."
+          ],
+          "cons": [
+            "The same key pasted again and again.",
+            "Changing a key means changing it in every page."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Keeping a page current",
+      "intro": "A dashboard is only useful if its numbers are fresh, and only trustworthy if you can tell how fresh."
+    },
+    {
+      "id": "Q-refresh-when",
+      "words": true,
+      "surface": "Pages",
+      "path": "A connected page, open or pinned",
+      "headline": "When should a connected page fetch fresh information?",
+      "today": "Pages never fetch anything. In the opening questions you chose background activity as something a page has to be given separately, not something every page gets.",
+      "problem": "Refreshing only while you look at a page is simple and cheap. But then a pinned dashboard always opens on old numbers and makes you wait.",
+      "proposal": "Pick what this phase includes. Each page chooses how often, with a floor of once a minute so a page cannot hammer a service or use up a paid key.",
+      "options": [
+        {
+          "id": "open-only",
+          "label": "On opening, then while it is open",
+          "pros": [
+            "Easy to understand: a page you are not looking at does nothing.",
+            "No surprise use of a paid key while you work on something else.",
+            "Keeps background activity as its own later decision, as you chose."
+          ],
+          "cons": [
+            "A page shows its last saved numbers for a moment each time you open it, then updates."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "pinned-too",
+          "label": "Also keep pinned pages fresh",
+          "pros": [
+            "A pinned dashboard is current the instant you open it."
+          ],
+          "cons": [
+            "Up to four pages quietly using the internet and your keys all day.",
+            "Needs the \"what is running in the background\" display and stop control built now, not later."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-last-updated",
+      "words": true,
+      "surface": "Pages",
+      "path": "The band above an open page",
+      "headline": "Where should \"last updated\" and the refresh button live?",
+      "today": "The band above a page has the page's name in the middle and \"Back to chat\" on the right. Pages have no notion of being out of date.",
+      "problem": "If each page draws its own \"last updated\", every page does it differently, some forget, and a page could show a time that is not true.",
+      "proposal": "Pick who owns it.",
+      "options": [
+        {
+          "id": "app-owned",
+          "label": "The app, in the band",
+          "summary": "Beside the page's name: \"Updated 2 min ago\" and a small refresh button. Shown only for connected pages.",
+          "pros": [
+            "Same place on every page, and always true because the app made the request.",
+            "A failed update shows there too (\"Couldn't update · Retry\") while the page keeps its last good numbers.",
+            "Still visible when a pinned page is opened edge to edge."
+          ],
+          "cons": [
+            "One more thing in a band you worked to keep quiet. It would be small and muted."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "page-owned",
+          "label": "Each page, using the style kit",
+          "pros": [
+            "The band stays exactly as approved.",
+            "A page can put it where it suits the design."
+          ],
+          "cons": [
+            "Depends on every page remembering to show it.",
+            "A page with several sources has to invent its own way to show which one failed."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-4",
+      "page": "Looking after connections",
+      "intro": "Approving is half of it. These cover changing your mind, and using a connected page from your phone."
+    },
+    {
+      "id": "Q-manage",
+      "words": true,
+      "surface": "Pages and Settings",
+      "path": "Manage pages, and Settings › Account › Connected accounts",
+      "headline": "Where should you see and remove what a page can reach?",
+      "today": "Manage pages shows each page as a card with a pin and Edit in chat. Settings already has a Connected accounts list described as \"Services YouCoded connects to on your behalf\", currently holding GitHub.",
+      "problem": "There are two different questions: \"what can this page reach?\" and \"which keys have I saved, and who uses them?\". One place answers only one of them well.",
+      "proposal": "Pick where these live.",
+      "options": [
+        {
+          "id": "both",
+          "label": "On the page's card, and in Settings",
+          "summary": "The card gets a quiet \"Connections\" line that opens the page's list with a Remove beside each. Settings › Connected accounts lists saved keys, shows which pages use each, and lets you replace or delete a key.",
+          "pros": [
+            "Each question is answered where you would look for it.",
+            "Deleting a key in one place cuts off every page using it."
+          ],
+          "cons": [
+            "Two places to build and keep in step."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "card-only",
+          "label": "Only on the page's card",
+          "pros": [
+            "Everything about pages stays inside Pages."
+          ],
+          "cons": [
+            "No single place to see or replace a saved key used by several pages."
+          ]
+        },
+        {
+          "id": "settings-only",
+          "label": "Only in Settings",
+          "pros": [
+            "The library cards stay exactly as they are."
+          ],
+          "cons": [
+            "Checking one page's access means leaving Pages and hunting through a list."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-remove",
+      "words": true,
+      "surface": "Pages",
+      "path": "Removing a connection from a page",
+      "headline": "Removing a connection stops the page reaching that service from then on; it cannot undo anything already sent.",
+      "changed": "Stated, not asked: after removal the page opens on its approval screen again, showing its last saved information until you approve or leave.",
+      "notice": "The wording on Remove says \"stops future use\", never \"revokes\" or \"makes safe\", because the app cannot take back what a service already received.",
+      "yes": "Holds",
+      "no": "Fails"
+    },
+    {
+      "id": "Q-phone",
+      "words": true,
+      "surface": "Pages over remote access",
+      "path": "A connected page opened from your phone's browser",
+      "headline": "From your phone, should you be able to approve a page and paste a key, or only use pages already approved?",
+      "today": "Pages open on a paired phone through your computer. Every request a connected page makes would leave from your computer, not the phone, and keys stay on the computer either way.",
+      "problem": "Approving on the phone is convenient. But a paired phone is one more screen where a key gets typed and an approval gets given, often on a small display where a long address is easy to misread.",
+      "proposal": "Pick what the phone can do.",
+      "options": [
+        {
+          "id": "phone-use-approve",
+          "label": "Use and approve; keys on the computer only",
+          "summary": "The phone can approve a page that needs no new key, or reuses a saved one. A page needing a new key says \"Finish setting this up on your computer\".",
+          "pros": [
+            "A key is never typed on the phone or sent across the link.",
+            "Most approvals still work from the sofa."
+          ],
+          "cons": [
+            "A brand-new service cannot be set up away from the computer."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "phone-everything",
+          "label": "Everything works on the phone",
+          "pros": [
+            "No dead ends away from your desk."
+          ],
+          "cons": [
+            "Keys travel over the remote link and get typed on a phone keyboard.",
+            "More to build and test on the small layout, which is not designed yet."
+          ]
+        },
+        {
+          "id": "phone-use-only",
+          "label": "Phone can only use approved pages",
+          "pros": [
+            "Simplest and strictest: all decisions happen at the computer."
+          ],
+          "cons": [
+            "An edit that adds a connection locks that page on your phone until you are home."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+ "deck": "minimalist-header-distinct-choice",
+ "started": "2026-09-23T09:03:00.106Z",
+ "submitted": "2026-09-23T09:03:29Z",
+ "cur": 0,
+ "answers": {
+  "C-2": {
+   "v": "pick",
+   "pick": "adaptive-ink",
+   "note": "this one is the best, but still nees some tuning",
+   "seconds": 28,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

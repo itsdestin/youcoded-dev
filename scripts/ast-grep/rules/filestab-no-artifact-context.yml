@@ -13,12 +13,21 @@ note: |
   props. Render-cost consolidation, 2026-09-18.
   Three branches, one fixture line each: useArtifact(), the non-throwing
   useArtifactOptional(), and a bare useContext(ArtifactContext) — each is the
-  same subscription under another name.
+  same subscription under another name. Since 2026-09-23 the context holds a
+  store read through useArtifactSelector / useArtifactDispatch / useArtifactStore
+  (and their *Optional twins); the first branch matches every useArtifact* hook
+  by name, so the store hooks are banned here too (the fixture's useArtifact()
+  line still covers it).
 files:
   - "**/src/renderer/components/project-view/tabs/FilesTab.tsx"
   - "**/fixtures/filestab-no-artifact-context*.tsx"
 rule:
   any:
-    - pattern: useArtifact()
-    - pattern: useArtifactOptional()
+    # Every artifact hook by name — useArtifact(), useArtifactOptional(),
+    # useArtifactSelector(…), useArtifactDispatch(), useArtifactStore()… —
+    # but not useArtifactContent (a file-content loader, no context read).
+    - kind: call_expression
+      has:
+        field: function
+        regex: "^useArtifact(Optional|Selector|SelectorOptional|Dispatch|DispatchOptional|Store|StoreOptional)?$"
     - pattern: useContext(ArtifactContext)

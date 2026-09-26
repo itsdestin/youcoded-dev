@@ -1,0 +1,24 @@
+{
+ "deck": "welcome-back-review-3",
+ "started": "2026-09-24T08:50:46.286Z",
+ "submitted": "2026-09-24T08:51:22Z",
+ "cur": 0,
+ "answers": {
+  "S-parity": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "morning-rounds"
+  },
+  "S-inapp": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "morning-rounds"
+  },
+  "Q-label": {
+   "v": "pick",
+   "pick": "switch",
+   "seconds": 12,
+   "theme": "morning-rounds"
+  }
+ }
+}

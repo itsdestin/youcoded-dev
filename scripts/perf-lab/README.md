@@ -151,6 +151,11 @@ budget is capped by the run's own `--max-minutes`, so a gate can never push a ru
 past the deadline its caller set. Pinned by `run-report.test.mjs` → "the
 machine-idle gate".
 
+**Your own parallel agents count as "busy".** Do not start the rig while this session's
+subagents are running `verify.sh` or vitest — on 2026-09-23/24 five runs were lost to the
+20-minute gate that way (and to other sessions' screenshot sweeps). Run it after they finish,
+and run before/after back to back so both see the same machine.
+
 ### Asking a report which STEP produced a number
 
 ```
@@ -287,6 +292,19 @@ Cold-boots the packaged app `--runs` times and reads the instrumented marks.
 **Look first at `sessionsListed`** — the moment the session list is on screen and the
 app is usable. `blankWindowMs` (how long a user stares at a created-but-empty window)
 is the second one.
+
+**At real scale: `real-scale-startup.mjs`** (standalone, not a `run.mjs` phase). The fixture
+above is ~600 tiny transcripts; launch and Resume costs only show at the size of a real
+history. This boots the same packaged app against a `cp --reflink` COPY of this machine's
+history (never the real folders — the launch repair moves files; no sync remote; plugin
+registry paths rewritten into the copy) and reports every `bg:*` mark (store start, slug
+repair and its stages, reconcile, materialize, each Resume scan split into native list /
+transcripts / store), first and settled Resume opens, and main-process stalls from a 100 ms
+IPC heartbeat. `--profile` records a whole launch instead (main CPU profile from its first
+line via `--inspect-brk`, window profile, long tasks, frame gaps, idle CPU by process type,
+running animations, programs started); `--real-look` adds the real theme and plugins;
+`--profile-browse` profiles a settled open. Needs btrfs (reflink). Results and numbers:
+`docs/active/investigations/2026-09-26-startup-resume-real-scale.md`.
 
 ### `scenario-history.mjs` — how long a conversation takes to come back
 Resumes each of the three fixture transcripts and splits the cost so you know which

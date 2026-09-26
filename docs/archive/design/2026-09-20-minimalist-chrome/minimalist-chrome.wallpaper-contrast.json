@@ -1,0 +1,20 @@
+{
+  "title": "Minimalist header — contrast on the actual wallpaper",
+  "key": "minimalist-wallpaper-contrast",
+  "out": "minimalist-chrome.wallpaper-contrast.html",
+  "images": "images/minimalist-chrome.wallpaper-contrast",
+  "runs": { "before": "runs/wallpaper-contrast-before", "after": "runs/wallpaper-contrast" },
+  "labels": { "before": "Without a contrast surface", "after": "Local contrast surface — prototype" },
+  "themes": ["meadow-mist", "midnight"],
+  "theme": "fixed",
+  "crops": { "header": ["contrast", "local-contrast", "1440x50+0+0"] },
+  "steps": [{
+    "id": "R-1",
+    "surface": "Chat",
+    "path": "Header over Meadow Mist and Midnight",
+    "crop": "header",
+    "headline": "Each control carries enough of its theme's own surface to separate its contents from the wallpaper.",
+    "changed": "Instead of choosing a stronger glow by eye, the prototype places a translucent, local theme-panel backing inside header controls and the session switcher. Status dots keep their meaning: colored dots have a matching soft bloom, while the neutral inactive dots adapt toward the theme's foreground. There is no full-width veil or white ring.",
+    "notice": "This is a visual prototype, not a shipped algorithm. On Meadow Mist, three sampled control interiors improved from about 3.1–3.5:1 against the wallpaper to about 7.9–8.2:1 for the theme's secondary text color. If the feel is right, the next step is a reusable treatment with image-region checks and guarded fallback for other bare-background controls; the composer and chips stay unchanged."
+  }]
+}

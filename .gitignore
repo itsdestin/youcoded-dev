@@ -73,11 +73,12 @@ worktrees/
 beta/
 
 # Full event-stream transcripts from the harness review runner
-# (youcoded/desktop/test-engine/review-harness.mjs). A transcript is a
-# debugging artifact for the session that produced it, not durable history —
-# five models' full event streams would dominate this repo's diff history.
-# The reviews themselves (appended into the investigation doc) are the
-# durable record.
+# (youcoded/desktop/test-engine/review-harness.mjs, retired 2026-09-23 — this
+# pattern is now historical, kept in case old run output still sits on disk).
+# A transcript is a debugging artifact for the session that produced it, not
+# durable history — five models' full event streams would dominate this
+# repo's diff history. The reviews themselves (appended into the
+# investigation doc) are the durable record.
 docs/active/investigations/harness-review-runs/
 docs/active/investigations/conversation-triage-runs/
 # Same reasoning for the model EVALUATOR (youcoded/desktop/test-engine/
@@ -132,3 +133,16 @@ scripts/promo/src/theme-art.generated.ts
 
 # Written beside a deck spec by review-cards.py serve (the workbench it boots for live panes)
 *.workbench.log
+
+# Secrets files — never commit. WHY (2026-09-23): jev-demo/.env held a live
+# OpenRouter key untracked in this PUBLIC repo with nothing stopping a `git add`.
+# The .example templates stay committable.
+.env
+.env.*
+!.env.example
+
+# Kept on this machine, never published (Destin, 2026-09-23): the Analytics page's
+# live data (internal business numbers, rewritten by the running app) and jev-demo,
+# an unrelated side project whose .env holds a key.
+Pages/analytics/
+jev-demo/
