@@ -27,10 +27,14 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
 ## 2. Components
 
 ### 2.1 The helper — `desktop/scripts/askpass/` (unpacked by `asarUnpack: scripts/**/*`)
-- `youcoded-askpass` (mode 0755, `#!/bin/sh`): `ELECTRON_RUN_AS_NODE=1 exec
-  "$YOUCODED_ASKPASS_RUNTIME" "$(dirname "$0")/askpass.cjs"`. The runtime is the app's own
-  `process.execPath`, passed in the Bash env. **Nothing about the runtime path is trusted**:
-  verification (§3) checks the helper process's real executable.
+- `youcoded-askpass` (mode 0755, `#!/bin/sh`):
+  `exec /usr/bin/env -i ELECTRON_RUN_AS_NODE=1 YOUCODED_ASKPASS_SOCKET="$YOUCODED_ASKPASS_SOCKET"
+  "$YOUCODED_ASKPASS_RUNTIME" "$(dirname "$0")/askpass.cjs"`. **`env -i` is load-bearing
+  (review 1, D1):** sudo forks askpass with its own unsanitised environment, so without it a
+  command could set `NODE_OPTIONS=--require=evil.js` and run code inside the verified helper.
+  The runtime is the app's own `process.execPath`, passed in the Bash env; **nothing about the
+  runtime path or the environment is trusted** — verification (§3) checks the helper's real
+  executable, its exact argv and its exact environment.
 - `askpass.cjs`: connects to `$YOUCODED_ASKPASS_SOCKET`, sends one JSON line
   `{v:1, pid: process.pid}`, reads one line back: `{ok:true, password}` → writes password +
   `\n` to stdout, overwrites its buffer, exits 0; `{ok:false}` or a closed socket → exits 1
@@ -43,11 +47,19 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
 - One per app. Listens on a unix socket in a 0700 directory: `$XDG_RUNTIME_DIR/youcoded/`
   on Linux (fallback `os.tmpdir()/youcoded-<uid>/`), `os.tmpdir()/youcoded-<uid>/` on macOS;
   socket file 0600; path includes the app pid so dev and live instances never collide.
-- On each connection: read ≤ 256 bytes, parse `{pid}`, run **verification (§3)**; on
+- On each connection: take the peer's pid from the KERNEL (review 1, D3) — koffi FFI, the
+  way `window-exclude-capture.ts` already calls into system libraries: Linux
+  `getsockopt(fd, SOL_SOCKET, SO_PEERCRED)`, macOS `getsockopt(fd, SOL_LOCAL, LOCAL_PEERPID)`,
+  on the accepted socket's fd. The helper sends nothing but `{v:1}`; any pid it claims is
+  ignored. Then run **verification (§3)**; on
   failure answer `{ok:false}`, log the reason (never a password), show NO card.
 - On success, resolve which Bash call it belongs to (§3.4) and hand a `PasswordAsk`
   to that call's session: `{requestId: 'pw-'+uuid, command, via?, triesLeft?, specialist?}`.
-- Holds pending asks in a Map keyed by requestId → `{socket, sudoPid, callRoot}`. When the
+- Pending asks live in **`PermissionBroker`'s pending map** as a new kind (review 1, D4), so
+  they get its 3 s re-announce and reconnect replay for free: sudo never times out an
+  askpass read (sudo `tgetpass.c`: `passwd_timeout`'s alarm wraps only the terminal read), so
+  a lost card would otherwise hang the command forever. The server keeps only
+  `requestId → {socket, sudoPid, callRoot}` for the write-back. When the
   socket closes first (sudo gave up, command killed) the ask is withdrawn (§6).
 - `submit(requestId, password: Buffer)`: writes `{ok:true,password}` to that socket, then
   `password.fill(0)`. A requestId it doesn't hold → `false` (card says it expired).
@@ -59,6 +71,9 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
   override them for itself — `SUDO_ASKPASS=x sudo -A …` — which only means its own helper
   runs and the app is never asked; nothing leaks.)
 - `diffPersistableEnv` must drop these three names so they are never persisted.
+- `spawnEnv` also drops `NODE_OPTIONS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_V8_COVERAGE` and
+  `ELECTRON_RUN_AS_NODE` inherited from the app (defence in depth; the helper's `env -i` and
+  the environment check are the real guard).
 - A process-wide `RunningCalls` map: root pid (the `setsid` leader = `child.pid`) →
   `{sessionId, toolCallId, specialist?}`, registered on spawn (foreground and background,
   surviving hand-off), removed on exit. Exit also triggers the forget step (§5).
@@ -105,28 +120,31 @@ second process that connects to the socket and claims to be a waiting helper, (e
 its own prompt text (`sudo -p`).
 
 For a connection claiming pid P, ALL must hold, else refuse:
-1. **P is our helper**: real executable of P == `process.execPath` (Linux
-   `readlink /proc/P/exe`; macOS `proc_pidpath` via `ps -o comm= -p P`, full path), and
-   argv[1] of P == the realpath of our bundled `askpass.cjs`.
-2. **P's parent is the system's genuine sudo**: parent executable ∈ trusted sudo set,
-   computed once at startup from `/usr/bin/sudo`, `/bin/sudo`, `/usr/local/bin/sudo`: a
-   realpath'd regular file owned by uid 0, setuid bit set, not group/other-writable, in a
-   root-owned directory. A fake `sudo` in `~/bin` fails this (a); a script that runs our
-   helper itself fails it (b); a model-supplied `SUDO_ASKPASS` never reaches us at all (c).
+1. **P is our helper, unmodified**: real executable of P == `process.execPath` (Linux
+   `readlink /proc/P/exe`; macOS `ps -o comm= -p P`, full path); P's argv is EXACTLY
+   `[execPath, <realpath of bundled askpass.cjs>]` (no `--require`, `--inspect`, …); and P's
+   environment is EXACTLY `{ELECTRON_RUN_AS_NODE, YOUCODED_ASKPASS_SOCKET}` (Linux
+   `/proc/P/environ`; macOS `ps -Eww -p P`) — review 1, D1.
+2. **P's parent is a genuine setuid sudo** (review 1, D5 — trusted by properties, not a path
+   list, so Nix's `/run/wrappers/bin/sudo` and similar work): the parent's real executable
+   has basename `sudo`, is a regular file owned by uid 0 with the setuid bit, not
+   group/other-writable, and every directory from it up to `/` is root-owned and not
+   group/other-writable. A fake `sudo` in `~/bin` fails this (a); a script that runs our
+   helper itself fails it (b); a model-supplied `SUDO_ASKPASS` never reaches us (c). At
+   startup the server checks that the `sudo` on the app's PATH qualifies and logs plainly
+   when none does (the feature then can't work, and the Bash description says so).
 3. **P is inside a registered Bash call**: walking P's ancestors (Linux `/proc/*/stat`
    ppid; macOS `ps -o ppid=`) reaches a root pid in `RunningCalls` within 64 steps.
-4. **One claim per pid**: a second connection claiming a pid that already has a pending or
-   answered ask is refused, and the first ask is withdrawn too (d, best effort).
+4. **The pid is the kernel's** (§2.2), so (d) — another process claiming a waiting
+   helper's identity — is closed.
 5. The card text comes only from the sudo process's own argv (`/proc/<sudo>/cmdline`, macOS
    `ps -o args=`), with sudo and its options removed by `shell-words` WRAPPERS rules; never
    from the helper, never from `-p` (e, R14).
 
 **Residual risk (stated on the deck, S-real-sudo, accepted):** code already running inside
 the approved command's own process tree can still read the password as it passes (ptrace
-of the helper, which it is an ancestor of, or racing (d) with the exact pid while an ask is
-pending). The same holds when a user types sudo in a terminal after running untrusted code.
-Linux `SO_PEERCRED` would close the pid-claim race; Node has no API for it — noted as a
-follow-up, not a blocker.
+of the helper, which it is an ancestor of). The same holds when a user types sudo in a
+terminal after running untrusted code.
 
 ## 4. The admin floor (R7, R16)
 
@@ -137,28 +155,32 @@ using `shell-words.ts` to find any simple command whose command word basename is
 (it names the more serious consequence), so `floorStop: 'admin'` → band in every mode,
 Always Allow hidden, nothing remembered (existing floor behaviour). Fixes today's gaps
 (`/usr/bin/sudo`, `echo x|sudo tee`, `(sudo x)` are not deny-listed).
-`doas/su/pkexec/run0` get the stop band but no password card (they can't use askpass; they
-fail as today) — the Bash description says so. R20's "visible sudo" = this verdict with
+**`doas`, `su`, `pkexec`, `run0` are refused outright** (review 1, D2): `pkexec`/`run0` would
+raise the desktop's own polkit dialog on a normal GNOME/KDE session — a system pop-up
+outside the app (R1) with wording the app doesn't control (R14). The refusal is a deny with
+a message to the model ("use sudo; the user is asked for their password in the app"); the
+card shows the command as not run. R20's "visible sudo" = this verdict with
 command word `sudo`.
 
 ## 5. Forgetting (R5)
 
-When a registered call that received a password exits (or its admin background run ends),
-run `<trusted sudo> -K` (no password needed; removes all of this user's sudo timestamps).
+When the LAST registered call that received a password exits (a count across calls —
+review 1, D6: `-K` clears every record, so running it on each exit would make a still-running
+admin command re-ask), run `<the verified sudo> -K` (no password needed; removes all of this user's sudo timestamps).
 Also on app quit. Cost accepted on the deck: the user's own terminal forgets too. While a
 command runs, sudo's own per-parent-process memory applies (a second sudo from the same
-shell doesn't re-ask) — that is inside the one command the user approved.
+shell doesn't re-ask) — that is inside the one command the user approved. A sudo under a
+different parent in the same command (a pipeline stage, a subshell) keys a separate record
+and asks again through the mid-command card (review 1, D7) — intended.
 
 ## 6. Tries, timeouts, withdrawal (R9, R10, R17, R18)
 
 - A second helper under the same sudo pid = the previous password was wrong →
   `triesLeft = 3 − previousAttempts` (sudo's default `passwd_tries`; a sudoers override
   just means the count is off — the banner never claims certainty beyond "tries left").
-- sudo may stop waiting on its own (`passwd_timeout`, default 5 min — **verify in a
-  throwaway VM whether it applies to askpass; never on Destin's machine**, a failed read can
-  count toward the lockout). Either way the helper's socket closes → `PasswordResolved` →
-  the card's field goes away and the tool result says what happened. The card itself has
-  no timer (R18).
+- sudo never times out an askpass read (review 1, D4, sudo `tgetpass.c`), so the ask waits
+  for the user (R18). If the helper's socket closes anyway (command killed) →
+  `PasswordResolved` → the card's field goes away and the tool result says what happened.
 - Stop / Skip / session close / app quit: pending sockets answered `{ok:false}`, stored
   up-front passwords wiped.
 
