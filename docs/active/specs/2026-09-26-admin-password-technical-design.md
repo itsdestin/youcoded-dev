@@ -344,3 +344,63 @@ API keys / `.env` (next project), GitHub/SSH logins, Windows elevation, Android.
 6. **Leak test + real sudo end to end** — `admin-password-leak.test.ts`; a docker container
    with a throwaway user and known password runs the helper + a real sudo against a
    headless AskpassServer harness. Never Destin's account.
+
+## 12. Per-machine guidance and refusals (Destin, 2026-09-26 — "this must never feel broken,
+## and the model's guidance must always be true on the machine in use")
+
+Three follow-on requirements found once the feature ran on a real machine, addressed as one
+group because all three are about the same failure mode: the app telling the model or the
+user something that isn't true of THIS machine or THIS moment.
+
+**Per-machine capability, settled once (`harness/admin-capability.ts`).** One
+`AdminCapability` value — `'card' | 'no-password-only' | 'windows'` — decided at app start,
+before any session may exist, and never re-derived: `'card'` needs BOTH the askpass
+self-test to have passed (§2.2/§3) AND a genuine setuid-root sudo of a supported flavour at
+one of the fixed, never-`$PATH`-derived locations §3 item 2 already uses
+(`KNOWN_SUDO_LOCATIONS`). "Supported flavour" means original (Todd Miller's) sudo, detected
+by its own `--version` banner (`Sudo version X.Y…`, confirmed on this session's dev machine:
+1.9.17p2) — never `sudo -V`'s exit code or presence alone, and never a guess: sudo-rs and
+anything else unrecognised are `'no-password-only'` until proven, because a wrong "sudo
+works" sentence is worse than an honest "it doesn't" one. `--version` is read-only and never
+authenticates (confirmed empirically: `env -i sudo --version </dev/null` exits 0 at once);
+`stdio: ['ignore', …]` closes stdin outright as a second belt regardless. macOS is
+`'no-password-only'` (MAC_ENABLED stays off); Windows is `'windows'` — sudo there, if the
+user enabled it, opens Windows' own permission window, never this app's card and never a
+password this app could see.
+
+The Bash description states exactly one true sentence per value:
+- `'card'`: "`sudo` works: the user types their admin password in a card inside the app
+  itself, never in this output — do not pass a password, `-S`, or `-A`, and do not set
+  `SUDO_ASKPASS` yourself."
+- `'no-password-only'`: "`sudo` only works here when the command needs no password
+  (NOPASSWD) — this computer can't show a password card, so a `sudo` that asks for one will
+  fail or hang with no further explanation."
+- `'windows'`: "`sudo`, if enabled on this PC, opens Windows' own permission window for the
+  user; it never asks for a password here."
+
+Session creation (`ipc-handlers.ts`'s `startSession`, which every creation path — fresh,
+resumed, and cross-device handoff — already funnels through) awaits
+`adminCapabilityReady()` before doing anything else, closing the exact race a session
+created in the app's first moments used to win: reading the pre-settlement placeholder and
+keeping it, byte-identical, for its own whole life (prompt cache). `settleAdminCapability()`
+is idempotent-once — the value genuinely never changes again for the rest of that app
+process's life.
+
+**Never fail silently.** When `AskpassServer` refuses a connection (any reason) or a
+password ask ends without a password for a reason other than the user's own Skip/Stop, and
+the call it belongs to is identifiable (the same ancestor walk §3 item 3 already runs) —
+(a) the tool result the model reads gets one appended plain-language line, and (b) the
+command's card shows one line under the command. Wording lives in ONE place
+(`harness/admin-password-copy.ts`) so Destin can review and change it without hunting:
+card — "YouCoded couldn't confirm this password request came from your computer's admin
+program, so it didn't ask for your password."; model — a reason-coded sentence built from
+the closed `VerifyReason` set, never an env value or anything secret. An unidentifiable call
+(no ancestor match) just logs, exactly as before — there is nothing to attach a notice to.
+
+**Resume carries no admin state.** Nothing about `AdminCapability` or the Bash description
+text is ever written into a session/conversation record: `getSettledAdminCapability()` is a
+plain module-level read, and `harness-session.ts`'s `buildAiTools()` re-reads
+`BashTool.description` fresh on every turn (never cached per session). A conversation
+resumed or handed off to a fresh app process — a different machine, a different sudo, a
+different capability entirely — gets that process's own settled answer on its very next
+turn, never anything carried over from where it started.
