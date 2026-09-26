@@ -340,12 +340,6 @@ seen-on is always n/a here.
       each card against its box and print which slide and window size clips
       `n/a` `confirmed` `checked 2026-09-17`
 
-- [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
-      port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
-      this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
-      the way its Chrome port blocks already do
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] Destin asked to “optimize tf out of our workspace” (2026-09-14). Oxlint, TypeScript 7 and the
       design check shipped; still untried: one-off scans with Fallow (dead code, copy-paste,
       tangled imports — could replace knip) and React Doctor (bad React patterns), reported

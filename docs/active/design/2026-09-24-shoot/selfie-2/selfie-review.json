@@ -1,0 +1,124 @@
+{
+ "title": "The review deck, reviewed on itself",
+ "key": "deck-selfie-review",
+ "out": "selfie-review.html",
+ "images": "images/selfie-review",
+ "theme": "fixed",
+ "runs": {
+  "before": "/home/destin/youcoded-dev/worktrees/sessions/ui-review-infra/docs/active/design/2026-09-24-shoot/selfie-2/selfie-runs/before",
+  "after": "/home/destin/youcoded-dev/worktrees/sessions/ui-review-infra/docs/active/design/2026-09-24-shoot/selfie-2/selfie-runs/after"
+ },
+ "labels": {
+  "before": "f208da3a~1",
+  "after": "This branch"
+ },
+ "themes": [
+  "midnight",
+  "light"
+ ],
+ "crops": {
+  "selfie-p1-1440x900": [
+   "selfie",
+   "selfie-p1-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-p1-1024x768": [
+   "selfie",
+   "selfie-p1-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-p2-1440x900": [
+   "selfie",
+   "selfie-p2-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-p2-1024x768": [
+   "selfie",
+   "selfie-p2-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-p3-1440x900": [
+   "selfie",
+   "selfie-p3-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-p3-1024x768": [
+   "selfie",
+   "selfie-p3-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-p4-1440x900": [
+   "selfie",
+   "selfie-p4-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-p4-1024x768": [
+   "selfie",
+   "selfie-p4-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-p5-1440x900": [
+   "selfie",
+   "selfie-p5-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-p5-1024x768": [
+   "selfie",
+   "selfie-p5-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-p6-1440x900": [
+   "selfie",
+   "selfie-p6-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-p6-1024x768": [
+   "selfie",
+   "selfie-p6-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-brief-p1-1440x900": [
+   "selfie",
+   "selfie-brief-p1-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-brief-p1-1024x768": [
+   "selfie",
+   "selfie-brief-p1-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-questions-p1-1440x900": [
+   "selfie",
+   "selfie-questions-p1-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-questions-p1-1024x768": [
+   "selfie",
+   "selfie-questions-p1-1024x768",
+   "1024x768+0+0"
+  ],
+  "selfie-questions-p2-1440x900": [
+   "selfie",
+   "selfie-questions-p2-1440x900",
+   "1440x900+0+0"
+  ],
+  "selfie-questions-p2-1024x768": [
+   "selfie",
+   "selfie-questions-p2-1024x768",
+   "1024x768+0+0"
+  ]
+ },
+ "steps": [
+  {
+   "id": "NONE",
+   "words": true,
+   "surface": "Review deck",
+   "path": "Every page",
+   "headline": "Nothing moved: every page looks the same here as at f208da3a~1.",
+   "changed": "The deck code changed, but nothing it draws on screen did.",
+   "notice": "Nothing to look at \u2014 this one is the all-clear.",
+   "yes": "Understood",
+   "no": "Looks wrong"
+  }
+ ]
+}

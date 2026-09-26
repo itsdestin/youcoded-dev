@@ -264,7 +264,20 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
   driver (`scripts/shoot/driver.mjs`) for `explore` and `journeys.mjs`; `expect` steps.
   Practice-app fixes found on the way: a new session now leaves "Initializing"; a typed message
   is recorded before the reply (replies had drawn ABOVE the message they answered).
-- Phase 6 not started.
+- **Phase 6 done (2026-09-26)** — no fixed ports left in the review tools. Deck live panes are
+  served by the deck itself under `/app/` (old decks rewritten once); decks take `shoot`
+  folders as runs (a step names a screen; one run highlights its panel). `record.mjs`,
+  `record-pair.sh`, `site-assets.sh` (+ `--out`), `shot.mjs` (kept only for
+  `plans/site-gallery.json`), `embed-posters.mjs`, `promo/film.sh` and `dom-size-sweep.mjs`
+  (every screen by name, under `stress`) run on the engine. `shoot --contrast` writes
+  `contrast.md`; `shoot --collect` feeds the design check. Deleted: `run-review.sh`,
+  `cdp-ports.sh`, `probe-ports.sh`, `montage.sh`, `make-gallery.py`; every plan but
+  site-gallery archived. **Departures from the table above, on purpose:** `ui-probe.mjs` stays
+  (it measures any page, e.g. a deck or the website; `explore` acts like a user and has no
+  eval by design — removing it would bring back throwaway CDP scripts), and `drag-probe.mjs` /
+  `drag-fuzz.mjs` stay (per-frame drag numbers `explore` cannot give; now on port 0).
+  `montage-ab.sh` stays with `record-pair.sh` for clip decks. Selfie review of the deck change:
+  `docs/active/design/2026-09-24-shoot/selfie-2/`.
 
 ## Order of work
 
