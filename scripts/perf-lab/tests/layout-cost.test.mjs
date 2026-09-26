@@ -1,10 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { connect, listTargets } from '../cdp.mjs';
+import { spawnSync } from 'node:child_process';
+import { rmSync } from 'node:fs';
+import { connect } from '../cdp.mjs';
+import { startLiveChrome } from './live-chrome.mjs';
 import {
   COMMITS_OUTRUN_FRAMES,
   FORCED_LAYOUT_PER_FRAME,
@@ -106,23 +105,13 @@ const haveChrome = spawnSync('sh', ['-c', `command -v ${CHROME}`], { encoding: '
 
 test('LIVE: a forced layout per delta is detected, and a coalesced stream is not', { skip: haveChrome ? false : `${CHROME} not on PATH` }, async () => {
   const port = 9783;
-  const profile = mkdtempSync(join(tmpdir(), 'perf-lab-layout-'));
-  const chrome = spawn(CHROME, [
-    '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
-    '--no-first-run', '--no-default-browser-check', 'about:blank',
-  ], { stdio: ['ignore', 'ignore', 'pipe'] });
-  // WHY: A browser binary on PATH is not proof it launched; CI needs Chrome's
-  // own startup error to distinguish a broken sandbox from a slow port bind.
-  let chromeError = '';
-  chrome.stderr.on('data', (chunk) => { chromeError = (chromeError + chunk).slice(-8192); });
-  chrome.on('error', (error) => { chromeError = `${chromeError}\n${error.message}`; });
+  // A slow runner gets a longer wait and one fresh retry (live-chrome.mjs).
+  let chrome = null;
+  let profile = null;
   let cdp = null;
   try {
-    let targets = null;
-    for (let i = 0; i < 60 && !targets; i++) {
-      try { targets = await listTargets(port); } catch { await new Promise((r) => setTimeout(r, 200)); }
-    }
-    assert.ok(targets, `Chrome never opened its debugging port (exit=${chrome.exitCode}, signal=${chrome.signalCode}): ${chromeError}`);
+    let targets;
+    ({ chrome, profile, targets } = await startLiveChrome(CHROME, port, [], 'perf-lab-layout-'));
     cdp = await connect(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
     assert.equal(await enablePerformanceDomain(cdp), true);
 
@@ -171,12 +160,12 @@ test('LIVE: a forced layout per delta is detected, and a coalesced stream is not
     // AFTER every assertion above had passed. A leftover directory in the OS temp dir
     // is not a test failure; reporting one as though the instrument were broken is.
     await new Promise((done) => {
-      if (chrome.exitCode !== null || chrome.signalCode !== null) return done();
+      if (!chrome || chrome.exitCode !== null || chrome.signalCode !== null) return done();
       const t = setTimeout(done, 5000);
       chrome.once('exit', () => { clearTimeout(t); done(); });
       chrome.kill();
     });
-    try { rmSync(profile, { recursive: true, force: true }); } catch { /* the OS will reap it */ }
+    if (profile) try { rmSync(profile, { recursive: true, force: true }); } catch { /* the OS will reap it */ }
   }
 });
 
