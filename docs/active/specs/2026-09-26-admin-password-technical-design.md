@@ -356,8 +356,9 @@ user something that isn't true of THIS machine or THIS moment.
 `AdminCapability` value — `'card' | 'no-password-only' | 'windows'` — decided at app start,
 before any session may exist, and never re-derived: `'card'` needs BOTH the askpass
 self-test to have passed (§2.2/§3) AND a genuine setuid-root sudo of a supported flavour at
-one of the fixed, never-`$PATH`-derived locations §3 item 2 already uses
-(`KNOWN_SUDO_LOCATIONS`). "Supported flavour" means original (Todd Miller's) sudo, detected
+one of the fixed, never-`$PATH`-derived locations §3 item 2 already uses — reused via its
+own exported `firstExistingKnownSudoPath` helper, never a second copy of the list.
+"Supported flavour" means original (Todd Miller's) sudo, detected
 by its own `--version` banner (`Sudo version X.Y…`, confirmed on this session's dev machine:
 1.9.17p2) — never `sudo -V`'s exit code or presence alone, and never a guess: sudo-rs and
 anything else unrecognised are `'no-password-only'` until proven, because a wrong "sudo
