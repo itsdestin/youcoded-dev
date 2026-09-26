@@ -23,6 +23,22 @@ youcoded wecoded-marketplace wecoded-themes`. Every repo uses the branch
 | wecoded-themes | the vendored contrast rule | itsdestin/wecoded-themes#35 — **merge after #104** (its drift check compares against marketplace master) |
 | youcoded-dev (workspace) | review decks + answers, reviews, rules, roadmap item, this handoff | itsdestin/youcoded-dev#201 |
 
+## Appearance panel redesign — done 2026-09-24/26 (decks review-3 … 7, theme-cards, theme-previews)
+
+All approved by Destin; nothing merged. Final panel, top to bottom: **Themes** (filled box
+~1.5 cards tall, Browse/Build pinned inside at the bottom, cards scroll under them behind the
+masked fade `.scroll-mask`, `styles/scroll-mask.css`) → **Layout** (picture tiles in the
+theme's own colours) with the **Additional Customizations** row under it (opens in place:
+Message bubbles, Roundness Square/Soft/Round, Glass strip + Fine-tune) → **Effects & chat**.
+"Auto" is every picker's first choice (= absent field). The **Message box setting is gone**:
+a chosen layout brings its preset input-style (`LAYOUT_INPUT_STYLE`, look-overrides.ts).
+Theme cards: `components/appearance/ThemeCard.tsx` — framed picture + slim strip, star
+always shown; falls back to the registry preview because installs never download
+preview.png (pinned by `tests/theme-card-preview.test.tsx`). Previews for the 4 built-ins
+and 8 community themes are now real-app screenshots (`scripts/ui-review/theme-previews.py`);
+the community ones ride on wecoded-themes #35. Own-theme previews still drawn — roadmap
+`themes.md`. The fade elsewhere is left to the ui-consistency session (AR4-5).
+
 ## What the next session is for
 
 **Refining the Appearance panel UI.** Destin: "the ui for the appearance panel will still need
