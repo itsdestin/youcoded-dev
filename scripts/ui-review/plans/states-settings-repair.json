@@ -15,9 +15,9 @@
         { "eval": "window.failPersonal();" },
         { "click": "[title=Settings]", "settle": 700 },
         { "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Backup & Sync'))", "settle": 1400 },
-        { "click": "js:[...document.querySelectorAll('[role=dialog] summary')].find(s=>s.textContent.trim()==='Show details')", "settle": 500 }
+        { "click": "js:[...document.querySelectorAll('[role=dialog] summary, [role=dialog] button')].find(s=>s.textContent.trim()==='Show details')", "settle": 500 }
       ],
-      "expect": "js:!!document.querySelector('[role=dialog] details[open] pre')"
+      "expect": "js:!!document.querySelector('[role=dialog] details[open] pre')||([...document.querySelectorAll('[role=dialog] button')].some(b=>b.textContent.trim()==='Hide details')&&!!document.querySelector('[role=dialog] pre'))"
     },
     {
       "name": "sync-log-open",
