@@ -1,0 +1,53 @@
+{
+  "title": "Float style — blur on each small button?",
+  "key": "minimalist-round9",
+  "out": "minimalist-chrome.round9.html",
+  "images": "images/minimalist-chrome.round9",
+  "runs": {
+    "after": "runs/r9"
+  },
+  "themes": [
+    "meadow-mist",
+    "golden-sunbreak",
+    "halftone-dimension",
+    "cotton-candy-sky"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "frosted-bottom": [
+      "r9",
+      "frosted",
+      "1440x230+0+670"
+    ],
+    "clear-bottom": [
+      "r9",
+      "clear",
+      "1440x230+0+670"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R9-1",
+      "surface": "Chat",
+      "path": "Bottom of the chat, scrolled up a little so a message passes under the buttons",
+      "headline": "Should each small button and chip keep its own blur, or only the message box and session switcher?",
+      "notice": "Look closely at the quick buttons and status buttons: with the blur off, the wallpaper behind them is a little sharper. The message box looks the same in both. The header buttons change the same way.",
+      "variants": [
+        {
+          "id": "frosted",
+          "label": "Each button blurs (today)",
+          "crop": "frosted-bottom",
+          "summary": "About 20 small buttons each blur what is behind them. The look you approved.",
+          "risk": "Twice before, about 20 separately blurred pieces redrawing during a reply made parts of the app flicker or vanish on Windows. Not tested on Windows here."
+        },
+        {
+          "id": "clear",
+          "label": "Only the big pieces blur",
+          "crop": "clear-bottom",
+          "summary": "The small buttons keep their faint fill, thin edge and shadow but stop blurring. The message box and session switcher keep their frost.",
+          "risk": "Over a busy wallpaper the buttons look slightly less frosted, and the wallpaper behind their text is a little sharper."
+        }
+      ]
+    }
+  ]
+}

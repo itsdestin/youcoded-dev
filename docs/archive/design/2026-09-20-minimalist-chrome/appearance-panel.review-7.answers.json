@@ -1,0 +1,21 @@
+{
+ "deck": "appearance-panel-review-7",
+ "started": "2026-09-24T20:26:13.557Z",
+ "submitted": "2026-09-24T20:27:09Z",
+ "cur": 1,
+ "answers": {
+  "AR7-1": {
+   "v": "yes",
+   "note": "now i want to work on improving the actual theme cards themselves, and hte buttons available on them",
+   "seconds": 35,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "AR7-2": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

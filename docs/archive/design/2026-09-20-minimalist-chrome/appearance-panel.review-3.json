@@ -1,0 +1,77 @@
+{
+  "_why": "Destin, 2026-09-24: wants the Appearance panel clean, minimal and organized like the other settings popups; the most relevant settings up front, less relevant ones may be hidden or collapsed; 'i need to visualize a few alternatives' for how bubble shape / message box / roundness are chosen. Every picture is the real panel in the workbench, with the popup's height cap lifted in the screenshot only, so each design shows whole.",
+  "title": "Appearance panel — a cleaner layout, and how the Look choices should work",
+  "key": "appearance-panel-review-3",
+  "out": "appearance-panel.review-3.html",
+  "images": "images/appearance-panel.review-3",
+  "stage": "design",
+  "runs": { "today": "runs/ap3" },
+  "themes": ["meadow-mist", "dark"],
+  "crops": {
+    "look-menu": ["ap3", "menu", "430x300+505+770"],
+    "look-strip": ["ap3", "strip", "430x375+505+735"],
+    "look-tiles": ["ap3", "tiles", "430x470+505+685"],
+    "panel-open": ["ap3", "menu", "430x945+505+280"],
+    "panel-collapsed": ["ap3", "collapsed", "430x725+505+390"]
+  },
+  "steps": [
+    {
+      "id": "AR3-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Look",
+      "headline": "How should you choose bubble shape, message box and roundness?",
+      "notice": "Glass follows the same style as the other three, so the whole Look section matches. What each setting does is unchanged, and every one still starts on the theme's own choice.",
+      "risk": "All three pictures are the panel before anything is changed, so the theme's choice is the one picked in each.",
+      "variants": [
+        {
+          "id": "menu",
+          "label": "Dropdowns",
+          "crop": "look-menu",
+          "summary": "One short row per setting with a menu on the right, just like today but with shorter words. The most compact, and the closest to the other settings popups. You only see the options once you open a menu.",
+          "measured": "about 290 px tall"
+        },
+        {
+          "id": "strip",
+          "label": "Button strips",
+          "crop": "look-strip",
+          "summary": "Every option is shown as a row of buttons under its title, like Glass today and Keep awake in Remote Access. One tap and you can see what's picked. It's taller, and five options fill the whole width.",
+          "measured": "about 365 px tall",
+          "risk": "On a phone screen, five words per strip is a tight fit."
+        },
+        {
+          "id": "tiles",
+          "label": "Small pictures",
+          "crop": "look-tiles",
+          "summary": "A tiny drawing of each bubble shape, message box and corner, like the Layout pictures at the top. You see what you get before you tap. It's the tallest version. Roundness becomes three steps (Square, Soft, Round) with no slider.",
+          "measured": "about 460 px tall",
+          "risk": "The drawings are small, so Standard vs Outlined bubbles look alike at a glance."
+        }
+      ]
+    },
+    {
+      "id": "AR3-2",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "headline": "Should the Look settings sit open in the panel, or behind one row you tap to open?",
+      "notice": "Both versions have the same clean-up. The two repeated lines saying these settings apply to every theme are gone (the ⓘ page still explains it). The Layout pictures are about half as tall. The glass warning is now the Glass row's own grey subtitle. The Reset button is outlined. Rows sit 6 px apart, like the other popups.",
+      "risk": "This is the panel with its height limit lifted so you can see all of it. In the app it still scrolls inside a popup the same height as today.",
+      "variants": [
+        {
+          "id": "open",
+          "label": "All open",
+          "crop": "panel-open",
+          "summary": "Layout, themes, Look and the two switches all show at once. Nothing is hidden, but you scroll to reach the bottom.",
+          "measured": "about 930 px of settings"
+        },
+        {
+          "id": "collapsed",
+          "label": "Look tucked away",
+          "crop": "panel-collapsed",
+          "summary": "Layout, themes and the two switches up front. Glass, bubble shape, message box and roundness sit behind one 'Customize look' row that opens in place when tapped. Its subtitle says how many you've changed. Shorter and calmer, with one more tap to reach those four.",
+          "measured": "about 710 px, 220 px shorter",
+          "risk": "People who never tap the row may never find those four settings."
+        }
+      ]
+    }
+  ]
+}

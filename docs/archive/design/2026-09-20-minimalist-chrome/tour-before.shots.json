@@ -1,0 +1,133 @@
+{
+ "_why": "Final pre-merge tour (2026-09-25): every surface the branch changes, master.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "shots": [
+  {
+   "name": "panel-top",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 1000
+    }
+   ]
+  },
+  {
+   "name": "panel-bottom",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 1000
+    },
+    {
+     "scrollDialog": "bottom"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "panel-mid",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 1000
+    },
+    {
+     "scrollDialog": 420
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "m-chat",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+   "actions": [],
+   "sameAsBaseline": true
+  },
+  {
+   "name": "m-files",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+   "actions": [
+    {
+     "click": "[aria-label='Session Files']",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "m-games",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+   "actions": [
+    {
+     "click": "[title='Games']",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "m-projects",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+   "actions": [
+    {
+     "click": "[title=Projects]",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "m-pages",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+   "actions": [
+    {
+     "click": "[aria-label='Open Pages']",
+     "settle": 1200
+    }
+   ]
+  },
+  {
+   "name": "m-terminal",
+   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&signedIn=1&scenario=default&chrome=float",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('.wide-view-toggle button')].find(b=>/terminal/i.test(b.getAttribute('aria-label')||b.textContent))",
+     "settle": 1500
+    }
+   ]
+  },
+  {
+   "name": "market",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 1000
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.includes('Browse'))",
+     "settle": 1800
+    }
+   ]
+  }
+ ]
+}

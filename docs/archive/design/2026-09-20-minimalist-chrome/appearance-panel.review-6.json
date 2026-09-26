@@ -1,0 +1,25 @@
+{
+  "_why": "Round 6, from Destin's review-5 AR5-2: the Look box moves directly under Layout and is named 'Additional Customizations'. Whole-panel pictures have the popup's height cap lifted in the screenshot only.",
+  "title": "Appearance panel — round 6: Additional Customizations under Layout",
+  "key": "appearance-panel-review-6",
+  "out": "appearance-panel.review-6.html",
+  "images": "images/appearance-panel.review-6",
+  "stage": "review",
+  "runs": { "before": "runs/ap5", "after": "runs/ap6" },
+  "labels": { "before": "Last round", "after": "Now" },
+  "themes": ["meadow-mist", "dark", "halftone-dimension"],
+  "crops": {
+    "panel": ["ap4", "closed", "430x680+505+400"]
+  },
+  "steps": [
+    {
+      "id": "AR6-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "crop": "panel",
+      "headline": "Additional Customizations now sits right under the Layout pictures, above your themes.",
+      "changed": "The Look section and its heading are gone. The same box, renamed Additional Customizations, is now the last thing in Layout. It opens in place exactly as before.",
+      "notice": "Opening it pushes your themes further down the panel, so you'll scroll a little to reach them while it's open."
+    }
+  ]
+}

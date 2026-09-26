@@ -1,0 +1,15 @@
+{
+ "deck": "theme-cards-review",
+ "started": "2026-09-24T21:06:05.113Z",
+ "submitted": "2026-09-24T21:07:58Z",
+ "cur": 0,
+ "answers": {
+  "TC-1": {
+   "v": "other",
+   "note": "i want to imrpove our preview renders for all of these. i want, preferable, screenshots of the theme in a preview window. i kinda like the frame from inset, but the bottom frame section would need to be MUCH thinner so the actual image takes more of the space. ",
+   "seconds": 112,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

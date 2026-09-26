@@ -1,0 +1,21 @@
+{
+ "deck": "appearance-panel-review-5",
+ "started": "2026-09-24T20:12:55.577Z",
+ "submitted": "2026-09-24T20:13:51Z",
+ "cur": 1,
+ "answers": {
+  "AR5-1": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "AR5-2": {
+   "note": "instead of it's own section, put this right under frames and label the card \"Additional Customizations\"",
+   "v": "other",
+   "seconds": 48,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

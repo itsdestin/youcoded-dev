@@ -141,7 +141,9 @@ he should DRIVE, use Live instead.
 
 ### Live — panes of the running app (`live.json`)
 
-Deck-level `live.worktree` names the build. A pane shows one of two things:
+Deck-level `live.worktree` names the build — a checkout holding `desktop/`, so for a session
+worktree it is `sessions/<key>/youcoded`, not `sessions/<key>` (that fails serve with "not a
+checkout with a desktop/ folder"). A pane shows one of two things:
 
 | A pane's `live` (or a variant's) | What it shows |
 |---|---|

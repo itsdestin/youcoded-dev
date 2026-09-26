@@ -1,0 +1,34 @@
+{
+  "title": "Wallpaper-aware header ink — theme and status tuning contract",
+  "key": "minimalist-header-ink-tuning-contract",
+  "out": "minimalist-chrome.ink-tuning.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/theme-minimal-chrome",
+  "sources": {
+    "minimalist-header-ink-tuning": "minimalist-chrome.ink-tuning.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Chat",
+      "path": "Header icons and session switcher status",
+      "headline": "This is what done means for wallpaper-aware header ink and status tuning.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Icons take a readable tint from their theme, instead of turning pure white.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "minimalist-header-ink-tuning#R-1"
+        },
+        {
+          "id": "R2",
+          "statement": "Active status keeps its hue and no longer fades nearly away; idle stays quiet.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "minimalist-header-ink-tuning#R-2"
+        }
+      ]
+    }
+  ]
+}

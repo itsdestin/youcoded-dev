@@ -1,0 +1,26 @@
+{
+  "title": "The welcome mascot at 30 frames a second — watch it",
+  "key": "mascot-frame-rate-live",
+  "out": "mascot-frame-rate.live.html",
+  "themes": ["midnight", "light"],
+  "live": { "worktree": "sessions/startup-perf-20260926/youcoded", "paneWidth": 260 },
+  "steps": [
+    {
+      "id": "L-1",
+      "surface": "Welcome screen",
+      "path": "The mascot on the screen with no session open",
+      "headline": "Watch both mascots — is the 30-per-second one smooth enough to keep?",
+      "risk": "Both panes are your real mascot; only how often it is redrawn differs. Try each motion button — faster motions show any difference most.",
+      "live": { "surface": "mascot-frame-rate", "round": 1 },
+      "variants": [
+        { "id": "full-refresh", "label": "Until now", "candidate": "full-refresh",
+          "summary": "Redrawn at your screen's full rate (180 times a second).",
+          "measured": "Idle welcome screen: graphics chip ~36% busy, app ~2/3 of a core" },
+        { "id": "thirty", "label": "30 per second (built)", "candidate": "thirty",
+          "summary": "The same motion, same curves, redrawn 30 times a second together with the arms and blinks.",
+          "measured": "Idle welcome screen: graphics chip ~12-17% busy, app ~1/4 of a core",
+          "risk": "Fast motions (Bounce) may look a touch less fluid up close." }
+      ]
+    }
+  ]
+}

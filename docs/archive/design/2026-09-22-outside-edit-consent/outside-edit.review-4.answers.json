@@ -1,0 +1,21 @@
+{
+ "deck": "outside-edit-full-auto-review-4",
+ "started": "2026-09-23T03:25:12.828Z",
+ "submitted": "2026-09-23T03:26:32Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "this second-level confirmation button can remain green",
+   "v": "yes",
+   "seconds": 28,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

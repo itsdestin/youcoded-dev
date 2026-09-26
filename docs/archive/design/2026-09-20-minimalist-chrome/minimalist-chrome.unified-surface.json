@@ -1,0 +1,77 @@
+{
+  "title": "Minimalist chrome \u2014 one look for every button",
+  "key": "minimalist-unified-surface",
+  "out": "minimalist-chrome.unified-surface.html",
+  "images": "images/minimalist-chrome.unified-surface",
+  "runs": {
+    "today": "runs/unified"
+  },
+  "themes": [
+    "meadow-mist",
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "today": [
+      "unified",
+      "today",
+      "1440x354+0+0"
+    ],
+    "a-light": [
+      "unified",
+      "a-light",
+      "1440x354+0+0"
+    ],
+    "b-mid": [
+      "unified",
+      "b-mid",
+      "1440x354+0+0"
+    ],
+    "c-strong": [
+      "unified",
+      "c-strong",
+      "1440x354+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "U-1",
+      "surface": "Chat",
+      "path": "Header buttons, quick buttons and status buttons",
+      "headline": "Which strength should every floating button share \u2014 header, quick buttons and status buttons alike?",
+      "notice": "Each picture is two separate views of the same screen: the top of the window (header over the wallpaper), a white gap, then the bottom (quick buttons, message box, status buttons). The message box itself is unchanged. The bottom buttons borrow the header's pale text so they stay readable.",
+      "risk": "With that pale text, the orange \"Sonnet\" label loses its orange. The \"Priority\" button keeps its own solid colour in all three (it would need its own change).",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today, for comparison",
+          "crop": "today",
+          "summary": "Header buttons nearly clear; quick and status buttons much more solid. Two different looks."
+        },
+        {
+          "id": "a-light",
+          "label": "Close to the header",
+          "crop": "a-light",
+          "summary": "Every button is a faint frosted pill with a hairline edge. The most wallpaper shows through.",
+          "measured": "16% fill",
+          "risk": "On a busy wallpaper patch the buttons' shapes are the hardest to make out."
+        },
+        {
+          "id": "b-mid",
+          "label": "The midpoint",
+          "crop": "b-mid",
+          "summary": "A little more fill and a clearer edge. Header icons gain a visible pill; the bottom buttons lose most of their solid look.",
+          "measured": "28% fill"
+        },
+        {
+          "id": "c-strong",
+          "label": "Close to the chips",
+          "crop": "c-strong",
+          "summary": "The most defined pills; header icons become obvious buttons.",
+          "measured": "40% fill",
+          "risk": "The header starts to look busier: eleven pills in a row."
+        }
+      ]
+    }
+  ]
+}

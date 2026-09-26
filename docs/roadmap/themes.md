@@ -2,9 +2,32 @@
 Filing test: how the app looks under a theme — engine, editor, a theme rendering wrong. Not
 here: installing or browsing themes (marketplace).
 
-- [ ] On the four light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
-      Strawberry Kitty) the provider brand colours — the Claude orange on the model chip and
-      friends — are still hard to read; 25 of 70 colour/theme pairs fail contrast, seen 2026-08-31
+
+- [ ] A theme whose mascot has companions (sun, motes, sparkles around it on the welcome
+      screen) still animates them smoothly at the screen's full refresh rate. The mascot
+      itself moved to 30 redraws a second on 2026-09-26 (youcoded#573: idle welcome screen
+      36% -> ~12-17% of the graphics chip on Destin's 180 Hz screen); the companions are the same
+      kind of cost, unmeasured because his theme has none. Measure a companion theme first
+      `all` `needs-verify` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
+- [ ] Themes you build yourself still get the old DRAWN preview picture (a mock chat page
+      made from the theme's colours), while the built-in and community themes now show a
+      real screenshot of the app (2026-09-24, `scripts/ui-review/theme-previews.py`). So on
+      the Appearance cards and in the Marketplace, your own theme looks different from the
+      rest. Three places still draw the old way: the desktop app when you share or publish
+      a theme (`main/theme-preview-generator.ts`), the theme builder's optional preview step
+      (`generate-previews.js`), and Android, which makes no preview at all
+      `settings/themes` `all` `confirmed` `checked 2026-09-24`
+
+- [ ] Before the official 1.3.1 release, test the Minimalist layout on a Windows computer: it
+      gives every small button its own blur, and on Windows a screen full of separately
+      blurred cards has twice stopped drawing (blank cards). Destin chose to ship it as is
+      (2026-09-24); if it breaks, Reduce Visual Effects turns the blur off
+      `window-chrome` `desktop` `needs-verify` `checked 2026-09-24` `v1.3.1`
+
+- [ ] On the light community themes (Kuromi Dreamer, Cotton Candy Sky, Meadow Mist,
+      Strawberry Kitty, and since 2026-09-22 Morning Rounds) the provider brand colours — the
+      Claude orange on the model chip and friends — are still hard to read; 27 colour/theme
+      pairs fail contrast (25 on 2026-08-31, Morning Rounds added two), seen 2026-08-31
       `all` `needs-verify` `checked 2026-09-01` → docs/active/investigations/2026-09-01-light-theme-brand-colours.md
 
 - [ ] A community theme's custom CSS can run a never-ending animation on the always-visible

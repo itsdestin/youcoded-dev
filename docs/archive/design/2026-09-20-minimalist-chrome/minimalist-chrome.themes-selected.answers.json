@@ -1,0 +1,22 @@
+{
+ "deck": "minimalist-themes-selected",
+ "started": "2026-09-23T23:47:54.346Z",
+ "submitted": "2026-09-23T23:50:49Z",
+ "cur": 1,
+ "answers": {
+  "T-1": {
+   "v": "other",
+   "note": "the alignment of the input bar/status bar is off in devils garden and golden sunbreak for some reason? also, the minimize/maximize/close buttons should be separate chips/buttons with no shared container.",
+   "seconds": 119,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "pick",
+   "pick": "bright",
+   "seconds": 54,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  }
+ }
+}

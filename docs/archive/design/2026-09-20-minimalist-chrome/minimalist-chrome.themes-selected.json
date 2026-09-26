@@ -1,0 +1,42 @@
+{
+  "title": "Minimalist chrome — across themes, and a clearer selected state",
+  "key": "minimalist-themes-selected",
+  "out": "minimalist-chrome.themes-selected.html",
+  "images": "images/minimalist-chrome.themes-selected",
+  "runs": { "after": "runs/tsel" },
+  "themes": ["meadow-mist", "cotton-candy-sky", "devils-garden", "golden-sunbreak", "halftone-dimension", "light", "midnight"],
+  "theme": "fixed",
+  "crops": {
+    "whole": ["tsel", "built", "1440x354+0+0"],
+    "sel-today": ["tsel", "files-open", "1440x44+0+0"],
+    "sel-accent": ["tsel", "sel-accent", "1440x44+0+0"],
+    "sel-bright": ["tsel", "sel-bright", "1440x44+0+0"],
+    "sel-ring": ["tsel", "sel-ring", "1440x44+0+0"]
+  },
+  "steps": [
+    {
+      "id": "T-1",
+      "surface": "Chat",
+      "path": "Whole window, in each theme",
+      "crop": "whole",
+      "highlight": {"box": [15, 52, 70, 47]},
+      "headline": "The light look in seven themes — switch themes with the buttons at the top right.",
+      "changed": "Since the last round: the message box frosts much more heavily. Each bottom button now picks its own readable text colour from the wallpaper right behind it (one shared colour failed on Golden Sunbreak).",
+      "notice": "Light and Midnight have no wallpaper, so the controls there use the theme's own colours. Ivory Schematic and Morning Rounds do not load in the test copy, so they are not shown.",
+      "risk": "On a busy wallpaper, neighbouring buttons can end up with different text colours (dark on a bright patch, pale on a dark one) — visible on Devil's Garden."
+    },
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Header — Files open, Chat selected",
+      "headline": "Which selected style reads clearly as on? It applies to the Chat/Terminal switch and to Files/Games.",
+      "notice": "Files is open in every picture (top right); Chat is the selected half of the switch (top left). Switch themes to check each.",
+      "variants": [
+        {"id": "today", "label": "Current (too faint)", "crop": "sel-today", "summary": "What you rejected: a slightly lighter glass pill."},
+        {"id": "accent", "label": "Accent glass", "crop": "sel-accent", "summary": "The theme's accent colour, partly see-through, with the icon in the accent's text colour. Closest to the app's normal selected look.", "risk": "Adds colour to an otherwise colourless header."},
+        {"id": "bright", "label": "Solid bright pill", "crop": "sel-bright", "summary": "A nearly solid panel-coloured pill with a stronger shadow; icon in the theme's main text colour. No new colour.", "risk": "The most solid element in the header, so it can look heavier than the rest."},
+        {"id": "ring", "label": "Accent outline", "crop": "sel-ring", "summary": "Stays see-through like everything else; an accent-coloured outline and icon mark it as selected.", "risk": "Thin outlines are easiest to miss on a busy wallpaper."}
+      ]
+    }
+  ]
+}

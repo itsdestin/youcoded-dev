@@ -396,6 +396,9 @@ Failure switches, for review shots of error states (added 2026-09-11):
 read that runs when the app starts (the skills drawer, the Library, the tag registry): a
 shot's `eval` only runs after boot, too late to fail a startup read. `skills.list` also feeds
 Marketplace and Library, so failing it fails all three — as in the real app.
+`?stall=<ns.method>[,…]` is its twin for long waits: those channels NEVER answer, so a
+spinner's slow state can be photographed (`?stall=session.browse` shows Resume's "Still
+loading" line after 6 s; added 2026-09-26).
 `?update=available` puts an available update (1.2.4 → 1.3.0) on `status:data`, which shows
 the status-bar version pill and lets its Update panel open; `update.download` answers a
 fake file and `update.getCachedDownload` answers nothing.

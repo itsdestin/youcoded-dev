@@ -1,0 +1,80 @@
+{
+  "title": "How strong should the soft band behind the header be?",
+  "key": "minimalist-chrome-veil",
+  "out": "minimalist-chrome.veil.html",
+  "images": "images/minimalist-chrome.veil",
+  "runs": {
+    "today": "runs/veil"
+  },
+  "labels": {
+    "today": "Minimalist"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "theme": "fixed",
+  "steps": [
+    {
+      "id": "V-1",
+      "surface": "Every screen",
+      "path": "The strip along the top of the window",
+      "headline": "Which soft band behind the header looks right?",
+      "notice": "Whichever you pick, the header controls sit on top of it and the chat keeps scrolling underneath. This is only about how much of that scrolling chat you can see through the band.",
+      "risk": "With no band at all the chat text runs straight through the header controls and both become hard to read, so all four of these are versions of the same soft fade.",
+      "variants": [
+        {
+          "id": "light",
+          "label": "Faint",
+          "crop": "veil-light",
+          "summary": "The lightest. The band fades out 22 pixels below the header, so more of the scrolling chat shows through it.",
+          "measured": "72% solid, 22 px fade",
+          "risk": "The small grey header labels get harder to read over a busy message."
+        },
+        {
+          "id": "medium",
+          "label": "Middle",
+          "crop": "veil-medium",
+          "summary": "Between the two. Still see-through, but the header text keeps its contrast.",
+          "measured": "88% solid, 18 px fade"
+        },
+        {
+          "id": "solid",
+          "label": "Solid, then a quick fade",
+          "crop": "veil-solid",
+          "summary": "The band is fully solid behind the header and dissolves over 14 pixels just below it. Safest to read.",
+          "measured": "97% solid, 14 px fade"
+        },
+        {
+          "id": "panel",
+          "label": "A sheet of glass",
+          "crop": "veil-panel",
+          "summary": "The band takes the theme's raised surface colour instead of the page colour, so the header reads as a soft sheet of glass with the controls sitting on it.",
+          "measured": "90% of the raised surface, 26 px fade",
+          "risk": "It is the most visible of the four \u2014 the band itself becomes something you notice rather than an absence."
+        }
+      ]
+    }
+  ],
+  "crops": {
+    "veil-light": [
+      "main",
+      "home",
+      "1440x110+0+0"
+    ],
+    "veil-medium": [
+      "main",
+      "home",
+      "1440x110+0+0"
+    ],
+    "veil-solid": [
+      "main",
+      "home",
+      "1440x110+0+0"
+    ],
+    "veil-panel": [
+      "main",
+      "home",
+      "1440x110+0+0"
+    ]
+  }
+}

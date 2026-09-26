@@ -1,0 +1,22 @@
+{
+  "title": "Minimalist header — the cushion you picked, corrected",
+  "key": "minimalist-header-correction",
+  "out": "minimalist-chrome.header-correction.html",
+  "images": "images/minimalist-chrome.header-correction",
+  "runs": { "before": "runs/lenses", "after": "runs/lenses-corrected" },
+  "labels": { "before": "The version you picked", "after": "Toggle and session switcher corrected" },
+  "themes": ["meadow-mist"],
+  "theme": "fixed",
+  "crops": { "header-cushion": ["main", "cushion", "1440x50+0+0"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "Header in Meadow Mist",
+      "crop": "header-cushion",
+      "headline": "The Chat/Terminal switch and session switcher now share the raised cushion look.",
+      "changed": "The moving Chat/Terminal highlight is visible again instead of being covered by the button fill. The session switcher's outer edge now matches the nearby buttons. Wallpaper remains visible between everything.",
+      "notice": "Only these two header elements changed since the version you picked; the rest of the header stays as chosen."
+    }
+  ]
+}
