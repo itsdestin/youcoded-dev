@@ -1,0 +1,135 @@
+{
+  "title": "Document comments — approve each part",
+  "key": "doc-comments-review",
+  "out": "doc-comments.review.html",
+  "stage": "review",
+  "themes": ["midnight"],
+  "live": { "worktree": "comments-mock-a" },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "File viewer",
+      "path": "File button (top right, \"15\") → 2026-09-24-onboarding-redesign.md",
+      "headline": "Reading a file: comments are highlights. Hover one, move onto the card, reply or resolve there. Click a highlight to open the panel.",
+      "notice": "The file stays full width. The card waits a moment before appearing, and stays open while you type a reply.",
+      "risk": "A highlight on a phrase that appears twice lands on the first copy (fixed in the real build, which remembers the surrounding words).",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-2",
+      "surface": "File viewer",
+      "path": "Any open file → select some text",
+      "headline": "Adding: select text and the right-click menu pops up. Add comment opens a small box by your selection. Right-clicking never opens a second menu.",
+      "notice": "The same menu appears whether you select or right-click, so there is one thing to learn. Chat keeps right-click only.",
+      "risk": "A menu popping up on every selection may feel busy if you select text just to read it; it ignores tiny selections of one character.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-3",
+      "surface": "File viewer",
+      "path": "Any file with comments → the Comments button left of Edit",
+      "headline": "The comment panel: rounded, titled, with Show Resolved. Cards stack from the top; clicking one scrolls to its highlight. Resolve with the circle-check.",
+      "notice": "Opening it folds the file list away. The Comments number counts open comments only. Ask Your Assistant floats at the bottom of the panel.",
+      "risk": "When the panel is full, the floating Ask Your Assistant button covers the last card until you scroll.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-4",
+      "surface": "Chat",
+      "path": "Select text in a file or a chat message → Ask about this",
+      "headline": "Ask about this puts a chip inside your sentence. Hover the chip to light up its source; click it to scroll there, even after sending.",
+      "notice": "The cursor lines up around the chip, arrow keys step over it, Backspace removes it whole. Clicking a sent chip reopens a closed file.",
+      "risk": "There is no × on the chip in the typing box (it would throw the cursor off again); Backspace removes it.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-5",
+      "surface": "Chat",
+      "path": "Comments panel → Ask Your Assistant",
+      "headline": "Ask Your Assistant sends every open comment at once: a short lead line, then one chip per comment showing your note.",
+      "notice": "Each chip lights up its comment's text on hover and opens it on click.",
+      "risk": "What the assistant actually receives is decided in the real build; today it would get a hidden code instead of readable text.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-6",
+      "surface": "File viewer",
+      "path": "File button → launch-brief.docx and q3-sales-by-rep.xlsx",
+      "headline": "Word and spreadsheets work the same way. Colleagues' Word comments appear under their name; commented cells get a red corner mark.",
+      "notice": "Spreadsheet cards name the tab and cell (\"By rep · B4\"); clicking one switches to that tab.",
+      "risk": "The preview shows Word comments from sample data; reading and writing them in real files is part of the build.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-7",
+      "surface": "File viewer",
+      "path": "File button → ChatView.tsx",
+      "headline": "Code files get the same comment panel, and Ask about this chips from code light up their lines.",
+      "notice": "Hovering a card or chip tints the lines; clicking scrolls to them.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-8",
+      "surface": "Projects",
+      "path": "Projects icon (top left) → docs folder → launch-brief.docx",
+      "headline": "On the Projects screen, Comments is a header button beside the file's other actions, with the same panel and Ask Your Assistant.",
+      "notice": "Sending from here closes Projects and sends in the current chat (see the question below).",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "R-9",
+      "surface": "Phone",
+      "path": "Tick Narrow in the workbench bar → ☰ → Session Files → a file",
+      "headline": "On a phone, tapping a highlight or commented cell slides that comment up from the bottom.",
+      "notice": "No hover card on touch. The slide-up sits above the typing box.",
+      "risk": "Checked in a phone-sized browser, not on a real Android phone, where Android's own copy/paste bar may also appear.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Projects",
+      "path": "Projects screen → a file → Comments → Ask Your Assistant",
+      "headline": "From the Projects screen, which chat should Ask Your Assistant send your comments to?",
+      "today": "It sends to whatever chat is currently open, which may belong to a different project than the file.",
+      "problem": "Your comments could land in an unrelated conversation, where the assistant lacks that project's context.",
+      "proposal": "Three ways to choose the chat.",
+      "options": [
+        {
+          "id": "project-chat",
+          "label": "A chat in the file's project",
+          "summary": "Uses the most recent chat in that project, or starts a new one there if none exists.",
+          "pros": ["The assistant works in the right project.", "Nothing to decide each time."],
+          "cons": ["It may open a chat you weren't looking at."],
+          "recommended": true
+        },
+        {
+          "id": "current-chat",
+          "label": "The current chat",
+          "pros": ["Stays where you already are."],
+          "cons": ["Can be the wrong project, so the assistant may not find the file."]
+        },
+        {
+          "id": "ask",
+          "label": "Ask each time",
+          "pros": ["Always your choice."],
+          "cons": ["An extra step on every send."]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "GitHub",
+      "path": "The app's GitHub page → branches",
+      "headline": "Delete the three rejected practice versions (the round-1 copy, pins & tray, inline threads)?",
+      "today": "They still exist as branches on GitHub and as folders on this computer, alongside the chosen design.",
+      "problem": "They look like live work to anyone browsing, and take up space.",
+      "proposal": "Yes deletes them here and on GitHub; the chosen design is untouched. No keeps them for reference.",
+      "options": [
+        { "id": "delete", "label": "Delete them", "pros": ["Nothing stale left around."], "cons": ["They can't be reopened for comparison."], "recommended": true },
+        { "id": "keep", "label": "Keep them", "pros": ["Can still compare against them."], "cons": ["Clutter until the feature merges."] }
+      ]
+    }
+  ]
+}
