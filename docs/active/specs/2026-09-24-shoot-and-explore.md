@@ -231,6 +231,20 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
 | Review decks | read `shoot` output; the lost-answer fixes above; live panes served by the deck itself |
 | `tester-kit.md`, `ux-tester.md`, `grader.md`, README | rewritten for `explore`/`shoot` |
 
+## Progress (2026-09-26)
+
+- **Phase 1 done** — engine, `shoot`, photo-only build + guard, Settings; Destin kept all 7
+  slides of the old-vs-new review (`docs/active/design/2026-09-24-shoot/`).
+- **Phase 2 done** — deck save status, stable address, merge on 409 and on reload; selfie
+  review kept (3/3).
+- **Phase 3 done** — 162 screens across settings, chat, marketplace, projects, pages, games,
+  first run, sign-in, handoff, sync and error states; 33 one-off plans archived. Left for
+  `explore` (not screens): pointer/drag moments (magnifier lens, drag hover), a game played out
+  (Flappy crash, Connect 4 result), results after a click (sync retry, uninstall failed…), the
+  per-row local-model states. Measured: `--check` ~13 s; two default themes ~77 s; six themes
+  ~2.5 min.
+- Phases 4–6 not started.
+
 ## Order of work
 
 1. **Engine + `shoot` for the Settings area only.**

@@ -1,0 +1,54 @@
+# shoot — pictures of any screen, by name
+
+```
+node scripts/shoot/shoot.mjs settings/*                  every Settings screen, default themes
+node scripts/shoot/shoot.mjs chat/menu/* --themes all     any names, every theme
+node scripts/shoot/shoot.mjs --tag error-state            by tag
+node scripts/shoot/shoot.mjs settings/* --before master --after <worktree>   side by side
+node scripts/shoot/shoot.mjs --list                       every screen name and its tags
+node scripts/shoot/shoot.mjs --all                        everything
+node scripts/shoot/shoot.mjs --check                      open every screen once (light); exit 1 on a miss
+```
+
+Options: `--worktree <name|branch|path>` (default: the checkout next to this script) ·
+`--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24) ·
+`--width N [--height N]` · `--contrast` · `--out <dir>` (default `scratch/shoot/<time>`).
+
+Output: `<out>/<screen name>/<theme>.png`, `manifest.json` (per picture: ok, reason, the
+screen's panel box, page errors), and a contact sheet per theme.
+
+## How it works
+
+- **Nothing clicks.** Each screen registers how to open it in the component that owns it
+  (`useScreenOpen`) and marks its own panel (`<Dialog screen=…>` / `<ScreenMark>`), in a
+  photo-only build the app and the website never contain (`desktop/src/renderer/shoot-mode.tsx`,
+  guarded by `desktop/tests/shoot-build-guard.test.ts`). The list of names is the app's own:
+  `desktop/src/renderer/dev/workbench/screens/*.ts`, one file per area.
+- **A picture counts only when its screen is showing** — the mark is on screen and not covered.
+  Two different screens that come out identical are flagged (`LOOK-ALIKE`) unless the list says
+  `sameAs` with a reason; the check caught three stale states while the list was built.
+- **A `#state` name** (`settings/sync#oversize`) is the same screen under other practice data:
+  the entry's `scenario`, `params` (mock-shim switches) or `session` (a practice session to
+  select first).
+- **The engine** (`engine.mjs`) builds the photo-only copy (cached until source changes), serves
+  it on a free port, and runs a few headless Chromes with private tabs sized from the core
+  count. It waits for the screen to be still — no fetch in flight, animations done, images
+  loaded — never a fixed time; every browser call has a time limit; a crashed run's browsers are
+  cleaned up by the next.
+
+## Adding a screen
+
+1. In the component that owns the open state: `useScreenOpen('area/name', () => setOpen(true))`.
+2. On its panel: `<Dialog screen="area/name" …>`, or `<ScreenMark name="area/name" />` inside a
+   custom panel. Mark only once the content has loaded (a spinner must never pass).
+3. Add the entry to the area file in `screens/`. `tests/shoot-screens.test.ts` fails until the
+   list and the registrations agree; `shoot --check` (run by `scripts/verify.sh` on renderer
+   changes) fails until it opens.
+
+Moments that need a pointer, a drag, typing or a game played out (the magnifier lens, a Flappy
+crash, a result after a click) are not screens — they belong to `explore` (spec phase 4).
+
+Measured 2026-09-26: 162 screens; `--check` ~13 s; every screen in the two default themes
+~77 s; all six themes (972 pictures) ~2.5 min. The old click-plan sweep took 14.4 min for three.
+
+Spec: `docs/active/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.

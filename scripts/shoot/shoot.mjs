@@ -30,10 +30,10 @@ const WORKSPACE = resolve(HERE, '..', '..');
 const DEFAULT_THEMES = ['meadow-mist', 'halftone-dimension'];
 const ALL_THEMES = ['midnight', 'light', 'halftone-dimension', 'meadow-mist', 'creme', 'dark'];
 const CHECK_THEME = 'light';
-// Two pictures are "the same" when a 480-px-wide grey copy differs by under 0.02% on average.
+// Two pictures are "the same" when a 480-px-wide grey copy differs by under 0.01% on average (dim text on dark themes moves little).
 // WHY this fine: states that differ by one line of text (OpenRouter's 'key expired' vs
 // 'key not accepted') passed as identical at 96 px / 0.1%.
-const LOOKALIKE = 0.0002;
+const LOOKALIKE = 0.0001;
 const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
