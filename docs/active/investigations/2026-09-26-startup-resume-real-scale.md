@@ -140,3 +140,9 @@ mascot's never-ending motion (`rig-breathe` plus MascotRig's own sway) is most o
 ~25 points of GPU and ~half a CPU core while nothing happens. Also disproved: drawing the
 mascot above `.chrome-glass` (z 11) changed nothing on Xvfb. Deck Q-2 was answered
 ("leave it") on the blur-centred framing; reopened as `startup-perf-mascot.questions.json`.
+
+**Outcome (2026-09-26):** Destin asked to test a lower frame rate instead of answering
+Q-3 (`startup-perf-mascot.questions.json`, left unanswered — superseded). The rig body
+loops now run in MascotRig's 30/s update (`rig-body-loop.ts`); real screen, idle welcome
+screen: GPU chip 36% → ~12–17% busy, app CPU ~2/3 → ~1/4 of a core. Judged side by side
+live (`mascot-frame-rate.live.json`): Destin picked "30 per second".
