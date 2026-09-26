@@ -30,7 +30,11 @@ const WORKSPACE = resolve(HERE, '..', '..');
 const DEFAULT_THEMES = ['meadow-mist', 'halftone-dimension'];
 const ALL_THEMES = ['midnight', 'light', 'halftone-dimension', 'meadow-mist', 'creme', 'dark'];
 const CHECK_THEME = 'light';
-const LOOKALIKE = 0.001; // mean difference of a 96-px-wide grey thumbnail below which two pictures are "the same"
+// Two pictures are "the same" when a 480-px-wide grey copy differs by under 0.02% on average.
+// WHY this fine: states that differ by one line of text (OpenRouter's 'key expired' vs
+// 'key not accepted') passed as identical at 96 px / 0.1%.
+const LOOKALIKE = 0.0002;
+const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -165,7 +169,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
-    const small = await tab.png({ clip: { x: 0, y: 0, width, height, scale: 96 / width } });
+    const small = await tab.png({ clip: { x: 0, y: 0, width, height, scale: THUMB_W / width } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
     r.ok = true;
