@@ -1,0 +1,21 @@
+{
+  "title": "Full Auto prompt — wording and color follow-up",
+  "key": "outside-edit-full-auto-review-2",
+  "out": "outside-edit.review-2.html",
+  "stage": "review",
+  "theme": "fixed",
+  "themes": ["midnight"],
+  "images": "images/outside-edit.review-2",
+  "runs": { "before": "runs/before-round2", "after": "runs/after-round2" },
+  "labels": { "before": "Previous draft", "after": "Updated draft" },
+  "crops": { "prompt": ["outside-prompt", "card", "640x175+0+0"] },
+  "steps": [{
+    "id": "S-1",
+    "surface": "Outside-edit prompt",
+    "path": "Full Auto → edit a file outside the working folder",
+    "crop": "prompt",
+    "headline": "The one-time button now says Approve.",
+    "changed": "Edit once became Approve. The wider button already matched Always Allow's color; they now share one style so they stay matched.",
+    "notice": "The wider choice still opens a separate confirmation, and resets when the session closes."
+  }]
+}

@@ -1,0 +1,35 @@
+{
+  "title": "Allow for This Session — the two-step choice",
+  "key": "outside-edit-full-auto-review-4",
+  "out": "outside-edit.review-4.html",
+  "stage": "review",
+  "theme": "fixed",
+  "themes": ["midnight"],
+  "images": "images/outside-edit.review-4",
+  "runs": { "before": "runs/before-round4", "after": "runs/after-round4" },
+  "labels": { "before": "Previous draft", "after": "Updated draft" },
+  "crops": {
+    "initial": ["outside-prompt", "initial", "640x175+0+0"],
+    "confirm": ["outside-prompt", "confirm", "640x224+0+0"]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Outside-edit prompt",
+      "path": "First choice",
+      "crop": "initial",
+      "headline": "The broad choice now reads Allow for This Session.",
+      "changed": "The blue button's shorter label leaves the one-time Approve and Deny controls unchanged.",
+      "notice": "Choosing it never starts the edit immediately; a second confirmation follows."
+    },
+    {
+      "id": "S-2",
+      "surface": "Outside-edit confirmation",
+      "path": "After Allow for This Session",
+      "crop": "confirm",
+      "headline": "A second step explains exactly what is being allowed.",
+      "changed": "It names this edit and all outside folders, says specialists remain in their work directories, and states that the allowance resets on close or resume.",
+      "notice": "Back grants nothing. Confirm and edit approves this edit and later outside edits for this session; secret-file blocks stay in place."
+    }
+  ]
+}
