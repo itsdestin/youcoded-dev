@@ -1,6 +1,6 @@
 {
  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=stress",
- "_why": "Local-engine upgrades (docs/archive/design/2026-09-04-local-engine-upgrades). Model Providers was folded into the wide Assistant settings dialog (2026-09-05, AssistantSettings.tsx) — every shot below now opens Settings → Assistant settings → the Local models page, where EngineCard.tsx still renders the same 'Local engine' card and its nested 'Advanced' row (fixed 2026-09-24, capture repair).",
+ "_why": "Local-engine upgrades (docs/archive/design/2026-09-04-local-engine-upgrades). Model Providers was folded into the wide Assistant settings dialog (2026-09-05, AssistantSettings.tsx) \u2014 every shot below now opens Settings \u2192 Assistant settings \u2192 the Local models page, where EngineCard.tsx still renders the same 'Local engine' card and its nested 'Advanced' row (fixed 2026-09-24, capture repair).",
  "shots": [
   {
    "name": "local-engine-card",
@@ -18,17 +18,18 @@
      "settle": 1200
     },
     {
-     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
+     "eval": "[...document.querySelectorAll('[role=dialog] *')].find(e=>e.children.length===0&&e.textContent.trim().startsWith('Local engine')).scrollIntoView({block:'start'})"
     },
     {
      "wait": 500
     }
    ],
-   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
+   "expect": "js:document.querySelector('[role=dialog]')?.textContent.includes('Local engine')",
+   "_why": "Selectors loosened 2026-09-26: they no longer depend on the engine's wrapper card, which the four-kinds trial removes; they work on both layouts."
   },
   {
    "name": "local-engine-rocm-guide",
-   "_why": "The optional ROCm build now renders INSIDE the 'Advanced' disclosure (EngineCard.tsx: optionalOptions.map(backendOptionRow) sits below the Advanced toggle) — Advanced must be opened before 'Set up' exists to click. The Advanced button's OWN class carries `rounded-lg` (SettingRow.tsx SETTING_ROW_BASE), so `.closest('.rounded-lg')` FROM the button self-matches instead of reaching the Local-engine card — found live-testing this repair (2026-09-24): the click silently no-op'd and both '-advanced' and '-rocm-guide' screenshotted the collapsed card. Fixed by scoping the button search to the card's own descendants instead.",
+   "_why": "The optional ROCm build now renders INSIDE the 'Advanced' disclosure (EngineCard.tsx: optionalOptions.map(backendOptionRow) sits below the Advanced toggle) \u2014 Advanced must be opened before 'Set up' exists to click. The Advanced button's OWN class carries `rounded-lg` (SettingRow.tsx SETTING_ROW_BASE), so `.closest('.rounded-lg')` FROM the button self-matches instead of reaching the Local-engine card \u2014 found live-testing this repair (2026-09-24): the click silently no-op'd and both '-advanced' and '-rocm-guide' screenshotted the collapsed card. Fixed by scoping the button search to the card's own descendants instead. Selectors loosened 2026-09-26: they no longer depend on the engine's wrapper card, which the four-kinds trial removes; they work on both layouts.",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -43,7 +44,7 @@
      "settle": 1200
     },
     {
-     "eval": "[...([...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').querySelectorAll('button'))].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
+     "eval": "[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
     },
     {
      "wait": 500
@@ -55,17 +56,17 @@
      "wait": 900
     },
     {
-     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
+     "eval": "[...document.querySelectorAll('[role=dialog] *')].find(e=>e.children.length===0&&e.textContent.trim().startsWith('Local engine')).scrollIntoView({block:'start'})"
     },
     {
      "wait": 400
     }
    ],
-   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
+   "expect": "js:document.querySelector('[role=dialog]')?.textContent.includes('Local engine')"
   },
   {
    "name": "local-engine-advanced",
-   "_why": "Same `.closest('.rounded-lg')` self-match bug as local-engine-rocm-guide — fixed 2026-09-24 (capture repair) by scoping the button search to the card instead of climbing from it.",
+   "_why": "Same `.closest('.rounded-lg')` self-match bug as local-engine-rocm-guide \u2014 fixed 2026-09-24 (capture repair) by scoping the button search to the card instead of climbing from it. Selectors loosened 2026-09-26: they no longer depend on the engine's wrapper card, which the four-kinds trial removes; they work on both layouts.",
    "actions": [
     {
      "click": "[title=Settings]",
@@ -80,19 +81,19 @@
      "settle": 1200
     },
     {
-     "eval": "[...([...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').querySelectorAll('button'))].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
+     "eval": "[...document.querySelectorAll('[role=dialog] button')].find(b=>b.textContent.trim().startsWith('Advanced'))?.click()"
     },
     {
      "wait": 700
     },
     {
-     "eval": "[...document.querySelectorAll('p')].find(p=>p.textContent.startsWith('Local engine')).closest('.rounded-lg').scrollIntoView({block:'start'})"
+     "eval": "[...document.querySelectorAll('[role=dialog] *')].find(e=>e.children.length===0&&e.textContent.trim().startsWith('Local engine')).scrollIntoView({block:'start'})"
     },
     {
      "wait": 400
     }
    ],
-   "expect": "js:[...document.querySelectorAll('p')].some(p=>p.textContent.startsWith('Local engine'))"
+   "expect": "js:document.querySelector('[role=dialog]')?.textContent.includes('Local engine')"
   },
   {
    "name": "local-models-installed",
