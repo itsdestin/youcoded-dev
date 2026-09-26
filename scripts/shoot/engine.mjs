@@ -23,6 +23,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /** A worktree name, branch, or path → the checkout folder holding desktop/. Same names run-workbench.sh takes. */
 export function resolveCheckout(target) {
   if (target && existsSync(join(target, 'desktop'))) return resolve(target);
+  // A workspace worktree's own folder (`.` from its root): its app checkout is youcoded/.
+  // WHY: a fresh session tried `--after .` and got "no checkout matches" (2026-09-26).
+  if (target && existsSync(join(target, 'youcoded', 'desktop'))) return resolve(target, 'youcoded');
   try {
     return execFileSync('bash', ['-c', 'source "$1/scripts/lib/resolve-checkout.sh"; resolve_youcoded_checkout "$2" "$1"', '_', WORKSPACE, target ?? ''], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   } catch (e) {

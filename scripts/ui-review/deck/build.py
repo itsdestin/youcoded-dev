@@ -318,13 +318,13 @@ def build_page(spec, boxes):
             if is_choice(st):
                 for v in st['variants']:
                     if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(v['crop'], t, runs[-1]))):
-                        errors.append(f'{st["id"]}/{v["id"]}: no picture for {t} — check coverage.md for that shot')
+                        errors.append(f'{st["id"]}/{v["id"]}: no picture for {t} — see why in that run\'s shoot summary / manifest.json (an old sweep\'s run: coverage.md)')
                     if v.get('highlight') and v['id'] not in (boxes.get(st['id'], {}).get(t) or {}):
                         errors.append(f'{st["id"]}/{v["id"]}: no highlight box for {t} — `crop` could not resolve it (see its output)')
                 continue
             for r in runs:
                 if not os.path.exists(os.path.join(spec['_base'], spec['images'], image_name(st['crop'], t, r))):
-                    errors.append(f'{st["id"]}: no picture for {t}/{r} — run `crop` (and check coverage.md for that shot)')
+                    errors.append(f'{st["id"]}: no picture for {t}/{r} — run `crop`, and see why in that run\'s shoot summary / manifest.json (an old sweep\'s run: coverage.md)')
             have = boxes.get(st['id'], {}).get(t) or {}
             if not all(r in have for r in runs):
                 errors.append(f'{st["id"]}: no highlight box for {t} — `crop` could not resolve it (see its output)')

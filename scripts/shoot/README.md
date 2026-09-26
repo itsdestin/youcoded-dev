@@ -1,14 +1,20 @@
 # shoot — pictures of any screen, by name
 
 ```
-node scripts/shoot/shoot.mjs settings/*                  every Settings screen, default themes
-node scripts/shoot/shoot.mjs chat/menu/* --themes all     any names, every theme
+node scripts/shoot/shoot.mjs 'settings/*'                every Settings screen, default themes (quote globs)
+node scripts/shoot/shoot.mjs 'chat/menu/*' --themes all   any names, every theme
 node scripts/shoot/shoot.mjs --tag error-state            by tag
-node scripts/shoot/shoot.mjs settings/* --before master --after <worktree>   side by side
+node scripts/shoot/shoot.mjs 'settings/*' --before <base> --after .   side by side
 node scripts/shoot/shoot.mjs --list                       every screen name and its tags
 node scripts/shoot/shoot.mjs --all                        everything
 node scripts/shoot/shoot.mjs --check                      open every screen once (light); exit 1 on a miss
 ```
+
+**Which code:** `--worktree`, `--before` and `--after` take a worktree name (`ui-review-infra`),
+a branch that has a worktree, or a folder — a checkout, or a workspace worktree (`.` from its
+root). `master` means the shared checkout exactly as it sits on disk (it may be behind, or not
+build); for a clean base, make a worktree of it first (`workspace-start`). Each side is built
+on its own; `--before` also needs the base to have the screen list (merged 2026-09).
 
 Options: `--worktree <name|branch|path>` (default: the checkout next to this script) ·
 `--themes a,b | all` (default meadow-mist,halftone-dimension — Destin, 2026-09-24) ·

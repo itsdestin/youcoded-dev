@@ -99,7 +99,7 @@ Dev launches must include `--label "Feature Name"`; concurrent instances also ne
 
 ### UI review: screenshots, click-through, journeys
 
-Pictures of named screens: `node scripts/shoot/shoot.mjs <names|globs> [--themes …] [--before <branch> --after <worktree>]` (`--list` names every screen). A picture counts only when its screen proved it is showing; a failed one is listed with its reason — **unreviewed, not fine**. To act like a user (menus, hover, drag, typing, results after a click): `node scripts/shoot/explore.mjs start`, then numbered steps. Saved click paths (`youcoded/desktop/tests/journeys/`) and `shoot --check` run in `verify.sh`. A new `<Dialog>` needs `screen=` or `noScreen="<why>"`. Depth: `scripts/shoot/README.md`.
+Pictures of named screens: `node scripts/shoot/shoot.mjs <names|'globs'> [--themes …] [--before <base> --after <worktree>]` (`--list` names every screen). A picture counts only when its screen proved it is showing; a failed one is listed with its reason — **unreviewed, not fine**. To act like a user (menus, hover, drag, typing, results after a click): `node scripts/shoot/explore.mjs start`, then numbered steps. Saved click paths (`youcoded/desktop/tests/journeys/`) and `shoot --check` run in `verify.sh`. A new `<Dialog>` needs `screen=` or `noScreen="<why>"`. Depth: `scripts/shoot/README.md`.
 
 ### Demo clips and the landing page
 
