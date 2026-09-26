@@ -80,6 +80,7 @@ function parseArgs(argv) {
     else if (a === '--out') cfg.out = resolve(argv[++i]);
     else if (a === '--real-look') cfg.realLook = true;
     else if (a === '--profile') cfg.profile = true;
+    else if (a === '--profile-browse') cfg.profileBrowse = true;
     else if (a === '--window-ms') cfg.windowMs = Number(argv[++i]);
     else throw new Error(`unknown argument ${a}`);
   }
@@ -401,8 +402,8 @@ async function profileBoot(build, fixture, label, windowMs) {
   }
 }
 
-async function oneBoot(build, fixture, label) {
-  const app = await launchApp({ binary: build.binary, appDir: build.appDir, fixture });
+async function oneBoot(build, fixture, label, profileBrowse = false) {
+  const app = await launchApp({ binary: build.binary, appDir: build.appDir, fixture, extraArgs: profileBrowse ? [`--inspect=127.0.0.1:${INSPECT_PORT}`] : [] });
   try {
     await app.cdp.send('Runtime.evaluate', { expression: HEARTBEAT_JS, returnByValue: true });
     await waitFor(app.cdp, `performance.getEntriesByType('mark').some(m => m.name === 'yc:sessions-listed')`, { timeoutMs: 180_000 });
@@ -420,7 +421,16 @@ async function oneBoot(build, fixture, label) {
       await sleep(1000);
     }
     await sleep(3000);
+    // --profile-browse: a main-process CPU profile of exactly this settled open.
+    let browseTop = null;
+    const mainCdp = profileBrowse ? await attachMainInspector() : null;
+    if (mainCdp) { await mainCdp.send('Profiler.enable'); await mainCdp.send('Profiler.setSamplingInterval', { interval: 200 }); await mainCdp.send('Profiler.start'); }
     const laterBrowse = await timedBrowse(app.cdp, 300_000);
+    if (mainCdp) {
+      const { profile } = await mainCdp.send('Profiler.stop');
+      browseTop = topInWindow(profile, sampleTimes(profile, 0), -Infinity, Infinity, 25);
+      mainCdp.close();
+    }
     log(`${label}: later Resume load ${laterBrowse.ms} ms (background work ${settled ? 'settled' : 'NOT settled after 5 min'})`);
 
     const hb = (await app.cdp.send('Runtime.evaluate', { expression: 'window.__hb', returnByValue: true })).result.value ?? [];
@@ -429,6 +439,7 @@ async function oneBoot(build, fixture, label) {
       label, listedAt, settled,
       firstBrowse: { ...firstBrowse, at: firstBrowse.startedAt - app.spawnedAt },
       laterBrowse: { ...laterBrowse, at: laterBrowse.startedAt - app.spawnedAt },
+      ...(browseTop ? { laterBrowseMainTop: browseTop } : {}),
       heartbeat: heartbeatStats(hb, app.spawnedAt),
       marks: marks.map(({ name, at, ...rest }) => ({ name, at, ...Object.fromEntries(Object.entries(rest).filter(([k]) => !['t', 'pid'].includes(k))) })),
       desktopLogErrors: (() => { try { return readFileSync(join(fixture.home, '.claude', 'desktop.log'), 'utf8').split('\n').filter((l) => l.includes('"level":"ERROR"')); } catch { return []; } })(),
@@ -449,7 +460,7 @@ async function main() {
   if (cfg.realLook) overlayRealLook(fixture.home);
   log(`copied real history${cfg.realLook ? ' + look' : ''} into ${fixture.home} in ${Date.now() - t0} ms`);
 
-  const boot = cfg.profile ? (b, f, l) => profileBoot(b, f, l, cfg.windowMs) : oneBoot;
+  const boot = cfg.profile ? (b, f, l) => profileBoot(b, f, l, cfg.windowMs) : (b, f, l) => oneBoot(b, f, l, cfg.profileBrowse);
   const boots = [];
   try {
     boots.push(await boot(build, fixture, 'cold'));
