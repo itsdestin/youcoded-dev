@@ -129,6 +129,26 @@ changelog:
     neutral, nameless author, never dropped); docx had no fixture exercising a comment range split
     across multiple runs and two paragraphs (F6 — added, confirms the exact quote captures the
     paragraph-break newline correctly).
+  - 2026-09-26: revised after T7's own implementation review (3 findings fixed in the built code,
+    `desktop/src/renderer/components/context-menu/compose-ref.ts`). **§6.2's escaping rule was
+    itself incomplete (F1 — high):** review 2's F7 fix only escaped a quote's own `"`, and located a
+    quote's closing mark as the LAST `"` followed by a trailing token — but a path may legally
+    contain its own `"` (Linux/macOS), so a path like `evil"_hijacked.md` could hijack decoding into
+    the wrong quote AND the wrong file. Fixed by escaping a path's own `"`/`\` the same way a
+    quote's `"` already was, AND by locating the closing quote as the FIRST unescaped match, not the
+    last (either fix alone would have closed this specific case; both together make every path
+    character structurally inert). **F2 (medium):** the path/suffix split (`splitPathSuffix`) matched
+    `_L<n>-<n>`/`_cell_<C>` against the end of the RAW remainder, so an extension-less path that
+    itself ends in that shape (`notes/draft_L2-3`, `x_cell_A1`) was misread as a real suffix and the
+    path was truncated. Fixed by also escaping a path's own `_` and splitting left-to-right for the
+    first UNESCAPED `_` instead of pattern-matching the string's end. **F3 (high — a signed
+    behaviour, confirmed against deck S-7):** the sent Ask Your Assistant summary chip stopped
+    highlighting anything on hover and stopped opening the comments panel on click, since both used
+    to key off `commentIds`, which the wire form (§6.2) never carries by design. Fixed without adding
+    ids to the wire text: `use-ref-source-highlight.ts` and `ReadingHighlights.tsx` recognize a
+    decoded summary chip by its shape and recover "every currently open comment on this path" from
+    the live comments store instead. §6.2 revised above to describe the corrected escaping rule and
+    the F3 fix; no signed contract row changed.
 ---
 
 # Document comments — build-stage technical design
@@ -1188,24 +1208,55 @@ parser locates them structurally (the quote by its `"…"` marks, the path/suffi
 recognizable prefixes), never by splitting on whitespace, so this fix touches only the syntax this
 design invents, not the user's own file paths or quoted text:
 
-**Escaping (review 2, F7 — the earlier draft of this grammar had no escape rule at all):** today's
-`encodeURIComponent(JSON.stringify(ref))` is fully escaped by construction — nothing in a real quote
-or path can break it. The grammar below needs its own explicit rule to keep that property: a literal
-`"` inside the quoted text is written as `\"` (backslash-escaped), and the parser locates a quote's
-closing mark as the LAST `"` that is immediately followed by a recognized trailing token (`_`, a
-path character, or `⦄`) — never the first `"` after the opening one. This resolves both gaps F7
+**Escaping (review 2, F7; corrected by T7's own implementation review, F1/F2 — the earlier draft of
+this grammar had no escape rule at all, and review 2's first escape rule was itself incomplete):**
+today's `encodeURIComponent(JSON.stringify(ref))` is fully escaped by construction — nothing in a
+real quote or path can break it. The grammar below needs its own explicit rule to keep that
+property. Review 2's fix escaped only a quote's own `"`, and located a quote's closing mark as the
+LAST `"` immediately followed by a recognized trailing token — **T7's implementation review found
+this incomplete on two counts, both now fixed:**
+
+- **F1 (high):** a `"` is legal in a path on Linux/macOS. With only the quote's own `"` escaped, a
+  path containing one (e.g. `evil"_hijacked.md`) could put an unescaped `"` right before a `_` —
+  exactly the shape the LAST-match rule was watching for — and hijack decoding into the wrong quote
+  AND the wrong file. Fixed two ways, kept together: the path's own `"` (and `\`) are now
+  backslash-escaped the same way a quote's `"` already was (`escapePath`, mirroring `escapeQuote`),
+  so no unescaped `"` can survive inside a path at all; **and** the parser now takes the FIRST
+  unescaped `"` followed by a trailing token, not the last — the true closing quote is always the
+  first one once the quote's own contents are correctly escaped, so this no longer depends on every
+  caller having escaped its path correctly either.
+- **F2 (medium):** the path/suffix split was an END-anchored regex over the RAW (unescaped)
+  remainder, so an extension-less path that itself ends in something shaped like `_L2-3` or
+  `_cell_A1` (e.g. `notes/draft_L2-3`) was misread as a real line-range/cell suffix, truncating the
+  path. Fixed by also escaping a path's own literal `_` (the one character this grammar reserves as
+  its own separator) and splitting LEFT-TO-RIGHT for the first unescaped `_` instead of pattern-
+  matching the end of the string — the path's own underscores are never unescaped, so the only
+  unescaped `_` that can exist is the real structural separator this grammar itself inserts (or none,
+  meaning no suffix at all).
+
+Both fixes use one escaping rule, general rather than quote-specific: `escapeText` backslash-escapes
+`\` first, then the caller's own problem characters (`"` for a quote; `"` and `_` for a path); the
+matching `unescapeText` reverses either in a single left-to-right pass, because every backslash in an
+escaped string is there only to introduce the next character literally, however many backslashes the
+original text itself happened to contain. This resolves every gap review 2's F7 and T7's review
 found: an embedded quote (`He said "stop it" and left` → `⦃"He said \"stop it\" and left"_docs/foo.md⦄`)
-parses correctly because the parser isn't fooled by the first interior `"`, and an underscore inside
-a real path or quote (`2026_09_24_plan.md`) is never mistaken for a structural separator because the
-parser finds the quote's end and the path's start by their `"`/`⦄` markers, not by blindly splitting
-on `_`. T7's tests add an embedded-quote-mark case and an underscore-in-path/quote case explicitly.
+parses correctly because the parser isn't fooled by an interior `"`; a quote or path's own `\` no
+longer risks being misread as escaping the wrong thing; and an underscore inside a real path
+(`2026_09_24_plan.md`) is never mistaken for a structural separator because the path is escaped
+before it ever reaches the wire, not merely located "structurally" by markers that turned out not to
+be unambiguous on their own. T7's tests cover an embedded quote mark, an underscore in a path/quote,
+a `"` inside a path (including immediately before a `_`, and at the very end), and a `\` inside a
+path or a quote.
 
 - **A quoted-text reference** (`kind: 'doc'`, no `commentId`/`commentIds` — an ephemeral "Ask
-  about this," not a saved comment): `⦃"<exact quote, \" escaped>"_<path>[_L<start>-<end>|_cell_<C>_<S>]⦄`
+  about this," not a saved comment): `⦃"<exact quote, \" escaped>"_<escaped path>[_L<start>-<end>|_cell_<C>_<S>]⦄`
   e.g. `⦃"Today's first-run flow shows five screens before the composer is reachable"_docs/active/plans/2026-09-24-onboarding-redesign.md⦄`.
   A model reading this sees a normal quoted excerpt and a file path — it can act on it with its
   existing Read/Grep tools without needing any new tool at all, because the quote text IS enough
-  to locate the span (the same substring-search tolerance §2's `resolveSelector` uses).
+  to locate the span (the same substring-search tolerance §2's `resolveSelector` uses). The path
+  is escaped on the wire (`escapePath`) and unescaped back to its real characters on decode, so a
+  model reading a marker whose path happens to contain an escaped `\_`/`\"` sees only one extra
+  backslash it can safely ignore — the file's real name is still recoverable by eye.
 - **A comment reference** (`commentId` set — from clicking an existing thread's chip, or the
   single-comment case of "Send to assistant"): adds the id so the assistant can call
   `ReplyToComment`/`ResolveComment` directly instead of re-finding the text:
@@ -1220,11 +1271,23 @@ on `_`. T7's tests add an embedded-quote-mark case and an underscore-in-path/quo
   adds a pinning test that a chat-message/code-block "Ask about this" still round-trips and still
   resolves via `chat-ref-highlight.ts`.
 - **The Ask Your Assistant summary chip** (`commentIds` set, §5's whole reason for existing):
-  `⦃<N>_open_comments_<path>_use_ReadFileComments_to_read_them⦄`. This one deliberately does
-  NOT inline every comment's text (`CommentsFloatingActions.tsx`'s own comment: *"The comments
+  `⦃<N>_open_comments_<escaped path>_use_ReadFileComments_to_read_them⦄`. This one deliberately
+  does NOT inline every comment's text (`CommentsFloatingActions.tsx`'s own comment: *"The comments
   themselves reach the assistant through its comment tools (real build), not the chip"* —
   §5.3/§9's `ReadFileComments` is what actually delivers the content; the chip is a pointer, on
-  purpose, so this design doesn't duplicate comment bodies into every future turn's context).
+  purpose, so this design doesn't duplicate comment bodies into every future turn's context). A
+  decoded chip therefore cannot recover WHICH comments it covered, only the count and the path —
+  **T7's implementation review, F3 (high):** this meant the SENT chip stopped highlighting anything
+  on hover and stopped opening the comments panel on click, since both used to key off
+  `commentIds`, which the wire form never carries. Fixed without adding ids to the wire text:
+  `use-ref-source-highlight.ts`'s `rangeFor` and `ReadingHighlights.tsx`'s jump listener recognize
+  a decoded summary chip by its SHAPE (`kind: 'doc'` with a `path` and no `quote`/`commentId`/
+  `cell`/`lineRange` — the one shape only this form ever produces) and look up "every currently
+  open comment on this path" from the live store (`commentsForPath(path).filter(c => !c.resolved)`)
+  instead of from the wire text — hover lights up all of them, and a click opens the panel focused
+  on the first one. The jump listener sets `handled` only when it actually opened something, so a
+  summary chip whose file is genuinely closed still falls through to `jumpToRef`'s own `openFile`
+  path.
 
 `splitComposeRefs`'s parser (`compose-ref.ts:79-95`) changes from `JSON.parse(decodeURIComponent(...))`
 to a small grammar parser matching the forms above, reconstructing the same `ComposeRef` shape the
