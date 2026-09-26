@@ -64,7 +64,9 @@ Kotlin port") would then need re-examination too: if the desktop write path move
 analogous Kotlin (`java.io.File` + a JVM XML parser, already available) or Android's own
 main-thread equivalent should mirror it, not the WebView.
 
-Triage:
+Triage: accepted — confirmed independently (`node -e "typeof DOMParser"` → `undefined` in this repo's
+Node 26.4.0; no DOMParser/jsdom/xmldom import anywhere under `desktop/src/main/**`); design now moves
+docx/xlsx comment parse+mutate into main (§3.2, §3.3, §4).
 
 ### F2 — [blocker] No IPC channel exists (or is proposed) to write mutated docx/xlsx bytes back to disk
 
@@ -90,7 +92,10 @@ channel is needed — main already has `fs`. If the design instead keeps docx/xl
 renderer, add a new `artifacts:write-binary`-style channel (base64 in, all five surfaces) as
 an explicit new task before T10-T13 can be implemented as currently written.
 
-Triage:
+Triage: accepted — confirmed `desktop/src/main/artifacts/ipc-channels.ts` defines only `READ_BINARY`
+(no `WRITE_BINARY`/`write-binary` counterpart) and `ipc-handlers.ts:5091`'s SAVE handler is
+`fs.promises.writeFile(tmpPath, newContent, 'utf8')`, text-only; resolved together with F1 by moving
+docx/xlsx logic to main (no new binary channel needed, §3.2/§3.3/§4).
 
 ### F3 — [blocker] No path-containment check specified for the comments sidecar path — path traversal / arbitrary-file-write risk
 
@@ -121,7 +126,10 @@ clamp) anything that escapes it, reusing or mirroring `write-authorization.ts`'s
 `judgeRelativeRecord()` logic. Add a pinning test with `../../etc/passwd`-shaped and absolute
 `path` inputs for every one of the six new IPC channels and six new tools.
 
-Triage:
+Triage: accepted — confirmed `write-authorization.ts`'s `judgeRelativeRecord` (realpath + deny-check +
+root-prefix test) and `git-service.ts`'s `locate()` (realpath + `path.relative` escape check) are the
+existing containment precedents, and confirmed §1.5 as written has no equivalent check; T1 now
+specifies and requires one (§1.5).
 
 ### F4 — [major] Cross-process lock-path agreement between TS main and the MCP script is untested for actual concurrency, and main's own lock key isn't canonicalized
 
@@ -150,7 +158,9 @@ deriving the lock path (document the exact canonicalization function to copy). (
 concurrency test: start both writers racing against the same file simultaneously, assert no
 write is lost (not just that both eventually succeed sequentially).
 
-Triage:
+Triage: accepted — confirmed `cas-write.ts:170`/`:227` derive the lock path as `target + '.lock'` with no
+`realpath` first (both `mutateFileUnderLock` and `casWrite`); T1/T9 now require identical
+canonicalization and a true-concurrency pinning test (§1.5, §9).
 
 ### F5 — [major] "Verify after write" failure doesn't specify automatic rollback — a failed write may leave a corrupted live file
 
@@ -170,7 +180,8 @@ either the successfully-mutated version or the original, never a half-written on
 specific, honest `<ErrorState>` per `docs/error-message-standards.md` ("the write didn't take
 — your file wasn't changed" + Retry), not a generic failure.
 
-Triage:
+Triage: accepted — §3.3/§4.3 as written only promised a surfaced error, not a restored file; design now
+makes the backup-restore automatic on verify failure, with a specific `<ErrorState>` (§3.3, §4.3).
 
 ### F6 — [major] Word comment/paraId uniqueness on ADD is unspecified
 
@@ -188,7 +199,8 @@ not assumed monotonic from creation order) and generate `w15:paraId` the way Wor
 does (an 8-hex-digit value, not sequential); add a fixture with gapped/non-sequential ids to
 T11's test list.
 
-Triage:
+Triage: accepted — §3.3 step 2 as written was genuinely silent on id uniqueness; design now specifies
+max-existing-id+1 plus a Word-shaped `w15:paraId`, and a gapped-id fixture (§3.3, T11).
 
 ### F7 — [major] Excel "resolved" marker is ambiguous and has no specified reopen path
 
@@ -206,7 +218,8 @@ non-natural-language token, or a hidden line prefixed with an invisible characte
 explicit round-trip tests for reopen (marker removed) and for a reply body that happens to
 contain resolve-like text.
 
-Triage:
+Triage: accepted — no reopen-strip or false-positive test existed; design now uses a PTY/prose-safe,
+non-natural-language marker and specifies reopen-strip + collision-avoidance tests (§4.1, T13).
 
 ### F8 — [major] T9 bundles at least three independently risky pieces into "one subagent"
 
@@ -235,7 +248,9 @@ explicitly citing `chatsearch.js`/`outbox-drain.ts` as the pattern to copy), T9b
 docx/xlsx pending-mutation queue, blocked on F1/F2), T9c (Android byte-parity + Kotlin
 wiring, citing `ClaudeCodeMcp.kt`/`PtyBridge.kt` as precedent).
 
-Triage:
+Triage: accepted — confirmed the precedents are real (`chatsearch.js:812-822` atomic tmp-write+rename +
+bounded poll loop, `ClaudeCodeMcp.kt`/`claude-code-mcp.ts` zero-dependency deploy pattern) and that T9
+as written bundles independently-testable pieces; split into T9a/T9b/T9c (§8).
 
 ### F9 — [major] §2.2's anchoring algorithm has two unspecified-fallback correctness gaps and one unverified stability assumption
 
@@ -273,7 +288,10 @@ minimum, document explicitly that prefix/suffix are captured post-mammoth-render
 mammoth bump is a known, watched risk — add it to `docs/PITFALLS.md` or a dependency-watch
 doc if not already tracked elsewhere).
 
-Triage:
+Triage: accepted — confirmed `DocxView.tsx:40-44` re-runs `mammoth.convertToHtml` on every mount with no
+version-pinned cache; §2.2 now specifies the closest-scoring fallback and a deterministic tie-break, and
+documents the post-mammoth-render assumption as a watched risk rather than adding a hard-to-build
+dual-mammoth-version fixture test now.
 
 ### F10 — [major] §1.6's cited Android "honest refusal" precedent for `docComments:watch` is the wrong pattern
 
@@ -301,7 +319,12 @@ Kotlin branch (matching `artifacts:watch-project`'s real code), and explicitly a
 is valid per `ipc-bridge.md`, but the design must pick the one it actually means and describe
 it correctly).
 
-Triage:
+Triage: accepted — confirmed `SessionService.kt:4077-4080` returns exactly
+`{"ok": false, "error": "not-implemented-on-mobile"}`, no `unsupported` field, and that
+`artifacts:watch-project` is not currently in `remote-shim.ts`'s `REJECT_ON_NOT_OK` (its caller already
+tolerates `ok:false` itself); design now specifies the correct response shape and explicitly registers
+`docComments:watch`/`:unwatch` in `REJECT_ON_NOT_OK` so a failed watch rejects rather than reading as "no
+changes yet" (§1.6, T3/T4).
 
 ### F11 — [major] Compose-ref redesign (§6, T7) doesn't account for the composer's existing "draft token" layer
 
@@ -322,7 +345,10 @@ Fix: add the draft-token layer explicitly to T7's scope and pinning tests (a tes
 through a draft token and confirms `expandDraftTokens` still produces the new wire format
 correctly), not just `encodeRefMarker`/`splitComposeRefs` in isolation.
 
-Triage:
+Triage: accepted — confirmed `compose-ref.ts:141-213`'s draft-token layer is real and separate from
+`encodeRefMarker`/`splitComposeRefs`, and that `InputBar.tsx:783` calls
+`buildOutgoingMessage(expandDraftTokens(...))` at send time; T7's scope now explicitly includes the
+draft-token layer and a type-through-a-draft-token pinning test (§6.2, T7).
 
 ### F12 — [major] The proposed "readable grammar" wire marker reintroduces literal whitespace into a PTY-submitted string
 
@@ -346,7 +372,10 @@ payload, converting to display spacing only when rendering the pill), or add an 
 test that sends a message containing the new marker through the actual PTY submit path (not
 just a unit-level encode/decode test) and confirms it arrives byte-identical.
 
-Triage:
+Triage: accepted — confirmed `encodeRefMarker` today produces zero literal spaces (`encodeURIComponent`)
+and that `sameUserMessage`'s whitespace-insensitive branch exists specifically for PTY-transit mangling
+(`chat-reducer.ts:69-71`); §6.2's marker now uses a PTY-safe separator with display-only spacing, plus an
+end-to-end PTY-submission test in T7.
 
 ### F13 — [minor] "No history" claim about the mock `DocComment` is imprecise
 
@@ -359,7 +388,8 @@ but could mislead a subagent about how much of §1.1's shape is genuinely new wo
 Fix: reword to "no resolve/reopen audit trail beyond the latest state" rather than "no
 history."
 
-Triage:
+Triage: accepted — confirmed `doc-comments-store.ts:33-60`'s `DocComment` already has
+`replies`/`resolvedBy`/`resolvedAt`; §1.1 reworded to name the actually-new piece precisely.
 
 ### F14 — [minor] Several stale file-path / doc-location citations
 
@@ -378,7 +408,13 @@ Evidence:
 
 Fix: correct the four paths above before this doc is handed to task-executing subagents.
 
-Triage:
+Triage: accepted, with a correction to the finding itself — the design's original citations were bare
+filenames (`project-manager.ts`, `write-authorization.ts`, `build-menu.ts`), not the wrong full paths the
+finding's wording implies; independently confirmed the real paths are
+`desktop/src/main/artifacts/project-manager.ts`, `desktop/src/main/artifacts/write-authorization.ts` and
+`desktop/src/renderer/components/context-menu/build-menu.ts` (all three files exist only there, not at
+the bare-name guess). The underlying risk — ambiguous for a subagent — is real regardless, so the design
+now spells out full paths and states which repo each cited rule lives in.
 
 ### F15 — [minor] T13's "verify exceljs's author API at task time" hedge is unnecessary — the answer is already knowable
 
@@ -391,7 +427,8 @@ body" fallback is therefore already the certain outcome, not a contingency to di
 Fix: commit to the fallback now in §4.1 and remove the "verify during T13" hedge, saving a
 task-time rediscovery step.
 
-Triage:
+Triage: accepted — confirmed `exceljs/index.d.ts:403-408`'s `Comment` interface has no author field;
+§4.1 now commits to the first-line fallback and drops the hedge.
 
 ### F16 — [minor] T14's dependency notation is ambiguous and likely too weak
 
@@ -406,7 +443,8 @@ Fix: change to "T10 AND T11, T12 AND T13" (or explicitly scope T14 into two sub-
 then write, if a phased rollout is intended) so the dependency notation matches what T14
 actually needs to deliver.
 
-Triage:
+Triage: accepted — "T5, T10 or T11, T12 or T13" read literally does allow a read-without-write start;
+changed to "T10 AND T11, T12 AND T13" (§8).
 
 ### F17 — [minor] No automated OOXML well-formedness/relationship check beyond "the comment re-parses"
 
@@ -425,7 +463,8 @@ a minimal automated relationship/content-types sanity check to the verify step (
 referenced has a `[Content_Types].xml` override) so a whole class of "opens in Word, silently
 drops in Google Docs" bugs is caught before the manual R10 check rather than by it.
 
-Triage:
+Triage: accepted (minor, non-blocking) — a cheap automated relationship/content-types sanity check is
+added to T11's verify step, ahead of the manual R10 check rather than instead of it (§3.3, T11).
 
 ## Summary
 
