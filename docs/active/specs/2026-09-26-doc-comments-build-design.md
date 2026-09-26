@@ -149,6 +149,38 @@ changelog:
     decoded summary chip by its shape and recover "every currently open comment on this path" from
     the live comments store instead. §6.2 revised above to describe the corrected escaping rule and
     the F3 fix; no signed contract row changed.
+  - 2026-09-26: revised after a review of T3's own built code (finding F1 — blocker, security). The
+    `list`/`add`/`reply`/`resolve`/`reopen`/`move`/`watch`/`unwatch` handlers built in
+    `desktop/src/main/doc-comments/ipc-handlers.ts` and `desktop/src/main/remote-server.ts` trusted a
+    caller-supplied `projectRoot` outright: §1.5's containment check only proves `path` resolves
+    INSIDE whatever root it is given, never that the root itself is one the app recognizes, so a
+    `projectRoot` of `/` or `$HOME` made containment a no-op — every channel could create/mutate a
+    sidecar anywhere on disk, and a `.docx`/`.xlsx` `list` could make the main process read and parse
+    any such file on the machine, bypassing `read-binary-access.ts`'s guard entirely. Separately, the
+    no-`projectRoot` fallback in `resolveSourceFilePath` (§1.1/§3.2/§4.1's dispatch) resolved and
+    returned any absolute path with no containment at all. §1.5 now specifies two gates, both
+    implemented in the built code rather than requiring a design change to the shapes above: (1) a new
+    shared module, `desktop/src/main/doc-comments/doc-comments-gate.ts` (`refuseUnknownProjectRoot`),
+    checked before every one of the eight channels above touches the store — reusing the SAME
+    `isKnownRoot()` authority (`desktop/src/main/artifacts/read-service.ts`) git's `knownGitRoot`/
+    `gitGate` and `remote-server.ts`'s own `isKnownRoot`/`refuseUnknownRoot` already gate on, so a
+    live session's own (possibly unregistered) cwd still counts, matching `useActiveProject.ts`'s
+    synthetic-project fallback (§1.4) — refusing an unrecognized root with a typed
+    `unknown-project-root` error instead of a silent no-op containment check; (2) the no-`projectRoot`
+    fallback path that reads actual `.docx`/`.xlsx` bytes (`doc-comments-dispatch.ts`'s
+    `listNativeComments`) now runs the resolved absolute path through `authorizeBytesRead`
+    (`read-service.ts`) — the SAME authority the artifacts binary viewers already use — refusing with
+    `path-not-tracked` for anything that isn't a saved folder, an indexed project, or a tracked
+    external artifact; the JSON-sidecar-only fallback (`locateFallback`, §1.4, used by every OTHER
+    file type's plain comment storage) is unchanged, since it never exposes a source file's content.
+    Both gates are single, shared functions reused identically by desktop IPC and the remote WS
+    surface, so a future native tool (T8) or the MCP script's own reimplementation (T9a) has one
+    place to import/mirror rather than a fourth independently-invented allowlist. No signed contract
+    row changed; `desktop/tests/doc-comments-gate.test.ts` (new), and additions to
+    `doc-comments-dispatch.test.ts`, `doc-comments-ipc-handlers.test.ts` and
+    `doc-comments-remote-relay.test.ts`, pin both gates on desktop and remote, including a forged root
+    ('/', an unregistered temp directory), the untracked-fallback-path case, and that a legitimate
+    (session-cwd or in-project) `projectRoot` keeps working.
 ---
 
 # Document comments — build-stage technical design
@@ -364,6 +396,33 @@ it (a roadmap item, not a build blocker).
 New module `desktop/src/main/doc-comments/doc-comments-store.ts`, following the shape of
 `artifact-store.ts` and `pages-service.ts`, not `page-fetch.ts`'s per-call pattern:
 
+- **`projectRoot` itself must be a root the app recognizes (T3 build review, F1 — blocker,
+  security).** Every containment check below (and §1.6's IPC surface) proves `path` resolves INSIDE
+  whatever `projectRoot` it is given — it never proves `projectRoot` ITSELF is real. Until this fix,
+  it wasn't: a caller naming `projectRoot: '/'` or `$HOME` made every containment check below a
+  no-op (`path.resolve('/', anything)` always lands "inside" `/`), so any `docComments:*` channel
+  could create/mutate a sidecar anywhere on disk, and a `.docx`/`.xlsx` `list` could read and parse
+  any such file on the machine — bypassing `read-binary-access.ts`'s guard entirely, the same guard
+  the artifacts binary viewers already enforce for exactly this class of read. The fix is a shared
+  gate, `desktop/src/main/doc-comments/doc-comments-gate.ts`'s `refuseUnknownProjectRoot` — reusing
+  `isKnownRoot()` (`artifacts/read-service.ts`), the SAME authority git's `knownGitRoot`/`gitGate`
+  (`ipc-handlers.ts`) and `remote-server.ts`'s own `isKnownRoot`/`refuseUnknownRoot` already gate on
+  — called by `doc-comments/ipc-handlers.ts` and `remote-server.ts` on EVERY one of the eight
+  channels (`list`/`add`/`reply`/`resolve`/`reopen`/`move`/`watch`/`unwatch`) before either surface
+  touches this store, refusing a typed `unknown-project-root` for an unrecognized root. A live
+  session's own cwd counts too (the caller passes it as an extra allowed root), matching
+  `useActiveProject.ts`'s synthetic-project fallback (§1.4) — otherwise a file opened via an
+  unregistered session's drawer would start refusing, not just close a hole. This module
+  (`doc-comments-store.ts`) deliberately stays unaware of the gate: it is intentionally
+  Electron-adjacent-but-pure fs/path logic, unit-tested with arbitrary temp directories as
+  `projectRoot`, and trusts its caller to have already vetted the root — exactly the layering gap
+  the gate closes at the real entry points. Separately, the NO-`projectRoot` fallback that reads
+  actual `.docx`/`.xlsx` bytes (`doc-comments-dispatch.ts`'s `listNativeComments`, §3.2/§4.1) now
+  runs the resolved absolute path through `authorizeBytesRead` (`read-service.ts`) before reading it,
+  refusing `path-not-tracked` for anything that isn't a saved folder, an indexed project, or a
+  tracked external artifact — the JSON-sidecar-only fallback below (`locateFallback`, used by every
+  OTHER file type) is unchanged, since it never exposes a source file's content, only a hash of its
+  path.
 - **Path containment (review 1, F3; corrected in review 2, F1 — blocker):** every entry point
   (`list`/`add`/`reply`/`resolve`/`reopen`/`move`) resolves `path` to a sidecar location using the
   STRONGER of this design's own two cited precedents. **This claim is only true once §1.6's `path`
