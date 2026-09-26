@@ -10,7 +10,7 @@
 //   explore type "hello"            types into whatever has focus (type 7 "hello": click 7 first)
 //   explore key Escape | key Ctrl+K | key Enter
 //   explore drag 4 to 9             a real drag, with hover states on the way
-//   explore scroll down [7]         the wheel, over control 7 or the middle of the window
+//   explore scroll down [3] [over 7]  the wheel: 3 notches, over control 7 (default: 1, mid-window)
 //   explore open settings/sync      jump to a named screen (explore screens lists them)
 //   explore back                    undo the last step (starts over and replays the others)
 //   explore stack                   the open layers, top first, and what has focus
@@ -318,7 +318,7 @@ async function daemon(o) {
       case 'scroll': {
         const p = step.target ? await where(step.target, n) : { x: o.width / 2, y: o.height / 2 };
         await moveTo(p.x, p.y);
-        await mouse('mouseWheel', p.x, p.y, { deltaX: 0, deltaY: step.dir === 'up' ? -400 : 400 });
+        for (let i = 0; i < (step.times ?? 1); i++) { await mouse('mouseWheel', p.x, p.y, { deltaX: 0, deltaY: step.dir === 'up' ? -400 : 400 }); await sleep(30); }
         break;
       }
       case 'open': await openScreen(step.screen); break;
@@ -429,15 +429,20 @@ async function daemon(o) {
       const a = pick(args[0]), b = pick(args[2]); n = a.n; toN = b.n;
       step = { do: 'drag', target: a.target, to: b.target };
     } else if (verb === 'scroll') {
-      if (!['up', 'down'].includes(args[0])) throw new Error('scroll needs a direction: explore scroll down [7]');
+      // `scroll down 3` = three notches; `scroll down over 7` = over control 7. A bare number
+      // once meant the control, and a tester read `scroll up 20` as "20 notches" (2026-09-26).
+      if (!['up', 'down'].includes(args[0])) throw new Error('scroll needs a direction: explore scroll down [3] [over 7]');
       step = { do: 'scroll', dir: args[0] };
-      if (args[1]) { const p = pick(args[1]); n = p.n; step.target = p.target; }
+      const rest = args.slice(1);
+      const at = rest.indexOf('over');
+      if (at >= 0) { const p = pick(rest[at + 1]); n = p.n; step.target = p.target; rest.splice(at, 2); }
+      if (rest.length) { const k = Number(rest[0]); if (!Number.isInteger(k) || k < 1 || k > 50 || rest.length > 1) throw new Error('scroll takes a count of notches (1–50) and/or "over N": explore scroll down 3 over 7'); step.times = k; }
     } else if (verb === 'open') { if (!args[0]) throw new Error('open needs a screen name (explore screens lists them)'); step = { do: 'open', screen: args[0] }; }
     else throw new Error(`unknown command "${verb}" — see explore --help`);
 
     await perform({ ...step, toN }, n);
     steps.push(step); stepNo++;
-    const what = step.target ? `${step.do} ${describe(step.target)}${step.to ? ` to ${describe(step.to)}` : ''}` : `${step.do} ${step.key ?? step.text ?? step.screen ?? step.dir ?? ''}`;
+    const what = step.target ? `${step.do}${step.dir ? ` ${step.dir}${step.times > 1 ? ` ×${step.times}` : ''} over` : ''} ${describe(step.target)}${step.to ? ` to ${describe(step.to)}` : ''}` : `${step.do} ${step.key ?? step.text ?? step.screen ?? `${step.dir}${step.times > 1 ? ` ×${step.times}` : ''}`}`;
     return `step ${stepNo}: ${what}\n${await report(step.do)}`;
   }
 
