@@ -146,7 +146,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
   const t0 = Date.now();
   const r = { name: screen.name, theme, ok: false, reason: '', file: null, ms: 0, errors: [] };
   try {
-    await tab.prepare({ theme, width, height });
+    // An entry may carry its own window (a phone screen); --width/--height apply otherwise.
+    const w = screen.viewport?.width ?? width, h = screen.viewport?.height ?? height;
+    await tab.prepare({ theme, width: w, height: h });
     const q = new URLSearchParams({ mode: 'workbench', child: '1', latency: '0', scenario: screen.scenario ?? 'default', ...(screen.params ?? {}) });
     await tab.navigate(`${base}?${q}`);
     if (!(await waitFor(tab, "window.__youcodedScreens && document.body.innerText.trim().length > 20", 20_000))) throw new Error('the app did not start within 20 s');
@@ -169,7 +171,7 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
-    const small = await tab.png({ clip: { x: 0, y: 0, width, height, scale: THUMB_W / width } });
+    const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
     r.ok = true;
