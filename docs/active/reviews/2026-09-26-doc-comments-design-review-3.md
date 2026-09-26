@@ -111,7 +111,17 @@ Either way, add the `path` (or index) into T3/T4/T8/T9a/T9b/T20's task rows, and
 exercises `reply`/`resolve`/`reopen`/`move` against a comment whose sidecar was never previously
 `list()`-ed in the acting process.
 
-Triage:
+Triage: accepted. Confirmed against the mock renderer store (`desktop/src/renderer/state/doc-comments-store.ts:374,385,393`)
+that `addReply(id, author, text)`/`resolveComment(id, by)`/`reopenComment(id)` really do take no
+`path` — the finding's central claim holds. Took the "simplest buildable option" over a maintained
+index: every real caller of `reply`/`resolve`/`reopen`/`move` already has the path in hand (the
+renderer's open file; the assistant's own prior `ReadFileComments`/`list()` result, whose
+`PersistedComment.path` field already carries it), so a required `path` field costs nothing a
+caller doesn't already have, while a `commentId → path` index would be a second piece of
+state three runtimes have to keep in sync for no offsetting benefit. Design revised: §1.6's IPC
+payload table, §5's tool-input table, and §7's renderer-injection note now all carry `path` on
+`reply`/`resolve`/`reopen`/`move`; T1/T3/T4/T8/T9a's task rows and pinning-test lists gain the
+path-containment check and the "never-previously-listed" cold-start test this fix requires.
 
 ### F2 — [blocker] `MoveComment` has no specified write algorithm for Word/Excel-native comments, and isn't in T11 or T13's scope at all — despite §5 explicitly claiming it works "identically" across formats
 
@@ -152,7 +162,17 @@ in §4.3/§4.3a for repointing a Note to a different `[sheet, cell]` pair. Add b
 descriptions and pinning-test lists, and add a repoint case to T21's parity guard so cross-platform
 agreement on this operation is actually checked, not just add/reply/resolve.
 
-Triage:
+Triage: accepted. Confirmed §3.3 stops at five steps (backup, add, reply, resolve/reopen, verify)
+with no relocation step, and T11/T13's task rows list only add/reply/resolve — the gap is real.
+Design revised: §3.3 gains a Move step (remove the old `w:commentRangeStart`/`End` pair plus its
+`w:commentReference` run by `w:id`, re-run `resolveSelector` against the CURRENT `document.xml`
+text for `newSelector`, insert the new range reusing the SAME `w:id`/`w15:paraId`, refuse with a
+specific `<ErrorState>` if `newSelector` doesn't resolve rather than leaving the old range deleted
+with nothing re-inserted); §4.3/§4.3a gain a mirroring Excel repoint step, citing exceljs's own
+`cDst._comment = undefined` precedent (`desktop/node_modules/exceljs/lib/doc/row.js:100,125` —
+confirmed real) for how to clear a Note being moved off its old cell before setting the identical
+body (transcript and resolve marker included) on the new one. T11/T13/T16/T17/T18/T19's task rows
+and pinning-test lists, and T21's parity guard, are updated to cover Move/repoint for both formats.
 
 ## Summary
 
