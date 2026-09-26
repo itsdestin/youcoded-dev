@@ -1,0 +1,154 @@
+{
+  "title": "Document comments — contract",
+  "key": "doc-comments-contract",
+  "out": "doc-comments.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/comments-mock-a",
+  "sources": {
+    "doc-comments-questions": "doc-comments.questions.json",
+    "doc-comments-review": "doc-comments.review.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "File viewer comments",
+      "path": "Any file open in the file viewer, in Comments mode",
+      "headline": "This is what done means for document comments.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Comments are saved in a hidden folder inside the project, beside the app's other hidden project data.",
+          "checkedBy": "human",
+          "threshold": "a hidden project-comments folder holds the saved comment, confirmed on disk",
+          "source": "doc-comments-questions#Q-1"
+        },
+        {
+          "id": "R2",
+          "statement": "The assistant can reply to your comments.",
+          "checkedBy": "live-app",
+          "threshold": "asking the assistant to reply posts a reply under the comment, in a dev instance",
+          "source": "doc-comments-questions#Q-2"
+        },
+        {
+          "id": "R3",
+          "statement": "The assistant can resolve a comment once it finishes what you asked.",
+          "checkedBy": "live-app",
+          "threshold": "the assistant resolves the comment it acted on, in a dev instance",
+          "source": "doc-comments-questions#Q-2"
+        },
+        {
+          "id": "R4",
+          "statement": "The assistant can leave its own comments on your document.",
+          "checkedBy": "live-app",
+          "threshold": "the assistant adds a comment of its own, in a dev instance",
+          "source": "doc-comments-questions#Q-2"
+        },
+        {
+          "id": "R5",
+          "statement": "The assistant can edit your file to fix what a comment asks, under its usual edit approval rules.",
+          "checkedBy": "live-app",
+          "threshold": "asking the assistant to fix a comment produces an edit through normal approval, in a dev instance",
+          "source": "doc-comments-questions#Q-2"
+        },
+        {
+          "id": "R6",
+          "statement": "On the phone, tapping a highlight opens the comment list, the same as clicking it does on desktop.",
+          "checkedBy": "live-app",
+          "threshold": "tapping a highlight on a phone-sized screen opens the comment list, in a dev instance",
+          "source": "doc-comments-questions#Q-3"
+        },
+        {
+          "id": "R7",
+          "statement": "The July \"Ask Claude about this\" draft pull request is closed, with a note pointing to this work.",
+          "checkedBy": "human",
+          "threshold": "PR #263 shows as closed on GitHub, with a note linking here",
+          "source": "doc-comments-questions#Q-5"
+        },
+        {
+          "id": "R8",
+          "statement": "Comments appear as highlights in the file; hovering one shows a card to reply or resolve, and clicking opens the panel.",
+          "checkedBy": "live-app",
+          "threshold": "hovering, replying, resolving and clicking a highlight all work, in a dev instance",
+          "source": "doc-comments-review#R-1"
+        },
+        {
+          "id": "R9",
+          "statement": "Selecting text or right-clicking opens the same menu; choosing Add comment opens a small box by the selection.",
+          "checkedBy": "live-app",
+          "threshold": "selecting text and right-clicking open one shared menu with Add comment, in a dev instance",
+          "source": "doc-comments-review#R-2"
+        },
+        {
+          "id": "R10",
+          "statement": "Show Resolved sits at the top of the comment panel, under the title.",
+          "checkedBy": "human",
+          "threshold": "Show Resolved appears at the top of the panel, under the title",
+          "source": "doc-comments-review#R-3"
+        },
+        {
+          "id": "R11",
+          "statement": "The comment panel has a close button in its top right corner.",
+          "checkedBy": "human",
+          "threshold": "a close control sits in the panel's top right corner",
+          "source": "doc-comments-review#R-3"
+        },
+        {
+          "id": "R12",
+          "statement": "Ask about this adds a chip to your message; hovering or clicking it shows or scrolls to its source, even after sending.",
+          "checkedBy": "live-app",
+          "threshold": "the chip highlights and scrolls to its source before and after sending, in a dev instance",
+          "source": "doc-comments-review#R-4"
+        },
+        {
+          "id": "R13",
+          "statement": "The Ask Your Assistant and Edit buttons are opaque and clearly clickable, matching every other button in the app.",
+          "checkedBy": "human",
+          "threshold": "both buttons look solid and clickable, matching the app's other buttons",
+          "source": "doc-comments-review#R-5"
+        },
+        {
+          "id": "R14",
+          "statement": "Word and spreadsheet files use the same comment panel; colleagues' Word comments show their name, and commented cells get a red corner mark.",
+          "checkedBy": "live-app",
+          "threshold": "opening a real Word file and spreadsheet shows comments and marked cells, in a dev instance",
+          "source": "doc-comments-review#R-6"
+        },
+        {
+          "id": "R15",
+          "statement": "Code files use the same comment panel, and Ask about this chips made from code highlight their lines.",
+          "checkedBy": "live-app",
+          "threshold": "a code file's comments and chips highlight the right lines, in a dev instance",
+          "source": "doc-comments-review#R-7"
+        },
+        {
+          "id": "R16",
+          "statement": "On the Projects screen, Comments appears as a header button beside the file's other actions, opening the same panel.",
+          "checkedBy": "live-app",
+          "threshold": "the Projects screen's Comments button opens the same comment panel, in a dev instance",
+          "source": "doc-comments-review#R-8"
+        },
+        {
+          "id": "R17",
+          "statement": "On a phone, tapping a highlight or commented cell slides that comment up from the bottom.",
+          "checkedBy": "live-app",
+          "threshold": "tapping a highlight or commented cell on a phone-sized screen slides the comment up, in a dev instance",
+          "source": "doc-comments-review#R-9"
+        },
+        {
+          "id": "R18",
+          "statement": "Sending comments to Ask Your Assistant from Projects opens the most recent chat in that file's project, or starts a new one.",
+          "checkedBy": "live-app",
+          "threshold": "sending from Projects opens or reuses the file's project chat, in a dev instance with multiple chats",
+          "source": "doc-comments-review#Q-1"
+        },
+        {
+          "id": "R19",
+          "statement": "The three rejected practice branches and folders are deleted from GitHub and this computer.",
+          "checkedBy": "human",
+          "threshold": "the three branches and folders no longer exist, on GitHub and locally",
+          "source": "doc-comments-review#Q-2"
+        }
+      ]
+    }
+  ]
+}

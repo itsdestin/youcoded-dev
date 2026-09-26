@@ -1,0 +1,63 @@
+{
+  "title": "Document comments: confirm the decisions made in notes and chat",
+  "key": "doc-comments-confirm",
+  "out": "doc-comments.confirm.html",
+  "steps": [
+    {
+      "id": "S-1", "words": true, "surface": "File viewer comments", "path": "Word and Excel files",
+      "headline": "Word and Excel files keep their comments inside the file; every other file keeps them in a hidden folder in the project.",
+      "changed": "From your note on the first page: files that can hold comments natively store them there.",
+      "notice": "Open the file in Word, Excel or Google Docs and your comments are there too.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "S-2", "words": true, "surface": "File viewer comments", "path": "Spreadsheets",
+      "headline": "Spreadsheet comments are in this version: attached to cells and saved into the spreadsheet file.",
+      "changed": "You said yes in chat.",
+      "notice": "Excel shows the same cell comments you left in YouCoded.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "S-3", "words": true, "surface": "File viewer comments", "path": "Word documents",
+      "headline": "Word comments work both ways in this version: comments from Word or Google Docs show here, and yours show there.",
+      "changed": "From your answer on the first page. It may be built in stages but merges as one piece of work.",
+      "notice": "You can reply in YouCoded to a colleague's Word comment and they see your reply in Word.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "S-4", "words": true, "surface": "File viewer comments", "path": "Google Docs",
+      "headline": "Google Docs support means the Word file keeps its comments when opened there; a live Google Drive link comes later.",
+      "changed": "You said \"just file itself for now\" in chat.",
+      "notice": "Uploading a commented Word file to Google Drive keeps the comments.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "S-5", "words": true, "surface": "Assistant", "path": "Comments the assistant leaves",
+      "headline": "The assistant leaves comments sparingly: only on things that clearly need your action or attention, never to narrate its own work.",
+      "changed": "From your note on the first page.",
+      "notice": "A document the assistant edits does not fill up with its notes.",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "S-6", "words": true, "surface": "Assistant", "path": "After the assistant edits commented text",
+      "headline": "After fixing a comment, the assistant decides whether to reply, resolve, or move it to the new wording; nothing is silently lost.",
+      "changed": "You said \"up to the assistant, depending on situation\" in chat.",
+      "notice": "A comment whose text disappeared and wasn't resolved stays in the list marked \"text no longer found\".",
+      "yes": "Correct", "no": "Not quite"
+    },
+    {
+      "id": "S-7", "words": true, "surface": "Chat", "path": "Comments panel → Ask Your Assistant",
+      "headline": "Ask Your Assistant sends one summary chip (\"2 comments · file.md\") instead of one chip per comment.",
+      "changed": "Built after your review note. Hovering the chip lights up every highlight it covers; clicking opens the comment panel.",
+      "notice": "The sent message stays one short line however many comments you left.",
+      "yes": "Keep it", "no": "Change it"
+    },
+    {
+      "id": "S-8", "words": true, "surface": "Projects", "path": "Projects → a file → Comments → Ask Your Assistant",
+      "headline": "From the Projects screen, Ask Your Assistant opens the new-chat pop-up with the file's project chosen and a model to pick.",
+      "changed": "Built after your review answer, using the same pop-up as Create a page.",
+      "notice": "The request is waiting in the new chat's typing box; you press send.",
+      "yes": "Keep it", "no": "Change it"
+    }
+  ]
+}
