@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 # Explore trial — speed settings + rename (2026-09-26)
 

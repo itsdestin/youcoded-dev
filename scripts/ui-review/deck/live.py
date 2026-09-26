@@ -10,7 +10,7 @@ serves what they point at. Both read the SAME spec through here, so a page built
 a server started later cannot disagree about the address — which is what makes
 `serve --no-build` safe.
 
-WHY relative addresses (2026-09-26, docs/active/specs/2026-09-24-shoot-and-explore.md → "Review
+WHY relative addresses (2026-09-26, docs/archive/specs/2026-09-24-shoot-and-explore.md → "Review
 decks"): a live pane used to point at a FIXED port (`run-workbench.sh` on 5173+340), which
 collided between sessions and lost its panes whenever the deck itself was restarted. The deck
 now serves the practice app itself, under its own address, as `/app/index.html` — so a pane

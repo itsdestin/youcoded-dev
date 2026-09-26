@@ -1,6 +1,6 @@
 ---
 date: 2026-09-24
-status: active
+status: shipped
 type: investigation
 topic: How to make YouCoded's screenshot and UI-review tools near-instant and easy to aim at any set of screens — measured causes, a working prototype, ranked proposals and the decisions Destin must make
 ---

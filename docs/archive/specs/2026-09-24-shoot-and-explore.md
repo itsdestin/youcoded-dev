@@ -1,16 +1,16 @@
 ---
 date: 2026-09-24
-status: draft
+status: shipped
 type: spec
 topic: Replace the screenshot/UI-review tooling with two simple tools on one engine — `shoot` (open named screens directly and photograph them, no clicking) and `explore` (a live click-through for AI reviewers) — plus a small set of saved journeys
 origin: Destin, 2026-09-24 — "the simplest possible version of the system that works as fast as possible, that has the fewest possible error cases, that requires the least thinking … from the model"; keep click paths for AI reviewers as a separate path
 revision: 2 — independent review folded in (see "What changed from revision 1")
-related: docs/active/investigations/2026-09-24-screenshot-infra-speed.md
+related: docs/archive/investigations/2026-09-24-screenshot-infra-speed.md
 ---
 
 # `shoot` and `explore`: one engine, two jobs
 
-Evidence for every measured number here is in `docs/active/investigations/2026-09-24-screenshot-infra-speed.md`.
+Evidence for every measured number here is in `docs/archive/investigations/2026-09-24-screenshot-infra-speed.md`.
 Anything marked *estimate* is measured in phase 1 before anyone relies on it.
 
 ## The two jobs
@@ -234,7 +234,7 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
 ## Progress (2026-09-26)
 
 - **Phase 1 done** — engine, `shoot`, photo-only build + guard, Settings; Destin kept all 7
-  slides of the old-vs-new review (`docs/active/design/2026-09-24-shoot/`).
+  slides of the old-vs-new review (`docs/archive/design/2026-09-24-shoot/`).
 - **Phase 2 done** — deck save status, stable address, merge on 409 and on reload; selfie
   review kept (3/3).
 - **Phase 3 done** — 162 screens across settings, chat, marketplace, projects, pages, games,
@@ -277,7 +277,7 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
   eval by design — removing it would bring back throwaway CDP scripts), and `drag-probe.mjs` /
   `drag-fuzz.mjs` stay (per-frame drag numbers `explore` cannot give; now on port 0).
   `montage-ab.sh` stays with `record-pair.sh` for clip decks. Selfie review of the deck change:
-  `docs/active/design/2026-09-24-shoot/selfie-2/`.
+  `docs/archive/design/2026-09-24-shoot/selfie-2/`.
 
 ## Order of work
 

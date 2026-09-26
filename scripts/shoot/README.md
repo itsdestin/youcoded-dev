@@ -111,4 +111,4 @@ then run `journeys.mjs <name>` three times.
 `shoot --check` also presses Escape once on every screen with something open and fails unless
 exactly the top layer closed.
 
-Spec: `docs/active/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.
+Spec: `docs/archive/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.

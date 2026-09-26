@@ -22,7 +22,7 @@
 //
 // One session per workspace worktree; it stops itself after 10 minutes idle, and `start`
 // stops any earlier one. Pictures: scratch/explore/<time>/. Spec:
-// docs/active/specs/2026-09-24-shoot-and-explore.md → "Tool 2: explore".
+// docs/archive/specs/2026-09-24-shoot-and-explore.md → "Tool 2: explore".
 //
 // --dev attaches to an isolated dev window started by `bash scripts/run-dev.sh` — only one
 // that left its marker file (desktop/.dev-instances/). The installed app never writes one,
