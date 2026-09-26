@@ -21,20 +21,24 @@
 //   Writes <docs>/media/embed-desktop-<theme>.webp and embed-phone-<theme>.webp.
 //   Run AFTER `npm run build:site` (site-assets.sh does). Writes nothing unless
 //   every still proved the app had painted in its theme.
-//   CDP_PORT=10390 to move the throw-away Chrome off its default port.
-import { spawn, spawnSync } from 'node:child_process';
+//
+// The throw-away browser comes from scripts/shoot/engine.mjs (a free debugging
+// port, private-context tabs, leftover clean-up) — this used to spawn its own
+// Chrome on a hardcoded CDP_PORT. The docs/ static server stays local (it
+// serves the already-BUILT site this script shoots, not the engine's own
+// photo-only practice-app build) but already picked a free port on its own.
+import { spawnSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { mkdtempSync, rmSync, readFileSync, writeFileSync, existsSync, copyFileSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, extname, normalize } from 'node:path';
-import { CHROME_FLAGS, waitForCdp } from './cdp-helpers.mjs';
+import { openBrowser } from '../shoot/engine.mjs';
 
 const DOCS = resolve(process.argv[2] ?? '');
 if (!process.argv[2] || !existsSync(join(DOCS, 'index.html')) || !existsSync(join(DOCS, 'site', 'index.html'))) {
   console.error('usage: node embed-posters.mjs <youcoded/docs>  (needs index.html and a built site/index.html)');
   process.exit(2);
 }
-const CDP_PORT = Number(process.env.CDP_PORT ?? 10390);
 // The two layouts that pick a still: setEmbedPoster() uses the phone still at
 // <=760px and the desktop one above. Measured at a common size of each.
 const LAYOUTS = [{ name: 'desktop', page: [1440, 900] }, { name: 'phone', page: [390, 844] }];
@@ -58,42 +62,22 @@ const server = createServer((req, res) => {
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const ORIGIN = `http://127.0.0.1:${server.address().port}`;
 
-const profile = mkdtempSync(join(tmpdir(), 'embed-posters-'));
 const staging = mkdtempSync(join(tmpdir(), 'embed-posters-out-'));
-const chrome = spawn('google-chrome-stable', CHROME_FLAGS(1440, 900, CDP_PORT, profile), { stdio: 'ignore' });
+const browser = await openBrowser({ width: 1440, height: 900 });
 const cleanup = () => {
-  chrome.kill(); server.close();
-  for (const d of [profile, staging]) { try { rmSync(d, { recursive: true, force: true }); } catch { /* best effort */ } }
+  try { browser.close(); } catch { /* best effort */ }
+  server.close();
+  try { rmSync(staging, { recursive: true, force: true }); } catch { /* best effort */ }
 };
 process.on('exit', cleanup);
-await waitForCdp(CDP_PORT);
 
-async function tab() {
-  const t = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json/new?about:blank`, { method: 'PUT' })).json();
-  const ws = new WebSocket(t.webSocketDebuggerUrl);
-  let id = 0; const pending = new Map();
-  ws.onmessage = (ev) => {
-    const m = JSON.parse(ev.data.toString());
-    if (m.id && pending.has(m.id)) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); }
-  };
-  await new Promise((r, j) => { ws.onopen = r; ws.onerror = j; });
-  const send = (method, params = {}) => new Promise((res, rej) => { const i = ++id; pending.set(i, { res, rej }); ws.send(JSON.stringify({ id: i, method, params })); });
-  const evaluate = async (expression) => {
-    const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-    if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text);
-    return r.result?.value;
-  };
-  const waitUntil = async (expr, what) => {
-    for (const t0 = Date.now(); Date.now() - t0 < READY_MAX;) {
-      if (await evaluate(`!!(${expr})`).catch(() => false)) return;
-      await new Promise((r) => setTimeout(r, 200));
-    }
-    throw new Error(`timed out waiting for ${what}`);
-  };
-  const close = async () => { try { ws.close(); await fetch(`http://127.0.0.1:${CDP_PORT}/json/close/${t.id}`); } catch { /* gone */ } };
-  await send('Page.enable'); await send('Runtime.enable');
-  return { send, evaluate, waitUntil, close };
-}
+const waitUntil = async (tab, expr, what) => {
+  for (const t0 = Date.now(); Date.now() - t0 < READY_MAX;) {
+    if (await tab.evaluate(`!!(${expr})`).catch(() => false)) return;
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  throw new Error(`timed out waiting for ${what}`);
+};
 
 // The app has painted, in the theme we asked for, with its wallpaper decoded.
 // Same bar the page's whenEmbedPainted() holds the live swap to, plus the
@@ -113,10 +97,10 @@ let failed = 0;
 const written = [];
 for (const layout of LAYOUTS) {
   const [pw, ph] = layout.page;
-  const page = await tab();
+  const page = await browser.newTab();
   await page.send('Emulation.setDeviceMetricsOverride', { width: pw, height: ph, deviceScaleFactor: 1, mobile: false });
   await page.send('Page.navigate', { url: `${ORIGIN}/index.html` });
-  await page.waitUntil(`document.readyState === 'complete' && typeof POSTER_THEMES !== 'undefined' && document.querySelector('.embed-stage')`, 'the landing page');
+  await waitUntil(page, `document.readyState === 'complete' && typeof POSTER_THEMES !== 'undefined' && document.querySelector('.embed-stage')`, 'the landing page');
   const info = await page.evaluate(`(() => {
     const r = document.querySelector('.embed-stage').getBoundingClientRect();
     return { w: Math.round(r.width), h: Math.round(r.height), themes: POSTER_THEMES,
@@ -128,19 +112,18 @@ for (const layout of LAYOUTS) {
 
   for (const theme of info.themes) {
     const name = `embed-${layout.name}-${theme}`;
-    const t = await tab();
+    const t = await browser.newTab();
     try {
       await t.send('Emulation.setDeviceMetricsOverride', { width: info.w, height: info.h, deviceScaleFactor: SCALE, mobile: false });
       await t.send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` });
       await t.send('Page.navigate', { url: info.src });
-      await t.waitUntil(`document.readyState === 'complete'`, 'the embed to load');
+      await waitUntil(t, `document.readyState === 'complete'`, 'the embed to load');
       // The page injects this into the phone embed on load (stripEmbedChrome); the still does the same.
       if (info.css) await t.evaluate(`(() => { const s = document.createElement('style'); s.textContent = ${JSON.stringify(info.css)}; document.head.appendChild(s); })()`);
-      await t.waitUntil(PAINTED(theme), `${theme} to paint`);
+      await waitUntil(t, PAINTED(theme), `${theme} to paint`);
       await new Promise((r) => setTimeout(r, SETTLE));
-      const shot = await t.send('Page.captureScreenshot', { format: 'png' });
       const png = join(staging, `${name}.png`);
-      writeFileSync(png, Buffer.from(shot.data, 'base64'));
+      writeFileSync(png, await t.png());
       const conv = spawnSync('magick', [png, '-quality', '82', join(staging, `${name}.webp`)], { encoding: 'utf8' });
       if (conv.status !== 0) throw new Error(`magick: ${conv.stderr.trim()}`);
       written.push(name);

@@ -90,3 +90,15 @@ export const CONTRAST_PROBE = `(() => {
   }
   return JSON.stringify(out);
 })()`;
+
+// Launched with debugging port 0, Chrome picks a free port and writes it to
+// <profile>/DevToolsActivePort. WHY: a fixed port collided whenever two runs overlapped
+// (a second session, a parallel sweep) — the engine (scripts/shoot/engine.mjs) works the
+// same way. Pass `0` as CHROME_FLAGS' port, then read the real one here.
+export async function readDevToolsPort(profileDir, ms = 10_000) {
+  const { readFileSync } = await import('node:fs');
+  for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 100))) {
+    try { const p = Number(readFileSync(`${profileDir}/DevToolsActivePort`, 'utf8').split('\n')[0]); if (p) return p; } catch { /* not written yet */ }
+  }
+  throw new Error(`Chrome did not report a debugging port within ${ms / 1000} s`);
+}

@@ -4,7 +4,7 @@
 // A warning names one class on one source line; that class alone is ambiguous (px-2 is
 // everywhere), so an element matches only if it carries EVERY static class of the class
 // string the flagged class sits in on that line.
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const [runDir, dataPath, root, theme = 'meadow-mist', fixesPath] = process.argv.slice(2);
@@ -29,6 +29,12 @@ function signature(file, line, cls) {
 }
 
 const shots = [];
+// A `shoot --collect` run: one manifest.json at the top; a screen name (`settings/sync`)
+// stands where the old sweep's plan/shot pair stood.
+if (existsSync(join(runDir, 'manifest.json'))) {
+  for (const e of JSON.parse(readFileSync(join(runDir, 'manifest.json'), 'utf8')))
+    if (e.theme === theme && e.ok && e.collectedEls) shots.push({ plan: e.name.split('/')[0], name: e.name, els: e.collectedEls.map((x) => ({ set: new Set(x.c.split(/\s+/)), r: x.r })) });
+}
 for (const d of readdirSync(runDir).filter((n) => n.startsWith('shots-'))) {
   const plan = d.slice(6); const seen = new Map();
   for (const mf of readdirSync(join(runDir, d)).filter((n) => n.startsWith('manifest-')).sort())

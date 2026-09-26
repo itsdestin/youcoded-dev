@@ -13,11 +13,11 @@
 //   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
-// the main one) · --themes a,b | all · --width N [--height N] · --contrast · --out <dir>
+// the main one) · --themes a,b | all · --width N [--height N] · --contrast · --collect <classes.json> · --out <dir>
 //
 // A picture only counts when its screen proved it is showing (the <ScreenMark> inside its
 // panel is on screen and not covered). Anything else is listed with a reason, never shown.
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,7 +39,7 @@ const THUMB_W = 480;
 
 // ─── Arguments ───────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
-const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, out: null, worktree: null, before: null, after: null, list: false, all: false, check: false };
+const opt = { names: [], tags: [], themes: null, width: 1440, height: null, contrast: false, collect: null, out: null, worktree: null, before: null, after: null, list: false, all: false, check: false };
 for (let i = 0; i < args.length; i++) {
   const a = args[i]; const next = () => { const v = args[++i]; if (v === undefined) die(`${a} needs a value`); return v; };
   if (a === '--tag') opt.tags.push(next());
@@ -47,6 +47,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--width') opt.width = Number(next());
   else if (a === '--height') opt.height = Number(next());
   else if (a === '--contrast') opt.contrast = true;
+  else if (a === '--collect') opt.collect = JSON.parse(readFileSync(resolve(next()), 'utf8'));
   else if (a === '--out') opt.out = resolve(next());
   else if (a === '--worktree') opt.worktree = next();
   else if (a === '--before') opt.before = next();
@@ -138,6 +139,18 @@ const MARK_CHECK = (name) => `(() => {
   return results.find((x) => x && x.panel) || results[0];
 })()`;
 
+const COLLECT = (classes) => `(() => {
+  const want = new Set(${JSON.stringify(classes)}); const els = [];
+  for (const el of document.querySelectorAll('[class]')) {
+    const cl = el.classList; if (!cl || !cl.length || els.length >= 2000) continue;
+    if (![...cl].some((c) => want.has(c))) continue;
+    const b = el.getBoundingClientRect(); const cs = getComputedStyle(el);
+    if (b.width < 1 || b.height < 1 || b.bottom <= 0 || b.right <= 0 || b.top >= innerHeight || b.left >= innerWidth || cs.visibility === 'hidden' || +cs.opacity === 0) continue;
+    els.push({ c: el.getAttribute('class'), r: { x: Math.round(b.left), y: Math.round(b.top), w: Math.round(b.width), h: Math.round(b.height) } });
+  }
+  return els;
+})()`;
+
 const THUMB = (b64) => `(async () => { const img = new Image(); img.src = 'data:image/png;base64,${b64}'; await img.decode();
   const c = new OffscreenCanvas(img.width, img.height); const g = c.getContext('2d'); g.drawImage(img, 0, 0);
   const d = g.getImageData(0, 0, img.width, img.height).data; const out = new Array(d.length / 4);
@@ -175,6 +188,10 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
+    // --collect <classes.json>: every visible element carrying one of those classes, with its
+    // full class list and box — the design check (scripts/ui-review/design-check/) matches a
+    // lint warning to its element by the whole class combination on the warned source line.
+    if (opt.collect) r.collectedEls = await tab.evaluate(COLLECT(opt.collect), 15_000).catch(() => null);
     // --check also presses Escape once: exactly the top layer must close — not nothing, not
     // the panel under it, not two at once. WHY (2026-09-26): ten dialogs got this wrong
     // before the shell took it over, and nothing noticed until a sweep like this one.
@@ -251,6 +268,13 @@ function summarize(label, { results, screens }, outDir) {
   const errs = ok.filter((r) => r.errors.length);
   for (const r of errs) console.log(`  PAGE ERROR ${r.name} · ${r.theme} — ${r.errors[0].split('\n')[0].slice(0, 160)}`);
   writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(results.map(({ thumb, ...r }) => r), null, 2));
+  // --contrast: the painted-pixel report beside the pictures (text too faint on its own
+  // background, per theme). Same report the old sweep wrote; it reads this manifest.
+  if (opt.contrast) {
+    const rep = spawnSync(process.execPath, [join(WORKSPACE, 'scripts', 'ui-review', 'contrast-report.mjs'), outDir], { encoding: 'utf8' });
+    writeFileSync(join(outDir, 'contrast.md'), rep.stdout || rep.stderr);
+    log(`contrast report: ${join(outDir, 'contrast.md')}`);
+  }
   return { bad: bad.length, same: same.length };
 }
 
