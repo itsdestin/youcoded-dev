@@ -1,188 +1,103 @@
 ---
-date: 2026-09-19
+date: 2026-09-26
 status: active
 type: handoff
-topic: specialists stage two — plans
+topic: specialists stage two — plans (spending rework, stage 1 of 3)
 branch: feat/specialists-plans-ui
 ---
 
 # Specialists plans — START HERE
 
-Read this before touching anything. It assumes no prior context.
+Read this before touching anything. It assumes no prior context. Rewritten 2026-09-26; the
+2026-09-19 version described a budget system that no longer exists.
 
 ## What the feature is
 
-The assistant proposes a **plan**: several steps, each run by one or more specialists (child AI
-sessions), as structured data rather than prose. The user sees a card in the chat, approves it, and
-the app runs it — in waves, with a hard spending limit it cannot exceed, pausing and resuming
-safely, surviving a restart.
+The assistant proposes a **plan**: steps run by specialists (child AI sessions), as structured data.
+The user sees a card in the chat, approves it, and the app runs it — waves of specialists, pausing
+and resuming safely, surviving a restart.
 
 ## Where it lives
 
 | What | Where |
 |---|---|
-| Branch (app code) | `feat/specialists-plans-ui` in the **youcoded** repo, 113 commits ahead of master |
-| Working worktree | `worktrees/specialists-plans` |
-| Workspace docs branch | `docs/specialists-plans-decisions` in **youcoded-dev**, worktree `worktrees/specialists-plans-decisions` |
-| Implementation plan | `docs/active/plans/2026-09-07-specialists-plans-backend-implementation.md` |
-| **Decision log (read this)** | `docs/active/design/2026-09-05-specialists-plans/decision-log.md` |
-| Contract (83 rows, UNSIGNED) | `docs/active/design/2026-09-05-specialists-plans/specialists-plans.contract.json` |
-| Decks 1–11 and their answers | same folder, `*.json` / `*.answers.json` |
-| Grammar | `desktop/src/main/harness/plans/schema.ts` + `validator.ts` |
+| App branch | `feat/specialists-plans-ui` (youcoded repo), worktree `worktrees/specialists-plans` |
+| Docs branch | `docs/specialists-plans-decisions` (youcoded-dev), worktree `worktrees/specialists-plans-decisions` |
+| **Decision log (read first)** | `docs/active/design/2026-09-05-specialists-plans/decision-log.md` — decisions 1–40; 33–40 are this stage |
+| Stage-1 backend design | `docs/active/design/2026-09-24-specialists-plans-spending-backend-design.md` (+ Revisions 1–3 at its end) |
+| Reviews (all triaged) | `docs/active/reviews/2026-09-24-plans-spending-*.md` (design ×3, T1–T6, whole-branch code review, UX run 1) |
+| Old contract (83 rows, UNSIGNED, pre-dates stage 1) | `…/2026-09-05-specialists-plans/specialists-plans.contract.json` |
 | The card | `desktop/src/renderer/components/plans/PlanCard.tsx` |
-| Projection (record → card) | `desktop/src/main/harness/plans/plan-journal.ts` |
+| Grammar | `desktop/src/main/harness/plans/schema.ts` + `validator.ts` |
+| Spend | `plans/plan-spend.ts`, `pricing.ts` (`billedEquivalentTokens`), hooks in `harness-session.ts` |
+| Estimate | `plans/specialist-usage-history.ts`, `plans/plan-estimate.ts` |
+| Executor / service / host | `plans/plan-executor.ts`, `plans/plan-service.ts`, `plans/plan-host-bridge.ts`, `native-session-host.ts` |
 
-The decision log is the single most useful file. Every numbered decision is the owner's ruling and
-the code carries WHY comments naming those numbers.
+## Stage 1 — the spending rework (BUILT, reviewed, cost-audited; not yet signed off)
 
-## State: built and working
+Destin's problem (2026-09-19): every specialist hit its per-step budget almost immediately, even on
+simple web searches; Add budget re-hit the same limit and froze the window. His rulings:
 
-The engine is complete — the `propose_plan` tool, the durable journal, hard token/dollar ceilings,
-the wave executor, pause/resume/recovery, the card, all three surfaces (desktop, Android, remote),
-and end-to-end tests. Each of seven build tasks was implemented by one subagent and audited by a
-separate one; every finding was fixed or declined in writing.
+- **No per-step budgets; no limit by default** (decision 34). `budget_tokens` left the grammar.
+- **Estimate** on the proposed card from his past specialist runs: "Usually $0.40–$2"; unpriced →
+  "About 300k tokens · included in your ChatGPT plan / runs on your computer" (34 Q-4/Q-5).
+- **Live spend** "Spent $X" (of $Y if a limit is set) beside Stop the plan — same number as the
+  conversation's cost chip (one `PlanSpend` object feeds both; design Revision 3 F1).
+- **Plan settings popup** (gear; titled with the plan's name, styled like ModelPickerPopup):
+  optional whole-plan limit (dollars; tokens when unpriced) + each step's model (35, 37).
+  Models default to the specialist type's default; the assistant sets `model` only on explicit
+  user direction; the user can change steps that haven't started.
+- **At the limit**: pauses once, "Reached your $X limit." with Stop · Continue; Continue opens
+  "$ [box] Continue ×" and calls `resume(limit)` atomically (34 Q-2, 37). No Add budget anywhere.
+- **Auto-start** = "when the estimate is under $X" (dollars; unpriced plans never auto-start).
+- The setup-cost probe (`resolveManifest` building a session per specialist — suspected cause of
+  the Add budget freeze and slow Continue) is **gone**; approve/continue do only identity checks.
+- **Assistant notices** (38): on approval it replies with a one-line confirmation and may do other
+  work if asked; on completion it receives the final step's reports and presents the result.
+- **Combine/verify `of` accepts several steps** ("← from steps 1, 2 and 3"); guidance says
+  independent work goes in ONE split step (39). Destin's rerun confirmed: parallel, and the
+  combiner got all reports.
+- Local-engine plan specialists run one at a time (shared context pool).
 
-Since then, driven by the owner's live testing:
+Verified: full desktop suite green (~14k), Android `./gradlew test -x bundleWebUi` 954 green at
+T7, and an independent literal-dollar audit (`tests/plan-cost-audit*.test.*`) — 7 scenarios pass,
+real-data token cross-check within ≤4 tokens of 103k (per-request ceiling vs per-turn sum). One
+ast-grep check (`app-prompt-show-starts-only-on-ready`) fails only because master added its guard
+AFTER this branch's last master merge — clears on the next catch-up.
 
-- Plans are never proposed with a specialist that cannot run (local credential check, no spend).
-- The one automatic retry is never spent on an error that cannot heal.
-- A tier change re-freezes and resumes instead of forcing a new plan.
-- **The card was reworked three times.** Two full redesigns were rejected; the third pass kept the
-  shipped card and fixed named defects. See "Card history" below — it matters, because the same
-  mistakes are easy to repeat.
-- **Grammar tightened (decision 33):** `summary` is required on every step; a plan whose entire
-  worst case is one specialist run is refused, telling the assistant to hire a specialist instead.
-  One-item split steps remain legal.
-- **A repeat is now ONE card row containing its body**, instead of being flattened into rows that
-  looked like unrelated steps with the loop, round count and stop condition invisible.
+## Next session's job (in order)
 
-## State: open, and what each needs
+1. **Catch up with master.** The branch already contains a master MERGE (`ce2f500a6`), so bring
+   master in with another merge (the same way), not a rebase — rebasing would replay ~150 commits
+   across that merge. ~143 master commits behind as of 2026-09-26. Then `scripts/verify.sh`.
+2. **One clickable UI deck** of every new/changed UI surface (decision 40: "a deck with like the
+   click throughable like full UI elements") — a **Live** deck of real workbench panes, not
+   screenshots, Before/After where a Before exists. Surfaces: proposed card (estimate line, gear;
+   priced / ChatGPT / local; heavy fixture), Plan settings popup (limit off/on, low-limit warning,
+   step models, started-step locked), running card (Spent $X / of $Y / tokens), paused at limit +
+   Continue box, completed card with assistant completion reply, "← from steps 1, 2 and 3",
+   Settings → Specialists auto-start row. Fixtures: `desktop/src/renderer/dev/workbench/fixtures/bubbles/plan-*`.
+3. **Explain the logic and user flows** the branch created or changed — in plain words for Destin
+   (propose → settings → approve → confirm line → run → spend → limit pause → Continue → complete
+   → result; Stop; restart/recovery; auto-start; estimate source; what the assistant is told).
+4. **After his feedback:** implement changes, then a FRESH independent correctness/bug review of the
+   whole branch (code reviewer brief `scripts/ui-review/code-reviewer.md`), fix, verify.
 
-### 1. Add budget freezes the window — UNSOLVED, highest priority
+Later, not this job: sign-off (the contract needs rewriting for decisions 33–40 before Destin signs;
+a fresh grader; acceptance) and his merge call. Stage 2 (coordinator step that can rewrite later
+steps, asking again only when the plan grows — decisions 35–36) and stage 3 (parallel builders in
+separate project copies; saved plans) are agreed, not started.
 
-Owner, 2026-09-19: *"when i press add budget, the whole window enters a 'not responding' state and
-freezes for a few seconds to minutes."*
+## Open questions for Destin (built with the recommended default)
 
-Not diagnosed. **Two fixes already landed near it are NOT this bug** — do not mistake them for it:
-- the card stayed disabled and silent through the slow half (fixed, `3bb875300`)
-- the workbench fake answered Add budget with a running plan, so the two-call path the app really
-  takes was never tested there (fixed, `2b1802df4`)
-
-Ruled out by measurement: git snapshots (9 ms on this workspace), token counting (there is no real
-tokenizer in that path).
-
-Still suspected, unproven: `resolveManifest` builds **a probe session per distinct specialist** on
-the main process, and the window going "not responding" means a blocked thread. Corroborating
-evidence: the dev instance's own debugger endpoint took 2.5 s to answer during the episode, and
-once returned nothing within 5 s.
-
-**Next step:** timing instrumentation around each stage of that path (session build, prompt
-assembly, measurement, per specialist) so the next occurrence produces numbers. Needs a dev restart.
-
-### 2. Why Continue re-measures at all — owner objected on principle
-
-Owner: *"why do we 'begin a new session' just to check the model? this seems broken or janky at the
-least."* He is right.
-
-`reconcile()` (plan-service.ts) calls `resolveManifest()` on **every Approve and every Continue**,
-and that opens a probe session per specialist to measure setup cost. On Continue the only question
-being asked is "did the model change since you paused?" — which is identity, not measurement.
-
-**Proposed fix, not yet built:** compare identity cheaply (binding, route, credentials, permission
-fingerprint) and reuse the frozen measurements when nothing moved; probe only when identity
-actually changed. Likely also fixes item 1.
-
-### 3. Sign-off sequence — deferred by the owner until he finishes testing
-
-In order: he signs the 83-row contract (one yes/no) → a **fresh** grader writes
-`specialists-plans.contract.verdicts.json` → build and serve the acceptance deck → his merge call.
-Do not start any of this unprompted; he said *"ignore contract for now until i am done testing."*
-
-### 4. Two questions owed to him
-
-- Whether **"Ask the assistant"** is the right name for that button (raised by the UX tester).
-- A re-ask of the **pause/resume cost** question (deck 9, Q9-1) in plainer words — he found the
-  original wording confusing.
-
-### 5. Judgement calls flagged rather than made
-
-- **A repeat row's count is its worst case across rounds** (2 items × 3 rounds = "6 workers"), which
-  asks the reader to multiply. Per-round counts would need progress re-derived per round — a
-  projection change with its own pricing risk. Owner's call.
-- **The heavy fixture's step 1 deliberately has no `summary`**, so it exercises the pre-decision-33
-  fallback path. It therefore looks worse than the other four fixtures. That is intentional.
-- **At 390 px the step row's detail still CSS-truncates.** Pre-existing and identical before this
-  work; letting it wrap makes every collapsed card taller on a phone. Needs its own decision.
-
-## Card history — read before redesigning anything
-
-Three attempts. The first two were rejected and the reasons generalise:
-
-1. **Round 1** (compare surface `plan-card-hierarchy`, round 1 — still in the registry as the
-   record): three new layouts. Rejected: *"doesnt match existing ui at all. lots of bare text and
-   divider lines, which we don't use anywhere else in the app."* They ignored
-   `docs/active/design/2026-08-25-ui-design-guide.md` — hand-rolled rows instead of `SettingRow`,
-   `divide-y` dividers (which appear in exactly ONE file in the whole renderer), information below
-   the 11 px floor.
-2. **Round 2** (same surface, round 2): the same three ideas rebuilt from real primitives. Rejected
-   anyway: *"these are just getting progressively worse. whatever is live in the dev window is still
-   the best i've seen."*
-3. **What worked:** keep the shipped card, fix the named defects, and judge every change against a
-   fixture shaped like a plan he actually ran. The earlier rounds looked fine only because the
-   sample plan had 3 short items and no brief; his had 7 long ones and a 600-word brief.
-
-**The lesson worth keeping: build the hard fixture first.**
-
-## Fixtures — use all five
-
-`?mode=workbench&seed=bubbles-<name>`, in `desktop/src/renderer/dev/workbench/fixtures/bubbles/`.
-They land on session **wb-2** ("theme contrast pass") — you must click that session in the strip.
-
-| Fixture | Shape it proves |
-|---|---|
-| `plan-shape-chain` | split → check → combine; shows NO flow labels (correct) |
-| `plan-shape-repeat` | a repeat with rounds and a stop condition on the row |
-| `plan-shape-fork` | two steps consuming the same earlier step; two backward labels |
-| `plan-shape-single` | a one-item split inside a larger plan |
-| `plan-proposed-heavy` | the owner's real plan: 7 long items, 31-line brief with `{item}` |
-
-## What the grammar can actually produce
-
-Worth knowing before designing UI for it. 1–6 top-level steps. Four kinds: **split** (`map`, 1–8
-items, one specialist per item), **check** (`verify`), **combine**, **repeat** (body of 1–4 leaf
-steps, up to 5 rounds, no nesting). Brief up to 4,000 chars; each item up to 2,000; stop condition
-up to 2,000; the plain sentence capped at 200. Smallest plan is two specialist runs; the largest is
-roughly 960.
-
-Two facts that constrain any design:
-
-- **A split step can never declare an input** (`of` belongs to check/combine only), and at run time
-  it genuinely receives nothing from earlier steps. So the card **can never show a complete flow**
-  and must not imply one.
-- **Every link names exactly one earlier step**, so the structure is always a tree, never a web.
-  That is why words carry it and no diagram is needed — a diagram was proposed and rejected twice.
-
-## How to run it
-
-```bash
-bash scripts/run-workbench.sh specialists-plans    # UI only, fake backend, fastest loop
-bash scripts/run-dev.sh --path worktrees/plans-demo --label "Plans demo" --profile plansdev
-bash scripts/verify.sh /home/destin/youcoded-dev/worktrees/specialists-plans
-```
-
-`verify.sh` is green except `ast-grep`, which fails at **exactly 341 pre-existing errors** owned by
-another session's in-flight rule sweep. Confirm the count is unchanged and that none name your
-files; do not start that sweep.
+- Change a step's model while the plan runs? — built: only steps not yet started.
+- Auto-start plans with no dollar price? — built: never.
+- Did he ask for "GPT-6-Sol" on the first test plan's last step, or did the assistant pick it?
 
 ## Standing constraints
 
-- **Never touch the owner's live built YouCoded app.** Dev instances only. A frozen demo worktree
-  (`worktrees/plans-demo`, Vite 5223, debugger 9272, profile `plansdev`) is used for live testing —
-  it is checked out detached at a specific commit on purpose.
-- Never `npm install` / `npm ci` — `node_modules` is a hardlink farm.
-- Never `git add -A`. Stage explicit paths.
-- Never merge or suggest merging. The owner decides.
-- A failing or flaky test is fixed when found, never filed.
-- **Ask before building a review deck while a dev instance is running** — a deck that shows what he
-  is already looking at wastes tokens (`.claude/rules/feature-flow.md`).
-- Never invent an error cause (`docs/error-message-standards.md`).
+Never touch Destin's live built app — dev instances only (`bash scripts/run-dev.sh --path
+worktrees/specialists-plans --label "Plans spending" --profile plansdev`; plans there use REAL
+models and create real conversations). No `npm install`/`npm ci` (hardlinked node_modules). Stage
+explicit paths. Never merge or suggest merging. A failing/flaky test is fixed when found. Several
+concurrent capture tools use the default CDP port 9978 — pass `CDP_PORT=<unique>` to `shot.mjs`.
