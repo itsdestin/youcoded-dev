@@ -67,6 +67,7 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 - Every popup and side panel uses the shared popup (`Dialog`): a **one-line 16px semibold
   title**, the **✕** at the right, a **tapered line** under the header. Every popup has the
   ✕ and closes on Esc. Examples: Settings, Session Files, Git review.
+- The close control is always the ✕ — never the words "Esc" or "Close". Quick pickers (the project switcher) follow the same shell: a title and the ✕.
 - When the body scrolls, the content fades at the hidden edge; never a solid strip.
 - **Narrow** popups are up to 420px wide (confirmations, Sound, Create a page); **wide**
   popups are larger.
@@ -85,8 +86,7 @@ underline under its words. Labels over short settings groups stay plain.
 - Body text: 14px, main text colour.
 - Hints, descriptions, dates and other secondary text: 12px in the one grey used for
   secondary text. The faintest grey is only for disabled things.
-- Smallest text: **open question** — the app's smallest step is 10px (used for most hints);
-  whether that stays or grows to 11px is Destin's call.
+- **Nothing a user has to read is smaller than 11px.** (The app's 10px step becomes 11px.)
 - A count beside a label or tab is the word then a smaller, fainter number: "Files 17". In a
   summary line it is a bold number then a grey word: "17 files". Never "(17)" and never a
   number in a bubble.
@@ -158,6 +158,17 @@ underline under its words. Labels over short settings groups stay plain.
   item's own box — and **its buttons (Try again, Resume, Show details) go inside the notice,
   at the right**.
 - Errors follow `docs/error-message-standards.md`.
+
+### Empty states
+Two different jobs, two looks:
+- **First time, or nothing exists yet** (a surface never used, e.g. Pages): a **card** with a short
+  explanation and **one full-width filled button**.
+- **Nothing picked yet** (a preview pane waiting for a choice, e.g. Resume): **one quiet grey line**, no button.
+
+### Sign-in and setup screens
+When several equal ways in exist (Claude, ChatGPT, OpenRouter, a local model, a key), show them as
+**equal outlined choices**, none filled. Each provider choice carries its **provider logo**
+(`ProviderIcon`) — the app already uses these logos in the model picker, Resume cards and status bar.
 
 ### Building a Page
 Pages use the page kit's classes (`.yc-button`, `.yc-card`, `.yc-title`, `.yc-muted`…), which

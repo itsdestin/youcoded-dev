@@ -1,0 +1,100 @@
+{
+ "deck": "ui-element-review-pieces",
+ "started": "2026-09-26T08:34:11.072Z",
+ "submitted": "2026-09-26T08:43:55Z",
+ "cur": 13,
+ "answers": {
+  "Q-1": {
+   "note": "some of these serve different purposes. the resume browser one-line is a temporary pre-selection state. the pages card is like a first-time state when nothing exists to select or the user has never seen the surface or used it.",
+   "v": "other",
+   "seconds": 217,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-2": {
+   "note": "esc should be replace with the x. we should restyle the project picker to match other popups and such. unsure about others aside from project view.",
+   "v": "other",
+   "seconds": 70,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "equal",
+   "note": "can we possibly add icons for the various providers/lines here. like some brand styling? would that violate anyone's rules?",
+   "seconds": 153,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-1": {
+   "v": "yes",
+   "seconds": 67,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "T-2": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-1": {
+   "v": "other",
+   "note": "confused",
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "other",
+   "note": "unsure, need to see",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "other",
+   "note": "confused, need to see",
+   "seconds": 25,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-4": {
+   "v": "other",
+   "note": "where my visuals bruh?",
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-5": {
+   "v": "other",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-6": {
+   "v": "other",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-7": {
+   "v": "other",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-8": {
+   "v": "other",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-9": {
+   "v": "other",
+   "seconds": 0,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
