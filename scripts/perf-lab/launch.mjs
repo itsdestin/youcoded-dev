@@ -422,7 +422,9 @@ function tailSink(store) {
  *
  * @param {{binary: string, appDir: string, fixture: object, cdpPort?: number, display?: string}} o
  */
-export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99' }) {
+// `extraArgs`: appended to the app's argv — e.g. `--inspect-brk=127.0.0.1:<port>` so a
+// caller can CPU-profile the main process from its first line (real-scale-startup.mjs).
+export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99', extraArgs = [] }) {
   if (!binary) throw new Error('perf-lab launch: launchApp needs { binary } — the packaged app executable.');
   if (!fixture?.home || !fixture?.userData) throw new Error('perf-lab launch: launchApp needs a fixture with { home, userData } from buildFixture().');
   // A fixture HOME that IS (or contains) the real home would put the rig's writes
@@ -540,7 +542,7 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   // out, and the next run's sweep() would kill any orphan before launching anyway.
   // --ozone-platform=x11 is the decisive half of the Wayland fix above: the env
   // vars express the preference, this flag removes the choice.
-  const proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox', '--ozone-platform=x11'], {
+  const proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox', '--ozone-platform=x11', ...extraArgs], {
     env, cwd: fixture.home, stdio: ['ignore', 'pipe', 'pipe'], detached: true,
   });
   proc.stdout.on('data', tailSink(out));

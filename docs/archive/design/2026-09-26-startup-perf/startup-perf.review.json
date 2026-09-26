@@ -1,0 +1,95 @@
+{
+  "title": "Faster launch and Resume \u2014 one visible change, two questions",
+  "key": "startup-perf-review",
+  "out": "startup-perf.review.html",
+  "images": "images/startup-perf.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today (after 6 s)",
+    "after": "After (after 6 s)"
+  },
+  "crops": {
+    "resume-load": [
+      "resume-slow",
+      "resume-loading",
+      "1000x690+220+105"
+    ]
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Resume Session",
+      "path": "Welcome screen \u2192 Resume, while the list is still loading",
+      "crop": "resume-load",
+      "headline": "If the Resume list takes more than 6 seconds, it now says it is still loading and offers Try again.",
+      "changed": "Before, a slow load showed only a spinner, forever, with no way to tell whether anything was happening. After 6 seconds a line and a Try again button appear under it.",
+      "measured": "Normal opens now take 0.3\u20131.5 s (were 1.7\u20134.2 s), so the line should almost never appear; the first launch after this update takes about 3 s",
+      "notice": "Most of the time, nothing: the list arrives long before 6 seconds. If it ever does get stuck, you get a message and a button instead of a silent spinner.",
+      "risk": "Try again asks for the same list again; if something is truly stuck, it may keep loading, but you will know it is still trying."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Welcome screen",
+      "path": "The screen with no session open, on a theme with frosted glass (yours: Meadow Mist)",
+      "headline": "May I measure the welcome screen's graphics cost on your real screen for about 30 seconds?",
+      "today": "On the welcome screen the mascot gently moves all the time, and your theme draws a frosted-glass frame around the whole window.",
+      "problem": "Measured on a test screen: every tiny mascot movement makes the whole frosted frame redraw, which kept the graphics side fully busy while the app sat idle (about 0% with the mascot hidden, about 5% with the blur off). The test screen has no graphics chip, so it overstates the cost, and I cannot tell how much of your launch stutter this causes without your real screen.",
+      "proposal": "Yes: a separate test copy of the app opens on your desktop for about 30 seconds, idle on the welcome screen, then closes itself; your real app is not touched. No: I decide the next question from the test-screen numbers alone."
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Welcome screen",
+      "path": "The mascot on the welcome screen",
+      "headline": "If the measurement shows it matters, which fix do you want?",
+      "today": "The mascot breathes and sways nonstop on the welcome screen. Turning on Reduced effects in Appearance already removes the blur, but you have it off.",
+      "problem": "The constant motion plus the frosted frame means the app never stops drawing on the welcome screen, which costs battery and can add stutter while the app is busy starting up.",
+      "proposal": "Three ways to handle it. I tried keeping everything as-is while drawing the mascot on top of the glass \u2014 it made no difference, so that option is gone.",
+      "options": [
+        {
+          "id": "settle",
+          "label": "The mascot settles after a while",
+          "recommended": true,
+          "pros": [
+            "After ~10 quiet seconds it comes to rest; idle drawing drops to nearly zero",
+            "It moves again the moment you move the mouse or anything happens"
+          ],
+          "cons": [
+            "A still mascot on a screen left alone",
+            "You once said a buddy that stops breathing looks lifeless"
+          ]
+        },
+        {
+          "id": "soften",
+          "label": "Keep the motion, soften the frame on the welcome screen only",
+          "pros": [
+            "The mascot never stops moving"
+          ],
+          "cons": [
+            "The welcome screen's frame looks less frosted than the chat screen's",
+            "The app still draws nonstop, only more cheaply"
+          ]
+        },
+        {
+          "id": "leave",
+          "label": "Leave it as is",
+          "pros": [
+            "Nothing changes",
+            "Reduced effects in Appearance still turns the cost off"
+          ],
+          "cons": [
+            "The welcome screen keeps drawing nonstop on blurred themes"
+          ]
+        }
+      ]
+    }
+  ]
+}

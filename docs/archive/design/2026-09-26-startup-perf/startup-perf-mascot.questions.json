@@ -1,0 +1,29 @@
+{
+  "title": "The welcome-screen mascot — asked again with real-screen numbers",
+  "key": "startup-perf-mascot",
+  "out": "startup-perf-mascot.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Welcome screen",
+      "path": "The mascot on the screen with no session open",
+      "headline": "Now that the real screen shows the mascot's motion is the main cost, which do you want?",
+      "today": "On the welcome screen the mascot breathes and sways nonstop. You answered \"Leave it as is\" when I described the cost as mostly the frosted-glass blur.",
+      "problem": "Measured on your real screen, idle on the welcome screen: the graphics chip is 36% busy (8% with the mascot hidden, 30% with the blur off), and the app uses about half a processor core. So the blur is a small part; the nonstop motion is most of it, so other mascot themes likely pay it too (measured on yours only) — battery and heat while nothing is happening.",
+      "proposal": "Pick one. Your earlier answer still stands if you pick Leave it.",
+      "options": [
+        { "id": "settle", "label": "The mascot settles after a while", "recommended": true,
+          "pros": ["After ~10 quiet seconds it comes to rest; idle cost drops to about zero", "It moves again the moment you move the mouse or anything happens"],
+          "cons": ["A still mascot on a screen left alone", "You once said a buddy that stops breathing looks lifeless"] },
+        { "id": "slower", "label": "Keep it moving, but at a lower frame rate",
+          "pros": ["The mascot never stops", "Lower cost — how much lower is not measured yet"],
+          "cons": ["Motion looks a little less smooth; you've called stepped motion juddery before"] },
+        { "id": "leave", "label": "Leave it as is",
+          "pros": ["Nothing changes"],
+          "cons": ["About a third of the graphics chip and half a core while the welcome screen sits idle"] }
+      ]
+    }
+  ]
+}

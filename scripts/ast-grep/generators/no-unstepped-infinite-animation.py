@@ -8,8 +8,9 @@ import os
 import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXEMPT = ['rig-breathe', 'rig-bounce-loop', 'rig-float-loop', 'rig-sleep-loop', 'rig-dizzy-sway',
-          'comp-twinkle', 'comp-spin', 'comp-pulse', 'comp-bob', 'mascot-comp-float',
+# The rig-* body loops left CSS on 2026-09-26 (MascotRig draws them at 30 fps,
+# rig-body-loop.ts), so they are no longer exempt: a smooth rig loop is new again.
+EXEMPT = ['comp-twinkle', 'comp-spin', 'comp-pulse', 'comp-bob', 'mascot-comp-float',
           'buddy-breathe', 'model-load-sweep']
 
 
@@ -146,9 +147,11 @@ def selfcheck() -> int:
     cases = {
         'animate-[version-glow_2s_ease_infinite]': True,
         'animate-[version-glow_2s_steps(16)_infinite]': False,
-        'animate-[rig-breathe_2s_ease_infinite]': False,
-        'animate-[rig-breathe_2s_steps(4)_infinite] animate-[glow_1s_infinite]': True,
-        'animate-[rig-breathex_2s_infinite]': True,
+        'animate-[buddy-breathe_2s_ease_infinite]': False,
+        'animate-[buddy-breathe_2s_steps(4)_infinite] animate-[glow_1s_infinite]': True,
+        'animate-[buddy-breathex_2s_infinite]': True,
+        # No longer exempt (2026-09-26): the rig body loops are drawn at 30 fps by MascotRig.
+        'animate-[rig-breathe_2s_ease_infinite]': True,
         'animate-[rig_2s_infinite]': True,
         'animate-[glow_2s_ssteps(3)_infinite]': False,
         'animate-[glow_2s_stepss_infinite]': True,

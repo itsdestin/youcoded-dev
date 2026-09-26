@@ -103,38 +103,29 @@ produced and the panel that shows them (files).
       up to search older ones"
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
-- [ ] **v1.3.1 release blocker.** Four smaller reads left over from cycle 2 still do more work than they need to: listing
-      past conversations re-reads about 25 MB every time the list opens and runs without a
-      concurrency cap, two more reads take whole files where the tail would do, the catalog
-      fetches the same thing several times at once instead of once, and per-session file
-      tracking is never cleaned up. Individually small, all on paths the user waits on.
-      Deferred at the time by scope decision; carried over from the cycle-3 handoff when that
-      document was archived 2026-09-10, where they existed only inside a shipped entry.
-      2026-09-16 (smoothness sweep C6, MERGED youcoded#501): the NATIVE half of the Resume
-      listing — every session file listed and 256 KB of each head-read synchronously — now
-      reads off the main thread; the Claude Code half (the 25 MB re-read, no concurrency cap)
-      and the other three are still as described. The 2026-09-16 simplification audit measured
-      the same Resume scan (W1): every open re-reads every conversation file — about 260 MB on
-      this machine — with nothing cached, and Project View pays the same scan just to count
-      files per folder; a folder's nickname-to-path lookup is redone on every browse and, when
-      nothing matches, reads every conversation in the folder in full (W6); and a history-replay
-      path that reads a whole conversation into memory (a 112 MB file becomes a 224 MB string)
-      is still wired up with nothing calling it (W5). Wanted: a size-and-date cache in front of
-      the per-file reader so an unchanged history opens without reading a file, the lookup
-      remembered and its fallback capped, the dead replay path deleted, and the replayed-turn
-      record's type made unambiguous (D11) — simplification phase 5's chat-data share. Resume
-      opens faster on a big history; nothing else changes. On hold since 2026-09-18 (Destin):
-      resumes after phase 4, with the rest of phase 5
-      `desktop` `blocked` `checked 2026-09-18` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
+- [ ] **v1.3.1 release blocker.** Smaller reads left over from cycle 2 still do more work than
+      they need to: two reads take whole files where the tail would do, the catalog fetches the
+      same thing several times at once instead of once, per-session file tracking is never
+      cleaned up, a history-replay path that reads a whole conversation into memory (a 112 MB
+      file becomes a 224 MB string) is still wired up with nothing calling it (W5), and the
+      replayed-turn record's type is ambiguous (D11). 2026-09-26 (youcoded#573, Destin asked
+      for the Resume work ahead of phase 5): the Resume scan now remembers every conversation
+      file by size and date across restarts, native and Claude Code halves (W1), and a folder's
+      nickname lookup is remembered until the folder changes (W6) — settled open 1.7 s -> 0.3 s
+      on a 2,600-conversation history. The rest resumes with phase 5
+      `desktop` `blocked` `checked 2026-09-26` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
-- [ ] Every conversation record write and read first lists the whole conversations directory,
-      synchronously (`conversation-store.ts` heal-on-write/read — one `readdirSync` over a file
-      per conversation ever recorded, per turn per live session), and starring, tagging or
-      renaming a chat kicks off a full search-index rebuild three seconds later that lists,
-      stats and chunk-reads every conversation on the main thread (`chatsearch-index`). Neither
-      is on a click path a user waits on directly; both are stalls with no visible cause.
-      Deferred by the 2026-09-16 smoothness sweep (C7) because `conversation-store.ts` was being
-      rewritten for sync safety; that work (youcoded#563) made heal's file reads async but left the
-      directory listing synchronous — both are now free to convert
-      `desktop` `confirmed` `checked 2026-09-23` `performance`
+- [ ] Starring, tagging or renaming a chat kicks off a full search-index rebuild three seconds
+      later that lists, stats and chunk-reads every conversation on the main thread
+      (`chatsearch-index`) — a stall with no visible cause. (The other half of this item, every
+      conversation record read and heal listing the whole directory synchronously, shipped in
+      youcoded#573, 2026-09-26: reads are async and heal shares one listing per second.)
+      `desktop` `confirmed` `checked 2026-09-26` `performance`
+
+- [ ] The first Resume open after launch "can seemingly load indefinitely" (Destin,
+      2026-09-25). Never reproduced: on a copy of his 2,600-conversation history the worst was
+      4.2 s before youcoded#573 and ~1.5 s after, and it now says "Still loading" with Try again
+      after 6 s. Next time it happens, note the time; `~/.claude/desktop.log` around it is the
+      next evidence
+      `desktop` `needs-verify` `checked 2026-09-26` `needs-repro` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
 
