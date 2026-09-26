@@ -42,13 +42,14 @@ screen's panel box, page errors), and a contact sheet per theme.
 2. On its panel: `<Dialog screen="area/name" …>`, or `<ScreenMark name="area/name" />` inside a
    custom panel. Mark only once the content has loaded (a spinner must never pass).
 3. Add the entry to the area file in `screens/`. `tests/shoot-screens.test.ts` fails until the
-   list and the registrations agree; `shoot --check` (run by `scripts/verify.sh` on renderer
+   list and the registrations agree, and on any `<Dialog>` with neither `screen=` nor
+   `noScreen="<why it cannot open directly>"` — so a new dialog cannot be missed; `shoot --check` (run by `scripts/verify.sh` on renderer
    changes) fails until it opens.
 
 Moments that need a pointer, a drag, typing or a game played out (the magnifier lens, a Flappy
 crash, a result after a click) are not screens — they belong to `explore`, below.
 
-Measured 2026-09-26: 162 screens; `--check` ~13 s; every screen in the two default themes
+Measured 2026-09-26: 162 screens (186 after every dialog was named); `--check` ~13 s; every screen in the two default themes
 ~77 s; all six themes (972 pictures) ~2.5 min. The old click-plan sweep took 14.4 min for three.
 
 # explore — click through the app one step at a time

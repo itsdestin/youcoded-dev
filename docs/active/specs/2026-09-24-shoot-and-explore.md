@@ -251,6 +251,9 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
   message box). While building it, `explore` found two app bugs (not fixed here — reported):
   the Rename session dialog ignores Escape, and "Filter and sort" in the Model & Effort dialog
   does nothing (its popover is positioned from a trigger the inline layout never draws).
+- **Drift guard + fixes (2026-09-26)** — every `<Dialog>` must carry `screen=` or
+  `noScreen="<why>"` (`shoot-screens.test.ts`); 22 named, 2 noScreen, `--check` 186/186. The
+  five bugs `explore` and its trial found are fixed (youcoded `d335c8453`).
 - Phases 5–6 not started.
 
 ## Order of work
