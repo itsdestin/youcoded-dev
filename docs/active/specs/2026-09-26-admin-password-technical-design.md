@@ -90,9 +90,10 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
   override them for itself — `SUDO_ASKPASS=x sudo -A …` — which only means its own helper
   runs and the app is never asked; nothing leaks.)
 - `diffPersistableEnv` must drop these three names so they are never persisted.
-- `spawnEnv` also drops `NODE_OPTIONS`, `NODE_REPL_EXTERNAL_MODULE`, `NODE_V8_COVERAGE` and
-  `ELECTRON_RUN_AS_NODE` inherited from the app (defence in depth; the helper's `env -i` and
-  the environment check are the real guard).
+- `spawnEnv` drops only the app's own `ELECTRON_RUN_AS_NODE` (and blanks `NODE_V8_COVERAGE`).
+  `NODE_OPTIONS`/`NODE_REPL_EXTERNAL_MODULE` are the user's settings and stay (2026-09-26:
+  dropping them silently changed every command's behaviour); the helper's `env -i` and the
+  exact-environment check are the guard.
 - A process-wide `RunningCalls` map: root pid (the `setsid` leader = `child.pid`) →
   `{sessionId, toolCallId, specialist?}`, registered on spawn (foreground and background,
   surviving hand-off), removed on exit. Exit also triggers the forget step (§5).
