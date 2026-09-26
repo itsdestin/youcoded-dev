@@ -159,32 +159,43 @@ export function listLayers() {
   };
   const cands = new Set(document.querySelectorAll(ROLE));
   for (const e of document.body.querySelectorAll('*')) if (!cands.has(e) && floating(e)) cands.add(e);
-  let els = [...cands].filter(shown);
-  els = els.filter((e) => !els.some((o) => o !== e && o.contains(e)));   // outermost only
+  // A full-window wrapper the pointer passes through (Dialog's centring box) is not a layer.
+  let els = [...cands].filter(shown).filter((e) => getComputedStyle(e).pointerEvents !== 'none');
+  // A layer inside a layer is its own layer (the marketplace's detail page over the
+  // marketplace) — unless it fills its parent: then they are one popup (a menu in its frame).
+  const box = (e) => e.getBoundingClientRect();
+  const fills = (inner, outer) => { const a = box(inner), b = box(outer); return Math.abs(a.left - b.left) < 8 && Math.abs(a.top - b.top) < 8 && Math.abs(a.right - b.right) < 8 && Math.abs(a.bottom - b.bottom) < 8; };
+  els = els.filter((e) => !els.some((o) => o !== e && o.contains(e) && fills(e, o)));
   // Stacking: the z-index chain from the root down, compared left to right; ties go to page order.
   const chain = (e) => { const z = []; for (let p = e; p && p !== document.documentElement; p = p.parentElement) { const v = getComputedStyle(p).zIndex; if (v !== 'auto') z.unshift(+v); } return z; };
   const cmp = (a, b) => {
+    if (a.contains(b)) return -1;   // the inner one is on top
+    if (b.contains(a)) return 1;
     const za = chain(a), zb = chain(b);
     for (let i = 0; i < Math.max(za.length, zb.length); i++) { const d = (za[i] ?? 0) - (zb[i] ?? 0); if (d) return d; }
     return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
   };
   els.sort(cmp).reverse();
   window.__exploreLayers = els;
+  // A layer is named from its OWN content, never from a layer nested inside it (the
+  // Projects view must not take the name of the Add-a-project dialog open over it).
+  const own = (s, sel) => [...s.querySelectorAll(sel)].filter((x) => !els.some((o) => o !== s && s.contains(o) && o.contains(x)));
+  const ownFirst = (s, sel) => (s.matches(sel) ? s : own(s, sel)[0]) || null;
   // A surface that wraps one menu or dialog is named by it.
-  const inner = (e) => e.matches('[role]') ? e : e.querySelector('[role=dialog],[role=alertdialog],[role=menu],[role=listbox],[role=tooltip]') || e;
+  const inner = (s) => ownFirst(s, '[role=dialog],[role=alertdialog],[role=menu],[role=listbox],[role=tooltip]') || s;
   const nameOf = (s) => {
     const e = inner(s);
     let v = e.getAttribute('aria-label'); if (t(v)) return t(v);
     const by = e.getAttribute('aria-labelledby'); if (by) { v = by.split(/\s+/).map((id) => document.getElementById(id)?.textContent || '').join(' '); if (t(v)) return t(v); }
-    v = e.querySelector('h1,h2,h3,[role=heading]')?.textContent; if (t(v)) return t(v).slice(0, 50);
+    v = own(e, 'h1,h2,h3,[role=heading]')[0]?.textContent; if (t(v)) return t(v).slice(0, 50);
     // A menu with no title: its first items say what it is.
-    const items = [...e.querySelectorAll('[role=menuitem],[role=option],[role=menuitemcheckbox],[role=menuitemradio]')].map((i) => t(i.textContent)).filter(Boolean);
+    const items = own(e, '[role=menuitem],[role=option],[role=menuitemcheckbox],[role=menuitemradio]').map((i) => t(i.textContent)).filter(Boolean);
     if (items.length) return items.slice(0, 3).join(' / ') + (items.length > 3 ? ' / …' : '');
-    const mark = s.querySelector('[data-screen]')?.getAttribute('data-screen');
+    const mark = ownFirst(s, '[data-screen]')?.getAttribute('data-screen');
     return mark || t(e.innerText).slice(0, 40);
   };
   const kindOf = (s) => { const e = inner(s); return e.getAttribute('role') || (s.classList.contains('settings-drawer') ? 'drawer' : 'panel'); };
-  const markOf = (e) => e.matches('[data-screen]') ? e.getAttribute('data-screen') : e.querySelector('[data-screen]')?.getAttribute('data-screen') || '';
+  const markOf = (s) => ownFirst(s, '[data-screen]')?.getAttribute('data-screen') || '';
   // Covered = a HIGHER layer sits over this one's middle. (Not "the hit is outside it": a
   // dialog's own full-window wrapper lets the pointer through to its scrim.)
   const layers = els.map((e, i) => {
