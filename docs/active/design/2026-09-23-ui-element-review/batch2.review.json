@@ -1,0 +1,259 @@
+{
+  "title": "Fix batch 2 \u2014 Settings, before and after",
+  "key": "ui-fix-batch-2",
+  "out": "batch2.review.html",
+  "images": "images/batch2.review",
+  "runs": {
+    "before": "runs/b2-before",
+    "after": "runs/b2-after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "After"
+  },
+  "themes": [
+    "meadow-mist",
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "sync-err": [
+      "sync-oversize-fix",
+      "sync-error",
+      "420x590+510+150"
+    ],
+    "sync-main": [
+      "main",
+      "settings-backup-sync",
+      "420x590+510+150"
+    ],
+    "sync-over": [
+      "sync-oversize-fix",
+      "sync-oversize-open",
+      "420x590+510+150"
+    ],
+    "remote": [
+      "main",
+      "settings-remote-access",
+      "420x590+510+150"
+    ],
+    "skip": [
+      "assistant-settings",
+      "assistant-claude-skip-on",
+      "360x360+540+270"
+    ],
+    "local": [
+      "assistant-settings",
+      "assistant-local",
+      "820x700+310+100"
+    ],
+    "local-int": [
+      "overlays",
+      "local-models-resuming",
+      "820x700+310+100"
+    ],
+    "spec": [
+      "assistant-settings",
+      "assistant-specialists",
+      "820x700+310+100"
+    ],
+    "about": [
+      "main",
+      "settings-about",
+      "420x590+510+150"
+    ],
+    "sound": [
+      "main",
+      "settings-sound",
+      "420x590+510+150"
+    ],
+    "prefs": [
+      "main",
+      "preferences-config",
+      "420x590+510+150"
+    ],
+    "skip-ticked": [
+      "assistant-settings",
+      "assistant-claude-skip-ticked",
+      "360x360+540+270"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Backup & Sync \u2014 when sync fails",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-err",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 when sync fails: keep these changes?",
+      "changed": "The error is now a tinted box inside the sync card, with grey text and its buttons (Show details, Try again) inside it. \"Add a backup\" and \"Back up all now\" are full-width outlined buttons. \"Sync log\" is a boxed row with the arrow on the right.",
+      "notice": "No red text; \"Show details\" is a button; groups are 16px apart.",
+      "risk": "Outlined buttons look faint on this theme \u2014 see the outline question below."
+    },
+    {
+      "id": "C-2",
+      "surface": "Backup & Sync \u2014 everything fine",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "sync-main",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 everything fine: keep these changes?",
+      "changed": "Same rules on the normal screen: follow-up actions are full-width outlined buttons, the sync log is a boxed row, spacing is even.",
+      "notice": "\"Back up all now\" is a button, not underlined text."
+    },
+    {
+      "id": "C-3",
+      "surface": "Backup & Sync \u2014 too big to sync",
+      "path": "Backup & Sync with conversations over the size limit",
+      "crop": "sync-over",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Backup & Sync \u2014 too big to sync: keep these changes?",
+      "changed": "The warning box you picked is unchanged, but \"Sync now\" is now a full-width outlined button, and the box title is normal text colour.",
+      "notice": "The orange title text is now dark, like other text."
+    },
+    {
+      "id": "C-4",
+      "surface": "Remote Access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "remote",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Remote Access: keep these changes?",
+      "changed": "\"Generate\" is gone. \"Set\" is a small filled button inside the password box. The top is a plain intro and one status row \u2014 no box inside a box. Labels lose capitals.",
+      "notice": "Fewer boxes on the screen. The top block's final look is still provisional.",
+      "risk": "Keep awake is unchanged (its own redesign is on the roadmap)."
+    },
+    {
+      "id": "C-5",
+      "surface": "Skip Permissions confirm",
+      "path": "Permissions \u2192 turn on Skip Permissions Mode",
+      "crop": "skip",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Skip Permissions confirm: keep these changes?",
+      "changed": "The whole \"I understand\u2026\" line is one tappable box with the tick on the left. \"Turn it on\" stays disabled until it is ticked. Buttons stay stacked.",
+      "notice": "The line lights up when ticked (shown in the next slide)."
+    },
+    {
+      "id": "C-5b",
+      "surface": "Skip Permissions \u2014 ticked",
+      "path": "Permissions \u2192 Skip Permissions Mode, ticked",
+      "crop": "skip-ticked",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "After"
+      },
+      "headline": "Skip Permissions ticked: is this lit state right?",
+      "changed": "Ticking the line lights it up with a tinted border and background; the red button becomes active.",
+      "notice": "Nothing else moves.",
+      "highlight": {
+        "box": [
+          5,
+          50,
+          90,
+          30
+        ]
+      }
+    },
+    {
+      "id": "C-6",
+      "surface": "Local models \u2014 downloads",
+      "path": "Settings \u2192 Assistant settings \u2192 Local models",
+      "crop": "local",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Local models \u2014 downloads: keep these changes?",
+      "changed": "No coloured strips. An interrupted or damaged download is a notice box inside its card, with its buttons (Delete, Resume) inside the box. \"Settings\" and \"Add vision\" are outlined buttons.",
+      "notice": "Errors look like Backup & Sync's warnings."
+    },
+    {
+      "id": "C-7",
+      "surface": "Local models \u2014 download interrupted",
+      "path": "Assistant settings \u2192 Local models (scrolled)",
+      "crop": "local-int",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Local models \u2014 download interrupted: keep these changes?",
+      "changed": "The same notice box for an interrupted download, shown lower on the page.",
+      "notice": "The title is normal text, not yellow-on-yellow."
+    },
+    {
+      "id": "C-8",
+      "surface": "Specialists",
+      "path": "Settings \u2192 Assistant settings \u2192 Specialists",
+      "crop": "spec",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Specialists: keep these changes?",
+      "changed": "The gap under the heading is 8px. The capital \"READ-ONLY\" chips are normal-case tinted pills. The count line reads \"Available specialists 7\" with a \"1 warning\" pill.",
+      "notice": "The intro sits right under its heading."
+    },
+    {
+      "id": "C-9",
+      "surface": "About",
+      "path": "Settings \u2192 About",
+      "crop": "about",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "About: keep these changes?",
+      "changed": "Small labels lose their spaced capitals; labels over reading text get the soft underline.",
+      "notice": "\"Disclaimer\" and \"Privacy\" are ordinary words.",
+      "themes": [
+        "meadow-mist",
+        "light"
+      ]
+    },
+    {
+      "id": "C-10",
+      "surface": "Sound & Notifications",
+      "path": "Settings \u2192 Sound & Notifications",
+      "crop": "sound",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Sound & Notifications: keep these changes?",
+      "changed": "Small labels lose capitals.",
+      "notice": "\"Volume\" and \"Notification\" are ordinary words."
+    },
+    {
+      "id": "C-11",
+      "surface": "Claude Code preferences",
+      "path": "Settings \u2192 Preferences",
+      "crop": "prefs",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "headline": "Claude Code preferences: keep these changes?",
+      "changed": "Small labels lose capitals.",
+      "notice": "Labels are ordinary words.",
+      "themes": [
+        "meadow-mist",
+        "light"
+      ]
+    }
+  ]
+}
