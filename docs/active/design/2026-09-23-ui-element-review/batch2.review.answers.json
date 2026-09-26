@@ -1,0 +1,81 @@
+{
+ "deck": "ui-fix-batch-2",
+ "started": "2026-09-26T18:56:35.017Z",
+ "submitted": "2026-09-26T18:59:43Z",
+ "cur": 11,
+ "answers": {
+  "C-1": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-2": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-3": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-4": {
+   "v": "yes",
+   "seconds": 42,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-5": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-5b": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-6": {
+   "note": "the text in the download interrupted card is not vertically centered within the card. it sits too high for some reason. ",
+   "v": "other",
+   "seconds": 51,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-7": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-8": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-9": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-10": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-11": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
