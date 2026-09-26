@@ -10,7 +10,7 @@ seen-on is always n/a here.
       shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
       slider/download strip). Left: move the ~330 entries the triage marks harmless into
       startup-only / user-rare (JSON lines ready in the report); batches B2 (native-home +
-      session-store), B4 (conversation-store — its rewrite has now landed), B5 (chat-search
+      session-store), B4 (conversation-store — reads, listing and heal async since youcoded#573; the locked write/remove path is left), B5 (chat-search
       index), B7 (git-transport / sync service), B10 (skill-provider catalog reads), B12
       (project-watcher); custom-theme glass sliders still save on every tick (theme:write-file)
       `n/a` `confirmed` `checked 2026-09-24` `performance` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
