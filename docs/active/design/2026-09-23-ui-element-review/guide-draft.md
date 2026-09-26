@@ -47,7 +47,7 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 5. **Cards for things, rows for lists, no nesting.** Something you open or install (a
    plugin, a Page, a file) is a raised card. A list you read or pick from (settings, a menu)
    is rows, never cards. Group with a small label and spacing — never put a box inside a
-   box.
+   box. **A Settings popup is built from four kinds of unit only: a small label, a row, a notice box and a button** (switches, dropdowns, tabs, inputs and small tags live inside a row). No wrapper cards.
 6. **Actions live on the right.** One filled button per view. A filled button, switch or
    selection never sits alone at the bottom-left — only when balanced by something on the
    right of the same line.
@@ -186,6 +186,7 @@ view**, which stays exactly as it is.
 - [ ] Two or three existing screens that do the same job were used as references, and are
       named when showing the work.
 - [ ] Every element matches a recipe here and is built from its shared piece; nothing invented.
+- [ ] Counted the kinds of unit (card, row, notice box, chip, table, button style…) on the screen: **more than four means it needs simplifying.**
 - [ ] Checked in its hard states too: error, empty, loading, very long text.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only.
 - [ ] No spaced-out capitals; headings from the three levels.

@@ -1,0 +1,15 @@
+{
+ "deck": "ui-fix-batch-2-outline",
+ "started": "2026-09-26T10:14:54.247Z",
+ "submitted": "2026-09-26T10:16:01Z",
+ "cur": 0,
+ "answers": {
+  "O-1": {
+   "v": "other",
+   "note": "can see a difference. also, just take a sec to notice how there are like 7 different card/button/unit styles on this single popup.....",
+   "seconds": 66,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
