@@ -474,7 +474,10 @@ seen-on is always n/a here.
       `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
       the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
       and focus emulation on by default, beside `--hover`
-      `n/a` `confirmed` `checked 2026-09-10`
+      **Half done 2026-09-26:** real input exists now — `scripts/shoot/explore.mjs` hovers,
+      presses, drags and types through CDP `Input`, and the tester kit uses it. Still missing:
+      touch and a 1.5× scale in `explore`/`shoot` (a tester still cannot claim to cover either)
+      `n/a` `confirmed` `checked 2026-09-26`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
       different subset of the layouts: `scripts/lib/resolve-checkout.sh` (run-workbench),

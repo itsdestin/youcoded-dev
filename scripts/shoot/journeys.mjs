@@ -11,7 +11,7 @@
 // A failure names the step, what it looked for, and what WAS on screen, with a picture.
 // When a button was simply renamed, change that label in the journey's JSON — the journey
 // lives in the same repo as the button, so the fix rides in the same commit.
-// Spec: docs/active/specs/2026-09-24-shoot-and-explore.md → "Saved journeys".
+// Spec: docs/archive/specs/2026-09-24-shoot-and-explore.md → "Saved journeys".
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

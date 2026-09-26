@@ -2,7 +2,7 @@
 // shoot — photograph named screens of the practice app. No clicking: every screen
 // opens directly by name (the screen list lives in the app,
 // desktop/src/renderer/dev/workbench/screens/). Spec:
-// docs/active/specs/2026-09-24-shoot-and-explore.md.
+// docs/archive/specs/2026-09-24-shoot-and-explore.md.
 //
 //   shoot settings/*                                  every Settings screen, the default themes
 //   shoot settings/sound settings/about --themes all  any names, every theme

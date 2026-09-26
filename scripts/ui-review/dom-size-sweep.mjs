@@ -19,7 +19,7 @@
 // per-surface stress pins (vitest, in verify.sh) already cover list by list.
 //
 // HOW IT OPENS SURFACES (rewritten onto the `shoot`/`explore` engine,
-// docs/active/specs/2026-09-24-shoot-and-explore.md): it builds and serves its own
+// docs/archive/specs/2026-09-24-shoot-and-explore.md): it builds and serves its own
 // photo-only copy of the app (scripts/shoot/engine.mjs — a free port, no cdp-ports.sh,
 // no run-workbench.sh), reads the app's own screen list
 // (desktop/src/renderer/dev/workbench/screens/*.ts via `window.__youcodedScreens.list()`),

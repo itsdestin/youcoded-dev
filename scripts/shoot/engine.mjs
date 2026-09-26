@@ -2,8 +2,8 @@
 // practice app, serve it on a free port, drive a pool of headless Chrome tabs.
 // Nothing here is configured by the caller beyond "which checkout".
 //
-// Spec: docs/active/specs/2026-09-24-shoot-and-explore.md → "The engine".
-// Evidence for every choice below: docs/active/investigations/2026-09-24-screenshot-infra-speed.md.
+// Spec: docs/archive/specs/2026-09-24-shoot-and-explore.md → "The engine".
+// Evidence for every choice below: docs/archive/investigations/2026-09-24-screenshot-infra-speed.md.
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
