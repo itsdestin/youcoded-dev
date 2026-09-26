@@ -27,7 +27,7 @@
       "path": "The drawer that slides in from the left",
       "_comment_path": "path: how he would get there.",
       "crop": "drawer",
-      "_comment_crop": "crop: the picture of how it is today. Names come from crops.json, or add your own under a top-level \"crops\" block.",
+      "_comment_crop": "crop: the picture of how it is today. A shoot screen name (shoot --list) — or a crops.json name, or add your own under a top-level \"crops\" block.",
       "headline": "Which section should the settings drawer open on?",
       "_comment_headline": "headline: the decision itself, in one sentence. 25 words at most, no code words.",
       "notice": "Whichever you pick is what opens every time you press the settings button.",

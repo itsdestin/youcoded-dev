@@ -1,10 +1,10 @@
-import json, os, sys, tempfile, threading, time, unittest, urllib.error, urllib.request
+import json, os, re, sys, tempfile, threading, time, unittest, urllib.error, urllib.request
 from unittest import mock
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
-from fixture import make_fixture
+from fixture import make_fixture, live_spec
 from deck.spec import load_spec
-from deck.serve import answers_path, make_server, preferred_ports, rotate_submitted, serve, summary, wait_for_submit, write_atomic
+from deck.serve import answers_path, build_app, make_server, preferred_ports, rewrite_stale_live, rotate_submitted, serve, summary, wait_for_submit, write_atomic
 
 def post(url, obj):
     req = urllib.request.Request(url, data=json.dumps(obj).encode(), headers={'content-type': 'application/json'}, method='POST')
@@ -237,3 +237,130 @@ class RecordTests(unittest.TestCase):
         self.assertTrue(any(f.startswith(self.spec['_stem'] + '.answers.2026') for f in os.listdir(self.spec['_base'])))   # the old submit is history, not overwritten
         self.assertEqual(self.record(self.spec, f'{ids[0]} pick zz', log=logs.append), 1)                  # a refused paste writes nothing new
         self.assertIn('refused', ''.join(logs))
+
+
+class StaleLiveRewriteTests(unittest.TestCase):
+    """A page built before 2026-09-26 bakes its pane addresses as `<live.base>/?…` — the
+    workbench's fixed port, which this deck no longer starts. Every page built since then
+    addresses its panes as `/app/index.html?…` instead (whether or not `live.base` is set — a
+    base only changes the ORIGIN a pane is prefixed with, never the path), so that is what
+    tells an old page apart from a new one, not the shape of `live.base` alone (an explicit
+    test stub can share the exact `http://127.0.0.1:<port>` shape the old fixed port had)."""
+
+    def _page(self, base, path):
+        deck = {
+            'live': {'base': base, 'worktree': 'live-tree',
+                     **({'command': 'bash scripts/run-workbench.sh live-tree'} if base else {})},
+            'steps': [{'id': 'L-1', 'kind': 'live', 'panes': [
+                {'id': 'a', 'url': f'{base}{path}?mode=workbench&child=1&view=live&surface=s&round=1&candidate=c&theme=midnight'},
+            ]}],
+        }
+        return 'PREFIX<script>const DECK=' + json.dumps(deck).replace('</', '<\\/') + ';</script>SUFFIX'
+
+    def _old_page(self, base='http://127.0.0.1:5513'):
+        return self._page(base, '/')   # the shape serve.py used to bake: <fixed workbench origin>/?…
+
+    def test_an_old_page_is_rewritten_onto_this_decks_own_app(self):
+        html = self._old_page()
+        out = []
+        fixed = rewrite_stale_live(html, log=out.append)
+        self.assertNotEqual(fixed, html)
+        self.assertTrue(any('rewritten' in l for l in out), out)
+        blob = json.loads(re.search(r'const DECK=(\{.*?\});', fixed, re.S).group(1).replace('<\\/', '</'))
+        self.assertEqual(blob['live']['base'], '')
+        self.assertNotIn('command', blob['live'])
+        self.assertEqual(blob['steps'][0]['panes'][0]['url'],
+                         '/app/index.html?mode=workbench&child=1&view=live&surface=s&round=1&candidate=c&theme=midnight')
+        self.assertTrue(fixed.startswith('PREFIX') and fixed.endswith('SUFFIX'), 'only the DECK blob changed')
+
+    def test_a_page_already_addressing_this_decks_own_app_is_left_alone(self):
+        # The DEFAULT shape every page has built since 2026-09-26: relative, no live.base at all.
+        html = self._page('', '/app/index.html')
+        self.assertEqual(rewrite_stale_live(html, log=lambda m: (_ for _ in ()).throw(AssertionError('should not log'))), html)
+
+    def test_an_explicit_test_stub_base_is_left_alone_when_it_already_addresses_app(self):
+        # A NEW page can also carry an explicit live.base (a test fixture) — its pane still
+        # addresses /app/index.html at that origin, and that is the signal that leaves it alone,
+        # never the shape of live.base (which an old page and this one can share exactly).
+        html = self._page('http://127.0.0.1:41234', '/app/index.html')
+        self.assertEqual(rewrite_stale_live(html, log=lambda m: (_ for _ in ()).throw(AssertionError('should not log'))), html)
+
+    def test_a_page_with_no_live_panes_is_left_alone(self):
+        html = 'PREFIX<script>const DECK=' + json.dumps({'steps': [{'id': 'S-1'}]}) + ';</script>SUFFIX'
+        self.assertEqual(rewrite_stale_live(html, log=lambda m: (_ for _ in ()).throw(AssertionError('should not log'))), html)
+
+    def test_serve_rewrites_an_old_page_on_disk_once_at_start(self):
+        tmp = tempfile.mkdtemp()
+        spec = load_spec(make_fixture(tmp))
+        with open(os.path.join(spec['_base'], spec['out']), 'w') as f:
+            f.write(self._old_page())
+        out = []
+        result = {}
+        def run(): result['code'] = serve(spec, port=0, timeout_min=1, log=out.append, live=False)
+        t = threading.Thread(target=run, daemon=True); t.start()
+        for _ in range(50):
+            if any(l.startswith('[deck] http') for l in out): break
+            time.sleep(0.1)
+        url = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1]
+        post(url.rsplit('/', 1)[0] + '/submit', {'deck': 'fixture', 'answers': {}})
+        t.join(5)
+        self.assertTrue(any('rewritten onto' in l for l in out), out)
+        with open(os.path.join(spec['_base'], spec['out'])) as f:
+            self.assertIn('/app/index.html?', f.read())
+
+
+class AppServingTests(unittest.TestCase):
+    """The deck serves the practice app it builds, at /app/*, from its own address — no fixed
+    port, no separate process to start or restart alongside the deck (spec: docs/active/specs/
+    2026-09-24-shoot-and-explore.md → "Review decks")."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def _live_spec_for_this_worktree(self):
+        # This worktree IS a real checkout with desktop/ — resolve_worktree finds it by its own
+        # session name, so build_app runs the REAL scripts/shoot/build.mjs (cached: near-instant
+        # when nothing changed, which is the case here).
+        return load_spec(live_spec(self.tmp, live={'worktree': 'ui-review-infra'}))
+
+    def test_a_served_deck_answers_app_index_and_an_asset_with_the_right_type(self):
+        spec = self._live_spec_for_this_worktree()
+        dist = build_app(spec, log=lambda m: None)
+        asset = next(f for f in os.listdir(os.path.join(dist, 'assets')) if f.endswith('.js'))
+        out = []
+        result = {}
+        def run(): result['code'] = serve(spec, port=0, timeout_min=1, log=out.append)
+        t = threading.Thread(target=run, daemon=True); t.start()
+        for _ in range(50):
+            if any(l.startswith('[deck] http') for l in out): break
+            time.sleep(0.1)
+        base = next(l for l in out if l.startswith('[deck] http')).split(' ', 1)[1].rsplit('/', 1)[0]
+        try:
+            r = urllib.request.urlopen(base + '/app/index.html', timeout=10)
+            self.assertEqual(r.status, 200)
+            self.assertIn('text/html', r.headers.get('content-type'))
+            self.assertIn(b'<html', r.read()[:200].lower())
+            r2 = urllib.request.urlopen(base + '/app/assets/' + asset, timeout=10)
+            self.assertEqual(r2.status, 200)
+            self.assertEqual(r2.headers.get('content-type'), 'text/javascript')
+            # The SPA fallback: a workbench route with nothing on disk but index.html.
+            r3 = urllib.request.urlopen(base + '/app/?view=live&surface=s&round=1&candidate=c', timeout=10)
+            self.assertIn(b'<html', r3.read()[:200].lower())
+        finally:
+            post(base + '/submit', {'deck': 'live-fixture', 'answers': {}})
+            t.join(10)
+
+    def test_no_live_never_builds_or_serves_app(self):
+        # `--no-live`: a spec whose panes point at a server of their own (an explicit live.base)
+        # has nothing here to build — /app/* must fall through untouched, never a 503.
+        spec = load_spec(live_spec(self.tmp, base='http://127.0.0.1:1'))   # nothing listens here
+        with mock.patch('subprocess.run', side_effect=AssertionError('--no-live must never build')):
+            srv, url = make_server(spec, 0, lambda state: None, serve_app=False)
+            t = threading.Thread(target=srv.serve_forever, daemon=True); t.start()
+            try:
+                base = url.rsplit('/', 1)[0]
+                with self.assertRaises(urllib.error.HTTPError) as cm:
+                    urllib.request.urlopen(base + '/app/index.html', timeout=5)
+                self.assertEqual(cm.exception.code, 404)   # the deck's OWN directory has no 'app' folder
+            finally:
+                srv.shutdown(); srv.server_close()

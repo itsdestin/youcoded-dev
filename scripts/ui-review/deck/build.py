@@ -7,7 +7,7 @@ import json
 import os
 
 from .crops import image_name
-from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, live_offset, pane_url, pane_width
+from .live import APP_PANE_HEIGHT, APP_PANE_WIDTH, is_app_pane, has_live, is_live, live_base, pane_url, pane_width
 from .spec import (QUESTION_FIELDS, SpecError, all_themes, clip_files, is_choice, is_clip, is_contract,
                     is_decide, is_dev, is_page, is_question, is_words, pages, run_names, step_runs, step_themes, validate,
                     workspace_root)
@@ -275,13 +275,16 @@ def deck_data(spec, boxes):
     for st, out in zip([x for x in spec['steps'] if not is_page(x)], steps):
         out.update(_answer_shape(st))
     every = all_themes(spec)
-    # `command` is spelled HERE, where the offset and the worktree are both known, so the
-    # "server isn't running" card can name the exact thing to run instead of guessing.
     tree = (spec.get('live') or {}).get('worktree', '')
+    base = live_base(spec)
     live = {'live': {
-        'base': live_base(spec),
+        'base': base,
         'worktree': tree,
-        'command': f'YOUCODED_PORT_OFFSET={live_offset(spec)} bash scripts/run-workbench.sh {tree}',
+        # `command` only means anything when `base` is an EXTERNAL server this deck did not
+        # start (an explicit `live.base` — a test's stub, standing in for one) — the deck's
+        # own server (the default, relative address) has nothing separate to start; serve.py
+        # builds and serves it, and a failure there is a build error, not a stopped process.
+        **({'command': f'bash scripts/run-workbench.sh {tree}'} if base else {}),
     }} if has_live(spec) else {}
     # A question deck is PAGES (design 3.1): `pages` lists the step ids on each, and page.js
     # switches to the scrolling reading column when it is there. Absent for any deck with a

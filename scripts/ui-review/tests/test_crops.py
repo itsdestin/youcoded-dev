@@ -1,7 +1,7 @@
 import json, os, sys, tempfile, unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
-from fixture import make_fixture
+from fixture import make_fixture, shoot_run
 from deck.spec import load_spec
 from deck.crops import crop_images, image_name, measure_key, newest_manifest_entry
 
@@ -42,7 +42,7 @@ class CropTests(unittest.TestCase):
     def test_missing_measurement_names_the_fix(self):
         self.spec['steps'][1]['highlight'] = {'selector': '#nope'}
         r = crop_images(self.spec, log=lambda *a: None)
-        self.assertTrue(any('"measure": ["#nope"]' in m and 'plans/main.json' in m for m in r['missing']))
+        self.assertTrue(any('"measure": ["#nope"]' in m and 'plans/archive/main.json' in m for m in r['missing']))
         self.assertEqual(r['boxes']['S-2']['light'], {})
     def test_missing_capture_is_reported_not_faked(self):
         os.remove(os.path.join(self.spec['runs']['after'], 'shots-main', 'light', 'home.png'))
@@ -66,5 +66,122 @@ class CropTests(unittest.TestCase):
         self.assertEqual(newest_manifest_entry(self.spec['runs']['before'], 'main', 'home', 'light')['measures']['#send']['x'], 1)
     def test_measure_key(self):
         self.assertEqual(measure_key({'selector': '#a'}), '#a'); self.assertEqual(measure_key({'text': 'Send'}), 'text:Send')
+
+
+# A picture in PIXELS on a 1440x900 shoot picture, and its percent equivalent (px_to_pct, 2dp).
+PANEL = {'x': 500, 'y': 250, 'w': 400, 'h': 200}
+PANEL_PCT = [34.72, 27.78, 27.78, 22.22]
+
+
+def _shoot_spec(tmp, step_over=None, **over):
+    """A one-step deck whose crop names a SHOOT SCREEN ("settings/sound") rather than a legacy
+    crops.json name — the shape this whole test class exists to cover."""
+    deck = os.path.join(tmp, 'deck'); os.makedirs(deck, exist_ok=True)
+    step = {'id': 'S-1', 'surface': 'Settings', 'path': 'Sound', 'crop': 'settings/sound',
+            'headline': 'A shoot screen shows here.', 'changed': 'x', 'notice': 'y'}
+    step.update(step_over or {})
+    spec = {'title': 'Shoot fixture', 'key': 'shoot-fixture', 'out': 'shoot.html',
+            'images': 'images/shoot', 'themes': ['midnight', 'light'],
+            'runs': {'before': os.path.join(tmp, 'runs', 'before'), 'after': os.path.join(tmp, 'runs', 'after')},
+            'steps': [step]}
+    spec.update(over)
+    p = os.path.join(deck, 'shoot.json'); json.dump(spec, open(p, 'w'), indent=1)
+    return p
+
+
+class ShootCropTests(unittest.TestCase):
+    """A step names a shoot SCREEN ("settings/sound") instead of a legacy crops.json name —
+    resolved against the run's OWN manifest.json (shoot's output shape: one whole picture per
+    screen × theme, never a sub-crop), with the screen's panel as the default highlight."""
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        # 'before' has no red block; 'after' does — the same before/after pattern make_runs.py
+        # uses, so "auto" has something real to find, just against the WHOLE picture this time.
+        for run, rect in (('before', None), ('after', (560, 260, 120, 40))):
+            shoot_run(os.path.join(self.tmp, 'runs', run),
+                     [{'name': 'settings/sound', 'theme': t, 'panel': PANEL, 'rect': rect} for t in ('midnight', 'light')])
+
+    def test_the_whole_picture_is_copied_never_a_sub_crop(self):
+        from deck.boxes import image_size
+        spec = load_spec(_shoot_spec(self.tmp))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        dst = os.path.join(spec['_base'], 'images', 'shoot', image_name('settings/sound', 'midnight', 'before'))
+        self.assertTrue(os.path.exists(dst))
+        self.assertEqual(image_size(dst), (1440, 900))
+
+    def test_auto_diff_still_works_across_two_shoot_pictures(self):
+        spec = load_spec(_shoot_spec(self.tmp))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], []); self.assertEqual(r['warnings'], [])
+        # Both runs get the SAME box (the change, found by diffing the two whole pictures) —
+        # identical to a legacy "auto" pair, just with no sub-crop geometry in the middle.
+        self.assertEqual(r['boxes']['S-1']['midnight']['before'], r['boxes']['S-1']['midnight']['after'])
+        b = r['boxes']['S-1']['midnight']['after']
+        self.assertAlmostEqual(b[0], 560 / 1440 * 100, delta=1); self.assertAlmostEqual(b[1], 260 / 900 * 100, delta=1)
+
+    def test_a_single_run_shoot_screen_defaults_to_its_own_panel(self):
+        spec = load_spec(_shoot_spec(self.tmp, runs={'today': os.path.join(self.tmp, 'runs', 'before')}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        self.assertEqual(r['boxes']['S-1']['midnight']['today'], PANEL_PCT)
+
+    def test_a_named_element_highlight_is_refused_on_a_shoot_crop(self):
+        # Shoot names screens, not elements — there is no "measures" dict to look a selector or
+        # text up in, ever, so this is refused rather than silently boxing nothing.
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'highlight': {'selector': '#nope'}}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertTrue(any('names a screen, not an element' in m for m in r['missing']), r['missing'])
+        self.assertEqual(r['boxes']['S-1']['midnight'], {})
+
+    def test_a_hand_placed_box_still_works_on_a_shoot_crop(self):
+        spec = load_spec(_shoot_spec(self.tmp, step_over={'highlight': {'box': [1, 2, 3, 4]}}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['boxes']['S-1']['midnight']['before'], [1, 2, 3, 4])
+        self.assertEqual(r['boxes']['S-1']['midnight']['after'], [1, 2, 3, 4])
+
+    def test_a_picture_shoot_marked_not_ok_is_missing_never_blank(self):
+        shoot_run(os.path.join(self.tmp, 'runs', 'before'),
+                 [{'name': 'settings/sound', 'theme': t, 'ok': False, 'reason': 'its mark is not on the page'} for t in ('midnight', 'light')])
+        spec = load_spec(_shoot_spec(self.tmp))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertTrue(any('its mark is not on the page' in m for m in r['missing']), r['missing'])
+        self.assertEqual(r['boxes']['S-1']['midnight'].get('before'), None)
+
+    def test_a_name_that_is_neither_legacy_nor_in_a_shoot_run_is_missing_not_a_crash(self):
+        # 'today' points at a plain empty folder: no shots-<plan>/ (legacy) and no manifest.json
+        # (shoot) — never a KeyError, always a clear, refused "missing".
+        empty = os.path.join(self.tmp, 'runs', 'empty'); os.makedirs(empty, exist_ok=True)
+        spec = load_spec(_shoot_spec(self.tmp, runs={'today': empty}))
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertTrue(any('not a shoot run' in m and 'not a name in crops.json either' in m for m in r['missing']), r['missing'])
+
+    def test_a_choice_step_may_mix_a_shoot_variant_with_a_legacy_one(self):
+        # The mode is decided PER VARIANT, not per step or per deck — a choice step comparing an
+        # old design against a real shoot-captured screen is a legitimate single ask. Both read
+        # from the SAME run folder: it is shoot-shaped (has manifest.json) for "settings/sound",
+        # and also holds an old-shaped shots-main/ folder for the legacy "c" crop.
+        run_dir = os.path.join(self.tmp, 'runs', 'before')   # already shoot-shaped from setUp
+        from deck.fixture.make_runs import make_runs
+        legacy = make_runs(os.path.join(self.tmp, 'legacy-src'), themes=('midnight',), runs=('only',))['only']
+        import shutil as _shutil
+        _shutil.copytree(os.path.join(legacy, 'shots-main'), os.path.join(run_dir, 'shots-main'))
+
+        deck = os.path.join(self.tmp, 'deck2'); os.makedirs(deck, exist_ok=True)
+        spec = {'title': 'Mixed choice', 'key': 'mixed-choice', 'out': 'mixed.html',
+                'images': 'images/mixed', 'themes': ['midnight'],
+                'runs': {'today': run_dir},
+                'crops': {'c': ['main', 'home', '400x200+500+250']},
+                'steps': [{'id': 'C-1', 'surface': 'Settings', 'path': 'Sound', 'headline': 'Which?',
+                          'variants': [{'id': 'a', 'label': 'Shoot', 'crop': 'settings/sound', 'summary': 'x'},
+                                       {'id': 'b', 'label': 'Legacy', 'crop': 'c', 'summary': 'y'}]}]}
+        p = os.path.join(deck, 'mixed.json'); json.dump(spec, open(p, 'w'))
+        spec = load_spec(p)
+        r = crop_images(spec, log=lambda *a: None)
+        self.assertEqual(r['missing'], [])
+        out = os.path.join(spec['_base'], 'images', 'mixed')
+        self.assertTrue(os.path.exists(os.path.join(out, image_name('settings/sound', 'midnight', 'today'))))
+        self.assertTrue(os.path.exists(os.path.join(out, image_name('c', 'midnight', 'today'))))
+
 
 if __name__ == '__main__': unittest.main()

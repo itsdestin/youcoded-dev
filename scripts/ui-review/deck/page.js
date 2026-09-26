@@ -55,21 +55,34 @@
 
   // ── live panes ──────────────────────────────────────────────────────────────────────
   const MIN_PANE_H = 160;   // a pane whose script never reported is visibly empty, not a 0px line
+  // A pane's address is normally root-relative (`/app/index.html?…`) — THIS deck's own server
+  // built and serves it, so it is same-origin, and postMessage needs a real origin rather than
+  // the empty string DECK.live.base then is. `live.base` only carries a value when a spec names
+  // an EXTERNAL server (a test's stub, standing in for one this deck did not start).
+  const LIVE_ORIGIN = (DECK.live && DECK.live.base) || location.origin;
   // One probe per entry to a live step (not one per page): a server started AFTER the deck
   // was opened must be able to recover on the next visit. `no-cors` gives an opaque response
   // — useless to read, but a REJECTION is unambiguous, and it is the only reliable signal
   // here: Chrome fires an iframe `load` event on its own error page too.
-  const probeLive = () => fetch(DECK.live.base + '/', { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
+  const probeLive = () => fetch(DECK.live.base ? DECK.live.base + '/' : '/app/index.html',
+    { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
   function drawLivePanes() {
     $$('#inner iframe').forEach(f => { if (f.dataset.src) f.src = f.dataset.src; });
   }
   function drawServerDown(st) {
     // Specific and accurate (docs/error-message-standards.md): we know exactly which address
-    // did not answer and exactly what starts it. This is also what an ARCHIVED review shows.
+    // did not answer. This is also what an ARCHIVED review shows.
+    // Two different failures wear this card: an EXTERNAL server (a test's stub) that never
+    // started — Start it with: <command> — versus this deck's OWN /app/, which it just tried
+    // to build; nothing external to start, so the fix is to read the build error and reload.
+    const external = !!DECK.live.base;
     inner.innerHTML = `<div class="down"><h3>The app server for this review is not running</h3>`
-      + `<p>Nothing answered at <code>${esc(DECK.live.base)}</code>, so the ${st.panes.length === 1 ? 'pane has' : 'panes have'} nothing to show. Start it with:</p>`
-      + `<pre>${esc(DECK.live.command)}</pre>`
-      + `<p class="sub">Or re-run <code>review-cards.py serve &lt;spec&gt;</code>, which starts it for you. A review read back later always lands here — live panes do not replay.</p></div>`;
+      + `<p>Nothing answered at <code>${esc(external ? DECK.live.base : '/app/index.html')}</code>, so the `
+      + `${st.panes.length === 1 ? 'pane has' : 'panes have'} nothing to show.`
+      + (external
+        ? ` Start it with:</p><pre>${esc(DECK.live.command)}</pre>`
+        : ` The practice app failed to build.</p><p class="sub">Check the terminal that ran <code>review-cards.py serve</code> for the error, then reload this page.</p>`)
+      + `<p class="sub">Or re-run <code>review-cards.py serve &lt;spec&gt;</code>, which builds and serves it for you. A review read back later always lands here — live panes do not replay.</p></div>`;
   }
   // Theme WITHOUT render(): render() rebuilds #inner, which reloads every iframe and throws
   // away a half-finished drag or an animation mid-play. The app applies the swap live through
@@ -77,7 +90,7 @@
   function setLiveTheme() {
     document.documentElement.dataset.theme = theme;
     $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
-    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ } });
+    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (e) { /* not loaded yet */ } });
   }
   // What a pane may be wide, as a range. A width the pane MEASURED for itself beats the one
   // the spec guessed at — the number lives in the registry in the other repo, so the deck can
@@ -148,7 +161,7 @@
       // reloading (a reload restarts the animation being judged); only when it changes.
       if (ranges[i].min !== ranges[i].max && f.dataset.askedWidth !== String(w)) {
         f.dataset.askedWidth = String(w);
-        try { f.contentWindow.postMessage({ type: 'youcoded:pane-width', width: w }, DECK.live.base); } catch (e) { /* not loaded yet */ }
+        try { f.contentWindow.postMessage({ type: 'youcoded:pane-width', width: w }, LIVE_ORIGIN); } catch (e) { /* not loaded yet */ }
       }
     });
     document.body.dataset.layout = 'live';
@@ -850,7 +863,7 @@
   // the deck cannot know a candidate's height — it lives in the other repo.
   window.addEventListener('message', e => {
     // Symmetric with the route, which only accepts theme messages from a loopback origin.
-    if (!DECK.live || e.origin !== DECK.live.base) return;
+    if (!DECK.live || e.origin !== LIVE_ORIGIN) return;
     const d = e.data;
     if (!d || d.type !== 'youcoded:pane-height' || !(d.height > 0)) return;
     const st = DECK.steps[cur];
@@ -866,7 +879,7 @@
     // right moment to correct that: the pane has MOUNTED and is listening. The iframe's own
     // `load` event is not — it fires before the app's async boot installs the listener, and
     // the message is dropped silently (tried that first, 2026-09-01).
-    try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+    try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (err) { /* gone */ }
     // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
     // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
     // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of

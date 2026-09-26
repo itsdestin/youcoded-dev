@@ -2,6 +2,7 @@
   "_comment": [
     "APPROVE — Destin looks at a change that is ALREADY BUILT and answers Yes, keep it / No, revert it / Other.",
     "Two screenshot sweeps: 'before' is master, 'after' is your branch. The rig boxes the pixels that differ.",
+    "Make the sweeps with shoot: `node scripts/shoot/shoot.mjs <screen names> --before master --after <your worktree> --out runs` (relative to this file) — its own before/after output IS the two folders `runs` below name, one screen per named `crop`. `shoot --list` shows every screen name.",
     "Copy this file beside your design notes, rename it, replace every value. Every _comment is stripped when the deck is built, so leave or delete them as you like."
   ],
   "title": "Send button — two changes to keep or revert",
@@ -13,7 +14,7 @@
   "images": "images/approve",
   "_comment_images": "images: where the cropped pictures land. It must contain this file's own name, or two decks overwrite each other's pictures.",
   "runs": {
-    "_comment": "runs: the two screenshot sweeps to compare, as folders relative to this file. Make them with run-review.sh, once per branch.",
+    "_comment": "runs: the two screenshot sweeps to compare, as folders relative to this file. `shoot --before --after --out runs` writes exactly these two subfolders itself, once, for both branches together.",
     "before": "runs/before",
     "after": "runs/after"
   },
@@ -28,8 +29,8 @@
       "_comment_surface": "surface: the part of the app this lives in, named the way he would name it.",
       "path": "The row under the message box",
       "_comment_path": "path: how he would get there — the screen, the menu route, the row.",
-      "crop": "send",
-      "_comment_crop": "crop: which region of the screenshot to show. Names come from crops.json; add your own under a top-level \"crops\" block.",
+      "crop": "chat/send-row",
+      "_comment_crop": "crop: which picture to show. A shoot SCREEN name (`shoot --list`), like this one — the whole screen, exactly as shoot photographed it, no cropping to do. A crops.json/spec-\"crops\" NAME (e.g. \"send\") instead cuts one small region out of an old-style workbench shot; see S-2.",
       "headline": "The send button now sits on its own line, clear of the model name.",
       "_comment_headline": "headline: the one sentence he reads first. What he SEES, not what you edited. 25 words at most, no code words.",
       "changed": "The button moved down into a row of its own instead of sharing the row with the model name.",

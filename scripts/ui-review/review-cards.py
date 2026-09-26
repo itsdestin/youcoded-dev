@@ -32,7 +32,8 @@ for animations, hovers, transitions and bugs that only show in motion; files fro
 `scripts/ui-review/record-pair.sh`, Before | After play side by side with a shared replay),
 and LIVE (`live` — panes of the RUNNING app he can hover, click and drag, one authored
 candidate each out of youcoded's compare/registry.tsx; `variants` makes it a pick-one, their
-absence a yes/no, and `serve` boots the worktree's workbench for it).
+absence a yes/no, and `serve` builds the worktree's practice app and serves it itself, at
+`/app/`, so the panes survive a `serve` restart).
 
 A step may instead be WORDS-ONLY ("words": true — no picture, no images folder needed): that
 is the questions deck asked before anything is drawn. A QUESTION says what exists, what goes
@@ -128,7 +129,8 @@ def main(argv):
         sub.choices[c].add_argument('--timeout', type=float, default=240, help='minutes to wait for a submit (exit 2 after)')
     sv = sub.choices['serve']
     sv.add_argument('--no-live', action='store_true',
-                    help="don't start or stop the app server for live panes (it's already running)")
+                    help="don't build or serve /app/* for live panes — for a spec whose live.base "
+                         "points at a server of its own (a test's stub), with nothing here to build")
     sv.add_argument('--no-build', action='store_true', help='serve the page as it is on disk')
     sv.add_argument('--port', type=int, default=0)
     for c in ('build', 'preview', 'serve'):
