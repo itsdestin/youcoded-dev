@@ -133,6 +133,23 @@ pipe to sudo, never to the model) and exits. When the command ends the app runs
 - Buddy compact strip (`CompactToolStrip.tsx`): shows "Enter your password in YouCoded"
   with a jump, never a field (a third surface for a secret is a third place to leak).
 
+
+### 2.7 Handshake v2 — verify, then harden, then deliver (found while building, 2026-09-26)
+
+A non-dumpable process's `/proc/<pid>/exe` and `/proc/<pid>/environ` are unreadable to other
+processes of the same user — including the app — so a helper that hardens first can't be
+verified. Order:
+1. helper connects, sends `{"v":2}` as a plain process (holds nothing yet; `env -i` and
+   `ulimit -c 0` already applied);
+2. server verifies (§3) while exe/argv/environ are readable;
+3. server sends `{"harden":true}`; helper goes non-dumpable, checks its own TracerPid, replies
+   `{"hardened":true}`;
+4. server re-checks TracerPid 0, starttime unchanged, and proves non-dumpability (opening
+   `/proc/P/environ` now fails with EACCES);
+5. only then the card is shown; the password is sent after the user confirms.
+Steps 1–4 have short timeouts; step 5 none. Residual: a tracer that attaches and detaches
+between 2 and 4 (ancestor-only under Yama scope 1, milliseconds wide) is not caught.
+
 ## 3. Verification — who may receive a password
 
 Threat: the model runs arbitrary code as the user. It may (a) plant a fake `sudo` earlier in
