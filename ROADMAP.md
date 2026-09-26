@@ -73,7 +73,7 @@ Target: `v1.3.1`
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 103 | 33 | 4 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 58 | 10 | 6 | 25 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 39 | 16 | 2 | 6 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 29 | 6 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 26 | 10 | 8 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 22 | 5 | 6 | 5 |
