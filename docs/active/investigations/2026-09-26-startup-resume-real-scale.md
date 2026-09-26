@@ -120,3 +120,23 @@ missing (cold copy only — Destin's live log shows a fetch every launch), `pacm
 real `claude` processes (the fixture's `claude` is a fake that answers instantly), and a
 real GPU at 180 Hz. The live log's 16–24 s repair vs 9 s here says the real launch
 carries roughly double this load.
+
+## Welcome screen on the real display (Destin approved, deck Q-1, 2026-09-26)
+
+`scratch/real-screen.mjs` (not kept): packaged app, Meadow Mist, idle welcome screen on
+the real display (XWayland, ANGLE on the Radeon 8060S), 5 s windows; the live app was
+running throughout. GPU chip busy = `/sys/class/drm/card1/device/gpu_busy_percent`.
+
+| condition | GPU chip busy | GPU process CPU | window CPU |
+|---|---|---|---|
+| test app not running | 6–10% | — | — |
+| welcome screen as launched | 36% | 30% | 23% |
+| mascot hidden | 8% | 0% | 2% |
+| mascot shown, all blur off | 30% | 16% | 19% |
+
+**This reverses the Xvfb attribution.** On software rendering the blur looked like the
+cost (99% → 5% with blur off); on the real GPU the blur is a minority of it and the
+mascot's never-ending motion (`rig-breathe` plus MascotRig's own sway) is most of it:
+~25 points of GPU and ~half a CPU core while nothing happens. Also disproved: drawing the
+mascot above `.chrome-glass` (z 11) changed nothing on Xvfb. Deck Q-2 was answered
+("leave it") on the blur-centred framing; reopened as `startup-perf-mascot.questions.json`.
