@@ -1,0 +1,15 @@
+{
+ "deck": "outside-edit-full-auto-review-2",
+ "started": "2026-09-23T03:05:16.873Z",
+ "submitted": "2026-09-23T03:06:23Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "note": "sorry lets actually make the \"allow outside/always allow\" blue like our other standard permission prompts",
+   "v": "other",
+   "seconds": 65,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

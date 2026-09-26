@@ -1,0 +1,23 @@
+{
+  "title": "Full Auto: outside-file edits and specialist stops",
+  "key": "outside-edit-full-auto-review",
+  "out": "outside-edit.review.html",
+  "stage": "review",
+  "theme": "fixed",
+  "themes": ["midnight"],
+  "images": "images/outside-edit.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "labels": { "before": "Your screenshot · existing prompt", "after": "Workbench · revised prompts" },
+  "crops": { "prompt": ["outside-prompt", "card", "640x175+0+0"] },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Permission prompts",
+      "path": "Full Auto → edit a file outside the working folder",
+      "crop": "prompt",
+      "headline": "Outside edits now explain the stop and offer a session-only choice.",
+      "changed": "The generic Yes/No becomes an explained stop. The default is Edit once; a separate choice confirms session-wide outside edits.",
+      "notice": "Deny replaces Skip it. Specialist stops explain themselves; the outside-edit grant never covers specialists."
+    }
+  ]
+}
