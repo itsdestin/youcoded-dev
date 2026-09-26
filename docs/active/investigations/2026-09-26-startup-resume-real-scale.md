@@ -68,3 +68,55 @@ not kept (it names real conversations); rerun the script to regenerate.
 - Spinner: say "still loading" with Retry after a few seconds (unchanged from plan).
 - Still unexplained: the "loads forever" case. Next time it happens, note the time —
   `~/.claude/desktop.log` around it is the next evidence.
+
+## The first-launch picture (profiled, 2026-09-26)
+
+`real-scale-startup.mjs --profile --real-look`: observe-only launch, 25 s, nothing poked;
+Destin's theme (Meadow Mist), wallpaper and installed plugins copied in (plugin registry
+paths rewritten into the copy). Main process CPU-profiled from its first line
+(`--inspect-brk`), the window from attach (~1.2 s), plus long tasks, frame gaps, the IPC
+heartbeat, per-process CPU and every program the app starts. Cold and warm agree.
+
+**Window (renderer) script is not the stutter.** Two long tasks per launch, both
+≤270 ms and both before the first paint (module evaluation / first render); after
+that the window's own script is ~1% busy.
+
+**The idle welcome screen redraws continuously, and with this theme each redraw is
+expensive.** Idle, averaged over 10 s by Chromium process type:
+
+| | GPU process | window | frames drawn in 24 s |
+|---|---|---|---|
+| Meadow Mist (Destin's) | **99%** of a core | 14% | 610 (≈25/s) |
+| stock theme | 1% | 7% | 1,429 (≈60/s) |
+
+On screen while idle: ONE running animation — the mascot's `rig-breathe` (smooth,
+infinite, allowlisted in `infinite-animation-allowlist.test.ts` as character motion) —
+and four `backdrop-filter: blur(22px)` surfaces, including the welcome screen's
+full-window `chrome-glass--bare` frame (1200×800, since 79fe9f737, 2026-08-27). Each
+breathing frame invalidates the area under the full-window blur, so the blur is
+recomputed every frame. Xvfb is software-rendered, so 99% overstates a real GPU; the
+SHAPE (constant work at display rate while nothing changes) is not an artifact. The
+stock theme shows the same breathing costs ~nothing without the blur. Not measured on a
+real display — that needs a window on Destin's desktop.
+
+**The main process is 100–170% busy for the first ~9 s**, then ~6%. By profile:
+- slug repair 6.2: `firstCwd` decodes a 512 KB head per transcript to a string (≈1.1 s
+  of `toString`) and JSON-parses up to 200 lines each (≈1.5–1.9 s of `extractCwd`) —
+  ~3,280 files, where the cwd is almost always in the first few lines;
+- the ~0.85 s freeze: `conversation-store.ts` `heal()` → `readdirSync` of the whole
+  Conversations dir (≈440 ms) + the conflict-name regex per entry, reached from
+  `store.get()` per session in `repairRecordsAndSpace`, plus `existsSync` per session
+  (≈100–170 ms) — all synchronous;
+- the Resume native list: `parseSessionLines`/`parseHead` ≈0.5 s per scan;
+- **a ~170 ms freeze every launch: `pacman -Qo` via `spawnSync`**
+  (`linux-install-kind.ts`), reached from the update check's `parseReleaseResponse`;
+- small synchronous spawns elsewhere: analytics `execSync` (6 ms), `nvidia-smi` probe
+  (5 ms here; unbounded on a machine where it hangs), ROCm `ldconfig` (3 ms).
+
+Programs started at launch: `git clone --depth 1` of the marketplace when its cache is
+missing (cold copy only — Destin's live log shows a fetch every launch), `pacman -Qo`.
+
+**Not in the rig, present in Destin's real launch:** GitHub sync of the Personal space,
+real `claude` processes (the fixture's `claude` is a fake that answers instantly), and a
+real GPU at 180 Hz. The live log's 16–24 s repair vs 9 s here says the real launch
+carries roughly double this load.

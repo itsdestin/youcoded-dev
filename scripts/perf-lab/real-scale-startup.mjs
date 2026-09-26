@@ -46,7 +46,8 @@ import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
 import { buildFixture } from './fixture.mjs';
 import { launchApp, startXvfb } from './launch.mjs';
-import { waitFor } from './cdp.mjs';
+import { connect, waitFor } from './cdp.mjs';
+import { findFamily } from './procs.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const SCRATCH = join(ROOT, 'scratch', 'perf-lab');
@@ -70,13 +71,16 @@ const COPY = [
 ];
 
 function parseArgs(argv) {
-  const cfg = { checkout: join(ROOT, 'youcoded'), warmBoots: 1, keep: false, out: null };
+  const cfg = { checkout: join(ROOT, 'youcoded'), warmBoots: 1, keep: false, out: null, realLook: false, profile: false, windowMs: 20_000 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--checkout') cfg.checkout = resolve(argv[++i]);
     else if (a === '--warm-boots') cfg.warmBoots = Number(argv[++i]);
     else if (a === '--keep') cfg.keep = true;
     else if (a === '--out') cfg.out = resolve(argv[++i]);
+    else if (a === '--real-look') cfg.realLook = true;
+    else if (a === '--profile') cfg.profile = true;
+    else if (a === '--window-ms') cfg.windowMs = Number(argv[++i]);
     else throw new Error(`unknown argument ${a}`);
   }
   return cfg;
@@ -105,6 +109,34 @@ function overlayRealHistory(home) {
     for (const e of readdirSync(projectsRoot, { withFileTypes: true })) {
       if (e.isDirectory()) mkdirSync(join(home, 'YouCoded', 'Projects', e.name), { recursive: true });
     }
+  }
+}
+
+// --real-look: the theme, wallpaper and installed plugins Destin actually launches
+// with, so first-launch animation and plugin-reconcile costs are his, not the
+// stock theme's. Plugin registries store ABSOLUTE install paths; the copies are
+// rewritten to point inside the fixture so a launch-time plugin update can only
+// ever write into the copy.
+const LOOK = ['.claude/youcoded-appearance.json', '.claude/wecoded-themes', '.claude/plugins'];
+const PLUGIN_REGISTRIES = ['.claude/plugins/installed_plugins.json', '.claude/plugins/known_marketplaces.json'];
+
+function overlayRealLook(home) {
+  for (const rel of LOOK) {
+    const src = join(REAL_HOME, rel);
+    if (!existsSync(src)) { log(`skip (absent): ~/${rel}`); continue; }
+    const dest = join(home, rel);
+    rmSync(dest, { recursive: true, force: true });
+    mkdirSync(dirname(dest), { recursive: true });
+    execFileSync('cp', ['-a', '--reflink=always', src, dest]);
+  }
+  for (const rel of PLUGIN_REGISTRIES) {
+    const f = join(home, rel);
+    if (!existsSync(f)) continue;
+    writeFileSync(f, readFileSync(f, 'utf8').split(`${REAL_HOME}/`).join(`${resolve(home)}/`));
+    // The fixture itself lives under the real home, so compare counts: every
+    // real-home path must now be a fixture path.
+    const t = readFileSync(f, 'utf8');
+    if (t.split(`${REAL_HOME}/`).length !== t.split(`${resolve(home)}/`).length) throw new Error(`refusing: ${f} still names the real home after rewrite`);
   }
 }
 
@@ -161,6 +193,214 @@ function heartbeatStats(samples, spawnedAt) {
 
 const SETTLE_MARKS = ['bg:slug-repair:done', 'bg:reconcile:copies-done', 'bg:materialize:done', 'bg:chatsearch-refresh:done'];
 
+// ── --profile: an observe-only boot that records the first `windowMs` of a launch ──
+//
+// WHY observe-only: the normal boot calls session.browse() the instant the list is
+// up, which is itself launch work; to see what a first launch does ON ITS OWN —
+// including what makes its animations stutter — nothing is poked until the window
+// closes. Records: a CPU profile of the main process from its first line
+// (--inspect-brk; the build's EnableNodeCliInspectArguments fuse is on), a CPU
+// profile of the window from attach, every long task (≥50 ms of script/style/
+// layout that blocks a frame), every frame gap, the IPC heartbeat, per-process CPU
+// per second, and every program the app starts.
+//
+// Frame gaps under Xvfb include software-rendering cost that a real GPU would not
+// pay; a gap that coincides with a LONG TASK is script work and would stutter on
+// any machine. That overlap is what the report calls out.
+const INSPECT_PORT = 9557;
+
+const FRAMES_JS = `(() => {
+  window.__frames = []; window.__longtasks = [];
+  try {
+    new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__longtasks.push([e.startTime, e.duration, e.name]); })
+      .observe({ type: 'longtask', buffered: true });
+  } catch (e) { window.__longtasksError = String(e); }
+  let last = performance.now();
+  const f = (now) => { window.__frames.push([last, now - last]); last = now; requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+  return performance.timeOrigin;
+})()`;
+
+async function attachMainInspector(timeoutMs = 30_000) {
+  const t0 = Date.now();
+  while (Date.now() - t0 < timeoutMs) {
+    try {
+      const list = await (await fetch(`http://127.0.0.1:${INSPECT_PORT}/json/list`)).json();
+      if (list[0]?.webSocketDebuggerUrl) return connect(list[0].webSocketDebuggerUrl);
+    } catch { /* not listening yet */ }
+    await sleep(50);
+  }
+  throw new Error(`main-process inspector never appeared on :${INSPECT_PORT}`);
+}
+
+/** Sample times on the wall clock: profile µs → epoch ms via the moment the profiler started. */
+function sampleTimes(profile, startWall) {
+  const out = []; let t = profile.startTime;
+  for (let i = 0; i < profile.samples.length; i++) { t += profile.timeDeltas[i] ?? 0; out.push(startWall + (t - profile.startTime) / 1000); }
+  return out;
+}
+
+/** Self time per function inside [fromWall, toWall] — "what was running during this stall". */
+function topInWindow(profile, times, fromWall, toWall, n = 5) {
+  const byId = new Map(profile.nodes.map((x) => [x.id, x]));
+  const self = new Map();
+  for (let i = 0; i < profile.samples.length; i++) {
+    if (times[i] < fromWall || times[i] > toWall) continue;
+    const cf = byId.get(profile.samples[i])?.callFrame; if (!cf) continue;
+    const url = (cf.url || '').replace(/^.*\/(dist|src|node_modules|app\.asar)\//, '$1/');
+    const key = `${cf.functionName || '(anonymous)'} ${url}${cf.lineNumber >= 0 ? `:${cf.lineNumber + 1}` : ''}`;
+    self.set(key, (self.get(key) ?? 0) + (profile.timeDeltas[i] ?? 0) / 1000);
+  }
+  return [...self.entries()].sort((a, b) => b[1] - a[1]).slice(0, n).map(([k, ms]) => `${Math.round(ms)}ms ${k}`);
+}
+
+/** Every descendant of `root` by parent pid — catches short-lived helpers (git,
+ *  claude, shells) whose command lines never mention a rig path. Read-only. */
+function descendants(root) {
+  const kids = new Map();
+  for (const d of readdirSync('/proc')) {
+    if (!/^\d+$/.test(d)) continue;
+    try {
+      const st = readFileSync(`/proc/${d}/stat`, 'utf8');
+      const ppid = Number(st.slice(st.lastIndexOf(')') + 2).split(' ')[1]);
+      if (!kids.has(ppid)) kids.set(ppid, []);
+      kids.get(ppid).push(Number(d));
+    } catch { /* exited */ }
+  }
+  const out = [root]; for (let i = 0; i < out.length; i++) out.push(...(kids.get(out[i]) ?? []));
+  return out;
+}
+
+function procKind(cmd) {
+  const t = /--type=([a-z-]+)/.exec(cmd); if (t) return t[1];
+  const exe = (cmd.split(' ')[0] || '').split('/').pop();
+  if (cmd.includes('linux-unpacked/youcoded') && !t) return 'main';
+  return exe || 'other';
+}
+
+async function profileBoot(build, fixture, label, windowMs) {
+  const launching = launchApp({ binary: build.binary, appDir: build.appDir, fixture, extraArgs: [`--inspect-brk=127.0.0.1:${INSPECT_PORT}`] });
+  launching.catch(() => {});
+  const mainCdp = await attachMainInspector();
+  await mainCdp.send('Profiler.enable');
+  await mainCdp.send('Profiler.setSamplingInterval', { interval: 500 });
+  await mainCdp.send('Profiler.start');
+  const mainStartWall = Date.now();
+  await mainCdp.send('Runtime.runIfWaitingForDebugger');
+  const app = await launching;
+  // Time zero is the moment the main process was let go, not the spawn: the
+  // inspector pause before it is the rig's, not the app's.
+  const zero = mainStartWall;
+  try {
+    const timeOrigin = (await app.cdp.send('Runtime.evaluate', { expression: FRAMES_JS, returnByValue: true })).result.value;
+    await app.cdp.send('Runtime.evaluate', { expression: HEARTBEAT_JS, returnByValue: true });
+    await app.cdp.send('Profiler.enable');
+    await app.cdp.send('Profiler.setSamplingInterval', { interval: 500 });
+    await app.cdp.send('Profiler.start');
+    const rendStartWall = Date.now();
+    const attachedAt = rendStartWall - zero;
+
+    // Per-process CPU every 250 ms, and every program the app starts.
+    const seen = new Map(); const cpuBuckets = new Map(); let prev = new Map();
+    const HZ = 100;
+    while (Date.now() - zero < windowMs) {
+      const now = Date.now() - zero;
+      for (const pid of new Set([...descendants(app.pid), ...findFamily(app.familyNeedles)])) {
+        let cmd = ''; let ticks = 0;
+        try { cmd = readFileSync(`/proc/${pid}/cmdline`, 'latin1').replace(/\0/g, ' ').trim(); } catch { continue; }
+        try { const st = readFileSync(`/proc/${pid}/stat`, 'utf8'); const r = st.slice(st.lastIndexOf(')') + 2).split(' '); ticks = Number(r[11]) + Number(r[12]); } catch { continue; }
+        if (!seen.has(pid)) seen.set(pid, { firstSeen: now, kind: procKind(cmd), cmd: cmd.replaceAll(fixture.home, '~').slice(0, 160) });
+        const d = ticks - (prev.get(pid) ?? ticks);
+        prev.set(pid, ticks);
+        const sec = Math.floor(now / 1000); const kind = seen.get(pid).kind;
+        const b = cpuBuckets.get(sec) ?? {}; b[kind] = (b[kind] ?? 0) + (d / HZ) * 1000; cpuBuckets.set(sec, b);
+      }
+      await sleep(250);
+    }
+
+    // Idle CPU by Chromium process TYPE over the window's last 10 s, from the
+    // browser's own process list (renderer vs GPU vs utility — /proc cmdlines
+    // cannot tell a zygote-forked renderer from its zygote).
+    const idleByType = await (async () => {
+      try {
+        const ver = await (await fetch(`http://127.0.0.1:${app.cdpPort}/json/version`)).json();
+        const b = await connect(ver.webSocketDebuggerUrl);
+        const snap = async () => (await b.send('SystemInfo.getProcessInfo')).processInfo;
+        const a0 = await snap(); await sleep(10_000); const a1 = await snap();
+        b.close();
+        const out = {};
+        // cpuTime is cumulative seconds; over 10 s, Δs × 10 = percent of one core.
+        for (const p of a1) { const q = a0.find((x) => x.id === p.id); if (q) out[p.type] = (out[p.type] ?? 0) + (p.cpuTime - q.cpuTime) * 10; }
+        for (const k of Object.keys(out)) out[k] = Math.round(out[k]);
+        return out;
+      } catch (e) { return { error: String(e) }; }
+    })();
+    // What keeps the screen repainting while idle: running animations, and the
+    // blurred surfaces that make every repaint beneath them expensive.
+    const onScreen = await (async () => {
+      const r = await app.cdp.send('Runtime.evaluate', { returnByValue: true, expression: `(() => {
+        const desc = (el) => el ? (el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\\s+/).slice(0, 3).join('.') : '')) : '?';
+        const anims = document.getAnimations().filter((a) => a.playState === 'running').map((a) => ({
+          name: a.animationName || a.id || a.constructor.name, target: desc(a.effect && a.effect.target),
+          infinite: !!(a.effect && a.effect.getTiming && a.effect.getTiming().iterations === Infinity),
+        }));
+        let blurred = 0; const blurSamples = [];
+        for (const el of document.querySelectorAll('*')) {
+          const cs = getComputedStyle(el); const f = cs.backdropFilter || cs.webkitBackdropFilter;
+          if (f && f !== 'none') { const r = el.getBoundingClientRect(); if (r.width && r.height) { blurred++; if (blurSamples.length < 8) blurSamples.push(desc(el) + ' ' + f + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); } }
+        }
+        const canvases = [...document.querySelectorAll('canvas')].map((c) => desc(c) + ' ' + c.width + 'x' + c.height);
+        return { anims, blurred, blurSamples, canvases, videos: document.querySelectorAll('video').length };
+      })()` });
+      return r.result.value;
+    })();
+    const { profile: mainProf } = await mainCdp.send('Profiler.stop');
+    const { profile: rendProf } = await app.cdp.send('Profiler.stop');
+    const r = async (e) => (await app.cdp.send('Runtime.evaluate', { expression: e, returnByValue: true })).result.value;
+    const frames = (await r('window.__frames')) ?? [];
+    const longtasks = (await r('window.__longtasks')) ?? [];
+    const hb = (await r('window.__hb')) ?? [];
+    const rendMarks = (await r(`performance.getEntriesByType('mark').map(m => [m.name, m.startTime])`)) ?? [];
+
+    const profDir = join(SCRATCH, 'profiles'); mkdirSync(profDir, { recursive: true });
+    writeFileSync(join(profDir, `${label}-main.cpuprofile`), JSON.stringify(mainProf));
+    writeFileSync(join(profDir, `${label}-renderer.cpuprofile`), JSON.stringify(rendProf));
+
+    const mainTimes = sampleTimes(mainProf, mainStartWall);
+    const rendTimes = sampleTimes(rendProf, rendStartWall);
+    const rel = (wall) => Math.round(wall - zero);
+    const tasks = longtasks.map(([st, dur]) => ({ at: rel(timeOrigin + st), ms: Math.round(dur) }));
+    const longTasks = tasks.filter((t) => t.ms >= 100).map((t) => ({
+      ...t, top: topInWindow(rendProf, rendTimes, zero + t.at, zero + t.at + t.ms),
+    }));
+    const gaps = frames.map(([st, d]) => ({ at: rel(timeOrigin + st), ms: Math.round(d) })).filter((g) => g.ms > 50);
+    const hbSlow = hb.filter(([, rtt]) => rtt > 150).map(([end, rtt]) => ({ at: rel(end - rtt), ms: rtt }));
+    const mainStalls = hbSlow.map((h) => ({ ...h, top: topInWindow(mainProf, mainTimes, zero + h.at, zero + h.at + h.ms) }));
+
+    return {
+      label, mode: 'profile', windowMs, attachedAt, idleCpuPctByType: idleByType, onScreen,
+      rendererMarks: rendMarks.map(([n, st]) => ({ name: n, at: rel(timeOrigin + st) })),
+      mainMarks: readMarks(fixture.perfLog, zero).map(({ name, at }) => ({ name, at })),
+      frames: {
+        count: frames.length,
+        over50: gaps.length, over100: gaps.filter((g) => g.ms > 100).length,
+        worst: [...gaps].sort((a, b) => b.ms - a.ms).slice(0, 20),
+      },
+      longTaskCount: tasks.length, longTaskTotalMs: tasks.reduce((n, t) => n + t.ms, 0),
+      longTasksError: await r('window.__longtasksError ?? null'),
+      longTasks,
+      mainStalls,
+      mainTop: topInWindow(mainProf, mainTimes, 0, Infinity, 30),
+      rendererTop: topInWindow(rendProf, rendTimes, 0, Infinity, 30),
+      cpuPerSecondMs: Object.fromEntries([...cpuBuckets.entries()].map(([k, v]) => [k, Object.fromEntries(Object.entries(v).map(([a, b]) => [a, Math.round(b)]))])),
+      processes: [...seen.entries()].map(([pid, v]) => ({ pid, ...v })),
+    };
+  } finally {
+    try { mainCdp.close(); } catch {}
+    await app.kill();
+  }
+}
+
 async function oneBoot(build, fixture, label) {
   const app = await launchApp({ binary: build.binary, appDir: build.appDir, fixture });
   try {
@@ -206,19 +446,21 @@ async function main() {
   const fixture = buildFixture(SCRATCH, { log });
   const t0 = Date.now();
   overlayRealHistory(fixture.home);
-  log(`copied real history into ${fixture.home} in ${Date.now() - t0} ms`);
+  if (cfg.realLook) overlayRealLook(fixture.home);
+  log(`copied real history${cfg.realLook ? ' + look' : ''} into ${fixture.home} in ${Date.now() - t0} ms`);
 
+  const boot = cfg.profile ? (b, f, l) => profileBoot(b, f, l, cfg.windowMs) : oneBoot;
   const boots = [];
   try {
-    boots.push(await oneBoot(build, fixture, 'cold'));
+    boots.push(await boot(build, fixture, 'cold'));
     for (let i = 1; i <= cfg.warmBoots; i++) {
       writeFileSync(fixture.perfLog, '');      // each boot's marks stand alone
-      boots.push(await oneBoot(build, fixture, `warm-${i}`));
+      boots.push(await boot(build, fixture, `warm-${i}`));
     }
   } finally {
     if (!cfg.keep) rmSync(fixture.home, { recursive: true, force: true });
   }
-  const report = { at: new Date().toISOString(), build: { sha: build.sha, dirty: build.dirty }, boots };
+  const report = { at: new Date().toISOString(), build: { sha: build.sha, dirty: build.dirty }, realLook: cfg.realLook, profile: cfg.profile, boots };
   const out = cfg.out ?? join(ROOT, 'perf-reports', `real-scale-startup-${report.at.replace(/[:.]/g, '-')}.json`);
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(report, null, 2));
