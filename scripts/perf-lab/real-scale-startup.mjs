@@ -217,7 +217,9 @@ const FRAMES_JS = `(() => {
       .observe({ type: 'longtask', buffered: true });
   } catch (e) { window.__longtasksError = String(e); }
   let last = performance.now();
-  const f = (now) => { window.__frames.push([last, now - last]); last = now; requestAnimationFrame(f); };
+  // Stoppable: a running requestAnimationFrame loop makes the page draw every
+  // frame by itself, which is exactly what the idle measurement must not see.
+  const f = (now) => { if (window.__stopFrames) return; window.__frames.push([last, now - last]); last = now; requestAnimationFrame(f); };
   requestAnimationFrame(f);
   return performance.timeOrigin;
 })()`;
@@ -322,6 +324,10 @@ async function profileBoot(build, fixture, label, windowMs) {
     // Idle CPU by Chromium process TYPE over the window's last 10 s, from the
     // browser's own process list (renderer vs GPU vs utility — /proc cmdlines
     // cannot tell a zygote-forked renderer from its zygote).
+    // WHY stop the frame sampler first (2026-09-26): its rAF loop forces a
+    // repaint every frame, so on a blurred theme it inflated "idle" GPU cost
+    // (caught when a no-sampler rerun disagreed). Frames are read after.
+    await app.cdp.send('Runtime.evaluate', { expression: 'window.__stopFrames = true', returnByValue: true });
     const idleByType = await (async () => {
       try {
         const ver = await (await fetch(`http://127.0.0.1:${app.cdpPort}/json/version`)).json();
