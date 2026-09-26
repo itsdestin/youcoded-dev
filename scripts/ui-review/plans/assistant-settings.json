@@ -26,7 +26,7 @@
   },
   {
    "name": "assistant-claude",
-   "_why": "'Claude Code' is not a nav page — ClaudeCodeBlock/ChatGptBlock/OpenRouterBlock are three provider cards stacked on ONE page, 'Cloud providers' (pages.tsx `id: 'cloud'`). This shot used to click a 'Claude Code' nav button that never existed (found MISSED in the 2026-09-23 sweep) — fixed 2026-09-24 (capture repair) to open Cloud providers and scroll to the Claude Code card.",
+   "_why": "'Claude Code' is not a nav page \u2014 ClaudeCodeBlock/ChatGptBlock/OpenRouterBlock are three provider cards stacked on ONE page, 'Cloud providers' (pages.tsx `id: 'cloud'`). This shot used to click a 'Claude Code' nav button that never existed (found MISSED in the 2026-09-23 sweep) \u2014 fixed 2026-09-24 (capture repair) to open Cloud providers and scroll to the Claude Code card.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -47,7 +47,7 @@
   },
   {
    "name": "assistant-claude-skip-on",
-   "_why": "Repurposed 2026-09-24 (capture repair): the old target (Claude Code page → Skip Permissions toggle → Advanced → 'Auto-approve all') is gone on two counts — there is no 'Claude Code' nav page, and SkipPermissionsSection.tsx's own header comment says the whole 'Advanced' protection-override list (Auto-approve all, config files, protected directories) was REMOVED, not moved. What replaced it: the Permissions page's 'Enable Skip Permissions Mode?' toggle opens a stacked confirm dialog ('Skip Permissions Mode', destructive) — that is now the closest real surface to picture.",
+   "_why": "Repurposed 2026-09-24 (capture repair): the old target (Claude Code page \u2192 Skip Permissions toggle \u2192 Advanced \u2192 'Auto-approve all') is gone on two counts \u2014 there is no 'Claude Code' nav page, and SkipPermissionsSection.tsx's own header comment says the whole 'Advanced' protection-override list (Auto-approve all, config files, protected directories) was REMOVED, not moved. What replaced it: the Permissions page's 'Enable Skip Permissions Mode?' toggle opens a stacked confirm dialog ('Skip Permissions Mode', destructive) \u2014 that is now the closest real surface to picture.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -66,7 +66,7 @@
   },
   {
    "name": "assistant-chatgpt",
-   "_why": "'ChatGPT' is not a nav page — see assistant-claude's note. Fixed 2026-09-24 to open Cloud providers and scroll to the ChatGPT card.",
+   "_why": "'ChatGPT' is not a nav page \u2014 see assistant-claude's note. Fixed 2026-09-24 to open Cloud providers and scroll to the ChatGPT card.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -88,7 +88,7 @@
   {
    "name": "assistant-chatgpt-blocked",
    "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chatgpt=blocked",
-   "_why": "Same nav fix as assistant-chatgpt. Also fixed the attention-dot expect: AssistantSettings.tsx's useAttention keys the warning dot by PAGE, not per-provider (`${p.label} needs attention`) — there is no 'ChatGPT needs attention' element any more, only 'Cloud providers needs attention' on the page/nav-row. Found live-testing this repair (2026-09-24): the old expect still failed even after the nav fix, and the screenshot itself was already correct.",
+   "_why": "Same nav fix as assistant-chatgpt. Also fixed the attention-dot expect: AssistantSettings.tsx's useAttention keys the warning dot by PAGE, not per-provider (`${p.label} needs attention`) \u2014 there is no 'ChatGPT needs attention' element any more, only 'Cloud providers needs attention' on the page/nav-row. Found live-testing this repair (2026-09-24): the old expect still failed even after the nav fix, and the screenshot itself was already correct.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -115,7 +115,7 @@
   },
   {
    "name": "assistant-openrouter",
-   "_why": "'OpenRouter' is not a nav page — see assistant-claude's note. Fixed 2026-09-24 to open Cloud providers and scroll to the OpenRouter card.",
+   "_why": "'OpenRouter' is not a nav page \u2014 see assistant-claude's note. Fixed 2026-09-24 to open Cloud providers and scroll to the OpenRouter card.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -196,7 +196,7 @@
   },
   {
    "name": "assistant-search",
-   "_why": "'Web search' is not its own nav page (round 1, P-10: 'too empty to be its own thing') — SearchProvidersBlock renders as a card at the bottom of General (pages.tsx GeneralPage). This shot used to click a 'Web search' nav button that never existed, which silently no-op'd and left the shot on whatever page General already was — fixed 2026-09-24 (capture repair) to open General (the default landing page) and scroll to the card.",
+   "_why": "'Web search' is not its own nav page (round 1, P-10: 'too empty to be its own thing') \u2014 SearchProvidersBlock renders as a card at the bottom of General (pages.tsx GeneralPage). This shot used to click a 'Web search' nav button that never existed, which silently no-op'd and left the shot on whatever page General already was \u2014 fixed 2026-09-24 (capture repair) to open General (the default landing page) and scroll to the card.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -227,7 +227,7 @@
   },
   {
    "name": "assistant-claude-info",
-   "_why": "'Claude Code' is not a nav page — see assistant-claude's note. Fixed 2026-09-24 to open Cloud providers first.",
+   "_why": "'Claude Code' is not a nav page \u2014 see assistant-claude's note. Fixed 2026-09-24 to open Cloud providers first.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -246,7 +246,7 @@
   },
   {
    "name": "assistant-prefs",
-   "_why": "'Claude Code' is not a nav page — see assistant-claude's note. The Preferences button lives in the Claude Code card on Cloud providers, only when signed in.",
+   "_why": "'Claude Code' is not a nav page \u2014 see assistant-claude's note. The Preferences button lives in the Claude Code card on Cloud providers, only when signed in.",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -265,7 +265,7 @@
   },
   {
    "name": "assistant-search-addkey",
-   "_why": "Same fix as assistant-search — Web search lives inside General, not its own nav page (fixed 2026-09-24, capture repair).",
+   "_why": "Same fix as assistant-search \u2014 Web search lives inside General, not its own nav page (fixed 2026-09-24, capture repair).",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -286,7 +286,7 @@
   },
   {
    "name": "assistant-permissions-link",
-   "_why": "OBSOLETE TARGET (found 2026-09-24, capture repair): grepped the whole renderer — no 'Claude Code page' button/link exists anywhere in source any more (PermissionsSection.tsx has no cross-page link back to Cloud providers). The shot now just confirms the Permissions page itself, same as assistant-permissions; kept as a separate name rather than deleted per the capture-repair brief ('list, don't delete').",
+   "_why": "OBSOLETE TARGET (found 2026-09-24, capture repair): grepped the whole renderer \u2014 no 'Claude Code page' button/link exists anywhere in source any more (PermissionsSection.tsx has no cross-page link back to Cloud providers). The shot now just confirms the Permissions page itself, same as assistant-permissions; kept as a separate name rather than deleted per the capture-repair brief ('list, don't delete').",
    "actions": [
     {
      "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
@@ -298,6 +298,29 @@
     }
    ],
    "expect": "js:document.querySelector('[role=dialog] nav button[aria-current=page]')?.textContent.trim()==='Permissions'"
+  },
+  {
+   "name": "assistant-claude-skip-ticked",
+   "_why": "Added 2026-09-25 (fix batch 2): the same confirm popup with its 'I understand' line ticked, to show the lit state of the new consent row.",
+   "actions": [
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Assistant settings'))",
+     "settle": 900
+    },
+    {
+     "click": "js:[...document.querySelectorAll('[role=dialog] nav button')].find(b=>b.textContent.trim()==='Permissions')",
+     "settle": 900
+    },
+    {
+     "click": "[role=dialog] [aria-label='Enable Skip Permissions Mode?']",
+     "settle": 700
+    },
+    {
+     "click": "[role=dialog][aria-label='Skip Permissions Mode'] [role=checkbox]",
+     "settle": 500
+    }
+   ],
+   "expect": "[role=dialog][aria-label='Skip Permissions Mode'] [role=checkbox][aria-checked=true]"
   }
  ]
 }
