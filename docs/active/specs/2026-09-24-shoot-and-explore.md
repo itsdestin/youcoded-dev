@@ -254,7 +254,17 @@ Replaces: plan-writing in `tester-kit.md`, `ui-probe.mjs`, `drag-probe.mjs`,
 - **Drift guard + fixes (2026-09-26)** — every `<Dialog>` must carry `screen=` or
   `noScreen="<why>"` (`shoot-screens.test.ts`); 22 named, 2 noScreen, `--check` 186/186. The
   five bugs `explore` and its trial found are fixed (youcoded `d335c8453`).
-- Phases 5–6 not started.
+- **Escape (2026-09-26)** — ten dialogs mishandled Escape; `<Dialog>` now registers it
+  (youcoded `14c5673dc`), and `shoot --check` presses Escape on every layered screen.
+- **Phase 5 done (2026-09-26)** — revised with Destin: journeys run in `verify.sh` (on renderer
+  or journey changes), because a manual check goes stale; they live in the app repo
+  (`desktop/tests/journeys/`). Seven: first-conversation, permission-approve, change-theme,
+  switch-model, resume-conversation, marketplace-install, open-project; ~8 s together; each
+  seen to fail when its behaviour breaks (switch-model with the label fix reverted). Shared
+  driver (`scripts/shoot/driver.mjs`) for `explore` and `journeys.mjs`; `expect` steps.
+  Practice-app fixes found on the way: a new session now leaves "Initializing"; a typed message
+  is recorded before the reply (replies had drawn ABOVE the message they answered).
+- Phase 6 not started.
 
 ## Order of work
 

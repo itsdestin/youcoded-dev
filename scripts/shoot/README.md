@@ -79,4 +79,30 @@ guide is `scripts/ui-review/tester-kit.md`.
   installed app never runs run-dev.sh, so it can never be attached to. `back` and `save` are
   refused there (a real app cannot be reset).
 
+# journeys — the core paths, replayed on every renderer change
+
+```
+node scripts/shoot/journeys.mjs                 all of them (~8 s; scripts/verify.sh runs it)
+node scripts/shoot/journeys.mjs switch-model    one
+```
+
+A journey is a saved `explore` session: clicks and keys found by role and label, then
+`expect` checks on the result (`explore expect "Got it."`, `--not`, `--screen <name>`,
+`--control N`). They live in the app repo, `desktop/tests/journeys/*.json`, so a change that
+renames a button fixes the journey in the same commit. A failure names the step, what it looked
+for, what WAS on screen, and a picture.
+
+**Why these seven** (2026-09-26): the paths that would make the app useless if broken, each
+ending in a check a user would make — first conversation (create, send, the reply lands under
+the message), a permission ask approved twice, theme change, model switch (status bar AND All
+Sessions), resume a past conversation, marketplace install, open a project. `shoot` opens
+screens directly, so only these notice when the path TO a screen breaks.
+
+**Why in `verify.sh`, not on request:** a check nobody runs goes stale. Adding one: record it
+with `explore` (start where a user starts, not with `--screen`), end with `expect`, `save`,
+then run `journeys.mjs <name>` three times.
+
+`shoot --check` also presses Escape once on every screen with something open and fails unless
+exactly the top layer closed.
+
 Spec: `docs/active/specs/2026-09-24-shoot-and-explore.md`. Tests: `node --test scripts/shoot/tests/*.test.mjs`.

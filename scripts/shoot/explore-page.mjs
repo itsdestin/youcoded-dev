@@ -76,6 +76,24 @@ export function listControls({ all = false } = {}) {
     return s;
   };
 
+  const scrollable = (e) => {
+    const r = e.getBoundingClientRect();
+    for (let p = e.parentElement; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.position === 'fixed' && p !== document.body) {
+        // Inside a fixed layer: reachable only if that layer is on screen.
+        const f = p.getBoundingClientRect();
+        if (f.bottom <= 0 || f.right <= 0 || f.top >= innerHeight || f.left >= innerWidth) return false;
+      }
+      if (!/(auto|scroll)/.test(cs.overflowY + cs.overflowX) || (p.scrollHeight <= p.clientHeight + 1 && p.scrollWidth <= p.clientWidth + 1)) continue;
+      const pr = p.getBoundingClientRect();
+      if (pr.bottom <= 0 || pr.right <= 0 || pr.top >= innerHeight || pr.left >= innerWidth) return false;
+      return r.top >= pr.top - p.scrollTop - 1 && r.bottom <= pr.top - p.scrollTop + p.scrollHeight + 1
+        && r.left >= pr.left - p.scrollLeft - 1 && r.right <= pr.left - p.scrollLeft + p.scrollWidth + 1;
+    }
+    const d = document.scrollingElement;
+    return !!d && (d.scrollHeight > innerHeight + 1 || d.scrollWidth > innerWidth + 1) && r.left > -1 && r.right < d.scrollWidth + 1;
+  };
   let covered = 0; let offscreen = 0;
   const rows = [];
   for (const e of els) {
@@ -84,6 +102,10 @@ export function listControls({ all = false } = {}) {
     const cs = getComputedStyle(e);
     if (cs.visibility === 'hidden' || +cs.opacity === 0 && !/^(INPUT)$/.test(e.tagName)) continue;
     const onScreen = r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+    // Off screen counts only when a person could scroll to it: inside a scrolling area that
+    // is itself on screen. A closed drawer parked off the edge (Settings at x −160, the
+    // skills drawer below the window) is not "out of view", it is not there.
+    if (!onScreen && !scrollable(e)) continue;
     if (!onScreen) { offscreen++; if (!all) continue; }
     let off = false;
     if (onScreen) {

@@ -49,6 +49,7 @@ node scripts/shoot/explore.mjs stop                      # when you are done
 | `drag N to M` | Presses on N, moves to M with hover on the way, lets go. |
 | `scroll down [3] [over N]` · `scroll up …` | The mouse wheel: a number is how many notches (default 1); `over N` scrolls the area under control N instead of the middle of the window. |
 | `back` | Undoes your last step (the app starts over and replays the others). |
+| `expect "words"` · `expect --not "words"` | Checks that some words are (or are no longer) on screen, waiting up to 10 s. Handy to confirm a result before you report it. |
 | `stack` | Just the layers and focus, no pictures. |
 | `errors` | Every error the page logged this session. |
 | `screens` · `open <name>` | The app's named screens, and a jump straight to one — only when your briefing tells you to use it; a new user gets there by clicking. |

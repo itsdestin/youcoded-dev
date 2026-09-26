@@ -256,6 +256,7 @@ if [[ $DRY -eq 1 ]]; then
   fi
   echo "  bash $ROOT/scripts/ast-grep/check.sh $DESKTOP/src"
   printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' && echo "  node $ROOT/scripts/shoot/shoot.mjs --check (renderer changed)"
+  printf '%s\n' "${CHANGED[@]:-}" | grep -qE '^desktop/(src/renderer/|tests/journeys/)' && echo "  node $ROOT/scripts/shoot/journeys.mjs (renderer or journeys changed)"
   exit 0
 fi
 
@@ -312,9 +313,20 @@ if [[ -f "$DESKTOP/src/renderer/dev/workbench/screens/index.ts" ]] \
   start screens "screens open (shoot --check)" node "$ROOT/scripts/shoot/shoot.mjs" --check --worktree "$CHECKOUT" --out "$LOGDIR/shoot"
 fi
 
+# Journeys: the saved paths through the app (desktop/tests/journeys/) — first conversation,
+# a permission ask, theme, model switch, resume, marketplace install, project — each ending in
+# a check of the result. WHY in verify and not "on request": a check nobody runs goes stale
+# (Destin, 2026-09-26, choosing this over a manual list). ~8 s. A renamed button fails one with
+# the step and label named; fix that line in the journey in the same change.
+if [[ -d "$DESKTOP/tests/journeys" ]] \
+  && printf '%s\n' "${CHANGED[@]:-}" | grep -qE '^desktop/(src/renderer/|tests/journeys/)' \
+  && command -v google-chrome-stable >/dev/null 2>&1; then
+  start journeys "journeys (click paths)" node "$ROOT/scripts/shoot/journeys.mjs" --worktree "$CHECKOUT"
+fi
+
 FAILED=0
 FAILED_KEYS=()
-for key in types testtypes tests knip lint design invariants screens; do
+for key in types testtypes tests knip lint design invariants screens journeys; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then

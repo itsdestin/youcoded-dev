@@ -10,7 +10,7 @@
 //   shoot settings/* --before master --after <wt>     side by side, each side from its own checkout
 //   shoot --list                                      every screen name, with tags
 //   shoot --all                                       everything
-//   shoot --check                                     open every screen once (one theme); exit 1 on any failure
+//   shoot --check                                     open every screen once (one theme), press Escape once; exit 1 on any failure
 //
 // Options: --worktree <name|branch|path> (default: the checkout this script sits in, else
 // the main one) · --themes a,b | all · --width N [--height N] · --contrast · --out <dir>
@@ -23,6 +23,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
+import { inPage, listLayers } from './explore-page.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -174,6 +175,21 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     const small = await tab.png({ clip: { x: 0, y: 0, width: w, height: h, scale: THUMB_W / w } });
     r.thumb = await tab.evaluate(THUMB(small.toString('base64')), 10_000).catch(() => null);
     if (opt.contrast) r.contrastFails = JSON.parse(await tab.evaluate(CONTRAST_PROBE, 15_000));
+    // --check also presses Escape once: exactly the top layer must close — not nothing, not
+    // the panel under it, not two at once. WHY (2026-09-26): ten dialogs got this wrong
+    // before the shell took it over, and nothing noticed until a sweep like this one.
+    if (opt.check) {
+      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip').map((l) => `${l.kind} "${l.name}"`);
+      const before = await layersNow();
+      if (before.length) {
+        await tab.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+        await tab.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+        await tab.still(2000);
+        const after = await layersNow();
+        const want = before.slice(1).join(' › ');
+        if (after.join(' › ') !== want) throw new Error(`Escape should close ${before[0]} only; open before: ${before.join(' › ')} — after: ${after.join(' › ') || 'nothing'}`);
+      }
+    }
     r.ok = true;
   } catch (e) { r.reason = e.message; }
   r.errors = tab.takeErrors(); r.ms = Date.now() - t0;

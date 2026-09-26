@@ -117,3 +117,24 @@ test('start, click, back, stop on the practice app', { skip: !canRun && 'needs C
     assert.match(run('stop').stdout, /stopped/);
   }
 });
+
+// ─── Saved journeys ─────────────────────────────────────────────────────────
+test('journeys: a passing path passes; a missing button fails naming the step and what is on screen', { skip: !canRun && 'needs Chrome and the app\'s node_modules' }, () => {
+  const dir = mkdtempSync(join(tmpdir(), 'journeys-test-'));
+  try {
+    writeFileSync(join(dir, 'good.json'), JSON.stringify({ start: { scenario: 'default' }, steps: [
+      { do: 'click', target: { role: 'button', label: 'Settings' } },
+      { do: 'expect', screen: 'settings' },
+      { do: 'key', key: 'Escape' },
+      { do: 'expect', screen: 'settings', not: true },
+    ] }));
+    writeFileSync(join(dir, 'bad.json'), JSON.stringify({ start: { scenario: 'default' }, steps: [
+      { do: 'click', target: { role: 'button', label: 'No Such Button' } },
+    ] }));
+    const r = spawnSync(process.execPath, [resolve(HERE, '..', 'journeys.mjs')], { encoding: 'utf8', timeout: 180_000, env: { ...process.env, JOURNEYS_DIR: dir } });
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stdout, /journeys: 1\/2 passed/);
+    assert.match(r.stdout, /✗ bad — step 1 of 1: click button "No Such Button"/);
+    assert.match(r.stdout, /On screen: .*button "Settings"/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
