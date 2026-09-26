@@ -125,36 +125,50 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
   mammoth drops comments.xml, so reading/writing it is build work. Excel: a comment belongs to
   a CELL (`DocComment.cell`) — Office-red corner triangle (fixed colour: the sheet paper is
   always light), same hover card / click → pane, right-click a cell → Ask about this / Add
-  comment, card header shows the cell ("· C4"); fixture `reports/q3-sales-by-rep.xlsx`.
+  comment, card shows the cell under the name ("C4", or "By rep · B4" in a multi-tab
+  workbook — `DocComment.sheet`); fixture `reports/q3-sales-by-rep.xlsx` is a two-tab workbook
+  (`fixtures/sheets/make-by-rep.mjs`).
   Colleague authors are `person:<name>` ("Priya Shah"). Screenshots:
   `docs/active/design/2026-09-24-doc-comments/shots-word-excel/` (untracked).
 - Phone: markdown/Word/Excel all show the marker rail; a tap opens that comment's sheet (now
   portaled above the composer); no hover card on touch; a long-press selection opens the menu
   after it settles. Checked at 390px in headless Chrome only — not on a real Android WebView,
   where the native selection toolbar may also appear.
-- Still not polished: the Ask-Your-Assistant sent
-  message, code-file comments, Meadow Mist, the Projects screen (no floating buttons → no Ask
-  Your Assistant). Halftone checked for Word + Excel only.
-- Spreadsheet cell comments name the cell only ("C4"), not the sheet; a comment on another
-  sheet tab is listed but has no mark until that tab is shown.
+- **Polish pass (2026-09-26)**, screenshots in `docs/active/design/2026-09-24-doc-comments/shots-polish/`
+  (untracked):
+  - Ask Your Assistant's sent message: plain lead + one chip per comment, one per line
+    (grouped at render in UserMessage — the sent text is flattened for the terminal).
+  - Code files: the same panel (`comments/CommentsPaneFrame.tsx`, shared); cards and code
+    chips light their LINES via CodeMirror decorations (`artifact-views/cm/ref-line-highlight.ts`).
+  - Meadow Mist + Halftone checked on every surface; fixed `<mark>` text going black on dark
+    themes.
+  - Projects screen: Comments is a header tool left of Edit; Ask Your Assistant floats in the
+    panel and, since that screen has no composer, closes Projects and sends in the current
+    chat (**which chat** is an open question for Destin — the file's project may not be the
+    chat's).
+  - Sheet tabs: clicking a card/chip for a comment on another tab switches to it
+    (`comments/sheet-reveal.ts`).
+- The floating Comments pill's count is ALL comments incl. resolved ("Comments 4" with two
+  open) — unchanged; worth asking whether it should count open ones.
 - Quote matching is first-occurrence, whitespace-insensitive; a repeated phrase lands on
   the first copy.
-- Mockup-only code to delete once settled: `comments/pane-variant.ts` and the four losing
-  framings, `CommentsModeToggle` (Projects-screen fallback row), the "Resolve as Claude"
-  style stand-ins in the seed data. SessionDrawer.tsx's line budget was raised to 1591 for
-  this mockup — lower it when that code goes.
+- Mockup-only code deleted 2026-09-26: `pane-variant.ts` + the four losing framings,
+  `CommentsModeToggle`. No "Resolve as Claude" stand-in remains (the seeds' assistant-resolved
+  comments stand for what the assistant's tools will do, and stay). What remains mock: the
+  in-memory store and its seeds.
 
 ## What remains
 
 1. ~~Decisions from Destin~~ — answered above.
-2. ~~Design the new surfaces~~ — Word, Excel and phone mocked (see Known gaps). Then **polish** the less-reviewed parts above; UI review deck; contract.
+2. ~~Design the new surfaces~~ and ~~polish~~ (2026-09-26, see Known gaps). Next: UI review deck; contract.
 3. **Build** — persistence with history in Web Annotation shape (account-ready ids);
    re-anchoring after edits with a "detached" state; assistant read/reply/resolve tools
    (native + MCP, desktop and Android), including repoint; Word (.docx comments.xml + range
    markers) and Excel (cell notes) read/write with backup; the Ask-about and Ask-Your-Assistant message
    formats sent to the assistant.
 4. **Review** — code reviewer, grader, acceptance deck (no UX tester, see Process decisions).
-5. **Cleanup** — delete mockup-only code; retire branches/worktrees `comments-mock-b/-c` and
-   `-a-v1`. (PR #263 closed 2026-09-24.)
+5. **Cleanup** — retire branches/worktrees `comments-mock-b`, `comments-mock-c` (both with
+   worktrees under `worktrees/sessions/`) and `comments-mock-a-v1` (branch only), local and
+   remote — ask Destin first. (Mockup-only code deleted; PR #263 closed 2026-09-24.)
 6. **Later, separate projects** — comments syncing across devices; sharing documents with
    other people through the account (roadmap: other-features → accounts).
