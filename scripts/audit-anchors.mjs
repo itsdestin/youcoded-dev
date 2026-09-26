@@ -316,6 +316,20 @@ export function harvestMapPaths(text) {
   return [...paths];
 }
 
+// Workspace scripts named in LIVE instructions — skills, slash commands, CLAUDE.md — must
+// exist. WHY (2026-09-26): the /ui-review skill still sent sessions to a deleted
+// `scripts/ui-review/run-review.sh` after the sweep was retired; MAP paths were checked, the
+// skill that a session actually follows was not, and only a hand search caught it. A line
+// that says the script is retired/deleted/archived is history, not an instruction.
+export function harvestScriptPaths(text) {
+  const paths = new Set();
+  for (const line of text.split(/\r?\n/)) {
+    if (/\b(retired|deleted|archived|removed)\b/i.test(line)) continue;
+    for (const m of line.matchAll(/(?<![\w./-])(scripts\/[\w./-]+\.(?:sh|mjs|js|py))\b/g)) paths.add(m[1]);
+  }
+  return [...paths];
+}
+
 // Just enough glob for the rules' paths: frontmatter: ** crosses slashes, * doesn't.
 // WHY `**/` is "zero or more folders" (2026-09-16): it used to compile to `.*/`, which
 // needs at least one folder in front — so `**/docs/*/plans/**` could never match the
@@ -852,6 +866,21 @@ function main() {
     result.mapPaths.missing.push('docs/MAP.md (the map itself is missing)');
   }
 
+  // 3b. scripts named in skills, slash commands and CLAUDE.md must exist
+  result.scriptPaths = { total: 0, missing: [] };
+  {
+    const sources = [path.join(root, 'CLAUDE.md')];
+    const walk = (dir) => { if (!fs.existsSync(dir)) return; for (const e of fs.readdirSync(dir, { withFileTypes: true })) { const f = path.join(dir, e.name); if (e.isDirectory()) walk(f); else if (f.endsWith('.md')) sources.push(f); } };
+    walk(path.join(root, '.claude', 'skills')); walk(path.join(root, '.claude', 'commands'));
+    for (const file of sources) {
+      if (!fs.existsSync(file)) continue;
+      for (const p of harvestScriptPaths(fs.readFileSync(file, 'utf8'))) {
+        result.scriptPaths.total++;
+        if (!fs.existsSync(path.join(root, p))) result.scriptPaths.missing.push(`${path.relative(root, file)}: ${p}`);
+      }
+    }
+  }
+
   // 4. every rule glob must still match >=1 tracked file (catches renamed dirs)
   const tracked = listTrackedFiles(root);
   for (const rule of rules) {
@@ -933,6 +962,7 @@ function main() {
   }
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
+    && !result.scriptPaths.missing.length
     && !result.ruleGlobs.failed.length && !result.budgets.violations.length
     && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length
     && !(result.strayRules || []).length && !(result.shadowedDocs || []).length;
@@ -966,6 +996,7 @@ function printHuman(r, root = process.cwd()) {
   };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
+  dump('scripts named in skills/commands/CLAUDE.md that do not exist', r.scriptPaths?.missing ?? []);
   warn('MAP paths in a repo that is not on disk (unverifiable here, not drift)', r.mapPaths.skipped || []);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)

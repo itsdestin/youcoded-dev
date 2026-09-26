@@ -5,59 +5,52 @@
 #   docs/gallery/        gallery stills as WebP (shot.mjs + magick)
 #   docs/media/embed-*   the demo window's per-theme stills, shot from the built embed (embed-posters.mjs)
 # Run before every release so the site can never drift from the app again.
-# Usage: bash scripts/ui-review/site-assets.sh <worktree-or-path>
+# Usage: bash scripts/ui-review/site-assets.sh <worktree-or-path> [--out <dir>]
+#   --out <dir> (or SITE_ASSETS_OUT=<dir>): write media/gallery/site somewhere other
+#   than <checkout>/docs — for a test run against scratch/. NEVER point this at
+#   youcoded/docs/media, docs/gallery or docs/site from a worktree other than the
+#   one you mean to release: those are committed site assets.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; WS="$(cd "$HERE/../.." && pwd)"
-TARGET="${1:?worktree name or path}"
+TARGET="${1:?worktree name or path}"; shift || true
+OUT_OVERRIDE="${SITE_ASSETS_OUT:-}"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --out) OUT_OVERRIDE="${2:?--out needs a directory}"; shift 2 ;;
+    *) echo "[site-assets] unknown argument: $1" >&2; exit 2 ;;
+  esac
+done
 if [[ -d "$WS/worktrees/$TARGET/desktop" ]]; then TDIR="$WS/worktrees/$TARGET"
 elif [[ -d "$TARGET/desktop" ]]; then TDIR="$(cd "$TARGET" && pwd)"
 elif [[ -d "$WS/youcoded/desktop" ]]; then TDIR="$WS/youcoded"
 else echo "error: no checkout found for '$TARGET' (expected a path containing desktop/, or a worktree under $WS/worktrees/)" >&2; exit 1
 fi
-# Port derives from the offset the same way run-workbench.sh does (5173 + offset),
-# so a caller CAN pass a different YOUCODED_PORT_OFFSET when 5473 is taken.
-export YOUCODED_PORT_OFFSET="${YOUCODED_PORT_OFFSET:-300}" VITE_NO_WATCH=1
-export WB_PORT=$((5173 + YOUCODED_PORT_OFFSET))
-OUT="$TDIR/docs"
+OUT="${OUT_OVERRIDE:-$TDIR/docs}"
 T="${TMPDIR:-/tmp}"; mkdir -p "$T"
-WB_LOG="$T/site-assets-wb.log"
 TMP="$(mktemp -d "$T/site-gallery-XXXX")"
-# Trap FIRST, before anything is spawned: a Ctrl-C during the boot wait must
-# still kill a server this script started (never one it merely found running)
-# and drop the gallery scratch dir.
-STARTED=0
-trap '[ "$STARTED" = 1 ] && pkill -f "[v]ite --port $WB_PORT" || true; rm -rf "$TMP"' EXIT
+# Trap FIRST, before anything is spawned: a Ctrl-C during the build must still
+# drop the gallery scratch dir. record.mjs/shot.mjs/embed-posters.mjs each clean
+# up their own browsers and build cache on exit — nothing long-lived is started
+# here any more (see the note below), so there is nothing else to stop.
+trap 'rm -rf "$TMP"' EXIT
 
-# 1. workbench (reuse if already up on 5473 from the same tree, else boot)
-if ! curl -sf "http://127.0.0.1:$WB_PORT/" >/dev/null; then
-  STARTED=1
-  (cd "$TDIR" && nohup bash "$WS/scripts/run-workbench.sh" "$TDIR" >"$WB_LOG" 2>&1 &)
-  for i in $(seq 1 60); do curl -sf "http://127.0.0.1:$WB_PORT/" >/dev/null && break; sleep 1; done
-fi
-# Whatever answers on the port MUST be serving the worktree we're regenerating
-# assets for. A stale or foreign server (left running from another tree, or from
-# a previous session) would produce perfectly "verified" assets of the WRONG
-# code — same guard run-review.sh uses (run-review.sh:68-74).
-# `|| true`: under pipefail a grep with no match would abort the script here
-# SILENTLY — before the message below could say what went wrong.
-VITE_PID="$(ss -ltnp "sport = :$WB_PORT" 2>/dev/null | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2 || true)"
-if [[ -z "$VITE_PID" ]]; then
-  echo "[site-assets] nothing is listening on :$WB_PORT — the workbench failed to boot; see $WB_LOG" >&2
-  exit 1
-fi
-VITE_CWD="$(readlink "/proc/${VITE_PID:-0}/cwd" 2>/dev/null || true)"
-if [[ "$VITE_CWD" != "$TDIR/desktop" ]]; then
-  echo "[site-assets] REFUSING: port $WB_PORT is served from '${VITE_CWD:-nothing}', not '$TDIR/desktop'. Stop that server or pass a different YOUCODED_PORT_OFFSET." >&2
-  exit 1
-fi
-echo "[site-assets] workbench :$WB_PORT serves $VITE_CWD (pid $VITE_PID)"
-node "$WS/scripts/workbench-boot-check.mjs" "$WB_PORT"
+# 1. build once, up front — record.mjs and shot.mjs each build+serve $TDIR
+# themselves through scripts/shoot/engine.mjs (WORKTREE=$TDIR below), and the
+# engine caches the build keyed to the checkout, so this is just to fail fast
+# and print the one-time build cost instead of hiding it inside the first clip.
+#
+# This step used to boot a workbench dev server on a FIXED port (:5473, offset
+# 300) and refuse to run if that port already served a different tree — a real
+# risk when a foreign or stale server was left running. The engine gives every
+# run its own free port from its own build, so there is no shared server left
+# to be "someone else's": that refusal is moot and has no replacement here.
+echo "[site-assets] building $TDIR through the engine (cached after the first run)"
+node "$WS/scripts/shoot/build.mjs" "$TDIR" >/dev/null
 
 # 2. loops — written OUTSIDE docs/site on purpose: `npm run build:site` runs with
 # --emptyOutDir and wipes docs/site wholesale (it deleted nine freshly recorded
 # loops on 2026-08-27). docs/media is never touched by the embed build.
 mkdir -p "$OUT/media"
-i=0
 # <file the page plays>:<scene that records it>. WHY a map: the 2026-09-03 redesign renamed five
 # of the page's clips to landing-* and recorded the sync pair from the -mirror scenes (one take at
 # two sizes), but this loop kept writing the old names — a release run refreshed four files the page
@@ -68,12 +61,12 @@ for pair in landing-row1-any-ai:row1-any-ai landing-row2-artifact-edit:row2-arti
             row6-yours:row6-yours landing-row7-play:row7-play; do
   # (row8-builders left the map on 2026-09-11: the "For builders" slide was removed from the page, youcoded c11db7f0)
   name="${pair%%:*}"; scene="${pair##*:}"
-  CDP_PORT=$((10320 + i)) node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$name"; i=$((i+1))
+  WORKTREE="$TDIR" node "$HERE/record.mjs" "$HERE/scenes/$scene.json" "$OUT/media/$name"
 done
 
 # 3. gallery
 for theme in midnight meadow-mist halftone-dimension creme light dark; do
-  CDP_PORT=$((10340 + i)) node "$HERE/shot.mjs" "$HERE/plans/site-gallery.json" "$TMP" "$theme"; i=$((i+1))
+  WORKTREE="$TDIR" node "$HERE/shot.mjs" "$HERE/plans/site-gallery.json" "$TMP" "$theme"
 done
 # shot.mjs exits 0 even when a shot failed verification — it files the miss under
 # <theme>/_unverified/ instead. Refuse BEFORE deleting the previous good stills,
@@ -97,5 +90,9 @@ du -sh "$OUT/media" "$OUT/gallery"
 # 5. demo stills — AFTER step 4 on purpose: they are shot out of the embed just built, so the
 # picture in the demo window is the very app that replaces it (2026-09-14: a stale grey still
 # made the live demo "pop in" over it). Exits non-zero, writing nothing, if any theme failed to paint.
-CDP_PORT=10390 node "$HERE/embed-posters.mjs" "$OUT"
-echo "site assets regenerated under $OUT — review docs/gallery and docs/media, then commit them"
+node "$HERE/embed-posters.mjs" "$OUT"
+if [[ "$OUT" == "$TDIR/docs" ]]; then
+  echo "site assets regenerated under $OUT — review $OUT/gallery and $OUT/media, then commit them"
+else
+  echo "site assets regenerated under $OUT (a scratch override — nothing under $TDIR/docs was touched)"
+fi

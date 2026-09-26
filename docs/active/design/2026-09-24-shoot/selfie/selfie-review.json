@@ -1,0 +1,83 @@
+{
+  "title": "Review pages now show whether your answers are saved",
+  "key": "deck-selfie-review",
+  "out": "selfie-review.html",
+  "images": "images/selfie-review",
+  "theme": "fixed",
+  "runs": {
+    "before": "selfie-runs/before",
+    "after": "selfie-runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "With this change"
+  },
+  "themes": [
+    "midnight",
+    "light"
+  ],
+  "crops": {
+    "selfie-p1-1440x900": [
+      "selfie",
+      "selfie-p1-1440x900",
+      "1440x100+0+0"
+    ],
+    "selfie-p1-1024x768": [
+      "selfie",
+      "selfie-p1-1024x768",
+      "1024x100+0+0"
+    ],
+    "selfie-questions-p1-1440x900": [
+      "selfie",
+      "selfie-questions-p1-1440x900",
+      "1440x100+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "selfie-p1-1440x900",
+      "surface": "Review deck",
+      "path": "A picture review page, full-size window",
+      "crop": "selfie-p1-1440x900",
+      "themes": [
+        "midnight",
+        "light"
+      ],
+      "highlight": "auto",
+      "headline": "\"Saved ✓\" now sits in the header of every review page.",
+      "changed": "Every click is saved to the file next to the page, and the header says so. If a save fails, the label turns red and reads \"NOT saved — retrying\" until it lands.",
+      "notice": "If a page ever loses its server or was left open across a restart, nothing you answered is lost: it keeps retrying, and it merges with what is already saved instead of replacing it.",
+      "risk": "The red \"NOT saved\" label is not pictured here: it only appears when a save fails. It is tested automatically."
+    },
+    {
+      "id": "selfie-p1-1024x768",
+      "surface": "Review deck",
+      "path": "A picture review page, smaller window",
+      "crop": "selfie-p1-1024x768",
+      "themes": [
+        "midnight",
+        "light"
+      ],
+      "highlight": "auto",
+      "headline": "In a smaller window the step counter hides, but the save label stays.",
+      "changed": "The step counter already hides at this width to make room; the save label never does, because a failed save is the one thing you must not miss.",
+      "notice": "If a page ever loses its server or was left open across a restart, nothing you answered is lost: it keeps retrying, and it merges with what is already saved instead of replacing it.",
+      "risk": "The red \"NOT saved\" label is not pictured here: it only appears when a save fails. It is tested automatically."
+    },
+    {
+      "id": "selfie-questions-p1-1440x900",
+      "surface": "Questions deck",
+      "path": "A questions page",
+      "crop": "selfie-questions-p1-1440x900",
+      "themes": [
+        "midnight",
+        "light"
+      ],
+      "highlight": "auto",
+      "headline": "Question pages show the same save label.",
+      "changed": "Same label, same behaviour: saved as you answer, red and retrying if the save fails.",
+      "notice": "If a page ever loses its server or was left open across a restart, nothing you answered is lost: it keeps retrying, and it merges with what is already saved instead of replacing it.",
+      "risk": "The red \"NOT saved\" label is not pictured here: it only appears when a save fails. It is tested automatically."
+    }
+  ]
+}

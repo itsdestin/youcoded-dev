@@ -6,7 +6,7 @@ paths:
   - "**/docs/gallery/**"
   - "scripts/ui-review/**"
   - "**/desktop/src/renderer/dev/workbench/**"
-last_verified: 2026-09-04
+last_verified: 2026-09-26
 verify:
   - path: scripts/ui-review/site-assets.sh
     contains: "docs/media"
@@ -41,16 +41,16 @@ Rebuilt 2026-08-28 for 1.3.0 (youcoded #360): `docs/archive/specs/2026-08-27-lan
 
 ## Assets are generated, never hand-edited
 **Invariant:** `bash scripts/ui-review/site-assets.sh <worktree>` regenerates `docs/media/`
-(loops + posters), `docs/gallery/` (48 stills) and `docs/site/` (embed). It refuses a
-workbench serving another tree and refuses to overwrite the gallery if any shot failed
-verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
+(loops + posters), `docs/gallery/` (48 stills) and `docs/site/` (embed), building that
+worktree itself; `--out <dir>` writes to a scratch folder instead. It refuses to overwrite the
+gallery if any shot failed verification. It is a step in the desktop release checklist (`docs/build-and-release.md`).
 The last three followed on 2026-09-04: `gen-hero-mascots.py` and `gen-og-image.mjs` (bump
 `?v=` on `og:image` or a shared link keeps the old one).
 `site-assets.sh` maps each file `index.html` plays to its scene. Loop length, zoom and pace:
 README → "The landing loops' standard".
 **Why:** the previous site drifted for four months on hand-drawn mockups; the share image
 stayed a screenshot of the pre-redesign app.
-**Guard:** the script's own checks; `scripts/workbench-boot-check.mjs`.
+**Guard:** the script's own checks.
 Depth for the mascots: `scripts/ui-review/README.md` -> "Hero mascots".
 
 ## Loops live in `docs/media/`, not `docs/site/media/`
@@ -77,10 +77,12 @@ Switches: `?seed=none&scenario=site` (empty chat — site scenario only), `?titl
 **Guard:** `workbench-reply-script.test.ts` (`splitTurns`, `isControl`),
 `workbench-fixture-actions.test.ts`, `mock-shim-window.test.ts` (HAND_WRITTEN).
 
-## Restart the workbench after editing a fixture or the mock shim
-**Invariant:** the filming workbench runs with `VITE_NO_WATCH=1` on port 5473
-(`YOUCODED_PORT_OFFSET=300`); it serves the code it started with.
-**Why:** every frame still "verifies" against stale code — filmed the old fixture twice.
+## Clips film the current code
+**Invariant:** `record.mjs` films the photo-only build (`scripts/shoot/engine.mjs`), rebuilt
+whenever the renderer source changed, on a free port — no workbench to start or restart. A
+scene's `127.0.0.1:5473` origin is a placeholder for it.
+**Why:** the old filming workbench served the code it started with, so a clip filmed the previous
+fixture twice while every frame still "verified". **Guard:** the build fingerprint (engine).
 
 ## The live embed
 **Invariant:** the page's floating theme button clicks the app's own gear + Appearance row

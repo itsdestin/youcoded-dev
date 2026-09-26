@@ -956,3 +956,54 @@ print(p)`;
     assert.deepEqual(c.errors, []);
   } finally { c.close(); srv.kill(); stub.kill(); }
 });
+
+// Lost answers (2026-09-23: two shutdowns cost Destin answers he had given). Every save now
+// shows whether it landed and retries until it does; a page older than the file folds the file
+// in instead of being refused silently; a reload merges the browser's backup with the file.
+test('a save that fails says so and retries, and a restart or a stale page loses nothing', async () => {
+  const tmp = mkdtempSync(join(tmpdir(), 'deck-save-'));
+  const fx = spawnSync('python3', ['-c', `import sys; sys.path.insert(0, ${JSON.stringify(HERE)}); from fixture import make_fixture; print(make_fixture(${JSON.stringify(tmp)}))`], { encoding: 'utf8' });
+  const spec = fx.stdout.trim(); const answersFile = join(dirname(spec), 'deck.answers.json');
+  { const r = spawnSync('python3', [RC, 'build', spec], { encoding: 'utf8' }); assert.equal(r.status, 0, r.stderr); }
+  const port = await freePort();
+  const start = () => spawn('python3', [RC, 'serve', spec, '--no-build', '--port', String(port), '--timeout', '2'], { stdio: 'ignore' });
+  const onDisk = () => JSON.parse(readFileSync(answersFile, 'utf8')).answers;
+  const until = async (f, what) => { for (let i = 0; i < 60; i++) { if (await f()) return; await sleep(100); } assert.fail('timed out waiting for ' + what); };
+  let srv = start(); const c = await cdp(await freePort(), 1280, 800);
+  const url = `http://127.0.0.1:${port}/fixture.html`;
+  const open = async (step) => { await c.send('Page.navigate', { url: url + '?step=' + step }); await until(() => c.evaluate('!!window.__deckReady').catch(() => false), 'the deck'); };
+  const savedText = () => c.evaluate("document.querySelector('#saved').hidden ? '' : document.querySelector('#saved').textContent");
+  await sleep(800); await open(2);
+  await c.evaluate("document.querySelector('.ans[data-v=yes]').click()");
+  await until(async () => (await savedText()) === 'Saved ✓', '"Saved"');
+  assert.equal(onDisk()['S-2'].v, 'yes');
+  // The server dies while the page is open: the next answer says it is NOT saved.
+  await open(1);
+  srv.kill(); await new Promise(r => srv.on('exit', r));
+  await c.evaluate("document.querySelector('.ans[data-v=no]').click()");
+  await until(async () => (await savedText()).startsWith('NOT saved'), '"NOT saved"');
+  assert.equal(await c.evaluate("document.querySelector('#saved').dataset.ok"), '0');
+  // It comes back on the same address; the retry lands without anyone touching the page.
+  srv = start();
+  try {
+    await until(async () => (await savedText()) === 'Saved ✓', 'the retry to land');
+    assert.equal(onDisk()['S-1'].v, 'no'); assert.equal(onDisk()['S-2'].v, 'yes');
+
+    // A stale page: something else saved S-3 after this page loaded. The page's next save is
+    // refused by the server (it would drop S-3), so the page folds the file in and saves both.
+    const disk = JSON.parse(readFileSync(answersFile, 'utf8'));
+    disk.answers['S-3'] = { v: 'other', note: 'from elsewhere', t: Date.now() };
+    await fetch(`http://127.0.0.1:${port}/answers`, { method: 'POST', headers: { 'content-type': 'application/json', origin: `http://127.0.0.1:${port}` }, body: JSON.stringify(disk) });
+    await c.evaluate("document.querySelector('.ans[data-v=yes]').click()");   // S-1 changes to yes
+    await until(async () => onDisk()['S-1'].v === 'yes', 'the merged save');
+    assert.equal(onDisk()['S-3'].note, 'from elsewhere', 'the answer saved elsewhere survives');
+    assert.equal(await savedText(), 'Saved ✓');
+
+    // A crash between the click and the save: the answer is only in the browser's backup.
+    // Reloading the deck puts it back in the file.
+    await c.evaluate(`(() => { const k = 'deck:fixture'; const s = JSON.parse(localStorage.getItem(k)); s.answers['S-4'] = { v: 'yes', t: Date.now() }; localStorage.setItem(k, JSON.stringify(s)); })()`);
+    await open(1);
+    await until(async () => onDisk()['S-4']?.v === 'yes', 'the backup to reach the file');
+    assert.deepEqual(c.errors, []);
+  } finally { c.close(); srv.kill(); }
+});

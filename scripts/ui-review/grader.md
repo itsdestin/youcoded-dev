@@ -16,9 +16,11 @@ design §7, §8e.
   verdict is its exit code. Evidence = the command and its last line. **Then read the test:**
   if it exists but does not test the row's statement, the verdict is `fail` with evidence
   saying what it tests instead — an existing guard is not a checked criterion.
-- `deck` — re-take the step's picture from the built branch (`scripts/ui-review/shot.mjs`
-  with the deck's plan, or `ui-probe.mjs --shot`), put it beside the approved one, and say
-  whether what was approved is what was built. Evidence = both paths.
+- `deck` — re-take the step's picture from the built branch, put it beside the approved one,
+  and say whether what was approved is what was built. Evidence = both paths. A named screen:
+  `node scripts/shoot/shoot.mjs <screen> --worktree <worktree>` (`--list` shows the names). A
+  moment reached by clicking (a hover, a result after a click): `node scripts/shoot/explore.mjs
+  start --worktree <worktree>`, then the steps — every step prints its picture's path.
 - `human` / `live-app` — no verdict; Destin answers these on the acceptance deck. Leave them
   out of the verdicts file.
 

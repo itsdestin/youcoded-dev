@@ -37,7 +37,9 @@ for (const d of dirs) {
   for (const { entry: e } of latest.values()) {
     // A shot with `probe: false` in its plan carries no contrastFails at all
     // (shot.mjs:240). Count the two cases apart — see the header below.
-    if (e.verified === false) skipped.unverified++;
+    // `verified` is shot.mjs's word; `ok` is shoot's (scripts/shoot/) — a picture that never
+    // proved its screen was showing has nothing to judge either way.
+    if (e.verified === false || e.ok === false) skipped.unverified++;
     else if (e.contrastFails === undefined) skipped.notProbed.add(d.replace(/.*shots-/, ''));
     else probed++;
     for (const f of (e.contrastFails ?? [])) rows.push({ theme: e.theme, surface: e.name, ...f });

@@ -137,8 +137,9 @@ This is intentional — isolating these would mean dev can't test against your r
   9977; on 2026-08-25 two sessions collided on both: one boot check hung 40 minutes attached to
   the other's Chrome, and a screenshot sweep "reused" the other session's workbench and shot the
   wrong worktree. Never reuse a server you did not start without checking what it serves
-  (`ss -ltnp 'sport = :5233'` → pid → `readlink /proc/<pid>/cwd`); the review rig now does this
-  itself and runs on its own port (5473). Pass `YOUCODED_PORT_OFFSET` per session.
+  (`ss -ltnp 'sport = :5233'` → pid → `readlink /proc/<pid>/cwd`); the review tools no longer
+  share servers at all (`scripts/shoot/` builds and serves on a free port per run). Pass
+  `YOUCODED_PORT_OFFSET` per session for `run-dev.sh` / `run-workbench.sh`.
 - **Second dev run fails noisily.** `strictPort: true` in `vite.config.ts` means if the dev port is already taken, Vite errors instead of silently picking the next one. Kill the stale process or bump `YOUCODED_PORT_OFFSET`. To find what's holding the port: `netstat -ano | grep ":5223 "` (substitute your chosen Vite port).
 - **No dev instance with sync on beside the installed app until the next release after beta.80.** A dev copy syncing the same `~/YouCoded` folder raced the size-cap step and stuck sync for nine days (youcoded#483/#485 fixed it, but the installed build predates the fix).
 - **If dev crashes, close only the dev window.** The built app is unaffected.
@@ -173,17 +174,21 @@ git -C youcoded branch -D dev-profile
 
 ## Driving the desktop dev app via CDP (headless verification)
 
-(A tester with no workspace context gets `scripts/ui-review/tester-kit.md` instead of this
-section; the implementing session does steps 1–2 below and hands over the address.)
+**To click through a dev window, use `node scripts/shoot/explore.mjs start --dev`**
+(`scripts/shoot/README.md`): numbered controls, pictures and layers per step, attached only
+through the marker `run-dev.sh` writes. A tester with no workspace context gets
+`scripts/ui-review/tester-kit.md`; the implementing session starts the dev window first. The
+raw recipe below is for evaluating code in the page (preload calls, state), which `explore`
+deliberately does not offer.
 
 For programmatic UI verification of the DESKTOP dev instance (the Android recipe in
 CLAUDE.md uses adb; this is the desktop equivalent, first used for the Phase 2 Plan A
 live-acceptance run):
 
-1. Launch Electron directly with a debugging port (run-dev's npm chain doesn't forward
-   Chromium flags): from `<worktree>/desktop`, with Vite already running,
-   `YOUCODED_NATIVE=1 YOUCODED_PORT_OFFSET=50 YOUCODED_PROFILE=dev ./node_modules/electron/dist/electron.exe . --remote-debugging-port=9222`
-2. `curl http://127.0.0.1:9222/json` lists page targets. Gotchas: the buddy floater is its
+1. `bash scripts/run-dev.sh <branch>` opens the debugging port by default (9222 + offset, 9272
+   at the default offset 50; `--no-devtools` turns it off) and records it, with its own pid,
+   in `desktop/.dev-instances/<offset>.json`.
+2. `curl http://127.0.0.1:9272/json` lists page targets. Gotchas: the buddy floater is its
    own page at `?mode=buddy-mascot` — match the main window by EXACT url
    `http://localhost:5223/`, not a substring; DevTools windows also appear as pages.
 3. Evaluate via `Runtime.evaluate` (awaitPromise) + `Page.captureScreenshot` over the

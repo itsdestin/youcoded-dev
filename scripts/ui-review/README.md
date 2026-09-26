@@ -1,135 +1,54 @@
-# ui-review — autonomous screenshot review of every YouCoded surface
+# ui-review — review decks, demo clips, the landing page's pictures
 
-One command screenshots every screen, dialog, drawer, popover and menu of the app in every
-theme, **proves each screenshot actually shows the surface it claims**, and produces
-side-by-side theme sheets, a painted-pixel contrast report, a coverage report and an HTML
-gallery. It is the evidence-gathering half of the `/ui-review` skill; the judgement half
-(what is ugly, what is inconsistent, what to propose) is written by a session reading the
-sheets against `docs/active/design/2026-08-25-ui-design-guide.md`.
+**Screenshots and click-throughs moved to `scripts/shoot/` (2026-09-26):** `shoot` photographs
+named screens (proving each is showing), `explore` clicks through the app one step at a time,
+`journeys.mjs` replays the core paths. Start at `scripts/shoot/README.md`. The old sweep
+(`run-review.sh` + 80 click plans) is retired; its plans are in `plans/archive/`.
 
-```
-bash scripts/ui-review/run-review.sh <worktree> [outDir] [themes]
-```
-
-Default output: `scratch/ui-review-<date>/` (git-ignored) with `gallery.html`,
-`coverage.md`, `contrast.md`, `sheets/` and the raw `shots-<plan>/<theme>/*.png`.
-Runs the UI Workbench (real renderer, fake backend, headless Chrome) — **never the live
-app**. A full 6-theme sweep runs one Chrome per (plan, theme, shard) through a queue of `UI_REVIEW_JOBS` workers (default 24) — about 5 minutes on this machine; `UI_REVIEW_PLANS=main,overlays` limits a run to the plans a PR touches.
+What stays here is everything built ON those pictures and on the running renderer:
 
 ## Start here
 
-Long file — jump to the section for the job in hand.
-
 | Want to… | Read |
 |---|---|
-| Screenshot every surface/theme | "Pieces", then the command above |
-| Serve a review or questions deck | `review-cards.py` in "Pieces"; `.claude/rules/review-deck.md` |
+| Pictures of screens, a theme sweep, before/after | `scripts/shoot/README.md` (`shoot`) |
+| Act like a user: menus, hover, drag, results | `scripts/shoot/README.md` (`explore`), `tester-kit.md` |
+| Serve a review or questions deck | `review-cards.py` below; `.claude/rules/review-deck.md` |
 | Record a demo loop | "Recording a loop" |
 | Edit landing-site copy | "Editing copy on the site" |
 | Regenerate mascots/hero art | "Hero mascots, the tab icon, and the share image" |
-| Add/use a workbench `?switch=` | "Workbench switches the plans rely on" |
-| Verify on real Electron | "Real-app pass (Electron)" |
-| Test drag/hover by hand | "Drag probe and drag sweep" |
-
-## Why it can be trusted (the 2026-08-25 lessons)
-
-**The server is checked before the shots are.** `run-review.sh` starts its own workbench on
-a dedicated port (offset 300 → Vite 5473) and refuses to run unless the process on that
-port has the worktree under review as its working directory. Later on 2026-08-25 a run
-"reused" another session's workbench on the default port and produced 40 minutes of
-perfectly *verified* screenshots of the wrong branch — every shot proved it opened, none
-was of the code being reviewed. Verification of the picture cannot catch a wrong server;
-only checking the server can. Plans still say `127.0.0.1:5233`; `shot.mjs` rewrites that
-to `WB_PORT`. The boot check likewise gets a debugging port derived from the Vite port
-(two sessions sharing 9977 hung one of them) and a 4-minute watchdog.
-
-
-The first run of this rig filed 40 screenshots of the plain chat window under labels like
-"context menu" because a click missed and nothing noticed; the findings written from them
-had to be retracted. `shot.mjs` therefore verifies every shot three ways before it counts:
-
-1. every action's target must exist (a `MISSING` selector fails the shot);
-2. the shot's `expect` selector/JS must be truthy afterwards (e.g. `[role=dialog]`);
-3. the result must differ from the post-boot baseline (ImageMagick RMSE), unless the plan
-   says `sameAsBaseline: true` on purpose.
-
-Before the fixed boot wait, `shot.mjs` polls until the page has painted real text (a plan
-may set `ready` to a stricter expression — `marketplace.json` waits for its cards), so a
-slow boot under a 24-Chrome sweep does not turn into a miss.
-
-Failed shots go to `_unverified/` (never into a sheet) and `coverage.md` lists them with
-the reason. **A review must quote `coverage.md` and call unverified surfaces "unreviewed"
-— silence is not a pass.**
-
-**The last step is the DOM-size sweep** (`dom-size-sweep.mjs`). It opens the long-list
-surfaces (Resume browser, Projects → Conversations and Files search, Marketplace, model
-search, conversation preview, side drawer) in the workbench's `stress` scenario with 2,000
-rows each, and counts the elements each one builds. Any surface over its `NODE_BUDGET`
-(8,000), or not proven open, prints `FAIL` in the table (kept as `dom-size.md`, with the
-raw log in `dom-size.log`) and makes `run-review.sh` exit 1 **after** the gallery and
-coverage are written. A red row means a list is drawing every item instead of the ones near
-the screen. Fix that list; do not raise the budget. Before the render-cost fixes
-(2026-09-18) Conversations was 17,546, Marketplace 58,706 and model search 24,679; after
-them every surface is under 3,300. It needs a serving workbench, so it is not in
-`scripts/verify.sh` (no browser there). Run it alone against any workbench with
-`node scripts/ui-review/dom-size-sweep.mjs --port <vite port> [--only conv,market]`.
+| Add/use a workbench `?switch=` | "Workbench switches" |
+| Check a change in the real app | `explore start --dev` ("Real-app pass") |
+| Measure a drag frame by frame | "Drag probe and drag sweep" |
 
 ## Pieces
 
-**Two sweeps at once:** each run takes its own block of CDP ports (`cdp-ports.sh`: a 400-port block starting at `30000 + offset`, chosen by the run's pid, every port probed by `probe-ports.sh`, the next block tried if one is busy, a loud refusal naming the busy ports after six). Two sessions sweeping at the default offset no longer touch each other's Chromes — the old "keep offsets ≥ 100 apart" advice was wrong anyway once a full six-theme sweep grew to 312 jobs. `YOUCODED_PORT_OFFSET` still matters for the **workbench**: two sweeps of *different* worktrees need different offsets or the second hits the wrong-worktree refusal above. `bash scripts/ui-review/run-review.sh --dry-run <worktree>` prints the workbench port, the job list and the exact CDP ports a run would take, without launching anything.
-
 | File | Job |
 |---|---|
-| `shot.mjs` | raw-CDP driver: boots the page per shot, runs actions, verifies, screenshots, runs the contrast probe. `ATTACH_PORT=<port>` drives a running Electron instance instead of headless Chrome. |
-| `plans/*.json` | what to open. `main` (screens + settings + overlays), `overlays` (context menus, prompts, wizard, stalled card, project overlays…), `narrow` (390 px), `tall` (full tool gallery), `latency` (2 s fake IPC → loading states), `marketplace` (registry data: hero, cards, detail, Library with content), `empty-marketplace` (`?marketplace=empty` — a brand-new install: nothing installed, registry unreachable; the Library/“Nothing matches” empty states), `electron-welcome` + `electron-live-session` (real app; see below). |
-| `montage.sh` | one sheet per surface, themes side by side, verified shots only. |
-| `montage-ab.sh` | before/after sheets for a UI PR: `montage-ab.sh <out> <plan/name,…> <themes> before=<runA> after=<runB> [more=<runC>]` — one sheet per surface, a row per theme, a column per run. |
-| `contrast-report.mjs` | aggregates the painted-pixel probe (fg vs *actual* bg) — catches hardcoded colours and translucent surfaces the token audit can't. Over-reports on glass themes; read it, don't paste it. |
-| `coverage.mjs` | covered / partial / MISSED per surface × theme, with reasons. |
-| `make-gallery.py` | the HTML gallery. |
-| `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. **Which kind to pick, and the rules that go with it: `.claude/rules/review-deck.md`. Every field of every kind, the page grammar, the refusals, the answers file and every command: `scripts/ui-review/deck/AUTHORING.md`. One worked template per kind: `scripts/ui-review/templates/`.** |
-| `review-page.py` | the earlier prose-first review page (Phase A/B pages). Rejected as a review surface on 2026-08-26; archived to `docs/archive/ui-review-tools/` 2026-09-23 (nothing live referenced it) — do not use for new phases. |
+| `review-cards.py` + `deck/` + `crops.json` | **the review surface** — the one page Destin answers on, in nine step kinds (approve, brief, choice, decide, clip, live, question, contract, acceptance) and eight commands (`build`, `preview`, `serve`, `wait`, `record`, `selfie`, `contract-check`, `acceptance`). `serve` builds, serves on 127.0.0.1, saves `<spec>.answers.json` on every click and **exits when Destin submits** — run it in the background; it opens no browser, so put its printed `[deck] http://…` line in chat as the last line of your turn. Live panes come from the deck's own server (`/app/`, the photo-only build). **Which kind to pick: `.claude/rules/review-deck.md`. Every field, command and refusal: `deck/AUTHORING.md`. One worked template per kind: `templates/`.** |
+| `record.mjs` + `scenes/*.json` | a scripted scene filmed as a WebM loop + WebP poster (below). |
+| `record-pair.sh` + `montage-ab.sh` | before/after clips and sheets for a deck's CLIP steps. |
+| `site-assets.sh` | regenerates the landing page's loops, gallery (`shot.mjs` + `plans/site-gallery.json`, the one plan still in use) and embed. |
+| `shot.mjs` | the old self-verifying plan driver, kept for `site-gallery.json`; on the engine (free ports). New pictures: `shoot`. |
+| `contrast-report.mjs` | painted-pixel contrast (fg vs *actual* bg) from a `shoot --contrast` run (`contrast.md`), or an old sweep's manifests. Over-reports on glass themes; read it, don't paste it. |
+| `coverage.mjs` | covered / MISSED per surface for an old sweep's run folders (decks still read them). |
+| `dom-size-sweep.mjs` | every screen of the shoot list, opened by name in the `stress` scenario, under 8,000 elements (below). |
+| `drag-probe.mjs`, `drag-fuzz.mjs` | per-frame positions during a session-pill drag (below). |
+| `design-check/` | lint:design warnings boxed on the real screen (`shoot --collect`). |
+| `tester-kit.md`, `ux-tester.md`, `code-reviewer.md`, `grader.md`, `contract-agent.md` | the feature flow's reviewer briefs. |
 
-## Writing a shot
-
-A context-free tester (the UX tester of the feature flow) learns this tool from
-`tester-kit.md` alone — keep that file, not this section, as the beginner's copy, and keep the
-two in agreement. The reviewer briefs beside it: `ux-tester.md`, `code-reviewer.md`,
-`grader.md`, `contract-agent.md`.
-
-`"measure": ["#send", {"text": "Send"}]` on a shot records those elements' window rectangles in
-the manifest (`measures`), which is how a review deck gets an exact highlight box. A missing
-element fails the shot. **Plan the `measure` lines before the Before run** — a measurement can
-only come from a capture, and the Before code is usually gone by the time the deck is written
-(the Phase C rebuild had to be pixel-diff only for exactly this reason). Prefer `aria-label` /
-role / `data-testid` selectors over visible text — one copy change broke three plans' `expect`s
-in a day (hand-off gap 5).
-
-```json
-{ "name": "close-session-prompt",
-  "actions": [ {"click": "[title='All Sessions']", "settle": 600},
-               {"click": "js:document.querySelector('[title=\"Close Session\"]')", "settle": 800} ],
-  "expect": "[role=dialog]" }
-```
-
-Actions: `click` / `rightClick` / `hover` (CSS selector or `js:` expression returning an
-element; real mouse events at its centre), `clickText`, `keyDown`/`keyUp`/`key` (+`modifiers`:
-2 = Ctrl, 8 = Shift), `type`, `eval`, `dispatch` (window CustomEvent), `scrollDialog`
-(`"bottom"`/`"top"`/px), `wait`, `dump` (lists clickable controls into the manifest — use it
-to discover selectors for a new surface). Always give an `expect`; if the surface is the
-page itself, say `sameAsBaseline: true` and still give an `expect`.
-
-Selector tips learned the hard way: the composer is `[placeholder^='Message']` (the
-`input.flex-1` in the DOM is the hidden skills-drawer search); Settings rows match on
-`textContent.includes(...)` because icon glyphs prefix the text ("YCDevelopment…"); the
-Development sub-screens are `[title^='Report a Bug']` etc.; project overlays open from
-`[title='Switch project']` and the Conversations/Context rows; "Musing"-style thinking
-chips have a *random* label — match `[data-testid=thinking-indicator]`; the welcome
-screen's *New Session* needs a JS `.click()` (the mouse click lands on the mascot layer).
+**The DOM-size sweep** (`dom-size-sweep.mjs`) opens every default-scenario screen of the shoot
+list in the `stress` scenario (2,000 rows) and counts the elements each builds. Any screen over
+`NODE_BUDGET` (8,000), or not proven open, prints `FAIL` and exits 1. A red row means a list is
+drawing every item instead of the ones near the screen: fix that list; do not raise the budget.
+Before the render-cost fixes (2026-09-18) Conversations was 17,546, Marketplace 58,706 and model
+search 24,679; on 2026-09-26 the largest of 176 screens was 3,577. Needs a browser, so it runs
+on request, not in `verify.sh`:
+`node scripts/ui-review/dom-size-sweep.mjs [--only settings/*,projects/conversations]`.
 
 ## Recording a loop (animated demo)
 
-`record.mjs` films the workbench through CDP and writes one WebM loop + a WebP poster —
+`record.mjs` films the practice app (the photo-only build, served on a free port) and writes one WebM loop + a WebP poster —
 the landing page's row demos, and any future "show me the feature" clip. One JSON per
 scene, same vocabulary as a shot plus typing and waiting:
 
@@ -161,17 +80,17 @@ Scene-level `fps` (default 24) sets the encode frame rate — the promo films at
 frame is doubled in a 30 fps edit.
 
 ```
-WB_PORT=5473 CDP_PORT=10330 node scripts/ui-review/record.mjs scripts/ui-review/scenes/<scene>.json <out-base>
+node scripts/ui-review/record.mjs scripts/ui-review/scenes/<scene>.json <out-base>   # WORKTREE=<name> for another checkout
 # → <out-base>.webm + <out-base>.webp (VP9 crf 33, 24 fps, 1440×900)
+# A scene's `127.0.0.1:5473` origin means "the practice app": it is replaced by the served build.
 ```
 
 What the model "says" is a fixture, not a model: `?reply=<name>` picks
 `desktop/src/renderer/dev/workbench/fixtures/replies/<name>.jsonl` — assistant text,
 tool cards, permission asks (the loop answers them with a real click), one
 `turn_complete` per turn; the Nth message sent plays the Nth turn. `?signedIn=1` gives
-a signed-in account with a scripted friend for the games. The workbench serves with
-`VITE_NO_WATCH=1`, so **restart it after editing a fixture or the mock shim** — the
-recorder otherwise films the previous code and every frame still "verifies".
+a signed-in account with a scripted friend for the games. The build is rebuilt whenever the
+source changed since the last one, so an edited fixture or mock shim is always what gets filmed.
 
 **The landing loops' standard (Destin, 2026-09-11 — keep it when re-recording).** About 15 s,
 never more than 20, with nothing real cut. Desktop takes `"zoom": 1.15` (the phone take stays at
@@ -201,7 +120,7 @@ After playing side by side, with native controls (pause, scrub) and ↻ to resta
 
 ```
 bash scripts/ui-review/record-pair.sh scripts/ui-review/scenes/<scene>.json <before> <after> <deck-dir>/images/<deck>/clips
-# <before>/<after>: a worktree name (its workbench is booted, one at a time) or a URL (a page served at two commits)
+# <before>/<after>: a worktree name (each built and served on its own free port) or a URL (a page served at two commits)
 ```
 then in the deck spec: `{ "id": "…", "surface": "…", "path": "…", "clip": "<scene>", "headline": "…",
 "changed": "…", "notice": "…", "risk": "…" }` — no `crop`, no `highlight`. `review-cards.py build`
@@ -249,11 +168,11 @@ yes/no is for verifying something built to an agreed spec.
   ] }
 ```
 
-Then the usual one command — `serve` boots that worktree's workbench on **:5513** and stops
-it again on exit:
+Then the usual one command — `serve` builds that worktree's practice app and serves it from the
+deck's own address under `/app/`, so the panes come back whenever the deck does:
 
 ```bash
-python3 scripts/ui-review/review-cards.py serve <spec>       # --no-live: leave my workbench alone
+python3 scripts/ui-review/review-cards.py serve <spec>       # --no-live: the spec's live.base names a server of its own
 ```
 
 Things worth knowing before you author one:
@@ -271,17 +190,17 @@ Things worth knowing before you author one:
 - **One theme at a time**, switched with the usual theme row (rendered as labels). The swap is
   sent to the panes as a message, so an animation mid-play survives it. Four candidates × six
   themes would be 24 running copies of the app on one page.
-- **File watching stays on**, so a candidate edited while the deck is open updates the pane in
-  front of him. Close the deck when you are done rather than leaving the watcher running.
-- **It does not replay.** Reopen the review later and the cards and answers are all there, but
-  each pane says the app server is not running. A review worth looking back at should carry a
-  still or a clip beside its live steps.
+- **An edited candidate shows on the pane's next reload** — the deck rebuilds the practice app
+  when `/app/index.html` is asked for and the source changed (it is not a hot-reloading server).
+- **It replays.** Reopen the review later and the panes come back with the deck (from that
+  worktree's current code). A deck built before 2026-09-26 pointed its panes at a fixed port;
+  serving it rewrites them onto `/app/` once and says so.
 
 Spec: `docs/archive/specs/2026-08-31-live-review-panes-design.md`.
 
 Rebuild every landing-page asset at once (loops, gallery stills, live embed):
-`bash scripts/ui-review/site-assets.sh <worktree>` — refuses a workbench serving a
-different tree, and refuses to overwrite a gallery when any shot failed verification.
+`bash scripts/ui-review/site-assets.sh <worktree> [--out <dir>]` — refuses to overwrite a gallery
+when any shot failed verification; `--out` writes everything to a scratch folder instead.
 
 **`"zoom": 1.25`** (scene field, default 1) films the page zoomed in the way Ctrl+= does in the
 app: the layout runs at width/zoom × height/zoom CSS px and Chrome paints it at `zoom` device
@@ -419,7 +338,10 @@ off any pose that staggers its limbs.
 reads those lengths as rendered CSS pixels, so the shoulder lands in the middle of the head
 and the waving arm detaches and flies off the body.
 
-## Workbench switches the plans rely on
+## Workbench switches
+
+The practice app's `?switch=` URL options — a `shoot` screen-list entry names them in `params`,
+a journey or `explore start --params` passes them, a scene puts them in its `base`.
 
 `?scenario=default|empty|no-providers|refused|stress` (resume list / permissions /
 providers data — the transcript never changes), `?stalled=1` (parks the native session's
@@ -491,21 +413,24 @@ shot captures the unchanged fixture — replace the whole namespace
 "before" shot came back identical to the "after" one and looked like a passing comparison. `expect` checks on marketplace text must be case-insensitive
 — the eyebrows are uppercased by CSS, so `textContent` still says "Featured".
 
-If the workbench dies with `ENOSPC` (file watchers), start it with `VITE_NO_WATCH=1`
-(run-review.sh already does): the live app plus one dev instance can hold ~495k of the
-524k inotify watches on this machine.
+If `run-workbench.sh` (the hot-reloading server, for building UI by hand) dies with `ENOSPC`
+(file watchers), start it with `VITE_NO_WATCH=1`: the live app plus one dev instance can hold
+~495k of the 524k inotify watches on this machine. The review tools use a static build and
+watch nothing.
 
 ## Real-app pass (Electron)
 
-For the terminal, marketplace with data, Backup & Sync, a live session:
+For the terminal, Backup & Sync, a live session — anything the practice app fakes — start an
+isolated dev window and click through it with `explore`:
 
 ```
-cd worktrees/<wt>/desktop && npx tsc -p tsconfig.json && cp src/main/pty-worker.js dist/main/ \
- && YOUCODED_PORT_OFFSET=60 YOUCODED_PROFILE=uiaudit YOUCODED_DEV_LABEL="UI Review" \
-    xvfb-run -a -s "-screen 0 1440x900x24" npx electron . --remote-debugging-port=9299 --no-sandbox
-ATTACH_PORT=9299 node scripts/ui-review/shot.mjs scripts/ui-review/plans/electron-welcome.json <out> app
-ATTACH_PORT=9299 node scripts/ui-review/shot.mjs scripts/ui-review/plans/electron-live-session.json <out> app
+bash scripts/run-dev.sh <branch> --label "<what you check>"
+node scripts/shoot/explore.mjs start --dev          # attaches only to a window run-dev.sh started
 ```
+
+`explore --dev` refuses any window without run-dev.sh's marker (`desktop/.dev-instances/`),
+so the installed app can never be driven. (The old `ATTACH_PORT=… shot.mjs plans/electron-*.json`
+recipe is retired with its plans.)
 
 **A screenshot of a dev window that is BEHIND other windows is stale.** Chromium stops
 painting an occluded window, so `Page.captureScreenshot` over CDP returns the last frame it
@@ -515,12 +440,9 @@ because the window sat under the terminal. Computed styles are still trustworthy
 "what is on screen now" are not. Bring the window to the front (or use the headless
 workbench) before trusting a pixel.
 
-(The workbench Vite server on :5233 must already be up for the same worktree — the dev
-main process loads the renderer from it.) The isolated `uiaudit` profile keeps this away
-from the live app, but it **shares `~/.claude` and the synced settings**, so the
-live-session plan turns *Skip Permissions* off before creating its one empty session and
-closes it at the end. Unset the `CLAUDE*` env vars first (see run-dev.sh) or Claude Code
-refuses to nest.
+The dev profile keeps this away from the live app, but it **shares `~/.claude` and the synced
+settings** — a session created there is a real conversation in the synced archive
+(`docs/local-dev.md`). Create sessions only when the check needs one, and say so.
 
 ## Tests
 
@@ -541,13 +463,12 @@ The six binary-free suites, which is what CI runs:
 cd scripts/ui-review/tests && python3 -m unittest test_spec test_tokens test_live test_words test_contract test_site_copy_editor
 ```
 
-Everything (244 tests, ~15s) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
+Everything (~280 tests) — needs `magick`, `ffmpeg` and Chrome, all present on this machine:
 
 <!-- runnable: local -->
 ```bash
 python3 -m unittest discover -s scripts/ui-review/tests -t scripts/ui-review/tests -p 'test_*.py'
 node --test scripts/ui-review/tests/deck-render.test.mjs
-bash scripts/ui-review/tests/probe-ports.test.sh && bash scripts/ui-review/tests/cdp-ports.test.sh
 bash scripts/ui-review/tests/close-out-contract.test.sh
 ```
 
@@ -559,7 +480,6 @@ months.
 | Suite | Needs |
 |---|---|
 | `test_spec`, `test_tokens`, `test_live`, `test_words`, `test_contract`, `test_site_copy_editor` | nothing — **these six run in `workspace-ci.yml`** |
-| `probe-ports.test.sh`, `cdp-ports.test.sh` | `python3` and `ss` (they hold real ports) |
 | `test_boxes`, `test_build`, `test_crops`, `test_cli`, `test_serve` | `magick` (they cut real crops) |
 | `deck-render.test.mjs`, `coverage.test.mjs`, `shot-measure.test.mjs` | Chrome; the clip fixture also needs `ffmpeg` |
 
@@ -568,9 +488,9 @@ decides whether it runs on every push or only when someone remembers.
 
 ## Extending
 
-New surface → add a shot with an `expect` → run the one plan → check `coverage.md` shows
-it `covered` in every theme → only then write about it. New workbench switch → also add a
-route to `scripts/workbench-boot-check.mjs`.
+New surface → a screen-list entry and a mark (`scripts/shoot/README.md` → "Adding a screen");
+`shoot --check` must open it. New workbench switch → also add a route to
+`scripts/workbench-boot-check.mjs`.
 
 ## Drag probe and drag sweep (session-pill motion)
 

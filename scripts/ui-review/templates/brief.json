@@ -36,7 +36,7 @@
       "path": "The strip along the bottom of the window",
       "_comment_path": "path: how he would get there — the screen, the menu route, the row.",
       "crop": "statusbar",
-      "_comment_crop": "crop: which region of today's screenshot to show. Names come from crops.json.",
+      "_comment_crop": "crop: which region of today's screenshot to show. A shoot screen name (shoot --list) — or a crops.json name.",
       "headline": "Put the model's name in the bottom strip, where the branch name already is.",
       "_comment_headline": "headline: the one sentence he reads first. What he would SEE once it is built. 25 words at most, no code words.",
       "changed": "The strip would carry the model's name after the branch name, so the name is on screen without opening the picker.",

@@ -53,6 +53,19 @@ class SpecTests(unittest.TestCase):
     def test_unknown_crop_is_an_error(self):
         s = load_spec(write_spec(self.d)); s['steps'][0]['crop'] = 'nope'
         self.assertTrue(any('unknown crop' in e for e in validate(s)[0]))
+    def test_a_shoot_screen_name_is_not_an_unknown_crop(self):
+        # "settings/sound" is not a crops.json/spec-"crops" name — it is presumed to be a shoot
+        # screen (deck/crops.py resolves it for real against the run's own manifest.json).
+        s = load_spec(write_spec(self.d)); s['steps'][0]['crop'] = 'settings/sound'
+        self.assertFalse(any('unknown crop' in e for e in validate(s)[0]))
+    def test_a_single_run_shoot_screen_needs_no_highlight(self):
+        # A shoot picture defaults to its own panel as the highlight, so — unlike a legacy crop
+        # — one picture and no highlight is not an error.
+        s = load_spec(write_spec(self.d, runs={'today': '/a'}))
+        s['steps'][0]['crop'] = 'settings/sound'
+        self.assertFalse(any('needs a highlight' in e for e in validate(s)[0]))
+        s['steps'][0]['crop'] = 'c'   # a legacy crop on the same shape still needs one
+        self.assertTrue(any('needs a highlight' in e for e in validate(s)[0]))
     def test_highlight_rules(self):
         s = load_spec(write_spec(self.d, runs={"today": "/a"}))
         self.assertTrue(any('needs a highlight' in e for e in validate(s)[0]))
@@ -103,6 +116,13 @@ class SpecTests(unittest.TestCase):
             self.assertTrue(any(want in e for e in errs), (want, errs))
         st['variants'][1] = {'id': 'B', 'label': 'b', 'crop': 'c', 'summary': 'fine'}
         self.assertEqual([e for e in validate(spec)[0] if e.startswith('C-1')], [])   # no changed/notice needed on a choice step
+    def test_choice_variant_shoot_screen_name_is_not_unknown(self):
+        spec = load_spec(write_spec(self.d))
+        st = {'id': 'C-2', 'surface': 'Home', 'path': 'Chat', 'headline': 'Which?',
+              'variants': [{'id': 'A', 'label': 'a', 'crop': 'settings/sound', 'summary': 'x'},
+                           {'id': 'B', 'label': 'b', 'crop': 'settings/theme', 'summary': 'y'}]}
+        spec['steps'].append(st)
+        self.assertEqual([e for e in validate(spec)[0] if e.startswith('C-2')], [])
     def test_decide_step_rules(self):
         from deck.spec import is_decide
         spec = load_spec(write_spec(self.d))
@@ -120,6 +140,14 @@ class SpecTests(unittest.TestCase):
         self.assertEqual([e for e in validate(spec)[0] if e.startswith('D-1')], [])
         del st['highlight']   # one picture only, so there is nothing to diff: a highlight is required
         self.assertTrue(any('needs a highlight' in e for e in validate(spec)[0]))
+    def test_decide_shoot_screen_needs_no_highlight(self):
+        spec = load_spec(write_spec(self.d))
+        st = {'id': 'D-2', 'surface': 'Home', 'path': 'Chat', 'headline': 'Where should it go?',
+              'crop': 'settings/sound',
+              'options': [{'id': 'a', 'label': 'Leave it', 'summary': 'Nothing moves.'},
+                          {'id': 'b', 'label': 'Move it', 'summary': 'It drops below.'}]}
+        spec['steps'].append(st)
+        self.assertEqual([e for e in validate(spec)[0] if e.startswith('D-2')], [])
 
     def test_duplicate_ids(self):
         s = load_spec(write_spec(self.d)); s['steps'].append(dict(s['steps'][0]))

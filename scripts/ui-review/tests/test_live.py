@@ -21,7 +21,7 @@ sys.path.insert(0, HERE)
 from fixture import live_spec                                                    # noqa: E402
 from deck.build import build_page, deck_data                                     # noqa: E402
 from deck.crops import crop_images                                               # noqa: E402
-from deck.live import APP_PANE_HEIGHT, APP_PANE_WIDTH, LIVE_OFFSET, PANE_WIDTH, all_live, is_live, live_base, pane_url   # noqa: E402
+from deck.live import APP_PANE_HEIGHT, APP_PANE_WIDTH, PANE_WIDTH, all_live, is_live, live_base, pane_url   # noqa: E402
 from deck.spec import SpecError, load_spec, validate                             # noqa: E402
 
 
@@ -51,20 +51,25 @@ class AddressTests(unittest.TestCase):
         self.tmp = tempfile.mkdtemp()
         self.spec = load_spec(live_spec(self.tmp))
 
-    def test_default_port_is_clear_of_the_other_rigs(self):
-        # run-dev 50, run-workbench 60, record-pair/run-review 300 — a deck must be servable
-        # while any of them is up.
-        self.assertNotIn(LIVE_OFFSET, (50, 60, 300))
-        self.assertEqual(live_base({'live': {}}), 'http://127.0.0.1:%d' % (5173 + LIVE_OFFSET))
+    def test_default_base_is_relative_to_this_decks_own_server(self):
+        # No fixed port to collide with run-dev/run-workbench/record-pair: this deck builds and
+        # serves the practice app itself, under its own address, at /app/.
+        self.assertEqual(live_base({'live': {}}), '')
 
-    def test_explicit_base_beats_the_offset(self):
+    def test_explicit_base_wins(self):
+        # A test's stub server, standing in for one this deck did not start.
         self.assertEqual(live_base({'live': {'base': 'http://127.0.0.1:41234/'}}), 'http://127.0.0.1:41234')
 
-    def test_url_carries_child_round_and_candidate(self):
+    def test_url_is_root_relative_to_this_decks_own_app(self):
         u = pane_url(self.spec, {'surface': 'strip-expand', 'round': 1}, {'candidate': 'as-built'}, 'midnight')
+        self.assertTrue(u.startswith('/app/index.html?'), u)
         for want in ('mode=workbench', 'child=1', 'view=live', 'surface=strip-expand',
                      'round=1', 'candidate=as-built', 'theme=midnight'):
             self.assertIn(want, u, want)
+
+    def test_an_explicit_base_prefixes_the_same_app_path(self):
+        u = pane_url({'live': {'base': 'http://127.0.0.1:41234'}}, {'surface': 's', 'round': 1}, {'candidate': 'c'}, 'midnight')
+        self.assertTrue(u.startswith('http://127.0.0.1:41234/app/index.html?'), u)
 
     def test_an_app_pane_names_a_screen_and_carries_no_candidate(self):
         # A pane may show a real screen of the app instead of an authored sketch — the gap
@@ -140,7 +145,7 @@ class BuildTests(unittest.TestCase):
     def test_every_pane_carries_the_url_the_popout_opens(self):
         for st in self.data['steps']:
             for pane in st['panes']:
-                self.assertTrue(pane['url'].startswith('http://'))
+                self.assertTrue(pane['url'].startswith('/app/index.html?'), pane['url'])
                 self.assertIn('view=live', pane['url'])
 
     def test_panes_open_on_the_decks_first_theme(self):
@@ -151,10 +156,18 @@ class BuildTests(unittest.TestCase):
             self.assertNotIn('images', st)
             self.assertEqual(st['kind'], 'live')
 
-    def test_deck_carries_the_base_and_the_command_to_start_it(self):
-        self.assertEqual(self.data['live']['base'], live_base(self.spec))
-        self.assertIn('run-workbench.sh', self.data['live']['command'])
-        self.assertIn('live-tree', self.data['live']['command'])
+    def test_deck_carries_no_base_or_command_by_default(self):
+        # The default spec names no explicit live.base, so this deck's own /app/ serves the
+        # panes — there is nothing separate to start, so no 'command' is offered.
+        self.assertEqual(self.data['live']['base'], '')
+        self.assertNotIn('command', self.data['live'])
+        self.assertEqual(self.data['live']['worktree'], 'live-tree')
+
+    def test_an_explicit_base_still_carries_the_command_to_start_it(self):
+        data = deck_data(spec_with(self.tmp, lambda r: r['live'].update({'base': 'http://127.0.0.1:41234'})), {})
+        self.assertEqual(data['live']['base'], 'http://127.0.0.1:41234')
+        self.assertIn('run-workbench.sh', data['live']['command'])
+        self.assertIn('live-tree', data['live']['command'])
 
     def test_width_falls_back_to_the_routes_own_default(self):
         self.assertEqual(self.data['steps'][0]['width'], PANE_WIDTH)
@@ -271,38 +284,18 @@ class ValidationTests(unittest.TestCase):
 
 
 class ServeGuardTests(unittest.TestCase):
-    """serve boots the worktree's workbench — but never over a foreign one."""
+    """serve builds the worktree's practice app (scripts/shoot/build.mjs) for its live panes."""
 
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
         self.spec = load_spec(live_spec(self.tmp))
 
     def test_an_unknown_worktree_is_refused_by_name(self):
-        from deck.serve import start_workbench
+        from deck.serve import build_app
         with self.assertRaises(SpecError) as cm:
-            start_workbench(self.spec, log=lambda m: None)
+            build_app(self.spec, log=lambda m: None)
         self.assertIn('live-tree', str(cm.exception))
         self.assertIn('desktop/', str(cm.exception))
-
-    def test_a_foreign_server_on_the_port_is_refused_with_both_paths(self):
-        from fixture import LivePaneServer
-        from deck import serve as serve_mod
-        stub = LivePaneServer()
-        self.addCleanup(stub.stop)
-        tree = os.path.join(self.tmp, 'live-tree')
-        os.makedirs(os.path.join(tree, 'desktop'), exist_ok=True)
-        real_resolve, real_listener = serve_mod.resolve_worktree, serve_mod._listener_cwd
-        serve_mod.resolve_worktree = lambda name: tree
-        serve_mod._listener_cwd = lambda port: (4242, '/somewhere/else/desktop')
-        self.addCleanup(lambda: (setattr(serve_mod, 'resolve_worktree', real_resolve),
-                                 setattr(serve_mod, '_listener_cwd', real_listener)))
-        with self.assertRaises(SpecError) as cm:
-            serve_mod.start_workbench(self.spec, log=lambda m: None)
-        msg = str(cm.exception)
-        self.assertIn('REFUSING', msg)
-        self.assertIn('/somewhere/else/desktop', msg)      # what IS there
-        self.assertIn(os.path.join(tree, 'desktop'), msg)  # what SHOULD be
-        self.assertIn('offset', msg)                       # and the way out
 
     def test_a_session_worktree_resolves_by_its_own_name(self):
         """`workspace-start` puts a session's app checkout at
@@ -321,18 +314,40 @@ class ServeGuardTests(unittest.TestCase):
                 self.assertEqual(serve_mod.resolve_worktree(spelling), os.path.abspath(tree))
         self.assertIsNone(serve_mod.resolve_worktree('no-such-session'))
 
-    def test_a_server_already_serving_this_tree_is_left_alone(self):
+    def test_build_mjs_is_invoked_with_the_resolved_tree_and_its_folder_returned(self):
+        # No real vite build here (this is the CI-safe, no-ImageMagick-no-workbench coverage) —
+        # a fake build.mjs stands in, so this pins the CONTRACT (resolved tree in, its printed
+        # folder out) rather than the real practice app.
         from deck import serve as serve_mod
         tree = os.path.join(self.tmp, 'live-tree')
         os.makedirs(os.path.join(tree, 'desktop'), exist_ok=True)
-        real_resolve, real_listener = serve_mod.resolve_worktree, serve_mod._listener_cwd
+        dist = os.path.join(self.tmp, 'dist')
+        os.makedirs(dist, exist_ok=True)
+        script = os.path.join(self.tmp, 'build.mjs')
+        with open(script, 'w') as f:
+            f.write(f'#!/usr/bin/env node\nconsole.log({dist!r});\n')
+        real_resolve, real_script = serve_mod.resolve_worktree, serve_mod.SHOOT_BUILD_SCRIPT
         serve_mod.resolve_worktree = lambda name: tree
-        serve_mod._listener_cwd = lambda port: (4242, os.path.join(tree, 'desktop'))
+        serve_mod.SHOOT_BUILD_SCRIPT = script
         self.addCleanup(lambda: (setattr(serve_mod, 'resolve_worktree', real_resolve),
-                                 setattr(serve_mod, '_listener_cwd', real_listener)))
-        proc, started = serve_mod.start_workbench(self.spec, log=lambda m: None)
-        self.assertIsNone(proc)
-        self.assertFalse(started)   # not ours, so serve() must not stop it on exit
+                                 setattr(serve_mod, 'SHOOT_BUILD_SCRIPT', real_script)))
+        self.assertEqual(serve_mod.build_app(self.spec, log=lambda m: None), dist)
+
+    def test_a_build_failure_is_refused_with_the_scripts_own_error(self):
+        from deck import serve as serve_mod
+        tree = os.path.join(self.tmp, 'live-tree')
+        os.makedirs(os.path.join(tree, 'desktop'), exist_ok=True)
+        script = os.path.join(self.tmp, 'build.mjs')
+        with open(script, 'w') as f:
+            f.write('#!/usr/bin/env node\nconsole.error("vite exploded");\nprocess.exit(1);\n')
+        real_resolve, real_script = serve_mod.resolve_worktree, serve_mod.SHOOT_BUILD_SCRIPT
+        serve_mod.resolve_worktree = lambda name: tree
+        serve_mod.SHOOT_BUILD_SCRIPT = script
+        self.addCleanup(lambda: (setattr(serve_mod, 'resolve_worktree', real_resolve),
+                                 setattr(serve_mod, 'SHOOT_BUILD_SCRIPT', real_script)))
+        with self.assertRaises(SpecError) as cm:
+            serve_mod.build_app(self.spec, log=lambda m: None)
+        self.assertIn('vite exploded', str(cm.exception))
 
 
 if __name__ == '__main__':

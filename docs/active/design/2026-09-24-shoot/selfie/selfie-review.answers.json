@@ -1,0 +1,29 @@
+{
+ "deck": "deck-selfie-review",
+ "started": "2026-09-26T04:50:30.348Z",
+ "submitted": "2026-09-26T04:51:31Z",
+ "cur": 2,
+ "answers": {
+  "selfie-p1-1440x900": {
+   "v": "yes",
+   "t": 1790398277407,
+   "seconds": 47,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "selfie-p1-1024x768": {
+   "v": "yes",
+   "t": 1790398284062,
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "selfie-questions-p1-1440x900": {
+   "v": "yes",
+   "t": 1790398290485,
+   "seconds": 6,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

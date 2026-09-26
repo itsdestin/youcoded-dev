@@ -55,21 +55,34 @@
 
   // ── live panes ──────────────────────────────────────────────────────────────────────
   const MIN_PANE_H = 160;   // a pane whose script never reported is visibly empty, not a 0px line
+  // A pane's address is normally root-relative (`/app/index.html?…`) — THIS deck's own server
+  // built and serves it, so it is same-origin, and postMessage needs a real origin rather than
+  // the empty string DECK.live.base then is. `live.base` only carries a value when a spec names
+  // an EXTERNAL server (a test's stub, standing in for one this deck did not start).
+  const LIVE_ORIGIN = (DECK.live && DECK.live.base) || location.origin;
   // One probe per entry to a live step (not one per page): a server started AFTER the deck
   // was opened must be able to recover on the next visit. `no-cors` gives an opaque response
   // — useless to read, but a REJECTION is unambiguous, and it is the only reliable signal
   // here: Chrome fires an iframe `load` event on its own error page too.
-  const probeLive = () => fetch(DECK.live.base + '/', { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
+  const probeLive = () => fetch(DECK.live.base ? DECK.live.base + '/' : '/app/index.html',
+    { mode: 'no-cors', cache: 'no-store' }).then(() => true, () => false);
   function drawLivePanes() {
     $$('#inner iframe').forEach(f => { if (f.dataset.src) f.src = f.dataset.src; });
   }
   function drawServerDown(st) {
     // Specific and accurate (docs/error-message-standards.md): we know exactly which address
-    // did not answer and exactly what starts it. This is also what an ARCHIVED review shows.
+    // did not answer. This is also what an ARCHIVED review shows.
+    // Two different failures wear this card: an EXTERNAL server (a test's stub) that never
+    // started — Start it with: <command> — versus this deck's OWN /app/, which it just tried
+    // to build; nothing external to start, so the fix is to read the build error and reload.
+    const external = !!DECK.live.base;
     inner.innerHTML = `<div class="down"><h3>The app server for this review is not running</h3>`
-      + `<p>Nothing answered at <code>${esc(DECK.live.base)}</code>, so the ${st.panes.length === 1 ? 'pane has' : 'panes have'} nothing to show. Start it with:</p>`
-      + `<pre>${esc(DECK.live.command)}</pre>`
-      + `<p class="sub">Or re-run <code>review-cards.py serve &lt;spec&gt;</code>, which starts it for you. A review read back later always lands here — live panes do not replay.</p></div>`;
+      + `<p>Nothing answered at <code>${esc(external ? DECK.live.base : '/app/index.html')}</code>, so the `
+      + `${st.panes.length === 1 ? 'pane has' : 'panes have'} nothing to show.`
+      + (external
+        ? ` Start it with:</p><pre>${esc(DECK.live.command)}</pre>`
+        : ` The practice app failed to build.</p><p class="sub">Check the terminal that ran <code>review-cards.py serve</code> for the error, then reload this page.</p>`)
+      + `<p class="sub">Or re-run <code>review-cards.py serve &lt;spec&gt;</code>, which builds and serves it for you. A review read back later always lands here — live panes do not replay.</p></div>`;
   }
   // Theme WITHOUT render(): render() rebuilds #inner, which reloads every iframe and throws
   // away a half-finished drag or an animation mid-play. The app applies the swap live through
@@ -77,7 +90,7 @@
   function setLiveTheme() {
     document.documentElement.dataset.theme = theme;
     $$('.thumb').forEach(b => b.classList.toggle('on', b.dataset.v === theme));
-    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (e) { /* not loaded yet */ } });
+    $$('#inner iframe').forEach(f => { try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (e) { /* not loaded yet */ } });
   }
   // What a pane may be wide, as a range. A width the pane MEASURED for itself beats the one
   // the spec guessed at — the number lives in the registry in the other repo, so the deck can
@@ -148,7 +161,7 @@
       // reloading (a reload restarts the animation being judged); only when it changes.
       if (ranges[i].min !== ranges[i].max && f.dataset.askedWidth !== String(w)) {
         f.dataset.askedWidth = String(w);
-        try { f.contentWindow.postMessage({ type: 'youcoded:pane-width', width: w }, DECK.live.base); } catch (e) { /* not loaded yet */ }
+        try { f.contentWindow.postMessage({ type: 'youcoded:pane-width', width: w }, LIVE_ORIGIN); } catch (e) { /* not loaded yet */ }
       }
     });
     document.body.dataset.layout = 'live';
@@ -329,14 +342,81 @@
   const stage = $('#stage'), inner = $('#inner'), loupe = $('#loupe');
 
   // ── persistence ──
+  // WHY each answer carries its own time (`t`) and nothing is ever just overwritten (2026-09-25):
+  // two PC shutdowns on 2026-09-23 lost answers Destin had given. The page kept a backup in the
+  // browser but never read it back while served, a refused save (409) looked like a saved one,
+  // and a restarted server moved the deck to a new address where that backup was out of reach.
+  // Now: every save is confirmed or retried and says which on screen; a refusal folds the file's
+  // answers in and saves again; loading merges the browser's backup with the file, the newer
+  // answer winning. serve.py keeps the deck on one address (pick_port) so the backup is found.
   const LS = 'deck:' + DECK.key;
-  async function load() {
-    try { const r = await fetch('/answers', { cache: 'no-store' }); if (r.ok) { server = true; document.body.dataset.served = '1'; const j = await r.json(); if (j && j.answers) Object.assign(state, j); return; } } catch (e) { /* not served */ }
-    try { const j = JSON.parse(localStorage.getItem(LS) || 'null'); if (j && j.answers) Object.assign(state, j); } catch (e) { /* no storage */ }
+  const stamped = {};   // step id → that answer as last stamped, so only a changed answer gets a new time
+  function stamp() {
+    const now = Date.now();
+    for (const [id, a] of Object.entries(state.answers || {})) {
+      if (!a) continue;
+      const { t, ...rest } = a; const k = JSON.stringify(rest);
+      if (stamped[id] !== k) { if (stamped[id] !== undefined || !t) a.t = now; stamped[id] = k; }
+    }
   }
+  // `extra`'s answers join `base`'s; where both hold one, the newer wins (a missing time is oldest).
+  function merged(base, extra) {
+    const out = { ...base, answers: { ...(base.answers || {}) } };
+    for (const [id, a] of Object.entries((extra && extra.answers) || {})) {
+      const b = out.answers[id];
+      if (a && (!b || (a.t || 0) > (b.t || 0))) out.answers[id] = a;
+    }
+    return out;
+  }
+  function showSaved(ok, why) {
+    const el = $('#saved'); if (!el || !server) return;
+    el.hidden = false; el.dataset.ok = ok ? '1' : '0';
+    el.textContent = ok ? 'Saved ✓' : 'NOT saved — retrying';
+    el.title = ok ? 'Your answers are in the file next to this deck.' : 'Could not save (' + why + '). Retrying every 2 seconds; your answers are also kept in this browser.';
+  }
+  async function load() {
+    let local = null;
+    try { local = JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { /* no storage */ }
+    try {
+      const r = await fetch('/answers', { cache: 'no-store' });
+      if (r.ok) {
+        server = true; document.body.dataset.served = '1';
+        const disk = await r.json();
+        // The browser's copy only counts for THIS round: a submitted round, or one the file says
+        // started at another time, belongs to an earlier review of the same deck.
+        const sameRound = local && local.answers && !local.submitted && (!disk.started || !local.started || disk.started === local.started);
+        const next = sameRound ? merged(disk && disk.answers ? disk : { ...local, answers: {} }, local) : disk;
+        if (next && next.answers) Object.assign(state, next);
+        for (const [id, a] of Object.entries(state.answers || {})) if (a) { const { t, ...rest } = a; stamped[id] = JSON.stringify(rest); }
+        if (sameRound && JSON.stringify(next.answers) !== JSON.stringify((disk && disk.answers) || {})) save();   // the backup held something the file lost
+        else showSaved(true);   // what is on screen is what is in the file, so say so from the start
+        return;
+      }
+    } catch (e) { /* not served */ }
+    if (local && local.answers) Object.assign(state, local);
+  }
+  let retry = null;
+  const post = () => fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) });
   async function save() {
+    stamp();
     try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) { /* no storage */ }
-    if (server) { try { await fetch('/answers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(state) }); } catch (e) { /* server gone — the file has everything up to the last successful POST */ } }
+    if (!server) return;
+    clearTimeout(retry);
+    try {
+      let r = await post();
+      if (r.status === 409) {
+        // This page is older than the file (it was open across a server restart). Fold the
+        // file's answers in — the newer of each wins — and save the union, instead of losing either.
+        const disk = await (await fetch('/answers', { cache: 'no-store' })).json();
+        Object.assign(state, merged(state, disk)); paintState();
+        r = await post();
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      showSaved(true);
+    } catch (e) {
+      showSaved(false, (e && e.message) || String(e));
+      retry = setTimeout(save, 2000);
+    }
   }
 
   // ── render the current step ──
@@ -783,7 +863,7 @@
   // the deck cannot know a candidate's height — it lives in the other repo.
   window.addEventListener('message', e => {
     // Symmetric with the route, which only accepts theme messages from a loopback origin.
-    if (!DECK.live || e.origin !== DECK.live.base) return;
+    if (!DECK.live || e.origin !== LIVE_ORIGIN) return;
     const d = e.data;
     if (!d || d.type !== 'youcoded:pane-height' || !(d.height > 0)) return;
     const st = DECK.steps[cur];
@@ -799,7 +879,7 @@
     // right moment to correct that: the pane has MOUNTED and is listening. The iframe's own
     // `load` event is not — it fires before the app's async boot installs the listener, and
     // the message is dropped silently (tried that first, 2026-09-01).
-    try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, DECK.live.base); } catch (err) { /* gone */ }
+    try { f.contentWindow.postMessage({ type: 'youcoded:theme', theme }, LIVE_ORIGIN); } catch (err) { /* gone */ }
     // NOT capped at the stage. It was, and a 494px design in a 380px stage lost its bottom
     // 114px — Destin saw a permissions list sliced mid-item (2026-09-01). A pane that scrolls
     // inside itself is worse than a stage that scrolls: the inner scrollbar reads as part of

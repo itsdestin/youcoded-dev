@@ -151,6 +151,14 @@ jobs:
           # Node started all perf files at once; neither failed in isolation.
           node --test --test-concurrency=2 $files
 
+      # shoot's engine (docs/active/specs/2026-09-24-shoot-and-explore.md): leftover
+      # browsers are swept without touching strangers, the pool stays sane. The
+      # two-tabs-two-themes case needs Chrome and the app's node_modules, and skips
+      # itself here — it runs wherever `shoot` does.
+      - name: Test shoot's engine
+        if: ${{ !cancelled() }}
+        run: node --test scripts/shoot/tests/*.test.mjs
+
       # The Luna cache-measurement rig's offline tests (2026-09-23): gate ceilings, usage
       # parsing, adapters and isolation checks — no network, no quota. The one test that
       # needs the private OpenCode source checkout skips itself here.
@@ -213,11 +221,6 @@ jobs:
       - name: a launcher resolves a session worktree by its own name
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/resolve-checkout.test.sh
-
-      # run-review.sh took `--help` as a worktree and started a workbench for it (2026-09-16).
-      - name: run-review.sh refuses a target that is not a folder
-        if: ${{ !cancelled() }}
-        run: bash scripts/ui-review/tests/run-review-args.test.sh
 
       # The pre-merge report must say whether the branch still merges cleanly — two branches
       # passed every check on 2026-09-04 and conflicted on the generated roadmap table at merge.

@@ -10,7 +10,8 @@ verify:
   - path: youcoded/desktop/src/renderer/styles/globals.css
     contains: "chrome-glass"
   - path: youcoded/desktop/src/renderer/components/RemoteSnapshotExporter.tsx
-  - path: scripts/ui-review/run-review.sh
+  - path: scripts/shoot/shoot.mjs
+    contains: "not showing"
   - path: scripts/ui-review/shot.mjs
     contains: "identical to baseline"
   - path: youcoded/desktop/src/renderer/components/ui/Button.tsx

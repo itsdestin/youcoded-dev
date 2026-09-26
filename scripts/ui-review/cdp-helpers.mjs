@@ -62,3 +62,47 @@ export const textExpr = (t, tag) => `[...document.querySelectorAll(${JSON.string
 // Wraps a selector expression (from selExpr/textExpr) into JS that resolves
 // the element's centre point + size in window pixels, or null if missing.
 export const rectOfExpr = (expr) => `(() => { const el = ${expr}; if (!el) return null; el.scrollIntoView({block:'nearest'}); const r = el.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}; })()`;
+
+// Painted-pixel contrast probe: for each visible element with its own text,
+// measure the computed colour against the first opaque ancestor background.
+// Returns a JSON string of the failures. Used by shot.mjs and scripts/shoot/.
+export const CONTRAST_PROBE = `(() => {
+  const lum = (r,g,b) => { const f = c => { c/=255; return c<=0.03928? c/12.92 : Math.pow((c+0.055)/1.055,2.4); }; return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b); };
+  const parse = s => { const m = s && s.match(/rgba?\\(([^)]+)\\)/); if(!m) return null; const p = m[1].split(',').map(Number); return {r:p[0],g:p[1],b:p[2],a:p.length>3?p[3]:1}; };
+  const blend = (top, under) => ({ r: top.r*top.a+under.r*(1-top.a), g: top.g*top.a+under.g*(1-top.a), b: top.b*top.a+under.b*(1-top.a), a: 1 });
+  const bgOf = el => { let cur = el; let acc = null; while (cur && cur !== document) { const cs = getComputedStyle(cur); const c = parse(cs.backgroundColor); if (c && c.a > 0) { acc = acc ? blend(acc, c) : c; if (acc.a >= 0.999 || c.a >= 0.999) return acc; } if (cs.backgroundImage && cs.backgroundImage !== 'none' && !acc) return null; cur = cur.parentElement; } return acc ? blend(acc, {r:255,g:255,b:255,a:1}) : null; };
+  const out = [];
+  for (const el of document.querySelectorAll('body *')) {
+    if (['SCRIPT','STYLE','SVG','PATH','CANVAS','IFRAME','TEXTAREA','INPUT'].includes(el.tagName)) continue;
+    let txt = ''; for (const n of el.childNodes) if (n.nodeType===3) txt += n.textContent;
+    txt = txt.trim(); if (!txt) continue;
+    const rect = el.getBoundingClientRect(); if (rect.width < 2 || rect.height < 2) continue;
+    if (rect.bottom < 0 || rect.right < 0 || rect.top > innerHeight || rect.left > innerWidth) continue;
+    const cs = getComputedStyle(el); if (cs.visibility==='hidden' || cs.display==='none' || Number(cs.opacity)===0) continue;
+    let anc = el, hidden=false; while (anc && anc !== document.body) { const a = getComputedStyle(anc); if (Number(a.opacity)===0 || a.visibility==='hidden') { hidden=true; break; } anc = anc.parentElement; } if (hidden) continue;
+    const fgRaw = parse(cs.color); if (!fgRaw) continue;
+    const bg = bgOf(el); if (!bg) continue;
+    const fg = fgRaw.a < 1 ? blend(fgRaw, bg) : fgRaw;
+    const L1 = lum(fg.r,fg.g,fg.b), L2 = lum(bg.r,bg.g,bg.b);
+    const ratio = (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
+    const size = parseFloat(cs.fontSize); const bold = parseInt(cs.fontWeight,10) >= 700;
+    const need = (size >= 18.66 || (bold && size >= 14)) ? 3 : 4.5;
+    if (ratio < need) {
+      const path = []; let p = el; for (let i=0;i<4 && p && p!==document.body;i++){ path.unshift(p.tagName.toLowerCase() + (typeof p.className==='string' && p.className ? '.'+p.className.trim().split(/\\s+/).slice(0,3).join('.') : '')); p = p.parentElement; }
+      out.push({ text: txt.slice(0,60), ratio: Math.round(ratio*100)/100, need, size, fg: cs.color, bg: 'rgb('+Math.round(bg.r)+','+Math.round(bg.g)+','+Math.round(bg.b)+')', path: path.join(' > '), x: Math.round(rect.left), y: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) });
+    }
+  }
+  return JSON.stringify(out);
+})()`;
+
+// Launched with debugging port 0, Chrome picks a free port and writes it to
+// <profile>/DevToolsActivePort. WHY: a fixed port collided whenever two runs overlapped
+// (a second session, a parallel sweep) — the engine (scripts/shoot/engine.mjs) works the
+// same way. Pass `0` as CHROME_FLAGS' port, then read the real one here.
+export async function readDevToolsPort(profileDir, ms = 10_000) {
+  const { readFileSync } = await import('node:fs');
+  for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 100))) {
+    try { const p = Number(readFileSync(`${profileDir}/DevToolsActivePort`, 'utf8').split('\n')[0]); if (p) return p; } catch { /* not written yet */ }
+  }
+  throw new Error(`Chrome did not report a debugging port within ${ms / 1000} s`);
+}

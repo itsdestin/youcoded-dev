@@ -1,108 +1,104 @@
 {
- "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
- "width": 1440,
- "height": 900,
- "shots": [
-  {
-   "name": "home",
-   "actions": [],
-   "sameAsBaseline": true,
-   "expect": "[title=Settings]"
-  },
-  {
-   "name": "marketplace",
-   "actions": [
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default",
+  "width": 1440,
+  "height": 900,
+  "shots": [
     {
-     "click": "[title='Browse skills']",
-     "settle": 800
+      "name": "home",
+      "actions": [],
+      "sameAsBaseline": true,
+      "expect": "[title=Settings]"
     },
     {
-     "click": "[title='Open marketplace']",
-     "settle": 1500
-    }
-   ],
-   "expect": "[aria-label='Open Your Library'], [title='Your Library']"
-  },
-  {
-   "name": "projects",
-   "actions": [
-    {
-     "click": "[title=Projects]",
-     "settle": 900
-    }
-   ],
-   "expect": "[aria-label=Files]"
-  },
-  {
-   "name": "model-picker",
-   "actions": [
-    {
-     "click": "[title^='Click to change model']",
-     "settle": 600
-    }
-   ],
-   "expect": "[role=dialog]"
-  },
-  {
-   "name": "tags",
-   "actions": [
-    {
-     "click": "[title^='Tags & note']",
-     "settle": 600
-    }
-   ],
-   "expect": "[placeholder^='Search or create']"
-  },
-  {
-   "name": "connect4",
-   "actions": [
-    {
-     "click": "[title='Games']",
-     "settle": 1500
+      "name": "marketplace",
+      "actions": [
+        {
+          "click": "[title='Browse skills']",
+          "settle": 800
+        },
+        {
+          "click": "[title='Open marketplace']",
+          "settle": 1500
+        }
+      ],
+      "expect": "[aria-label='Open Your Library'], [title='Your Library']"
     },
     {
-     "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(4)",
-     "settle": 1600
+      "name": "projects",
+      "actions": [
+        {
+          "click": "[title=Projects]",
+          "settle": 900
+        }
+      ],
+      "expect": "[aria-label=Files]"
     },
     {
-     "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(3)",
-     "settle": 1600
+      "name": "model-picker",
+      "actions": [
+        {
+          "click": "[title^='Click to change model']",
+          "settle": 600
+        }
+      ],
+      "expect": "[role=dialog]"
     },
     {
-     "click": ".bg-blue-700.rounded-lg.p-2 > .flex.gap-1 > div:nth-child(5)",
-     "settle": 1600
+      "name": "tags",
+      "actions": [
+        {
+          "click": "[title^='Tags & note']",
+          "settle": 600
+        }
+      ],
+      "expect": "[placeholder^='Search or create']"
+    },
+    {
+      "name": "connect4",
+      "actions": [
+        {
+          "eval": "window.__youcodedScreens.open('chat/games/connect-four')",
+          "settle": 1500
+        },
+        {
+          "click": "[data-col='3']",
+          "settle": 1600
+        },
+        {
+          "click": "[data-col='2']",
+          "settle": 1600
+        },
+        {
+          "click": "[data-col='4']",
+          "settle": 1600
+        }
+      ],
+      "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&signedIn=1",
+      "expect": "js:[...document.querySelectorAll('[data-col]')].some((b) => /, [1-9] of \\d+ filled/.test(b.getAttribute('aria-label') || ''))"
+    },
+    {
+      "name": "themes",
+      "actions": [
+        {
+          "click": "[title=Settings]",
+          "settle": 700
+        },
+        {
+          "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+          "settle": 900
+        }
+      ],
+      "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
+    },
+    {
+      "name": "permissions",
+      "actions": [
+        {
+          "eval": "window.__youcodedScreens.open('settings/assistant/permissions')",
+          "settle": 1200
+        }
+      ],
+      "expect": "[data-screen='settings/assistant/permissions']"
     }
-   ],
-   "url": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&signedIn=1",
-   "expect": ".bg-blue-700.rounded-lg.p-2 .bg-red-600, .bg-blue-700.rounded-lg.p-2 .bg-yellow-500"
-  },
-  {
-   "name": "themes",
-   "actions": [
-    {
-     "click": "[title=Settings]",
-     "settle": 700
-    },
-    {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
-     "settle": 900
-    }
-   ],
-   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
-  },
-  {
-   "name": "permissions",
-   "actions": [
-    {
-     "click": "[title=Settings]",
-     "settle": 700
-    },
-    {
-     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Permissions\"))",
-     "settle": 900
-    }
-   ],
-   "expect": "[role=dialog], [aria-label='Close settings'] ~ *"
-  }
- ]
+  ]
 }

@@ -19,7 +19,6 @@
 //     'http://127.0.0.1:<port>/?mode=workbench&child=1&view=app&scenario=stress&latency=0'
 //   A scenario needs 3+ pills in the strip, so pass FUZZ_W=1400 FUZZ_H=900 — see W/H below.
 //
-//   CDP_PORT=10330   throw-away Chrome's debug port (fresh per run)
 //   FUZZ_W / FUZZ_H  emulated window (default 460x600, the deck pane's width)
 //   OUT_DIR=.        drag-fuzz.json (every scenario's frames) + drag-fuzz.md (the table)
 //   DPR=1.5          device scale factor (Destin's panel is 1.5)
@@ -42,7 +41,7 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { CHROME_FLAGS, waitForCdp } from './cdp-helpers.mjs';
+import { CHROME_FLAGS, readDevToolsPort, waitForCdp } from './cdp-helpers.mjs';
 
 const [url, countArg, seedArg] = process.argv.slice(2);
 if (!url) { console.error('usage: drag-fuzz.mjs <url> [count] [seed]'); process.exit(2); }
@@ -52,7 +51,6 @@ const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed
 const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
 const between = (a, b) => a + rnd() * (b - a);
 
-const CDP_PORT = Number(process.env.CDP_PORT ?? 10330);
 const DPR = Number(process.env.DPR ?? 1.5);
 // WHY (2026-09-07) these are overridable: 460 is the DECK PANE's width, and at
 // 460 the strip packs to ONE pill — runScenario needs three, so the sweep bailed
@@ -61,10 +59,12 @@ const DPR = Number(process.env.DPR ?? 1.5);
 // workbench's stress scenario: 1 pill at 460x600, 11 at 1400x900.
 const W = Number(process.env.FUZZ_W ?? 460), H = Number(process.env.FUZZ_H ?? 600);
 const profile = mkdtempSync(join(tmpdir(), 'drag-fuzz-'));
-const flags = CHROME_FLAGS(W, H, CDP_PORT, profile).map((f) => f === '--force-device-scale-factor=1' ? `--force-device-scale-factor=${DPR}` : f);
+const flags = CHROME_FLAGS(W, H, 0, profile).map((f) => f === '--force-device-scale-factor=1' ? `--force-device-scale-factor=${DPR}` : f);
 if (process.env.UNLIMITED) flags.unshift('--disable-frame-rate-limit', '--disable-gpu-vsync');
 const chrome = spawn('google-chrome-stable', flags, { stdio: 'ignore' });
 process.on('exit', () => { chrome.kill(); try { rmSync(profile, { recursive: true, force: true }); } catch {} });
+// Port 0: Chrome picks a free one (was CDP_PORT=10330, which collided between runs).
+const CDP_PORT = await readDevToolsPort(profile);
 await waitForCdp(CDP_PORT);
 const targets = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json();
 const target = targets.find((t) => t.type === 'page') ?? targets[0];

@@ -1,4 +1,4 @@
-"""Live panes: where a pane's address comes from, and who owns the port it points at.
+"""Live panes: where a pane's address comes from, and who serves what it points at.
 
 A live step shows the RUNNING app instead of a screenshot — one authored candidate out of
 `compare/registry.tsx`, in its own frame, that Destin can hover, click and drag. Motion is
@@ -6,16 +6,20 @@ judged by doing it; two recordings side by side is how the 2026-08-31 session-st
 failed. Spec: docs/archive/specs/2026-08-31-live-review-panes-design.md.
 
 WHY this is its own module: `build.py` bakes the pane addresses into the page and `serve.py`
-starts the server those addresses point at. Both read the SAME spec through here, so a page
-built earlier and a server started later cannot disagree about the port — which is what makes
-`serve --no-build` safe."""
+serves what they point at. Both read the SAME spec through here, so a page built earlier and
+a server started later cannot disagree about the address — which is what makes
+`serve --no-build` safe.
+
+WHY relative addresses (2026-09-26, docs/active/specs/2026-09-24-shoot-and-explore.md → "Review
+decks"): a live pane used to point at a FIXED port (`run-workbench.sh` on 5173+340), which
+collided between sessions and lost its panes whenever the deck itself was restarted. The deck
+now serves the practice app itself, under its own address, as `/app/index.html` — so a pane
+survives a restart along with the rest of the page. `live.base` remains as an explicit escape
+hatch: a test binds a stub server on an ephemeral port, which is not this deck's own address,
+and making a fixture do arithmetic against a constant it does not care about is a trap."""
 
 from urllib.parse import urlencode
 
-VITE_BASE_PORT = 5173
-# 5513. Deliberately clear of run-dev.sh (50), run-workbench.sh (60) and record-pair.sh /
-# run-review.sh (300), so a deck can be served while any of those is already running.
-LIVE_OFFSET = 340
 # Must match PANE_WIDTH in youcoded's compare/Frame.tsx: the route falls back to it for a
 # surface that declares no paneWidth, and the deck sizes the row on the same number. This
 # repo cannot read the registry, so the two constants are pinned by comment, not by import.
@@ -42,19 +46,14 @@ def all_live(spec):
     return bool(spec['steps']) and all(is_live(st) for st in spec['steps'])
 
 
-def live_offset(spec):
-    return (spec.get('live') or {}).get('offset', LIVE_OFFSET)
-
-
 def live_base(spec):
-    """The origin the panes are served from. `live.base` wins when set — the tests bind a stub
-    server on an ephemeral port, which is not `5173 + <any sane offset>`, and making a fixture
-    do that arithmetic against a constant it does not care about is a trap. `offset` remains
-    the thing serve.py hands to run-workbench.sh."""
+    """The origin a pane's address is written against. `live.base` wins when set — the tests
+    bind a stub server on an ephemeral port, and page.js treats a spec that sets this as
+    pointing at an EXTERNAL server it did not start (the old "is it running?" card still
+    applies there). Empty otherwise: the address is root-relative, so it resolves against
+    whatever this deck's own server is running on — no arithmetic, no fixed port to collide."""
     explicit = (spec.get('live') or {}).get('base')
-    if explicit:
-        return explicit.rstrip('/')
-    return f'http://127.0.0.1:{VITE_BASE_PORT + live_offset(spec)}'
+    return explicit.rstrip('/') if explicit else ''
 
 
 def pane_width(spec):
@@ -100,6 +99,11 @@ def is_app_pane(d):
 def pane_url(spec, live, pane, theme):
     """The one place a pane address is spelled.
 
+    `/app/index.html` is where THIS deck serves the practice app it just built (serve.py) —
+    root-relative, so it resolves against whatever address the deck itself is running on.
+    `live_base(spec)` prefixes it only when a spec names an explicit `live.base` (a test's
+    stub server, standing in for a server this deck did not start).
+
     Always `child=1` — without it the workbench renders its toolbar frame instead of the page.
     A CANDIDATE pane always carries `round` too: candidate ids are unique only within a round
     (`close-prompt-body` reuses `labelled` and `one-line` across its ten rounds), so an address
@@ -128,4 +132,4 @@ def pane_url(spec, live, pane, theme):
             q['stalled'] = '1'
     else:
         q.update({'view': 'live', 'surface': d['surface'], 'round': d['round'], 'candidate': d['candidate']})
-    return f'{live_base(spec)}/?{urlencode(q)}'
+    return f'{live_base(spec)}/app/index.html?{urlencode(q)}'

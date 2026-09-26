@@ -56,6 +56,10 @@ body.embedded .deck{margin-bottom:62px}   /* the app's file panel floats an Edit
 .steps span:hover{transform:scaleY(1.4)} .steps span.on{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--fg)}
 .steps span.yes,.steps span.pick{background:var(--yes)} .steps span.no{background:var(--no)} .steps span.other{background:var(--other)} .steps span.skip{background:var(--fg-faint)}
 .count{font-size:11px;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Save status (page.js showSaved): visible at every width, unlike .count — a failed save is the one
+   thing on this bar he must never miss. Quiet when saved, loud when not. */
+.saved{font-size:11px;white-space:nowrap;color:var(--fg-muted)}
+.saved[data-ok="0"]{color:#fff;background:#b3261e;padding:3px 8px;border-radius:6px;font-weight:600}
 .btn{font:inherit;font-size:12px;font-weight:500;height:32px;padding:0 14px;border-radius:var(--radius-md);border:1px solid var(--edge);background:transparent;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background .15s,transform .15s,filter .15s}
 .btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)} .btn.ghost{border-color:transparent;color:var(--fg-2)} .btn.sm{height:28px;padding:0 10px}
 @media (hover:hover){ .btn:hover{background:var(--inset)} .btn.primary:hover{background:var(--accent);filter:brightness(1.12);transform:translateY(-1px)} .btn.ghost:hover{background:var(--inset);color:var(--fg)} }
