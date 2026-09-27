@@ -71,7 +71,12 @@ test('controls: labels, roles, what is covered, and the top layer first', { skip
     const tab = await b.newTab();
     await tab.prepare({ theme: 'light', width: 800, height: 600 });
     await tab.navigate(`data:text/html,${encodeURIComponent(PAGE)}`);
-    await new Promise((r) => setTimeout(r, 300));
+    // WHY wait on the page, not a fixed 300 ms: navigate() returns before the
+    // document exists, and on a loaded CI runner 300 ms was not enough —
+    // listLayers read a null body (youcoded-dev#212, 2026-09-27).
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
     const { layers } = await tab.evaluate(inPage(listLayers));
     assert.deepEqual(layers.map((l) => `${l.kind} ${l.name}`), ['menu First item / Second item', 'dialog Rename']);
     const { controls, covered, offscreen } = await tab.evaluate(inPage(listControls, {}));
