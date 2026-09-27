@@ -124,6 +124,29 @@ narrow desktop pane → popover by the marker), comments re-opening after resize
 deck one-pane live steps clipping the app (Meadow Mist blur), deck panes ignoring their
 theme. Deck-page CSS change needs a selfie before/after before merge.
 
+## Build status (2026-09-27, before compaction)
+
+**Decision (Destin, 2026-09-27, chat — ratify on the acceptance/reopen deck):** Excel comments use
+ONLY modern threaded comments (xl/threadedComments + xl/persons.xml, plus the legacy placeholder
+Excel expects), never old-style notes as the product format. The built desktop xlsx writer
+(youcoded 75f160141, surgical note edits) and reader are note-based and must be redesigned; the
+Android xlsx write task (T19) is on hold until then. Current code wrongly refuses the WHOLE workbook
+if any threaded comment exists (xlsx-comments.ts ~356-393).
+
+**Open question for Destin:** should the assistant ask permission before changing comments
+(design §5.2a)? Options: only for Word/Excel files (recommended) / every time / never. Blocks T8/T9a.
+
+**Built + reviewed + fixed (youcoded session/comments-mock-a):** T1 store, T2 anchoring, T3 IPC +
+known-root gate, T4 Android IPC parity (+ cross-process lock), T5 renderer on real IPC, T6 detached
+UI, T7 chip wire format, T10/T12 desktop Word/Excel read, T11 desktop Word write, T13 desktop Excel
+write (surgical rewrite — its review was interrupted; superseded by the threaded decision), T14
+anchoring in viewers, T16/T18 Android Word/Excel read, T17 Android Word write.
+**Remaining:** Excel threaded-comment redesign (desktop read/write + Android read/write T18/T19
+redo), T8 native assistant tools, T9a MCP tools, T9b desktop pending queue, T9c Android MCP asset,
+T20 Android pending queue, T21 cross-platform golden parity test; then code reviewer, grader,
+acceptance deck; deck-page CSS selfie (review-deck rule); roadmap items: backup eviction,
+workbench latency quirk in ui-probe.
+
 ## What the build found (infrastructure survey, 2026-09-24)
 
 - Accounts: GitHub sign-in through the marketplace Worker (D1). No per-user document
