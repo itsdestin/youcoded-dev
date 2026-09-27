@@ -5,6 +5,31 @@ contract: docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json 
 handoff: docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 related: docs/roadmap/files.md → "Document comments"
 changelog:
+  - 2026-09-26: revised after T11's own IMPLEMENTATION review (docx write, `desktop/src/main/doc-
+    comments/docx-comments.ts`, commit 63d49b155) — 5 findings, all fixed in the same pass as T13's
+    generic write pipeline (`write-pipeline.ts`) landed, so T11 now runs ON that shared pipeline rather
+    than a second copy of it. F1 (blocker): `verifyOoxmlWiring`'s r:id check was scoped to the WHOLE
+    document, so a single pre-existing dangling relationship anywhere (common in real Word files; Word
+    opens them without complaint) failed every write to that file with
+    a misleading verify-failed — scoped to a before/after diff of dangling ids, so only a reference
+    THIS write itself broke fails verification (§3.3 step 6). F2 (major): every write re-serialized
+    document.xml/[Content_Types].xml/document.xml.rels through linkedom unconditionally, which silently
+    rewrites the XML declaration (drops `standalone="yes"`, lowercases `encoding`) and adds a space
+    before every self-closing tag's `/>` — even on parts the operation never touched. Each part now
+    tracks whether THIS operation actually changed it; an untouched part is written back byte-for-byte
+    verbatim, and a changed part gets its original declaration restored and the added space stripped.
+    F3 (major): splitting a run for a new comment range only cloned its `w:rPr` child, dropping every
+    attribute Word stamps on `<w:r>` itself (rsids) — now copied onto every resulting piece. F4: two of
+    Word 2016+'s own extension parts, `word/commentsIds.xml` (w16cid, pairs a comment's paraId with a
+    durable id) and `word/commentsExtensible.xml` (w16cex, pairs that durable id with a UTC timestamp),
+    now get a matching entry on add/reply when the file ALREADY has them — never created when absent.
+    F5: settled §3.3 step 1's own open choice ("next to the source... or under `.youcoded/backups/`,
+    decided at task time") — the backup lives at `~/.claude/youcoded-doc-backups/<hash-of-path>
+    .docx.bak` (or `.xlsx.bak` for T13's xlsx path, since the fix landed in the shared pipeline), one
+    ROLLING backup per file (a hash of the absolute path, not a timestamp, so the next write overwrites
+    it rather than accumulating), KEPT after a successful write as a standing safety net rather than
+    deleted. See `desktop/src/main/doc-comments/write-pipeline.ts` for the mechanics; both docx and
+    xlsx share them.
   - 2026-09-26: revised after review 1 (docs/active/reviews/2026-09-26-doc-comments-design-review-1.md)
     — 17/17 findings accepted. Moved docx/xlsx comment parse+mutate from the renderer into the main
     process (§3.2, §3.3, §4; resolves the F1/F2 renderer-vs-main contradiction with no new binary IPC
@@ -815,11 +840,19 @@ contract).
 Same module, mirrored write functions, applied to the **loaded JSZip archive** in memory:
 
 1. **Backup before write** (contract requirement, R9/R10's own threshold language): copy the
-   original bytes to a sibling path before touching anything —
-   `<file>.docx.bak-<timestamp>` next to the source (or under `.youcoded/backups/`, decided at
-   task time — either is fine as long as it survives the write it's protecting against). Only one
-   rolling backup is kept per file per session to avoid unbounded growth; this is a safety net for
-   a corrupted write, not a version history (Word comments already carry their own history, §1.1).
+   original bytes to `~/.claude/youcoded-doc-backups/<hash-of-the-absolute-path>.docx.bak` before
+   touching anything — **decided at implementation time (T11 review, F5)**, settling this step's
+   original "next to the source... or under `.youcoded/backups/`" open choice. A sibling path next
+   to the source was ruled out: a dotdir INSIDE the user's own project is still inside whatever that
+   project's git repo or cloud-sync tool (Dropbox, iCloud) watches, so it fails the "survives the
+   write it's protecting against, and isn't itself synced/committed as a stray file" requirement —
+   only a location entirely OUTSIDE the project satisfies it. The filename is a hash of the file's own
+   absolute path, not a timestamp, so exactly ONE rolling backup exists per file — the next write to
+   the same file overwrites the same path — and it is KEPT after a successful write (not deleted) as
+   a standing safety net, not just cover for the moment of the write itself; this is still a safety
+   net for a corrupted write, never a version history (Word comments already carry their own history,
+   §1.1). Implemented once, generically, in `desktop/src/main/doc-comments/write-pipeline.ts`
+   (T13's shared pipeline) — §4.3's xlsx path gets the identical behaviour for free.
 2. Add a comment: append a new `<w:comment>` to `comments.xml` (creating the part + its
    `[Content_Types].xml` override + the `word/_rels/document.xml.rels` relationship if the file had
    no comments before), and insert `w:commentRangeStart`/`End` + a `w:commentReference` run into
@@ -835,6 +868,15 @@ Same module, mirrored write functions, applied to the **loaded JSZip archive** i
    `w15:paraIdParent` to the parent's `w15:paraId` (creating `commentsExtended.xml` if absent).
 4. Resolve/reopen: set/clear `w15:done` on the matching `commentsExtended.xml` entry (creating the
    part if this is the file's first resolve).
+4a. **Word 2016+ extension parts (T11 review, F4), add/reply only:** if the file ALREADY has
+   `word/commentsIds.xml` (w16cid — pairs a comment's own `w14:paraId` with a durable id) and/or
+   `word/commentsExtensible.xml` (w16cex — pairs that SAME durable id with a UTC creation timestamp),
+   a brand-new `<w:comment>` (an add, or a reply — a reply is its own new comment entry) gets a
+   matching entry in whichever of the two is present, sharing one freshly-minted durable id between
+   them. Neither part is ever CREATED by this module when absent — unlike comments.xml/
+   commentsExtended.xml, which this task creates on first use, these two are left alone entirely on a
+   file that never had them, since nothing in this feature's own read path (§3.2) or its
+   `<ErrorState>` surface needs them to exist.
 5. **Move (repoint), new — review 3, F2 (blocker):** relocate an existing comment's anchor without
    touching its authored text, author, replies, or resolve state — the piece the design's earlier
    drafts asserted worked "identically" across formats (§5) but never actually specified for either
