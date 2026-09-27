@@ -1770,3 +1770,15 @@ combining. Split into:
   unaffected: `docComments:watch`/`:unwatch` stays `not-implemented-on-mobile` on Android for every
   file type (§1.6) — a general "no `FileObserver`-based push" gap, not a Word/Excel-specific one, and
   reopen-1's answer was about reading/adding/replying/resolving, not live-watching.
+- **Rolling backups are never evicted (T17 implementation review, F4 — informational).** §3.3 step 1/
+  §4.3's "one rolling backup per file, overwritten on the next successful write" means exactly one
+  `.docx.bak`/`.xlsx.bak` file exists PER SOURCE FILE ever written through this feature, forever, under
+  `~/.claude/youcoded-doc-backups/` — but the DIRECTORY itself only ever grows: nothing deletes a
+  backup for a file that was renamed, moved, deleted, or never touched again. A user who edits
+  comments on hundreds of Word/Excel files over months accumulates hundreds of small backup files
+  with no cleanup path, on both desktop (`write-pipeline.ts`'s `BACKUP_DIR`) and Android
+  (`DocxComments.kt`'s `docxBackupPathFor`) alike — this is not a regression T17 introduced, it is
+  the design's existing behavior on both platforms, called out here as explicitly NOT covered rather
+  than silently left out. Deliberately not fixed as part of this task: an eviction policy (age-based?
+  LRU? "the source file no longer exists"?) is a real product decision, not a bug fix, and is
+  out of scope for a review-findings pass.
