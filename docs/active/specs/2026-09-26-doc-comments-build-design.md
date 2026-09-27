@@ -1295,7 +1295,12 @@ touches editing is `MoveComment`/R6: once an edit lands, the assistant decides �
 judgment any reply/resolve/move already requires — whether to call `ReplyToComment`, `ResolveComment`,
 `MoveComment`, or some combination, on the comment whose text it just changed.
 
-### 5.2a The six comment tools' OWN permission gate — needs Destin's decision (review 2, F8)
+### 5.2a The six comment tools' OWN permission gate — DECIDED: option 1 (review 2, F8)
+
+**Decided (Destin, 2026-09-27, chat: "fine w A"): option 1.** Word/Excel-targeted comment
+mutations use `permissionSubject: (a) => a.path` at the `Edit`/`Write` tier; plain-text/markdown/code
+sidecar mutations are ungated (`permissionSubject` returns `undefined` for them). T8 and T9a wire
+exactly this. Ratify on the acceptance deck.
 
 §5.2 above correctly covers R5's own scope (Edit/Write for CONTENT changes), but review 2 (F8) found
 a separate, real gap this design left silent: the six comment tools THEMSELVES have no specified

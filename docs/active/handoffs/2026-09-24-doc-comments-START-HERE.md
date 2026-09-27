@@ -133,8 +133,8 @@ Excel expects), never old-style notes as the product format. The built desktop x
 Android xlsx write task (T19) is on hold until then. Current code wrongly refuses the WHOLE workbook
 if any threaded comment exists (xlsx-comments.ts ~356-393).
 
-**Open question for Destin:** should the assistant ask permission before changing comments
-(design §5.2a)? Options: only for Word/Excel files (recommended) / every time / never. Blocks T8/T9a.
+**Decided (Destin, 2026-09-27, chat "fine w A"):** the assistant asks permission before changing
+comments ONLY in Word/Excel files (design §5.2a option 1); code/notes comments are ungated. T8/T9a unblocked.
 
 **Built + reviewed + fixed (youcoded session/comments-mock-a):** T1 store, T2 anchoring, T3 IPC +
 known-root gate, T4 Android IPC parity (+ cross-process lock), T5 renderer on real IPC, T6 detached
