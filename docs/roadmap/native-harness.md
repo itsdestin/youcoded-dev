@@ -223,12 +223,6 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       `desktop` `needs-verify` `checked 2026-08-12`
 
 ## permissions
-- [ ] Admin (sudo) commands can't run from chat: approving one fails because it has no way to
-      ask for your password, and a script that needs admin partway through fails silently.
-      In design 2026-09-25: an in-chat password card (never saved, never shown to the
-      assistant, asks every time, works from the paired phone too) — questions deck answered
-      `desktop` `decision` `checked 2026-09-25` `security` → docs/active/design/2026-09-25-admin-password/admin-password.questions.json
-
 - [ ] Idea (Destin, 2026-09-25): the assistant should be able to ask you for an API key or a
       `.env` value in a secure box, so it's used without being saved in chat history or shown to
       the assistant: "the model can ask for .env stuff, api keys, etc." Sequenced after the admin

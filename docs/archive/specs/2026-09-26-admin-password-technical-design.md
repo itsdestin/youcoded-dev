@@ -1,7 +1,7 @@
 ---
-status: draft
+status: shipped
 feature: admin-password
-contract: docs/active/design/2026-09-25-admin-password/admin-password.contract.json
+contract: docs/archive/design/2026-09-25-admin-password/admin-password.contract.json
 branch: session/sudo-prompt (youcoded + youcoded-dev)
 ---
 

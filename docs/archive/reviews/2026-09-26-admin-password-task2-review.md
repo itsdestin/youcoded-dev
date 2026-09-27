@@ -2,7 +2,7 @@
 status: active
 feature: admin-password
 review-round: task2
-design: docs/active/specs/2026-09-26-admin-password-technical-design.md
+design: docs/archive/specs/2026-09-26-admin-password-technical-design.md
 commit: 607945d9420f4b469dc647a20315e59c6fe300e7
 ---
 

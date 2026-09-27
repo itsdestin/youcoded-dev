@@ -6,7 +6,7 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       read: its dimmed label measured 3.98:1 on Midnight, under the 4.5:1 minimum for small
       text. Found by the admin-password UX review 2 (U3), 2026-09-26; the dimming is the shared
       button's disabled look, so every such button has it
-      `all` `confirmed` `checked 2026-09-26` → docs/active/reviews/2026-09-26-admin-password-ux-review-2.md
+      `all` `confirmed` `checked 2026-09-26` → docs/archive/reviews/2026-09-26-admin-password-ux-review-2.md
 
 - [ ] The design check still lists about 530 places where a screen overrides a shared button’s
       look, types a size in by hand, or uses a color outside the theme. Only the mechanical

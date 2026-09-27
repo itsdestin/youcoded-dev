@@ -2,8 +2,8 @@
 status: active
 feature: admin-password
 review-round: task4
-design: docs/active/specs/2026-09-26-admin-password-technical-design.md
-contract: docs/active/design/2026-09-25-admin-password/admin-password.contract.json
+design: docs/archive/specs/2026-09-26-admin-password-technical-design.md
+contract: docs/archive/design/2026-09-25-admin-password/admin-password.contract.json
 commit: 042f45971
 ---
 

@@ -2,8 +2,8 @@
 status: active
 feature: admin-password
 review-round: 2
-design: docs/active/specs/2026-09-26-admin-password-technical-design.md
-prior-review: docs/active/reviews/2026-09-26-admin-password-design-review-1.md
+design: docs/archive/specs/2026-09-26-admin-password-technical-design.md
+prior-review: docs/archive/reviews/2026-09-26-admin-password-design-review-1.md
 ---
 
 # Admin password card — design review 2

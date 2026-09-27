@@ -1,7 +1,7 @@
 # Admin password card — code review
 
 Branch `session/sudo-prompt` vs `origin/master`, reviewed against
-`docs/active/design/2026-09-25-admin-password/admin-password.contract.json` and
+`docs/archive/design/2026-09-25-admin-password/admin-password.contract.json` and
 `.claude/rules/{native-permissions,ipc-bridge,react-renderer,performance,renderer-lists,
 narrow-viewport,test-suite-hygiene,harness-tools}.md` + `docs/PITFALLS.md`. No sudo, docker,
 or any authenticating command was run on this machine; `admin-password-docker.test.ts` (the
