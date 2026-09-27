@@ -1059,6 +1059,31 @@ needed there.
 
 ### 4.3 Read/write/backup, mirroring §3.3
 
+**Rewritten 2026-09-27 (session `comments-mock-a`), superseding this section's own original ExcelJS-
+based write design (commit a4275bf23):** a review built a real LibreOffice-authored workbook and
+round-tripped it through the ExcelJS-based writer described below. It came back with `docProps/
+custom.xml` GONE, `xl/externalLinks/*` GONE (breaking formula references to other workbooks), defined
+names' `$`-absoluteness ALTERED, `ignoredErrors`/`customSheetViews` GONE, and a resized comment box
+reset to the default size. The root cause is structural, not a bug this section's own feature-denylist
+(`UNSUPPORTED_FEATURES`, described below) could ever fully close: `workbook.xlsx.writeBuffer()`
+REBUILDS every OOXML part from ExcelJS's own in-memory model, which has no slot at all for several
+whole part types (custom properties, external links, several other features) — those were lost
+SILENTLY, with no refusal, because a denylist can only refuse on a part someone thought to name. The
+fix is the same shape §3.3 already uses for Word: **surgical JSZip edits.** A legacy Note touches, at
+most, five parts — the target worksheet's own comments part (`xl/commentsN.xml`), its VML drawing
+(`xl/drawings/vmlDrawingN.vml`), that worksheet's own rels file, the worksheet's own `<legacyDrawing
+r:id>` element, and `[Content_Types].xml` — and every other part in the archive is never parsed, never
+touched, and round-trips through JSZip's own unmodified-entry passthrough byte-for-byte. Where a
+worksheet already has comments/VML from a real Excel/LibreOffice author, the new writer edits them IN
+PLACE (adding or replacing only the target cell's `<comment>`/`<v:shape>`), so an existing, differently
+sized comment elsewhere on the same worksheet is never re-serialized, and so never resized. Exact byte
+shapes for a brand-new comments/VML pair still follow §4.3a's own T18 spike reference
+(`shared-fixtures/doc-comments/xlsx-note-reference/`) verbatim, so Android's future T19 writer's target
+does not move. Full implementation detail (author-index correctness fix, the one feature refusal that
+remains and why, the `cell-has-no-value` refusal's real cause) lives as comments in
+`desktop/src/main/doc-comments/xlsx-comments.ts`'s own T13 section header — this section is kept as an
+accurate summary, not a duplicate of that detail.
+
 **Moved to main, alongside §3.2's docx fix (review 1, F1/F2 — blocker):** exceljs needs no DOM and
 runs in plain Node exactly as well as in the renderer, so this module lives in
 `desktop/src/main/doc-comments/xlsx-comments.ts`, not `XlsxView.tsx`'s renderer code, for the same
@@ -1070,41 +1095,53 @@ untouched — only the comment-note read/write path moves. **Android scope — s
 `not-implemented-on-mobile` on Kotlin; reopen-1's "full phone support" answer means Excel comments get
 a real Kotlin implementation too, §4.3a below.
 
-Read: alongside a load of the workbook via ExcelJS in main. Write: backup-before-write, apply via
-ExcelJS's normal save API (`workbook.xlsx.writeBuffer()`), **verify-after-write with automatic
-rollback on failure** by re-loading the buffer and re-reading the note (review 1, F5 — same fix as
-§3.3's now-step-6 verify: on a verify failure, rename the backup back over the target before
-surfacing a specific `<ErrorState>`, never leave a possibly-corrupted file as the user's live
-document) — exactly §3.3's six-step shape, minus the range-marker mechanics (a note has no separate
-"range start/end," it's a cell property, so Excel's own Move step below repoints the cell directly
-instead), below.
+**Read** is unchanged by the 2026-09-27 rewrite: still a load of the workbook via ExcelJS in main
+(kept — the rewrite's own scope was the WRITE path only). **Write** (rewritten): backup-before-write
+(unchanged, `write-pipeline.ts`), apply via the surgical JSZip edit described above, **verify-after-
+write with automatic rollback on failure** by re-loading the buffer through the SAME (unchanged)
+ExcelJS-based reader and re-reading the note (review 1, F5 — same fix as §3.3's now-step-6 verify: on a
+verify failure, rename the backup back over the target before surfacing a specific `<ErrorState>`,
+never leave a possibly-corrupted file as the user's live document). **A real constraint this rewrite
+surfaced, not previously documented:** because verify still goes through the unchanged ExcelJS reader,
+a cell with ZERO `<c>` presence in `sheetData` (never touched by the user at all) cannot safely be
+commented on — ExcelJS's own reader classifies a value-less, style-less `<c>` as a merge-continuation
+placeholder and never visits it, so a note there would be valid, real-Excel-visible OOXML that this
+app's own reader can never see again. `'cell-has-no-value'` is kept as a refusal for this reason (a
+DIFFERENT, verified cause than the original design's, which blamed ExcelJS's writer specifically) — a
+cell that already has ANY `<c>` element, value or just styling, is unaffected.
 
-**Move (repoint), new — review 3, F2 (blocker):** unlike Word's in-document range, a legacy Note's
-anchor IS the cell itself — `cell.note` is a property of a specific `[sheet, cell]` `ExcelJS.Cell`
-object, not separate metadata alongside it, so "moving" a Note structurally means relocating that
-property, not updating an external selector the way a `PersistedComment`'s move already is (§1: pure
-metadata, no document mutation at all). Algorithm: read the note's CURRENT body verbatim off the OLD
-`[sheet, cell]` pair (the full transcript, including any already-applied resolve marker — §4.1's
-current `​✓ Resolved` or the legacy `​[[yc:resolved]]`, whichever is present — since a move changes
-nothing about what was said or its resolve state, only where it points);
-clear the old cell's note; set the SAME body verbatim onto the NEW `[sheet, cell]` pair the caller's
-`newSelector` (a `CellSelector`) names. **Clearing a note (review 3, F2):** exceljs's public API has
-no documented "remove this note" method — `cell.note = <value>` (`desktop/node_modules/exceljs/lib/
-doc/cell.js:228-230`) always constructs a new `Note`, never deletes one — but exceljs's OWN internal
-row-copy code needs to do exactly this and solves it by clearing the private-by-convention field
-directly: `cDst._comment = undefined` (`desktop/node_modules/exceljs/lib/doc/row.js:100,125`,
-confirmed real, shipped code in the installed version). The write path uses this same, already-
-precedented technique — not an invented workaround — to remove the old cell's note before setting
-the new one, so no orphaned empty-note entry is left in `comments<N>.xml`/`vmlDrawing<N>.vml` for the
-vacated cell. If the `newSelector`'s cell reference is malformed or names a `sheet` that doesn't
-exist in the workbook, the move is refused with a specific `<ErrorState>` (mirroring Word's refusal
-above) rather than silently creating a note on a nonsensical target or throwing an uncaught exceljs
-error. This still fits §4.3's now-six-step shape: backup-before-write, apply the move (clear-old,
-set-new), verify-after-write (re-load the buffer, confirm the OLD cell's `.note` is gone and the NEW
-cell's `.note` matches the original body byte-for-byte) with automatic rollback on failure, same as
-every other xlsx write in this section.
+**Feature refusal, narrowed:** the original `UNSUPPORTED_FEATURES` denylist (charts/chartsheets, pivot
+tables, slicers, timelines, VBA macros, modern threaded comments, rich data types, embedded objects,
+form controls) existed because ExcelJS's REBUILD would silently drop each of those. A surgical writer
+never rebuilds anything it doesn't touch, so eight of those nine no longer need refusing — a workbook
+carrying any of them round-trips that content byte-for-byte, the same way it round-trips `styles.xml`.
+Only modern **threaded comments** are still refused (workbook-wide): a threaded comment leaves a
+legacy-shaped compatibility placeholder in the very same `xl/commentsN.xml` this writer edits, and
+editing that placeholder in place would desynchronize it from the real threaded thread it fronts for —
+exactly the "comments/VML parts are ambiguous" case worth refusing rather than risking.
+
+**Move (repoint), new in review 3 F2, now cross-sheet-capable in the 2026-09-27 rewrite:** unlike
+Word's in-document range, a legacy Note's anchor IS the cell itself, so "moving" a Note means removing
+its `<comment>`/`<v:shape>` from the OLD worksheet's parts and appending the identical body as a NEW
+`<comment>`/`<v:shape>` on the NEW `[sheet, cell]` pair — minting a fresh comments/VML pair for the
+destination worksheet if it has none yet (the same wiring Add uses). Refuses rather than clobbering if
+the destination already carries a DIFFERENT comment, and refuses (`'cell-has-no-value'`) rather than
+risking the same ExcelJS-reader blind spot described above if the destination has zero `<c>` presence.
+This still fits §4.3's six-step shape: backup-before-write, apply the move (remove-old, add-new),
+verify-after-write (re-load the buffer, confirm the OLD cell's `.note` is gone and the NEW cell's
+`.note` matches the original body byte-for-byte) with automatic rollback on failure, same as every
+other xlsx write in this section.
 
 ### 4.3a Android: a real Kotlin implementation, and why it's riskier than Word's
+
+**Note added 2026-09-27, alongside §4.3's rewrite:** this subsection's own plan — hand-roll the exact
+OOXML wiring via `java.util.zip`/`javax.xml.parsers` rather than any whole-workbook library — turns out
+to now match desktop's OWN approach exactly, not just Kotlin's necessity. Desktop's write path used to
+be a fully different shape (ExcelJS's whole-workbook rebuild); now that it is also surgical, targeted
+JSZip/DOM edits to the same five parts named below, T19 has nothing new to reconcile against a
+differently-shaped desktop writer — the byte target this subsection already describes (the T18 spike
+reference) is what BOTH platforms build toward, from day one, not a later convergence. No other change
+to this subsection's own scope or task list.
 
 Same tools as §3.2a (`java.util.zip` + `javax.xml.parsers`/`javax.xml.transform`, no new Gradle
 dependency), new file `XlsxComments.kt` alongside `DocxComments.kt` in
