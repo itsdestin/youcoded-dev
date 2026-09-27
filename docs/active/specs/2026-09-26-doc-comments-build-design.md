@@ -5,6 +5,32 @@ contract: docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json 
 handoff: docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 related: docs/roadmap/files.md → "Document comments"
 changelog:
+  - 2026-09-27: revised after T4's own IMPLEMENTATION review (Android docComments IPC parity,
+    `SessionService.kt`, commit 9e1735ab6) — 5 findings fixed. F1 (blocker): §1.5's "Kotlin's own
+    file-locking" and §9.1 point 3 both claimed Android's plain-text JSON sidecar needed no
+    cross-process lock, reasoning Android has no second concurrent process sharing the file — wrong,
+    since the Claude Code MCP script (§9.1 point 2, §9.2) runs on Android too, as its own separate
+    Termux process, and reads/mutates that SAME sidecar directly. `DocCommentsStore.kt` now goes
+    through `com.youcoded.app.artifacts.mutateFileUnderLock` — a new Kotlin port of desktop's
+    `cas-write.ts` mkdir-lock primitive (`CasWrite.kt`) — with the in-process Mutex kept only as a fast
+    path in front of it; §1.5/§9.1 corrected in place, not just here (the `.docx`/`.xlsx` in-process-
+    mutex reasoning is UNCHANGED — that path never lets the MCP script touch the file directly). F2
+    (major): `PersistedComment`'s Kotlin `fromJson`/`toJson` rebuilt every record field by field,
+    dropping any key they didn't know about; now clone-then-overlay (`overlayJson`), matching desktop's
+    own spread-based preservation, at every level the design's shape covers (sidecar file, comment,
+    reply, resolve-history entry). F3 (major): `listNativeComments` (`DocCommentsDispatch.kt`) had no
+    exception boundary around T16/T18's readers — a corrupt-but-openable `.docx`/`.xlsx` (valid ZIP,
+    malformed inner XML) threw straight through `SessionService.handleBridgeMessage`'s un-caught
+    `serviceScope.launch`, leaving the request unanswered forever; now catches at the dispatch
+    boundary and returns a typed refusal (`read-failed` for I/O/permission, the format's own
+    `invalid-*` code otherwise). F4 (major, security): that same no-`projectRoot` native read checked
+    only a sensitive-path DENYLIST, unlike desktop's own two-pass roots-plus-tracked-artifacts
+    ALLOWLIST (`authorizeBytesRead`) — switched to `DocCommentsGate.kt`'s new
+    `allowUntrackedNativeRead`, the same authority `refuseUnknownProjectRoot` uses (minus live session
+    cwds, matching desktop's own narrower `knownRoots()` for this specific check) plus tracked external
+    artifacts/manual includes. F6: added `DocCommentsBridge.kt`'s `handleDocCommentsMessage`, extracting
+    the docComments:* dispatch out of `SessionService.handleBridgeMessage` so a JVM unit test
+    (`DocCommentsBridgeTest.kt`) can assert the real response JSON shape directly, not a regex.
   - 2026-09-26: revised after T11's own IMPLEMENTATION review (docx write, `desktop/src/main/doc-
     comments/docx-comments.ts`, commit 63d49b155) — 5 findings, all fixed in the same pass as T13's
     generic write pipeline (`write-pipeline.ts`) landed, so T11 now runs ON that shared pipeline rather
@@ -598,13 +624,27 @@ channels with no existing caller convention to match, so T3/T4 explicitly add bo
 `REJECT_ON_NOT_OK`: a failed watch must reject to the caller's catch, never resolve as an ordinary
 value a comments pane could misread as "subscribed, no changes yet" (review 1, F10).
 
-**Kotlin's own file-locking**: Android doesn't share `~/.claude/` with a second concurrent
-YouCoded process the way desktop's dev-instance-plus-built-app does (PITFALLS.md's cross-process
-hazard is desktop-only), so Kotlin's write path can use a plain in-process mutex plus a
-temp-then-rename (still crash-safe) rather than porting the mkdir-lock protocol. This holds for
-`.docx`/`.xlsx` writes too (§3.2a/§4.3a): the same in-process mutex serializes a Kotlin-originated
-write against a pending-mutation-queue-originated write (§9's Android extension, T20) — Android
-never needs the desktop main process's cross-process mkdir-lock, only ordinary in-process exclusion.
+**Kotlin's own file-locking (corrected 2026-09-27 after T4's own IMPLEMENTATION review — F1,
+blocker):** this originally said Android doesn't share `~/.claude/` with a second concurrent
+YouCoded process the way desktop's dev-instance-plus-built-app does, so the plain-text
+`PersistedComment` JSON sidecar's write path could use a plain in-process mutex plus a
+temp-then-rename instead of porting the mkdir-lock protocol. **That was wrong for the plain JSON
+sidecar specifically**: the Claude Code MCP script (T9a, §9.1 point 2) reads and mutates that exact
+same sidecar file DIRECTLY, as its own separate Termux `node` process, with zero shared runtime with
+the Kotlin app — an in-process mutex does nothing to exclude a process outside the JVM that holds it.
+Kotlin's JSON sidecar writer (`DocCommentsStore.kt`) now goes through
+`com.youcoded.app.artifacts.mutateFileUnderLock` — the SAME cross-process mkdir-based lock protocol
+desktop's `cas-write.ts` uses (identical lock path naming, identical 30s stale-lock timeout) — with
+the in-process mutex kept only as a fast, allocation-free path in front of it for the common case of
+zero cross-process contention. This makes the JSON sidecar story genuinely **three** implementations
+that must exclude each other by the SAME on-disk protocol (§9.1), not two-with-Android-exempted.
+**The `.docx`/`.xlsx` reasoning below is UNCHANGED and still correct**: unlike the JSON sidecar, the
+MCP script never touches a `.docx`/`.xlsx` file directly — it goes through the pending-mutation queue
+(§9.2, T20), whose applier is `SessionService`'s own polling loop running in the SAME process as every
+Kotlin-originated write, so ordinary in-process exclusion (the same mutex) genuinely is sufficient
+there: the same in-process mutex serializes a Kotlin-originated write against a
+pending-mutation-queue-originated write (§9's Android extension, T20) — Android never needs the
+desktop main process's cross-process mkdir-lock for THIS path, only ordinary in-process exclusion.
 See §9 for why this is one of several separate implementations of "write this safely" the design
 accepts rather than fights.
 
@@ -1571,11 +1611,17 @@ This design accepts, rather than architects away, three separate places that rea
    file, and it contains no mutex anywhere. The mutual-exclusion half of T9a (truly excluding a second
    writer from the SAME file) has no precedent anywhere in this codebase to copy from — it is novel
    work, not a port, and T9a's review budget (§8's task table) is set accordingly.
-3. **Kotlin** (`SessionService.kt`, T4) — a plain-mutex-plus-atomic-rename implementation (simpler
-   than #1/#2 because Android has no concurrent second-process hazard, per §1.6) — for plain-text
-   `PersistedComment` files. (Kotlin's SEPARATE docx/xlsx write path, real as of reopen-1, is §9.2,
-   not this three-way JSON story — a `.docx`/`.xlsx` file never touches the JSON sidecar at all,
-   per §1.1.)
+3. **Kotlin** (`DocCommentsStore.kt`, T4) — **corrected 2026-09-27 after T4's own implementation
+   review (F1, blocker):** this used to say a plain-mutex-plus-atomic-rename implementation was
+   sufficient because Android has no concurrent second-process hazard. That was wrong — implementation
+   #2 above (the MCP script) runs on Android too, as its own separate Termux process, and reads/mutates
+   this SAME sidecar file directly. Kotlin's write path now uses
+   `com.youcoded.app.artifacts.mutateFileUnderLock` — the SAME cross-process mkdir-lock protocol #1
+   uses (identical lock path naming, identical 30s stale-lock timeout) — with the in-process mutex kept
+   only as a fast path in front of it, so all three implementations actually exclude each other over
+   the same file. (Kotlin's SEPARATE docx/xlsx write path, real as of reopen-1, is §9.2, not this
+   three-way JSON story — a `.docx`/`.xlsx` file never touches the JSON sidecar at all, per §1.1, and
+   its own in-process-mutex reasoning is UNCHANGED — see §1.5's "Kotlin's own file-locking" for why.)
 
 **Lock-path canonicalization must match across #1 and #2 (review 1, F4 — restated from §1.5):**
 `cas-write.ts`'s existing lock derivation (`target + '.lock'`, no `realpath` first) is fine for its
@@ -1586,6 +1632,13 @@ difference between Electron and a Claude Code CLI session silently stops the two
 each other — a torn or lost write on the exact file R6 depends on. The pinning test is a TRUE
 concurrency test (both writers racing the same file simultaneously, asserting nothing is lost), not
 only the sequential round-trip below.
+
+**#3 (Kotlin) added 2026-09-27, needs no separate canonicalization fix of its own:** `DocCommentsStore.kt`'s
+own `sidecarPath` is ALREADY built from the realpathed project root (never the caller's unresolved
+argument — see F1 above), so its lock path (`sidecarPath + ".lock"`, via
+`com.youcoded.app.artifacts.mutateFileUnderLock`) lands on the identical string #1/#2 compute for the
+same real file without a second fix — the alias trap this paragraph describes is specific to deriving
+a lock path from an UNRESOLVED target, which Kotlin's store never does.
 
 ### 9.2 docx/xlsx OOXML mutation: now two real implementations, and Android's own queue
 
