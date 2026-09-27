@@ -1,0 +1,15 @@
+{
+ "deck": "outside-edit-full-auto-review-3",
+ "started": "2026-09-23T03:12:15.327Z",
+ "submitted": "2026-09-23T03:13:08Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "note": "just do \"Allow for This Session\" we should have a second-level confirmation popup, as exists for the push/delete always allow selection, that explains specifics",
+   "seconds": 51,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

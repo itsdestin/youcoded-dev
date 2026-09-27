@@ -8,7 +8,6 @@
 //
 // Usage:
 //   node scripts/ui-review/drag-probe.mjs <url> <fromIdx> <toIdx> [dragMs] [holdAfterMs]
-//   CDP_PORT=10330  throw-away Chrome's debug port (use a fresh one per run)
 //   OUT_DIR=.       where drag-probe.json (the full per-frame log) is written
 //   PRESS_FIRST=<idx>  click this pill first and wait for the row to settle, so the drag
 //                      starts on an ACTIVE, open name (Destin drags the name he is on)
@@ -44,16 +43,17 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { CHROME_FLAGS, waitForCdp } from './cdp-helpers.mjs';
+import { CHROME_FLAGS, readDevToolsPort, waitForCdp } from './cdp-helpers.mjs';
 
 const [url, fromIdx, toIdx, msArg, holdArg] = process.argv.slice(2);
-const CDP_PORT = Number(process.env.CDP_PORT ?? 10330);
 // PROBE_W: the viewport width — the review deck shows the strip in a 460px pane, and a drag that
 // works at 1440 can fail there (fewer pills fit, the held name is capped at the budget).
 const W = Number(process.env.PROBE_W ?? 1440), H = 600;
 const profile = mkdtempSync(join(tmpdir(), 'drag-probe-'));
-const chrome = spawn('google-chrome-stable', CHROME_FLAGS(W, H, CDP_PORT, profile), { stdio: 'ignore' });
+const chrome = spawn('google-chrome-stable', CHROME_FLAGS(W, H, 0, profile), { stdio: 'ignore' });
 process.on('exit', () => { chrome.kill(); try { rmSync(profile, { recursive: true, force: true }); } catch {} });
+// Port 0: Chrome picks a free one (was CDP_PORT=10330, which collided between runs).
+const CDP_PORT = await readDevToolsPort(profile);
 await waitForCdp(CDP_PORT);
 const targets = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json();
 const target = targets.find((t) => t.type === 'page') ?? targets[0];

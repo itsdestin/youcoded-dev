@@ -294,6 +294,19 @@ fi
 
 preflight_ports
 
+# The marker `explore --dev` attaches through (scripts/shoot/explore.mjs → devMarker).
+# WHY: a window title or a port number proves nothing about whose app answers there; this
+# file names this script's own pid, and only this script writes it — Destin's installed
+# app never runs run-dev.sh, so it can never be attached to. Removed when this script
+# exits; a leftover from a killed run names a dead pid, which explore ignores.
+if [[ "$DEVTOOLS" == "1" ]]; then
+  MARKER="$DESKTOP/.dev-instances/$OFFSET.json"
+  mkdir -p "$DESKTOP/.dev-instances"
+  printf '{"pid":%d,"devtoolsPort":%d,"vitePort":%d,"offset":%d,"profile":"%s"}\n' \
+    "$$" "$((9222 + OFFSET))" "$((5173 + OFFSET))" "$OFFSET" "${PROFILE//[\"\\]/}" > "$MARKER"
+  trap 'rm -f "$MARKER"' EXIT
+fi
+
 cd "$DESKTOP"
 if [[ "$PHONE_BUILD" == "1" ]]; then
   # WHY opt-in, and built fresh here: the remote server used to serve any built copy it found on disk,
