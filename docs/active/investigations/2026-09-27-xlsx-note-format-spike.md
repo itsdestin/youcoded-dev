@@ -1,8 +1,23 @@
 ---
-status: active
+status: superseded
 date: 2026-09-27
+superseded-by: docs/active/specs/2026-09-26-doc-comments-build-design.md §4 (2026-09-27 threaded-
+  comments-only redesign) — see also shared-fixtures/doc-comments/xlsx-threaded-reference/
 related: docs/active/specs/2026-09-26-doc-comments-build-design.md §4.3a, T18
 ---
+
+**SUPERSEDED 2026-09-27 (same day, later in the session):** Destin decided Excel comments use ONLY
+modern threaded comments, never old-style Notes, as the product's write format (design doc's own
+changelog, this date). This spike's whole subject — the legacy-Note OOXML shape `exceljs`'s write
+path produces — is no longer what T18/T19 build toward; the product never creates a legacy Note at
+all going forward (an existing one in a file is still read far enough to refuse `'cell-has-note'`,
+never parsed for its own content). The new format's equivalent spike work (threaded comments'
+`xl/threadedComments/`+`xl/persons/` shape, researched from real Excel-365 and Google Sheets files
+rather than from desktop's own writer output) lives in the design doc's §4.2 and in
+`shared-fixtures/doc-comments/xlsx-threaded-reference/`. This document is kept for history —
+`xlsx-note-reference/` (the fixture this spike produced) is likewise kept, unmodified, as a
+reference for what a genuine legacy Note looks like (still relevant: the product must recognize and
+leave one untouched, §4.1), not deleted.
 
 # xlsx legacy-Note OOXML format — spike findings (T18)
 
