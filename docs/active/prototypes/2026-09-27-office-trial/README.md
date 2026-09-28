@@ -32,7 +32,9 @@ The sample files were copies of Destin's own documents and are NOT in the repo.
 The Office mockups in the app's workbench frame the real editor from `http://127.0.0.1:4717`
 (`fixtures/office.ts` → `OFFICE_EDITOR_ORIGIN`). To reproduce:
 
-1. Build ranuts/document (above) and copy `dist/` to a scratch folder, e.g. `dist-yc/`.
+1. Build ranuts/document (above) and copy `dist/` to a scratch folder, e.g. `dist-yc/`. Keep it in the
+   worktree's ignored `scratch/office-editor/`, not `/tmp`: a reboot on 2026-09-28 wiped the `/tmp` copy
+   mid-review.
 2. Add the theme bridge: copy `yc-bridge.js` into `dist-yc/` and insert
    `<script src="./yc-bridge.js"></script>` before the module script in `dist-yc/editor.html`.
 3. Fix the font catalogue's Calibri entry (it has no bold face, so bold Calibri draws garbled
