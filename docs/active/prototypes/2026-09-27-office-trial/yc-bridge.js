@@ -214,19 +214,41 @@
     }
     return false;
   }
-  // Slim mode lives in a narrow pane: fit the page to its width once drawn.
+  // Slim mode lives in a narrow pane. Fitting the whole PAPER width there shrank the text to
+  // about half size (office-review#B-inline, Destin: "make these documents fit/fill the pane
+  // better"), so a document fits its TEXT column instead: fit to width, then enlarge by the
+  // paper-to-text ratio (1in margins leave ~78% of a Letter/A4 page for text) — the blank
+  // margins run off the sides. Measured 2026-09-28: 51% → 65% in a 480px pane. Spreadsheets
+  // and slides keep the editor's own fit (they have no paper margins to lose).
   function fitWidth() {
     var doc = editorDoc(window);
     var w = doc && doc.defaultView;
     try {
       var api = w && (w.editor || (w.Asc && w.Asc.editor));
-      if (api && api.zoomFitToWidth) api.zoomFitToWidth();
-    } catch (e) { /* not every editor has it (spreadsheets zoom by cell) */ }
+      if (!api || !api.zoomFitToWidth) return;
+      api.zoomFitToWidth();
+      var z = api.WordControl && api.WordControl.m_nZoomValue;
+      if (z && api.zoomCustomMode && api.zoom) { api.zoomCustomMode(); api.zoom(Math.round(z / 0.78)); }
+    } catch (e) { /* not every editor has these */ }
   }
+  var fitTimer = null;
+  window.addEventListener('resize', function () {
+    if (!slim) return;
+    clearTimeout(fitTimer);
+    fitTimer = setTimeout(fitWidth, 200);
+  });
   setInterval(function () {
     if (latest) walk(window); // cheap when nothing changed; catches late theme registration
     var now = drawn(window);
-    if (now && !announced) { announced = true; if (slim) setTimeout(fitWidth, 300); window.parent.postMessage({ type: 'yc:office-loaded' }, '*'); }
+    if (now && !announced) {
+      announced = true;
+      // Slim: fit the text first and only then say "drawn", so the host never shows (or
+      // photographs) the page at the editor's own small fit-page zoom. Fitted again a moment
+      // later because the editor re-lays out its view once after the first paint.
+      var announce = function () { window.parent.postMessage({ type: 'yc:office-loaded' }, '*'); };
+      if (slim) { setTimeout(function () { fitWidth(); setTimeout(function () { fitWidth(); announce(); }, 700); }, 300); }
+      else announce();
+    }
     if (!now) announced = false;
   }, 150);
 })();
