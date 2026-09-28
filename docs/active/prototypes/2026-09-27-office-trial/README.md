@@ -29,22 +29,10 @@ The sample files were copies of Destin's own documents and are NOT in the repo.
 
 ## Serving the editors for the workbench (design stage, 2026-09-28)
 
-The Office mockups in the app's workbench frame the real editor from `http://127.0.0.1:4717`
-(`fixtures/office.ts` → `OFFICE_EDITOR_ORIGIN`). To reproduce:
-
-1. Build ranuts/document (above) and copy `dist/` to a scratch folder, e.g. `dist-yc/`. Keep it in the
-   worktree's ignored `scratch/office-editor/`, not `/tmp`: a reboot on 2026-09-28 wiped the `/tmp` copy
-   mid-review.
-2. Add the theme bridge: copy `yc-bridge.js` into `dist-yc/` and insert
-   `<script src="./yc-bridge.js"></script>` before the module script in `dist-yc/editor.html`.
-3. Fix the font catalogue's Calibri entry (it has no bold face, so bold Calibri draws garbled
-   glyphs): in `dist-yc/sdkjs/common/AllFonts.js` replace `["Calibri",115,0,-1,-1,-1,-1,-1,-1]`
-   with Carlito's faces, `["Calibri",115,0,114,0,112,0,113,0]`. The real add-on regenerates
-   the catalogue; this is the bug it must not reintroduce.
-4. Put the three neutral fixtures (`make-samples.py`-style: Garden plan.docx, Garden
-   budget.xlsx, Garden talk.pptx) in `dist-yc/samples/`.
-5. `python3 serve-euro.py dist-yc` (serves `/editor`, unpacks nothing, adds the `br`
-   header for the brotli-packed translator and CORS on `/samples/` for the fake file reader).
+Superseded by the build (Task 6): the workbench's Office screens now frame the installed add-on
+served by `node scripts/office-workbench-server.mjs` from `youcoded/desktop/` (127.0.0.1:4717,
+the app's own CSP, fixtures translated by main's real x2t `convert()` from the compiled `dist/`),
+so this rig's `serve-euro.py` and ranuts build are no longer needed.
 
 The bridge (`yc-bridge.js`) is the add-on side of the theming and slim-mode contract:
 theme tokens → the editor's CSS variables and light/dark base; title row hidden; slim mode
