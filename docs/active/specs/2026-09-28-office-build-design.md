@@ -1,6 +1,6 @@
 ---
 date: 2026-09-28
-status: draft
+status: active
 type: spec
 topic: Office — technical design for the build (backend, add-on, data, reuse), under the signed contract
 ---
@@ -22,7 +22,7 @@ the approved UI is a reopen deck, not a change here.
 ```
  YouCoded (MIT)                                   Office add-on (AGPL, separate repo)
  ─────────────────────────────────────            ──────────────────────────────────────
- renderer: OfficeView, EditorFrame,     postMessage   office://app/editor.html
+ renderer: OfficeView, EditorFrame,     postMessage   office://<docToken>/editor.html
    OfficeInlineEditor, office-store  ◀──────────▶     Euro-Office sdkjs + web-apps (desktop mode)
         │  window.claude.office.*                     yc-bridge.js (theme, slim, cmds, esc, save)
         ▼                                             AscDesktopEditor shim (from euro-office-lite)
@@ -36,7 +36,7 @@ the approved UI is a reopen deck, not a change here.
   bridge, the desktop-mode shim, fonts and the native `x2t` per platform, and a CI job that
   publishes one pinned, checksummed bundle per platform.
 - **YouCoded** pulls a pinned add-on version at build time into `extraResources/office/`
-  (electron-builder), verifies its checksum, and serves it at `office://app/`.
+  (electron-builder), verifies its checksum, and serves it at `office://<docToken>/` — one origin per open document (§3a).
 - Only files and small messages cross between them: no shared JS, no imports. This keeps the
   separate-program arrangement clean (investigation, "The one real decision").
 
@@ -69,7 +69,7 @@ cannot be made to work within the spike's budget, fall back to the WASM route on
 
 ## 3a. How requests and bytes cross the frame (review 1, R1-1)
 
-The whole of euro-office-lite's `bridge.js` runs INSIDE the `office://app` page, where it reaches
+The whole of euro-office-lite's `bridge.js` runs INSIDE the document's `office://<docToken>` page, where it reaches
 the editor objects directly (same origin as the web-apps frames it creates). Its only way out is
 Tauri's JS API: `__TAURI__.core.invoke(cmd, args)`, `.event.listen`, `.dialog.confirm/message`,
 `.window.getCurrentWindow` (~25 commands, listed in `scratch/spike/app/main.cjs`). The add-on
@@ -77,7 +77,7 @@ defines `window.__TAURI__` as a relay, so `bridge.js` stays unmodified:
 
 ```
 bridge.js ─invoke(cmd,args)─▶ __TAURI__ relay (add-on) ─postMessage {yc:'rpc',id,cmd,args}─▶
-YouCoded EditorFrame (checks origin === office://app, source === this frame, cmd ∈ allow-list)
+YouCoded EditorFrame (checks origin === this document's office://<docToken>, source === this frame, cmd ∈ allow-list)
 ─▶ window.claude.office.invoke(docId, cmd, args) ─IPC─▶ main office/commands.ts
 ◀── result/error, same id, back down the same path; host → editor events use {yc:'event',name,payload}
 ```
@@ -132,7 +132,11 @@ All I/O async (performance rule 1; `main-blocking-calls.test.ts` ratchet).
   and offers `.xlsx` instead. Files over 200 MB are refused with a specific message (review 1,
   R1-7; review 2, R2-10): the translated form plus the editor's model run to several times the
   file's size in memory (the 21 MB workbook used ~1 GB), so 200 MB is where a laptop would
-  start to swap; the viewers' 50 MB preview cap is a different limit for a different path. One save in flight per document; a save requested meanwhile coalesces into one
+  start to swap. The limit is `OFFICE_MAX_BYTES` in `shared/office-types.ts`, enforced by
+  office-files' own reader — not the artifacts preview reader, whose 50 MB
+  `READ_BINARY_MAX_BYTES` (editable-path-policy.ts) stays for previews. A 50–200 MB file shows
+  the viewer's existing too-large-to-preview state, with Edit and Open in Office still offered
+  (review 3, R3-2). One save in flight per document; a save requested meanwhile coalesces into one
   follow-up save with the newest bytes.
 - **`versions.ts`** — snapshots under `userData/office-versions/<sha1(canonical path)>/`:
   `index.json` + one copy per version. Taken on open and at most every 10 minutes while
@@ -191,7 +195,8 @@ holds a recovery copy, in which case waking shows the same conflict choice (revi
   unmounts its editor; state keeps file + scroll position (the bridge reports and restores
   the caret/scroll on wake).
 - `EditorFrame`: bytes in (`office:open`), `Editor.bin` out (`office:save`), save status to
-  the strip; message origin checks stay (origin === `office://app`, source === frame).
+  the strip; message origin checks stay (origin === this document's `office://<docToken>`, which
+  office-store threads into EditorFrame's `origin` prop; source === frame — review 3, R3-1).
 - Theme: unchanged from the mockups (`office-theme.ts` + the bridge), plus roundness (R26)
   already mapped; a pinning test compares the bridge's token list to `office-theme.ts`.
 - Escape (R20), focus on tab switch, the header briefcase, slim overscan: as built in the
