@@ -258,10 +258,9 @@ test('x2t round-trips a docx through Editor.bin', async () => {
 });
 ```
 
-  Fixture: copy `scratch/spike/samples/budget-memo.docx` → `test/fixtures/memo.docx`. This is
-  the spike's own neutral test memo, not one of Destin's documents; check with
-  `unzip -p test/fixtures/memo.docx docProps/core.xml` that it carries no personal author name.
-  If it does, make a fresh one with the trial venv: `python -c "import docx; d=docx.Document(); d.add_heading('Memo'); d.add_paragraph('Hello **world**'); d.save('test/fixtures/memo.docx')"`.
+  Fixture: GENERATE a neutral memo; never copy anything from `scratch/spike/samples/`,
+  which holds Destin's own files. Nothing of his goes into any repo without his say.
+  `scratch/office-editor/venv/bin/python -c "import docx; d=docx.Document(); d.add_heading('Test memo', 1); p=d.add_paragraph('Plain text, then '); p.add_run('bold').bold=True; d.add_table(rows=2, cols=2); d.save('test/fixtures/memo.docx')"`
 
 - [ ] **Step 7: Run the test.** `node --test test/` should FAIL (no `work/bundle`).
 - [ ] **Step 8: Build.** Run `bash build/build-linux.sh` with Node 22 first on PATH
@@ -582,7 +581,7 @@ export function registerOfficeProtocol(deps: { root: string; sessions: ReturnTyp
   - `src/main/office/office-commands.ts`
   - `tests/office/x2t.test.ts`
   - `tests/office/office-commands.test.ts`
-  - `tests/office/fixtures/memo.docx` (same neutral memo as Task 1)
+  - `tests/office/fixtures/memo.docx` (the generated neutral memo from the add-on repo's `test/fixtures/`, never a file from `scratch/spike/samples/`)
 
 **Interfaces:**
 - Consumes: `officeRoot()` (Task 2); `createSessions`/`OfficeSession` (Task 3).
