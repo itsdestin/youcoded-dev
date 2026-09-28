@@ -4,7 +4,7 @@ severity: error
 message: >-
   ShortcutsPopup must keep the shared Dialog's scrolling body
   (scrollBody defaults true — never pass scrollBody={false}), must stay the
-  "panel" (420px) size, and must render its rows from the SHORTCUTS list
+  "panel" (420px) size, and must render its rows from its list (SHORTCUTS, or SHORTCUT_GROUPS since the 2026-09-28 grouping)
   itself. Phase E of the 2026-08-25 UI review (P-7/P-8) found the popup at
   `size="prompt"` (340px) with `scrollBody={false}`: four labels wrapped to
   two lines AND the last three of the thirteen rows fell outside the
@@ -18,7 +18,7 @@ note: |
   SHORTCUTS.map half only — see LIMITATION]).
   Fires four ways at the whole-file (`program`) level, each `has:`/`not:has:`
   scoped `inside:` the ShortcutsPopup function: (a) scrollBody={false}
-  present (banned), (b) size="panel" missing, (c) SHORTCUTS.map missing, (d)
+  present (banned), (b) size="panel" missing, (c) neither SHORTCUTS.map nor SHORTCUT_GROUPS.map, (d)
   ShortcutsPopup itself is gone entirely — the retired test's own
   `block()` helper asserted its start marker was found
   (`toBeGreaterThan(-1)`); a bare `inside:`-scoped rule with no existence
@@ -64,7 +64,11 @@ rule:
     - not:
         has:
           stopBy: end
-          pattern: SHORTCUTS.map($$$ARGS)
+          # Either the flat list or, since nothing-bare#NB-4 (2026-09-28), the labelled
+          # groups — each group maps its own rows, so every shortcut is still drawn from data.
+          any:
+            - pattern: SHORTCUTS.map($$$ARGS)
+            - pattern: SHORTCUT_GROUPS.map($$$ARGS)
           inside:
             kind: function_declaration
             stopBy: end
