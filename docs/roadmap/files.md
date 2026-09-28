@@ -31,6 +31,12 @@ searched or resumed (chat-data).
       is saved yet and the assistant cannot see comments
       `files-panel` `desktop` `in-flight` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 
+- [ ] Comment times are only relative ("5h ago"): hovering one could show the exact date and
+      time, a resolved comment could say when it was resolved (not possible for Word/Excel,
+      which don't record it), and the assistant could see comment times when it reads them.
+      Offered 2026-09-28, not chosen for the first version
+      `files-panel` `all` `decision` `checked 2026-09-28`
+
 - [ ] On the phone, an open comments panel does not update by itself when the file's comments
       change somewhere else (the assistant, another device, another app); reopening the file shows
       the change. Desktop and the web version update live. Destin: fine for now (2026-09-28)
