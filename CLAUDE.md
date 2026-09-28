@@ -77,7 +77,7 @@ Never invent an error cause. Use `<ErrorState>`: specific accurate detail + Retr
 
 ## Development Workflow
 
-Load only the procedure needed. Existing approval gates still apply; moving their recipes out of this file does not waive them.
+Choose the route by request (read-only review, edit, UI feature, fix-executing audit, wrap-up, or release) in `docs/workspace-workflows.md` → Choosing a workflow. Load only the procedure needed. Existing approval gates still apply; moving their recipes out of this file does not waive them.
 
 ### New Features & UI/UX Changes
 

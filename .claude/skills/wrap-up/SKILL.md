@@ -1,6 +1,6 @@
 ---
 name: wrap-up
-description: End-of-session workspace retrospective — replay what this session actually did (context loaded, searches forced by missing docs, tooling used, wrong turns, what Destin said he wants), turn that friction into durable workspace improvements, then push and ask about merging. Use whenever Destin says "wrap up", "wrap this up", "close out this session", "let's finish up", "we're done", "anything to improve?", or asks what this session taught us about the workspace. Every finding ends the session applied, filed as a dated roadmap entry, or explicitly dropped.
+description: Use when Destin says "wrap up", "wrap this up", "close out this session", "let's finish up", "we're done", "anything to improve?", or asks what this session taught us about the workspace.
 ---
 
 # /wrap-up — turn this session into a better workspace
@@ -9,12 +9,14 @@ A session is the only thing that knows where the workspace failed it; once the t
 closes, that knowledge is gone. Two prior retrospectives proved the failure mode: findings
 written down, never closed, rediscovered twice.
 
-**This is a PROCESS, not a report generator.** Every recommendation ends this session
-**applied**, **a dated roadmap entry** (`docs/roadmap/<area>.md` — `ROADMAP.md` → "Filing
-an item"), or **dropped with a reason**.
+**This is a PROCESS, not a report generator.** Within an authorized editing session,
+every recommendation ends **applied**, **a dated roadmap entry** (`docs/roadmap/<area>.md`
+— `ROADMAP.md` → "Filing an item"), or **dropped with a reason**. For a read-only session,
+report the recommendation and ask before recording or applying it; wrap-up does not widen
+what Destin authorized.
 
-Retrospective first, while the session is fresh. Pushing and closing out (Step 6) is a
-checklist that survives a tired session; honest self-replay is not.
+Retrospective first, while the session is fresh. Branch-state reporting and close-out
+(Step 6) are a checklist that survives a tired session; honest self-replay is not.
 
 ## What "better" means here
 
@@ -100,7 +102,7 @@ poisons the ones that matter. A short session can end here.
 
 ## Step 5 — land them, on the session's branch
 
-Retrospective edits ship WITH the work, so everything pushes and merges together:
+When edits are authorized, retrospective changes stay on the same session branches as the work; neither this step nor wrap-up itself authorizes a push or merge:
 
 - Sub-repo edits (a pinning test, an ast-grep rule, a WHY comment) → the session's feature
   branch in that repo.
@@ -117,15 +119,11 @@ Then:
 - **Roadmap:** the area file whose `Filing test:` says yes; **dedupe by file or symbol name,
   not by symptom** — searching `flaky` instead of `sync-spaces-engine` filed a duplicate.
 - **Dropped:** say so in your reply, with the reason. An unrecorded rejection gets re-argued.
-- **Always:** append this session's entry to `docs/wrap-ups.md` — its header explains the
-  format. That file is Step 1 for the next session; skipping it is how the same friction
-  gets rediscovered.
+- **When editing is authorized:** append this session's entry to `docs/wrap-ups.md` — its header explains the format. In a read-only session, give the retrospective in chat and ask before recording it. The ledger is Step 1 for the next editing session.
 
-## Step 6 — push everything, then ask about merging
+## Step 6 — identify local-only work and report the boundary
 
-**Push every branch this session touched. Do not ask.** A push is a backup, not a release:
-it ships nothing, and `git push -d` undoes it. An unpushed branch is the only state where
-work can actually be lost.
+**Inspect this session's branches; publish only within the authorization for this task.** A push backs up commits but also publishes them to the remote, and a later branch deletion does not erase copies others fetched. If Destin asked to push, verify the branch and scan public-repo commits for secrets first. Otherwise report the commits that exist only on this machine; do not silently push them. A read-only session must not become an editing or shipping session because it is ending.
 
 Then sweep for anything else local-only — other sessions leave branches behind, and one
 sweep found seven across four repos:
@@ -164,8 +162,7 @@ done
 
 For a fuller inventory across every OLD worktree, not just this session's own, `node scripts/prune-worktrees.mjs` reports which are actually safe to delete (clean, merged, unused) — dry run only; never run its `--apply` without Destin naming the exact ones.
 
-**Secrets-scan any branch before its first push to a PUBLIC repo — including swept ones you
-never read.** `youcoded` and `youcoded-dev` are public; `youcoded-admin` is not.
+**Secrets-scan any branch before its first authorized push to a PUBLIC repo.** For other sessions' branches, report local-only work rather than publishing it under this session's authority. `youcoded` and `youcoded-dev` are public; `youcoded-admin` is not.
 
 Then run the close-out check per branch — read-only, always exits 0, and it detects whether
 the branch landed and checks accordingly:
@@ -174,17 +171,14 @@ the branch landed and checks accordingly:
 bash scripts/close-out.sh <branch> [<repo>]     # repo: a sub-repo name, or `workspace`
 ```
 
-**Finish every line it reports.** A `TODO` is yours to do now. A `--` line is a judgement it
-deliberately refuses to make — make it: close the roadmap item **if the work actually
+**Address every line within the authorized scope; report the rest.** A `TODO` is not permission to edit or ship beyond the task. A `--` line is a judgement it
+deliberately refuses to make — make it only with evidence: close the roadmap item **if the work actually
 shipped** (`node scripts/roadmap-check.mjs --close <area>:<text> --ref "<commit or PR>"`, then archive its
 report); give the subsystem a `docs/MAP.md` row
 ("no rule" is an answer, "no row" is not); move `status: shipped` docs to `docs/archive/`
 and repoint cross-links — but a doc describing work still in review stays in `docs/active/`,
 or it goes invisible to the reviewing session.
 
-**Then ask Destin one question: "Ready to merge?"** With a recommendation and, per branch,
-what is actually proven — did `scripts/verify.sh` pass, has any of it run for real, what is
-unverified. **Default to NOT merging** unless he says yes; he decides. Never end a turn
-suggesting a merge (`CLAUDE.md` → iteration mode), and do not open a PR unless he asks.
+**End with the state of each branch and what was actually proven** — did `scripts/verify.sh` pass, has any of it run for real, what is unverified or only saved locally. Do not propose a merge, open a PR, or merge as a routine wrap-up step. If Destin expressly asks whether to merge, present the evidence and wait for his instruction; merging and pushing require explicit authorization (`CLAUDE.md` → Git, worktrees, and shipping).
 
 **You run the commands, not Destin.** Never end a turn handing him something to type.
