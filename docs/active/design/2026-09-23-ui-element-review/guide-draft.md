@@ -148,6 +148,12 @@ Settings → Backup & Sync, Assistant → General, Account.
 - **Lists of short names** (saved devices) are plain rows inside **one** shared box, not a box
   each.
 - 16px between first-level cards; 12px inside a card's edge.
+- **The outline is what separates layers.** A card's fill is only a shade off what it sits on,
+  in every theme, so every card and nested box carries the shared card outline — visible on
+  any theme, and always weaker than a button's outline so a card never reads as a button.
+  Never rely on fill alone, and never use the theme's faint outline for a card.
+- A box built as a first-level card that ends up inside another card **takes the nested look
+  automatically** — pick by meaning, the level follows from where it sits.
 
 ### Cards
 - Anything you open, install or pick from a grid is a **raised card**: panel colour, thin

@@ -1,0 +1,101 @@
+{
+ "deck": "ui-surface-levels",
+ "started": "2026-09-28T21:51:50.044Z",
+ "submitted": "2026-09-28T22:00:10Z",
+ "cur": 12,
+ "answers": {
+  "SL-1": {
+   "v": "yes",
+   "t": 1790632346373,
+   "seconds": 36,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-2": {
+   "v": "yes",
+   "t": 1790632355126,
+   "seconds": 9,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-3": {
+   "v": "yes",
+   "t": 1790632376704,
+   "seconds": 22,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-4": {
+   "v": "yes",
+   "t": 1790632417022,
+   "seconds": 40,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-5": {
+   "v": "yes",
+   "t": 1790632464450,
+   "seconds": 47,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SL-6": {
+   "v": "yes",
+   "t": 1790632472315,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SL-7": {
+   "v": "yes",
+   "t": 1790632578085,
+   "seconds": 106,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "SL-8": {
+   "v": "yes",
+   "t": 1790632607712,
+   "seconds": 30,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-9": {
+   "v": "yes",
+   "t": 1790632612522,
+   "seconds": 5,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-10": {
+   "v": "yes",
+   "t": 1790632659907,
+   "seconds": 47,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-11": {
+   "v": "yes",
+   "t": 1790632687700,
+   "seconds": 28,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-12": {
+   "note": "just want to note i dont like this page ui and we should revisit later. thing some of these should maybe be grouped/arranged/displayed differently. it just looks off....",
+   "t": 1790632750068,
+   "v": "yes",
+   "seconds": 62,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "SL-13": {
+   "v": "yes",
+   "t": 1790632807987,
+   "note": "can we make the gap between the header divider and the top of the account pill match the spacing between the different settings cards/pills.",
+   "seconds": 58,
+   "theme": "cotton-candy-sky",
+   "zoom": 1
+  }
+ }
+}
