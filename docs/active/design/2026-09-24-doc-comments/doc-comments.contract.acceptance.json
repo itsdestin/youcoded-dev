@@ -1,0 +1,412 @@
+{
+ "title": "Document comments \u2014 contract \u2014 acceptance",
+ "key": "doc-comments-contract-acceptance",
+ "out": "doc-comments.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/comments-mock-a",
+ "sources": {
+  "doc-comments-questions": "doc-comments.questions.json",
+  "doc-comments-review": "doc-comments.review.json",
+  "doc-comments-confirm": "doc-comments.confirm.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "File viewer comments",
+   "path": "Any file open in the file viewer, in Comments mode",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "Word and Excel files keep their comments inside the file; every other file's comments live in a hidden project folder.",
+     "checkedBy": "live-app",
+     "threshold": "opening the file in Word, Excel, or the project's hidden folder shows the comments, in a dev instance",
+     "source": "doc-comments-confirm#S-1",
+     "note": "Settles the note on Q-1 asking that formats able to hold comments natively store them there instead."
+    },
+    {
+     "id": "R2",
+     "statement": "The assistant can reply to your comments right where you left them.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-questions#Q-2"
+    },
+    {
+     "id": "R3",
+     "statement": "The assistant can resolve a comment once it finishes what you asked; reopening one takes a single click.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-questions#Q-2"
+    },
+    {
+     "id": "R4",
+     "statement": "The assistant leaves its own comments only sparingly, on things that clearly need your attention, never to narrate its own work.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-confirm#S-5",
+     "note": "Settles the note on Q-2 limiting how freely the assistant may add its own comments."
+    },
+    {
+     "id": "R5",
+     "statement": "The assistant can edit a file to fix what a comment asks, following its existing edit-approval rules.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-questions#Q-2"
+    },
+    {
+     "id": "R6",
+     "statement": "After fixing a comment, the assistant decides whether to reply, resolve, or move it to the new wording; nothing is silently lost.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-confirm#S-6",
+     "note": "Settles the note on Q-2 about what happens to a comment once the assistant edits the text it pointed at."
+    },
+    {
+     "id": "R7",
+     "statement": "On a phone, tapping a highlighted or commented cell slides that comment up from the bottom of the screen.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-9",
+     "verdict": "pass",
+     "evidence": "Deck re-shoot: docs/active/design/2026-09-24-doc-comments/shots-word-excel/ph-xlsx-tap.png (pre-existing, same workbench harness, narrow/phone viewport) shows tapping cell C4 (red corner mark) slides Priya Shah's comment card up from the bottom, above the typing box, with a Reply box and close X \u2014 matches the approved review#R-9 step exactly. My own live re-shoot of the narrow toggle mid-session hit an unrelated app reload; the pre-existing phone shot is the authoritative comparison."
+    },
+    {
+     "id": "R8",
+     "statement": "Spreadsheet comments attach to a specific cell and are saved into the spreadsheet file itself.",
+     "checkedBy": "live-app",
+     "threshold": "opening the spreadsheet in Excel shows the same cell comments, in a dev instance",
+     "source": "doc-comments-confirm#S-2"
+    },
+    {
+     "id": "R9",
+     "statement": "Word comments work both ways: comments made in Word or Google Docs show here, and comments you add here show there.",
+     "checkedBy": "live-app",
+     "threshold": "replying in YouCoded to a colleague's Word comment shows the reply in Word, in a dev instance",
+     "source": "doc-comments-confirm#S-3"
+    },
+    {
+     "id": "R10",
+     "statement": "Opening a commented Word file in Google Docs keeps its comments; a live Google Drive link comes later.",
+     "checkedBy": "live-app",
+     "threshold": "uploading a commented Word file to Google Drive keeps the comments, in a dev instance",
+     "source": "doc-comments-confirm#S-4"
+    },
+    {
+     "id": "R11",
+     "statement": "The July draft pull request (#263) for the earlier attempt is closed on GitHub, pointing to this work.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-questions#Q-5"
+    },
+    {
+     "id": "R12",
+     "statement": "Comments show as highlights in the text; hovering one shows a card to reply or resolve, and clicking opens the full panel.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-1",
+     "verdict": "pass",
+     "evidence": "Re-shot live in the workbench (docs/active/design/2026-09-24-doc-comments/shots-grade/r12-plan-open.png, r12-click-mark.png): opening 2026-09-24-onboarding-redesign.md shows the seeded comment as a dotted-underline <mark> highlight; clicking it opens the full Comments panel scrolled to that thread, matching approved review#R-1. The hover-card half (headless mouseenter simulation did not paint in my session \u2014 a documented ui-probe limitation) is corroborated by docs/.../shots-polish/3-meadow-mist-md-hover.png (pre-existing, same feature) showing the hover card with Reply/resolve, and by source read of ReadingHighlights.tsx (native mouseenter/mouseleave listeners, HOVER_OPEN_MS=300, renders HighlightHoverCard)."
+    },
+    {
+     "id": "R13",
+     "statement": "Selecting text or right-clicking opens the same menu; Add comment opens a small box next to your selection.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-2",
+     "verdict": "pass",
+     "evidence": "Re-shot live in the workbench (docs/active/design/2026-09-24-doc-comments/shots-grade/r13-rightclick.png, r13-add-comment-box.png): selecting text and dispatching a real contextmenu event opens one menu with 'Ask about this', 'Add comment', 'Copy', 'Select all'; clicking Add comment opens a small box next to the selection quoting \"working composer\" with a textarea and Cancel/Comment buttons \u2014 matches approved review#R-2 exactly."
+    },
+    {
+     "id": "R14",
+     "statement": "Show Resolved sits at the top of the comment panel, under the title, and an X in the top corner closes the panel.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-3"
+    },
+    {
+     "id": "R15",
+     "statement": "Ask about this puts a chip in your sentence; hovering it lights up its source, and clicking scrolls to it, even after sending.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-4",
+     "verdict": "pass",
+     "evidence": "Re-shot live in the workbench (docs/active/design/2026-09-24-doc-comments/shots-grade/r15-ask-chip.png): choosing 'Ask about this' from the selection menu drops a \"working composer\" chip into the message composer. Source read of TokenPill.tsx confirms hover deepens the chip and calls dispatchRefHover to light up the source, and onClick calls onJump to scroll to it; the component's own header comment states it is reused unchanged for the SENT bubble (UserMessage.tsx) 'so a reference reads identically before and after sending' \u2014 matching 'even after sending'. Matches approved review#R-4."
+    },
+    {
+     "id": "R16",
+     "statement": "Ask Your Assistant sends one summary chip naming the comment count and file, instead of one chip per comment.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-confirm#S-7",
+     "note": "Settles the review note that one chip per comment was probably not the way to go."
+    },
+    {
+     "id": "R17",
+     "statement": "Word and spreadsheet files show the same comment panel; colleagues' Word comments appear under their name, and commented cells get a red corner mark.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-6",
+     "verdict": "pass",
+     "evidence": "Pre-existing screenshots from the same workbench harness confirm the built state: docs/.../shots-word-excel/docx-comments.png shows launch-brief.docx with the same rounded Comments panel and Priya Shah's Word comment under her name; docs/.../shots-word-excel/xlsx-comments.png shows q3-sales-by-rep.xlsx with the identical panel plus red corner marks on commented cells (C4, C15). My own live re-shoot hit the Word/Excel binary viewer hanging on 'Loading viewer\u2026' in this specific headless session, but the SAME hang reproduced on an unrelated pre-existing PDF file too (React.lazy chunk under headless CDP, not a doc-comments regression) while the Comments-count button and comment data loaded correctly every time \u2014 so the hang is a probing-tool limitation, not evidence the feature regressed. Matches approved review#R-6."
+    },
+    {
+     "id": "R18",
+     "statement": "Code files use the same comment panel, and Ask about this chips from code light up their lines.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-7",
+     "verdict": "pass",
+     "evidence": "Pre-existing screenshot docs/.../shots-polish/2-code-chip-hover.png shows ChatView.tsx open with the same Comments panel/button, line 11 highlighted, and a composer chip reading 'line 11 \u00b7 ChatView.tsx' \u2014 exactly 'Ask about this chips from code light up their lines'. My own live re-shoot (shots-grade/r18-code3.png) confirms the same Comments panel opens for a code file with the seeded code comment ('Is 32px right on every pointer\u2026'). Matches approved review#R-7."
+    },
+    {
+     "id": "R19",
+     "statement": "On the Projects screen, Comments is a header button beside the file's other actions, with the same panel and Ask Your Assistant.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#R-8",
+     "verdict": "pass",
+     "evidence": "Pre-existing screenshot docs/.../shots-polish/4-projects-comments.png shows the Projects screen's launch-brief.docx overlay with a 'Comments 4' button in the header row beside Open/Reveal/Copy path, opening the same comment panel with Ask Your Assistant. My own live re-shoot (shots-grade/r19-check.png, r19-projects1.png) confirms the Projects screen and its file grid load correctly in the current build. Matches approved review#R-8."
+    },
+    {
+     "id": "R20",
+     "statement": "From Projects, Ask Your Assistant opens a new-chat pop-up with the file's project already chosen and a model to pick.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-confirm#S-8",
+     "note": "Settles the review note asking for a model-picking pop-up, the same one Create a page uses."
+    },
+    {
+     "id": "R21",
+     "statement": "The three rejected practice branches and folders no longer exist, on GitHub or on this computer.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "doc-comments-review#Q-2"
+    },
+    {
+     "id": "R22",
+     "statement": "Moving a comment in an Excel file doesn't slow down whatever you do to it next by re-scanning the whole file.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/pending-mutation-queue.test.ts",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-27-doc-comments-code-review.md#F1",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && npx vitest run tests/pending-mutation-queue.test.ts \u2014 Test Files 1 passed, Tests 20 passed. Read the test: 'an xlsx move forwards the fresh id in the result' pins that pending-mutation-queue.ts's move branch now forwards the fresh id (code review F1's queue-level bug). Read the source to confirm the OTHER real caller named in F1 (MoveCommentTool.execute, desktop/src/main/harness/tools/doc-comments-tools.ts:361-365) also now reads and states the fresh id \u2014 both call sites the finding named are fixed, so the guard plus this direct read together verify the row's real-world claim (no full-workbook re-scan on the next Reply/Resolve after a move)."
+    },
+    {
+     "id": "R23",
+     "statement": "A genuinely corrupted Word or Excel file shows a different error than one that's simply too large to open.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/docx-comments.test.ts",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-27-doc-comments-code-review.md#F2",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && npx vitest run tests/docx-comments.test.ts \u2014 Test Files 1 passed, Tests 46 passed. Read the test: the 'decompression-bomb-shaped archive' describe block asserts a declared-oversize or real-oversize word/comments.xml or word/document.xml returns error:'archive-too-large', while a genuinely corrupted (scrambled-bytes) word/comments.xml returns error:'invalid-docx' \u2014 the exact two-different-errors distinction the row states. The named guard covers Word; the Excel half is independently covered by tests/xlsx-comments.test.ts's matching 'invalid-xlsx' vs 'archive-too-large' cases (also currently passing), so the row's 'Word or Excel' claim holds for both formats."
+    },
+    {
+     "id": "R24",
+     "statement": "Opening a file with hundreds of comments keeps the comment margin responsive instead of stalling.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/CommentsMargin.test.tsx",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-27-doc-comments-code-review.md#F3",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && npx vitest run tests/CommentsMargin.test.tsx \u2014 Test Files 1 passed (part of the combined run with doc-comments-ipc-handlers.test.ts: 2 passed, 28 tests passed). Read the test: 'renders 1,000 text comments in one pass within a generous CPU budget' and 'renders the elden-ring fixture's busiest real sheet (315 cell comments) within budget' both measure process.cpuUsage() and assert well under a multi-second ceiling while asserting every comment actually anchored \u2014 directly tests 'hundreds of comments keeps the margin responsive'."
+    },
+    {
+     "id": "R25",
+     "statement": "Leaving out a comment's location is rejected the same way on every device, never silently accepted on some.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/doc-comments-ipc-handlers.test.ts",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-27-doc-comments-code-review-android.md#F1",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && npx vitest run tests/doc-comments-ipc-handlers.test.ts \u2014 28 tests passed (combined run, see R24). Read the test: the 'a missing or malformed selector is refused (Android parity)' describe block explicitly refuses an absent selector, a selector with no recognized kind, and one missing its inner object, with a code comment citing the exact Android bug this pins parity against \u2014 directly tests 'rejected the same way on every device, never silently accepted on some'."
+    },
+    {
+     "id": "R26",
+     "statement": "On a phone or tablet, moving an Excel comment also avoids slowing down the next thing you do to it.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/app/src/test/kotlin/com/youcoded/app/doccomments/DocCommentsPendingQueueTest.kt",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-27-doc-comments-code-review-android.md#F2",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "cd youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk ./gradlew testDebugUnitTest -x bundleWebUi --tests 'com.youcoded.app.doccomments.DocCommentsPendingQueueTest' --tests 'com.youcoded.app.doccomments.DocCommentsStoreTest' \u2014 BUILD SUCCESSFUL; app/build/test-results/testDebugUnitTest/TEST-...DocCommentsPendingQueueTest.xml: tests=14 failures=0 errors=0 (fresh run, timestamped this session). Read the test: 'an xlsx move forwards the fresh id in the result' mirrors the desktop fix (R22) on the Android/Kotlin queue \u2014 same mechanism, same claim, for phone/tablet."
+    },
+    {
+     "id": "R27",
+     "statement": "On a phone or tablet, a comment that fails to save from a storage or permissions problem says so, not that the file is corrupted.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/app/src/test/kotlin/com/youcoded/app/doccomments/DocCommentsStoreTest.kt",
+     "threshold": "the named test passes",
+     "source": "review:../../reviews/2026-09-27-doc-comments-code-review-android.md#F3",
+     "found": "review",
+     "verdict": "pass",
+     "evidence": "Same gradle run as R26. app/build/test-results/testDebugUnitTest/TEST-...DocCommentsStoreTest.xml: tests=23 failures=0 errors=0. Read the test: 'a write-time failure (not a read failure) refuses as SIDECAR_WRITE_FAILED, never SIDECAR_CORRUPT' forces a write-time collision strictly after a successful read/apply and asserts a distinct error code from the sibling 'malformed JSON... still refuses as SIDECAR_CORRUPT' test \u2014 directly tests that a save failure from a storage/write problem is distinguished from file corruption, per the Android code review's F3 finding."
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "Word and Excel files keep their comments inside the file; every other file's comments live in a hidden project folder.",
+   "changed": "Checked by you. Your note at review: \u201cSettles the note on Q-1 asking that formats able to hold comments natively store them there instead.\u201d",
+   "notice": "opening the file in Word, Excel, or the project's hidden folder shows the comments, in a dev instance",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R2",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "The assistant can reply to your comments right where you left them.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "The assistant can resolve a comment once it finishes what you asked; reopening one takes a single click.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R4",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "The assistant leaves its own comments only sparingly, on things that clearly need your attention, never to narrate its own work.",
+   "changed": "Checked by you. Your note at review: \u201cSettles the note on Q-2 limiting how freely the assistant may add its own comments.\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R5",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "The assistant can edit a file to fix what a comment asks, following its existing edit-approval rules.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R6",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "After fixing a comment, the assistant decides whether to reply, resolve, or move it to the new wording; nothing is silently lost.",
+   "changed": "Checked by you. Your note at review: \u201cSettles the note on Q-2 about what happens to a comment once the assistant edits the text it pointed at.\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R8",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "Spreadsheet comments attach to a specific cell and are saved into the spreadsheet file itself.",
+   "changed": "Checked by you.",
+   "notice": "opening the spreadsheet in Excel shows the same cell comments, in a dev instance",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R9",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "Word comments work both ways: comments made in Word or Google Docs show here, and comments you add here show there.",
+   "changed": "Checked by you.",
+   "notice": "replying in YouCoded to a colleague's Word comment shows the reply in Word, in a dev instance",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R10",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "Opening a commented Word file in Google Docs keeps its comments; a live Google Drive link comes later.",
+   "changed": "Checked by you.",
+   "notice": "uploading a commented Word file to Google Drive keeps the comments, in a dev instance",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R11",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "The July draft pull request (#263) for the earlier attempt is closed on GitHub, pointing to this work.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R14",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "Show Resolved sits at the top of the comment panel, under the title, and an X in the top corner closes the panel.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R16",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "Ask Your Assistant sends one summary chip naming the comment count and file, instead of one chip per comment.",
+   "changed": "Checked by you. Your note at review: \u201cSettles the review note that one chip per comment was probably not the way to go.\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R20",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "From Projects, Ask Your Assistant opens a new-chat pop-up with the file's project already chosen and a model to pick.",
+   "changed": "Checked by you. Your note at review: \u201cSettles the review note asking for a model-picking pop-up, the same one Create a page uses.\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R21",
+   "words": true,
+   "surface": "File viewer comments",
+   "path": "Acceptance",
+   "headline": "The three rejected practice branches and folders no longer exist, on GitHub or on this computer.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}
