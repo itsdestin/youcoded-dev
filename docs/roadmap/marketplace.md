@@ -143,3 +143,15 @@ them. Not here: the theme renders wrong (themes).
       entries and never removes one the plugin no longer supports on that device. Low priority
       (found 2026-09-23)
       `all` `parked` `checked 2026-09-23`
+
+- [ ] Todoist is listed as an available integration, but installing it fails with "setup method
+      isn't supported": its setup asks for an API key, and the app only knows how to install
+      plugin-type integrations (`youcoded/desktop/src/main/integration-installer.ts` rejects
+      `api-key`). Found in the 2026-09-26 integrations audit; not covered by the connections rebuild.
+      `marketplace-screen` `all` `confirmed` `checked 2026-09-27` → docs/active/investigations/2026-09-26-integrations-rebuild/research/01-current-integrations.md
+
+- [ ] Google Messages (youcoded-messaging) looks broken on Mac and Linux: its settings say it runs on
+      all three, but only the Windows program (`gmessages.exe`) ships. Its description also still
+      promises iMessage, which was removed. Read from the files, not run on a Mac or Linux machine;
+      not covered by the connections rebuild.
+      `marketplace-screen` `desktop` `needs-verify` `checked 2026-09-27` → docs/active/investigations/2026-09-26-integrations-rebuild/research/01-current-integrations.md

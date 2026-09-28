@@ -78,7 +78,7 @@ Target: `v1.3.1`
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 27 | 10 | 8 | 6 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 5 | 7 | 5 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
-| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
+| [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 22 | 8 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 17 | 4 | 0 | 9 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
