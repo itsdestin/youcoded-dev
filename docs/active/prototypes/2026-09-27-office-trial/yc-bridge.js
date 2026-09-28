@@ -101,6 +101,18 @@
       var want = latest.dark ? 'theme-dark' : 'theme-light';
       if (Themes && Themes.currentThemeId && Themes.currentThemeId() !== want) Themes.setTheme(want);
     } catch (e) { /* no theme API in this frame: the variables still apply */ }
+    // Escape with nothing of the editor's own open (no menu, no dialog) goes to
+    // the app, like a YouCoded page's Escape — the host closes its top layer.
+    if (!doc.__ycEsc) {
+      doc.__ycEsc = true;
+      doc.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'Escape' || ev.defaultPrevented) return;
+        var busy = [].some.call(doc.querySelectorAll('.dropdown-menu, .asc-window, .modals-mask, .open > .dropdown-menu'), function (el) {
+          return el.offsetParent !== null && getComputedStyle(el).visibility !== 'hidden';
+        });
+        if (!busy) window.parent.postMessage({ type: 'yc:office-esc' }, '*');
+      }, true);
+    }
     var style = doc.getElementById(STYLE_ID);
     if (!style) { style = doc.createElement('style'); style.id = STYLE_ID; doc.head.appendChild(style); }
     var css = buildCss(latest);
