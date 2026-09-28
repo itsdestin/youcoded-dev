@@ -1,0 +1,121 @@
+{
+ "title": "Nothing bare, round 2 — labels first, About and Performance tidied",
+ "key": "ui-nothing-bare-2",
+ "out": "nothing-bare-2.review.html",
+ "images": "images/nothing-bare-2.review",
+ "runs": {
+  "before": "runs/n2-before",
+  "after": "runs/n2-after"
+ },
+ "labels": {
+  "before": "You reviewed",
+  "after": "Round 2"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight"
+ ],
+ "crops": {
+  "settings__about": [
+   "n2",
+   "settings__about",
+   "468x636+486+132"
+  ],
+  "settings__about--bottom": [
+   "n2",
+   "settings__about--bottom",
+   "468x636+486+132"
+  ],
+  "settings__performance": [
+   "n2",
+   "settings__performance",
+   "468x636+486+132"
+  ],
+  "settings__shortcuts": [
+   "n2",
+   "settings__shortcuts",
+   "468x636+486+132"
+  ],
+  "settings__sync": [
+   "n2",
+   "settings__sync",
+   "468x636+486+132"
+  ],
+  "settings__account": [
+   "n2",
+   "settings__account",
+   "468x327+486+287"
+  ],
+  "settings__buddy": [
+   "n2",
+   "settings__buddy",
+   "388x276+526+312"
+  ]
+ },
+ "steps": [
+  {
+   "id": "N2-1",
+   "surface": "About (top)",
+   "path": "Settings → About",
+   "crop": "settings__about",
+   "headline": "About (top): fixed now?",
+   "changed": "The popup now opens on Disclaimer: the version and policy card moved to the bottom (next step).",
+   "notice": "Wording unchanged."
+  },
+  {
+   "id": "N2-2",
+   "surface": "About (bottom)",
+   "path": "Settings → About, scrolled down",
+   "crop": "settings__about--bottom",
+   "headline": "About (bottom): fixed now?",
+   "changed": "The version and policies card now sits last, under a \"Version and policies\" label, with its two buttons side by side at full width instead of pushed to the right.",
+   "notice": "Wording unchanged."
+  },
+  {
+   "id": "N2-3",
+   "surface": "Performance",
+   "path": "Settings → Performance",
+   "crop": "settings__performance",
+   "headline": "Performance: fixed now?",
+   "changed": "A \"Graphics\" label sits above the first card. Your detected graphics chips moved into the switch's grey description, so the card is one clean block instead of a second loose line.",
+   "notice": "Everything else as in the last round."
+  },
+  {
+   "id": "N2-4",
+   "surface": "Keyboard Shortcuts",
+   "path": "Settings → Keyboard Shortcuts",
+   "crop": "settings__shortcuts",
+   "headline": "Keyboard Shortcuts: fixed now?",
+   "changed": "The table is split into four labelled groups: Views, Sessions, Writing messages, Modes and prompts. Each group is its own card, and no row wraps any more.",
+   "notice": "Same 13 shortcuts, regrouped; two rows moved to sit with their group."
+  },
+  {
+   "id": "N2-5",
+   "surface": "Backup & Sync",
+   "path": "Settings → Backup & Sync",
+   "crop": "settings__sync",
+   "headline": "Backup & Sync: fixed now?",
+   "changed": "A \"Main backup\" label now sits above the first card, so the popup no longer opens straight into a card.",
+   "notice": "Only the label is new."
+  },
+  {
+   "id": "N2-6",
+   "surface": "Account",
+   "path": "Settings → Account",
+   "crop": "settings__account",
+   "headline": "Account: fixed now?",
+   "changed": "A \"Your profile\" label sits above the first card.",
+   "notice": "Only the label is new."
+  },
+  {
+   "id": "N2-7",
+   "surface": "Buddy Floater",
+   "path": "Settings → Buddy Floater",
+   "crop": "settings__buddy",
+   "headline": "Buddy Floater: fixed now?",
+   "changed": "A \"Mascot\" label sits above the switch card.",
+   "notice": "The bare \"Remove helper\" text button below it is already on the fix list for bare-text buttons, so it is unchanged here."
+  }
+ ]
+}
