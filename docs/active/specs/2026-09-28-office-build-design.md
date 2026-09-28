@@ -121,7 +121,13 @@ All I/O async (performance rule 1; `main-blocking-calls.test.ts` ratchet).
   (the ast-grep exception for EditorFrame's `allow-same-origin` depends on this — a test pins it).
 - **`x2t.ts`** — runs the bundled native `x2t` with an XML task in a per-job temp dir
   (`os.tmpdir()/youcoded-office/<job>`), async spawn, 60 s timeout, one concurrent job per
-  file, stderr kept for the error. Formats: file ⇄ `Editor.bin` (8193/8194/8195 and back), PDF
+  file, stderr kept for the error. **The temp dir is fresh per job, never shared between the
+  open and the save** — measured in the spike (2026-09-28): saving with the dir the open had
+  used (it leaves `xlsx_unpacked/` behind) made x2t merge the old drawing parts in, and a
+  workbook's 5 charts came back on two sheets; a clean dir is correct. Pinned by a test that
+  round-trips a charted fixture. Also measured: x2t runs out of memory (`std::bad_alloc`)
+  writing the 9.5 MB model as `.ods` — a very large spreadsheet saved as OpenDocument fails
+  with a specific message instead of a crash (R23). Formats: file ⇄ `Editor.bin` (8193/8194/8195 and back), PDF
   export. The trial's `roundtrip.py` is the reference invocation.
 - **`office-files.ts`** — open: authorize the path through the existing artifacts write
   boundary (`write-authorization.ts`, same rules as `artifacts:save`; `.git`, credentials never;
