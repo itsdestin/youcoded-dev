@@ -2,14 +2,17 @@
   "title": "Office — contract",
   "key": "office-contract",
   "out": "office.contract.html",
-  "themes": ["midnight"],
+  "themes": [
+    "midnight"
+  ],
   "branch": "session/office-suite-investigation",
   "sources": {
     "office-questions": "office.questions.json",
     "office-base": "office-base.questions.json",
     "office-review": "office.review.json",
     "office-review-2": "office.review-2.json",
-    "office-review-3": "office.review-3.json"
+    "office-review-3": "office.review-3.json",
+    "office-odf": "office-odf.questions.json"
   },
   "steps": [
     {
@@ -176,10 +179,11 @@
         },
         {
           "id": "R23",
-          "statement": "LibreOffice's .odt, .ods and .odp files are supported in the first version of Office, not added later.",
+          "statement": "LibreOffice .odt, .ods and .odp files open in the first version; editing one saves your changes to a Word, Excel or PowerPoint copy beside it.",
           "checkedBy": "human",
           "threshold": "pass/fail",
-          "source": "office-review-3#Q-odf"
+          "source": "office-odf#Q-odf-save",
+          "note": "Amended 2026-09-28 by office-odf#Q-odf-save: the translator turns partly-bold bullet lines fully bold when writing LibreOffice files (found in the spike), so the original is never rewritten."
         },
         {
           "id": "R24",
