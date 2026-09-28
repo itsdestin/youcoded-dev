@@ -44,10 +44,10 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
    who has never seen the app or used its features. Headers are one line.
 4. **Three heading levels, no more.** If a screen seems to need a fourth, it needs fewer
    sections.
-5. **Cards for things, rows for lists, no nesting.** Something you open or install (a
+5. **Cards for things, rows for lists, styled by level.** Something you open or install (a
    plugin, a Page, a file) is a raised card. A list you read or pick from (settings, a menu)
-   is rows, never cards. Group with a small label and spacing — never put a box inside a
-   box.
+   is rows. Inside a popup, every card at the same depth looks the same (see Card levels) —
+   a card that holds one idea keeps it together; never split one idea into separate boxes.
 6. **Actions live on the right.** One filled button per view. A filled button, switch or
    selection never sits alone at the bottom-left — only when balanced by something on the
    right of the same line.
@@ -121,14 +121,33 @@ underline under its words. Labels over short settings groups stay plain.
   **Wide controls (text boxes, sets of choices) go below** the title and hint, full width.
 - Offering choices: 2–4 short choices → a tab strip; many choices or long names → a
   dropdown; choices that each need an explanation → a boxed list.
-- **Groups are flat:** a small label, then the rows directly under it, then a normal button.
-  No box inside a box.
+- **Groups keep their card:** a group that is one idea (sync, "Models") is one first-level
+  card, with its rows, notices and buttons inside it. Follow Card levels below.
 - Rows use the shared setting row: title, hint under it in the left column, control at the
   right.
 - **Anything that folds open** (a log, advanced options, details) is a **boxed row like a
   setting, arrow on the right**. One fold-out style everywhere.
 - **"I understand" before a risky action:** the whole line is a tappable box, tick box on
   the left, lighting up when ticked; the action stays disabled until it is ticked.
+
+### Card levels (inside popups and side panels)
+Every card is styled **by how deep it sits**, never by which screen it is on. Reference:
+Settings → Backup & Sync, Assistant → General, Account.
+- **First level** — a card sitting on the popup: the shared see-through glass card with a
+  thin outline (`CARD_LEVEL_1`). Every first-level card in every popup looks the same.
+- **Second level** — anything boxed inside a first-level card (a device list, a text box, a
+  picker, a fold-out row): one shared nested look (`CARD_LEVEL_2`, the field surface). All
+  second-level boxes look the same.
+- **Notices** keep their own tint at any level; **buttons** look the same everywhere, and
+  nothing that isn't a button looks like one.
+- **A card's own header row** (its title, hint and switch) sits in the card with no box of its
+  own — a boxed header inside a card reads as a card in a card.
+- **Text that describes a card lives inside it.** No loose lines between cards.
+- **No line crosses the full width** of a card or popup. Separate with spacing; a divider, if
+  one is needed, is the tapered line.
+- **Lists of short names** (saved devices) are plain rows inside **one** shared box, not a box
+  each.
+- 16px between first-level cards; 12px inside a card's edge.
 
 ### Cards
 - Anything you open, install or pick from a grid is a **raised card**: panel colour, thin
@@ -190,7 +209,7 @@ view**, which stays exactly as it is.
 - [ ] No hard-coded colour, pill or corner size; theme colours and shape only.
 - [ ] No spaced-out capitals; headings from the three levels.
 - [ ] Actions on the right; one filled button; nothing filled alone at the bottom-left.
-- [ ] Spacing from the scale; no box inside a box.
+- [ ] Spacing from the scale; cards styled by level; no loose text; no full-width lines.
 - [ ] Popups have the ✕ and close on Esc.
 - [ ] Checked in light, a dark theme, a wallpaper theme and at 390px wide.
 - [ ] Shown to Destin as pictures of the real screen, not described in words.
