@@ -13,6 +13,16 @@ from .live import APP_SCENARIOS, APP_VIEWS, PANE_WIDTH, is_app_pane, is_live, pa
 HERE = os.path.dirname(os.path.abspath(__file__))
 UI_REVIEW = os.path.dirname(HERE)
 DEFAULT_THEMES = ['midnight', 'light', 'creme', 'dark', 'halftone-dimension', 'meadow-mist']
+
+
+def is_shoot_crop_name(name):
+    """A shoot screen name (`"settings/sound"`) is the one crop-name shape no crops.json entry
+    or spec `crops` override has ever used (checked repo-wide 2026-09-26, all "/"-free) — so an
+    unrecognized name containing "/" is presumed to be one. Real existence is checked later,
+    against the run's own manifest (deck/crops.py, which cannot be imported here — it imports
+    FROM this module); this is only the fast, structural check that still catches a plain typo
+    of a legacy crop name at validate() time, same as before shoot existed."""
+    return '/' in (name or '')
 # Whole-word, case-insensitive. "px" and numbers are fine — measurements are wanted.
 # The marker a GENERATOR leaves where a session has to write the copy. Any field still
 # carrying it blocks the build (validate) — `selfie` writes the pictures, but only the session
@@ -560,12 +570,16 @@ def validate(spec):
         for k in ('surface', 'path', 'crop', 'headline', 'changed', 'notice'):
             if not st.get(k):
                 errors.append(f'{sid}: missing {k}')
-        if st.get('crop') and st['crop'] not in spec['_crops']:
-            errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops")')
+        if st.get('crop') and st['crop'] not in spec['_crops'] and not is_shoot_crop_name(st['crop']):
+            errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops", '
+                          f'or name a shoot screen like "area/name")')
         _headline_and_words(st, sid, errors)
         hl = st.get('highlight', 'auto' if two_runs else None)
         if hl is None:
-            errors.append(f'{sid}: one picture and nothing to compare it with — this slide needs a highlight (selector or text)')
+            # A shoot screen needs no highlight at all: its own panel is the default box
+            # (deck/crops.py). Only a legacy (or unresolvable) crop name still requires one.
+            if not is_shoot_crop_name(st.get('crop') or ''):
+                errors.append(f'{sid}: one picture and nothing to compare it with — this slide needs a highlight (selector or text)')
         elif hl == 'auto':
             if not two_runs:
                 errors.append(f'{sid}: "auto" highlight needs a before and an after run')
@@ -624,12 +638,16 @@ def _validate_decide(spec, st, sid, errors, warnings):
     for k in ('surface', 'path', 'crop', 'headline'):
         if not st.get(k):
             errors.append(f'{sid}: missing {k}')
-    if st.get('crop') and st['crop'] not in spec['_crops']:
-        errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops")')
+    if st.get('crop') and st['crop'] not in spec['_crops'] and not is_shoot_crop_name(st['crop']):
+        errors.append(f'{sid}: unknown crop "{st["crop"]}" (add it to crops.json or the spec\'s "crops", '
+                      f'or name a shoot screen like "area/name")')
     _headline_and_words(st, sid, errors)
     hl = st.get('highlight')
     if hl is None:
-        errors.append(f'{sid}: a decide step needs a highlight (it shows one picture, so there is nothing to diff)')
+        # A shoot screen defaults to its own panel as the highlight (deck/crops.py) — only a
+        # legacy (or unresolvable) crop name still needs one written out.
+        if not is_shoot_crop_name(st.get('crop') or ''):
+            errors.append(f'{sid}: a decide step needs a highlight (it shows one picture, so there is nothing to diff)')
     elif not (isinstance(hl, dict) and any(k in hl for k in ('selector', 'text', 'box'))):
         errors.append(f'{sid}: highlight must have selector, text or box')
     elif 'box' in hl:
@@ -834,8 +852,8 @@ def _validate_choice(spec, st, sid, errors, warnings):
         for k in ('label', 'crop', 'summary'):
             if not v.get(k):
                 errors.append(f'{sid}/{vid}: missing {k}')
-        if v.get('crop') and v['crop'] not in spec['_crops']:
-            errors.append(f'{sid}/{vid}: unknown crop "{v["crop"]}"')
+        if v.get('crop') and v['crop'] not in spec['_crops'] and not is_shoot_crop_name(v['crop']):
+            errors.append(f'{sid}/{vid}: unknown crop "{v["crop"]}" (or name a shoot screen like "area/name")')
         for k in VARIANT_TEXT_FIELDS:
             for w in banned_in(v.get(k)):
                 errors.append(f'{sid}/{vid}: {k} uses banned word "{w}"')

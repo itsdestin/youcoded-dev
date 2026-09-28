@@ -1,0 +1,23 @@
+{
+  "title": "Minimalist header — smoother edges and a complete switch",
+  "key": "minimalist-softened-header",
+  "out": "minimalist-chrome.softened-header.html",
+  "images": "images/minimalist-chrome.softened-header",
+  "runs": { "before": "runs/lenses-corrected", "after": "runs/lenses-softened" },
+  "labels": { "before": "The version that looked broken", "after": "Softer edges and full Terminal button" },
+  "themes": ["meadow-mist"],
+  "theme": "fixed",
+  "crops": { "header-only": ["main", "cushion", "1440x50+0+0"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "Header in Meadow Mist",
+      "crop": "header-only",
+      "highlight": { "box": [11.5, 6, 9, 82] },
+      "headline": "The Terminal button is whole; the controls fade toward the wallpaper instead of drawing a hard top line.",
+      "changed": "The switch no longer cuts off Terminal. The solid selection block is now a softer highlight, and the dark line along the session switcher is gone. The background fades at each control's edge.",
+      "notice": "The full-width header veil stays off; the wallpaper remains visible between controls."
+    }
+  ]
+}

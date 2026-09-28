@@ -35,6 +35,11 @@ topic: Where the remaining hiccups and freezes come from — a five-angle code s
 > and the per-word redraw of every entry in the VISIBLE chat. General guards added in the
 > same batch: `.claude/rules/performance.md`, `tests/busy-app-render-budget.test.tsx`,
 > `tests/main-blocking-calls.test.ts` (replaced 14 per-file ast-grep rules).
+>
+> **Status 2026-09-24:** A5 shipped without a visible change (youcoded#566): finished
+> markdown groups render once while a reply streams, only the live tail re-parses; the
+> visible chat no longer redraws non-reply entries per word; six main-process blocking-call
+> batches shipped (see `2026-09-24-main-blocking-calls-triage.md`).
 
 Session key `perf-smoothness-20260916`. Read-only sweep of `origin/master` at `18cc8cbc` (workspace) /
 the fetched app master, from five angles: main-process blocking work, renderer click paths, the

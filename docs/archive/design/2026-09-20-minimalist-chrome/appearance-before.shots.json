@@ -1,0 +1,66 @@
+{
+ "_why": "Appearance panel on master, for Before pictures.",
+ "base": "http://127.0.0.1:5270/?mode=workbench&child=1&latency=0&scenario=default",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "shots": [
+  {
+   "name": "panel-top",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    }
+   ]
+  },
+  {
+   "name": "panel-bottom",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "eval": "(()=>{const b=document.querySelector('[role=dialog] [data-guide-anchor=theme-grid]');let e=b;while(e&&!(e.scrollHeight>e.clientHeight+4&&getComputedStyle(e).overflowY!=='visible'))e=e.parentElement;if(e)e.scrollTop=e.scrollHeight;return true})()"
+    },
+    {
+     "wait": 500
+    }
+   ]
+  },
+  {
+   "name": "editor",
+   "actions": [
+    {
+     "click": "[title=Settings]",
+     "settle": 700
+    },
+    {
+     "click": "js:[...document.querySelectorAll('button')].find(b=>b.textContent.includes(\"Appearance\"))",
+     "settle": 900
+    },
+    {
+     "click": "js:document.querySelector('[role=dialog] [aria-label^=Edit]')",
+     "settle": 800
+    }
+   ]
+  },
+  {
+   "name": "chat",
+   "actions": [
+    {
+     "wait": 1200
+    }
+   ]
+  }
+ ]
+}

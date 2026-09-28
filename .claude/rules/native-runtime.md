@@ -10,8 +10,16 @@ paths:
   - "**/desktop/src/main/providers/**"
   - "**/desktop/src/main/native-home.ts"
   - "**/desktop/src/renderer/components/native-send.ts"
-last_verified: 2026-09-06
+last_verified: 2026-09-24
 verify:
+  # The floors under remembered grants (2026-09-23): a silent move of this check would
+  # make the "Always-allow beats the deny list" line read as the whole story again.
+  - path: youcoded/desktop/src/main/harness/harness-session.ts
+    contains: "floorStop && configured.action !== 'deny'"
+  - path: youcoded/desktop/src/main/harness/native-session-host.ts
+    contains: "endQuiesce"
+  - test: youcoded/desktop/tests/harness-compaction.test.ts
+  - test: youcoded/desktop/tests/native-switch-model.test.ts
   - path: youcoded/desktop/src/main/harness/harness-session.ts
   - path: youcoded/desktop/src/main/harness/harness-session.ts
     contains: "sawFirstChunk .. this.turnEverParked. && !willRetry"
@@ -57,7 +65,7 @@ verify:
 `SessionProvider` is `'claude' | 'native' | 'shell'`; shell is a terminal, not AI. Every provider branch handles it. **Depth: `youcoded/docs/native-runtime.md`, `provider-dependencies.md`; siblings: `harness-tools.md`, `native-permissions.md`.**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
-- **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`, which hides every desktop-only section off Electron.
+- **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`, hiding desktop-only sections off Electron.
 - **`createSession` throws only for a fresh native session without a binding**; the native branch builds NO PTY worker — guard every `session.worker.X`.
 
 ## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home`
@@ -71,20 +79,20 @@ verify:
 - **The emit surface is FROZEN** — new loop states map onto existing `TranscriptEventType`s.
 - **Tool-call/result pairing holds EVERYWHERE** (driver, `rebuildHistory`, `fitToContext`) — a dangling tool_call bricks sessions.
 - **An ask PAUSES the turn, not ends it** — no re-`send()` while open. **Carve-out: a HUMAN dismissal (broker `dismissed`) ENDS it.**
-- **Permission precedence is two-tier:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it.
+- **Permission precedence:** tool-layer guards never yield; the destructive deny-list is CONFIG — a remembered Always-allow beats it, never the Bash floors beneath (`harness-tools.md`), which force an ask.
 
 ## M2 conversations/sync — guards: `ipc-handlers`/`holder-takeover`
-- **Native sessions are real Conversation Store rows** — see rule `conversations.md`.
-- **`quiesce(id)` is STRONGER teardown than `interrupt()`** — cross-device takeover only, never Stop.
+- **Native sessions are Conversation Store rows** (rule `conversations.md`).
+- **`quiesce(id)` is STRONGER teardown than `interrupt()`** — cross-device takeover only, never Stop. Its send refusal lasts until destroy (`endQuiesce` only for an aborted takeover).
 
 ## Local reliability (Plan C) — guards: `capability-profile`/`known-models`/`compaction` tests
 - **CapabilityProfile NEVER branches on a model name** (`known-models.ts` is the ONLY modelId inspection); `supportsTools:false` → plain chat.
 - **A local model's REAL context window is read (`/props`) + clamped, never guessed** — ONE number feeds tiering, compaction, StatusBar.
-- **Near-limit compaction: one validated summary, never pruning.** Keep tool groups and accepted history; shorten only the summarizer's copy. The `compact-summary` line is the durable record — append, then adopt. Switches are fit-checked (`native:switch-model`). Guards: `harness-compaction`, `native-switch-model` tests.
+- **Near-limit compaction: one validated summary, never pruning.** Keep tool groups and accepted history; shorten only the summarizer's copy. The `compact-summary` line is the durable record — append, then adopt. Switches are fit-checked (`native:switch-model`).
 
 ## Stall watchdog & the park — guard: `harness-stall-watchdog.test.ts`
 - **The park is a `return` that does NOT resolve the stall race** — stage 2 emits `{stalled:true}` and returns; nothing is torn down; a late chunk still continues the turn. That `return` IS the feature.
-- **Check the park guard against the EXPRESSION, never prose — it has been mis-stated five times.** `!isSpecialistChild && (sawFirstChunk || turnEverParked) && !willRetry`, `willRetry = !emittedAny && isFirstAttempt`. `willRetry` tests `emittedAny`, NOT `sawFirstChunk` — tool-argument fragments set only the latter, so a first-attempt tool-args stall auto-retries silently.
+- **Check the park guard against the EXPRESSION, never prose.** `!isSpecialistChild && (sawFirstChunk || turnEverParked) && !willRetry`, `willRetry = !emittedAny && isFirstAttempt`. `willRetry` tests `emittedAny`, NOT `sawFirstChunk` — tool-argument fragments set only the latter, so a first-attempt tool-args stall auto-retries silently.
 - **Clock 1 stays OUT OF SCOPE** — nothing streamed this attempt and the turn never parked → still ends in the prefill `StreamStallError`. `turnEverParked` is per-TURN (cleared at `send()` entry), so a post-park retry never dies on Clock 1.
 - **A specialist child must NEVER park** — `SUBAGENT_DISPLAY_TYPES` excludes `assistant-thinking`, so a parked child shows no card, its `send()` never settles, and the parent's `Task` waits forever.
-- **Retry erases in THREE places** — screen (`NATIVE_PARTS_DROPPED`, rule `chat-reducer.md`), disk (`SessionStore` discards the open part — the one path that doesn't flush it), model memory (`reportPartial('')`).
+- **Retry erases in THREE places** — screen (`NATIVE_PARTS_DROPPED`, rule `chat-reducer.md`), disk (`SessionStore` discards the open part), model memory (`reportPartial('')`).

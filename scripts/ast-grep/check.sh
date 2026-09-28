@@ -392,7 +392,12 @@ fi
 #   and "must still exist" check). 424 - 17 = 407.
 # 2026-09-23 (plan-approval review): +1 — main-auto-approve-through-should-auto-approve's
 #   fixture fires once. 407 + 1 = 408.
-EXPECTED_VIOLATIONS=408
+# 2026-09-24 (startup prompts, second review F2/F4): +4 — app-prompt-show-starts-only-on-ready
+#   fires twice on its unguarded fixture (the call, and the missing guarded call) and once on
+#   its "-missing" fixture; app-composer-disabled-through-helper's fixture fires once. 408 + 4 = 412.
+# 2026-09-24 (startup prompts, dev-instance finding): +2 — app-existing-sessions-started-through-helper's
+#   fixture fires twice (the map form and the loop form). 412 + 2 = 414.
+EXPECTED_VIOLATIONS=414
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

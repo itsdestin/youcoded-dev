@@ -55,6 +55,12 @@ If you catch yourself copying a class string somewhere to render it, stop — ed
 Use `run-dev.sh` instead only when the work needs real event ordering, a PTY, or main-process
 behaviour.
 
+**Pictures for the deck come from `shoot`, not from this hot-reloading tab.** Give each new
+surface a screen name (`useScreenOpen` + `screen=`/`<ScreenMark>` + a list entry —
+`scripts/shoot/README.md` → "Adding a screen"; a new `<Dialog>` fails the tests until it has one),
+then `node scripts/shoot/shoot.mjs <names> --before <base> --after <worktree> --out <deck>/runs`
+and name the screens as the steps' `crop`. Hover, drag and motion are live steps instead.
+
 ### Controls (toolbar, above the app)
 
 - **View** — `app`, or the `tool gallery` (every tool fixture as a real `<ToolCard>`; replaced
@@ -132,9 +138,10 @@ deck he sees should already be free of the confusion an outsider catches in ten 
 
 ## Verification is Destin's
 
-Per the workspace rule, do **not** script interactive verification. One-shot screenshots for
-your own layout self-checks are fine; the interactive pass — hover, drag, timing, "does this
-feel right" — is his, and he can usually eyeball it in 30 seconds. Tell him what to click.
+Per the workspace rule, do **not** build your own interactive verification rig. `shoot` pictures
+and `explore` walks (the UX tester's tool) are the sanctioned checks for your own self-review;
+the judgement — hover, drag, timing, "does this feel right" — is his, and he can usually eyeball
+it in 30 seconds. Tell him what to click.
 
 ## After approval
 

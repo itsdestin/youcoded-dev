@@ -1,0 +1,44 @@
+{
+  "title": "Minimalist header — three different ways to read it",
+  "key": "minimalist-header-distinct-choice",
+  "out": "minimalist-chrome.distinct-choice.html",
+  "images": "images/minimalist-chrome.distinct-choice",
+  "runs": { "today": "runs/distinct-options" },
+  "themes": ["meadow-mist", "midnight"],
+  "theme": "fixed",
+  "crops": {
+    "adaptive-ink": ["distinct", "adaptive-ink", "1440x50+0+0"],
+    "icon-spotlights": ["distinct", "icon-spotlights", "1440x50+0+0"],
+    "raised-keys": ["distinct", "raised-keys", "1440x50+0+0"]
+  },
+  "steps": [{
+    "id": "C-2",
+    "surface": "Chat",
+    "path": "Header against the wallpaper",
+    "headline": "Which direction makes the controls visible and still feels like this theme?",
+    "notice": "These are distinct visual prototypes in the real renderer, not three strengths of one panel. Nothing has been made the default. Try both Meadow Mist and Midnight; 'None of these' is valid.",
+    "variants": [
+      {
+        "id": "adaptive-ink",
+        "label": "Wallpaper-aware ink",
+        "crop": "adaptive-ink",
+        "summary": "Keep clear controls. Lighten the icons and each status color over Meadow Mist's blue header; leave Midnight's already-legible colors alone. The selected session gets a small dark patch behind its name.",
+        "risk": "This prototype samples one header area. A real implementation would need to follow wallpapers, window sizes and theme changes; these colors are not yet adaptive at runtime."
+      },
+      {
+        "id": "icon-spotlights",
+        "label": "Icon spotlights",
+        "crop": "icon-spotlights",
+        "summary": "Small backlit patches sit behind individual icons rather than filling whole buttons. The longer toggle and session switcher get their own readable glass backing.",
+        "risk": "The Session Files badge needs special positioning; the small patches may feel busy when many buttons sit together."
+      },
+      {
+        "id": "raised-keys",
+        "label": "Raised keys",
+        "crop": "raised-keys",
+        "summary": "Separate, flatter-edged controls use stronger local surfaces and a short bottom shadow—more like individual keys emerging from the wallpaper.",
+        "risk": "The shape is a bigger departure from the originally soft, melted-glass look."
+      }
+    ]
+  }]
+}

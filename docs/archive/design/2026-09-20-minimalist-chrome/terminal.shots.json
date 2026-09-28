@@ -1,0 +1,7 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chrome=float",
+ "width": 1440, "height": 900, "boot": 2500,
+ "shots": [
+  {"name": "terminal", "actions": [{"click": "js:[...document.querySelectorAll('.wide-view-toggle button')].find(b=>/terminal/i.test(b.getAttribute('aria-label')||b.textContent))", "settle": 1500}]}
+ ]
+}

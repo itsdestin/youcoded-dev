@@ -1,0 +1,34 @@
+{
+ "_why": "Float chrome round 9: blur on each small control (today) vs only on the message box and session switcher.",
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&latency=0&scenario=default&chrome=float",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "shots": [
+  {
+   "name": "frosted",
+   "actions": [
+    {
+     "eval": "(()=>{const s=document.querySelector('.chat-scroll');s.scrollTop=s.scrollTop-170;return true})()"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "clear",
+   "actions": [
+    {
+     "eval": "(()=>{const st=document.createElement('style');st.textContent=\"[data-wallpaper] [data-chrome-style='float'] :is(.header-bar > .header-controls-left > button:not(.session-strip), .header-bar > .header-controls-left > div:not(.wide-view-toggle) > button, .header-bar > .header-controls-right > div > button, .header-bar .wide-view-toggle, .quick-chip, .quick-chip-edit, .status-bar > button, .status-bar .status-chip){backdrop-filter:none !important;-webkit-backdrop-filter:none !important}\";document.head.append(st);return true})()"
+    },
+    {
+     "eval": "(()=>{const s=document.querySelector('.chat-scroll');s.scrollTop=s.scrollTop-170;return true})()"
+    },
+    {
+     "wait": 900
+    }
+   ]
+  }
+ ]
+}

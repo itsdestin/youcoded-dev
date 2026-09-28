@@ -105,6 +105,16 @@
     "home",
     "440x30+0+868"
   ],
+  "chrome-top": [
+    "main",
+    "home",
+    "1440x120+0+0"
+  ],
+  "chrome-bottom": [
+    "main",
+    "home",
+    "1440x150+0+750"
+  ],
   "narrow-bottom": [
     "narrow",
     "home",

@@ -18,11 +18,15 @@ seen-on is always n/a here.
       when it opens (found 2026-09-27, the same on master)
       `n/a` `confirmed` `checked 2026-09-27`
 
-- [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`,
-      2026-09-23) holds ~700 calls marked "unreviewed — hot-path candidate". The guard stops new
-      ones; the old ones still freeze every window when a click or timer reaches them. Work
-      through the list by how often each runs and convert or classify it; the list may only shrink
-      `n/a` `confirmed` `checked 2026-09-23` `performance`
+- [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`)
+      still holds ~650 "unreviewed" calls. The 2026-09-24 triage ranked them and six batches
+      shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
+      slider/download strip). Left: move the ~330 entries the triage marks harmless into
+      startup-only / user-rare (JSON lines ready in the report); batches B2 (native-home +
+      session-store), B4 (conversation-store — reads, listing and heal async since youcoded#573; the locked write/remove path is left), B5 (chat-search
+      index), B7 (git-transport / sync service), B10 (skill-provider catalog reads), B12
+      (project-watcher); custom-theme glass sliders still save on every tick (theme:write-file)
+      `n/a` `confirmed` `checked 2026-09-24` `performance` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
 
 - [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
       → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
@@ -69,16 +73,15 @@ seen-on is always n/a here.
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
 
-- [ ] Three small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
-      whole cycle: (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
+- [ ] Two small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
+      whole cycle (a third, line budgets only reported at the end of verify, was fixed
+      2026-09-27: verify checks them first): (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
       sign they are its children — have it say so from the process's ancestry, instead of a doc
       asking sessions to remember; (2) a fresh session worktree has no `scratch/perf-lab/assets`,
       so `fixture.mjs --ensure-assets` re-downloads ~490 MB and a slow link times the whole run
       out after the 3-minute build and the quiet-machine wait — copy or hardlink from the shared
-      checkout's `scratch/perf-lab/assets` when it is there; (3) `verify.sh` found six separate
-      line-budget overruns of one to thirteen lines, each only at the END of a full run — run
-      `tests/line-budgets.test.ts` first, it takes under a second
-      `n/a` `confirmed` `checked 2026-09-18`
+      checkout's `scratch/perf-lab/assets` when it is there
+      `n/a` `confirmed` `checked 2026-09-27`
 
 - [ ] The perf lab's new "blank on arrival" count has never been shown to FAIL. It was added
       2026-09-18 (`scenario-workload.mjs` → `switchBlank`) because the painted clock counts entry
@@ -91,14 +94,6 @@ seen-on is always n/a here.
       could simply be blind. Run `bg-run.sh --checkout <a worktree at e5f8b2d8> --only workload
       --workload-repeats 1` on a quiet machine; expect blank frames on most switches
       `n/a` `needs-verify` `checked 2026-09-18`
-
-- [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
-      never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
-      pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
-      hour. Nothing about the code changed between the green and red runs, so it is the runner's
-      Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
-      is recognised, but the fix is a longer or retried launch in the perf-lab harness
-      `n/a` `needs-verify` `checked 2026-09-10`
 
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
@@ -321,18 +316,33 @@ seen-on is always n/a here.
 
 ## rigs
 
+- [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
+      ChatGPT sign-in that never renews, so the real app is never signed out). Destin
+      2026-09-24: "it's sometimes annoying to add separate api keys and such for a quick test".
+      Investigated, not built: keys are locked under the app's name, so dev needs the keychain
+      helper under the built name (may prompt KWallet); ChatGPT renewal in dev would sign the real
+      app out; needs a written read-only exemption in live-app-safety.md; Linux first. Recommended
+      design B (keys + borrowed ChatGPT, no marketplace). OpenCode is not an in-app sign-in
+      `n/a` `decision` `checked 2026-09-24`
+
+- [ ] Removing a provider in a dev instance also removes it from the real app — both read and
+      write the shared `~/.youcoded/providers.json` (provider-registry remove), so a quick test
+      can silently delete a real provider row
+      `n/a` `needs-verify` `checked 2026-09-24`
+
+- [ ] The perf rig's native-stream phase streams into a brand-new chat, so it cannot see per-word
+      costs that grow with chat history (the 2026-09-24 visible-chat fix showed 0 in the rig);
+      add a variant that streams into a chat with prior history, markers and cards. Also
+      terminal switching measured 137 ms (09-11) vs ~580 ms (09-23) with a very tight spread —
+      a fixed wait or a scenario change; find which
+      `n/a` `confirmed` `checked 2026-09-24` `performance`
+
 - [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
       cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
       catches it. `deck/AUTHORING.md` already warns about it, and on 2026-09-17 it still took three
       rebuilds (two slides lost their Risk card at 1280 and 1024 wide). Preview should measure
       each card against its box and print which slide and window size clips
       `n/a` `confirmed` `checked 2026-09-17`
-
-- [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
-      port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
-      this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
-      the way its Chrome port blocks already do
-      `n/a` `confirmed` `checked 2026-09-16`
 
 - [ ] Destin asked to “optimize tf out of our workspace” (2026-09-14). Oxlint, TypeScript 7 and the
       design check shipped; still untried: one-off scans with Fallow (dead code, copy-paste,
@@ -347,8 +357,10 @@ seen-on is always n/a here.
       runner (a CI box's software renderer says nothing about a 180 Hz panel): launch a dev
       instance nightly, run the idle probe at three times its baseline, run the startup marks
       and append one line per night, with a sanity floor because the rig has twice reported
-      clean while measuring nothing
-      `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
+      clean while measuring nothing. 2026-09-26: `scripts/perf-lab/real-scale-startup.mjs` now
+      takes the startup marks (and the detached launch work, Resume scans, main-process stalls)
+      against a copy of the REAL history, by hand — the nightly line is still missing
+      `n/a` `confirmed` `checked 2026-09-26` → docs/active/investigations/2026-09-16-simplification-audit.md
 
 - [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
       remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
@@ -402,8 +414,15 @@ seen-on is always n/a here.
       Measuring what Destin actually sees would need a real display with a compositor, which
       means putting windows on his screen while he works. Deliberately not attempted; filed so
       the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
-      GPU" should cite this
-      `n/a` `confirmed` `checked 2026-09-10` `performance`
+      GPU" should cite this. 2026-09-26 (Destin approved one 30 s window on his screen): the
+      software renderer MISATTRIBUTED an idle welcome screen's cost — on Xvfb the frosted blur
+      looked like all of it (99% -> 5% with blur off), on his real GPU the blur was a minority
+      and the mascot's full-refresh motion was most of it (36% -> 8% hidden). A question deck
+      framed on the Xvfb reading got the wrong answer and had to be reopened. Recipe that
+      worked: `launchApp({ display: process.env.DISPLAY })`, GPU busy from
+      `/sys/class/drm/card1/device/gpu_busy_percent`, CPU by process type from CDP
+      `SystemInfo.getProcessInfo` — nothing drawing a frame counter while measuring idle
+      `n/a` `confirmed` `checked 2026-09-26` `performance`
 
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
@@ -467,7 +486,10 @@ seen-on is always n/a here.
       `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
       the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
       and focus emulation on by default, beside `--hover`
-      `n/a` `confirmed` `checked 2026-09-10`
+      **Half done 2026-09-26:** real input exists now — `scripts/shoot/explore.mjs` hovers,
+      presses, drags and types through CDP `Input`, and the tester kit uses it. Still missing:
+      touch and a 1.5× scale in `explore`/`shoot` (a tester still cannot claim to cover either)
+      `n/a` `confirmed` `checked 2026-09-26`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
       different subset of the layouts: `scripts/lib/resolve-checkout.sh` (run-workbench),
@@ -641,6 +663,13 @@ seen-on is always n/a here.
       ruled the other candidates out: `docs/active/investigations/2026-09-20-session-worktree-disappeared-mid-session.md`.
       Related to the stale-manifest item above and to the fact that 179 of 198 manifests now point at
       worktrees that no longer exist (counted this session; that item's 20-of-33 count is 3 hours old)
+      RECURRED 2026-09-23/24: `worktrees/sessions/perf-many-tabs-baseline` (a clean, zero-commit
+      baseline kept for perf-rig comparisons) vanished with its branch between a PC crash and the
+      next rig run; four "before" runs failed with `spawn git ENOENT` before it was noticed, and
+      re-running the key now REFUSES ("Missing recorded worktree … will not be recreated") — an
+      improvement, but a new key was the only way on. Lead, unconfirmed: the same evening a tooling
+      session pruned "9 finished session worktrees"; a clean worktree at master with no commits
+      looks exactly like finished work to a pruner
       `n/a` `needs-verify` `checked 2026-09-20`
 
 ## knowledge
@@ -702,8 +731,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-18`
 
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
-      then recommend deleting its worktree; it should notice unfinished edits before declaring success
-      `n/a` `needs-verify` `checked 2026-09-05`
+      then recommend deleting its worktree; it should notice unfinished edits before declaring success.
+      Reproduced 2026-09-27 on the release-skill session worktrees in both workspace and
+      `youcoded-admin`: the tip was just fetched master and the remote branch did not exist,
+      but both worktrees hold uncommitted edits. `close-out.sh` printed "the work landed",
+      "remote branch deleted" and TODOs to delete both worktrees. Those verdicts refer only to
+      the branch tip, not the unfinished files; do NOT follow those deletion suggestions.
+      `n/a` `confirmed` `checked 2026-09-27`
 
 - [ ] Recheck the old cleanup handoff's remaining unused-code and bug-hunt ideas before
       treating them as completed; its retired tooling instructions are no longer a safe starting point
@@ -843,17 +877,6 @@ seen-on is always n/a here.
       click Update on his Arch install once a beta carrying youcoded#546 ships; the macOS halves
       (Rosetta detection, the removed any-dmg fallback) have no machine here at all
       `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
-
-- [ ] Strip every youcoded-core step out of the release skill (`youcoded-admin`
-      `skills/release/SKILL.md`, 56 references). The repo was archived 2026-09-20, so a commit,
-      push, tag or `gh release create` against it now FAILS — the skill would die mid-release at
-      Phase 4 Step 6. A header note at the top currently says "skip every youcoded-core step",
-      which holds the next release together but leaves the two-repo flow written out below it:
-      Repository Details, Phase 1 Steps 1–7, the review-mandates and review-update-compat agents,
-      the two-CHANGELOG generation, the YOUCODED-CORE release block, Steps 8a–8c and the error
-      table. Also drop the youcoded-core rows from `setup.sh`/`workspace-start.mjs` if nothing
-      needs the checkout any more
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
 
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build

@@ -72,7 +72,7 @@
 - Full-resolution PNG originals live in `scratch/ui-review-2026-08-25/` (workbench sweep)
   and `scratch/ui-audit-2026-08-25/shots-e*/` (real app), both git-ignored.
 
-**Regenerate everything:** `bash scripts/ui-review/run-review.sh <worktree>` (≈15 min), then
+**(2026-09-26: the sweep below is retired — regenerate with `node scripts/shoot/shoot.mjs --all --themes all --contrast --worktree <worktree>`; see `.claude/skills/ui-review/SKILL.md`.)** Originally: **Regenerate everything:** `bash scripts/ui-review/run-review.sh <worktree>` (≈15 min), then
 copy `sheets/*.jpg` here and run `python3 scripts/ui-review/make-gallery.py images gallery.html`.
 The real-app plans need the dev instance described in `scripts/ui-review/README.md`.
 

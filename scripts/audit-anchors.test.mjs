@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import {
-  parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths,
+  parseRuleFrontmatter, harvestDocAnchors, harvestMapPaths, harvestScriptPaths,
   globToRegex, countBodyWords, yamlUnsafeFrontmatter, subRepoRoot, baseFor, REPOS,
   uncommittedPaths, strandedWorktrees, undocumentedWorkbenchSwitches,
 } from './audit-anchors.mjs';
@@ -859,4 +859,14 @@ test('undocumentedWorkbenchSwitches: a checkout without the rig README reports n
     readme: null,
   });
   assert.deepEqual(undocumentedWorkbenchSwitches(root), []);
+});
+
+test('harvestScriptPaths: script paths from live instructions, not lines that call them retired', () => {
+  const text = [
+    '2. `bash scripts/ui-review/run-review.sh <worktree>` — screenshots everything',
+    'Run node scripts/shoot/shoot.mjs --check, then scripts/verify.sh.',
+    'The old sweep (`scripts/ui-review/run-review.sh`) was retired 2026-09-26.',
+    'Not a path: youcoded/scripts/x.sh stays out, and a URL https://x/scripts/y.sh too.',
+  ].join('\n');
+  assert.deepEqual(harvestScriptPaths(text).sort(), ['scripts/shoot/shoot.mjs', 'scripts/ui-review/run-review.sh', 'scripts/verify.sh']);
 });

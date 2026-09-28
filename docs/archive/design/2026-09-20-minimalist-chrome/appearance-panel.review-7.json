@@ -1,0 +1,37 @@
+{
+  "_why": "Round 7, from Destin's review-6 AR6-1: Layout section below Themes; the Framed layout picture redrawn as a full frame. Whole-panel pictures have the popup's height cap lifted in the screenshot only.",
+  "title": "Appearance panel — round 7: themes first, and a proper Framed picture",
+  "key": "appearance-panel-review-7",
+  "out": "appearance-panel.review-7.html",
+  "images": "images/appearance-panel.review-7",
+  "stage": "review",
+  "runs": { "before": "runs/ap6", "after": "runs/ap7" },
+  "labels": { "before": "Last round", "after": "Now" },
+  "themes": ["meadow-mist", "dark", "halftone-dimension"],
+  "crops": {
+    "panel": ["ap4", "closed", "430x680+505+400"],
+    "tiles": ["ap4", "closed", "400x90+520+780"]
+  },
+  "steps": [
+    {
+      "id": "AR7-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance",
+      "crop": "panel",
+      "headline": "Themes now come first, with Layout and Additional Customizations below them.",
+      "changed": "The Themes box moved to the top of the panel. Layout, with the Additional Customizations box under it, follows, then Effects & chat.",
+      "notice": "The first thing you see when the panel opens is your themes."
+    },
+    {
+      "id": "AR7-2",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Layout",
+      "crop": "tiles",
+      "runs": ["after"],
+      "highlight": { "box": [0, 0, 50, 100] },
+      "headline": "The Framed picture now shows one frame all the way around, with the chat set inside it.",
+      "changed": "It used to be four separate strips, which read as two bars. Now the whole window is the frame colour, with the chat sitting inside as a rounded pane with an outline, and the message box in the frame below it, as in the real Framed layout.",
+      "notice": "Auto shows the same picture whenever the theme's own layout is Framed."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Full Auto safety stops — blue broad-allow buttons",
+  "key": "outside-edit-full-auto-review-3",
+  "out": "outside-edit.review-3.html",
+  "stage": "review",
+  "theme": "fixed",
+  "themes": ["midnight"],
+  "images": "images/outside-edit.review-3",
+  "runs": { "before": "runs/before-round3", "after": "runs/after-round3" },
+  "labels": { "before": "Previous draft", "after": "Updated draft" },
+  "crops": { "prompt": ["outside-prompt", "card", "960x170+0+0"] },
+  "steps": [{
+    "id": "S-1",
+    "surface": "Full Auto permission prompts",
+    "path": "Outside edits and pushing code",
+    "crop": "prompt",
+    "headline": "Broad approval is blue, like standard Always Allow.",
+    "changed": "Allow outside edits and Always Allow on push/delete stops are now blue. Approve/Run it stays green; Deny stays red.",
+    "notice": "This changes button colors only. The outside-edit grant still requires confirmation and ends when the session closes."
+  }]
+}

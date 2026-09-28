@@ -61,15 +61,6 @@ chat-data).
       (`CLAUDE_CODE_FORK_SUBAGENT`)
       `settings/development` `desktop` `parked` `checked 2026-04-21`
 
-- [ ] Chat view hangs on "Initializing session..." when Claude Code is waiting on its
-      trust-folder prompt — terminal view shows the prompt and answers fine, chat view never
-      surfaces it (Destin, 2026-09-03, screenshot on file: "Accessing workspace: /home/destin
-      ... Yes, I trust this folder"). Since 2026-09-14 the screen at least says "Something may
-      be wrong" after 6 s with a Check terminal view button, so it no longer hangs silently.
-      Cause found 2026-09-23: Claude Code 2.1.281's folder-trust prompt no longer numbers its
-      options, so the app never recognises it as a prompt and no trust card appears in chat
-      `desktop` `confirmed` `checked 2026-09-23`
-
 - [ ] Reloading the app window while a permission or plan question is waiting makes its card
       disappear: the terminal looks blank and the chat looks idle while Claude Code is still
       waiting for an answer. Now that a question is held for up to 2 hours, this can last much

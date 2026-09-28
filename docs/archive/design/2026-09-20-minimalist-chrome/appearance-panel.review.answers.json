@@ -1,0 +1,46 @@
+{
+ "deck": "appearance-panel-review",
+ "started": "2026-09-24T09:00:54.119Z",
+ "submitted": "2026-09-24T09:03:13Z",
+ "cur": 5,
+ "answers": {
+  "AR-1": {
+   "note": "layout should be at the top. i want it to be clearer that there is a container around the themes and add our fade effect so it's scrollable.",
+   "v": "other",
+   "seconds": 59,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "AR-2": {
+   "v": "yes",
+   "seconds": 13,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "AR-3": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "AR-4": {
+   "v": "yes",
+   "seconds": 30,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "AR-5": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "AR-6": {
+   "v": "pick",
+   "pick": "keep-sections",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

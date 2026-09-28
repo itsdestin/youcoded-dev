@@ -1,0 +1,15 @@
+{
+ "deck": "outside-edit-full-auto-review",
+ "started": "2026-09-23T01:58:10.680Z",
+ "submitted": "2026-09-23T01:59:06Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "other",
+   "note": "change \"edit once\" to \"approve\" \"allow outside edits\" should be whatever the color for \"always allow\" is on the push/delete prompts.",
+   "seconds": 55,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,97 @@
+{
+  "title": "Float style — session menu, scroll bars, message fade",
+  "key": "minimalist-round7",
+  "out": "minimalist-chrome.round7.html",
+  "images": "images/minimalist-chrome.round7",
+  "runs": {
+    "before": "runs/r7-before",
+    "after": "runs/r7-after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "golden-sunbreak",
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "menu": [
+      "r7",
+      "menu",
+      "900x560+270+0"
+    ],
+    "scrollbar": [
+      "r7",
+      "scrolled",
+      "600x460+840+120"
+    ],
+    "fade-today": [
+      "r7",
+      "fade-today",
+      "1440x330+0+570"
+    ],
+    "fade-mid": [
+      "r7",
+      "scrolled",
+      "1440x330+0+570"
+    ],
+    "fade-low": [
+      "r7",
+      "fade-low",
+      "1440x330+0+570"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R7-1",
+      "surface": "Chat",
+      "path": "Header — the arrow at the end of the session switcher",
+      "crop": "menu",
+      "headline": "The session menu now has the same see-through surface as the session switcher and the header buttons.",
+      "changed": "The menu was a thick glass panel. It now uses the switcher's faint frosted fill, thin edge and light blur. The highlighted session row uses the same fill as the selected session in the switcher.",
+      "notice": "Only this menu changed. The app's other pop-up menus keep their current look.",
+      "risk": "With so little frost, the chat messages behind the menu show through its rows, so the menu is busier to read than before, most on dark or busy wallpaper."
+    },
+    {
+      "id": "R7-2",
+      "surface": "Chat",
+      "path": "Right edge of the chat — the scroll bar",
+      "crop": "scrollbar",
+      "headline": "Scroll bars now use the buttons' see-through fill and thin edge instead of a solid grey or theme-coloured bar.",
+      "changed": "Every scroll bar in the float style: chat, side panels, menus and the terminal. Golden Sunbreak's solid gold bar becomes the same frosted bar as everywhere else.",
+      "notice": "The scroll bar is the thin bar at the right edge of each picture."
+    },
+    {
+      "id": "R7-3",
+      "surface": "Chat",
+      "path": "Bottom of the chat, scrolled up a little",
+      "headline": "How far down should messages stay visible before fading out?",
+      "notice": "Scrolled up a little so a message passes under the bottom controls. At rest the last message still sits above the quick buttons in all three.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "fade-today",
+          "summary": "Messages fade out just below the quick buttons and never reach the message box."
+        },
+        {
+          "id": "mid",
+          "label": "Behind the message box",
+          "crop": "fade-mid",
+          "summary": "Messages pass behind the quick buttons and fade out behind the message box. This is what's built now.",
+          "risk": "The quick buttons now sit over moving message text while you scroll."
+        },
+        {
+          "id": "low",
+          "label": "Down to the status buttons",
+          "crop": "fade-low",
+          "summary": "Messages stay visible behind the message box and fade out only at the status buttons along the bottom edge.",
+          "risk": "Message text shows through the message box's frost while you scroll, which can make what you're typing harder to read."
+        }
+      ]
+    }
+  ]
+}

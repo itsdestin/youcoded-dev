@@ -1,0 +1,22 @@
+{
+  "title": "Minimalist header — legibility without a veil",
+  "key": "minimalist-header-emphasis",
+  "out": "minimalist-chrome.header-emphasis.html",
+  "images": "images/minimalist-chrome.header-emphasis",
+  "runs": { "before": "runs/lenses-colorless", "after": "runs/lenses-emphasis" },
+  "labels": { "before": "Colourless glass", "after": "Theme-aware emphasis" },
+  "themes": ["meadow-mist", "midnight"],
+  "theme": "fixed",
+  "crops": { "header": ["main", "cushion", "1440x50+0+0"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "Header over light and dark wallpaper",
+      "crop": "header",
+      "headline": "Clearer controls and status dots, with more wallpaper through the selected session.",
+      "changed": "Header glyphs use each theme's foreground with a subtle local halo. Session dots keep their status colours and gain a small contrast rim; idle dots are less faded. The selected session's surface is now 26% opaque instead of solid.",
+      "notice": "No full-width header veil or button fill was added. Content chips and message box are unchanged; other chrome styles retain their previous styling. Review both Meadow Mist and Midnight."
+    }
+  ]
+}

@@ -10,8 +10,15 @@ paths:
   - "**/desktop/src/main/mcp-reconciler.ts"
   # G-1 background Bash: the registry lives one level up from tools/.
   - "**/desktop/src/main/harness/shell-registry.ts"
-last_verified: 2026-08-28
+last_verified: 2026-09-24
 verify:
+  - path: youcoded/desktop/src/main/harness/tools/rm-target.ts
+    contains: "destructiveRmVerdict"
+  - path: youcoded/desktop/src/main/harness/tools/bash-secret-paths.ts
+    contains: "checkPathGuard"
+  - test: youcoded/desktop/tests/rm-target.test.ts
+  - test: youcoded/desktop/tests/bash-secret-paths.test.ts
+  - test: youcoded/desktop/tests/shell-words.test.ts
   - path: youcoded/desktop/src/main/harness/tools/guards.ts
     contains: "toPosix"
   - path: youcoded/desktop/src/main/harness/tools/bash.ts
@@ -69,7 +76,7 @@ verify:
 Session lifecycle: `native-runtime.md`. **Depth + why for every bullet: `youcoded/docs/native-runtime.md`.**
 
 ## Core tools — guards: `harness-tools-core`/`harness-tool-guards`/`harness-tool-bounds` tests
-- **The file-tool guards (secret paths, cwd jail) are honest friction, NOT a sandbox — Bash bypasses them.** Never present them as a security boundary or glob toward one.
+- **The file-tool guards (secret paths, cwd jail) are honest friction, NOT a sandbox.** Bash is never refused; two floors below every rule read its text and force an ask with no Always-allow — `rm-target.ts` (removing workspace/home/root/system folders), `bash-secret-paths.ts` (paths `checkPathGuard` denies), sharing `shell-words.ts`. Never call any of it a security boundary.
 - **Bash cwd is SCOPED-PERSISTENT; the file tools are not** — `shellCwd` tracks across calls (`__YC_CWD__` sentinel); a `cd` outside `ctx.cwd` is reverted AND announced; only cwd persists (resets on resume); PowerShell stays stateless.
 - **Tools emit FORWARD SLASHES; Bash reports cwd in the ROOT'S SPELLING** — `toPosix()` is the one output normalizer; `rebaseReportedCwd()` re-expresses `pwd` in `ctx.cwd`'s vocabulary; containment is checked BEFORE the rebase; **`ctx.cwd` is never canonicalized** (permission-store key). **VACUOUS on Linux** — fails only on Windows/macOS CI (`eba51705`).
 - **Schemas are `.strict()` (MCP pass-through); PDF extraction is SERIALIZED (`pdf-text.ts`); Write REFUSES omission placeholders; served-reads/served-skills dedupe CLEAR on compaction/resume; Bash text has NO pipe advice** — guards: `tool-arg-errors`, `read-pdf`, `native-tools-polish`.
@@ -79,14 +86,14 @@ Session lifecycle: `native-runtime.md`. **Depth + why for every bullet: `youcode
 ## Web tools (Plan B) — guards: `net-guard`/`web-fetch-tool`/`search-backends`/`search-service` tests
 - **WebFetch/WebSearch follow redirects MANUALLY and re-validate every hop** (scheme + literal IP + DNS answer) — the SSRF bypass class. Never `redirect:'follow'`.
 - **WebFetch keeps its pre-parse complexity guard (`MAX_TAGS`/`MAX_DEPTH`)** — Readability is synchronous and ~quadratic in DOM depth.
-- **WebSearch walks a data-driven backend chain** (tavily → exa → ddg; refreshes from the repo's `search-chain.json`). **DDG `202` = rate-limited, NEVER retried.** IPC backend ids are whitelisted.
+- **WebSearch walks a data-driven backend chain** (`search-chain.json`). **DDG `202` = rate-limited, NEVER retried.**
 - **Search keys are `safeStorage`-encrypted; `search-providers.json` holds only `secretRef`s**; `search:*` has 5-surface parity; `search:test` never throws (guards: `search-key-store`/`ipc-channels`).
 - **AskUserQuestion rides the permission-ask rail** — the broker threads `decision.updatedInput`; `formatAnswers` is TOTAL (a throw bricks the session). **A human dismissal ENDS the turn** — guards: `native-permission-broker`/`ask-user-question-tool`.
 
 ## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
 - **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a prompt change discards the KV cache prefix.
 - **Injected content is bounded by the profile; truncation announces itself** (budgets from the REAL window; unmeasured = small).
-- **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives; the notice states what happened; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
+- **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives, announced; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
 - **`Skill` is CONDITIONAL and absent from `NATIVE_TOOL_NAMES`** — attached only when the profile affords its catalog; re-synced on `setBinding`; `/skill-name` works on every model.
 - **A rule with no `paths:` is SKIPPED, never global** — eager rules ride every turn.
 - **`native:*` four-surface parity is pinned** (`ipc-channels.test.ts` → "native:* channel parity").
@@ -94,7 +101,7 @@ Session lifecycle: `native-runtime.md`. **Depth + why for every bullet: `youcode
 ## MCP (M3) — guards: the seven `mcp-*.test.ts` suites
 - **MCP secret plaintext NEVER enters `~/.youcoded/mcp.json`** — `secretRef` only; plaintext in `SecretsStore`.
 - **Attachment is WHOLE-SERVER, in registry order, dropping from the END** — no partial tool sets.
-- **Grants are PER-TOOL (`mcp__{server}__{tool}`), not per-server** — a server update can add a destructive tool (no revocation UI until M5).
+- **Grants are PER-TOOL (`mcp__{server}__{tool}`), not per-server** — a server update can add a destructive tool.
 - **`stderr: 'pipe'` on the stdio transport is LOAD-BEARING** — `'inherit'` hides a failing server's only explanation.
 - **A server's own `readOnlyHint`/`destructiveHint` are IGNORED.**
 - **Projection into `~/.claude.json` NEVER overwrites an unowned entry** — ownership is the TOP-LEVEL `_youcodedOwnedMcpServers: string[]`; colliding unowned ids are SKIPPED into `skippedCollisions`.
