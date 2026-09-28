@@ -124,6 +124,11 @@ YouCoded EditorFrame (checks origin === this document's office://<docToken>, sou
 - **Bytes** travel as ArrayBuffers end to end (transferred, not copied); where `bridge.js`
   expects base64 the add-on patch hands it bytes instead (review 2, R2-8). Budget: the 21 MB
   workbook under 300 ms each way, measured in the spike.
+  - **Task 3 update:** base64 strings cross unchanged instead — euro-office-lite's `bridge.js`
+    passes them as base64 itself, and there is no bytes-instead patch. The spike measured them
+    within budget: +110 ms for the 9.5 MB workbook, +210–230 ms for the 21 MB one, 191 ms to
+    save the 9.5 MB one. So review 2's R2-8 ("hand it bytes instead") is not needed, and
+    `bridge.js` stays unmodified apart from `ASC_PROTO_BASE`.
 - The editor origin cannot reach `window.claude` or any other channel.
 
 ## 3. Main process — `desktop/src/main/office/`
