@@ -43,7 +43,6 @@ Target: `v1.3.1`
 - chat-data: Smaller reads left over from cycle 2 still do more work than they need to: two reads take whole files where…
 - dev-workspace: Waiting on CI runs eats whole sessions
 - dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
-- dev-workspace: Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56…
 - dev-workspace: Every macOS download since 2026-07-23 is unopenable, and the download page sends people to a button that no…
 - dev-workspace: Windows and macOS installers still hit the security wall
 - dev-workspace: No Google Play listing
@@ -71,7 +70,7 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 101 | 31 | 4 | 9 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 31 | 4 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 30 | 7 | 1 | 4 |

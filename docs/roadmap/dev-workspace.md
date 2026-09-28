@@ -719,8 +719,8 @@ seen-on is always n/a here.
 
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
       then recommend deleting its worktree; it should notice unfinished edits before declaring success.
-      Reproduced 2026-09-27 on `session/release-skill-current-flow-20260927` in both workspace
-      and `youcoded-admin`: the tip is just fetched master and the remote branch does not exist,
+      Reproduced 2026-09-27 on the release-skill session worktrees in both workspace and
+      `youcoded-admin`: the tip was just fetched master and the remote branch did not exist,
       but both worktrees hold uncommitted edits. `close-out.sh` printed "the work landed",
       "remote branch deleted" and TODOs to delete both worktrees. Those verdicts refer only to
       the branch tip, not the unfinished files; do NOT follow those deletion suggestions.
@@ -864,17 +864,6 @@ seen-on is always n/a here.
       click Update on his Arch install once a beta carrying youcoded#546 ships; the macOS halves
       (Rosetta detection, the removed any-dmg fallback) have no machine here at all
       `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
-
-- [ ] Strip every youcoded-core step out of the release skill (`youcoded-admin`
-      `skills/release/SKILL.md`, 56 references). The repo was archived 2026-09-20, so a commit,
-      push, tag or `gh release create` against it now FAILS — the skill would die mid-release at
-      Phase 4 Step 6. A header note at the top currently says "skip every youcoded-core step",
-      which holds the next release together but leaves the two-repo flow written out below it:
-      Repository Details, Phase 1 Steps 1–7, the review-mandates and review-update-compat agents,
-      the two-CHANGELOG generation, the YOUCODED-CORE release block, Steps 8a–8c and the error
-      table. Also drop the youcoded-core rows from `setup.sh`/`workspace-start.mjs` if nothing
-      needs the checkout any more
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
 
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
