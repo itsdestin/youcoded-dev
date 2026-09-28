@@ -55,13 +55,15 @@ talk to YouCoded's renderer over postMessage (to `office-host`), and YouCoded's 
 its Rust side does (open, save, convert, recover). WASM stays a fallback for phones later
 (contract R28: desktop first).
 
-**Spike first (task 0, before anything else is built).** Pass requires ALL of (review 1, R1-3,
-R1-8): (a) Euro-Office's own editor UI (built in desktop mode from source) loads from `office://`
+**Spike first (task 0, before anything else is built).** Go only if ALL of these pass; any
+failure is a no-go for desktop mode (review 1, R1-3, R1-8; review 2, R2-9): (a) Euro-Office's own editor UI (built in desktop mode from source) loads from `office://`
 inside Electron 41 with the unmodified `bridge.js`; (b) it opens and saves Destin's six sample
 files **through the editor's own save path** (not x2t alone), and `compare.py` finds nothing
 lost; (c) an `.odt`, `.ods` and `.odp` round-trip the same way; (d) the theme bridge restyles it
-in Midnight and Meadow Mist. The spike runs the editor top-level in its own window first
-(`scratch/spike/app/`), then framed from a second origin with the §3a relay. If desktop mode
+in Midnight and Meadow Mist; (e) the same, with the editor FRAMED from a second origin through
+the §3a relay and per-document origins, two documents open at once; (f) the relay moves the
+21 MB workbook's bytes in under 300 ms each way. The spike first runs the editor top-level
+(`scratch/spike/app/`) to isolate Euro-Office problems from relay problems. If desktop mode
 cannot be made to work within the spike's budget, fall back to the WASM route on Euro-Office
 (its x2t WASM build exists — CryptPad's), and say so on a reopen deck, since speed differs.
 
@@ -82,14 +84,24 @@ YouCoded EditorFrame (checks origin === office://app, source === this frame, cmd
 
 - Bytes cross as ArrayBuffers (structured clone, transferred — no base64 inflation on our
   side; the relay base64-encodes only where `bridge.js` expects a string).
-- Every request carries the frame's `docId`, issued by main when the tab opened the file; main
-  keeps one session per docId (current path, temp dir, modified flag), so two open documents
-  never share `Editor.bin` the way euro-office-lite's single-window state does.
-- **Document media** (pictures inside a document) are served by a second scheme,
-  `ascdesktop://docmedia/<docId>/…`, answering only from that docId's temp folder (the name
-  `bridge.js` already uses). Dictionaries come from the add-on through the same scheme.
-- The allow-list of commands is a const shared by main and the renderer; an unknown command is
-  refused and logged. The editor origin cannot reach `window.claude` or any other channel.
+- **One origin per document** (review 2, R2-1, R2-2). Main issues each opened document an
+  unguessable 128-bit `docToken`; its editor loads from `office://<docToken>/editor.html`, so
+  every open document is its own origin. That separates what `bridge.js` keeps in
+  `localStorage` (`eo-pending-open-path`, `eo-pending-recover-id` — it assumes one document per
+  page) and every other per-origin state. Main keeps one session per token (path, temp dir,
+  modified flag); two documents never share an `Editor.bin`.
+- **Document media** (pictures inside a document) and dictionaries are served under the same
+  per-document origin: the add-on sets `bridge.js`'s protocol base (`ASC_PROTO_BASE`, one line
+  in the add-on's small patch set) to `office://<docToken>/asc/`; the handler answers
+  `/asc/docmedia/…` only from that token's temp folder. Another document cannot name the folder
+  without its token.
+- **Main re-checks everything** (review 2, R2-7): each `office:invoke` is refused unless the
+  command is on the allow-list AND the token belongs to a document opened by the sending
+  window (`event.sender`). The renderer's own check is a convenience, not the guard.
+- **Bytes** travel as ArrayBuffers end to end (transferred, not copied); where `bridge.js`
+  expects base64 the add-on patch hands it bytes instead (review 2, R2-8). Budget: the 21 MB
+  workbook under 300 ms each way, measured in the spike.
+- The editor origin cannot reach `window.claude` or any other channel.
 
 ## 3. Main process — `desktop/src/main/office/`
 
@@ -101,7 +113,10 @@ All I/O async (performance rule 1; `main-blocking-calls.test.ts` ratchet).
   the minimum the spike proves necessary (review 1, R1-9): start from `standard, secure,
   supportFetchAPI` (workers, fetch, storage need a standard secure origin); add `stream` only if
   media playback needs it; never `bypassCSP` or service workers. The same set applies to
-  `ascdesktop`. `office-protocol.test.ts` pins the final set.
+  per-document origin. `office-protocol.test.ts` pins the final set. Every response carries a
+  CSP with no network egress (`default-src office: data: blob:`, no `connect-src` beyond
+  `office:`), so a compromised editor cannot send a document anywhere; the editor's external
+  links (help, about) open through the app's window-open handler (review 2, R2-6).
   The scheme is **not** in the renderer's own origin: the editor frame stays a separate origin
   (the ast-grep exception for EditorFrame's `allow-same-origin` depends on this — a test pins it).
 - **`x2t.ts`** — runs the bundled native `x2t` with an XML task in a per-job temp dir
@@ -115,7 +130,9 @@ All I/O async (performance rule 1; `main-blocking-calls.test.ts` ratchet).
   mtime token — the existing conflict machinery) → version snapshot rules (§4). Legacy
   `.doc/.xls/.ppt` save as the modern type after a prompt (R22); CSV save checks for loss (R24)
   and offers `.xlsx` instead. Files over 200 MB are refused with a specific message (review 1,
-  R1-7). One save in flight per document; a save requested meanwhile coalesces into one
+  R1-7; review 2, R2-10): the translated form plus the editor's model run to several times the
+  file's size in memory (the 21 MB workbook used ~1 GB), so 200 MB is where a laptop would
+  start to swap; the viewers' 50 MB preview cap is a different limit for a different path. One save in flight per document; a save requested meanwhile coalesces into one
   follow-up save with the newest bytes.
 - **`versions.ts`** — snapshots under `userData/office-versions/<sha1(canonical path)>/`:
   `index.json` + one copy per version. Taken on open and at most every 10 minutes while
@@ -156,7 +173,10 @@ program, or the assistant's own file tools: an unmodified document reloads in pl
 its tab and scroll); a modified one shows the file viewer's existing conflict choice ("This
 file changed on disk while you were editing" — keep mine / use the file on disk), and autosave
 pauses for that document until answered. `casWrite`'s mtime token catches the race where the
-change lands between our read and our write.
+change lands between our read and our write. "Reload" remounts the frame on the fresh file;
+the caret and scroll position come back best-effort from what the bridge last reported
+(review 2, R2-4). An asleep tab needs nothing: it opens the newest file when woken, unless it
+holds a recovery copy, in which case waking shows the same conflict choice (review 2, R2-5).
 
 ## 5. Renderer changes
 
@@ -164,8 +184,10 @@ change lands between our read and our write.
   across the Office page and the file viewers. Opening a file already open elsewhere brings
   that editor forward instead (Edit in a file viewer on a file open in Office focuses its Office
   tab; Open in Office from an in-place edit closes the in-place editor first, as built).
-- `office-store.ts`: sleep (R8) — a tab not shown for 20 minutes, with no unsaved change and no
-  failed save (review 1, R1-5),
+- `office-store.ts`: sleep (R8) — a tab not shown for 20 minutes goes to sleep. If it still
+  holds unsaved changes (its save keeps failing), it first writes a recovery copy through main
+  and sleeps anyway, so a stuck tab never holds its memory (review 1, R1-5; review 2, R2-3);
+  waking restores from the recovery copy and retries the save;
   unmounts its editor; state keeps file + scroll position (the bridge reports and restores
   the caret/scroll on wake).
 - `EditorFrame`: bytes in (`office:open`), `Editor.bin` out (`office:save`), save status to
