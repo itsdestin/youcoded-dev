@@ -11,7 +11,8 @@ const S = '/tmp/claude-1000/-home-destin-youcoded-dev/c25d3b88-5ae3-48b8-9f2e-1e
 const require = createRequire(path.join(S, 'document/package.json'));
 const { chromium } = require('@playwright/test');
 const EXE = fs.readdirSync(`${process.env.HOME}/.cache/ms-playwright/chromium-1243`).map((d) => `${process.env.HOME}/.cache/ms-playwright/chromium-1243/${d}/chrome`).find(fs.existsSync);
-const rss = () => Math.round(Number(execSync(`ps -eo rss,args | grep -F chromium-1243 | grep -v grep | awk '{s+=$1} END {print s+0}'`).toString().trim()) / 1024);
+const rss = () => Math.round(Number(execSync(`for p in $(pgrep -f chromium-1243); do awk '/^Pss:/{print $2}' /proc/$p/smaps_rollup 2>/dev/null; done | awk '{s+=$1} END {print s+0}'`, { shell: '/bin/bash' }).toString().trim()) / 1024);
+const byType = () => execSync(`for p in $(pgrep -f chromium-1243); do t=$(tr '\\0' ' ' < /proc/$p/cmdline | grep -oE -- '--type=[a-z-]+|--utility-sub-type=[a-zA-Z.]+' | tail -1); [ -z "$t" ] && t=browser; echo "$t $(awk '/^Pss:/{print $2}' /proc/$p/smaps_rollup 2>/dev/null)"; done | awk '{a[$1]+=$2} END {for (k in a) printf "%s=%dMB ", k, a[k]/1024}'`, { shell: '/bin/bash' }).toString().trim();
 
 async function visible(page, t0) {
   // Poll every frame until OnlyOffice's loading mask is gone and its canvas area exists.
@@ -55,7 +56,7 @@ for (const name of process.argv.slice(2)) {
   const coldOrWarm = out.files.length === 0 ? 'first' : 'later';
   const ms = await openIn(page, name);
   await page.waitForTimeout(1500);
-  out.files.push({ name, [coldOrWarm + 'VisibleMs']: ms, totalAboveBaseMB: rss() - base });
+  out.files.push({ name, [coldOrWarm + 'VisibleMs']: ms, totalAboveBaseMB: rss() - base, byType: byType() });
 }
 console.log(JSON.stringify(out, null, 1));
 await browser.close();

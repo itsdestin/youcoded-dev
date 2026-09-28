@@ -229,6 +229,45 @@ Screenshots (not in the repo — they show his documents): `~/Documents/office-t
 | Theming | **Works through OnlyOffice's own CSS variables** (`--background-toolbar`, `--text-normal`, `--highlight-button-hover`, … ≈40 used). Midnight made the whole interface dark; Meadow Mist showed its wallpaper through frosted-glass toolbars with its font. OnlyOffice's title row can be hidden so YouCoded's tabs own it. Document page and spreadsheet grid stay white by design. |
 | Phone | **Gap.** This package squeezes the *desktop* editor onto a phone: usable, themed, but tiny page text and a cramped ribbon. OnlyOffice's real phone interface ships in the same package (17 MB) but ranuts never wired it up — that wiring is ours. |
 
+### Why memory and load time are heavy, and the fixes (measured 2026-09-27)
+
+**Correction:** the memory row above summed resident memory across processes, which counts
+shared pages repeatedly (an empty browser read 1 GB). Re-measured with proportional memory
+(PSS, `measure.mjs`): empty browser ≈355 MB; above that, Word memo ≈580 MB, 7-slide deck
+≈980 MB, 9.5 MB spreadsheet ≈1.0 GB — nearly all in the editor's renderer process.
+
+**Where it goes** (`breakdown.mjs`, 9.5 MB spreadsheet, visible at 5.7 s): 0.7 s reading the
+file and mounting the editor; 0.75 s loading editor code and starting the translator; **3.8 s
+translating .xlsx → the editor's internal format in WebAssembly**; 0.4 s fonts and paint. Memory:
+≈290 MB JS heap (the editor's document model) + **≈340 MB translator WebAssembly memory, still
+held after the translation finished** (WebAssembly memory never shrinks) + spell checker 16 MB.
+
+**Native translator comparison** — the `x2t` from Destin's installed OnlyOffice Desktop 9.4
+(`/opt/onlyoffice/desktopeditors/converter/x2t`), same files, same target format:
+
+| File | WebAssembly (in browser) | Native |
+|---|---|---|
+| Word memo | part of 1.45 s total | 0.14 s |
+| 7-slide deck | part of 2.4 s total | 0.09 s |
+| 9.5 MB spreadsheet | 3.8 s, 340 MB kept | **0.85 s, ≤83 MB, freed on exit** |
+| 21 MB workbook | most of 8.9 s total | **2.0 s, ≤127 MB, freed on exit** |
+
+**Fixes, biggest first** (effects are estimates until built):
+1. **Desktop: run the native translator as a separate short-lived program**, shipped inside the
+   AGPL add-on (same download-and-verify pattern as `llama-server`). ≈4–5× faster translation;
+   its memory is returned the moment it exits. Big spreadsheet: ≈5.7 s → ≈2 s, ≈1 GB → ≈0.6 GB.
+2. **Where WebAssembly stays (Android, phone remote): end the translator worker after each open
+   and restart it for save** (≈0.15 s restart) — returns ≈280–340 MB per open document.
+3. **Pre-start one hidden editor when the Office page opens** — removes ≈0.7–1.4 s from the first file.
+4. **Cache the translated form of recent files** (keyed by file + modified time) — reopening skips translation.
+5. Left alone: the ≈290 MB editor model for a big spreadsheet is inherent to OnlyOffice's editor
+   (the same in OnlyOffice Desktop, which runs the identical editor code).
+
+Microsoft Office was not measured (not on this machine). General experience, not a measurement:
+Word opens a memo in about a second at ~150–250 MB; Excel opens a workbook this size in 1–3 s
+at a few hundred MB. With fixes 1–4 the estimate is the same ballpark for Word files and
+somewhat heavier/slower than Excel for very large spreadsheets.
+
 Bugs found, all in the borrowed package rather than the approach:
 1. **Garbled bold Calibri headings** (and style-gallery previews) in the Word files. The font
    catalogue maps "Calibri" to a file with no bold face (`AllFonts.js`: `"Calibri",115,0,-1,…`).
