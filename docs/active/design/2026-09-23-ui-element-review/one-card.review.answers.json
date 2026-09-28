@@ -1,0 +1,116 @@
+{
+ "deck": "ui-one-card",
+ "started": "2026-09-28T04:39:09.479Z",
+ "submitted": null,
+ "cur": 1,
+ "answers": {
+  "R-1": {
+   "v": "skip",
+   "seconds": 56,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "skip",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-3": {
+   "v": "skip",
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-4": {
+   "v": "skip",
+   "seconds": 89,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-5": {
+   "v": "skip",
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "skip",
+   "seconds": 1582,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-18": {
+   "v": "skip",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-17": {
+   "v": "skip",
+   "seconds": 41,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-16": {
+   "v": "skip",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-15": {
+   "v": "skip",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-14": {
+   "v": "skip",
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-13": {
+   "v": "skip",
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-12": {
+   "v": "skip",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-11": {
+   "v": "skip",
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-10": {
+   "v": "skip",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-9": {
+   "v": "skip",
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-8": {
+   "v": "skip",
+   "seconds": 1,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-7": {
+   "v": "skip",
+   "seconds": 53,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
