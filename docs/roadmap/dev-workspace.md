@@ -5,6 +5,13 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] A headless page check (`scripts/ui-probe.mjs`) shows Word, Excel, PDF and image files
+      stuck on "Loading viewer…" when it waits a fixed time after a click. The tab it opens is
+      never brought to the front, so Chrome holds back the page's queued work until the next
+      check runs; waiting with `--wait` instead of `--settle` works. Bring the tab to the front
+      when it opens (found 2026-09-27, the same on master)
+      `n/a` `confirmed` `checked 2026-09-27`
+
 - [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`,
       2026-09-23) holds ~700 calls marked "unreviewed — hot-path candidate". The guard stops new
       ones; the old ones still freeze every window when a click or timer reaches them. Work

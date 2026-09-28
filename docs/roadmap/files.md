@@ -31,6 +31,16 @@ searched or resumed (chat-data).
       is saved yet and the assistant cannot see comments
       `files-panel` `desktop` `in-flight` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 
+- [ ] Saving a comment into a Word or Excel file keeps one backup copy per file, and those
+      copies are never cleared out, so they pile up for every document ever commented on
+      `files-panel` `all` `confirmed` `checked 2026-09-27`
+
+- [ ] "This file looks open in another app" (shown before a comment is saved into a Word or
+      Excel file) can be wrong both ways: after Word or Excel crashes it can keep appearing for a
+      closed file, and for a very long file name Word's hidden marker is named differently, so an
+      open file is not noticed and saving in Word later wipes the comment
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-27`
+
 - [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
       but still a visible pause. What is left is the sheer number of elements syntax
       highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576
