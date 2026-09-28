@@ -1,0 +1,43 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > recovers one structured overflow on a rejected request after completed tools without redoing them
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not retry an overflow after output has begun
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay second overflow indefinitely
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay second overflow indefinitely
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay auth indefinitely
+[harness] stream error: rejected
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay network indefinitely
+[harness] stream error: connection lost (provider error 400)
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > does not replay unrecognized indefinitely
+[harness] stream error: context length exceeded (provider error 400)
+
+ ✓ tests/harness-history-rebuild.test.ts (32 tests) 216ms
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > clears progress on error and destroy
+[harness] stream error: provider unavailable
+
+stderr | tests/harness-session-loop.test.ts > HarnessSession — multi-step turn driver > retry: attempt 1 errors immediately, attempt 2 streams clean → completes, no dup events
+[harness] stream error: temporary upstream
+
+ ✓ tests/harness-session-loop.test.ts (135 tests) 2839ms
+     ✓ specialist children bypass the 'frontier (former 50-step)' fallback without a max_steps ask  395ms
+     ✓ root sessions without an explicit maxSteps run beyond the former 50-step boundary without asking  377ms
+
+ Test Files  2 passed (2)
+      Tests  167 passed (167)
+   Start at  16:39:46
+   Duration  3.59s (transform 850ms, setup 120ms, import 1.07s, tests 3.05s, environment 0ms)
+

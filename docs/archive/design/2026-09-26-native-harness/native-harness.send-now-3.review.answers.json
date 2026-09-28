@@ -1,0 +1,32 @@
+{
+ "deck": "native-harness-send-now-review-3",
+ "started": "2026-09-28T22:26:34.398Z",
+ "submitted": "2026-09-28T22:28:03Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "note": "i want an up arrow or a different/unique icon.also want to re-use the edit element used for the status bar, quick chips menu, etc",
+   "t": 1790634451563,
+   "v": "other",
+   "seconds": 57,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "alignment is still off, text looks too high",
+   "t": 1790634464847,
+   "v": "other",
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "note": "alignment looks better here, idk why",
+   "t": 1790634482623,
+   "v": "other",
+   "seconds": 18,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

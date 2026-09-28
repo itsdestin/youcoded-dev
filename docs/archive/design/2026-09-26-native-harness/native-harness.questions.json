@@ -1,0 +1,202 @@
+{
+  "title": "Native harness — 15 changes to approve or deny",
+  "key": "native-harness-audit-questions",
+  "out": "native-harness.questions.html",
+  "stage": "ask",
+  "_comment_sources": {
+    "report": "../../investigations/2026-09-26-native-harness-audit.md",
+    "Q-1": "F01", "Q-2": "F02", "Q-3": "F03", "Q-4": "F10",
+    "Q-5": "D01: deliberate behavior change, not an undiscovered bug",
+    "Q-6": "D02: project-root inheritance only; no global files or cross-Git-boundary loading",
+    "Q-7": "F04", "Q-8": "F05", "Q-9": "F06", "Q-10": "F07",
+    "Q-11": "F08; preserve existing-session snapshots", "Q-12": "F09",
+    "Q-13": "F11", "Q-14": "F12", "Q-15": "F13"
+  },
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Which harness changes should we make?",
+      "intro": "Approve or deny each item independently; use Other to change its scope. Items 5 and 6 change instruction-loading behavior; the rest address audit findings. Approval authorizes that item only, not a release or changes to your running app."
+    },
+    {
+      "id": "Q-1", "words": true,
+      "surface": "Conversation recovery", "path": "A native conversation checking whether an action is allowed",
+      "headline": "1. Keep a permission error from breaking the rest of the conversation?",
+      "today": "The assistant checks saved permissions before running actions. The audit reproduced a failed permission check leaving the conversation in an invalid state.",
+      "problem": "Your next message can fail too, even after the original permission-storage problem is gone.",
+      "proposal": "Record the failed action and any unstarted actions as not completed, explain the error, and leave the conversation able to accept your next message. Never run the action without permission.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["One permission error no longer poisons later messages."],"cons":["You may need to retry the original action once permissions can be checked."]},
+        {"id":"deny","label":"Deny","pros":["Leave permission-error behavior unchanged."],"cons":["This failure can still make the next message fail."]}
+      ]
+    },
+    {
+      "id": "Q-2", "words": true,
+      "surface": "Queued messages", "path": "Sending a message while background work reports back",
+      "headline": "2. Make queued messages continue after a background report?",
+      "today": "You can send another message while the assistant is processing a completed background task.",
+      "problem": "The audit reproduced that message being accepted as queued, then left waiting after the background report finishes.",
+      "proposal": "Keep draining accepted messages in order until there is no pending work. Preserve the current rule that Stop ends the current turn but does not discard messages you already queued.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["An accepted message gets its turn without another nudge."],"cons":["Messages already queued will still run after Stop; changing that policy is not part of this fix."]},
+        {"id":"deny","label":"Deny","pros":["Leave message scheduling unchanged."],"cons":["Messages sent during background-report processing can remain stranded."]}
+      ]
+    },
+    {
+      "id": "Q-3", "words": true,
+      "surface": "Project rules", "path": "Continuing work after clearing or summarizing a conversation",
+      "headline": "3. Reload project rules when the conversation no longer contains them?",
+      "today": "A matching project rule is loaded once. Clearing the conversation removes its text but does not reset the record saying it was loaded.",
+      "problem": "The assistant can continue in the same files without receiving those rules again. Summarizing older messages can create the same mismatch.",
+      "proposal": "Track whether each rule is still present in the assistant's context. Load it again when needed after clearing or summarizing, without repeating rules that remain available.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Standing project guidance survives conversation resets."],"cons":["Restoring missing guidance uses some context and may add a small processing cost."]},
+        {"id":"deny","label":"Deny","pros":["Avoid restoring rule text during a conversation."],"cons":["A cleared rule can remain missing until a new session loads it."]}
+      ]
+    },
+    {
+      "id": "Q-4", "words": true,
+      "surface": "Rule matching", "path": "Project rule files that specify which folders they apply to",
+      "headline": "4. Make rule patterns match the folders their authors intended?",
+      "today": "Rules use folder patterns. The audit found a valid inline comment can stop a rule loading, while a pattern for a src folder can also match a folder named notsrc.",
+      "problem": "The assistant may miss the right guidance or receive guidance for the wrong files without any warning.",
+      "proposal": "Read the supported rule-file syntax correctly and preserve folder boundaries when matching patterns. Test both files that should match and similar names that should not.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Rules follow their written scope instead of accidental text matches."],"cons":["Rules that previously matched too broadly will stop appearing outside their intended folders."]},
+        {"id":"deny","label":"Deny","pros":["Keep existing matching behavior."],"cons":["Silent missed rules and unintended matches remain possible."]}
+      ]
+    },
+    {
+      "id": "Q-5", "words": true,
+      "surface": "First-edit guidance", "path": "The assistant's first change to a file governed by a new rule",
+      "headline": "5. Give the assistant a file's rules before its first change, not afterward?",
+      "today": "Relevant rules currently arrive after a set of actions has finished. This is the existing design, not a newly introduced regression.",
+      "problem": "The first edit can already be wrong before the assistant learns the rule it was supposed to follow.",
+      "proposal": "Before a file-changing action runs, load any newly relevant guidance and let the assistant reconsider the pending change. Keep the existing permission checks. This applies to dedicated file actions, not a promise to understand every shell command.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["The first change can take the applicable rules into account."],"cons":["Entering a newly governed folder may need an extra model step, adding delay and possible usage cost."]},
+        {"id":"deny","label":"Deny","pros":["Keep the faster, post-action guidance flow."],"cons":["Rules still cannot reliably govern the first edit that causes them to load."]}
+      ]
+    },
+    {
+      "id": "Q-6", "words": true,
+      "surface": "Instruction inheritance", "path": "Opening a project subfolder or assigning a specialist a narrower folder",
+      "headline": "6. Keep project-wide instructions when work starts in a subfolder?",
+      "today": "The native harness selects one nearest project instruction file. Folder-rule discovery starts at the conversation's or specialist's own working folder.",
+      "problem": "Starting deeper in a project can omit broader project guidance that still applies to the work.",
+      "proposal": "Approving this includes both ancestor instruction files and applicable ancestor folder rules. Load them from the Git project root down to the working folder, with more specific guidance last. Keep AGENTS.md ahead of CLAUDE.md within one folder. Do not cross the Git boundary or add global personal files.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Subfolder sessions and specialists receive the project's shared guidance."],"cons":["More instruction text may be loaded, and conflicting ancestor guidance will need clear precedence."]},
+        {"id":"deny","label":"Deny","pros":["Keep the smaller, nearest-file-only instruction load."],"cons":["Broad project guidance can still be omitted when work starts deeper in the project."]}
+      ]
+    },
+    {
+      "id": "Q-7", "words": true,
+      "surface": "Worker specialists", "path": "A Worker checking or stopping its own background command",
+      "headline": "7. Let Workers use the background-command controls they are already offered?",
+      "today": "Workers with shell access are offered tools to read background output and stop background commands.",
+      "problem": "Their own permission rules deny both controls, so a Worker cannot use them to manage the command it started.",
+      "proposal": "Allow those two companion tools whenever a specialist has shell access. Keep them limited to that specialist's own commands; do not grant shell access to read-only specialists.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Workers can inspect and stop their own long-running work."],"cons":["Workers gain these two usable controls, but no access to another conversation's commands."]},
+        {"id":"deny","label":"Deny","pros":["Leave specialist permissions unchanged."],"cons":["The assistant will continue offering Workers controls they cannot use."]}
+      ]
+    },
+    {
+      "id": "Q-8", "words": true,
+      "surface": "Stopping commands", "path": "Stopping a shell command or closing its conversation",
+      "headline": "8. Stop a command's remaining subprocesses even after its shell exits?",
+      "today": "Stopping a command first requests a graceful exit, then can force it to stop. The force-stop is skipped if the original shell has already exited.",
+      "problem": "A program started by that shell can keep running. The audit reproduced this with an isolated Linux command.",
+      "proposal": "Stop the remaining subprocesses still in the command's tracked group, even if the original shell has exited. This does not promise to catch programs that detached from that group. Never use broad process-name matching or touch unrelated programs.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Stopping work is less likely to leave hidden background activity."],"cons":["A subprocess that refuses a graceful stop may be force-stopped and lose its unsaved work."]},
+        {"id":"deny","label":"Deny","pros":["Keep the existing graceful-stop behavior."],"cons":["Some subprocesses can survive an apparent stop."]}
+      ]
+    },
+    {
+      "id": "Q-9", "words": true,
+      "surface": "Long-running commands", "path": "A foreground command being moved into the background",
+      "headline": "9. Fail safely if a command cannot move into the background?",
+      "today": "A long foreground command normally moves into background tracking, which creates a place for its output.",
+      "problem": "If that setup fails, the audit reproduced an uncaught error and a command result that never settles.",
+      "proposal": "Keep control of the process until background tracking succeeds. If it fails, settle the action with an accurate error and safely stop work that cannot remain tracked, rather than leaving it unmanaged.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["A storage failure no longer leaves the conversation waiting on an unmanaged command."],"cons":["A command may have to stop when its background output cannot be tracked."]},
+        {"id":"deny","label":"Deny","pros":["Leave background handoff unchanged."],"cons":["A failed handoff can still leave an unsettled action and unmanaged process."]}
+      ]
+    },
+    {
+      "id": "Q-10", "words": true,
+      "surface": "MCP connection credentials", "path": "A connection shared with Claude Code whose saved credential becomes unavailable",
+      "headline": "10. Remove stale connection credentials instead of losing track of them?",
+      "today": "YouCoded can write its managed MCP connections into Claude Code's configuration. If a required credential later becomes unavailable, an older copy can remain.",
+      "problem": "The app can also forget that it owns that old entry, so later removal does not clean it up and repairing the connection can hit a name conflict.",
+      "proposal": "Remove the unusable old entry when it is proven to be YouCoded-owned, retain accurate ownership records, and report the missing credential. Never overwrite an independently configured Claude Code connection.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Old credentials are cleaned up from previously YouCoded-owned entries; independently configured connections stay untouched."],"cons":["That managed connection stays unavailable until its credential is restored."]},
+        {"id":"deny","label":"Deny","pros":["An old connection may keep working with its previous credential."],"cons":["A stale credential and an unmanageable connection entry can remain behind."]}
+      ]
+    },
+    {
+      "id": "Q-11", "words": true,
+      "surface": "MCP connection updates", "path": "Starting a conversation after changing a connection's settings or credentials",
+      "headline": "11. Give new conversations the updated connection, not a cached old one?",
+      "today": "Conversations share MCP connections. A new conversation can reuse an older connection while another conversation still has it open.",
+      "problem": "Changing a server command or credential may not affect a newly opened conversation until every older user of that connection closes.",
+      "proposal": "Create a new connection when its effective settings or credentials change. New conversations use the updated version; existing conversations keep their current connection until they finish.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Reopening a conversation reliably picks up connection changes without disrupting older work."],"cons":["Old and new connections may briefly run side by side and use extra resources."]},
+        {"id":"deny","label":"Deny","pros":["Keep one shared connection until its last conversation closes."],"cons":["Even a new conversation can continue using obsolete settings or credentials."]}
+      ]
+    },
+    {
+      "id": "Q-12", "words": true,
+      "surface": "Automatic retries", "path": "A model connection failing after part of a reply has appeared",
+      "headline": "12. Replace abandoned partial output when an automatic retry succeeds?",
+      "today": "The harness can automatically retry a temporary provider error after some reply text is already visible.",
+      "problem": "The audit reproduced both attempts remaining visible, while the assistant remembers only the successful one.",
+      "proposal": "Use the same clean replacement behavior as a manual retry: remove the abandoned attempt consistently from the displayed and saved reply before retrying. Never rerun completed file or shell actions.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["The reply you see matches the reply the assistant keeps."],"cons":["A partial sentence may disappear and be replaced while recovery runs."]},
+        {"id":"deny","label":"Deny","pros":["Previously displayed partial text stays visible."],"cons":["Duplicate or contradictory attempts can remain in the conversation."]}
+      ]
+    },
+    {
+      "id": "Q-13", "words": true,
+      "surface": "Web requests", "path": "Stopping a web lookup while a website's address is being resolved",
+      "headline": "13. Make Stop and time limits cover the whole web lookup?",
+      "today": "Web requests have cancellation and a time limit, but the preceding website-address lookup does not observe them.",
+      "problem": "If that lookup stalls, the action can keep waiting after you press Stop. The audit reproduced this with a controlled address lookup.",
+      "proposal": "Apply cancellation and the time limit to the entire operation, including address resolution. Settle the action promptly and discard any late result, while cleaning up underlying work where supported.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["A stalled address lookup no longer holds the conversation open after cancellation."],"cons":["A very slow lookup may time out and need a retry."]},
+        {"id":"deny","label":"Deny","pros":["Slow address resolution can continue waiting."],"cons":["Stop and the advertised time limit can still fail to end that wait."]}
+      ]
+    },
+    {
+      "id": "Q-14", "words": true,
+      "surface": "File reading", "path": "The assistant reading a file it has read before",
+      "headline": "14. Verify file contents before claiming an earlier read is still current?",
+      "today": "A repeated Read can skip returning content when the file's modification time has not changed.",
+      "problem": "Some replacements preserve that time. The audit reproduced changed contents being described as unchanged. The separate write-safety check still prevents a stale overwrite.",
+      "proposal": "Verify content identity before suppressing a repeated read. If freshness cannot be established, return the current content instead of claiming the old copy is current.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["The assistant does not rely on an obsolete file just because its date stayed the same."],"cons":["Repeated reads need more disk work, especially for large files."]},
+        {"id":"deny","label":"Deny","pros":["Keep the quickest repeated-read shortcut."],"cons":["Files replaced without a date change can still be misreported as current."]}
+      ]
+    },
+    {
+      "id": "Q-15", "words": true,
+      "surface": "Question cards", "path": "Answering several assistant questions on one card",
+      "headline": "15. Keep answers independent when two questions use the same wording?",
+      "today": "The assistant can submit two questions with identical wording but different headings or choices. Answers are currently identified by that wording.",
+      "problem": "Both questions share one answer slot, so you cannot reliably give them different answers.",
+      "proposal": "Give each question a separate identity throughout selection, submission and the answer returned to the assistant. Keep the wording and choices unchanged; do not require you to spot duplicate questions.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Each question retains the answer you chose for it."],"cons":["This must preserve compatibility with question cards from both native conversations and Claude Code."]},
+        {"id":"deny","label":"Deny","pros":["Leave the existing answer format unchanged."],"cons":["Repeated question wording can still collapse different answers into one."]}
+      ]
+    }
+  ]
+}
