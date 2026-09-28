@@ -1,0 +1,62 @@
+[
+  {
+    "name": "chat#questions-cc",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/docs/active/reviews/native-harness-implementation-evidence/D4/shoot/chat#questions-cc/halftone-dimension.png",
+    "ms": 1362,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#questions-cc",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/docs/active/reviews/native-harness-implementation-evidence/D4/shoot/chat#questions-cc/meadow-mist.png",
+    "ms": 1365,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#questions-native",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/docs/active/reviews/native-harness-implementation-evidence/D4/shoot/chat#questions-native/halftone-dimension.png",
+    "ms": 1626,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900
+    }
+  },
+  {
+    "name": "chat#questions-native",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/docs/active/reviews/native-harness-implementation-evidence/D4/shoot/chat#questions-native/meadow-mist.png",
+    "ms": 1782,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 0,
+      "w": 1420,
+      "h": 900
+    }
+  }
+]

@@ -176,9 +176,16 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
   async function perform(step, n) {
     switch (step.do) {
       case 'click': case 'double-click': case 'right-click': case 'hover': {
-        const p = await where(step.target, n);
-        if (step.do === 'hover') await moveTo(p.x, p.y);
-        else await press(p.x, p.y, step.do === 'right-click' ? 'right' : 'left', step.do === 'double-click' ? 2 : 1);
+        let p = await where(step.target, n);
+        await moveTo(p.x, p.y);
+        // WHY look again after the move (2026-09-27): the travel crosses other controls,
+        // and one it rests on can react and move the target. Under load a mouse step over
+        // the header's last session dot outlasted its hover dwell, the dot opened its name,
+        // the centred row shifted, and the click meant for "All Sessions" hit the dot.
+        if (step.do !== 'hover') {
+          p = await where(step.target, n);
+          await press(p.x, p.y, step.do === 'right-click' ? 'right' : 'left', step.do === 'double-click' ? 2 : 1);
+        }
         break;
       }
       case 'type': {
