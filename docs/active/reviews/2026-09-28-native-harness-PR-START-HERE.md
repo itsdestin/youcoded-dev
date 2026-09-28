@@ -8,7 +8,7 @@ This work is being committed and proposed for review at Destin's request. **Do n
 
 ## Review order
 
-1. Decisions: `../design/2026-09-26-native-harness/native-harness.decisions.md` — original approvals, native-only question transport choice, denied credential cleanup and deferred process-group stopping.
+1. Decisions: `../design/2026-09-26-native-harness/native-harness.decisions.md` — original approvals, native-only question transport choice, denied credential cleanup and deferred process-group stopping. **Read its final section, "PR-review amendments (2026-09-28)": it replaces earlier answers (Send now added; rules that cannot fit are shown shortened, not refused).**
 2. Accepted results: `../design/2026-09-26-native-harness/native-harness.contract.verdicts.json` and `native-harness.contract.acceptance.answers.json` beside it. **17 pass; R17/C2 is deferred and explicitly not passed.**
 3. Original audit: `../investigations/2026-09-26-native-harness-audit.md` — findings are historical observations, not claims that every item is repaired.
 4. Implementation plans: `../plans/2026-09-26-native-harness-approved-fixes.md` and its three linked batch plans.
@@ -19,11 +19,11 @@ The app and workspace repositories have companion branches named `session/native
 ## Implemented scope
 
 - Permission failure result pairing and continued usable history.
-- Reliable host FIFO draining and ordinary busy input delivered at safe in-turn boundaries. **One send flow, existing queued Edit/Cancel, no new urgent-send or follow-up-mode controls.**
+- Reliable host FIFO draining; a message sent mid-task is read after the assistant's current batch of actions and resets the step count. **Send now** on a waiting message stops the current task and sends it next (PR-review amendment; replaces the original "no urgent-send control"). No follow-up-mode control.
 - Automatic retry attempt retraction across visible output, effective replay and accepted history.
-- Full ancestor instruction-file inventory, immutable startup facts and accurate multi-file context display.
+- Full ancestor instruction-file inventory (the session folder's own file gets room first — PR-review Q-4), immutable startup facts and accurate multi-file context display.
 - Git-root-bounded inherited project rules with owner-relative pattern matching; supported parser/glob fixes; retained-context rule deduplication.
-- A first Write/Edit encountering new rules is deferred for a new model decision. Omission-only guidance cannot authorize a write; an unfittable group ends with a truthful not-run refusal.
+- A first Write/Edit encountering new rules is deferred for a new model decision. Rules that cannot fit are shown shortened once (each names its file to read for the rest) and the model re-plans; **no refusal** (PR-review Q-5 replaced the earlier not-run refusal).
 - Bash-enabled specialist companion tools share the advertised/authorized effective allowlist.
 - Failed background handoff settles accurately and retains best-effort cleanup ownership.
 - Effective MCP configuration generations preserve old holders while serving new settings to new acquisitions, including overlapping close/destroy handling.

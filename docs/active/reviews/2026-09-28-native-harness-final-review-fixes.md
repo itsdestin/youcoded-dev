@@ -1,5 +1,7 @@
 # Integrated review — B4 fail-closed rule budget
 
+> **Superseded in part (2026-09-28, PR-review Q-5):** the "refuse the change when rules cannot fit" behaviour described below was replaced — rules that cannot fit are now shown shortened once and the model re-plans. See the PR-review amendments in `../design/2026-09-26-native-harness/native-harness.decisions.md`. The rest of this record stands.
+
 Scope: only the B4 aggregate-guidance omission edge, in the preserved uncommitted app worktree. No commits, live-app access, paid inference, C2 work or Q10 changes.
 
 ## Why and interface

@@ -1,5 +1,7 @@
 # Native harness — final acceptance grading (fresh grader)
 
+> **Graded before the PR-review follow-ups (2026-09-28).** Two rows describe behaviour later changed at Destin's request: R6 ("omitted body fails closed" — now shown shortened once, no refusal) and R14 ("forbidden urgent labels" — Send now was then approved and added). See the PR-review amendments in `../design/2026-09-26-native-harness/native-harness.decisions.md`. These rows were not re-graded.
+
 **Scope:** read-only grading of production and existing tests in the isolated `native-harness-audit-20260926` worktree; only contract metadata, new verdict/acceptance JSON and this report changed. No implementation, commit, live-app interaction, paid inference or rebuild of signed historical HTML/answers. The approved contract sources/statements/IDs remain unchanged. Signed contract: `docs/active/design/2026-09-26-native-harness/native-harness.contract.json`; subsequent authority: `native-harness.decisions.md` (Q-22 native-only and Q-20/C2 deferred). Review triage: `docs/active/reviews/2026-09-28-native-harness-ux-triage.md`.
 
 ## Result
