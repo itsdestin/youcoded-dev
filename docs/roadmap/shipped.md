@@ -96,6 +96,7 @@ decision either way.
 - [x] 2026-09-24 chat-data — "Welcome back" on cold start (itsdestin/youcoded#572)
 - [x] 2026-09-26 dev-workspace — Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome never opened its debugging port"… (youcoded-dev#206)
 - [x] 2026-09-26 dev-workspace — `run-review.sh` refuses to start when another session’s workbench already holds its default port (5473), and the only way on is to guess a free… (7ad1d9da — sweep retired; review tools build and serve on a free port)
+- [x] 2026-09-27 native-harness — Admin commands work from chat: you type your computer password in a card (never saved, never shown to the assistant); every admin command stops for approval (youcoded#580)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

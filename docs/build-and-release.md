@@ -281,8 +281,14 @@ files and the Android `mipmap-*` layers from it (needs `rsvg-convert`, `magick`,
 Pillow). The design rounds and the one-off generator that made the mascot drawing are in
 `docs/archive/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
+The RUNNING app resets its taskbar/Dock icon on every theme load, so `desktop/src/main/app-icon.ts`
+picks the same file per platform (`icon-mac.png` is the `.icns`'s PNG twin) and shrinks any
+edge-to-edge icon — a theme's included — onto Apple's grid before it reaches the Dock;
+`desktop/tests/app-icon-runtime.test.ts` pins that. Resetting to `icon.png` made the Mac Dock icon
+oversized until 2026-09-27.
 <!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "icon-mascot.svg"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/app-icons.test.ts"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/app-icon-runtime.test.ts"} -->
 
 **macOS ships two dmgs, and the x64 one is built on an arm64 runner.** `electron-builder.yml`
 targets both `x64` and `arm64`, but both workflows run on `macos-latest` (Apple Silicon) and cut

@@ -1,0 +1,25 @@
+{
+  "title": "Mac Dock icon — back to the right size",
+  "key": "mac-dock-icon-review",
+  "out": "mac-dock-icon.review.html",
+  "stage": "review",
+  "images": "images/mac-dock-icon.review",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "labels": { "before": "Today (1.3.0)", "after": "With this fix" },
+  "crops": { "dock": ["dock", "dock", "820x200+0+0"] },
+  "steps": [
+    {
+      "id": "D-1",
+      "surface": "Mac Dock",
+      "path": "The Dock at the bottom of a Mac screen, a second after YouCoded opens",
+      "crop": "dock",
+      "themes": ["light"],
+      "headline": "On a Mac, YouCoded's Dock icon now matches the size of the apps beside it.",
+      "changed": "When the app opened, it swapped its Dock icon for the Windows version, which fills the whole square. It now uses the Mac version, the one the installer already shows while the app is closed. Gray squares are stand-ins for other apps.",
+      "measured": "Icon body 80% of its square instead of 100%, same as the installed Mac icon",
+      "notice": "Mac users no longer see the icon jump bigger right after launch. It stays the same size the whole time.",
+      "risk": "A theme that brings its own icon gets shrunk to the same size automatically. No theme has its own icon today, so nobody sees that part yet.",
+      "highlight": { "box": [40, 15, 20, 72] }
+    }
+  ]
+}
