@@ -165,3 +165,9 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       with an optional Settings → System View dashboard. 2026-07-14.
       `all` `parked` `checked 2026-07-14`
 
+
+- [ ] Accounts you connect (Google, Outlook, iCloud) will stay on the one computer or phone that
+      signed in; every other device has to sign in again. Syncing them through your YouCoded account
+      would mean sign-ins passing through our servers. Destin, 2026-09-27: "probably per-device for
+      now. syncing can be a roadmap item, but i dont want to deal with the risk rn".
+      `settings/sync` `all` `parked` `checked 2026-09-27` `security` → docs/active/design/2026-09-26-everyday-actions/proposal.md

@@ -231,10 +231,10 @@ Reminders and Notes won't be reachable at first, even on a Mac, until this or th
 So neither disappears outright. Google shrinks to "advanced Gmail reading", and Apple shrinks to
 "Mac extras". Current users get the one-time "reconnect with the new sign-in" offer.
 
-## 8. Open questions for the next deck
+## 8. Decided 2026-09-27, and still open
 
-1. Are these 11 actions the right first release, or should to-dos (Tier 2) come in at launch, since you picked them?
-2. The AI-provider risk: warn users when a Google-connected chat uses an AI provider with no
-   no-training promise, or only disclose it in the privacy policy?
-3. Should connections be per device (sign in on each computer), or shared across your devices
-   through your YouCoded account (sign in once, works everywhere, but sign-ins then pass through our sync)?
+- **To-dos:** a follow-up, not the first release (Destin: "we can have to-dos be a follow up").
+- **Connections are per device** for now. Syncing them across devices is parked on the roadmap
+  (`docs/roadmap/sync.md`). Destin: "i dont want to deal with the risk rn".
+- **Still open:** how to handle the AI-provider risk in section 4. Destin found the question
+  confusing; it is re-explained in chat and belongs on the next deck.

@@ -166,3 +166,11 @@ has passed ~8 items — graduate it to its own file.
       only way to get one is that one button. Destin's note on the 2026-09-05 local-engine
       questions deck: it would win over developers.
       `all` `in-flight` `checked 2026-09-06` → docs/archive/design/2026-09-04-local-engine-upgrades/local-engine-upgrades.questions.answers.json
+
+- [ ] Connecting Google, Outlook or iCloud is painful or impossible: Google needs your own Google
+      Cloud project and a re-sign-in every 7 days, Apple is Mac-only, Microsoft doesn't exist, and
+      none of it works in the app's own assistant or on Android. Planned: one Connections screen
+      and ~11 built-in everyday actions (calendar, email, contacts) that work the same for every
+      account. To-dos are a follow-up (Destin, 2026-09-27). Decisions from the 2026-09-26 deck are
+      in; the Google sign-in, AI-provider wording and first release scope go to the next deck.
+      `settings` `all` `decision` `checked 2026-09-27` → docs/active/design/2026-09-26-everyday-actions/proposal.md
