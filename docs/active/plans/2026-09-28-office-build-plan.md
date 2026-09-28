@@ -637,9 +637,35 @@ export function createOfficeCommands(deps: {
   4. A session whose path has a `.git` segment rejects with `Office can't open files in this protected folder.`.
   5. An unknown command rejects with `refused`.
   6. `get_system_fonts` returns `''`. `recent_files_state` returns `{enabled:false, files:[]}`.
-- [ ] **Step 4: Implement `office-commands.ts`.** Port `COMMANDS` from the spike `main.cjs`
-  with these changes:
+  7. Race (real x2t, no mocks of the queue): start `write_editor_bin(A)`, `save_file`,
+     `write_editor_bin(B)` and `save_file` without awaiting between them.
+     - The file afterwards opens as B's content.
+     - No `.tmp` is left.
+     - x2t ran at most twice.
+     Make A and B differ: A is the memo's own Editor.bin; B is the Editor.bin of a second
+     fixture docx.
+  8. `write_editor_bin` with a string whose `length * 3 / 4` exceeds `EDITOR_BIN_MAX_BYTES`
+     rejects with the too-large message, without allocating the buffer. Test with a small
+     override of the limit via deps.
+- [ ] **Step 4: Implement `office-commands.ts`.** Port the per-document `commands(s)` factory
+  from the spike's `main2.cjs:49` (review P1-1). Not `main.cjs`: that one is single-document,
+  with global state. Changes from the spike:
   - The session comes from the token, never from `args.path`.
+  - `s.path` is already canonical: `office:open` (Task 5) stores `authorizeArtifactWrite`'s
+    `realPath`, never the spelling it was given (review P1-6). Versions and "one editor per
+    file" key on it.
+  - **One command at a time per document** (review P1-2; design §3 "one save in flight per
+    document"):
+    - Every command for a session runs through a per-session promise chain
+      (`s.queue = s.queue.then(run, run)`). WHY: without it, `write_editor_bin` from a second
+      save could replace `Editor.bin` while x2t is still reading it.
+    - Consecutive `save_file` calls queued behind a running one collapse into one, so only the
+      newest bytes are translated.
+  - `write_editor_bin` refuses more than `EDITOR_BIN_MAX_BYTES = 1024 * 1024 * 1024` decoded,
+    checked as `data.length * 3 / 4` before decoding. The message is
+    `This document has grown too large for Office to save.` (review P1-3). WHY 1 GB and not
+    200 MB: the translated form runs about 5× the file (the 21 MB workbook's Editor.bin was
+    104 MB). Add it to `office-types.ts` beside `OFFICE_MAX_BYTES`.
   - Authorization: `authorizeArtifactWrite({ projectRoot: path.dirname(s.path), fullPath: s.path, mustStayInRoot: false })`.
     - `protected-path` → the protected-folder message.
     - `needs-confirm` → `Office can't open settings files like this one yet.`
@@ -677,7 +703,7 @@ export function createOfficeCommands(deps: {
   - `src/main/preload.ts` (an `office` namespace)
   - `src/renderer/hooks/useIpc.ts` (`Window.claude.office?: OfficeBridge`)
   - `src/main/main.ts` (call `registerOfficeIpc` inside `whenReady`, after the protocol)
-  - `src/main/remote-shim.ts` / `remote-unsupported.ts` (desktop-only refusal)
+  - `src/renderer/remote-shim.ts` / `src/renderer/remote-unsupported.ts` (desktop-only refusal)
   - `../app/src/main/kotlin/com/youcoded/app/runtime/SessionService.kt` (explicit stubs)
   - `src/renderer/dev/workbench/mock-only.ts` (remove the office rows)
   - `src/renderer/dev/workbench/mock-shim.ts` (fake v2, Task 6 finishes it)
@@ -723,7 +749,8 @@ export interface OfficeBridge {
   6. `office:close` removes the session.
   7. A sender's `destroyed` event closes all its sessions.
   8. Opening the same path twice from the same sender returns the SAME token (one editor per
-     file, design §5).
+     file, design §5). Opening it through a symlink to it also returns the same token, and
+     `session.path` is the realpath (review P1-6).
   9. With the add-on unavailable, `office:open` → `{ok:false, message:"Office isn't included in this build."}`.
 - [ ] **Step 2: Implement `office-ipc.ts`**, following `src/main/voice/voice-handlers.ts`:
   - Keep a `CHANNELS` list, and call `ipcMain.removeHandler` on each before handling.
@@ -854,8 +881,9 @@ export interface OfficeBridge {
     change it.
 - [ ] **Step 4: Workbench fake host** (the shoot screens need it).
   - `scripts/office-workbench-server.mjs` serves `office-addon/editors` on 127.0.0.1:4717 with
-    `OFFICE_CSP`. `GET /fixtures/<name>` runs x2t (from `office-addon/converter`, via
-    `convert()` compiled from Task 4, or its own copy of the XML) on
+    `OFFICE_CSP`. `GET /fixtures/<name>` runs x2t via Task 4's real `convert()` (import the
+    compiled `dist/main/office/x2t.js` after `npx tsc -p tsconfig.json`; never a second copy
+    of the task XML, review P1-7) on
     `src/renderer/dev/workbench/fixtures/office/<name>` and returns base64 Editor.bin. It
     caches the result in memory.
   - The mock's `open(path)` returns `{ok:true, token:'wb', origin:'http://127.0.0.1:4717'}`.
@@ -880,8 +908,10 @@ export interface OfficeBridge {
      `scratch/spike/samples/budget-memo.docx` (a copy made in `scratch/spike/work/`), type a
      word, wait 5 s, and close the tab.
   3. `compare.py` then shows the paragraph count +0 and the chars grown by the typed word.
-  4. Try dropping `corsEnabled`, then `stream`, from the scheme privileges (Task 3 Step 5)
-     and record the result.
+  4. Try dropping `corsEnabled`, then `stream`, from the scheme privileges (Task 3 Step 5).
+     Rerun steps 2–3 each time. Ship the smallest set that passes: edit `main.ts`, the Task 3
+     pin test and its WHY comment to match, and name in the comment what broke without each
+     kept privilege (review P1-5).
 - [ ] **Step 7: `bash scripts/verify.sh <app worktree>`.** It must be green; fix anything it
   finds. Then commit and push.
 
