@@ -45,7 +45,8 @@ here: installing or browsing themes (marketplace).
 
 - [ ] Destin's ask (2026-09-10): the app's taskbar and Dock icon should change to match the
       theme, drawn from the new robot icon. Until then, every theme shows the same lavender robot
-      icon, because the old theme matching redrew the retired "YC" square
+      icon, because the old theme matching redrew the retired "YC" square. The Mac Dock
+      already shrinks edge-to-edge theme art onto Apple's grid (app-icon.ts, 2026-09-27)
       `window-chrome` `desktop` `parked` `checked 2026-09-10`
 
 - [ ] A theme's icon overrides are accepted, and the Library shows a "custom icons" badge for
