@@ -127,6 +127,8 @@ searched or resumed (chat-data).
       editor that can hand a file over to the full one (Destin, 2026-09-24). Investigation
       recommends borrowing OnlyOffice/Euro-Office's editors whole as a download-on-first-use
       add-on; licence route decided 2026-09-24: the app stays MIT and the editors ship as a
-      separate AGPL add-on (Option A). Next: a throwaway spike in a dev window.
+      separate AGPL add-on (Option A). Trial done 2026-09-27: all six real files opened and
+      saved with nothing lost, themed cleanly, ran in the app's Electron; gaps are memory, a
+      font bug and the phone layout. Next: design decks
       Would also resolve the look-only spreadsheet item above
       `files-panel` `all` `decision` `checked 2026-09-24` → docs/active/investigations/2026-09-24-office-suite.md

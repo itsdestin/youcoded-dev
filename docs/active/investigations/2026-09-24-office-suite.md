@@ -211,12 +211,41 @@ nothing is new invention; every piece has a working example to copy.
 - OnlyOffice Docs 9.4 removed the old 20-connection limit; it wouldn't apply to us anyway (no server).
 - Plugin API: [api.onlyoffice.com — interacting with editors](https://api.onlyoffice.com/docs/plugin-and-macros/interacting-with-editors/overview/).
 
+## Trial results (2026-09-27) — the plan holds
+
+Rig and method: `docs/active/prototypes/2026-09-27-office-trial/`. ranuts/document `1301bb8`
+built from source, framed from a second origin (standing in for the app), driven only by
+postMessage. Six copies of Destin's own files: three JLBC-style .docx memos/bills, the
+9.5 MB "EDModel Forecast" .xlsx, a 21 MB data workbook, and a 19 MB 7-slide .pptx.
+Screenshots (not in the repo — they show his documents): `~/Documents/office-trial-2026-09-27/`.
+
+| Question | Result |
+|---|---|
+| Opens and saves real files? | **Yes, all six**, no errors, in Chromium AND in YouCoded's own Electron 41.10.7 served from a private `office://` scheme in a hidden sandboxed window. |
+| Anything lost on save? | **Nothing measurable.** Every paragraph, table, cell, image, hyperlink, section and style; every formula; all 2.88 M spreadsheet values; all slides, pictures and notes. Two false alarms: conditional formatting is re-written in Excel 2010's `x14` form (present, just not readable by the checker), and three "CHECK" cells went from 0 to ~2×10⁻⁶ (recalculation rounding, displays as "–"). |
+| Download size | **63 MB without fonts, 144 MB with all 203 fonts** (zstd-19 of the 451 MB build; fonts alone 81 MB). Trimming fonts is the lever. |
+| Time until visible | Editor shell ≈0.1 s. Word files ≈1.6 s; 7-slide deck ≈3.6 s; 9.5 MB spreadsheet ≈6.2 s; 21 MB workbook ≈8.9 s. Save: 0.1–0.3 s for docs, 4–5 s for the big spreadsheets. |
+| Memory | Heavy. ≈650 MB above an empty browser for one Word document; ≈1.4 GB for a big spreadsheet; it grew to ≈1.6 GB after four files in one editor (process-tree resident memory, which over-counts shared pages — treat as an upper bound). Implies: one editor per tab, closed tabs really torn down, and a warning/limit for many open files, especially on Android. |
+| Theming | **Works through OnlyOffice's own CSS variables** (`--background-toolbar`, `--text-normal`, `--highlight-button-hover`, … ≈40 used). Midnight made the whole interface dark; Meadow Mist showed its wallpaper through frosted-glass toolbars with its font. OnlyOffice's title row can be hidden so YouCoded's tabs own it. Document page and spreadsheet grid stay white by design. |
+| Phone | **Gap.** This package squeezes the *desktop* editor onto a phone: usable, themed, but tiny page text and a cramped ribbon. OnlyOffice's real phone interface ships in the same package (17 MB) but ranuts never wired it up — that wiring is ours. |
+
+Bugs found, all in the borrowed package rather than the approach:
+1. **Garbled bold Calibri headings** (and style-gallery previews) in the Word files. The font
+   catalogue maps "Calibri" to a file with no bold face (`AllFonts.js`: `"Calibri",115,0,-1,…`).
+   We rebuild that catalogue anyway when trimming fonts; must be fixed before anyone sees it.
+2. **The translator file is stored brotli-packed** (`x2t.wasm.br`) and relies on a web server to
+   unpack it; under a custom scheme it fails with "expected magic word". Store it unpacked in the add-on.
+3. OnlyOffice's "New feature" tips pop over the sheet; switch off in config.
+
+Prior art worth borrowing beyond OnlyOffice itself (all AGPL, so fine inside the add-on): ranuts'
+16 runtime guards that make OnlyOffice work without a server (fonts, save stream, memory,
+worker), its embed postMessage API, its compact-viewport logic, and an `agent-plugin/` that
+already drives the live editor from an LLM.
+
 ## Suggested order, if you go ahead
 
-0. **Decide the licence route** (A/B/C above). Nothing else should start first.
-1. **Spike (days, throwaway):** run ranuts/document's build in a dev YouCoded window, open and
-   save a real .docx/.xlsx/.pptx from your files, measure download size, start time, memory, and
-   check the phone UI. This proves or kills the plan cheaply.
+0. ~~Decide the licence route~~ — decided: A.
+1. ~~Spike~~ — done 2026-09-27, see "Trial results". Plan holds.
 2. **Design (the usual review decks):** Office start page, tabs, compact editor + "Open in
    Office" handoff, first-run download screen, theme matching Before/After.
 3. **Desktop:** add-on packaging and download, private address, binary save, Office page,
