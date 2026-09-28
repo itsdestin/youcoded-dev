@@ -67,6 +67,29 @@ the §3a relay and per-document origins, two documents open at once; (f) the rel
 cannot be made to work within the spike's budget, fall back to the WASM route on Euro-Office
 (its x2t WASM build exists — CryptPad's), and say so on a reopen deck, since speed differs.
 
+**Spike result (2026-09-28): GO.** Code and how to rerun it:
+`docs/active/prototypes/2026-09-28-office-spike/`. Euro-Office desktop build, Electron 41, Linux.
+- (a) pass. Changes needed: `get_system_fonts` must return `''`, not `[]` (an empty array
+  crashes font loading with NeedStyles). The only `bridge.js` edit is the one-line
+  `ASC_PROTO_BASE` patch (§3a).
+- (b) pass, framed, through the editor's own save (`write_editor_bin` → x2t). `compare.py`
+  finds only the known false alarms: an empty footnotes part appears; conditional formats are
+  rewritten in the x14 form; 3 CHECK cells round differently.
+- (c) pass for opening; `.odp` is identical. The `.odt` save spreads bold (an upstream x2t
+  bug), which Destin's save-as-word answer handles (`office-odf#Q-odf-save`). The large
+  workbook written as `.ods` runs out of memory in x2t (§3).
+- (d) pass. Meadow Mist turns the panels, buttons and dialog green and hides the title row.
+  Test with a light theme: Euro-Office already defaults to dark on a dark desktop, so a dark
+  theme can pass without the bridge doing anything. Two leftovers for the build:
+  - Theme fonts from Google are blocked by the no-internet policy. Serve them from the add-on
+    origin, or fall back.
+  - Euro-Office's "New feature" tips and the spreadsheet "links to external sources" warning
+    still appear. The bridge must dismiss them; the editor cannot reach the internet anyway.
+- (e) pass: two documents, each on its own origin. Neither can read the other's storage or
+  media, and neither can reach the internet.
+- (f) pass. The relay adds about 210–230 ms to opening the 21 MB workbook (x2t itself: 3.4 s;
+  drawn at 6.0 s). The 9.5 MB workbook adds about 110 ms, and its save adds 191 ms.
+
 ## 3a. How requests and bytes cross the frame (review 1, R1-1)
 
 The whole of euro-office-lite's `bridge.js` runs INSIDE the document's `office://<docToken>` page, where it reaches
