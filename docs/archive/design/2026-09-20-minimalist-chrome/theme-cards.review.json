@@ -1,0 +1,50 @@
+{
+  "_why": "Destin, 2026-09-24 after appearance-panel-review-7: 'improve the actual theme cards themselves' — shape, style and preview; the only card action is the favourite star, always shown, 'kinda in style of resume browser tag/complete icons'. Three styles drawn by the real panel in the workbench.",
+  "title": "Theme cards — three designs",
+  "key": "theme-cards-review",
+  "out": "theme-cards.review.html",
+  "images": "images/theme-cards.review",
+  "stage": "design",
+  "runs": { "today": "runs/cards" },
+  "themes": ["meadow-mist", "dark", "halftone-dimension"],
+  "crops": {
+    "inset": ["cards", "inset-top", "430x300+505+470"],
+    "palette": ["cards", "palette-top", "430x300+505+470"],
+    "bleed": ["cards", "bleed-top", "430x300+505+470"]
+  },
+  "steps": [
+    {
+      "id": "TC-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Themes",
+      "headline": "Which theme card should the Themes box use?",
+      "notice": "In all three, the star is always shown as a small bare icon like the tag and complete icons in the session browser, so it works on touch screens too. Tap it to add or remove a favourite. Themes you built yourself also keep the pencil beside it, because that is the only way into their editor. The active theme gets an accent outline and a small 'Active' label.",
+      "risk": "The full theme names are only truncated when very long; all the built-in and community names fit.",
+      "variants": [
+        {
+          "id": "inset",
+          "label": "Framed picture",
+          "crop": "inset",
+          "summary": "The theme's preview picture sits inside the card as a small framed thumbnail, with the name, Active label and star on a line beneath it in the app's own colours. Tidy and consistent with the other cards in the app, and it still shows wallpapers.",
+          "measured": "about 90 px tall"
+        },
+        {
+          "id": "palette",
+          "label": "Live colours",
+          "crop": "palette",
+          "summary": "No picture: a tiny chat drawn live in the theme's own colours (header, your message, the reply, the message box). Always sharp and always matches the theme exactly, even with no preview file.",
+          "measured": "about 90 px tall",
+          "risk": "Wallpapers aren't shown, so wallpaper themes like Meadow Mist look plainer than they are."
+        },
+        {
+          "id": "bleed",
+          "label": "Full picture",
+          "crop": "bleed",
+          "summary": "The preview fills the whole card, with the name in white over a dark fade at the bottom and the star in the top corner. The biggest, most visual picture of the theme.",
+          "measured": "96 px tall",
+          "risk": "The dark fade muddies light themes like Crème, and the star can land on busy parts of the picture."
+        }
+      ]
+    }
+  ]
+}

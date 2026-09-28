@@ -1,0 +1,27 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+  "width": 1440,
+  "height": 900,
+  "boot": 1300,
+  "sameThreshold": 0.001,
+  "shots": [
+    {
+      "name": "soft-tiles",
+      "actions": [{ "eval": "(()=>{const s=document.createElement('style');s.id='visual-option';s.textContent=\"[data-header-lens='cushion'][data-chrome-style='float'] :is(.header-bar > :first-child > button, .header-bar > :first-child > div:not(.wide-view-toggle) > button, .header-bar > :last-child > div > button, .header-bar .wide-view-toggle)::before {background:color-mix(in srgb,var(--fg) 14%,transparent) !important;filter:blur(2px)} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip::before {background:color-mix(in srgb,var(--fg) 8%,transparent) !important} [data-header-lens='cushion'][data-chrome-style='float'] .session-dot {box-shadow:0 0 6px 1px color-mix(in srgb,currentColor 55%,transparent)}\";document.head.append(s);return !!document.querySelector('.header-bar')})()" }],
+      "expect": "js:document.querySelector('#visual-option') && document.body.dataset.headerLens==='cushion'",
+      "probe": false
+    },
+    {
+      "name": "vivid-glyphs",
+      "actions": [{ "eval": "(()=>{const s=document.createElement('style');s.id='visual-option';s.textContent=\"[data-header-lens='cushion'][data-chrome-style='float'] .header-bar :is(button:not(.bg-accent),.wide-view-toggle) {color:color-mix(in srgb,var(--fg-2) 55%,var(--accent) 45%);filter:drop-shadow(0 0 3px color-mix(in srgb,currentColor 55%,transparent))} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip .session-dot {box-shadow:0 0 7px 2px color-mix(in srgb,currentColor 70%,transparent)}\";document.head.append(s);return !!document.querySelector('.header-bar')})()" }],
+      "expect": "js:document.querySelector('#visual-option') && document.body.dataset.headerLens==='cushion'",
+      "probe": false
+    },
+    {
+      "name": "sculpted-glass",
+      "actions": [{ "eval": "(()=>{const s=document.createElement('style');s.id='visual-option';s.textContent=\"[data-header-lens='cushion'][data-chrome-style='float'] :is(.header-bar > :first-child > button, .header-bar > :first-child > div:not(.wide-view-toggle) > button, .header-bar > :last-child > div > button, .header-bar .wide-view-toggle) {box-shadow:inset 0 1px 1px color-mix(in srgb,var(--fg) 22%,transparent),0 5px 11px -3px rgba(0,0,0,.38) !important} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip {box-shadow:inset 0 1px 1px color-mix(in srgb,var(--fg) 20%,transparent),0 5px 11px -3px rgba(0,0,0,.36) !important} [data-header-lens='cushion'][data-chrome-style='float'] .session-strip .session-dot {box-shadow:0 0 6px 1px color-mix(in srgb,currentColor 65%,transparent)}\";document.head.append(s);return !!document.querySelector('.header-bar')})()" }],
+      "expect": "js:document.querySelector('#visual-option') && document.body.dataset.headerLens==='cushion'",
+      "probe": false
+    }
+  ]
+}

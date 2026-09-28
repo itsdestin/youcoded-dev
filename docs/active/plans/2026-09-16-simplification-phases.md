@@ -48,7 +48,7 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 | 2 | Always-on timers | W2, W7, W8, W9, W11, W12, W18, W19, W23 | 2 + 1 | Batch C merged or dropped |
 | 3 | Launch path | W3, W4+D5, W15, W16, W17, W25, W21, W22 | 2 + 1 | Batches A and C merged or dropped |
 | 4 | One door for desktop and phone | D2, D1, D3, M5 | ~12–20 + one reviewer per run | runs alone |
-| 5 | Structure B | D4, D7, D8, D11, D12, W5, W6, W1 | 4–5 + 1 each | Phase 4 done; Batch C merged or dropped |
+| 5 | Structure B | D4, D7, D8, D11, D12, W5 (W6, W1 shipped early — youcoded#573) | 4–5 + 1 each | Phase 4 done; Batch C merged or dropped |
 
 1a, 1b and T are independent and may run at the same time in three worktrees. 1a and 1b both touch `main.ts` only in different regions (1a: none; 1b: buddy branches), and neither touches T's files.
 
@@ -159,6 +159,8 @@ The D3 event-translator merge is desktop-only and may be split off into phase 5 
 
 **For Destin.** Today the remaining oversized pieces: one 4,756-line object that runs conversations and also orchestrates helper agents (which already have their own home); three copies of the file downloader; two parallel settings screens sharing 14 of 17 rows; a history-replay path that reads a 112 MB file into memory with no caller; the Resume browser re-reading every conversation file on every open. What changes: each is split, merged or cached along the seam the audit names. End state: files a session can hold in its head, and Resume that opens from a cache. **You would notice:** Resume opens faster on a big history; the settings screen's row order may shift slightly — D8 gets a before/after review deck before it is kept. Nothing else.
 
+**Shipped early (2026-09-26, youcoded#573, at Destin's request):** W1 and W6. Resume remembers every conversation file by size + mtime on disk across restarts (`main/scan-cache.ts`, native and Claude Code halves), and each slug directory's R1 answer until the directory changes. Settled open 1.7 s -> 0.3 s on a 2,600-conversation history. The rows below are kept as the record; do not redo them.
+
 **Precondition.** Phase 4 done (D4 and D7 touch the runtime Phase 4 moves). Batch C merged or dropped (C6 edits `session-browser.ts`, W1's file).
 
 **Items and files** (one worker per row group; D8 alone)
@@ -171,8 +173,8 @@ The D3 event-translator merge is desktop-only and may be split off into phase 5 
 | D11 | `injected` is the discriminant; `kind` optional-and-ignored for one release | `shared/types.ts:385-405, 951-995`; `state/chat-reducer.ts:1401` |
 | D12 | Manager's three engine calls go through `supervisor.trackedFetch` | `main/engine/engine-manager.ts:703, 1189, 1594, 1783, 1954`; `engine-supervisor.ts:339-345, 609-613, 916` |
 | W5 | Verify no caller, then delete `TRANSCRIPT_REPLAY`, its preload binding and `getHistory` | `main/transcript-watcher.ts:615-655`; `ipc-handlers.ts:3168-3178, 3241-3249`; `preload.ts:1232` |
-| W6 | Memoize slug → path per process; cap the fallback | `main/session-browser.ts:189-215`; `main/transcript-cwd.ts:76-104` |
-| W1 | `(size, mtime) → meta` map in front of the per-file reader; short memo of the list | `main/session-browser.ts:401-505, 299-385`; callers `ipc-handlers.ts:1853`, `projects-index.ts:134`, `remote-server.ts:1780` |
+| W6 | **DONE youcoded#573** (remembered per slug directory, on disk) — memoize slug → path per process; cap the fallback | `main/session-browser.ts:189-215`; `main/transcript-cwd.ts:76-104` |
+| W1 | **DONE youcoded#573** (`scan-cache.ts`; no list memo — identical in-flight browses share one scan instead) — `(size, mtime) → meta` map in front of the per-file reader; short memo of the list | `main/session-browser.ts:401-505, 299-385`; callers `ipc-handlers.ts:1853`, `projects-index.ts:134`, `remote-server.ts:1780` |
 
 **Gate.** `verify.sh` green. Guards: D7 — one downloader test covers disk-full mid-stream for all three callers; D11 — `tests/chat-reducer.test.ts` case for a persisted turn with `kind` absent; W1 — `tests/session-browser.test.ts` case: second listing of an unchanged directory performs zero file reads (count via an injected `fs`), a touched file is re-read; W5 — `rg -n "TRANSCRIPT_REPLAY|getHistory\(" desktop/src` returns nothing after; D8 — the deck, answered. G2 budgets lowered for every file that shrank.
 
@@ -194,4 +196,4 @@ D9 (Android rebuild), D10 (measured), W26 (replaced by the two guards), M6 (`YOU
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
 | 4 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after Plan C's `remote-` cluster has merged |
-| 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition) |
+| 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition). W1 + W6 shipped early 2026-09-26 (youcoded#573) |

@@ -10,7 +10,7 @@ seen-on is always n/a here.
       shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
       slider/download strip). Left: move the ~330 entries the triage marks harmless into
       startup-only / user-rare (JSON lines ready in the report); batches B2 (native-home +
-      session-store), B4 (conversation-store — its rewrite has now landed), B5 (chat-search
+      session-store), B4 (conversation-store — reads, listing and heal async since youcoded#573; the locked write/remove path is left), B5 (chat-search
       index), B7 (git-transport / sync service), B10 (skill-provider catalog reads), B12
       (project-watcher); custom-theme glass sliders still save on every tick (theme:write-file)
       `n/a` `confirmed` `checked 2026-09-24` `performance` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
@@ -60,16 +60,15 @@ seen-on is always n/a here.
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
 
-- [ ] Three small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
-      whole cycle: (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
+- [ ] Two small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
+      whole cycle (a third, line budgets only reported at the end of verify, was fixed
+      2026-09-27: verify checks them first): (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
       sign they are its children — have it say so from the process's ancestry, instead of a doc
       asking sessions to remember; (2) a fresh session worktree has no `scratch/perf-lab/assets`,
       so `fixture.mjs --ensure-assets` re-downloads ~490 MB and a slow link times the whole run
       out after the 3-minute build and the quiet-machine wait — copy or hardlink from the shared
-      checkout's `scratch/perf-lab/assets` when it is there; (3) `verify.sh` found six separate
-      line-budget overruns of one to thirteen lines, each only at the END of a full run — run
-      `tests/line-budgets.test.ts` first, it takes under a second
-      `n/a` `confirmed` `checked 2026-09-18`
+      checkout's `scratch/perf-lab/assets` when it is there
+      `n/a` `confirmed` `checked 2026-09-27`
 
 - [ ] The perf lab's new "blank on arrival" count has never been shown to FAIL. It was added
       2026-09-18 (`scenario-workload.mjs` → `switchBlank`) because the painted clock counts entry
@@ -82,14 +81,6 @@ seen-on is always n/a here.
       could simply be blind. Run `bg-run.sh --checkout <a worktree at e5f8b2d8> --only workload
       --workload-repeats 1` on a quiet machine; expect blank frames on most switches
       `n/a` `needs-verify` `checked 2026-09-18`
-
-- [ ] Workspace CI's perf-lab LIVE tests fail intermittently on the GitHub runner with "Chrome
-      never opened its debugging port" (`scripts/perf-lab/tests/layout-cost.test.mjs` and the
-      pop-in test): one master run in five on 2026-09-10 evening, and a docs-only PR the same
-      hour. Nothing about the code changed between the green and red runs, so it is the runner's
-      Chrome launch racing a timeout; `ci-red-vs-master.sh` now compares five master runs so it
-      is recognised, but the fix is a longer or retried launch in the perf-lab harness
-      `n/a` `needs-verify` `checked 2026-09-10`
 
 - [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
       actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
@@ -340,12 +331,6 @@ seen-on is always n/a here.
       each card against its box and print which slide and window size clips
       `n/a` `confirmed` `checked 2026-09-17`
 
-- [ ] `run-review.sh` refuses to start when another session’s workbench already holds its default
-      port (5473), and the only way on is to guess a free `YOUCODED_PORT_OFFSET` by hand; it hit
-      this on 2026-09-16 while a second session was reviewing. It should pick a free port itself,
-      the way its Chrome port blocks already do
-      `n/a` `confirmed` `checked 2026-09-16`
-
 - [ ] Destin asked to “optimize tf out of our workspace” (2026-09-14). Oxlint, TypeScript 7 and the
       design check shipped; still untried: one-off scans with Fallow (dead code, copy-paste,
       tangled imports — could replace knip) and React Doctor (bad React patterns), reported
@@ -359,8 +344,10 @@ seen-on is always n/a here.
       runner (a CI box's software renderer says nothing about a 180 Hz panel): launch a dev
       instance nightly, run the idle probe at three times its baseline, run the startup marks
       and append one line per night, with a sanity floor because the rig has twice reported
-      clean while measuring nothing
-      `n/a` `confirmed` `checked 2026-09-18` → docs/active/investigations/2026-09-16-simplification-audit.md
+      clean while measuring nothing. 2026-09-26: `scripts/perf-lab/real-scale-startup.mjs` now
+      takes the startup marks (and the detached launch work, Resume scans, main-process stalls)
+      against a copy of the REAL history, by hand — the nightly line is still missing
+      `n/a` `confirmed` `checked 2026-09-26` → docs/active/investigations/2026-09-16-simplification-audit.md
 
 - [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
       remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
@@ -414,8 +401,15 @@ seen-on is always n/a here.
       Measuring what Destin actually sees would need a real display with a compositor, which
       means putting windows on his screen while he works. Deliberately not attempted; filed so
       the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
-      GPU" should cite this
-      `n/a` `confirmed` `checked 2026-09-10` `performance`
+      GPU" should cite this. 2026-09-26 (Destin approved one 30 s window on his screen): the
+      software renderer MISATTRIBUTED an idle welcome screen's cost — on Xvfb the frosted blur
+      looked like all of it (99% -> 5% with blur off), on his real GPU the blur was a minority
+      and the mascot's full-refresh motion was most of it (36% -> 8% hidden). A question deck
+      framed on the Xvfb reading got the wrong answer and had to be reopened. Recipe that
+      worked: `launchApp({ display: process.env.DISPLAY })`, GPU busy from
+      `/sys/class/drm/card1/device/gpu_busy_percent`, CPU by process type from CDP
+      `SystemInfo.getProcessInfo` — nothing drawing a frame counter while measuring idle
+      `n/a` `confirmed` `checked 2026-09-26` `performance`
 
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
@@ -479,7 +473,10 @@ seen-on is always n/a here.
       `Emulation.setFocusEmulationEnabled`, without which headless `:focus` never matches and
       the first run reported the focused style as absent). The want is `--drag x1,y1,x2,y2`
       and focus emulation on by default, beside `--hover`
-      `n/a` `confirmed` `checked 2026-09-10`
+      **Half done 2026-09-26:** real input exists now — `scripts/shoot/explore.mjs` hovers,
+      presses, drags and types through CDP `Input`, and the tester kit uses it. Still missing:
+      touch and a 1.5× scale in `explore`/`shoot` (a tester still cannot claim to cover either)
+      `n/a` `confirmed` `checked 2026-09-26`
 
 - [ ] Three copies of "which youcoded checkout do you mean?" exist, and each knows a
       different subset of the layouts: `scripts/lib/resolve-checkout.sh` (run-workbench),

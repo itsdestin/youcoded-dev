@@ -1,0 +1,35 @@
+{
+  "title": "Minimalist chrome — bare status dots",
+  "key": "minimalist-bare-dots",
+  "out": "minimalist-chrome.bare-dots.html",
+  "images": "images/minimalist-chrome.bare-dots",
+  "runs": { "before": "runs/dots-before", "after": "runs/dots-after" },
+  "labels": { "before": "Dark backing", "after": "Bare, tuned colour" },
+  "themes": ["meadow-mist", "midnight"],
+  "crops": {
+    "header": ["main", "current", "1440x40+0+0"],
+    "bottom": ["main", "current", "900x130+270+770"]
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "surface": "Chat",
+      "path": "Header, session dots",
+      "crop": "header",
+      "headline": "Session dots have no shadow, glow or ring; each colour adjusts itself to stay visible on the wallpaper.",
+      "changed": "Removed the dark backing and the soft glow. On Meadow Mist's blue, red deepens to a dark red and idle dots are a quiet slate; green, blue and amber only shift when they would otherwise disappear. On dark themes the dots are unchanged.",
+      "notice": "The header icons and the selected Chat button are exactly as the last session left them — you haven't judged those yet, so judge the whole header here.",
+      "risk": "A deep red on a mid-blue wallpaper is less bright than the usual red. It can never turn pink or neon, but it can look darker than you expect."
+    },
+    {
+      "id": "B-2",
+      "surface": "Chat",
+      "path": "Bottom status buttons",
+      "crop": "bottom",
+      "headline": "The small status buttons under the message box are more solid, so their text is easier to read.",
+      "changed": "They now let at most 15% of the wallpaper through (was 42% on Meadow Mist). The quick buttons above the message box and the message box itself are unchanged.",
+      "notice": "\"Meadow Mist\" and \"Sonnet | Auto Effort\" were the hardest to read before; they still read less strongly than the others.",
+      "risk": "The status row looks slightly less see-through than the quick buttons above it."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+ "deck": "minimalist-round5",
+ "started": "2026-09-23T23:55:21.021Z",
+ "submitted": "2026-09-23T23:56:22Z",
+ "cur": 1,
+ "answers": {
+  "R5-1": {
+   "note": "this is good.",
+   "v": "yes",
+   "seconds": 48,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R5-2": {
+   "v": "yes",
+   "note": "",
+   "seconds": 13,
+   "theme": "halftone-dimension",
+   "zoom": 1
+  }
+ }
+}

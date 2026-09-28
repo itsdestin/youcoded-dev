@@ -97,9 +97,9 @@ Four or more questions go on a questions deck — a words-only review deck: copy
 
 Dev launches must include `--label "Feature Name"`; concurrent instances also need distinct `--offset` and `--profile` to avoid collisions. See `docs/local-dev.md`.
 
-### UI review (autonomous screenshot sweep)
+### UI review: screenshots, click-through, journeys
 
-Use `scripts/ui-review/run-review.sh` and **read `coverage.md` before judging**. A surface not proven open is unreviewed, not fine. Capture affected Before/After surfaces for the review deck. Full instructions and real-app exceptions: `scripts/ui-review/README.md`.
+Pictures of named screens: `node scripts/shoot/shoot.mjs <names|'globs'> [--themes …] [--before <base> --after <worktree>]` (`--list` names every screen). A picture counts only when its screen proved it is showing; a failed one is listed with its reason — **unreviewed, not fine**. To act like a user (menus, hover, drag, typing, results after a click): `node scripts/shoot/explore.mjs start`, then numbered steps. Saved click paths (`youcoded/desktop/tests/journeys/`) and `shoot --check` run in `verify.sh`. A new `<Dialog>` needs `screen=` or `noScreen="<why>"`. Depth: `scripts/shoot/README.md`.
 
 ### Demo clips and the landing page
 
@@ -107,7 +107,7 @@ Use recordings of the running renderer, not drawings. Start at `scripts/ui-revie
 
 ### Asking a page a question, and A/B-ing the answer
 
-Use existing tools before inventing a rig: `scripts/ui-probe.mjs` for an isolated browser query/screenshot, `scripts/ab-measure.sh` for HEAD-vs-edit comparisons, `scripts/image-churn.sh` for unchanged pixels, `scripts/check-doc-commands.mjs` for runnable doc examples. Recipes: `docs/workspace-workflows.md`. Never attach probes to the live app.
+Use existing tools before inventing a rig: `scripts/ui-probe.mjs` for an isolated browser query/screenshot of any page (`explore` acts like a user; this measures), `scripts/ab-measure.sh` for HEAD-vs-edit comparisons, `scripts/image-churn.sh` for unchanged pixels, `scripts/check-doc-commands.mjs` for runnable doc examples. Recipes: `docs/workspace-workflows.md`. Never attach probes to the live app.
 
 ### Local build & test
 

@@ -1,0 +1,57 @@
+{
+  "title": "Minimalist chrome \u2014 alignment, window buttons, selected state",
+  "key": "minimalist-round5",
+  "out": "minimalist-chrome.round5.html",
+  "images": "images/minimalist-chrome.round5",
+  "runs": {
+    "before": "runs/r5-before",
+    "after": "runs/r5-after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "devils-garden",
+    "meadow-mist",
+    "cotton-candy-sky",
+    "halftone-dimension",
+    "light",
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "whole": [
+      "r5",
+      "built",
+      "1440x354+0+0"
+    ],
+    "header": [
+      "r5",
+      "files-open",
+      "1440x44+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R5-1",
+      "surface": "Chat",
+      "path": "Message box and status buttons",
+      "crop": "whole",
+      "headline": "The message box is centred again on Devil's Garden and Golden Sunbreak, lined up with the chips and status buttons.",
+      "changed": "Those two themes use the floating message-box style, whose own side margins were pushing the narrowed box to the left. The float style's centring now wins.",
+      "notice": "Opens on Golden Sunbreak. Every other theme looks the same as last round at the bottom."
+    },
+    {
+      "id": "R5-2",
+      "surface": "Chat",
+      "path": "Header \u2014 Files open, Chat selected",
+      "crop": "header",
+      "headline": "Selected Files and the selected Chat segment are solid bright pills; minimize, maximize and close are three separate chips.",
+      "changed": "Built your pick from last round (solid bright pill). The window buttons lost their shared container; each has the same chip as every other header button. Close still turns red on hover.",
+      "risk": "The window buttons now look like any other header button, so the top-right corner reads as five buttons in a row.",
+      "notice": "Files is open in both pictures (top right); Chat is the selected half of the switch (top left). Check a light theme and a dark one."
+    }
+  ]
+}

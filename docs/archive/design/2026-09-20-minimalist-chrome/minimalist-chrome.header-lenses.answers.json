@@ -1,0 +1,16 @@
+{
+ "deck": "minimalist-header-lenses",
+ "started": "2026-09-23T00:22:39.105Z",
+ "submitted": "2026-09-23T00:23:47Z",
+ "cur": 0,
+ "answers": {
+  "C-1": {
+   "v": "pick",
+   "pick": "cushion",
+   "note": "chat/terminal toggle loocks broken though. and the outer container of the session switcher should match the buttons i think",
+   "seconds": 66,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

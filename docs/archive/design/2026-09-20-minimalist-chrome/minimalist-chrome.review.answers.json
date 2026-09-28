@@ -1,0 +1,22 @@
+{
+ "deck": "minimalist-chrome",
+ "started": "2026-09-21T08:23:03.700Z",
+ "submitted": "2026-09-21T08:24:51Z",
+ "cur": 1,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "note": "but the raising doesn't look as smooth as i want. i want the individual controls to kinda fade into the background magically lmao",
+   "seconds": 57,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "note": "we may need to give them a blur/glass effect in this theme type.the glow also looks a little odd in the new style.",
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

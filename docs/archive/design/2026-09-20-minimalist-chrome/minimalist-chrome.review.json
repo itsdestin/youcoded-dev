@@ -1,0 +1,58 @@
+{
+  "title": "A new Minimalist chrome for the theme builder",
+  "key": "minimalist-chrome",
+  "out": "minimalist-chrome.review.html",
+  "images": "images/minimalist-chrome.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Minimalist"
+  },
+  "themes": [
+    "midnight",
+    "meadow-mist"
+  ],
+  "crops": {
+    "chrome-top": [
+      "main",
+      "home",
+      "1440x120+0+0"
+    ],
+    "chrome-bottom": [
+      "main",
+      "home",
+      "1440x150+0+750"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Every screen",
+      "path": "The strip along the top of the window",
+      "crop": "chrome-top",
+      "notice": "The session switcher, the settings gear, the games button and the Chat/Terminal toggle each lift out of the background instead of sitting on one wide bar.",
+      "risk": "The header is still there and still holds everything it holds today \u2014 nothing moved and nothing became unreachable. It no longer has a solid edge, so a little of the chat shows through the very top of the band.",
+      "changed": "The bar across the top of the window no longer paints. The controls on it \u2014 session switcher, gear, projects, games, the Chat/Terminal toggle \u2014 each get their own raised surface instead.",
+      "headline": "Should the top strip become individual controls?",
+      "highlight": {
+        "selector": ".header-bar"
+      }
+    },
+    {
+      "id": "R-2",
+      "surface": "Every screen",
+      "path": "The message box and the strip under it",
+      "crop": "chrome-bottom",
+      "notice": "The field, each quick chip and every status chip along the bottom now lift out of the background on their own, instead of sharing one container.",
+      "risk": "Same controls, same order, same places. The status chips read a little smaller because they are no longer inside a strip.",
+      "changed": "The container holding the message box and the quick chips no longer paints, and neither does the strip behind the status chips. Each chip and the message field lift on their own.",
+      "headline": "Should the message box and chips lift on their own?",
+      "highlight": {
+        "selector": ".input-bar-container form"
+      }
+    }
+  ]
+}

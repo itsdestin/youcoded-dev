@@ -255,6 +255,8 @@ if [[ $DRY -eq 1 ]]; then
     printf '  npx vitest related --run%s\n' "$(printf ' %s' "${REL[@]}")"
   fi
   echo "  bash $ROOT/scripts/ast-grep/check.sh $DESKTOP/src"
+  printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' && echo "  node $ROOT/scripts/shoot/shoot.mjs --check (renderer changed)"
+  printf '%s\n' "${CHANGED[@]:-}" | grep -qE '^desktop/(src/renderer/|tests/journeys/)' && echo "  node $ROOT/scripts/shoot/journeys.mjs (renderer or journeys changed)"
   exit 0
 fi
 
@@ -265,6 +267,22 @@ fi
 # caught before release. Checkouts that predate tsgo fall back to tsc.
 TSC=tsc
 [[ -x "$DESKTOP/node_modules/.bin/tsgo" ]] && TSC=tsgo
+
+# Line budgets FIRST, synchronously (~2 s), printed before the parallel checks start.
+# WHY: an over-budget file was the most repeated verify failure in docs/wrap-ups.md
+# (four sessions; six overruns in one, 2026-09-27), and it only surfaced when every
+# check had finished, minutes later. Reported now, it is fixed while the rest run.
+# Still counted as a failure at the end; the related-tests run repeats it harmlessly.
+BUDGETS_FAILED=0
+if [[ -f "$DESKTOP/tests/line-budgets.test.ts" ]]; then
+  if ! ( cd "$DESKTOP" && npx vitest run tests/line-budgets.test.ts ) >"$LOGDIR/budgets.log" 2>&1; then
+    BUDGETS_FAILED=1
+    echo "FAIL  line budgets (checked first — the other checks still run)"
+    grep -E 'lines, budget' "$LOGDIR/budgets.log" | grep -vE '^\s*[-+]' | sed 's/^ */      /' | sort -u
+    echo ""
+  fi
+fi
+
 start types "types ($TSC --noEmit)" npx "$TSC" --noEmit -p tsconfig.json
 # The test tree is its own TS project (different module resolution, allowJs for
 # the .mjs orchestrator). Separate check so a failure names which tree broke.
@@ -299,9 +317,33 @@ fi
 # worktree's source is the whole point of passing a checkout argument.
 start invariants "invariants (ast-grep)" bash "$ROOT/scripts/ast-grep/check.sh" "$DESKTOP/src"
 
+# Screens: open every screen in the list once, in the photo-only build, and fail
+# on any that does not show (scripts/shoot/, spec 2026-09-24-shoot-and-explore).
+# WHY only on renderer changes: nothing else can move a screen, and the check
+# builds the app and starts browsers (~5 s for Settings, measured 2026-09-25).
+# It compares no pictures, so run-to-run image differences cannot fail it.
+# Skipped, not failed, without Chrome or on a checkout older than the screen list.
+if [[ -f "$DESKTOP/src/renderer/dev/workbench/screens/index.ts" ]] \
+  && printf '%s\n' "${CHANGED[@]:-}" | grep -q '^desktop/src/renderer/' \
+  && command -v google-chrome-stable >/dev/null 2>&1; then
+  start screens "screens open (shoot --check)" node "$ROOT/scripts/shoot/shoot.mjs" --check --worktree "$CHECKOUT" --out "$LOGDIR/shoot"
+fi
+
+# Journeys: the saved paths through the app (desktop/tests/journeys/) — first conversation,
+# a permission ask, theme, model switch, resume, marketplace install, project — each ending in
+# a check of the result. WHY in verify and not "on request": a check nobody runs goes stale
+# (Destin, 2026-09-26, choosing this over a manual list). ~8 s. A renamed button fails one with
+# the step and label named; fix that line in the journey in the same change.
+if [[ -d "$DESKTOP/tests/journeys" ]] \
+  && printf '%s\n' "${CHANGED[@]:-}" | grep -qE '^desktop/(src/renderer/|tests/journeys/)' \
+  && command -v google-chrome-stable >/dev/null 2>&1; then
+  start journeys "journeys (click paths)" node "$ROOT/scripts/shoot/journeys.mjs" --worktree "$CHECKOUT"
+fi
+
 FAILED=0
 FAILED_KEYS=()
-for key in types testtypes tests knip lint design invariants; do
+if [[ $BUDGETS_FAILED -eq 1 ]]; then FAILED=1; FAILED_KEYS+=("budgets"); fi
+for key in types testtypes tests knip lint design invariants screens journeys; do
   [[ -n "${PID[$key]:-}" ]] || continue
   wait "${PID[$key]}"; rc=$?
   if [[ $rc -eq 0 ]]; then

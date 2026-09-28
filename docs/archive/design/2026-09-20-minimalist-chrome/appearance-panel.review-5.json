@@ -1,0 +1,54 @@
+{
+  "_why": "Round 5 of the Appearance panel, from Destin's review-4 answers: AR4-1 smaller gap under the last theme, AR4-3 the opened Look settings inside the Customize look box, AR4-4 Message box removed and tied to the layout. Whole-panel pictures have the popup's height cap lifted in the screenshot only.",
+  "title": "Appearance panel — round 5: tighter themes box, one Customize look box",
+  "key": "appearance-panel-review-5",
+  "out": "appearance-panel.review-5.html",
+  "images": "images/appearance-panel.review-5",
+  "stage": "review",
+  "runs": {
+    "before": "runs/ap4",
+    "after": "runs/ap5"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "dark",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "themes-end": [
+      "ap4",
+      "closed",
+      "430x260+505+620"
+    ],
+    "look-open": [
+      "ap4",
+      "open",
+      "430x520+505+625"
+    ]
+  },
+  "steps": [
+    {
+      "id": "AR5-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Themes, scrolled to the end",
+      "crop": "themes-end",
+      "headline": "The last theme now sits 8 px above the buttons instead of 16 px.",
+      "changed": "At the end of the list, the gap between the last card and Browse / Build matches the gap between cards.",
+      "measured": "8 px, down from 16 px",
+      "notice": "The box also got 8 px shorter at the end of the list, and the cards still slide under the buttons while you scroll."
+    },
+    {
+      "id": "AR5-2",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Customize look (tapped open)",
+      "crop": "look-open",
+      "headline": "Customize look opens as one box, and Message box is gone.",
+      "changed": "The row's tinted box now continues down and holds Message bubbles, Roundness and Glass. Message box was removed. Picking a layout now brings its matching message box: Framed and Minimalist use the standard bar, and Floating bars uses the floating one. Auto layout leaves each theme's own message box alone.",
+      "notice": "Inside the box, the Glass strip and the Fine-tune row keep a slightly darker tint of their own. If that reads as a box inside a box, say so in a note and I'll flatten them."
+    }
+  ]
+}
