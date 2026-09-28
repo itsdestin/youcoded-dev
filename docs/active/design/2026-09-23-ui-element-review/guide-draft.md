@@ -95,7 +95,9 @@ underline under its words. Labels over short settings groups stay plain.
 - One scale: **4 · 8 · 12 · 16 · 24 px.** 4 between an icon and its label; 8 between
   things inside a card; 12 inside a card's edge and between cards; 16 between groups; 24
   for major breaks.
-- In Settings popups: **16px between groups, 6px between rows.**
+- In popups: **16px between groups, 8px between neighbouring boxes or rows** (the Settings list's gap).
+- **Nothing sits bare on the popup background.** A group is a small label and then a card holding its
+  controls and text. Reference: Remote Access.
 
 ### Buttons
 - Shape follows the theme's control roundness (built-in themes: Round, 14px).
