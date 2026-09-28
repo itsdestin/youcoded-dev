@@ -145,6 +145,15 @@ All I/O async (performance rule 1; `main-blocking-calls.test.ts` ratchet).
   CSP with no network egress (`default-src office: data: blob:`, no `connect-src` beyond
   `office:`), so a compromised editor cannot send a document anywhere; the editor's external
   links (help, about) open through the app's window-open handler (review 2, R2-6).
+  - **Fix round 1 deviation:** the scheme-source `office:` alone would let one document's page
+    load resources from every OTHER open document's `office://<other-token>` origin too — the
+    per-document confinement `office-protocol.ts` enforces server-side was not mirrored at the
+    CSP layer. Every directive now scopes to `'self'` instead — `default-src 'self' data: blob:
+    'unsafe-inline' 'unsafe-eval'; connect-src 'self' data: blob:; img-src 'self' data: blob:;
+    font-src 'self' data:` — plus `form-action 'none'; base-uri 'none'`. `data:`/`blob:` and the
+    `unsafe-*` keywords are unchanged. CSP still cannot stop a script from navigating the frame
+    itself (`location = 'https://...'`); that needs the editor frame's own navigation guard, a
+    later task.
   The scheme is **not** in the renderer's own origin: the editor frame stays a separate origin
   (the ast-grep exception for EditorFrame's `allow-same-origin` depends on this — a test pins it).
 - **`x2t.ts`** — runs the bundled native `x2t` with an XML task in a per-job temp dir
