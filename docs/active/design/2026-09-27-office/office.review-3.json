@@ -1,0 +1,101 @@
+{
+  "title": "Office — the last loose ends before the definition of done",
+  "key": "office-review-3",
+  "out": "office.review-3.html",
+  "stage": "design",
+  "images": "images/office.review-3",
+  "runs": { "before": "runs2/after", "after": "runs3/after" },
+  "labels": { "before": "Round 2", "after": "Round 3" },
+  "steps": [
+    {
+      "id": "A-slim-clean",
+      "crop": "chat/files/edit/a-sent-plan",
+      "highlight": { "box": [65, 4, 35, 85] },
+      "surface": "Session files",
+      "path": "A conversation → Session files → Garden plan.docx → Edit",
+      "headline": "The editor's scroll bars and the gap above the page are gone; the document fills the panel edge to edge.",
+      "changed": "Your round-2 note: the editor's own chunky scroll bars and the band above the first page now sit just outside the panel, where they are cropped away.",
+      "notice": "The page starts right under the slim toolbar, and the text is a little larger again. Mouse wheel, trackpad and touch still scroll.",
+      "risk": "There is no scroll bar to drag in this small editor; the full Office page keeps the editor's own."
+    },
+    {
+      "id": "Q-odf",
+      "words": true,
+      "surface": "Office",
+      "path": "Opening a LibreOffice file (.odt, .ods, .odp)",
+      "headline": "Should LibreOffice files be in the first version, or added later?",
+      "today": "You picked Word, Excel, PowerPoint, CSV, old Office files and LibreOffice files, with a note that LibreOffice files can wait if they are a lot of work.",
+      "problem": "The same translator already opens and saves them, so the work is testing, not building — but every format is more to check before the first version.",
+      "proposal": "Two orders.",
+      "options": [
+        {
+          "id": "first",
+          "label": "In the first version",
+          "pros": [
+            "LibreOffice users' files open from day one.",
+            "Little extra work: the translator already handles them."
+          ],
+          "cons": [
+            "A few more days of testing before the first version."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "later",
+          "label": "Later, on the roadmap",
+          "pros": [
+            "The first version arrives slightly sooner."
+          ],
+          "cons": [
+            "A LibreOffice file shows only its name until then."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-csv-warn",
+      "words": true,
+      "surface": "Office",
+      "path": "Editing a CSV table in Office",
+      "headline": "Before saving a CSV, Office warns if anything you added — colours, a second sheet, formulas — cannot be kept in that format.",
+      "changed": "Your note on file types: \"we should handle csv but warn if something would cause an issue\". The warning offers to save a spreadsheet copy instead.",
+      "notice": "A CSV with only plain values saves silently, as it does today.",
+      "yes": "Warn like that",
+      "no": "Something else"
+    },
+    {
+      "id": "S-no-assistant",
+      "words": true,
+      "surface": "Office",
+      "path": "Chatting while a document is open",
+      "headline": "This version of Office adds nothing to the assistant: it neither sees nor edits open documents. It is your own editing tool.",
+      "changed": "Your notes on the two assistant questions said not to change assistant behaviour for now, so the \"straight in, undoable\" pick is set aside for a later version.",
+      "notice": "The assistant can still read and write the files themselves, as it does today.",
+      "yes": "Right, no assistant",
+      "no": "Not quite"
+    },
+    {
+      "id": "S-roundness",
+      "words": true,
+      "surface": "Office",
+      "path": "The Office editor under your current theme",
+      "headline": "Theme matching includes your theme's roundness: the editor's buttons, menus, fields and dialogs use your theme's corner sizes.",
+      "changed": "Your note on theming asked for the roundness settings too. The editor has corner settings for all of those; Halftone Dimension's large corners already showed in round 1.",
+      "notice": "A handful of the editor's own shapes with fixed corners stay square; those are fixed by hand during the build.",
+      "yes": "Include roundness",
+      "no": "Colours only"
+    },
+    {
+      "id": "S-installer",
+      "words": true,
+      "surface": "Office",
+      "path": "Installing YouCoded",
+      "headline": "Office ships inside the YouCoded installer as a separate program, which its licence allows, with its notices and a link to its code.",
+      "changed": "Your note on the download question asked if bundling is allowed. The licence explicitly permits shipping separate programs together, as long as its notices and code link are included.",
+      "notice": "Every YouCoded download grows by about 80 MB; Office can still update between app releases.",
+      "risk": "The lawyer check we planned before launch still applies to the separate-program arrangement as a whole.",
+      "yes": "Ship it that way",
+      "no": "Rethink"
+    }
+  ]
+}
