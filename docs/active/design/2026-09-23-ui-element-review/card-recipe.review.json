@@ -1,0 +1,885 @@
+{
+  "title": "One card look for every Settings menu",
+  "key": "ui-card-recipe",
+  "out": "card-recipe.review.html",
+  "images": "images/card-recipe.review",
+  "runs": {
+    "today": "runs/cardcmp"
+  },
+  "themes": [
+    "midnight",
+    "light",
+    "meadow-mist"
+  ],
+  "crops": {
+    "sd-today": [
+      "zz-cardcmp",
+      "settings-drawer--today",
+      "320x560+0+40"
+    ],
+    "sd-well": [
+      "zz-cardcmp",
+      "settings-drawer--well",
+      "320x560+0+40"
+    ],
+    "sd-panel": [
+      "zz-cardcmp",
+      "settings-drawer--panel",
+      "320x560+0+40"
+    ],
+    "sa-today": [
+      "zz-cardcmp",
+      "settings-account--today",
+      "430x340+500+280"
+    ],
+    "sa-well": [
+      "zz-cardcmp",
+      "settings-account--well",
+      "430x340+500+280"
+    ],
+    "sa-panel": [
+      "zz-cardcmp",
+      "settings-account--panel",
+      "430x340+500+280"
+    ],
+    "sap-today": [
+      "zz-cardcmp",
+      "settings-appearance--today",
+      "430x600+505+150"
+    ],
+    "sap-well": [
+      "zz-cardcmp",
+      "settings-appearance--well",
+      "430x600+505+150"
+    ],
+    "sap-panel": [
+      "zz-cardcmp",
+      "settings-appearance--panel",
+      "430x600+505+150"
+    ],
+    "ss-today": [
+      "zz-cardcmp",
+      "settings-sound--today",
+      "430x600+505+150"
+    ],
+    "ss-well": [
+      "zz-cardcmp",
+      "settings-sound--well",
+      "430x600+505+150"
+    ],
+    "ss-panel": [
+      "zz-cardcmp",
+      "settings-sound--panel",
+      "430x600+505+150"
+    ],
+    "sbs-today": [
+      "zz-cardcmp",
+      "settings-backup-sync--today",
+      "430x600+505+150"
+    ],
+    "sbs-well": [
+      "zz-cardcmp",
+      "settings-backup-sync--well",
+      "430x600+505+150"
+    ],
+    "sbs-panel": [
+      "zz-cardcmp",
+      "settings-backup-sync--panel",
+      "430x600+505+150"
+    ],
+    "sra-today": [
+      "zz-cardcmp",
+      "settings-remote-access--today",
+      "430x600+505+150"
+    ],
+    "sra-well": [
+      "zz-cardcmp",
+      "settings-remote-access--well",
+      "430x600+505+150"
+    ],
+    "sra-panel": [
+      "zz-cardcmp",
+      "settings-remote-access--panel",
+      "430x600+505+150"
+    ],
+    "sdev-today": [
+      "zz-cardcmp",
+      "settings-development--today",
+      "430x515+505+193"
+    ],
+    "sdev-well": [
+      "zz-cardcmp",
+      "settings-development--well",
+      "430x515+505+193"
+    ],
+    "sdev-panel": [
+      "zz-cardcmp",
+      "settings-development--panel",
+      "430x515+505+193"
+    ],
+    "sab-today": [
+      "zz-cardcmp",
+      "settings-about--today",
+      "430x600+505+150"
+    ],
+    "sab-well": [
+      "zz-cardcmp",
+      "settings-about--well",
+      "430x600+505+150"
+    ],
+    "sab-panel": [
+      "zz-cardcmp",
+      "settings-about--panel",
+      "430x600+505+150"
+    ],
+    "pc-today": [
+      "zz-cardcmp",
+      "preferences-config--today",
+      "430x600+505+150"
+    ],
+    "pc-well": [
+      "zz-cardcmp",
+      "preferences-config--well",
+      "430x600+505+150"
+    ],
+    "pc-panel": [
+      "zz-cardcmp",
+      "preferences-config--panel",
+      "430x600+505+150"
+    ],
+    "sks-today": [
+      "zz-cardcmp",
+      "settings-keyboard-shortcuts--today",
+      "430x475+505+215"
+    ],
+    "sks-well": [
+      "zz-cardcmp",
+      "settings-keyboard-shortcuts--well",
+      "430x475+505+215"
+    ],
+    "sks-panel": [
+      "zz-cardcmp",
+      "settings-keyboard-shortcuts--panel",
+      "430x475+505+215"
+    ],
+    "sbf-today": [
+      "zz-cardcmp",
+      "settings-buddy-floater--today",
+      "350x215+545+344"
+    ],
+    "sbf-well": [
+      "zz-cardcmp",
+      "settings-buddy-floater--well",
+      "350x215+545+344"
+    ],
+    "sbf-panel": [
+      "zz-cardcmp",
+      "settings-buddy-floater--panel",
+      "350x215+545+344"
+    ],
+    "sdo-today": [
+      "zz-cardcmp",
+      "settings-donate--today",
+      "350x230+545+336"
+    ],
+    "sdo-well": [
+      "zz-cardcmp",
+      "settings-donate--well",
+      "350x230+545+336"
+    ],
+    "sdo-panel": [
+      "zz-cardcmp",
+      "settings-donate--panel",
+      "350x230+545+336"
+    ],
+    "ag-today": [
+      "zz-cardcmp",
+      "assistant-general--today",
+      "830x710+305+95"
+    ],
+    "ag-well": [
+      "zz-cardcmp",
+      "assistant-general--well",
+      "830x710+305+95"
+    ],
+    "ag-panel": [
+      "zz-cardcmp",
+      "assistant-general--panel",
+      "830x710+305+95"
+    ],
+    "ac-today": [
+      "zz-cardcmp",
+      "assistant-claude--today",
+      "830x710+305+95"
+    ],
+    "ac-well": [
+      "zz-cardcmp",
+      "assistant-claude--well",
+      "830x710+305+95"
+    ],
+    "ac-panel": [
+      "zz-cardcmp",
+      "assistant-claude--panel",
+      "830x710+305+95"
+    ],
+    "al-today": [
+      "zz-cardcmp",
+      "assistant-local--today",
+      "830x710+305+95"
+    ],
+    "al-well": [
+      "zz-cardcmp",
+      "assistant-local--well",
+      "830x710+305+95"
+    ],
+    "al-panel": [
+      "zz-cardcmp",
+      "assistant-local--panel",
+      "830x710+305+95"
+    ],
+    "ap-today": [
+      "zz-cardcmp",
+      "assistant-permissions--today",
+      "830x710+305+95"
+    ],
+    "ap-well": [
+      "zz-cardcmp",
+      "assistant-permissions--well",
+      "830x710+305+95"
+    ],
+    "ap-panel": [
+      "zz-cardcmp",
+      "assistant-permissions--panel",
+      "830x710+305+95"
+    ],
+    "asp-today": [
+      "zz-cardcmp",
+      "assistant-specialists--today",
+      "830x710+305+95"
+    ],
+    "asp-well": [
+      "zz-cardcmp",
+      "assistant-specialists--well",
+      "830x710+305+95"
+    ],
+    "asp-panel": [
+      "zz-cardcmp",
+      "assistant-specialists--panel",
+      "830x710+305+95"
+    ],
+    "se-today": [
+      "zz-cardcmp",
+      "sync-error--today",
+      "430x600+505+150"
+    ],
+    "se-well": [
+      "zz-cardcmp",
+      "sync-error--well",
+      "430x600+505+150"
+    ],
+    "se-panel": [
+      "zz-cardcmp",
+      "sync-error--panel",
+      "430x600+505+150"
+    ],
+    "so-today": [
+      "zz-cardcmp",
+      "sync-oversize-open--today",
+      "430x600+505+150"
+    ],
+    "so-well": [
+      "zz-cardcmp",
+      "sync-oversize-open--well",
+      "430x600+505+150"
+    ],
+    "so-panel": [
+      "zz-cardcmp",
+      "sync-oversize-open--panel",
+      "430x600+505+150"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-drawer",
+      "surface": "Settings",
+      "path": "Click the gear icon",
+      "headline": "Which card look should the Settings menu's own list use?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sd-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sd-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sd-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ],
+      "notice": "This list has no boxed cards today, so both new looks may look the same here \u2014 it is shown anyway for completeness."
+    },
+    {
+      "id": "S-account",
+      "surface": "Settings \u2192 Account",
+      "path": "Settings, then Account",
+      "headline": "Which card look fits the Account screen?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sa-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sa-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sa-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-appearance",
+      "surface": "Settings \u2192 Appearance",
+      "path": "Settings, then Appearance",
+      "headline": "Which card look fits the Appearance screen's cards?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sap-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sap-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sap-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-sound",
+      "surface": "Settings \u2192 Sound & Notifications",
+      "path": "Settings, then Sound",
+      "headline": "Which card look fits the Sound screen?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "ss-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "ss-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "ss-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-backup-sync",
+      "surface": "Settings \u2192 Backup & Sync",
+      "path": "Settings, then Backup & Sync",
+      "headline": "Which card look fits Backup & Sync's cards, including the error notice?",
+      "notice": "This is the card look you already liked on this screen \u2014 it becomes every card's look, not just this one.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sbs-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sbs-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps. The error notice keeps its red tint.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sbs-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps. The error notice keeps its red tint.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-remote-access",
+      "surface": "Settings \u2192 Remote Access",
+      "path": "Settings, then Remote Access",
+      "headline": "Which card look fits Remote Access?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sra-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sra-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sra-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-development",
+      "surface": "Settings \u2192 Development",
+      "path": "Settings, then Development",
+      "headline": "Which card look fits the Development screen, and does its edge spacing now match its neighbors?",
+      "notice": "This screen's content used to sit twice as far from the edge as every other screen; both new looks also fix that.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sdev-today",
+          "summary": "This screen's own mix of card looks and its doubled edge spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sdev-well",
+          "summary": "Every card becomes one solid dark box; the edge spacing now matches every other screen.",
+          "measured": "12 px corners, 16 px edge spacing"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sdev-panel",
+          "summary": "Every card becomes one solid lighter box; the edge spacing now matches every other screen.",
+          "measured": "12 px corners, 16 px edge spacing"
+        }
+      ]
+    },
+    {
+      "id": "S-about",
+      "surface": "Settings \u2192 About",
+      "path": "Settings, then About",
+      "headline": "Which card look fits the About screen?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sab-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sab-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sab-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-preferences",
+      "surface": "Claude Code Preferences",
+      "path": "Type /config in the message box",
+      "headline": "Which card look fits the Preferences screen?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pc-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "pc-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "pc-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-keyboard",
+      "surface": "Settings \u2192 Keyboard Shortcuts",
+      "path": "Settings, then Keyboard Shortcuts",
+      "headline": "Which card look fits the Keyboard Shortcuts screen?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sks-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sks-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sks-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-buddy",
+      "surface": "Settings \u2192 Buddy Floater",
+      "path": "Settings, then Buddy Floater",
+      "headline": "Which card look fits the Buddy Floater screen?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sbf-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sbf-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sbf-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-donate",
+      "surface": "Settings \u2192 Donate",
+      "path": "Settings, then Donate",
+      "headline": "Which card look fits the Donate screen, and does its edge spacing now match its neighbors?",
+      "notice": "This screen's content used to sit further from the edge than every other screen; both new looks also fix that.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "sdo-today",
+          "summary": "This screen's own mix of card looks and its wider edge spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "sdo-well",
+          "summary": "Every card becomes one solid dark box; the edge spacing now matches every other screen.",
+          "measured": "12 px corners, 16 px edge spacing"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "sdo-panel",
+          "summary": "Every card becomes one solid lighter box; the edge spacing now matches every other screen.",
+          "measured": "12 px corners, 16 px edge spacing"
+        }
+      ]
+    },
+    {
+      "id": "S-asst-general",
+      "surface": "Settings \u2192 Assistant settings \u2192 General",
+      "path": "Settings, then Assistant settings",
+      "headline": "Which card look fits Assistant settings' General page?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "ag-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "ag-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "ag-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-asst-claude",
+      "surface": "Settings \u2192 Assistant settings \u2192 Cloud providers",
+      "path": "Settings, then Assistant settings, then Cloud providers",
+      "headline": "Which card look fits the Claude Code provider card?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "ac-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "ac-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "ac-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-asst-local",
+      "surface": "Settings \u2192 Assistant settings \u2192 Local models",
+      "path": "Settings, then Assistant settings, then Local models",
+      "headline": "Which card look fits Local models' cards and notices?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "al-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "al-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps. Notices keep their tint.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "al-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps. Notices keep their tint.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-asst-permissions",
+      "surface": "Settings \u2192 Assistant settings \u2192 Permissions",
+      "path": "Settings, then Assistant settings, then Permissions",
+      "headline": "Which card look fits the Permissions list, including its nested list of rows?",
+      "notice": "Today this list has a box inside a box; both new looks flatten the inner box away.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "ap-today",
+          "summary": "This screen's own mix of card looks, including a box nested inside another box."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "ap-well",
+          "summary": "One solid dark card holds the whole list; the nested box is gone.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "ap-panel",
+          "summary": "One solid lighter card holds the whole list; the nested box is gone.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-asst-specialists",
+      "surface": "Settings \u2192 Assistant settings \u2192 Specialists",
+      "path": "Settings, then Assistant settings, then Specialists",
+      "headline": "Which card look fits the Specialists list?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "asp-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "asp-well",
+          "summary": "Every card becomes one solid dark box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "asp-panel",
+          "summary": "Every card becomes one solid lighter box with a thin border, no glass, and matching gaps.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-sync-error",
+      "surface": "Settings \u2192 Backup & Sync, when a sync fails",
+      "path": "Settings, then Backup & Sync, while a sync has failed",
+      "headline": "Which card look fits a sync error notice?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "se-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "se-well",
+          "summary": "Every card becomes one solid dark box; the error notice keeps its own red tint.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "se-panel",
+          "summary": "Every card becomes one solid lighter box; the error notice keeps its own red tint.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "S-sync-oversize",
+      "surface": "Settings \u2192 Backup & Sync, a conversation too big to sync",
+      "path": "Settings, then Backup & Sync, with the too-big-to-sync notice opened",
+      "headline": "Which card look fits an opened, too-big-to-sync notice?",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "so-today",
+          "summary": "This screen's own mix of card looks and spacing, unchanged."
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "crop": "so-well",
+          "summary": "Every card becomes one solid dark box; the notice keeps its own tint.",
+          "measured": "12 px corners, 16 px gaps"
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "crop": "so-panel",
+          "summary": "Every card becomes one solid lighter box; the notice keeps its own tint.",
+          "measured": "12 px corners, 16 px gaps"
+        }
+      ]
+    },
+    {
+      "id": "Q-FINAL",
+      "words": true,
+      "surface": "Every Settings menu",
+      "path": "Anywhere Settings shows a card",
+      "headline": "Which card look should every Settings menu use from now on?",
+      "today": "Each Settings screen currently uses its own mix of card boxes, borders, and amounts of see-through, so screens look like they were designed by different people.",
+      "problem": "Nothing ties the screens together \u2014 different corner styles, different amounts of glass, and different gaps between things make the app feel inconsistent from menu to menu.",
+      "proposal": "Every settings card, in every menu shown above, would use ONE look \u2014 either the dark card or the light card you just saw \u2014 with the same spacing everywhere.",
+      "options": [
+        {
+          "id": "dark",
+          "label": "Dark card",
+          "pros": [
+            "Matches the look of the Backup & Sync card you already liked",
+            "Feels the least different from how Settings looks today"
+          ],
+          "cons": [
+            "In the darkest theme, this card's own color is exactly the same as the page behind it, so it depends entirely on its thin border to read as a card at all"
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Light card",
+          "recommended": true,
+          "pros": [
+            "Its color is different from the page behind it in every theme, including the darkest one, so it always reads as a card by its color, not only its outline",
+            "Still solid, with no see-through glass anywhere"
+          ],
+          "cons": [
+            "A slightly bigger visual change from how Backup & Sync looks today, since its own card gets a touch lighter"
+          ]
+        },
+        {
+          "id": "neither",
+          "label": "Neither \u2014 keep looking",
+          "pros": [
+            "No commitment yet if neither one feels right"
+          ],
+          "cons": [
+            "The inconsistency across Settings menus stays until something is chosen"
+          ]
+        }
+      ]
+    }
+  ]
+}
