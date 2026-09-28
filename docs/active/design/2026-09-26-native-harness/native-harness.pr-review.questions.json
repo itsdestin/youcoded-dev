@@ -1,0 +1,338 @@
+{
+  "title": "Native assistant fixes — decisions from the PR review",
+  "key": "native-harness-pr-review-questions",
+  "out": "native-harness.pr-review.questions.html",
+  "steps": [
+    {
+      "id": "P-1",
+      "page": "Messages you send while the assistant is working",
+      "intro": "What happens to a message you type while the assistant is still busy with a task."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "Typing a message while the assistant is still working",
+      "headline": "When should a message you send mid-task reach the assistant?",
+      "today": "In the pending update, your message is picked up before the assistant's next action. Every action it had already lined up but not started is dropped and shows as a \"Not run\" card.",
+      "problem": "Even a small message like \"thanks\" throws away work the assistant already planned. It then has to plan again, which is slower and costs more on paid models. No other assistant we looked at (Claude Code, Codex, pi, OpenCode, Hermes, Cursor) drops planned actions this way.",
+      "proposal": "Pick when your message should be seen.",
+      "options": [
+        {
+          "id": "after-batch",
+          "label": "After its current batch",
+          "summary": "The assistant finishes the actions it already lined up, then reads your message before planning its next move. This is what the other assistants do.",
+          "pros": [
+            "Nothing it planned is thrown away, so no wasted time or cost.",
+            "No confusing \"Not run\" cards in the chat.",
+            "Your Cancel and Edit buttons get a few seconds to work (see question 3)."
+          ],
+          "cons": [
+            "If the batch includes something slow, your message waits for all of it.",
+            "A correction like \"stop, wrong file\" still waits until the batch finishes. Stop still works instantly."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "before-each",
+          "label": "Before each action",
+          "summary": "Keep the pending behaviour: your message is picked up right away and every unstarted action is dropped.",
+          "pros": [
+            "Fastest reaction to a correction.",
+            "Already built and tested."
+          ],
+          "cons": [
+            "Any message, even \"thanks\", cancels planned work.",
+            "\"Not run\" cards appear in the chat.",
+            "Queued messages are picked up almost instantly, so Cancel and Edit rarely work."
+          ]
+        },
+        {
+          "id": "picker",
+          "label": "Let me choose each time",
+          "summary": "Two ways to send: \"steer now\" (like the current behaviour) or \"send after it finishes\" (like before). OpenCode, pi and Claude Code offer this.",
+          "pros": [
+            "You decide how urgent each message is.",
+            "Proven in other apps."
+          ],
+          "cons": [
+            "You turned down a second send option twice earlier in this project as tedious.",
+            "One more control in the message box to learn."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "surface": "Chat",
+      "path": "The \"keep going?\" check during long tasks",
+      "headline": "Should the \"keep going?\" count start over when your message joins a task?",
+      "today": "During a long task the assistant stops and asks \"keep going?\" after a set number of steps without you. Before this update, every message you sent started a new task, so the count started over.",
+      "problem": "Now your message joins the task already running, and the count does not start over. After a long task where you chipped in, you can be asked \"keep going?\" sooner than makes sense, even though you were clearly involved.",
+      "proposal": "Pick whether chipping in resets the count.",
+      "options": [
+        {
+          "id": "reset",
+          "label": "Start the count over",
+          "pros": [
+            "Chipping in counts as being involved, as it did before this update.",
+            "OpenCode does exactly this, and has a test for it."
+          ],
+          "cons": [
+            "Someone who keeps sending messages keeps putting the check off. It is a pace check, not a security lock, so the risk is small."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep counting",
+          "pros": [
+            "The check always comes at the same point in a long task."
+          ],
+          "cons": [
+            "It can ask \"keep going?\" moments after you just told it what to do."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Chat",
+      "path": "The strip of waiting messages above the message box",
+      "headline": "How should you take back or change a message that is still waiting?",
+      "today": "A message sent while the assistant is busy waits in a strip above the message box, with Cancel and Edit buttons. If it has already been picked up, you see \"Already sending — too late to cancel.\"",
+      "problem": "In the pending update, messages are picked up almost instantly, so the buttons rarely work. Other assistants also let you pull a waiting message back into the text box with a key (Up arrow in Claude Code).",
+      "proposal": "Pick one or more. If you chose \"After its current batch\" in question 1, messages already wait a few seconds, so the buttons work again on their own.",
+      "pick": "several",
+      "options": [
+        {
+          "id": "buttons-only",
+          "label": "Keep the buttons as they are",
+          "pros": [
+            "Nothing new to learn.",
+            "Works well once messages wait for the batch to finish."
+          ],
+          "cons": [
+            "Still too late if the batch ends just after you send."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "up-arrow",
+          "label": "Up arrow pulls it back",
+          "summary": "With the message box empty, Up arrow moves the newest waiting message back into the box to edit.",
+          "pros": [
+            "Same habit as Claude Code, which many people already use.",
+            "Hands stay on the keyboard."
+          ],
+          "cons": [
+            "A hidden shortcut; people who don't know it never benefit.",
+            "Up arrow currently scrolls the chat when you are not typing, so the two need to fit together."
+          ]
+        },
+        {
+          "id": "grace",
+          "label": "A short wait before pickup",
+          "summary": "A new waiting message is held for about 2 seconds before it can be picked up.",
+          "pros": [
+            "Time to catch a typo, whatever the assistant is doing."
+          ],
+          "cons": [
+            "Every message you send mid-task reaches the assistant 2 seconds later."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-2",
+      "page": "Instruction files and rules",
+      "intro": "How the assistant fits your instruction files and rules into small models."
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "Instruction files (CLAUDE.md / AGENTS.md) from your project and the folders above it",
+      "headline": "When instruction files don't all fit, which should get the most room?",
+      "today": "At the start of a chat the assistant now reads an instruction file from your project folder and from every folder above it. They share one space limit, split evenly.",
+      "problem": "On small local models, your project's own file, the most specific and usually most relevant, gets the same small share as a broad file from a parent folder, so it is cut shorter than before. On cloud models there is room for everything, so nothing changes.",
+      "proposal": "Pick how the space is shared. Only small local models are affected.",
+      "options": [
+        {
+          "id": "floor-then-nearest",
+          "label": "Headings first, then your project",
+          "summary": "Every file keeps at least its section headings. Leftover space goes to your project's file first, then outward.",
+          "pros": [
+            "Your project's file gets full detail whenever it can.",
+            "Broad files, which often hold safety rules, never vanish; their headings always show.",
+            "No other assistant does better: Codex drops whole files once full, which can remove your project's file entirely."
+          ],
+          "cons": [
+            "Broad files can be cut down to headings only on the smallest models."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "even",
+          "label": "Split evenly",
+          "summary": "Keep the pending behaviour.",
+          "pros": [
+            "Already built; every file is treated the same."
+          ],
+          "cons": [
+            "Your project's own file loses room to folders above it."
+          ]
+        },
+        {
+          "id": "nearest-only",
+          "label": "Your project takes what it needs",
+          "summary": "Your project's file is filled first, with no minimum kept for broader files.",
+          "pros": [
+            "Most detail for the file most relevant to the work."
+          ],
+          "cons": [
+            "A big project file can push broader files, safety rules included, out entirely."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-5",
+      "words": true,
+      "surface": "Chat",
+      "path": "When a small model tries to change a file that has project rules",
+      "headline": "What should happen when a small model is about to edit a file whose rules don't fit?",
+      "today": "Before its first change to a file that has project rules, the assistant is shown those rules. If several apply at once and they don't fit a small model, the change is refused and the task ends.",
+      "problem": "The only explanation is inside a collapsed action card, and the assistant never says anything. The refusal tells it to open and read the rule file, but even if it does, the code still refuses. This is realistic on small models in projects with many rules, like this one.",
+      "proposal": "Pick what should happen instead.",
+      "options": [
+        {
+          "id": "read-and-respond",
+          "label": "Let it read, then continue",
+          "summary": "If the assistant opens the rule file itself, that counts as seeing the rule. The task no longer ends abruptly: the assistant can read the rule or explain in plain words. A limit stops it retrying the same edit without reading.",
+          "pros": [
+            "Small models can still edit files, just one step slower.",
+            "You always get an explanation in the chat, not a hidden card.",
+            "Matches the earlier decision: show new guidance, then let the assistant reconsider."
+          ],
+          "cons": [
+            "An extra step, and a little extra cost, when this happens."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "explain-only",
+          "label": "Keep refusing, but explain",
+          "summary": "The change is still refused, but the assistant tells you why and suggests a model with more room.",
+          "pros": [
+            "Rules are never followed half-read.",
+            "Simple."
+          ],
+          "cons": [
+            "Small models can't edit files in projects with many rules."
+          ]
+        },
+        {
+          "id": "as-is",
+          "label": "Keep it as it is",
+          "pros": [
+            "Already built and tested."
+          ],
+          "cons": [
+            "The task stops silently, with the reason hidden in a card."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "What the assistant was given",
+      "path": "A folder containing both AGENTS.md and CLAUDE.md",
+      "headline": "When a folder has both instruction files, should the assistant also be told one was skipped?",
+      "today": "Only one instruction file per folder is used; AGENTS.md wins over CLAUDE.md. The panel now says \"CLAUDE.md here not used\". OpenCode picks the same way; Claude Code uses CLAUDE.md.",
+      "problem": "You can see the skipped file in the panel, but the assistant can't. If CLAUDE.md held something important, the assistant has no idea it exists.",
+      "proposal": "Pick whether the assistant is told too.",
+      "options": [
+        {
+          "id": "panel-only",
+          "label": "Panel only",
+          "summary": "Keep what is built: you see it, the assistant doesn't.",
+          "pros": [
+            "No extra words sent to the model.",
+            "Rare: most folders have only one of the two files."
+          ],
+          "cons": [
+            "The assistant can't tell you about, or open, a file it doesn't know exists."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "tell-assistant",
+          "label": "Tell the assistant too",
+          "summary": "One short line in its instructions names the skipped file, so it can open it if needed.",
+          "pros": [
+            "Nothing is hidden from the assistant."
+          ],
+          "cons": [
+            "A line of space used on every chat in that folder, including on small models."
+          ]
+        },
+        {
+          "id": "read-both",
+          "label": "Use both files",
+          "pros": [
+            "Nothing is skipped."
+          ],
+          "cons": [
+            "Often the two files are copies of each other, so it would read the same thing twice and use double the space."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-3",
+      "page": "Re-reading files",
+      "intro": "Speed versus certainty when the assistant looks at a file again."
+    },
+    {
+      "id": "Q-7",
+      "words": true,
+      "surface": "Chat",
+      "path": "When the assistant opens a file it already opened earlier",
+      "headline": "How should the assistant check whether a file changed since it last opened it?",
+      "today": "If the assistant re-opens the same part of an unchanged file, it is told \"you already have this\" instead of getting a second copy. The pending update reads the whole file every time to be sure. Before, it trusted the file's \"last modified\" time, which some tools can leave unchanged even when the content changes.",
+      "problem": "Reading the whole file every time is always right, but slower on big files. The old way was fast, but could wrongly say \"unchanged\".",
+      "proposal": "Pick the balance.",
+      "options": [
+        {
+          "id": "fast-then-full",
+          "label": "Quick check, full read if needed",
+          "summary": "On Mac and Linux, first compare details the system keeps that ordinary tools can't fake (change time, size, file ID). If all match, say \"unchanged\"; otherwise read the whole file. Windows always reads the whole file, because those details aren't reliable there.",
+          "pros": [
+            "As fast as before in the usual case.",
+            "As safe as the new version on Windows, and nearly as safe elsewhere.",
+            "File edits keep their strict full check either way."
+          ],
+          "cons": [
+            "Very small chance on Mac/Linux of a wrong \"unchanged\", far smaller than before this update."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "always-full",
+          "label": "Always read the whole file",
+          "summary": "Keep the pending behaviour.",
+          "pros": [
+            "Never wrong."
+          ],
+          "cons": [
+            "Slower on big files the assistant re-opens often."
+          ]
+        }
+      ]
+    }
+  ]
+}
