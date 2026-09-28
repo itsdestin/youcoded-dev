@@ -5,6 +5,51 @@ contract: docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json 
 handoff: docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 related: docs/roadmap/files.md → "Document comments"
 changelog:
+  - 2026-09-27: revised after review 1 of the xlsx threaded-comments redesign
+    (docs/active/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-1.md) — 12 findings,
+    11 accepted and fixed here, 1 informational/already-handled (see the review's own per-finding
+    "Triage:" lines for the reasoning behind each). **F1 (High, the one correctness-risk finding):**
+    the app-level thread id was a positional ordinal (`xt-{sheetId}-{cell}-{n}`, `n` by ascending
+    `dT` among that cell's CURRENT roots) that only this app's own writes were shown to keep stable
+    — a foreign edit (a colleague, in real Excel, editing a shared multi-thread cell between two of
+    this app's own calls) could silently reshuffle which real thread an already-issued id names,
+    misdirecting a reply/resolve/move at the wrong colleague's comment with no error. Fixed: the id
+    now embeds the thread's own real GUID (`xt-{sheetId}-{cell}-{GUID}`), resolved by a hinted-`ref`
+    lookup first, then a full-workbook fallback scan, then `'comment-not-found'` — never positional
+    guessing (§4.2, §4.3, §4.3a). **F2 (Medium): three "confirmed directly against real files"
+    claims in §4.2 did not survive independent re-verification** — the `N`-numbering claim ("only
+    sheets 1 and 5 have comments") was based on inspecting 2 of 9 commented sheets and both the
+    original claim and a natural "1:1 to sheet position" correction are wrong; the real rule is `N`
+    incrementing sequentially among only the commented sheets, skipping gaps (re-verified against
+    every sheet's own `.rels`, corrected in §4.2 AND in the app repo's own
+    `xlsx-threaded-reference/manifest.json`, which carried the same error); the `elden` `B19` cell's
+    reply/root count ("8-reply, 5-root, 9-message") was arithmetically self-contradictory and wrong
+    — the real count, re-verified directly, is 4 replies + 5 roots = 9 (corrected in §4.2 and the
+    same manifest.json); and `mc:Ignorable="xr"` is NOT confirmed present in both fixtures'
+    `<comments>` roots — only `docling` (Mac Excel) has it, `elden` (Google Sheets) omits it and
+    Excel tolerates the omission (corrected in §4.2; this specific claim was design-doc-only, not
+    in the fixture manifest). **F3-F6, F8-F11 (Medium/Low, design gaps, all accepted as proposed or
+    with the review's own reasoning adopted):** an explicit record-count ceiling alongside the
+    existing byte ceiling (F3); the decompression-bomb guard narrows to the named parts this module
+    now actually opens, matching docx's own model, since exceljs's black-box decompression is gone
+    from xlsx entirely (F4); appending a placeholder `<v:shape>` into an EXISTING `vmlDrawing{N}.vml`
+    reuses the legacy writer's own `nextVmlShapeId` scan-max+1 rule, named explicitly rather than
+    silently inherited (F5); a brand-new `comments{N}.xml` gets `xmlns:xr`/`mc:Ignorable="xr"` (the
+    Mac-Excel convention) on creation (F6); Strict OOXML is named as an accepted, out-of-scope gap
+    (F8); deletion/post-hoc-editing of an already-posted reply or thread is stated explicitly as
+    deliberately out of scope, cross-referencing §10's existing whole-feature statement (F9); no
+    Excel-side "detached" state is needed, and why, stated as a reasoned conclusion rather than left
+    implicit (F10); T21's full write-sequence parity test names `elden-ring-completionist-
+    checklist.xlsx` explicitly as its target, adopting the reviewer's own "more surface area to
+    accidentally re-serialize" reasoning (F11). **F7 (Medium, UI gap — resolved per Destin's own
+    instruction, not a new UX-tester round):** the approved mockup predates the "multiple
+    independent threads on one cell" finding, and nothing stated what a cell with several
+    independent threads should look like. Resolved without inventing new UI or reopening a review
+    round: §4.2 now states this reuses the already-approved card list exactly as it already renders
+    several ordinary comments today (the same shape "several comments on one line of a text file"
+    already takes) — one corner mark, the same pane, no new interaction — and this specific case
+    (the real `elden` fixture's `B19`) is added to the acceptance deck's own checklist so Destin
+    confirms it before ship, rather than treated as an open design question here.
   - 2026-09-27: **Excel comments redesigned to be threaded-only** (Destin, chat: "Excel comments use
     ONLY modern threaded comments... never old-style notes as the product format"). §4 (every
     subsection), the T12/T13/T18/T19 task rows, and §9.2/§9.3's xlsx parity guard are rewritten from
@@ -1114,12 +1159,21 @@ a single-sample artifact):
 worksheet's own `threadedComment{N}.xml` via `personId` (confirmed in both real files: one
 workbook, one `person.xml`, many worksheets). `N` in `threadedComment{N}.xml`/`comments{N}.xml` is
 shared between the two for a given worksheet (never a separate counter for threaded parts) but is
-**not** tied to the worksheet's position in the workbook — confirmed directly: the Google Sheets
-file has 10 sheets, comments only on sheets 1 and 5, using `N=1` and `N=4` respectively, matching
-each sheet's OWN `.rels` file rather than a 1:1 sheet-index mapping. This app's writer follows the
-same convention the legacy-Notes writer already established (`mintPartNumber`: the smallest
-positive integer not already used by `comments{N}.xml`, `vmlDrawing{N}.vml`, OR
-`threadedComment{N}.xml` anywhere in the archive), extended to also scan the new part.
+**not** tied to the worksheet's own position/`sheetId`. **Corrected (design review 1, F2 —
+re-verified directly against every sheet's own `.rels`, not just a two-sheet sample):** the Google
+Sheets file has 10 sheets, and **9 of them** carry comments (only sheet 4, "Sorceries &
+Incantations List," has none) — `N` runs `1` through `9` in the **sequential order of sheets that
+have any comment**, skipping the one uncommented sheet's number entirely rather than reserving it:
+sheet 1 → `N=1`, sheet 2 → `N=2`, sheet 3 → `N=3`, sheet 4 → (no parts), sheet 5 → `N=4`, sheet 6 →
+`N=5`, ..., sheet 10 → `N=9`. (An earlier draft of this paragraph, based on inspecting only 2 of the
+9 commented sheets, wrongly generalized "comments only on sheets 1 and 5" as if that were the
+file's whole comment set — corrected by listing every `sheet{1..10}.xml.rels`'s own comments/
+threadedComment relationship Target directly.) This app's writer follows the same convention the
+legacy-Notes writer already established (`mintPartNumber`: the smallest positive integer not
+already used by `comments{N}.xml`, `vmlDrawing{N}.vml`, OR `threadedComment{N}.xml` anywhere in the
+archive), extended to also scan the new part — an algorithm that already produces exactly this
+"skip the gap, don't reserve it" numbering, so the correction above changes the evidence, not the
+algorithm.
 
 **Both the ThreadedComments and Person relationships are "implicit"** (MS-XLSX's own term, ISO/IEC
 29500-1 §12.3.23/12.3.24): the `Relationship` entry exists in the owning part's `.rels` file, but
@@ -1130,6 +1184,18 @@ referenced explicitly, via the worksheet's own `<legacyDrawing r:id="...">` (unc
 legacy-Notes shape §4.3 already builds). This app's writer still creates the Relationship entries —
 they have to exist for Excel to find the parts — it just never needs to stamp a matching `r:id`
 into worksheet/workbook content for the two new ones.
+
+**Out of scope, named rather than silent (design review 1, F8):** every relationship/content-type
+string this section names is the **Transitional** OOXML variant — the overwhelming majority of real
+`.xlsx` files, and the only variant either real sample here uses. **ISO/IEC 29500 Strict** (a rare
+export option, mainly seen from LibreOffice or PowerPoint) uses different URIs entirely (e.g.
+`http://purl.oclc.org/ooxml/officeDocument/relationships/worksheet` instead of `.../2006/
+relationships/worksheet`). `parseSheetsFromWorkbook`'s relationship-`Type` matching is exact-string
+— a Strict-variant `.xlsx` would silently resolve **zero** addressable sheets (no relationship in
+it matches any Transitional type string this module looks for) rather than fail with an honest
+error. Accepted as an out-of-scope gap, the same way SheetJS/POI unavailability and same-cell
+Note+thread coexistence already are (§4.1/§4.2) — a real but low-likelihood file shape this build
+does not handle, named here so it isn't rediscovered as a silent surprise later.
 
 **Element schema**, quoted verbatim from the spec's own XSD (learn.microsoft.com/en-us/openspecs/
 office_standards/ms-xlsx/adb84732-9fc8-48b6-bddc-6b0bcdaad940):
@@ -1223,10 +1289,13 @@ shape**, not a UTC-suffixed one, to match every real writer sampled rather than 
 but never-observed alternative.
 
 **`parentId`/reply flattening**: a reply's `parentId` always names the THREAD ROOT's own `id` —
-**never chained reply-to-reply**, confirmed with a 3-reply thread (`docling`) and an 8-reply,
-5-root, 9-message cell (`elden`, below) where every single reply across many days and several
-different people still points directly at its own root. `done` was never observed on a non-root
-element. This app's own writer follows the same convention: a reply's `parentId` is always the
+**never chained reply-to-reply**, confirmed with a 3-reply thread (`docling`) and a 4-reply,
+5-root, 9-message cell (`elden`, below — corrected, design review 1 F2: an earlier draft of this
+sentence said "8-reply," which is both arithmetically inconsistent with its own "9-message" total
+and factually wrong; re-counted directly from `elden-threadedComment1-B19-excerpt.xml`'s 9
+`ref="B19"` elements: 5 carry no `parentId` — the roots — and 4 carry one, always the id of one of
+those 5 roots) where every single reply across many days and several different people still points
+directly at its own root. `done` was never observed on a non-root element. This app's own writer follows the same convention: a reply's `parentId` is always the
 thread's root id, never another reply's — which is also what keeps §2's "replies ordered by `dT`"
 read-side logic a flat sort under one root, with no tree to walk.
 
@@ -1258,12 +1327,49 @@ colleague's file with several independent old threads on one cell will show seve
 at that cell in YouCoded's own pane (never merged, never dropped), but YouCoded's own "Add comment"
 on an ALREADY-commented cell always offers reply-to-the-existing-thread, never a second independent
 one — matching Excel's own everyday UI, not the looser thing a Google-Sheets-authored file can
-apparently accumulate over time. The app-level comment id reflects the READ side's own possible
-plurality — `xt-{sheetId}-{cell}-{n}`, `n` 0-indexed by ascending `dT` among that cell's roots at
-read time — so a foreign file's multiple threads on one cell each get their own stable id and their
-own card, never collapsed into one. A brand-new thread this app creates always sorts last (its `dT`
-is "now"), so this ordinal never reshuffles an already-seen thread's id out from under an in-flight
-reply/resolve/move call.
+apparently accumulate over time.
+
+**UI for N>1 threads at one cell: reuses the already-approved card list, no new UI invented
+(design review 1, F7).** The approved mockup already renders however many `PersistedComment` cards
+a file/path has, stacked in the comments pane's own scroller (`CommentsPaneFrame.tsx`) — exactly
+the shape "several comments on one line of a text file" already takes today for Word/plain-text.
+Several independent threads on one Excel cell are not a new visual case: they are several ordinary
+cards whose `selector.cell` happens to be equal, shown exactly as several `TextQuoteSelector`
+comments whose `exact` text happens to overlap are already shown — one corner mark on the cell
+(unchanged, R17), hover/click opens the SAME pane already showing every card at that highlight,
+in `dT` order like any other list. No new interaction is designed or built for this — **this
+specific case (a real multi-thread cell, using the `elden` fixture's own `B19` as the concrete
+example) is added to the acceptance deck's checklist (§8/feature-flow's own acceptance-round step)
+so Destin sees it before ship, not invented as new UI here.**
+
+**Id scheme, corrected (design review 1, F1 — a positional ordinal is not a safe mutation
+target).** An earlier draft of this paragraph identified a thread by `xt-{sheetId}-{cell}-{n}`,
+`n` a 0-indexed ordinal by ascending `dT` among that cell's CURRENT roots — and reasoned that this
+app's own writes can't reshuffle it (a new thread always sorts last). That reasoning is correct as
+far as it goes, but it only covers THIS app's own writes. It says nothing about a **foreign** edit
+(a colleague, in real Excel, using the file normally) landing between two of this app's own calls
+on a shared, multi-thread cell — and the `B19` case above proves that shape is real, not
+hypothetical: five threads, five different authors, spanning nine months. If a colleague deletes
+their own unrelated thread on `B19` between this app's `ReadFileComments` and a later `Resolve
+Comment(id)` call, every ordinal after the deleted one shifts down one position — the id the
+assistant was holding now names a **different, real thread**, and nothing in a purely positional
+scheme would catch that: the write would silently succeed against the wrong colleague's comment.
+**Fixed: the app-level id embeds the thread's own real GUID, not a position** —
+`xt-{sheetId}-{cell}-{id-without-braces}` (e.g. `xt-3-B19-36100E21-63DC-459D-8552-6830736C717E`).
+`sheetId`/`cell` are kept in the id purely as a locate-first HINT (so a mutation can jump straight
+to the right worksheet/cell without re-scanning the whole workbook in the common case) — the
+GUID segment is the only part that identifies WHICH thread. Every reply/resolve/reopen/move
+re-resolves an incoming id by: (1) opening the hinted worksheet and matching the embedded GUID
+against a root `<threadedComment>` currently at the hinted `ref`; (2) if no match there — e.g. the
+thread was itself moved to a different cell since the id was issued — falling back to a full-
+workbook scan for a root whose `id` matches the embedded GUID; (3) refusing `'comment-not-found'`
+only if NEITHER finds it, never guessing at "the nth thread currently at this ref." An ordinal MAY
+still drive **display** order in the pane (so already-open cards don't visually reorder against
+each other), but is never again the identity a mutation call targets. **Replies keep their existing
+`{rootId}-r{n}` ordinal convention, unchanged** — the same class of instability doesn't apply to
+them, because no tool in §5's table ever addresses an individual REPLY by id (`ReplyToComment`
+always takes the THREAD's — the root's — id and appends; a reply's own id is display-only, read
+back but never independently mutated), so there is no call this ordinal could silently misdirect.
 
 **`person` attributes, real-world values**: `providerId` seen: `"None"` (Mac Excel, a local/
 non-managed account), `"google-sheets"` (every person in the Google Sheets file — 57 entries
@@ -1320,8 +1426,16 @@ where `{GUID}` is byte-identical (including case) to the corresponding `threaded
 `id` — confirmed in every sample and by the spec's own text ("Legacy Comment Placeholders": author
 "MUST contain `tc={uid}`"). The same GUID is **also** written to the legacy `<comment>` element's
 own `xr:uid` attribute (`xmlns:xr="http://schemas.microsoft.com/office/spreadsheetml/2014/
-revision"`, `mc:Ignorable="xr"` declared on the `<comments>` root — both confirmed present whenever
-a `tc=` author exists). There is **no other link** — no relationship-level or `ref`-level pointer —
+revision"`), present on every `tc=`-authored `<comment>` in both fixtures. **Correction (design
+review 1, F2):** an earlier draft of this paragraph additionally claimed `mc:Ignorable="xr"` is
+"confirmed present whenever a `tc=` author exists" — re-checked directly, that is only true for
+`docling` (Mac Excel), whose `<comments>` root does declare `mc:Ignorable="xr"`. `elden`'s (Google
+Sheets) `<comments1.xml>` root uses `xr:uid` freely with **no** `mc:Ignorable` declaration at all
+(`grep mc:Ignorable` on the real file returns nothing) and Excel accepts the file anyway. This has
+no effect on the reading algorithm above — the reader only ever checks a `<comment>`'s own `tc=`-
+shaped author (and, redundantly, its `xr:uid`), never `mc:Ignorable` — but the writer's own choice
+of whether to declare it needs its own answer, not an assumption; see §4.3 step 1 (F6). There is
+**no other link** — no relationship-level or `ref`-level pointer —
 between the two parts; the spec itself says a `ref` mismatch between the two is resolved in the
 placeholder's own favor for DISPLAY, but the `tc=`/`xr:uid` pair is what identifies which real
 thread a placeholder fronts for. This app's reader identifies (and then SKIPS — §4.1) a placeholder
@@ -1343,6 +1457,20 @@ by any writer this design specifies — is deleted rather than kept as an unused
 before (`sourceLabel`'s "By rep · B4" vs plain "C4" convention, `doc-comments-store.ts:249,281,298`)
 — the format underneath changed, the anchor shape did not. `sheet-reveal.ts` already handles
 switching the visible tab when a comment on another sheet is clicked — no change needed there.
+
+**No spreadsheet equivalent of §2's "detached" state is needed, and this is a reasoned conclusion,
+not a silent omission (design review 1, F10).** §2's whole re-anchoring/detached machinery exists
+because an EDIT to the surrounding TEXT can move or delete exactly what a `TextQuoteSelector`
+pointed at, and this feature has no way to know unless it re-derives the anchor itself. A cell
+address has no equivalent problem: when a row or column is inserted or deleted, keeping every OTHER
+cell's own comments correctly repositioned (shifting `ref="C4"` to `ref="C5"`, etc.) is Excel's/
+Google Sheets' own job, already solved by the spreadsheet engine on save — this feature never edits
+sheet structure itself, only comment threads, so it never has to duplicate that bookkeeping or
+detect when it might be stale. The only way a `CellSelector` goes stale is the row/column it named
+being DELETED outright (not shifted) — already handled the same way `resolveSelector`'s existing
+cell-selector branch handles it (§2.2: "does `[data-sheet=…] [data-cell=…]` exist in the rendered
+grid" — a missing cell renders exactly like any other not-found target), so no new machinery is
+needed there either.
 
 ### 4.3 Read/write/backup, mirroring §3.3
 
@@ -1381,9 +1509,36 @@ the write path already established), resolves the target worksheet's `threadedCo
 relationships by Type (§4.2's "implicit relationship" finding — never by a referenced `r:id`),
 parses both parts with `linkedom`, matches every element by `localName` (§4.2's namespace-prefix
 finding), groups `threadedComment` elements by `(ref, id-chain)` (§4.2's multiple-threads-per-cell
-finding), and builds one `PersistedComment` per root plus one `CommentReply` per child ordered by
-`dT`. A legacy `<comment>` is inspected only far enough to classify it `tc={GUID}`-linked (skip —
-its thread is read from the real part instead) or a genuine Note (skip — §4.1, never shown).
+finding), and builds one `PersistedComment` per root (`id: xt-{sheetId}-{cell}-{root's own GUID,
+braces stripped}` — §4.2's corrected id scheme) plus one `CommentReply` per child ordered by `dT`.
+A legacy `<comment>` is inspected only far enough to classify it `tc={GUID}`-linked (skip — its
+thread is read from the real part instead) or a genuine Note (skip — §4.1, never shown).
+
+**A record-count ceiling, not just a byte ceiling (design review 1, F3).** `zip-size-guard.ts`'s
+existing guard bounds DECOMPRESSED BYTES, not element count — a crafted (or just very large)
+`threadedComment{N}.xml` of hundreds of thousands of minimal `<threadedComment ref="A1" .../>`
+roots could stay comfortably under the byte ceiling while still handing the renderer hundreds of
+thousands of `PersistedComment` records in one `list()` response, exactly the per-event-cost-growth
+shape `.claude/rules/performance.md` rule 4 and the busy-app render-budget test exist to catch. Add
+an explicit record-count ceiling alongside the existing byte ceiling — refuse (a new
+`'too-many-comments'` read error, same `<ErrorState>` treatment as `'archive-too-large'`) past a
+task-time, benchmarked threshold (a starting point, not a frozen constant, matching this design's
+own precedent for other such numbers, e.g. §4.3a's Android size guard) — rather than leaving the
+byte ceiling to silently stand in for a guarantee it was never designed to make.
+
+**The decompression-bomb guard's shape should narrow along with the reader (design review 1, F4).**
+The CURRENT two-tier guard (`checkTotalWithinCeiling` pre-scanning the WHOLE archive, plus
+`decompressBounded` as a backstop) exists specifically because the OLD exceljs-based reader was a
+black box with no hook to bound its own decompression — so the guard had to defend blindly, before
+handing bytes to something it couldn't see inside. §4.1 removes exceljs from this module entirely;
+this reader now only ever touches `threadedComment{N}.xml`, `person.xml`, and `comments{N}.xml` by
+NAME, the same "named parts only" model `docx-comments.ts`'s own guard (`checkNamedEntriesWithinCeiling`)
+already uses. **The guard narrows to match**: xlsx's read/write path checks only the parts it is
+about to open, not the whole archive — strictly cheaper, and just as safe, since there is no more
+black-box decompressor downstream to defend blindly. (Every OTHER part in the archive still
+round-trips through JSZip's own unmodified-entry passthrough without ever being decompressed by
+this module at all, so a huge, irrelevant, embedded image or other big part poses no risk this
+narrower guard needs to catch.)
 
 **Write** (rewritten): backup-before-write (unchanged, `write-pipeline.ts`), apply the surgical
 edit described in each step below, **verify-after-write with automatic rollback on failure** by
@@ -1392,6 +1547,16 @@ thread's real fields match what was requested (never a raw-string comparison —
 body is real structured XML per message, not a formatted-transcript blob, so verification compares
 parsed fields directly) — on failure, rename the backup back over the target before surfacing a
 specific `<ErrorState>`, never leave a possibly-corrupted file as the user's live document.
+
+**Resolving an incoming `commentId` (steps 2-4 below), per §4.2's corrected id scheme (design
+review 1, F1):** `xt-{sheetId}-{cell}-{GUID}` is resolved by (1) opening the hinted worksheet and
+looking for a root `<threadedComment>` at the hinted `ref` whose own `id` matches the embedded GUID;
+(2) on a miss (the thread moved since the id was issued — including by a PRIOR call in this same
+session), falling back to a full-workbook scan for a root whose `id` matches; (3) refusing
+`'comment-not-found'` only if neither finds it. **Never** "the nth thread currently at this `ref`" —
+that positional resolution is exactly what the earlier, now-corrected id scheme risked, and §4.2's
+`B19` scenario (a foreign edit reshuffling which thread sits at which ordinal between two of this
+app's own calls) is the concrete failure this guards against.
 
 1. **Add a comment**: mint a root GUID (uppercase — §4.2) and a `dT` in this app's own writer
    format; reuse-or-create this app's own `<person>` entry (§4.2's `providerId="YouCoded"`
@@ -1406,6 +1571,23 @@ specific `<ErrorState>`, never leave a possibly-corrupted file as the user's liv
    `<x:Locked>`/`<x:LockText>` — §4.2). **Refuses `'cell-has-note'`** if the target cell already
    carries a genuine (non-`tc=`) Note, and **`'cell-already-has-comment'`** if it already carries
    ANY thread (§4.2's own one-thread-per-cell write policy).
+   - **A brand-new `comments{N}.xml`'s own root gets `xmlns:xr`/`mc:Ignorable="xr"`, matching the
+     Mac-Excel convention, not Google Sheets' omission of it (design review 1, F6):** both are
+     tolerated by real Excel (§4.2's F2 correction confirms Google Sheets omits it and Excel still
+     opens the file), but this app's writer follows the more spec-literal of the two observed
+     conventions when creating a part from scratch, rather than leaving the choice to be discovered
+     mid-implementation. (An EXISTING `comments{N}.xml` this module edits in place — the append
+     case, next bullet — keeps whatever convention it already had; this only governs a part this
+     app mints itself.)
+   - **A `<v:shape>` appended into an EXISTING `vmlDrawing{N}.vml` reuses the legacy-Notes writer's
+     own id-collision rule, carried over explicitly rather than silently assumed (design review 1,
+     F5):** the real `docling` fixture proves this case isn't hypothetical — cells A1/B2 already
+     carry genuine Notes' own `<v:shape id="_x0000_sNNNN">` elements in the SAME `vmlDrawing1.vml`
+     that F7/G12's threaded placeholders also live in. A brand-new placeholder's shape id is picked
+     the same way the currently-built legacy writer's `nextVmlShapeId` already does — scan every
+     `_x0000_sNNNN` id already present in the part (Notes' and threaded placeholders' alike) and use
+     `max + 1` — never assumed to start fresh at `1025` just because this rewrite touches a
+     different part type. This is existing, working logic being carried forward, not new design.
 2. **Reply**: mint a new GUID/`dT`, reuse-or-create the replying identity's `<person>` entry, append
    a `<threadedComment parentId="{root's id}">` (never chained to another reply — §4.2) to the SAME
    `threadedComment{N}.xml`; rewrite the ONE existing legacy `<comment>` for this thread, appending a
@@ -1424,6 +1606,16 @@ specific `<ErrorState>`, never leave a possibly-corrupted file as the user's liv
 5. **Verify after write, with automatic rollback** — see above; additionally confirms the
    relationship/content-types sanity check this section already needs for the legacy pair also
    covers the two new `threadedComment`/`person` relationships and their Overrides.
+
+**Deletion, or editing an already-posted reply's own text, is out of scope here — deliberately, not
+by oversight (design review 1, F9).** The only mutating operations this section (and §3.3's Word
+equivalent) ever offers are add/reply/resolve/reopen/move; there is no "delete a reply," "delete a
+whole thread," or "edit a reply's text after posting," on either format. This matches the signed
+contract's own R6 wording ("reply, resolve, and/or repoint... nothing silently lost") — deletion and
+post-hoc editing are never promised — and §10's own "no delete-a-comment capability beyond what the
+mock already had client-side only" already states this as a whole-feature scope boundary; this is
+that same boundary, restated here so a builder or a future reviewer doesn't re-litigate "can the
+assistant undo or fix a typo in its own reply" while reading this section in isolation.
 
 **No feature-refusal denylist is needed the way the legacy-Notes rewrite still needed one for
 threaded comments specifically.** That refusal existed because a writer editing `commentsN.xml` in
@@ -1466,6 +1658,12 @@ plus new work with no legacy-Notes precedent at all:
 - **Grouping by `(ref, id-chain)`** (§4.2's multiple-independent-threads-per-cell finding) replaces
   the legacy reader's simpler "one note per cell" assumption outright — this reader must never
   assume a `ref` implies a single thread.
+- **Comment ids are GUID-embedding, not positional, identically to desktop (§4.2/§4.3, design
+  review 1, F1):** `xt-{sheetId}-{cell}-{GUID}`, resolved the SAME two-step way (hinted `ref` first,
+  then a full-workbook fallback scan, then `'comment-not-found'`) — never "the nth thread at this
+  `ref`." This is the one piece of T18/T19 where reusing an ordinal instead would have been an easy,
+  wrong shortcut distinct from anything the legacy-Notes predecessor had to get right (a Note's own
+  id was always positional-safe, since a cell can hold only one).
 - **Write mirrors §4.3's five-step shape exactly**: backup, mint GUID/`dT`, reuse-or-create the
   `providerId="YouCoded"` person entry, wire all new parts on first use, write the placeholder text
   and VML shape verbatim to §4.2's spec, move-by-`ref`-update across the whole id-chain, verify with
@@ -1903,7 +2101,7 @@ accounted for.
 | T18 | **(reopen-1, redesigned 2026-09-27, threaded-only)** Android xlsx read. Unlike the retired legacy-Notes version of this row, **the reference is already captured** — this redesign's own research saved two real, license-checked, redistributable files (`docling-xlsx-comments.xlsx`, real Excel-365-for-Mac; `elden-ring-completionist-checklist.xlsx`, real Google Sheets export) to `shared-fixtures/doc-comments/xlsx-threaded-reference/`, a stronger target than the old "capture from desktop's own writer" approach since it's cross-checked against two independent real vendors, not one app's own code. `XlsxComments.kt`'s read half parses `threadedComment{N}.xml`/`person.xml` via namespace-aware `javax.xml.parsers`, matching by `localName` (§4.2/§4.3a), into the SAME shape T12 produces | T1, T4, T12 (needs T12's shape to exist) | The reference is pre-captured from real files, not re-derived from desktop's own writer output | parse the checked-in `docling`/`elden` fixtures directly, asserting the SAME shape T12 produces from each (proves namespace-prefix-agnostic Kotlin parsing against both a default-namespace and an `x18tc:`-prefixed real file); the `elden` fixture's 5-independent-threads-on-`B19` case, none dropped; a file with only a genuine Note returns zero comments | Same namespace-prefix trap as T12's own key risk, now in Kotlin: a from-scratch XML walk matching literal tag strings instead of `localName` would silently read zero comments from the Google-Sheets-shaped real fixture while passing against the Excel-shaped one. |
 | T19 | **(reopen-1, redesigned 2026-09-27, threaded-only)** Android xlsx write: hand-construct `threadedComment{N}.xml`'s `<threadedComment>` elements (root/reply/`done`) + `person.xml`'s `<person>` entries (creating the part + workbook relationship + content-types entry on first use, reusing an existing `providerId="YouCoded"` entry rather than duplicating) + the matching legacy `commentsN.xml`/`vmlDrawingN.vml` placeholder (§4.2's exact verbatim text/whitespace, VML omitting `<x:Locked>`/`<x:LockText>`) to match T18's real-file-sourced reference; `MoveComment` updates `ref` on the root and every reply sharing its id-chain plus the one legacy comment entry, reusing the same ids (no fresh GUIDs on a move); refuses `'cell-has-note'`/`'cell-already-has-comment'`/`'destination-cell-occupied'` identically to T13; backup-before-write, verify-after-write with automatic rollback; a size guard before loading the archive fully (unchanged from the original T19's own F16) | T18 | Target shape pre-written by T18's real-file-sourced reference, not desktop's own writer output — closing the asymmetry the retired legacy-Notes T18/T19 pair had | round-trip against T12/T18's shared real-file fixtures; multi-reply formatting; a resolve/reopen never touches the legacy placeholder text; a move that relocates a thread, confirming the OLD `ref` is gone and the NEW one carries the identical text/replies/`done` state; an add/move onto an already-commented or Note-bearing cell is refused per §4.3; a verify-failure test asserts byte-identical rollback; an over-size-threshold file routes to the specific `<ErrorState>`, not an OOM; T18/T19's own re-run re-diffs against the checked-in real-file reference every time, failing loudly on drift; a multiple-independent-threads-per-cell case (the `elden` fixture's `B19`) proving a move/resolve on ONE thread never disturbs a sibling thread sharing its cell; (manual, dev-instance build) a `.xlsx` this writes opens correctly with a visible, correctly-positioned threaded comment in the desktop app's own XlsxView and in real Excel/Google Sheets if available. The release-R8 build is exercised for free by the existing `android-ci.yml` job's `assembleReleaseTest` step. | **Still the single riskiest task in the whole reopen** — hand-rolled OOXML with no library help on either platform, now with persons.xml's workbook-singular (not per-worksheet) scoping as an added way to get it wrong: creating a SECOND `person.xml`, or a per-worksheet one, produces a file real Excel doesn't open cleanly, a failure mode legacy Notes' four worksheet-scoped pieces never had. |
 | T20 | **(reopen-1)** Android half of the MCP pending-mutation queue: the byte-identical MCP asset (T9c) writes the SAME `.youcoded/comments/.pending/<uuid>.json` request shape T9b defines (**including its `path`/`newSelector` fields, review 3, F1/F2**); a Kotlin coroutine polling loop inside `SessionService` (not `FileObserver` — see §9.2) applies it via `DocxComments.kt`/`XlsxComments.kt` and writes the same result-file shape back | T9c, T17, T19 | Description; request/result JSON shape pre-written by T9b (unchanged) | queue round-trip on Android (request written → Kotlin applies it → result appears → MCP script reads it); the same bounded-timeout test as T9b using the corrected, benchmarked value, not the retracted ~3s figure (review 2, F13, never hangs); **a move request round-trips through the Android queue against T18's fixture (review 3, F2)** | Two independently-written watchers (chokidar vs. a Kotlin polling loop) for the identical request/result contract — a Kotlin-side field-naming slip is invisible until an Android build actually exercises this path. |
-| T21 | **(reopen-1)** Cross-platform golden-fixture parity test — **precisely worded (review 2, F5): desktop's CI and Android's CI are two independently-scheduled jobs (a Node process and a JVM process never run inside the same test), so this proves "both sides match a shared, checked-in golden fixture," not a live hand-off between the two processes in one run** — desktop writes a docx/xlsx **add+reply+resolve+move** sequence into a fixture copy and checks its output against the checked-in golden bytes; Android reads the SAME golden bytes and produces the identical `PersistedComment[]`; the same in reverse for a Kotlin-written fixture; both platforms' verify-after-write rollback is exercised against a deliberately-corrupted intermediate write (§9.3); **a repoint (`MoveComment`) case is included for both formats, not just add/reply/resolve (review 3, F2 — blocker: this is the ONE test that would otherwise never notice Move's absence or a cross-platform disagreement on it)** | T11, T13, T17, T19 | Description; fixtures live in `shared-fixtures/doc-comments/` (the workspace's established cross-runtime fixture convention — `shared-fixtures/artifacts/`, `shared-fixtures/attention-classifier/` are the precedent, though both of those are JSON-only; this is the first binary+JSON pair in that directory); **desktop's own CI adds a self-check that fails loudly if its freshly-generated output no longer matches the committed golden fixture (review 2, F5) — otherwise fixture staleness lets desktop's CI stay green while silently drifting from the bytes Android's still-green test actually reads** | the five-part test §9.3 describes (add, reply, resolve, **move**, and a corrupted-write rollback), run in CI on the desktop side and via `./gradlew test` on the Android side against the SAME checked-in fixture bytes; **a staleness self-check: desktop's writer output is re-diffed against the committed golden fixture on every run, failing loudly on drift instead of only on the next manual regeneration (F5)**; **the move case: desktop repoints a comment and Android reads the identical new anchor (and vice versa) for both docx and xlsx (review 3, F2)** | This is the ONLY thing that catches "each side passes its own tests but the two are subtly incompatible" — treat a passing T17/T19 alone as unproven parity, not done, until this lands. It proves both sides match a shared golden fixture, not that the two live implementations agree with each other right now (F5) — that's the best achievable structure across a Node/JVM split, not a shortcut. Without a move case (review 3, F2), this guard would stay green even if Move silently disagreed cross-platform, or wasn't implemented at all. |
+| T21 | **(reopen-1)** Cross-platform golden-fixture parity test — **precisely worded (review 2, F5): desktop's CI and Android's CI are two independently-scheduled jobs (a Node process and a JVM process never run inside the same test), so this proves "both sides match a shared, checked-in golden fixture," not a live hand-off between the two processes in one run** — desktop writes a docx/xlsx **add+reply+resolve+move** sequence into a fixture copy (the xlsx copy is `elden-ring-completionist-checklist.xlsx`, named explicitly — §9.3, review 1 F11) and checks its output against the checked-in golden bytes; Android reads the SAME golden bytes and produces the identical `PersistedComment[]`; the same in reverse for a Kotlin-written fixture; both platforms' verify-after-write rollback is exercised against a deliberately-corrupted intermediate write (§9.3); **a repoint (`MoveComment`) case is included for both formats, not just add/reply/resolve (review 3, F2 — blocker: this is the ONE test that would otherwise never notice Move's absence or a cross-platform disagreement on it)** | T11, T13, T17, T19 | Description; fixtures live in `shared-fixtures/doc-comments/` (the workspace's established cross-runtime fixture convention — `shared-fixtures/artifacts/`, `shared-fixtures/attention-classifier/` are the precedent, though both of those are JSON-only; this is the first binary+JSON pair in that directory); **desktop's own CI adds a self-check that fails loudly if its freshly-generated output no longer matches the committed golden fixture (review 2, F5) — otherwise fixture staleness lets desktop's CI stay green while silently drifting from the bytes Android's still-green test actually reads** | the five-part test §9.3 describes (add, reply, resolve, **move**, and a corrupted-write rollback), run in CI on the desktop side and via `./gradlew test` on the Android side against the SAME checked-in fixture bytes; **a staleness self-check: desktop's writer output is re-diffed against the committed golden fixture on every run, failing loudly on drift instead of only on the next manual regeneration (F5)**; **the move case: desktop repoints a comment and Android reads the identical new anchor (and vice versa) for both docx and xlsx (review 3, F2)** | This is the ONLY thing that catches "each side passes its own tests but the two are subtly incompatible" — treat a passing T17/T19 alone as unproven parity, not done, until this lands. It proves both sides match a shared golden fixture, not that the two live implementations agree with each other right now (F5) — that's the best achievable structure across a Node/JVM split, not a shortcut. Without a move case (review 3, F2), this guard would stay green even if Move silently disagreed cross-platform, or wasn't implemented at all. |
 
 **Every task in a parallel batch below gets its OWN worktree (review 2, F11)** — per
 `.claude/rules/using-git-worktrees`, never two write-capable subagents sharing one checkout.
@@ -2053,7 +2251,14 @@ combining. Split into:
   captured, not a desktop-writer-generated fixture) drives a test that: (1) desktop writes an
   add+reply+resolve+**move** sequence into a fixture copy and Android reads the result, producing
   the identical `PersistedComment[]` shape (same ids, text, `resolved`, reply order, **and the
-  relocated selector — review 3, F2**); (2) the same in reverse — Android writes, desktop reads;
+  relocated selector — review 3, F2**) — **the xlsx copy this sequence runs against is
+  `elden-ring-completionist-checklist.xlsx`, named explicitly rather than left to whichever fixture
+  is convenient when T21 is built (design review 1, F11):** its ~150 unrelated comment threads and
+  ~150 `xl/tables/*`/`xl/documenttasks/*` parts give the "never re-serialize a part this mutation
+  doesn't need" guarantee (§4.3) far more surface area to accidentally violate than `docling`'s
+  much smaller, simpler file would, making it the STRONGER test of exactly the property this
+  redesign's whole rewrite (§4.3's own opening paragraph) exists to guarantee; (2) the same in
+  reverse — Android writes, desktop reads;
   (3) both platforms' own verify-after-write logic is exercised against a deliberately-corrupted
   intermediate write, confirming both roll back to a byte-identical original; (4) **xlsx-specific,
   new for the threaded-comments redesign:** both platforms read the `elden` real-file fixture's
