@@ -114,8 +114,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `all` `confirmed` `checked 2026-09-11` `v1.3.1` → docs/active/investigations/2026-09-10-error-inventory/README.md
 
 - [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
-      sessions showed no "Start a conversation" text; Destin said ignore for now
-      `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
+      sessions showed no "Start a conversation" text; Destin said ignore for now. 2026-09-27: a
+      friend on Windows and Destin on Linux saw messages disappear MID-conversation behind
+      "Start a conversation" while Claude and the terminal still had them. Four causes fixed
+      (youcoded#582); what rebuilds the chat mid-conversation in the built app is still unknown —
+      next step is a tripwire that logs what emptied an open chat, or the friend's desktop.log
+      `chat` `desktop` `needs-verify` `checked 2026-09-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
 - [ ] Switching sessions in terminal view redraws the letters of EVERY open terminal each time
       (the black-glyph safety net in `TerminalView.tsx`). Measured 2026-09-10 with the new perf-lab
