@@ -1,0 +1,1072 @@
+{
+  "title": "One card look for every Settings menu",
+  "key": "ui-one-card",
+  "out": "one-card.review.html",
+  "images": "images/one-card.review",
+  "runs": {
+    "today": "runs/onecard3"
+  },
+  "labels": {
+    "today": "Screens"
+  },
+  "themes": [
+    "meadow-mist",
+    "light",
+    "midnight"
+  ],
+  "crops": {
+    "settings-backup-sync": [
+      "oc3",
+      "settings-backup-sync",
+      "1296x630+0+0"
+    ],
+    "sync-error": [
+      "oc3",
+      "sync-error",
+      "1296x630+0+0"
+    ],
+    "sync-oversize-open": [
+      "oc3",
+      "sync-oversize-open",
+      "1296x630+0+0"
+    ],
+    "settings-remote-access": [
+      "oc3",
+      "settings-remote-access",
+      "1296x630+0+0"
+    ],
+    "assistant-local": [
+      "oc3",
+      "assistant-local",
+      "2496x740+0+0"
+    ],
+    "assistant-claude": [
+      "oc3",
+      "assistant-claude",
+      "2496x740+0+0"
+    ],
+    "assistant-general": [
+      "oc3",
+      "assistant-general",
+      "2496x740+0+0"
+    ],
+    "assistant-permissions": [
+      "oc3",
+      "assistant-permissions",
+      "2496x740+0+0"
+    ],
+    "assistant-specialists": [
+      "oc3",
+      "assistant-specialists",
+      "2496x740+0+0"
+    ],
+    "settings-account": [
+      "oc3",
+      "settings-account",
+      "1296x630+0+0"
+    ],
+    "settings-appearance": [
+      "oc3",
+      "settings-appearance",
+      "1296x630+0+0"
+    ],
+    "settings-sound": [
+      "oc3",
+      "settings-sound",
+      "1296x630+0+0"
+    ],
+    "settings-development": [
+      "oc3",
+      "settings-development",
+      "1296x630+0+0"
+    ],
+    "settings-about": [
+      "oc3",
+      "settings-about",
+      "1296x630+0+0"
+    ],
+    "preferences-config": [
+      "oc3",
+      "preferences-config",
+      "1296x630+0+0"
+    ],
+    "settings-keyboard-shortcuts": [
+      "oc3",
+      "settings-keyboard-shortcuts",
+      "1296x630+0+0"
+    ],
+    "settings-buddy-floater": [
+      "oc3",
+      "settings-buddy-floater",
+      "1296x630+0+0"
+    ],
+    "settings-donate": [
+      "oc3",
+      "settings-donate",
+      "1296x630+0+0"
+    ],
+    "settings-drawer": [
+      "oc3",
+      "settings-drawer",
+      "996x780+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Backup & Sync",
+      "path": "Settings \u2192 Backup & Sync",
+      "crop": "settings-backup-sync",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Backup & Sync: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-2",
+      "surface": "Backup & Sync \u2014 sync failing",
+      "path": "Settings \u2192 Backup & Sync \u2014 sync failing",
+      "crop": "sync-error",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Backup & Sync \u2014 sync failing: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-3",
+      "surface": "Backup & Sync \u2014 too big to sync",
+      "path": "Settings \u2192 Backup & Sync \u2014 too big to sync",
+      "crop": "sync-oversize-open",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Backup & Sync \u2014 too big to sync: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-4",
+      "surface": "Remote Access",
+      "path": "Settings \u2192 Remote Access",
+      "crop": "settings-remote-access",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Remote Access: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-5",
+      "surface": "Local models",
+      "path": "Settings \u2192 Local models",
+      "crop": "assistant-local",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Local models: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-6",
+      "surface": "Cloud providers",
+      "path": "Settings \u2192 Cloud providers",
+      "crop": "assistant-claude",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Cloud providers: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-7",
+      "surface": "General",
+      "path": "Settings \u2192 General",
+      "crop": "assistant-general",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "General: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-8",
+      "surface": "Permissions",
+      "path": "Settings \u2192 Permissions",
+      "crop": "assistant-permissions",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Permissions: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-9",
+      "surface": "Specialists",
+      "path": "Settings \u2192 Specialists",
+      "crop": "assistant-specialists",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Specialists: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-10",
+      "surface": "Account",
+      "path": "Settings \u2192 Account",
+      "crop": "settings-account",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Account: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-11",
+      "surface": "Appearance",
+      "path": "Settings \u2192 Appearance",
+      "crop": "settings-appearance",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Appearance: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-12",
+      "surface": "Sound & Notifications",
+      "path": "Settings \u2192 Sound & Notifications",
+      "crop": "settings-sound",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Sound & Notifications: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-13",
+      "surface": "Development",
+      "path": "Settings \u2192 Development",
+      "crop": "settings-development",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Development: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-14",
+      "surface": "About",
+      "path": "Settings \u2192 About",
+      "crop": "settings-about",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "About: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-15",
+      "surface": "Preferences",
+      "path": "Settings \u2192 Preferences",
+      "crop": "preferences-config",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Preferences: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-16",
+      "surface": "Keyboard shortcuts",
+      "path": "Settings \u2192 Keyboard shortcuts",
+      "crop": "settings-keyboard-shortcuts",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Keyboard shortcuts: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-17",
+      "surface": "Buddy",
+      "path": "Settings \u2192 Buddy",
+      "crop": "settings-buddy-floater",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Buddy: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-18",
+      "surface": "Donate",
+      "path": "Settings \u2192 Donate",
+      "crop": "settings-donate",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Donate: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-19",
+      "surface": "Settings list",
+      "path": "Settings \u2192 Settings list",
+      "crop": "settings-drawer",
+      "highlight": {
+        "box": [
+          0,
+          0,
+          100,
+          100
+        ]
+      },
+      "headline": "Settings list: which card look?",
+      "notice": "Same groups in the same places; only the card look, spacing and text styles change.",
+      "options": [
+        {
+          "id": "today",
+          "label": "Today",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Several card looks in one menu."
+          ]
+        },
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "One calm look everywhere."
+          ],
+          "cons": [
+            "Blends into dark themes."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out on every theme."
+          ],
+          "cons": [
+            "Brighter."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "R-ALL",
+      "words": true,
+      "surface": "Every Settings menu",
+      "path": "Design guide",
+      "headline": "Which card look should every Settings menu use?",
+      "today": "Settings uses 8 different card looks, some see-through, with different spacing and text sizes.",
+      "problem": "Menus look like they were each styled separately and feel cluttered.",
+      "proposal": "One shared solid card for every group, the same spacing and text styles everywhere; groups stay where they are.",
+      "options": [
+        {
+          "id": "dark",
+          "label": "Solid dark card",
+          "pros": [
+            "Matches the Backup & Sync card you liked.",
+            "Calm and uniform."
+          ],
+          "cons": [
+            "On Midnight the card is the same colour as the background; only its border shows it."
+          ]
+        },
+        {
+          "id": "light",
+          "label": "Solid light card",
+          "pros": [
+            "Stands out from the background on every theme."
+          ],
+          "cons": [
+            "Brighter; slightly heavier on light themes."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "neither",
+          "label": "Neither",
+          "pros": [
+            "Nothing changes."
+          ],
+          "cons": [
+            "Menus stay inconsistent."
+          ]
+        }
+      ]
+    }
+  ]
+}
