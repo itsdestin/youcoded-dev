@@ -98,8 +98,15 @@ underline under its words. Labels over short settings groups stay plain.
 - In popups: **16px between groups, 8px between neighbouring boxes or rows** (the Settings list's gap).
 - **Nothing sits bare on the popup background.** A group is a small label and then a card holding its
   controls and text. Reference: Remote Access.
+- **A label comes first.** A popup never opens straight into a card: a small label sits above the first
+  card, and once one card has a label, every card on that page does (otherwise the next card reads as
+  filed under the one above). A label never repeats the popup's title. Short yes/no confirmations and
+  popups that open on a warning are the exception.
 
 ### Buttons
+- **Text and buttons in one box:** text on the left and buttons on the right **on one line** when they
+  fit. When they must stack, the buttons go **full width** (side by side, sharing the width) — never
+  pushed to the right under the text.
 - Shape follows the theme's control roundness (built-in themes: Round, 14px).
 - **Main action:** filled. **Everything less important beside it** (Cancel, Preview, Not
   now, Dismiss): **outlined**, never bare text.
@@ -140,6 +147,8 @@ Settings → Backup & Sync, Assistant → General, Account.
 - **Second level** — anything boxed inside a first-level card (a device list, a text box, a
   picker, a fold-out row): one shared nested look (`CARD_LEVEL_2`, the field surface). All
   second-level boxes look the same.
+- **A nested box looks the same in every state.** Its state (healthy, failing) is shown by its status
+  light, not by tinting the box.
 - **Notices** keep their own tint at any level; **buttons** look the same everywhere, and
   nothing that isn't a button looks like one.
 - **A card's own header row** (its title, hint and switch) sits in the card with no box of its
