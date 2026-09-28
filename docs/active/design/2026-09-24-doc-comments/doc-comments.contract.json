@@ -167,6 +167,54 @@
           "checkedBy": "human",
           "threshold": "pass/fail",
           "source": "doc-comments-review#Q-2"
+        },
+        {
+          "id": "R22",
+          "statement": "Moving a comment in an Excel file doesn't slow down whatever you do to it next by re-scanning the whole file.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/pending-mutation-queue.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-27-doc-comments-code-review.md#F1"
+        },
+        {
+          "id": "R23",
+          "statement": "A genuinely corrupted Word or Excel file shows a different error than one that's simply too large to open.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/docx-comments.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-27-doc-comments-code-review.md#F2"
+        },
+        {
+          "id": "R24",
+          "statement": "Opening a file with hundreds of comments keeps the comment margin responsive instead of stalling.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/CommentsMargin.test.tsx",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-27-doc-comments-code-review.md#F3"
+        },
+        {
+          "id": "R25",
+          "statement": "Leaving out a comment's location is rejected the same way on every device, never silently accepted on some.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/desktop/tests/doc-comments-ipc-handlers.test.ts",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-27-doc-comments-code-review-android.md#F1"
+        },
+        {
+          "id": "R26",
+          "statement": "On a phone or tablet, moving an Excel comment also avoids slowing down the next thing you do to it.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/app/src/test/kotlin/com/youcoded/app/doccomments/DocCommentsPendingQueueTest.kt",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-27-doc-comments-code-review-android.md#F2"
+        },
+        {
+          "id": "R27",
+          "statement": "On a phone or tablet, a comment that fails to save from a storage or permissions problem says so, not that the file is corrupted.",
+          "checkedBy": "mechanical",
+          "guard": "youcoded/app/src/test/kotlin/com/youcoded/app/doccomments/DocCommentsStoreTest.kt",
+          "threshold": "the named test passes",
+          "source": "review:../../reviews/2026-09-27-doc-comments-code-review-android.md#F3"
         }
       ]
     }
