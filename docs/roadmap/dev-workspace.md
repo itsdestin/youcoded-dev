@@ -718,8 +718,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-18`
 
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
-      then recommend deleting its worktree; it should notice unfinished edits before declaring success
-      `n/a` `needs-verify` `checked 2026-09-05`
+      then recommend deleting its worktree; it should notice unfinished edits before declaring success.
+      Reproduced 2026-09-27 on `session/release-skill-current-flow-20260927` in both workspace
+      and `youcoded-admin`: the tip is just fetched master and the remote branch does not exist,
+      but both worktrees hold uncommitted edits. `close-out.sh` printed "the work landed",
+      "remote branch deleted" and TODOs to delete both worktrees. Those verdicts refer only to
+      the branch tip, not the unfinished files; do NOT follow those deletion suggestions.
+      `n/a` `confirmed` `checked 2026-09-27`
 
 - [ ] Recheck the old cleanup handoff's remaining unused-code and bug-hunt ideas before
       treating them as completed; its retired tooling instructions are no longer a safe starting point
