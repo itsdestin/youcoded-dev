@@ -1916,15 +1916,12 @@ app's own calls) is the concrete failure this guards against.
    relationship/content-types sanity check this section already needs for the legacy pair also
    covers the two new `threadedComment`/`person` relationships and their Overrides.
 
-**Deletion, or editing an already-posted reply's own text, is out of scope here — deliberately, not
-by oversight (design review 1, F9).** The only mutating operations this section (and §3.3's Word
-equivalent) ever offers are add/reply/resolve/reopen/move; there is no "delete a reply," "delete a
-whole thread," or "edit a reply's text after posting," on either format. This matches the signed
-contract's own R6 wording ("reply, resolve, and/or repoint... nothing silently lost") — deletion and
-post-hoc editing are never promised — and §10's own "no delete-a-comment capability beyond what the
-mock already had client-side only" already states this as a whole-feature scope boundary; this is
-that same boundary, restated here so a builder or a future reviewer doesn't re-litigate "can the
-assistant undo or fix a typo in its own reply" while reading this section in isolation.
+**Superseded 2026-09-28 — see §11.** This paragraph originally said deletion and post-hoc editing
+were out of scope for BOTH formats, deliberately (design review 1, F9). Destin's own decisions
+(`doc-comments.edit-delete.questions.answers.json`) since asked for both, and §11 is the build that
+answers them — retained here only as history, not as current scope. The one piece still true: the
+ASSISTANT still gets no edit/delete tool of its own (§11's own "no new capability offered to the
+assistant" line) — only the human-facing UI/IPC surface gained these operations.
 
 **No feature-refusal denylist is needed the way the legacy-Notes rewrite still needed one for
 threaded comments specifically.** That refusal existed because a writer editing `commentsN.xml` in
@@ -2733,7 +2730,10 @@ concurrently with this revision:**
   ("Later, separate projects").
 - No live Google Drive link — R10 is "a `.docx` keeps its comments when uploaded," not a
   Drive integration.
-- No delete-a-comment capability beyond what the mock already had client-side only (§7).
+- **Superseded 2026-09-28 — see §11.** This bullet originally said "no delete-a-comment capability
+  beyond what the mock already had client-side only (§7)." Destin's own decisions
+  (`doc-comments.edit-delete.questions.answers.json`) since asked for real edit/delete, and §11 is
+  the build that answers them — retained here only as history.
 - No change to the approved UI beyond the one addition §2.3/T6 calls out (the detached-state line)
   and whatever §9's real-backend-data plumbing surfaces that the mockup's seed data already
   demonstrated (colleague names, resolved history, etc. — the cards already render these fields,
@@ -2762,3 +2762,109 @@ concurrently with this revision:**
   than silently left out. Deliberately not fixed as part of this task: an eviction policy (age-based?
   LRU? "the source file no longer exists"?) is a real product decision, not a bug fix, and is
   out of scope for a review-findings pass.
+
+## 11. Edit and delete (2026-09-28, session `comments-mock-a`)
+
+**Supersedes §4.3's "deletion... out of scope" paragraph and §10's "no delete-a-comment capability"
+bullet** — both are left in place as history, marked superseded, rather than deleted, per this
+document's own convention elsewhere. Decisions: `docs/active/design/2026-09-24-doc-comments/
+doc-comments.edit-delete.questions.answers.json`. **Anyone's comment or reply can be edited or
+deleted — no author check, unlike resolve/reopen's `by` field.** No "edited" marker is ever stored
+or shown (no new field on `PersistedComment`, no placeholder text). **The assistant gets NO new
+tool** — §5's tool table is unchanged; this is a human-facing UI/IPC capability only, reached through
+`CommentCard`/`HighlightHoverCard`'s edit/delete icons.
+
+**Four new channels**, same "all five surfaces" shape every other `docComments:*` channel already
+has (§1.6): `docComments:edit` `{path,id,text,projectRoot}`, `docComments:edit-reply`
+`{path,id,replyId,text,projectRoot}`, `docComments:delete` `{path,id,projectRoot}` (the WHOLE
+thread), `docComments:delete-reply` `{path,id,replyId,projectRoot}` (one reply only). Same
+known-root gate (`doc-comments-gate.ts`), realpath containment (§1.5), by-extension format dispatch
+(`nativeFormatFor`/`resolveNativeFormat` on the resolved path), and — for `.docx`/`.xlsx` —the same
+`write-pipeline.ts` (file-open-elsewhere step 0, backup, atomic replace, verify, automatic rollback)
+every other native mutation already goes through. **Deleting a thread's first comment deletes the
+whole thread** (decisions.json) — this is what `docComments:delete` always does; there is no
+separate "delete just the root, keep the replies" operation on any format, matching how the plain
+sidecar's `PersistedComment` already nests its own `replies[]` (removing the row removes them for
+free) and how a reply never has an existence independent of its root on either native format either.
+
+**Plain sidecar** (`doc-comments-store.ts`): `editComment`/`deleteComment`/`editReply`/`deleteReply`,
+same `mutateSidecar`/`mutateFileUnderLock` shape as every existing mutation — a plain text overwrite
+or array-filter under the lock, no new on-disk shape.
+
+**Word (.docx, `docx-comments.ts`)**: edit replaces the target `<w:comment>`'s own `<w:p>` children
+with one fresh paragraph carrying the new text (mirrors `appendCommentEntry`'s own shape) — the
+element's OWN attributes (`w:id`/`w:author`/`w:date`, and any `w:initials` a real file carries) are
+never touched, which is what "keep author/date/initials" reduces to: this function only ever looks
+at children. Edit-reply resolves the target reply by the SAME `w-{rootId}-r{n}` ordinal
+`nextReplyOrdinal` already assigns, via a new shared `collectReplyEntries` helper (also used to
+recompute `nextReplyOrdinal` itself, and by delete). Delete-thread removes the root's
+`w:commentRangeStart`/`End` + `w:commentReference` run from `document.xml` (§3.2: only the ROOT ever
+gets one — a reply never does, so there is nothing to remove from `document.xml` for any reply),
+then the root's own `<w:comment>` AND every reply chained to it via `w15:paraIdParent`
+(`collectReplyEntries`), plus each one's `commentsExtended.xml`/`commentsIds.xml`/
+`commentsExtensible.xml` entries (the ids/extensible pair is removed via its own paraId → durableId
+lookup, mirroring `recordCommentExtensionParts`'s own pairing in reverse — neither part is ever
+CREATED by a delete, same F4 rule as everywhere else this module touches them). Delete-reply removes
+just that one reply's `<w:comment>` and its own extended/ids/extensible entries, never the root's
+document.xml anchor (a reply never had one). Verify-after-write reuses `verifyOoxmlWiring` plus a
+direct marker-count check (mirroring move's own "the OLD range is gone" check) confirming ZERO
+`w:commentRangeStart`/`End`/`w:commentReference` remain for a deleted thread's id — this is also
+this task's own **"a Word delete that leaves a document Word opens"** structural pinning test
+(`docx-comments.test.ts`), which additionally re-walks every `r:id` in `document.xml` against
+`word/_rels/document.xml.rels` and confirms `[Content_Types].xml` still carries a `comments.xml`
+Override, independent of the write path's own verify step.
+
+**Excel (.xlsx, `xlsx-comments.ts`)**: edit overwrites the root `<threadedComment>`'s own `<text>`
+child in place (`ref`/`dT`/`personId`/`id`/`parentId`/`done` untouched) and — per §4.2's own
+"the placeholder is write-only, rebuilt whole, never patched" rule — rebuilds
+`xl/commentsN.xml`'s legacy placeholder body from the thread's CURRENT full transcript via a new
+`rebuildPlaceholderForRoot` helper (factored out of what `mutateReplyToXlsxComment` already did
+inline, so add/edit/delete-reply can never disagree about the placeholder's own shape). Edit-reply
+resolves the target reply the same way move/reply already do (`repliesOfRoot`, sorted by `dT`,
+indexed by the reply id's own trailing `-r{n}`) and rebuilds the placeholder the same way. Delete-
+thread reuses `removeThreadFromWorksheet` (already built for Move: removes the root+replies from
+`threadedCommentN.xml`, the one legacy `<comment>`, and the `<v:shape>`) — new for delete only is
+**`cleanupEmptyCommentPartsIfNeeded`**: if the worksheet now has ZERO comments of ANY kind left
+(no `threadedComment` element AND no legacy `<comment>` element — a genuine Note on the SAME sheet,
+never touched by this module, keeps the parts alive), it removes `commentsN.xml`/`vmlDrawingN.vml`/
+`threadedCommentN.xml` from the zip outright, strips the worksheet's own rels entries for all three,
+strips their `[Content_Types].xml` Overrides (the shared `vml` Default extension entry is left
+alone — other worksheets may still need it), and removes the worksheet's own `<legacyDrawing>`
+element — "leaving the workbook exactly as if it never had comments on that sheet" (task brief,
+pinned by `xlsx-comments.test.ts`'s own from-scratch add-then-delete-the-only-comment test, built
+against a fresh in-memory workbook via `exceljs` specifically so there is a genuine zero-comments
+starting point to prove the parts are truly GONE afterward, not merely unchanged). Never built for
+Move, which always re-inserts the thread elsewhere and so never empties a worksheet this way.
+Delete-reply removes one `<threadedComment>` reply element and rebuilds the placeholder from what's
+left, never touching the root or its own VML shape/legacy-comment existence. A reply id's ordinal is
+read the same `-r{n}`-suffix way on every format — a tiny `replyOrdinalFromId` helper, duplicated
+(not shared) across `docx-comments.ts`/`xlsx-comments.ts`/`doc-comments-store.ts` since the three
+modules otherwise share no code and the shape is one line each.
+
+**Android (Kotlin)**: `DocCommentsStore.kt`/`DocxComments.kt`/`XlsxComments.kt` mirror the TS
+functions above 1:1 (same function names — `editComment`/`deleteComment`/`editReply`/`deleteReply`
+on the sidecar store, `editDocxComment`/`editDocxReply`/`deleteDocxComment`/`deleteDocxReply` on
+Word, `editXlsxComment`/`editXlsxReply`/`deleteXlsxComment`/`deleteXlsxReply` on Excel), wired into
+`DocCommentsBridge.kt`'s `handleDocCommentsMessage` and `SessionService.kt`'s combined
+`docComments:*` `when` arm the same way `add`/`reply`/`resolve` already are — reopen-1's "full phone
+support" applies here identically (real, not `not-implemented-on-mobile`).
+
+**Renderer/mock-shim**: `docComments:edit`/`:edit-reply`/`:delete`/`:delete-reply` were designed and
+built in the renderer (`CommentCard`/`HighlightHoverCard`, `doc-comments-store.ts`'s own
+`editComment`/`editReply`/`deleteComment`/`deleteReply`) concurrently with this backend, coordinating
+through `mock-shim.ts`'s `MOCK_ONLY` registry the normal way (a row added while the UI was designed
+ahead of its backend, removed the same session once this build landed on preload/remote-shim/
+ipc-handlers/remote-server).
+
+**Tests**: `doc-comments-store.test.ts` (sidecar edit/delete, incl. "deleting the first comment
+removes every reply with it"), `docx-comments.test.ts` (edit/edit-reply/delete/delete-reply, incl.
+the structural "no dangling range markers, rel/content-type consistency" pin), `xlsx-comments.test.ts`
+(same four ops, incl. the from-scratch last-comment-cleanup pin and a five-independent-threads-on-
+one-cell delete), `doc-comments-ipc-handlers.test.ts`/`doc-comments-remote-relay.test.ts` (format
+dispatch and containment on both the desktop IPC and remote WS surfaces), `mock-shim-doc-comments.test.ts`.
+**Not extended in this pass**: the T21 golden-fixture cross-platform-parity suite (§9.3's
+`write-golden/*.json` recipe-replay mechanism plus the Kotlin `*CrossPlatformParityTest.kt` files) —
+its recipes cover add/reply/resolve/reopen/move only; adding edit/delete recipes plus regenerated
+golden bytes was judged not cheap enough to fold into this pass (its own generator scripts and the
+Kotlin-side parity tests would both need new cases) and is left as a follow-up rather than silently
+assumed covered.
