@@ -1,0 +1,23 @@
+{
+ "deck": "native-harness-send-now-review",
+ "started": "2026-09-28T22:00:21.012Z",
+ "submitted": "2026-09-28T22:04:11Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "note": "i think \"send now\" should be a dark button on the right with an up arrow, with text that expands to the left of the up arrow within the button on hover to say \"Interrupt and Send Now\"? the \"x\" icon should become a trash icon matching whatever is being used in a parallel doc comments work to delete a comment. it should sit to the left of the send now button, and should slide to the left at a fixed distance from the edge of the send now button as the text rolls out.",
+   "t": 1790633043475,
+   "v": "other",
+   "seconds": 222,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "other",
+   "t": 1790633050179,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
