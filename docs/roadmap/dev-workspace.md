@@ -865,17 +865,6 @@ seen-on is always n/a here.
       (Rosetta detection, the removed any-dmg fallback) have no machine here at all
       `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
 
-- [ ] Strip every youcoded-core step out of the release skill (`youcoded-admin`
-      `skills/release/SKILL.md`, 56 references). The repo was archived 2026-09-20, so a commit,
-      push, tag or `gh release create` against it now FAILS — the skill would die mid-release at
-      Phase 4 Step 6. A header note at the top currently says "skip every youcoded-core step",
-      which holds the next release together but leaves the two-repo flow written out below it:
-      Repository Details, Phase 1 Steps 1–7, the review-mandates and review-update-compat agents,
-      the two-CHANGELOG generation, the YOUCODED-CORE release block, Steps 8a–8c and the error
-      table. Also drop the youcoded-core rows from `setup.sh`/`workspace-start.mjs` if nothing
-      needs the checkout any more
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
-
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build
       from being stamped at all, so macOS now rejects it as a broken app rather than an unverified
