@@ -100,8 +100,8 @@ underline under its words. Labels over short settings groups stay plain.
   controls and text. Reference: Remote Access.
 - **A label comes first.** A popup never opens straight into a card: a small label sits above the first
   card, and once one card has a label, every card on that page does (otherwise the next card reads as
-  filed under the one above). A label never repeats the popup's title. Short yes/no confirmations and
-  popups that open on a warning are the exception.
+  filed under the one above). A label never repeats the popup's title. Exceptions: a small popup holding
+  a single card (Buddy), short yes/no confirmations, and popups that open on a warning.
 
 ### Buttons
 - **Text and buttons in one box:** text on the left and buttons on the right **on one line** when they

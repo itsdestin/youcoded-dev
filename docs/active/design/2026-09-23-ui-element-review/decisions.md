@@ -95,3 +95,4 @@ source is `<deck key>#<step id>`. Research behind each question: `inventory/`.
 | Platform-only controls | Say which platform: "Remove KDE helper". | — | `ui-nothing-bare-3#N3-3` |
 | Meadow Mist corner glow | Explained, not fixed: the popup is lighter than its cards, so the lighter margin wraps the cut-off cards at the bottom edge. Two tries (no side strip; shorter fade) changed nothing and were reverted. Belongs to the per-theme card/popup colour review (roadmap, themes). | Follow-up. | `ui-nothing-bare-2#N2-1` (note) |
 | Switch rows with long text | Performance uses title + switch on one line, explanation full width below. **Asked, not answered:** make it the rule for every switch with a long explanation? | Ask. | chat 2026-09-28 |
+| A label first — single-card popups | Amended: a small popup holding only one card doesn't need the label above it (Buddy's "Mascot" label removed). | — | Destin in chat, 2026-09-28 |
