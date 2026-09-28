@@ -374,6 +374,27 @@ deciding how much to invest in a fix; 4 and 5 are small, well-scoped cleanups.
   find-and-patch fix bolted onto a shared, hot permission path under concurrent-editing constraints.
   Recommend filing as a roadmap item for a dedicated pass once the concurrent docx/xlsx work lands.
 
+- **#5 (Low/info) — FIXED for a resolvable path, in a later session on this same branch
+  (2026-09-27, commit 38c74c268), once the concurrent docx/xlsx work above had landed.** The
+  format decision now runs on the RESOLVED real path (following any symlink) at every dispatch
+  site: `doc-comments-store.ts`'s new `resolveNativeFormat` (reusing `resolveSourceFilePath`'s
+  own containment realpath) replaces `nativeFormatFor` in `ipc-handlers.ts`, `remote-server.ts`
+  and the store's own `resolveWatchTarget`; the deployed Claude Code MCP script now decides from
+  `located.sourceAbsolutePath` (it already computed this value, just wasn't using it); Android's
+  `DocCommentsDispatch.kt`/`DocCommentsBridge.kt` mirror the same fix. For the two genuinely
+  constrained sites this triage's own paragraph named: `doc-comments-tools.ts`'s
+  `permissionSubject` (no ctx/cwd on its frozen signature) now resolves and gates correctly for
+  an ABSOLUTE symlinked path — the common case this triage worried about (a real write with no
+  ask) is closed for that shape — but a workspace-RELATIVE symlinked path is still judged on its
+  own string (undocumented before, now an explicit, tested, accepted limitation, not silently
+  reintroduced); `permission-auto-approve.ts` was fixed with the fail-safe direction instead of
+  resolution, exactly as this paragraph anticipated: an absolute path that is itself a symlink
+  never gets a free ride through the auto-approve hook, so it falls through to the ordinary ask
+  rather than guessing. Path containment itself is unchanged everywhere — only which BRANCH a
+  resolved path dispatches to. Tests added at every site named above (dispatch, native
+  `permissionSubject`, auto-approve, the MCP script, Android's bridge). `bash scripts/verify.sh
+  --full` and `./gradlew test -x bundleWebUi` (463 tests) both green afterward.
+
 All five findings' own fixes are in desktop/src/main/{claude-code-doc-comments-mcp.ts,
 doc-comments/pending-mutation-queue.ts, permission-auto-approve.ts, session-manager.ts,
 ipc-handlers.ts, main.ts} and desktop/src/shared/{doc-comments-mcp.ts, doc-comments-types.ts}, with
