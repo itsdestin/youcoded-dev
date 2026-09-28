@@ -719,8 +719,8 @@ seen-on is always n/a here.
 
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
       then recommend deleting its worktree; it should notice unfinished edits before declaring success.
-      Reproduced 2026-09-27 on `session/release-skill-current-flow-20260927` in both workspace
-      and `youcoded-admin`: the tip is just fetched master and the remote branch does not exist,
+      Reproduced 2026-09-27 on the release-skill session worktrees in both workspace and
+      `youcoded-admin`: the tip was just fetched master and the remote branch did not exist,
       but both worktrees hold uncommitted edits. `close-out.sh` printed "the work landed",
       "remote branch deleted" and TODOs to delete both worktrees. Those verdicts refer only to
       the branch tip, not the unfinished files; do NOT follow those deletion suggestions.
