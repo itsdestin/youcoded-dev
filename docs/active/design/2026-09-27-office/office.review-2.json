@@ -1,0 +1,109 @@
+{
+  "title": "Office — your changes, and how long versions are kept",
+  "key": "office-review-2",
+  "out": "office.review-2.html",
+  "stage": "design",
+  "images": "images/office.review-2",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs2/after"
+  },
+  "labels": {
+    "before": "Round 1",
+    "after": "Round 2"
+  },
+  "live": {
+    "worktree": "sessions/office-suite-investigation/youcoded"
+  },
+  "steps": [
+    {
+      "id": "A-inline",
+      "crop": "chat/files/edit/a-sent-plan",
+      "surface": "Session files",
+      "path": "A conversation → Session files → Garden plan.docx → Edit",
+      "headline": "Open in Office is now the briefcase in the panel's header, and a document's text fills the panel's width.",
+      "changed": "For Word, Excel and PowerPoint files the header's open-in-default-app icon becomes the Office briefcase; the slim toolbar keeps only formatting. Documents zoom so their text, not the whole paper, fits the width.",
+      "notice": "Text in the panel is about a quarter larger. The paper's blank margins run off the sides; the editor's thin scroll bars reach them.",
+      "risk": "These files lose the one-press open-in-default-app from the panel; Reveal in folder still gets you there.",
+      "measured": "51% → 65% zoom in the default panel width",
+      "highlight": {
+        "box": [
+          65,
+          4,
+          35,
+          85
+        ]
+      }
+    },
+    {
+      "id": "L-try-2",
+      "surface": "Office",
+      "path": "The practice app — Pages button, then Office",
+      "headline": "Try it yourself: open Office, open files from Recent, switch tabs, open Versions, then edit Garden plan.docx from a conversation's files.",
+      "live": {
+        "app": "default"
+      },
+      "changed": "Last round this slide showed a 404 — it was started without the practice app it needs. It is running now.",
+      "notice": "Nothing you do is saved, and a new blank file opens a sample of its kind."
+    },
+    {
+      "id": "Q-versions-keep",
+      "words": true,
+      "surface": "Office",
+      "path": "Office → a document → Versions",
+      "headline": "How long should Office keep earlier versions of a file?",
+      "today": "Office saves every change straight to the file and keeps a copy when you open it and every few minutes while you work.",
+      "problem": "Without limits those copies pile up forever and fill your disk, especially for big spreadsheets edited daily.",
+      "proposal": "Three keeping rules. The oldest copies go first whenever a limit is reached.",
+      "options": [
+        {
+          "id": "tiered-30",
+          "label": "A day, then daily",
+          "summary": "Every copy from the last 24 hours, then one per day for 30 days; at most 50 per file and 1 GB for all of Office.",
+          "pros": [
+            "Fine-grained undo for today's work, and a month of daily restore points.",
+            "Disk use has a hard ceiling."
+          ],
+          "cons": [
+            "A version from 31 days ago is gone."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "week",
+          "label": "One week",
+          "summary": "Every copy for 7 days, then deleted; 1 GB ceiling.",
+          "pros": [
+            "Simplest to explain.",
+            "Smallest disk use."
+          ],
+          "cons": [
+            "Nothing older than a week can be restored."
+          ]
+        },
+        {
+          "id": "forever",
+          "label": "Until you delete",
+          "summary": "Keep everything; a Clear button in Settings empties it.",
+          "pros": [
+            "Nothing is ever lost by accident."
+          ],
+          "cons": [
+            "Disk use grows without limit until you notice."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-history",
+      "words": true,
+      "surface": "Office",
+      "path": "Inside the editor: File → Version History",
+      "headline": "The editor's own Version History menu is hidden; Office's Versions button is the one place to see and restore versions.",
+      "changed": "OnlyOffice's history panel only works with OnlyOffice's own server storing versions. YouCoded runs no such server, so inside the app that panel would be empty or broken.",
+      "notice": "One history, in YouCoded's style, the same for documents, spreadsheets and slides.",
+      "yes": "Hide theirs",
+      "no": "Keep both"
+    }
+  ]
+}
