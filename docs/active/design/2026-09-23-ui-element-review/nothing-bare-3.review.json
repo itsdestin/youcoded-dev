@@ -1,0 +1,65 @@
+{
+ "title": "Nothing bare, round 3",
+ "key": "ui-nothing-bare-3",
+ "out": "nothing-bare-3.review.html",
+ "images": "images/nothing-bare-3.review",
+ "runs": {
+  "before": "runs/n3-before",
+  "after": "runs/n3-after"
+ },
+ "labels": {
+  "before": "You reviewed",
+  "after": "Round 3"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight"
+ ],
+ "crops": {
+  "settings__performance": [
+   "n3",
+   "settings__performance",
+   "468x636+486+132"
+  ],
+  "settings__sync": [
+   "n3",
+   "settings__sync",
+   "468x636+486+132"
+  ],
+  "settings__buddy": [
+   "n3",
+   "settings__buddy",
+   "388x282+526+309"
+  ]
+ },
+ "steps": [
+  {
+   "id": "N3-1",
+   "surface": "Performance",
+   "path": "Settings → Performance",
+   "crop": "settings__performance",
+   "headline": "Performance: fixed now?",
+   "changed": "\"Prefer power saving\" and its switch now sit alone on one line, lined up. The explanation and your detected graphics chips run full width underneath.",
+   "notice": "Same words."
+  },
+  {
+   "id": "N3-2",
+   "surface": "Backup & Sync",
+   "path": "Settings → Backup & Sync",
+   "crop": "settings__sync",
+   "headline": "Backup & Sync: fixed now?",
+   "changed": "Every card now has its own label — \"Main backup\", \"Additional backups\", and \"History\" above the Sync log — so nothing reads as filed under the card above it. The second card's own line now says \"Keep a second copy\" (with its Optional tag), since the label already says \"Additional backups\".",
+   "notice": "\"Keep a second copy\" is the only new wording."
+  },
+  {
+   "id": "N3-3",
+   "surface": "Buddy Floater",
+   "path": "Settings → Buddy Floater",
+   "crop": "settings__buddy",
+   "headline": "Buddy Floater: fixed now?",
+   "changed": "\"Remove helper\" is a full-width outlined button instead of bare text.",
+   "notice": "It only shows once the helper has been added (Linux)."
+  }
+ ]
+}

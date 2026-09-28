@@ -1,0 +1,61 @@
+{
+ "deck": "ui-nothing-bare-2",
+ "started": "2026-09-28T23:23:03.069Z",
+ "submitted": "2026-09-28T23:26:51Z",
+ "cur": 6,
+ "answers": {
+  "N2-1": {
+   "v": "yes",
+   "t": 1790637837097,
+   "note": "the bottom corners of this window in meadow mistseem to have an odd glow. any idea what that is?",
+   "seconds": 54,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N2-2": {
+   "v": "yes",
+   "t": 1790637858407,
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N2-3": {
+   "v": "other",
+   "t": 1790637900970,
+   "note": "i think prefer power saving should be aligned with the toggle, and all copy should be full width under the one line title/toggle.",
+   "seconds": 43,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N2-4": {
+   "v": "yes",
+   "t": 1790637912440,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N2-5": {
+   "v": "other",
+   "t": 1790637956355,
+   "note": "ehh no because \"additional backups\" now appear to be under \"main backups\"?",
+   "seconds": 44,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N2-6": {
+   "v": "yes",
+   "t": 1790637989008,
+   "seconds": 33,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "N2-7": {
+   "note": "need to fix remove helper button tho.",
+   "t": 1790638009882,
+   "v": "yes",
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
