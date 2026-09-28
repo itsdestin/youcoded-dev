@@ -1,0 +1,212 @@
+{
+  "_why": "Final pre-merge tour (2026-09-25): every surface the branch changes, today's app (master) beside the branch, freshly shot. Plans: tour.shots.json / tour-before.shots.json; theme preview sheets copied from runs/pv-*.",
+  "title": "Minimalist + Appearance panel: everything that changes, before merge",
+  "key": "final-tour",
+  "out": "final-tour.review.html",
+  "images": "images/final-tour.review",
+  "stage": "review",
+  "runs": {
+    "before": "runs/tour-before",
+    "after": "runs/tour-after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "After merge"
+  },
+  "themes": [
+    "dark",
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "panel-top": [
+      "tour",
+      "panel-top",
+      "440x615+505+80"
+    ],
+    "panel-custom": [
+      "tour",
+      "panel-custom",
+      "440x615+505+80"
+    ],
+    "panel-finetune": [
+      "tour",
+      "panel-finetune",
+      "440x615+505+80"
+    ],
+    "panel-bottom": [
+      "tour",
+      "panel-bottom",
+      "440x615+505+80"
+    ],
+    "sheet": [
+      "pv",
+      "sheet",
+      "1438x360+0+0"
+    ],
+    "chat": [
+      "tour",
+      "m-chat",
+      "1440x520+0+380"
+    ],
+    "files": [
+      "tour",
+      "m-files",
+      "1440x520+0+0"
+    ],
+    "games": [
+      "tour",
+      "m-games",
+      "1440x520+0+0"
+    ],
+    "projects": [
+      "tour",
+      "m-projects",
+      "1440x520+0+0"
+    ],
+    "pages": [
+      "tour",
+      "m-pages",
+      "1440x520+0+0"
+    ],
+    "terminal": [
+      "tour",
+      "m-terminal",
+      "1440x420+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "FT-1",
+      "surface": "Appearance panel",
+      "path": "Settings \u2192 Appearance",
+      "crop": "panel-top",
+      "headline": "The panel is now called Appearance and opens on a Themes box, with Layout pictures right below it.",
+      "changed": "Themes sit in a filled box about one and a half cards tall that scrolls, with Browse and Build inside it. Cards show a framed picture, a slim name strip, and a star that is always visible.",
+      "notice": "You scroll the themes inside the box; the rest of the panel stays put."
+    },
+    {
+      "id": "FT-2",
+      "surface": "Appearance panel",
+      "path": "Settings \u2192 Appearance \u2192 Additional Customizations",
+      "crop": "panel-custom",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "After merge (new)"
+      },
+      "highlight": {
+        "box": [
+          3,
+          18,
+          94,
+          80
+        ]
+      },
+      "headline": "New: Layout, message bubbles, roundness and glass \u2014 chosen once, applied to every theme.",
+      "changed": "Every choice starts on Auto, which keeps each theme as its author made it. Picking a layout also brings that layout's matching message box.",
+      "notice": "Switching themes no longer undoes your layout or bubble choice."
+    },
+    {
+      "id": "FT-3",
+      "surface": "Appearance panel",
+      "path": "Settings \u2192 Appearance \u2192 Additional Customizations \u2192 Fine-tune glass",
+      "crop": "panel-finetune",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "After merge (new)"
+      },
+      "highlight": {
+        "box": [
+          3,
+          22,
+          94,
+          50
+        ]
+      },
+      "headline": "New: Fine-tune glass sets each blur and see-through level yourself, for every theme.",
+      "changed": "Clear, Frosted and Solid are one-tap choices; Fine-tune opens sliders. Sliders that cannot apply to the current theme are greyed out with the reason shown.",
+      "notice": "The old per-theme glass tweaks are gone \u2014 anyone who had set them sees the theme's own glass again."
+    },
+    {
+      "id": "FT-4",
+      "surface": "Appearance panel",
+      "path": "Settings \u2192 Appearance, scrolled to the bottom",
+      "crop": "panel-bottom",
+      "headline": "The bottom of the panel: Effects & chat now has its own heading under Layout.",
+      "changed": "Reduce Visual Effects and Message Timestamps are unchanged, grouped under an Effects & chat heading.",
+      "notice": "Nothing new to learn here; the switches work as before."
+    },
+    {
+      "id": "FT-5",
+      "surface": "Theme previews",
+      "path": "Settings \u2192 Appearance, and the theme Marketplace",
+      "crop": "sheet",
+      "themes": [
+        "dark"
+      ],
+      "headline": "Theme pictures are now real screenshots of the app wearing each theme, not drawn mock-ups.",
+      "changed": "The 4 built-in and 8 community themes got new pictures taken from the real app (first two rows shown).",
+      "notice": "What a theme's card shows is what you get when you pick it.",
+      "risk": "Themes you build yourself still get drawn pictures (filed)."
+    },
+    {
+      "id": "FT-6",
+      "surface": "Chat screen",
+      "path": "Appearance \u2192 Layout \u2192 Minimalist",
+      "crop": "chat",
+      "headline": "The new Minimalist layout: no solid bars \u2014 the message box and status line float over the wallpaper.",
+      "changed": "Top bar, status bar and message box lose their solid backgrounds; each button gets its own soft glass.",
+      "notice": "More wallpaper shows. Nothing changes unless you pick Minimalist.",
+      "risk": "Not yet tested on Windows; checked before 1.3.1."
+    },
+    {
+      "id": "FT-7",
+      "surface": "Session Files",
+      "path": "Minimalist \u2192 files button, top right",
+      "crop": "files",
+      "headline": "Session Files in Minimalist: the drawer floats as its own glass pane.",
+      "changed": "The side drawer matches the floating style instead of a solid strip.",
+      "notice": "Same drawer, same contents; only its frame changes in Minimalist."
+    },
+    {
+      "id": "FT-8",
+      "surface": "Games",
+      "path": "Minimalist \u2192 Games button",
+      "crop": "games",
+      "headline": "Games in Minimalist: the games drawer floats like the files drawer.",
+      "changed": "The drawer gets the same floating glass pane.",
+      "notice": "Games work exactly as before."
+    },
+    {
+      "id": "FT-9",
+      "surface": "Projects",
+      "path": "Minimalist \u2192 Projects",
+      "crop": "projects",
+      "headline": "Projects in Minimalist: the page sits in one rounded glass pane over the wallpaper.",
+      "changed": "The full-page Projects screen follows the floating style.",
+      "notice": "Same buttons and lists; only the surroundings change."
+    },
+    {
+      "id": "FT-10",
+      "surface": "Pages",
+      "path": "Minimalist \u2192 Pages",
+      "crop": "pages",
+      "headline": "Pages in Minimalist: the list and the page area follow the floating style.",
+      "changed": "The Pages screen gets the same floating treatment as Projects.",
+      "notice": "Same pages, same buttons."
+    },
+    {
+      "id": "FT-11",
+      "surface": "Terminal",
+      "path": "Minimalist \u2192 switch the chat to Terminal view",
+      "crop": "terminal",
+      "headline": "The terminal view in Minimalist: the floating top bar stays, the terminal fills the pane.",
+      "changed": "The terminal keeps the floating top bar and status line.",
+      "notice": "Typing and scrolling in the terminal are unchanged."
+    }
+  ]
+}

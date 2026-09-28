@@ -1,0 +1,27 @@
+{
+ "deck": "bubble-grouping",
+ "started": "2026-09-02T08:29:52.147Z",
+ "submitted": "2026-09-02T08:31:53Z",
+ "cur": 2,
+ "answers": {
+  "B-1": {
+   "v": "yes",
+   "seconds": 43,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "yes",
+   "seconds": 8,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "B-3": {
+   "v": "yes",
+   "note": "separately, also want to see renders with multiple skills invocations at different points and sequentially, deliverables, etc",
+   "seconds": 70,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

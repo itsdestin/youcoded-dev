@@ -1,0 +1,22 @@
+{
+ "deck": "minimalist-bare-dots",
+ "started": "2026-09-23T22:41:02.184Z",
+ "submitted": "2026-09-23T22:42:27Z",
+ "cur": 1,
+ "answers": {
+  "B-1": {
+   "note": "the red is too dark. i want it to be vibrant like the green.",
+   "v": "other",
+   "seconds": 18,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "B-2": {
+   "v": "other",
+   "note": "i think i may actually want to almost make them more transparent/colorless? i think i want to kinda find a happy midpoint between the header buttons and the quick chips/status bar buttons to apply to all.",
+   "seconds": 66,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,55 @@
+id: app-prompt-show-starts-only-on-ready
+language: tsx
+severity: error
+message: >-
+  In App.tsx's promptShow handler, a session may be marked started ONLY inside
+  `if (promptShowMeansStarted(payload.promptId))`. Any other prompt:show is a
+  startup-dialog card; counting it as "started" switches the startup safety net
+  off and enables the chat box while a dialog (the multi-server MCP list) is
+  live, so typed text lands in the dialog.
+note: |
+  Second review F4 (2026-09-24): the helper was unit-tested, but reverting the
+  CALL SITE to an unconditional setInitializedSessions left every test green,
+  because no test can mount App. Two branches: (1) a setInitializedSessions call
+  inside the promptShow handler that is not under that `if`; (2) App.tsx no
+  longer contains the guarded call at all (Android would then never start).
+files:
+  - "**/src/renderer/App.tsx"
+  - "**/fixtures/app-prompt-show-starts-only-on-ready*.tsx"
+utils:
+  in-prompt-show-handler:
+    inside:
+      stopBy: end
+      kind: call_expression
+      has:
+        field: function
+        regex: "\\.promptShow$"
+  guarded:
+    inside:
+      stopBy: end
+      kind: if_statement
+      has:
+        field: condition
+        stopBy: end
+        kind: call_expression
+        regex: "^promptShowMeansStarted\\("
+rule:
+  any:
+    - kind: call_expression
+      has:
+        field: function
+        regex: "^setInitializedSessions$"
+      matches: in-prompt-show-handler
+      not:
+        matches: guarded
+    - kind: program
+      not:
+        has:
+          stopBy: end
+          kind: call_expression
+          has:
+            field: function
+            regex: "^setInitializedSessions$"
+          all:
+            - matches: in-prompt-show-handler
+            - matches: guarded

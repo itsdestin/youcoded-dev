@@ -1,25 +1,44 @@
 #!/usr/bin/env node
-// Records a scripted scene in the real renderer (UI Workbench, headless Chrome,
-// raw CDP) and encodes a looping WebM + a WebP poster for the landing page.
-// Sibling of shot.mjs — shares its Chrome flags and selector helpers through
-// cdp-helpers.mjs; the difference is Page.startScreencast instead of one
-// captureScreenshot, an interpolated mouse, and per-key typing, because a
-// recording of a cursor teleporting and text appearing all at once does not
-// look like a person using the app.
+// Records a scripted scene in the real renderer (the shoot/explore engine's
+// photo-only build, headless Chrome, raw CDP) and encodes a looping WebM + a
+// WebP poster for the landing page. Sibling of shot.mjs — shares its selector
+// helpers through cdp-helpers.mjs; the difference is Page.startScreencast
+// instead of one captureScreenshot, an interpolated mouse, and per-key typing,
+// because a recording of a cursor teleporting and text appearing all at once
+// does not look like a person using the app.
 //
-// Usage: WB_PORT=5473 CDP_PORT=10320 node record.mjs <scene.json> <outBase>
-import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync, copyFileSync } from 'node:fs';
+// The page and the browser both come from scripts/shoot/engine.mjs: build the
+// photo-only copy once (cached until source changes), serve it on a free port,
+// one private-context tab. No fixed WB_PORT/CDP_PORT and no run-workbench.sh
+// needed first. `?mode=workbench` behaves the same against the engine's build
+// as it did against the dev server — isWorkbenchMode() is DEV || VITE_WORKBENCH
+// === '1', and the engine's build sets VITE_WORKBENCH=1 — so every existing
+// scene keeps working unchanged.
+//
+// Usage: node record.mjs <scene.json> <outBase>
+//   WORKTREE=<name|branch|path>  which checkout to build+serve (default: the
+//                                checkout next to this script, same rule
+//                                shoot.mjs/build.mjs use)
+//   BASE_URL=<origin>            record the same scene against another server
+//                                entirely (a static page at two commits, a
+//                                remote build) — the scene's path and query
+//                                are kept, only the origin changes, and no
+//                                build happens. Used by record-pair.sh for
+//                                review-deck CLIP steps.
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, rmSync, writeFileSync, readFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname } from 'node:path';
-import { CHROME_FLAGS, waitForCdp, selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { selExpr, textExpr, rectOfExpr } from './cdp-helpers.mjs';
 import { runAutopilot, marksFile } from './autopilot.mjs';
+import { ensureBuild, openBrowser, resolveCheckout, serve } from '../shoot/engine.mjs';
 
+const HERE = dirname(fileURLToPath(import.meta.url));
+const WORKSPACE = resolve(HERE, '..', '..');
 const [scenePath, outBase] = process.argv.slice(2);
 if (!scenePath || !outBase) { console.error('usage: node record.mjs <scene.json> <outBase>'); process.exit(2); }
 const scene = JSON.parse(readFileSync(scenePath, 'utf8'));
-const WB_PORT = process.env.WB_PORT ?? '5473';
-const CDP_PORT = Number(process.env.CDP_PORT ?? 10320);
 const W = scene.width ?? 1440, H = scene.height ?? 900;
 // `zoom` (default 1): film the page ZOOMED IN, the way Ctrl+= does in the app —
 // the layout runs at W/zoom × H/zoom CSS px and Chrome paints it at `zoom`
@@ -30,39 +49,47 @@ const W = scene.width ?? 1440, H = scene.height ?? 900;
 // are CSS px and use the CSS size below.
 const ZOOM = scene.zoom ?? 1;
 const CW = Math.round(W / ZOOM), CH = Math.round(H / ZOOM);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// This checkout by default: the same rule shoot.mjs/build.mjs use — inside a
+// session worktree that is <worktree>/youcoded, else the main checkout.
+function defaultCheckout() {
+  const local = join(WORKSPACE, 'youcoded');
+  return existsSync(join(local, 'desktop')) ? local : resolveCheckout('');
+}
+
 // Scenes hardcode the workbench default (127.0.0.1:5473); swap it for whatever
-// port this worktree's workbench actually started on, same trick as shot.mjs's `wb()`.
+// port the engine actually served this checkout on — same trick as shot.mjs's
+// `wb()`, just against a port we picked instead of one run-workbench.sh picked.
 // ONLY that port. WHY (2026-09-11): this used to rewrite ANY 127.0.0.1 port, so a
 // scene filming a page on its own server (site-hero-cycler.json on :8765; a site
 // scroll served on :8817) silently filmed Chrome's "refused to connect" page on
 // :5473 and died as "only 1 frames" — four clips and ~10 calls before a kept
 // frame showed the error page.
-let url = scene.base.replace(/127\.0\.0\.1:5473\b/, `127.0.0.1:${WB_PORT}`);
-// BASE_URL=<origin>: record the same scene against another server entirely (a static
-// page at two commits, a remote build) — the scene's path and query are kept, only the
-// origin changes. Used by record-pair.sh for review-deck CLIP steps.
-if (process.env.BASE_URL) { const b = new URL(process.env.BASE_URL), u = new URL(scene.base); url = b.origin + u.pathname + u.search + u.hash; }
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let url = scene.base;
+let built = null; // the engine's static server for this checkout, when we built one
+if (process.env.BASE_URL) {
+  const b = new URL(process.env.BASE_URL), u = new URL(scene.base);
+  url = b.origin + u.pathname + u.search + u.hash;
+} else {
+  const checkout = process.env.WORKTREE ? resolveCheckout(process.env.WORKTREE) : defaultCheckout();
+  const dist = await ensureBuild(checkout, (m) => console.error(`[record] ${m}`));
+  built = await serve(dist);
+  url = scene.base.replace(/127\.0\.0\.1:5473\b/, `127.0.0.1:${built.port}`);
+}
 
-const profile = mkdtempSync(join(tmpdir(), 'ui-record-'));
-const chrome = spawn('google-chrome-stable', CHROME_FLAGS(W, H, CDP_PORT, profile), { stdio: 'ignore' });
-// Fix: chrome.kill() is a signal, not a wait — Chrome can still be writing its
-// own lock files in the profile dir when rmSync runs a moment later, and an
-// uncaught ENOTEMPTY there would mask the real "frames=... out=..." success
-// line already printed above it. Same guard shot.mjs uses for its profile dir.
-process.on('exit', () => { chrome.kill(); try { rmSync(profile, { recursive: true, force: true }); } catch { /* best effort */ } });
-await waitForCdp(CDP_PORT);
-// Fix: don't trust list[0] — on machines with force-installed extension
-// policies, a background_page/service_worker target for some extension can
-// come back BEFORE the real about:blank tab, and Page.navigate against a
-// background page silently does nothing (found 2026-08-27: the recorder
-// threw "MISSING [placeholder]" because it had been driving a Hangouts
-// extension background page, not the app).
-const targets = await (await fetch(`http://127.0.0.1:${CDP_PORT}/json`)).json();
-const target = targets.find((t) => t.type === 'page') ?? targets[0];
-const ws = new WebSocket(target.webSocketDebuggerUrl);
-await new Promise((r) => ws.addEventListener('open', r));
-let id = 0; const pending = new Map(); const frames = [];
+// One throw-away browser, one private tab: engine.mjs picks a free debugging
+// port, sets the Chrome flags shot.mjs/explore.mjs also use, and sweeps a
+// crashed run's leftover Chromes the next time anything here runs.
+const browser = await openBrowser({ width: W, height: H });
+const tab = await browser.newTab();
+process.on('exit', () => { try { browser.close(); } catch { /* best effort */ } try { built?.close(); } catch { /* best effort */ } });
+// `send`/`evaluate` alias the tab's CDP connection so everything below (selectors,
+// humanised input, the recording loop) is unchanged from when this dialled raw CDP itself.
+const send = (method, params = {}) => tab.send(method, params);
+const evaluate = async (expression) => tab.evaluate(expression);
+
+const frames = [];
 // Fix: wall-clock of the FIRST screencast frame is the clip's time zero — every
 // action's start/end (stamped in Date.now()) is converted to video seconds by
 // subtracting this, in marksFile below.
@@ -89,19 +116,17 @@ process.on('unhandledRejection', (err) => {
   } catch { /* best effort */ }
   console.error(err); process.exit(1);
 });
-ws.addEventListener('message', (m) => {
-  const d = JSON.parse(m.data);
-  if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id); }
-  if (d.method === 'Page.screencastFrame') {
-    if (frames.length === 0) firstFrameAt = Date.now();
-    const n = frames.length;
-    writeFileSync(join(framesDir, `f${String(n).padStart(5, '0')}.png`), Buffer.from(d.params.data, 'base64'));
-    frames.push({ n, t: d.params.metadata.timestamp });
-    send('Page.screencastFrameAck', { sessionId: d.params.sessionId });
-  }
+// Every screencast frame arrives as a Page.screencastFrame event on the tab's
+// own CDP session — engine.mjs's `tab.on` forwards every protocol event for
+// this tab, the same channel shoot.mjs would use for console errors.
+tab.on((m) => {
+  if (m.method !== 'Page.screencastFrame') return;
+  if (frames.length === 0) firstFrameAt = Date.now();
+  const n = frames.length;
+  writeFileSync(join(framesDir, `f${String(n).padStart(5, '0')}.png`), Buffer.from(m.params.data, 'base64'));
+  frames.push({ n, t: m.params.metadata.timestamp });
+  send('Page.screencastFrameAck', { sessionId: m.params.sessionId });
 });
-const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
-const evaluate = async (expression) => (await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })).result?.result?.value;
 
 // ---- selectors (shared with shot.mjs) ----
 const rectOf = async (expr) => evaluate(rectOfExpr(expr));

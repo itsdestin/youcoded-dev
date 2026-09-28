@@ -1,0 +1,38 @@
+{
+  "title": "Floating handoff notice",
+  "key": "handoff-freshness-floating-review",
+  "out": "freshness-floating.review.html",
+  "themes": ["midnight", "light"],
+  "images": "images/freshness-floating.review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/freshness-inline/focused/after",
+    "after": "../../../../scratch/lease-handoff/freshness-floating/focused/after"
+  },
+  "labels": {"before": "Previous: inside the input frame", "after": "Proposed: floating in the chat"},
+  "crops": {
+    "waiting": ["freshness", "waiting", "800x330+0+0"],
+    "incomplete": ["freshness", "incomplete", "800x330+0+0"]
+  },
+  "steps": [
+    {
+      "id": "F-8",
+      "surface": "Resuming a conversation",
+      "path": "Chat panel → floating notice",
+      "crop": "waiting",
+      "headline": "Separate from the input frame.",
+      "changed": "The syncing notice floats in the chat, styled like model loading.",
+      "notice": "You can still draft while sending waits.",
+      "risk": "UI preview only; no cross-computer transfer."
+    },
+    {
+      "id": "F-9",
+      "surface": "Handoff needs a choice",
+      "path": "Chat panel → floating notice",
+      "crop": "incomplete",
+      "headline": "Try again, on the right of the text.",
+      "changed": "Retry shares the warning’s text row.",
+      "notice": "Continue with these messages remains the secondary option.",
+      "risk": "UI preview only; ownership checks remain required."
+    }
+  ]
+}

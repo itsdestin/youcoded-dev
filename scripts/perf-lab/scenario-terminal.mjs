@@ -148,19 +148,21 @@ export async function installTerminalHelpers(cdp) {
         return rows && rows.children.length ? 'dom' : 'unknown';
       },
       /** Click the session's pill; time until its terminal is the visible one and two frames painted. */
-      switchTo: async (idx, name, sessionCount) => {
+      // idx = the session's index (what the pill click needs); termIdx = its
+      // terminal's index among the wrappers (native sessions mount none).
+      switchTo: async (idx, name, sessionCount, termIdx = idx) => {
         const t0 = performance.now();
         const before = visibleIdx();
         if (!window.__perfLab) return { ok: false, mode: 'none', reason: 'window.__perfLab is not installed' };
         const c = await window.__perfLab.switchTo(idx, name, sessionCount, false);
         if (c.mode === 'none') return { ok: false, mode: 'none', reason: c.reason, before, after: visibleIdx() };
-        const shown = await until(() => visibleIdx() === idx, 20000);
+        const shown = await until(() => visibleIdx() === termIdx, 20000);
         await raf2();
         return {
-          ok: shown && before !== idx,
+          ok: shown && before !== termIdx,
           ms: Math.round((performance.now() - t0) * 10) / 10,
           mode: c.mode, before, after: visibleIdx(),
-          reason: shown ? (before === idx ? 'that terminal was already visible — nothing switched' : null) : 'the target terminal never became the visible one within 20 s',
+          reason: shown ? (before === termIdx ? 'that terminal was already visible — nothing switched' : null) : 'the target terminal never became the visible one within 20 s',
         };
       },
     };
@@ -369,14 +371,14 @@ export const MEASURES = {
 // ---------------------------------------------------------------------------
 
 /** Open one switch's slot: atlas reading, probe mark, IPC probe installed, then the click. */
-async function openSlot(cdp, i, idx, name, sessionCount, pingMs) {
+async function openSlot(cdp, i, idx, name, sessionCount, pingMs, termIdx = idx) {
   const label = `terminal:switch-${i}`;
   const clearsPre = await call(cdp, 'h.atlasClears()');
   await mark(cdp, `${label}:start`);
   await installIpcStallProbe(cdp, { everyMs: pingMs });
   let r;
   try {
-    r = await call(cdp, `h.switchTo(${idx}, ${JSON.stringify(name)}, ${sessionCount})`);
+    r = await call(cdp, `h.switchTo(${idx}, ${JSON.stringify(name)}, ${sessionCount}, ${termIdx})`);
   } catch (err) {
     r = { ok: false, mode: 'none', reason: err.message };
   }
@@ -424,9 +426,13 @@ export async function runTerminalScenario(app, fixture, {
     const { names, sizeByName } = await openJourneySessions(cdp, fixture, { ids, warnings });
     const ptyIdx = names.map((n, i) => (sizeByName[n] === 'native' ? -1 : i)).filter((i) => i >= 0);
     if (ptyIdx.length < 2) throw new Error(`terminal: only ${ptyIdx.length} PTY-backed session(s) opened — nothing to switch between`);
+    // WHY ptyIdx and not ids (2026-09-23): native sessions mount no TerminalView,
+    // so the n-th wrapper in DOM order is the n-th PTY-backed session, and a
+    // session's terminal index is its position in ptyIdx.
+    const termOf = (idx) => ptyIdx.indexOf(idx);
     const terminals = await call(cdp, 'h.count()');
-    if (terminals !== ids.length) {
-      throw new Error(`terminal: ${terminals} TerminalView wrappers for ${ids.length} sessions — the DOM-order index rule does not hold, so every switch would be verified against the wrong terminal`);
+    if (terminals !== ptyIdx.length) {
+      throw new Error(`terminal: ${terminals} TerminalView wrappers for ${ptyIdx.length} PTY-backed sessions — the DOM-order index rule does not hold, so every switch would be verified against the wrong terminal`);
     }
 
     // ── Setup: each PTY session into terminal view, then fill it ─────────
@@ -437,9 +443,9 @@ export async function runTerminalScenario(app, fixture, {
       const sw = await cdp.evaluate(`window.__perfLab.switchTo(${idx}, ${JSON.stringify(names[idx])}, ${ids.length}, false)`);
       if (sw.mode === 'none') throw new Error(`terminal: could not bring ${names[idx]} on screen — ${sw.reason}`);
       await toggleView(cdp);
-      const shown = await call(cdp, `h.until(() => h.visibleIdx() === ${idx}, 20000)`);
+      const shown = await call(cdp, `h.until(() => h.visibleIdx() === ${termOf(idx)}, 20000)`);
       if (!shown) throw new Error(`terminal: Ctrl+\` did not put ${names[idx]} into terminal view (visible terminal index ${await call(cdp, 'h.visibleIdx()')}) — the app's view toggle did not respond`);
-      if (renderer === 'unknown') renderer = await call(cdp, `h.rendererOf(${idx})`);
+      if (renderer === 'unknown') renderer = await call(cdp, `h.rendererOf(${termOf(idx)})`);
 
       const t0 = Date.now();
       await cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(ids[idx])}, ${JSON.stringify(`${glyphCommand(glyphLines)}\r`)})`);
@@ -483,7 +489,7 @@ export async function runTerminalScenario(app, fixture, {
       // Setup ended on the LAST PTY session and this starts at the first, so
       // switch 0 always moves; every later switch goes to the next session.
       const idx = ptyIdx[i % ptyIdx.length];
-      const slot = await openSlot(cdp, i, idx, names[idx], ids.length, pingMs);
+      const slot = await openSlot(cdp, i, idx, names[idx], ids.length, pingMs, termOf(idx));
       // A switch that overran its slot closes at once, and the next slot opens
       // straight after — the slots stay contiguous either way.
       const close = startedAt + (i + 1) * switchEveryMs - Date.now();

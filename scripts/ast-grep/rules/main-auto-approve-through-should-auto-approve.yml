@@ -1,0 +1,33 @@
+id: main-auto-approve-through-should-auto-approve
+language: typescript
+severity: error
+message: >-
+  main.ts may answer a Claude Code PermissionRequest "allow" on its own ONLY
+  inside an `if` that asks shouldAutoApprove(...) (permission-auto-approve.ts),
+  and that call must exist. shouldAutoApprove is what refuses ExitPlanMode and
+  AskUserQuestion: Claude Code ignores a hook allow for them, so an auto-allow
+  there removes the card while Claude Code's own menu stays live with the send
+  gate open — a chat message starting with "2" would then pick an approve row
+  (review 2026-09-23).
+note: |
+  Whole-file rule (kind: program): fires if the call is missing, or if any
+  allow-respond sits outside such an `if`. main.ts cannot be imported into a
+  test (Electron setup at import), so this is the call-site guard; the
+  decision itself is tested in tests/permission-auto-approve.test.ts.
+files:
+  - "**/src/main/main.ts"
+  - "**/fixtures/main-auto-approve-through-should-auto-approve.ts"
+rule:
+  kind: program
+  any:
+    - not: { has: { stopBy: end, pattern: "shouldAutoApprove($$$)" } }
+    - has:
+        stopBy: end
+        pattern: "hookRelay.respond($R, { decision: { behavior: 'allow' } })"
+        not:
+          inside:
+            stopBy: end
+            kind: if_statement
+            has:
+              field: condition
+              has: { stopBy: end, pattern: "shouldAutoApprove($$$)" }

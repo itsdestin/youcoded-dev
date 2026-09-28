@@ -103,11 +103,18 @@ is not (do not go there by default). Memory: f16 KV per token from the GGUF head
 | Qwen3.6-35B-A3B | 2.6 GiB | 10.0 GiB | ~5 GiB |
 | Gemma-4-E2B | 2.2 GiB | 8.5 GiB | ~4 GiB |
 
-This is directly connected to the open 2026-08-16 memory crash: the fit estimator
-charges a flat **2 GB** for "working memory" regardless of context length
-<!-- claim: {"path": "youcoded/desktop/src/main/models/fit-estimator.ts", "contains": "OVERHEAD_BYTES = 2 \\* GB"} -->
-while Destin's 128k setting on the 27B model can need ~32 GB of it. The guard cannot be
-right until it computes KV from the model's layer/head metadata × the configured context.
+This was directly connected to the open 2026-08-16 memory crash: the fit estimator used
+to charge a flat **2 GB** for "working memory" regardless of context length, while
+Destin's 128k setting on the 27B model can need ~32 GB of it.
+
+**FIXED 2026-09-05 (`e361b778a`, T11, spec §4.3/§D2-D3).** `fit-estimator.ts` was
+rebuilt to compute KV cache from the model's own GGUF header — layer count, per-layer
+KV head count/width, sliding-window and recurrent-layer exceptions — times the
+configured context length (`kvCacheBytes()`), which is exactly what this finding asked
+for. The flat `2 GB` constant is gone from the file (`rg` returns 0 hits, re-verified
+2026-09-23); this passage is now historical and does not gate either roadmap item
+linking here (`local-models:38`, `local-models:49` — both are about the remaining
+engine-parity gaps in §4, not this arithmetic).
 
 ### 2c. Not measured here but cheap
 

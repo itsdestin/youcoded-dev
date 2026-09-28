@@ -122,14 +122,22 @@ verdict `tight` — still only a soft, dismissible warning. Four structural prob
 1. **The residency cap is a count, not a byte budget.** `MODELS_MAX = 2`
    (`engine-supervisor.ts:43`) — its own comment reasons in 8 GB terms ("two 8GB
    models already hurt"). Two 70 GB models are inside the limit, so LRU eviction
-   never fired.
+   never fired. **Still true 2026-09-23**: unchanged by the 2026-09-05 rewrite,
+   and this is the concrete anchor for why the roadmap item stays open as a
+   `decision` — see the "PARTLY ADDRESSED" note above.
+   <!-- claim: {"path": "youcoded/desktop/src/main/engine/engine-supervisor.ts", "contains": "const MODELS_MAX = 2;"} -->
 2. **The guard doesn't know the GPU pool has its own ceiling.** It treats a
    unified-memory machine as having `totalMem` available, but GPU-offloaded weights
    are capped at `amdgpu.gttsize` (80 GiB here) — and that memory is unreclaimable
    once held. Nothing in the codebase reads `mem_info_gtt_total`.
-3. **It measures total memory, not free memory.** `capacity = totalMemBytes` ignores
-   what Chrome, Steam, Discord, and Claude Code were already holding.
-   <!-- claim: {"path": "youcoded/desktop/src/main/models/fit-estimator.ts", "contains": "const capacity = totalMemBytes \\+ \\(totalVramBytes \\?\\? 0\\);"} -->
+3. **FIXED 2026-09-05 (`e361b778a`, T11).** It used to measure total memory, not
+   free memory: `capacity = totalMemBytes + (totalVramBytes ?? 0)` ignored what
+   Chrome, Steam, Discord, and Claude Code were already holding. `fit-estimator.ts`
+   now scores against `availableMemoryBytes()` (Linux `/proc/meminfo`
+   `MemAvailable`, macOS `vm_stat`, `os.freemem()` on Windows) minus what is
+   already resident (`checkMemoryForLoad`'s `need > input.availableBytes` check) —
+   the exact gap this finding named. Historical; the quote above no longer exists
+   in the file (`rg` returns 0 hits, re-verified 2026-09-23).
 4. **`gpu-detector` misreads this APU as a dedicated 4 GB GPU.** `readAmdSysfsVram`
    (`gpu-detector.ts:140`) reads `mem_info_vram_total`, which on Strix Halo is the
    BIOS-carved 4 GiB UMA window — above the 2 GB `MIN_DEDICATED_VRAM_BYTES` floor, so

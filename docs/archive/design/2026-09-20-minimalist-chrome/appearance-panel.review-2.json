@@ -1,0 +1,24 @@
+{
+  "title": "Appearance panel — layout on top, a clearer favorites box",
+  "key": "appearance-panel-review-2",
+  "out": "appearance-panel.review-2.html",
+  "images": "images/appearance-panel.review-2",
+  "stage": "review",
+  "runs": { "before": "runs/ap2-before", "after": "runs/ap2-after" },
+  "labels": { "before": "Last round", "after": "Now" },
+  "themes": ["meadow-mist", "midnight"],
+  "theme": "fixed",
+  "crops": { "top": ["ap", "top", "440x600+500+150"] },
+  "steps": [
+    {
+      "id": "AR2-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance, top",
+      "crop": "top",
+      "headline": "Layout now heads the panel, and your favorite themes sit in an outlined box that fades at the edge where there's more to scroll.",
+      "changed": "The four layout pictures moved to the very top, under a Layout heading. The favorites box has a visible outline with a little padding inside, and the app's standard edge fade (the same one as the folder list and the session browser) shows at the top or bottom whenever more themes are hidden that way. Glass, bubble shape, message box and roundness stay in Look, below the themes.",
+      "notice": "You can tell at a glance the favorites scroll. With four or fewer favorites there is nothing to scroll, so there's no fade.",
+      "risk": "On wallpaper themes the fade is drawn in the panel's colour, so over a dark theme preview it can look like a soft band rather than a clean fade. That's the same trade-off every other scrolling list in the app makes."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+ "deck": "bubble-steps",
+ "started": "2026-09-02T10:52:28.786Z",
+ "submitted": "2026-09-02T10:57:27Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 259,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": ""
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 39,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

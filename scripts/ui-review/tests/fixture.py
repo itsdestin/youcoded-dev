@@ -62,6 +62,40 @@ def make_fixture(tmp, themes=('midnight', 'light'), clip=False, long_path=False)
     p = os.path.join(deck, 'deck.json'); json.dump(spec, open(p, 'w'), indent=1); return p
 
 
+# ── shoot runs ───────────────────────────────────────────────────────────────────────────
+# A miniature stand-in for `node scripts/shoot/shoot.mjs`'s own output: `<root>/<screen name as
+# path>/<theme>.png` plus ONE `<root>/manifest.json` — the one shape (a manifest.json AT THE
+# ROOT) that tells a shoot run apart from an old run-review.sh one (deck/crops.py
+# `is_shoot_run`). Picture-free tests (test_spec.py) never call this; test_crops.py does, with
+# real ImageMagick, the same as make_runs.py's legacy fixture.
+def shoot_run(root, entries):
+    """`entries`: a list of `{"name", "theme", "ok"?, "reason"?, "panel"?, "rect"?, "color"?}`.
+    `ok` defaults True; a true entry gets a real 1440x900 PNG (flat `color`, default per-theme
+    grey/dark, with a `rect` [x, y, w, h] painted red when given — so a diff between two shoot
+    runs has something to find) and a `panel` (default: the whole picture). Returns `root`."""
+    import subprocess
+    os.makedirs(root, exist_ok=True)
+    manifest = []
+    for e in entries:
+        name, theme, ok = e['name'], e['theme'], e.get('ok', True)
+        rec = {'name': name, 'theme': theme, 'ok': ok, 'reason': e.get('reason', ''), 'file': None, 'ms': 1, 'errors': e.get('errors', [])}
+        if ok:
+            d = os.path.join(root, *name.split('/')); os.makedirs(d, exist_ok=True)
+            file = os.path.join(d, f'{theme}.png')
+            color = e.get('color') or ('#202020' if theme == 'midnight' else '#EEEEEE')
+            cmd = ['magick', '-size', '1440x900', f'xc:{color}']
+            if e.get('rect'):
+                x, y, w, h = e['rect']
+                cmd += ['-fill', 'red', '-draw', f'rectangle {x},{y} {x + w - 1},{y + h - 1}']
+            subprocess.run(cmd + [file], check=True)
+            rec['file'] = file
+            rec['panel'] = e.get('panel') or {'x': 0, 'y': 0, 'w': 1440, 'h': 900}
+        manifest.append(rec)
+    with open(os.path.join(root, 'manifest.json'), 'w') as f:
+        json.dump(manifest, f)
+    return root
+
+
 # ── live panes ──────────────────────────────────────────────────────────────────────────
 # A LIVE-only deck needs no screenshots at all, which is exactly why the live tests live in
 # test_live.py: no ImageMagick, no ffmpeg, no workbench — so they are the deck coverage that

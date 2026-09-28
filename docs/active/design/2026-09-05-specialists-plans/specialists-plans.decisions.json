@@ -1,0 +1,231 @@
+{
+  "title": "Plans for helpers — five decisions before design starts",
+  "intro": "Background in one paragraph. Today a YouCoded session can hire helpers: it splits a job into pieces, hands each piece to a separate helper session, and they report back. The next step, called 'plans', is the assistant proposing a whole multi-step job as a document you approve as a card that shows the most it could ever cost, and that picks up where it left off if the app restarts. Nothing of that is built. Five decisions gate it. Each question below is written for someone with no context; pick what you would want to see on screen.",
+  "sections": [
+    {
+      "title": "What the future Agents view is made of",
+      "intro": "The Agents & Automations view (jobs that run on a schedule without you) is not built. What it organizes decides how plans are named and what the plan card belongs to.",
+      "questions": [
+        {
+          "id": "unit-of-organization",
+          "area": "agents view",
+          "today": "There is no Agents view yet. In chat, the assistant can hire helpers for one conversation, and each helper is a one-off: it runs, reports back, and is done. Nothing runs on a schedule.",
+          "problem": "Two designs for the Agents view exist and they disagree on the basic thing you would create there. The July design has one object: an 'agent' is one automation (one job, one schedule, one run history). Your September idea has two: an 'assistant' you name ('my Office assistant') that owns several 'duties', each a recurring job. Under your idea the assistant can be a coordinator that decides what to run, the single agent that does every duty itself, or no agent at all: just a folder of duties that each run on their own. Every part of the Agents view, and the words on the plan card, wait on this.",
+          "proposal": "Pick the shape the first version is built around. Costs below are honest guesses in weeks of sessions on top of the plans work itself.",
+          "options": [
+            {
+              "label": "One object: an agent is one automation (July design)",
+              "pros": [
+                "Cheapest: about nothing extra beyond the scheduler and inbox everyone needs anyway.",
+                "The Agents view is one flat list. Each row is a job with its schedule, its last run, and a Run now button. Nothing to learn.",
+                "A plan card in chat stays a chat thing; it never has to say which assistant it belongs to."
+              ],
+              "cons": [
+                "No grouping. Your 'Office' example becomes three unrelated rows (check email, weekly finance report, reorder shopping list) that never share anything.",
+                "No coordinator ever: nothing can look at the day and decide which job to run.",
+                "If you later want grouping, every existing job has to be re-homed into a container."
+              ]
+            },
+            {
+              "label": "Assistant made of duties, folder shape first (Recommended)",
+              "pros": [
+                "Nearly as cheap as the one-object design: about half a week to a week of sessions on top, because a folder is only a name and a list.",
+                "The Agents view lists assistants ('Office', 'School'); open one to see its duties, each with its own schedule and last run. It matches how you already talk about it.",
+                "Leaves the door open: a coordinator or sole agent can be added to an assistant later without moving any duty.",
+                "Nothing forces a coordinator into existence, so a beginner never meets one."
+              ],
+              "cons": [
+                "A duty runs on its own; the assistant does not think between duties. The 'Office assistant' cannot notice that email mentioned a deadline and adjust the finance report.",
+                "Two levels to click through instead of one list. For someone with two jobs total, the folder is one tap of overhead."
+              ]
+            },
+            {
+              "label": "Assistant made of duties, coordinator first",
+              "pros": [
+                "The most capable shape from day one: the assistant reads the situation, chooses which duties to run, and can chain them (email finds a deadline, so it drafts the deliverable).",
+                "The assistant gets its own conversation you can talk to about its duties."
+              ],
+              "cons": [
+                "The most expensive by far: roughly three to five extra weeks of sessions, because a coordinator IS a plan runner on a schedule plus a conversation plus a way to pause and ask you. It cannot be built before plans exist.",
+                "The Agents view has to explain a coordinator to every user, including the ones who only wanted one scheduled job.",
+                "Every coordinator run costs model time even when nothing needs doing, unless it runs on a local model."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "word-assistant",
+          "area": "words on screen",
+          "today": "The word 'assistant' is on screen in three places already, and a fourth is proposed. (1) When you start a YouCoded session you pick a style card: 'Assistant — Research, write, and get answers — asks before consequential actions' next to 'Coder — Agentic coding — plans with todos, edits confidently, runs and verifies'. The header pill then reads 'YouCoded Assistant'. (2) The permissions explainer says 'Assistant starts cautious and asks about most things.' (3) An unmerged Settings panel mockup from August groups Defaults, Permissions and Model Providers under one row titled 'Assistant settings'. (4) Your September idea uses 'assistant' for the named container in the question above ('my Office assistant').",
+          "problem": "If the container is also called 'assistant', a user would see 'YouCoded Assistant' in the header (a style), 'Assistant settings' in Settings (a panel about models and permissions), and 'Office assistant' in the Agents view (a thing they made), and would reasonably think they are the same thing. They are not.",
+          "proposal": "Decide which meaning keeps the word. The copy each option leaves on screen is spelled out in its pros. No code is renamed until this lands.",
+          "options": [
+            {
+              "label": "Container keeps it; rename the style card AND the panel",
+              "pros": [
+                "Style cards would read 'Everyday' and 'Coder'; header pill 'YouCoded Everyday'; explainer 'Everyday starts cautious and asks about most things.'",
+                "Settings row would read 'Model & permissions' instead of 'Assistant settings'.",
+                "The Agents view keeps your words exactly: 'Office assistant', with duties inside.",
+                "Cleanest: one word, one meaning."
+              ],
+              "cons": [
+                "Two renames now (a style card users already see, plus the panel mockup) for a container that does not exist yet.",
+                "'Everyday' is a placeholder; a better word for 'careful, asks first' may take a round of copy."
+              ]
+            },
+            {
+              "label": "Style card keeps it; the container becomes 'agent'",
+              "pros": [
+                "Nothing on screen today changes: 'YouCoded Assistant', 'Assistant settings' stay.",
+                "The Agents view is already called Agents, so 'Office agent' with duties inside reads consistently there."
+              ],
+              "cons": [
+                "'Agent' is the word the app has avoided everywhere else because it sounds technical; the accessibility rule prefers 'assistant' or 'helper'.",
+                "Your own phrasing ('my Office assistant') stops matching what the screen says."
+              ]
+            },
+            {
+              "label": "Container AND panel keep it; rename only the style card (Recommended)",
+              "pros": [
+                "'Assistant settings' becomes literally true: it is where you set up your assistant's model, permissions and defaults, and the same panel can later host each assistant's duties.",
+                "Style cards read 'Everyday' and 'Coder'; that is the only visible change today, and it is one card and one header pill.",
+                "The Agents view keeps 'Office assistant'."
+              ],
+              "cons": [
+                "Until assistants exist, 'Assistant settings' is a slightly grand name for a models-and-permissions panel.",
+                "The style card rename still needs a word better than 'Everyday'."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Plans themselves",
+      "intro": "Plans are the next thing to build for helpers. These two questions decide what they are called and when they get built.",
+      "questions": [
+        {
+          "id": "plan-words",
+          "area": "words on screen",
+          "today": "In chat the assistant can hire a 'helper' (that is the word on the status chip, the report card and in Settings). A 'plan' does not exist on screen yet; in the approved design it is a card the assistant proposes: 'review these 6 files with 3 helpers, check each result, combine them', with an Approve button and a cost ceiling.",
+          "problem": "If you chose the assistant/duty framing above, a helper becomes plumbing: a duty is a recurring job that a helper or a skill carries out, and the user is never asked which. That leaves the question of what a plan is called when it appears in chat, and whether it is just another face of a duty.",
+          "proposal": "Pick the words plans and helpers use on the plan card and in chat. Nothing in code is renamed before this lands.",
+          "options": [
+            {
+              "label": "Keep 'plan' and 'helper' (Recommended)",
+              "pros": [
+                "A plan is a one-off proposal inside a chat; a duty is a recurring job on a schedule. Different things, different words, and a user can hold both.",
+                "The card reads naturally: 'Plan: 3 helpers, up to 40,000 tokens. Approve / Comment.'",
+                "No rename of anything already shipped (status chip, report cards, Settings roster)."
+              ],
+              "cons": [
+                "'Helper' stays visible in chat even though the Agents view will later hide it behind duties. Two vocabularies, one per surface."
+              ]
+            },
+            {
+              "label": "Fold plans into 'duties'",
+              "pros": [
+                "One word across chat and the Agents view: a plan card would read 'Duty: review these files'."
+              ],
+              "cons": [
+                "A one-off job in a chat is not a duty in any normal sense of the word; users would expect it to recur.",
+                "Forces the Agents view vocabulary onto chat before the Agents view exists, and renames shipped helper copy for consistency."
+              ]
+            },
+            {
+              "label": "Decide later; build with today's words",
+              "pros": [
+                "Zero decision cost now; plans ship with 'plan' and 'helper'."
+              ],
+              "cons": [
+                "A later rename touches every plan card state, the approve flow and the explainer copy, which is a session of work after users have learned the first words.",
+                "It is the same as the first option, only with the door left open, which is exactly what leaves renames for later sessions."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "order-of-work",
+          "area": "order of work",
+          "today": "Three approved-but-unbuilt items compete for the next sessions. (a) Plans. (b) Ground-truth model information: the app knowing each model's real price, context size and tool support, discovered from the provider instead of a hand-kept list; this is what turns a token count into a dollar figure, and it also fixes three known mistakes in the session cost chip. (c) The session context panel, designed and approved on 2026-08-17: at the start of every session it shows what the assistant was given (instructions, skills, tools) and what was trimmed to fit a small model. Model tiering (four model sizes so small cloud models are treated like small local ones) rides along with (b).",
+          "problem": "Without (b), a plan card can only say 'up to 40,000 tokens', never 'up to $0.12'. A token number means little to most people. Without (c), a user on a small local model still never sees that half their instructions were cut. Both are real gaps; only one can go first.",
+          "proposal": "Choose the order. Costs are honest estimates in weeks of sessions, not code words; a week means roughly five working sessions.",
+          "options": [
+            {
+              "label": "Plans now with token ceilings, then model information (Recommended)",
+              "pros": [
+                "Plans arrive soonest: about three to four weeks. The card shows a token ceiling and the model name; dollars appear one to two weeks later when model information lands, with no change to the card's shape.",
+                "Plans are what the Agents view and the 'pause and ask me' mechanism are built on, so they unblock the most.",
+                "Cloud models that already have a price in the hand-kept list show dollars from day one anyway."
+              ],
+              "cons": [
+                "For one to two weeks the plan card shows only tokens for models not in the hand-kept price list.",
+                "The context panel waits five to six weeks in total."
+              ]
+            },
+            {
+              "label": "Model information first, then plans with dollars from day one",
+              "pros": [
+                "Every plan card shows a dollar ceiling the day plans ship.",
+                "The session cost chip's three known accounting mistakes get fixed first, so the numbers users already see stop being wrong.",
+                "Model tiering (the same size axis plans use to decide which models may propose a plan) is done properly instead of by a stopgap."
+              ],
+              "cons": [
+                "Plans arrive one to two weeks later: about five to six weeks in total.",
+                "Model information is discovery work against several providers; its estimate is the least certain of the three."
+              ]
+            },
+            {
+              "label": "Session context panel first",
+              "pros": [
+                "The design is already approved by eye; only the backend is missing. About one to two weeks.",
+                "Fixes a trust problem users on small models hit in every session today."
+              ],
+              "cons": [
+                "Feeds nothing into plans; it pushes plans out to five to six weeks with no gain for them.",
+                "The mockup branch is about a thousand commits behind, so part of the week is re-fitting it."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Local models",
+      "intro": "One question that the measurements from 2026-09-04 settle most of.",
+      "questions": [
+        {
+          "id": "local-plan-authoring",
+          "area": "local models",
+          "today": "Small local models are already kept away from hiring helpers: a model in the smallest class does not get the hire tool, because measurements showed weak coordinators make bad delegations. On 2026-09-04 every local model on this machine was asked to write a plan through the same mechanism it uses for any tool call. From the 9B class up, every model wrote a valid, sensible plan every time (40 seconds on the 9B, two to four minutes on the 27B, because it thinks first). The 2B class could not: one ignored the plan format entirely, the other produced a usable plan one time in three.",
+          "problem": "Plans cannot be offered to the 2B class. Nothing today suggests a model that small will get there soon.",
+          "proposal": "Decide whether plans ship gated to the model classes that can write them (the same gate the hire tool already uses), or wait.",
+          "options": [
+            {
+              "label": "Ship gated to the classes that can (Recommended)",
+              "pros": [
+                "Plans ship as soon as they are built. On a 9B-or-larger local model, or any cloud model, the assistant can propose a plan.",
+                "On a 2B model nothing changes from today: the assistant answers itself, no half-broken plan card ever appears.",
+                "One gate, already shipped, decides both hiring and planning; nothing new to explain."
+              ],
+              "cons": [
+                "A user on a 2B model never sees a plan and is not told why unless the app adds a hint. That hint is a small follow-on, not part of the first version.",
+                "On a 9B model 'writing the plan' takes about 40 seconds and on a 27B up to four minutes, so the card needs a visible 'writing the plan' state instead of a spinner."
+              ]
+            },
+            {
+              "label": "Wait for a local model that can",
+              "pros": [
+                "Every local model would behave the same on the day plans ship."
+              ],
+              "cons": [
+                "No date. Plans would wait on a model release outside anyone's control, while cloud and mid-size local users get nothing.",
+                "The gate would still be needed for whichever models remain below the bar."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

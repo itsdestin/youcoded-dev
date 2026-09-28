@@ -1,0 +1,50 @@
+{
+  "title": "Full-width chat notices",
+  "key": "handoff-freshness-wide-review",
+  "out": "freshness-wide.review.html",
+  "themes": ["midnight", "light"],
+  "images": "images/freshness-wide.review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/freshness-wide/focused/before",
+    "after": "../../../../scratch/lease-handoff/freshness-wide/focused/after"
+  },
+  "labels": {"before": "Previous", "after": "Revised"},
+  "crops": {
+    "waiting": ["freshness", "waiting", "800x330+0+0"],
+    "incomplete": ["freshness", "incomplete", "800x330+0+0"],
+    "model-loading": ["freshness", "model-loading", "1280x330+0+0"]
+  },
+  "steps": [
+    {
+      "id": "F-10",
+      "surface": "Resuming a conversation",
+      "path": "Chat → floating status",
+      "crop": "waiting",
+      "headline": "The floating notice spans the chat.",
+      "changed": "Full chat width with a small side inset, separate from the input.",
+      "notice": "The waiting message and drafting behavior are unchanged.",
+      "risk": "UI preview only; no cross-computer transfer."
+    },
+    {
+      "id": "F-11",
+      "surface": "Handoff needs a choice",
+      "path": "Chat → floating warning",
+      "crop": "incomplete",
+      "headline": "Continue directly left of Try again.",
+      "changed": "Both actions sit together on the right.",
+      "notice": "On narrow screens the two actions wrap together below the text.",
+      "risk": "UI preview only; ownership checks still apply."
+    },
+    {
+      "id": "F-12",
+      "themes": ["midnight"],
+      "surface": "Local model loading",
+      "path": "Chat → model-loading notice",
+      "crop": "model-loading",
+      "headline": "Model loading uses the same width.",
+      "changed": "Widened the existing local-model loading notice to match.",
+      "notice": "It still floats above the input, inside the chat column.",
+      "risk": "Layout change only; loading behavior is unchanged."
+    }
+  ]
+}

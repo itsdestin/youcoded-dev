@@ -10,13 +10,16 @@ topic: Any 401 from a social or marketplace call silently signs the account out 
 **Symptom.** The user is unhooked from their account with zero feedback; presence drops with
 it, so friends see them offline forever (frozen `last_seen_at`) and the user only finds out by
 opening the friends panel. Indistinguishable from the presence latch wedge
-(`2026-09-01-presence-suspended-latch.md`). Ranked Tier 3 on 2026-08-31.
+(`docs/archive/investigations/2026-09-01-presence-suspended-latch.md`, fixed in youcoded#562). Ranked Tier 3 on 2026-08-31.
 
 ## Mechanism (re-checked 2026-09-01)
 
 `youcoded/desktop/src/main/handler-utils.ts` wraps every social and marketplace handler with
 a "clear session on 401" decorator: one non-ok result with status 401 calls `store.signOut()`.
-<!-- claim: {"path": "youcoded/desktop/src/main/handler-utils.ts", "contains": "status === 401\\) store\\.signOut\\(\\)"} -->
+Re-verified 2026-09-23: still true, just reformatted across two statements (the 401 check
+now opens a block that reads `store.getToken()` before calling `signOut()`, rather than
+one inline expression) — the anchor below was updated to match the current shape.
+<!-- claim: {"path": "youcoded/desktop/src/main/handler-utils.ts", "contains": "result\\.status === 401\\) \\{"} -->
 
 Nothing announces it: no toast, no log line, no renderer event beyond the sign-in state
 flipping. `usePresence` then drops presence because `signedIn` went false.

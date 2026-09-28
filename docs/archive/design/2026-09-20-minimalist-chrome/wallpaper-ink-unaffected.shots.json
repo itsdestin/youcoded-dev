@@ -1,0 +1,13 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+  "width": 1440,
+  "height": 900,
+  "boot": 2800,
+  "shots": [{
+    "name": "unaffected",
+    "actions": [],
+    "expect": "js:!!document.querySelector('.header-bar') && !document.querySelector('.header-bar[data-wallpaper-ink], .header-bar [data-wallpaper-control-ink], .session-strip .session-dot[data-wallpaper-dot-ink]')",
+    "sameAsBaseline": true,
+    "probe": false
+  }]
+}

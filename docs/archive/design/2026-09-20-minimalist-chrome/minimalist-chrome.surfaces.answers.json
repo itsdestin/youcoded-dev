@@ -1,0 +1,44 @@
+{
+ "deck": "minimalist-surfaces",
+ "started": "2026-09-24T06:53:11.837Z",
+ "submitted": "2026-09-24T06:53:48Z",
+ "cur": 5,
+ "answers": {
+  "S6-1": {
+   "v": "yes",
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S6-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S6-3": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S6-4": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S6-5": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S6-6": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

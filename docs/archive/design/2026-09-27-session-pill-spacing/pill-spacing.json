@@ -1,0 +1,49 @@
+{
+  "title": "Session switcher — even spacing on both sides",
+  "key": "session-pill-spacing",
+  "out": "pill-spacing.review.html",
+  "images": "images/pill-spacing",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "crops": {
+    "strip": [
+      "strip",
+      "strip",
+      "1950x108+0+0"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Header",
+      "path": "The session switcher at the top of the window (shown 3x larger)",
+      "crop": "strip",
+      "headline": "The open session's name now has the same space after it as before its dot.",
+      "changed": "The blank strip after the name shrank to match the space before the dot. Before, the right side was about 12px wider than the left.",
+      "measured": "Right side 19 px → 7 px; left side 7 px (unchanged)",
+      "notice": "The name pill looks centred and is 12px narrower, so a longer name fits before it has to fade out.",
+      "risk": "When a name is too long and fades out at the end, the fade is shorter (7px instead of 12px), so the cut-off looks slightly sharper.",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    },
+    {
+      "id": "S-2",
+      "surface": "Header",
+      "path": "The session switcher at the top of the window (shown 3x larger)",
+      "crop": "strip",
+      "headline": "Each session dot is now centred in its space, so the dots sit evenly.",
+      "changed": "Each dot had 4px of extra empty space on its right. That space is gone, so every dot is 4px narrower and centred.",
+      "measured": "Each dot 28 px → 24 px wide; ten dots take 40 px less room",
+      "notice": "The row of dots is tighter and even. In a narrow window, a few more sessions fit before the \"+N\" bubble appears.",
+      "risk": "Dragging a pill past a dot now swaps at the dot's new centre (2px sooner). The automatic drag test found no new problems, but it's worth one drag to check it feels the same.",
+      "themes": [
+        "meadow-mist",
+        "halftone-dimension"
+      ]
+    }
+  ]
+}

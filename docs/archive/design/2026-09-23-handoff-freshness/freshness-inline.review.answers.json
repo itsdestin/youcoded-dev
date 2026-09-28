@@ -1,0 +1,22 @@
+{
+ "deck": "handoff-freshness-inline-review",
+ "started": "2026-09-23T09:36:19.915Z",
+ "submitted": "2026-09-23T09:37:42Z",
+ "cur": 1,
+ "answers": {
+  "F-6": {
+   "note": "no, this shouldn't be a part of the frame/input container. it should be a separate floating toast/warning thing in the chat panel at the bottom. i think there are other elements we could style this around, like maybe the model loading one.",
+   "v": "other",
+   "seconds": 56,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-7": {
+   "note": "try again on righthand side in-line with the text",
+   "v": "other",
+   "seconds": 26,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

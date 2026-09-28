@@ -11,6 +11,7 @@ exits — that exit IS the notification that the review is done, with the summar
 No copy, no paste, no "I'm done" message (spec §4.3)."""
 import http.server
 import json
+import mimetypes
 import os
 import re
 import signal
@@ -19,11 +20,26 @@ import subprocess
 import sys
 import threading
 import time
-import urllib.error
-import urllib.request
 
-from .live import VITE_BASE_PORT, has_live, live_offset
-from .spec import SpecError, is_page, workspace_root
+from .live import has_live
+from .spec import UI_REVIEW, SpecError, is_page, workspace_root
+
+# WHY not workspace_root() (2026-09-26): that is where the SUB-REPO checkouts are cloned once
+# (youcoded/, wecoded-themes/) and shared across every worktree — it is NOT where this deck
+# tooling's own scripts/ lives, which is versioned per-worktree/branch like any other source
+# file. `scripts/shoot/build.mjs` is a sibling of scripts/ui-review/, always — a worktree still
+# on an older branch must use ITS OWN copy, not a shared one that may not have this tool yet
+# (the shared checkout at workspace_root() had none, mid-migration). A module global, not a
+# call inlined in build_app(), so a test can point it at a stand-in script.
+SHOOT_BUILD_SCRIPT = os.path.join(os.path.dirname(UI_REVIEW), 'shoot', 'build.mjs')
+
+# Matches app-server types in scripts/shoot/engine.mjs's `serve()` — the reference for both
+# types and the SPA fallback, since that is the other place this same built folder is served
+# from (a standalone `shoot`/`explore` run, with no deck around it).
+APP_TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
+             '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg',
+             '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf',
+             '.wasm': 'application/wasm', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.jsonl': 'application/json'}
 
 
 def answers_path(spec):
@@ -97,11 +113,53 @@ class _Server(socketserver.ThreadingMixIn, http.server.HTTPServer):
     allow_reuse_address = True
 
 
-def make_server(spec, port, on_submit):
+def port_path(spec):
+    return os.path.join(spec['_base'], spec['_stem'] + '.serve-port')
+
+
+def preferred_ports(spec):
+    """The ports a deck tries, in order: the one it used last, then its own home port and the
+    49 after it. WHY a steady address (2026-09-25): the page keeps a backup of every answer in
+    the browser, and a browser keys that backup by address. A random port per `serve` put a
+    restarted deck on a new address, where the backup from before a crash could not be read —
+    one of the three ways answers were lost on 2026-09-23."""
+    import zlib
+    home = 20000 + zlib.crc32(os.path.abspath(os.path.join(spec['_base'], spec['_stem'])).encode()) % 20000
+    ports = [home + i for i in range(50)]
+    try:
+        with open(port_path(spec)) as f:
+            last = int(f.read().strip())
+        if last not in ports:
+            ports.insert(0, last)
+        else:
+            ports.remove(last); ports.insert(0, last)
+    except (OSError, ValueError):
+        pass
+    return ports
+
+
+def make_server(spec, port, on_submit, serve_app=True, log=print):
     apath = answers_path(spec)
     # One dev window per try-it slide, so pressing the button twice does not leave two apps
     # fighting over the same profile. Keyed by step id; a dead entry is forgotten.
     dev_windows = {}
+    # The practice app's built folder for /app/* — filled in by `_ensure_app`, which (re)builds
+    # it (cheap: ensureBuild reuses the cache when nothing changed) at server start and again
+    # every time the pane page itself is asked for, so an edit to a candidate shows on the next
+    # reload of a pane instead of needing `serve` restarted.
+    app_dir = {'path': None}
+
+    def _ensure_app(rebuild):
+        if rebuild or not app_dir['path']:
+            try:
+                app_dir['path'] = build_app(spec, log=log)
+            except SpecError as e:
+                log(f'[deck] {e}')
+                return None
+        return app_dir['path']
+
+    if serve_app and has_live(spec) and not (spec.get('live') or {}).get('base'):
+        _ensure_app(True)
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *a, **k):
@@ -129,10 +187,35 @@ def make_server(spec, port, on_submit):
             origin = self.headers.get('origin')
             return (self.headers.get('host') or '') not in mine or (origin is not None and origin not in {f'http://{m}' for m in mine})
 
+        def _serve_app(self, path):
+            # Rebuild-check ONLY on the pane page itself (never on its assets, one per pane per
+            # load) — a candidate's edit shows on the next reload without a `serve` restart.
+            dist = _ensure_app(path in ('/app', '/app/', '/app/index.html'))
+            if dist is None:
+                return self._json(503, {'error': 'the practice app for this deck\'s live panes failed to '
+                                        'build — see the terminal that ran `serve`, then reload'})
+            rel = (path[len('/app'):] or '/').lstrip('/') or 'index.html'
+            file = os.path.normpath(os.path.join(dist, rel))
+            # Path-escape guard (a dotted-up path) and the SPA fallback (a workbench route like
+            # ?view=live has nothing on disk but index.html) are the same case: serve the app's
+            # own page and let its JS route from the query string.
+            if os.path.commonpath([file, dist]) != dist or not os.path.isfile(file):
+                file = os.path.join(dist, 'index.html')
+            ctype = APP_TYPES.get(os.path.splitext(file)[1]) or mimetypes.guess_type(file)[0] or 'application/octet-stream'
+            with open(file, 'rb') as f:
+                body = f.read()
+            self.send_response(200)
+            self.send_header('content-type', ctype)
+            self.send_header('content-length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
         def do_GET(self):
             if self._wrong_origin():
                 return self._json(403, {'error': 'wrong host or origin'})
             path = self.path.split('?')[0]
+            if serve_app and has_live(spec) and (path == '/app' or path.startswith('/app/')):
+                return self._serve_app(path)
             if path == '/answers':
                 if os.path.exists(apath):
                     with open(apath) as f:
@@ -368,110 +451,95 @@ def resolve_worktree(name):
     return None
 
 
-def _listener_cwd(port):
-    """(pid, cwd) of whatever holds the port, or (None, None). Linux-only, like record-pair.sh."""
-    try:
-        out = subprocess.run(['ss', '-ltnp', f'sport = :{port}'], capture_output=True, text=True).stdout
-    except (OSError, subprocess.SubprocessError):
-        return None, None
-    m = re.search(r'pid=(\d+)', out)
-    if not m:
-        return None, None
-    pid = int(m.group(1))
-    try:
-        return pid, os.readlink(f'/proc/{pid}/cwd')
-    except OSError:
-        return pid, None
-
-
-def _answers(port):
-    try:
-        urllib.request.urlopen(f'http://127.0.0.1:{port}/', timeout=1).read(1)
-        return True
-    except urllib.error.HTTPError:
-        return True          # it answered; a status code is still an answer
-    except Exception:
-        return False
-
-
-def start_workbench(spec, log=print):
-    """Boot the workbench the live panes point at, and say whether WE started it.
+def build_app(spec, log=print):
+    """Build (or reuse) the practice app this deck's live panes point at, and return its
+    folder — where `/app/*` is served from. `scripts/shoot/build.mjs` does the actual work
+    (and the caching: unchanged source answers in well under a second).
 
     WHY serve owns this: "one command produces a working review" is the whole point of the
-    deck. Returns (proc_or_None, started) — only a server we started is ours to stop."""
+    deck — the app used to be a SEPARATE server (`run-workbench.sh` on a fixed port) that had
+    to be started by hand, or by this same function; now the deck serves it itself, so a
+    restarted deck's panes come back with it instead of pointing at a dead port."""
     tree_name = (spec.get('live') or {}).get('worktree', '')
     tree = resolve_worktree(tree_name)
     if not tree:
         raise SpecError(f'live.worktree "{tree_name}" is not a checkout with a desktop/ folder '
                         f'(looked in {os.path.join(workspace_root(), "worktrees")}, as a path, and at the workspace root)')
-    port = VITE_BASE_PORT + live_offset(spec)
-    pid, cwd = _listener_cwd(port)
-    if pid:
-        # A FOREIGN server would show the wrong code in every pane with nothing visible to
-        # say so — the same refusal record-pair.sh makes, for the same reason.
-        if cwd != os.path.join(tree, 'desktop'):
-            raise SpecError(f'REFUSING: port {port} is already served from {cwd or "an unreadable cwd"} '
-                            f'(pid {pid}), not {os.path.join(tree, "desktop")} — stop it, or give this deck '
-                            f'another "live": {{"offset": N}}')
-        log(f'[deck] workbench for {tree_name} already running on :{port} — leaving it alone')
-        return None, False
-    log_path = os.path.join(spec['_base'], spec['_stem'] + '.workbench.log')
-    env = {**os.environ, 'YOUCODED_PORT_OFFSET': str(live_offset(spec))}
-    # NO VITE_NO_WATCH. record-pair.sh sets it because a recording is a fixed artefact; a live
-    # review is the opposite — watching on is what lets a candidate be edited while the deck
-    # is open and have the pane update in front of Destin.
-    env.pop('VITE_NO_WATCH', None)
-    with open(log_path, 'w') as lf:
-        proc = subprocess.Popen(['bash', os.path.join(workspace_root(), 'scripts', 'run-workbench.sh'), tree],
-                                stdout=lf, stderr=subprocess.STDOUT, cwd=tree, env=env,
-                                start_new_session=True)
-    log(f'[deck] starting the workbench for {tree_name} on :{port} (log: {log_path})')
-    for _ in range(60):
-        if _answers(port):
-            return proc, True
-        if proc.poll() is not None:
-            raise SpecError(f'the workbench for "{tree_name}" exited before answering on :{port} — see {log_path}')
-        time.sleep(1)
-    stop_workbench(proc)
-    raise SpecError(f'the workbench for "{tree_name}" did not answer on :{port} within 60s — see {log_path}')
+    if not os.path.exists(SHOOT_BUILD_SCRIPT):
+        raise SpecError(f'{SHOOT_BUILD_SCRIPT} is not here — run the deck from a worktree that has scripts/shoot/build.mjs')
+    r = subprocess.run(['node', SHOOT_BUILD_SCRIPT, tree], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SpecError(f'building the practice app for "{tree_name}" failed:\n{(r.stderr or r.stdout).strip()}')
+    dist = r.stdout.strip()
+    if not dist or not os.path.isdir(dist):
+        raise SpecError(f'building the practice app for "{tree_name}" printed no folder — see: {r.stderr.strip()}')
+    log(f'[deck] the practice app for {tree_name} is at {dist} — served at /app/')
+    return dist
 
 
-def stop_workbench(proc):
-    """Stop only a server WE started. run-workbench.sh spawns vite as a child, so the whole
-    process group has to go — killing the shell alone leaves vite holding the port."""
-    if proc is None or proc.poll() is not None:
-        return
+_DECK_BLOB_RE = re.compile(r'(const DECK=)(\{.*?\})(;)', re.S)
+
+
+def rewrite_stale_live(html, log=print):
+    """An old-built page's live panes point at `<live.base>/?…` — the workbench's fixed port,
+    which this deck no longer starts. Every page built since 2026-09-26 points its panes at
+    `/app/index.html?…` instead (this deck's own address, whether or not `live.base` is set —
+    a base only ever changes the ORIGIN a pane is prefixed with, never the path), so a pane
+    address with no `/app/` in it is what tells an old page apart from a new one — never the
+    shape of `live.base` alone, which an explicit test stub can share with the old fixed port.
+
+    `serve --no-build` of an old page would otherwise show empty panes forever (a dead address
+    never comes back). Rewrites the baked `DECK.live.base` and every pane's `url` onto this
+    deck's own `/app/` in place, on disk, so the page behaves exactly as if it had just been
+    rebuilt. Returns the html unchanged when there is nothing stale to fix."""
+    m = _DECK_BLOB_RE.search(html)
+    if not m:
+        return html
     try:
-        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-    except (OSError, ProcessLookupError):
-        proc.terminate()
-    try:
-        proc.wait(timeout=10)
-    except subprocess.TimeoutExpired:
-        try:
-            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
-        except (OSError, ProcessLookupError):
-            proc.kill()
+        data = json.loads(m.group(2).replace('<\\/', '</'))
+    except ValueError:
+        return html
+    panes = [p for st in data.get('steps', []) for p in (st.get('panes') or [])]
+    if not panes or all('/app/' in (p.get('url') or '') for p in panes):
+        return html   # no live panes, or every one already addresses this deck's own /app/
+    data['live'] = data.get('live') or {}
+    data['live']['base'] = ''
+    data['live'].pop('command', None)
+    for p in panes:
+        query = (p.get('url') or '').split('?', 1)
+        p['url'] = '/app/index.html' + ('?' + query[1] if len(query) > 1 else '')
+    blob = json.dumps(data).replace('</', '<\\/')
+    log('[deck] this page\'s live panes pointed at the old fixed workbench port — rewritten onto '
+        'this deck\'s own /app/ address; reload any pane that was already open')
+    return html[:m.start(2)] + blob + html[m.end(2):]
 
 
 def serve(spec, port=0, timeout_min=240, log=print, live=True):
     """Blocks. Returns 0 after a submit (summary logged), 2 on timeout, 3 if this spec is already served.
 
-    `live=False` (--no-live) leaves the app server alone, for when Destin already has the
-    workbench up on that port and does not want it restarted underneath him."""
+    `live=False` (--no-live) never builds or serves `/app/*` for this deck's live panes — for
+    a spec that points its panes at a server of its own (an explicit `live.base`, which is
+    what a test's stub server is) and has nothing here to build."""
     lock = lock_path(spec)
     other = already_served(spec)
     if other is not None:
         log(f'REFUSING: {spec["_stem"]} is already served by pid {other["pid"]} at {other["url"]}')
         return 3
     rotate_submitted(spec, log)
+    # A page built before this deck served its own live panes still bakes the old fixed-port
+    # address — fix it on disk once, so it behaves like a freshly built page from here on.
+    out_path = os.path.join(spec['_base'], spec['out'])
+    try:
+        with open(out_path) as f:
+            html = f.read()
+        fixed = rewrite_stale_live(html, log)
+        if fixed != html:
+            with open(out_path, 'w') as f:
+                f.write(fixed)
+    except OSError:
+        pass   # no page on disk yet (a first `build` still runs before this in review-cards.py)
     result = {}
     holder = {}
-    # AFTER the already-served refusal above (which returns before the try/finally below), so
-    # everything we start is covered by the cleanup that stops it.
-    wb, wb_started = (None, False)
-    if live and has_live(spec):
-        wb, wb_started = start_workbench(spec, log)
 
     def on_submit(state):
         result['state'] = state
@@ -479,7 +547,25 @@ def serve(spec, port=0, timeout_min=240, log=print, live=True):
         # thread that runs serve_forever (the handler thread is one of its children in
         # ThreadingMixIn) would deadlock — it must run on a throwaway thread.
         threading.Thread(target=holder['srv'].shutdown, daemon=True).start()
-    srv, url = make_server(spec, port, on_submit)
+    if port:
+        srv, url = make_server(spec, port, on_submit, serve_app=live, log=log)
+    else:
+        # A steady address per deck (preferred_ports); a busy one moves to the next, and the
+        # one it lands on is remembered so the next serve comes back to it.
+        srv = url = None
+        for p in preferred_ports(spec):
+            try:
+                srv, url = make_server(spec, p, on_submit, serve_app=live, log=log)
+                break
+            except OSError:
+                continue
+        if srv is None:
+            srv, url = make_server(spec, 0, on_submit, serve_app=live, log=log)
+        try:
+            with open(port_path(spec), 'w') as f:
+                f.write(str(srv.server_address[1]))
+        except OSError:
+            pass
     holder['srv'] = srv
     with open(lock, 'w') as f:
         json.dump({'pid': os.getpid(), 'url': url}, f)
@@ -506,11 +592,6 @@ def serve(spec, port=0, timeout_min=240, log=print, live=True):
             os.remove(lock)
         except OSError:
             pass
-        # Only a workbench WE started. One that was already running belongs to whoever
-        # started it and is left exactly as we found it.
-        if wb_started:
-            log('[deck] stopping the workbench this review started')
-            stop_workbench(wb)
     if 'state' in result:
         log(summary(spec, result['state']))
         return 0

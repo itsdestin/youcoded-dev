@@ -237,7 +237,7 @@ as your own, and do not let a standing red teach you to skip the check.
 - The workbench must look like the real app: no prototype captions, no greyed-out primary
   actions, dialog actions full-width `w-full py-2.5` primary over secondary
   (`.claude/skills/ui-mockup/SKILL.md`, and Destin 2026-09-09).
-- `WB_PORT=<port>` repoints a capture plan; do not copy the plan to change its port.
+- (2026-09-26) Capture plans no longer take a port: `shot.mjs` builds and serves the app itself, and error states are named screens (`shoot --list --tag error-state`).
 
 ## Order decided — 2026-09-10
 

@@ -1,0 +1,76 @@
+{
+ "deck": "lease-handoff-questions",
+ "started": "2026-09-21T07:21:55.208Z",
+ "submitted": "2026-09-21T07:30:52Z",
+ "cur": 2,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "claim-first",
+   "note": "i'm kinda okay with this, but want to test real latency first. and we'd need an escape hatch, can't block users from accessing conversation just because the internet is down or slow.",
+   "seconds": 82,
+   "theme": "devils-garden"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "message-only",
+   "note": "with a try again button.",
+   "seconds": 82,
+   "theme": "devils-garden"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "waker-yields",
+   "note": "with option to take back over/resume on this device, which would in turn take control from other device.",
+   "seconds": 82,
+   "theme": "devils-garden"
+  },
+  "Q-4": {
+   "v": "no",
+   "seconds": 41,
+   "theme": "devils-garden"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "short-para",
+   "seconds": 41,
+   "theme": "devils-garden"
+  },
+  "Q-6": {
+   "note": "kinda confused about this \"second copy\" thing. do we not eventually merge the updated conversation/transcript over the outdated one? i thought our youcoded conversation sync updated/merge everything with git.",
+   "v": "other",
+   "seconds": 41,
+   "theme": "devils-garden",
+   "dk": true
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "couldnt-confirm",
+   "seconds": 41,
+   "theme": "devils-garden"
+  },
+  "Q-8": {
+   "v": "no",
+   "note": "\"Still syncing recent messages, this may take a moment.\"",
+   "seconds": 41,
+   "theme": "devils-garden"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "copy-says-so",
+   "seconds": 27,
+   "theme": "devils-garden"
+  },
+  "Q-10": {
+   "v": "no",
+   "note": "but add to roadmap as a potential issue needing further exploration",
+   "seconds": 27,
+   "theme": "devils-garden"
+  },
+  "Q-11": {
+   "v": "yes",
+   "seconds": 27,
+   "theme": "devils-garden"
+  }
+ }
+}

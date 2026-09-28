@@ -1,0 +1,444 @@
+{
+ "title": "Local engine upgrades \u2014 contract \u2014 acceptance",
+ "key": "local-engine-upgrades-contract-acceptance",
+ "out": "local-engine-upgrades.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "feat/local-engine-upgrades",
+ "sources": {
+  "local-engine-upgrades-questions": "local-engine-upgrades.questions.json",
+  "local-engine-upgrades-review": "local-engine-upgrades.review.json",
+  "local-engine-upgrades-review-2": "local-engine-upgrades.review-2.json",
+  "local-engine-upgrades-review-3": "local-engine-upgrades.review-3.json",
+  "local-engine-upgrades-review-5": "local-engine-upgrades.review-5.json",
+  "local-engine-upgrades-review-6": "local-engine-upgrades.review-6.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "The engine card, the Recommended and Installed model lists, a model's Settings dialog, and the memory warning before a model loads",
+   "headline": "The contract, graded \u2014 accept these verdicts?",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "When AMD's ROCm software is missing on Linux, the app shows the install command and types it into its own terminal for you to run.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-1",
+     "note": "only half-related, but this makes me think we should add a simple \"Terminal\" entry to the provider list when creating a new session, and allow users to have just a bare terminal window as a \"youcoded\" session. this would ingratiate us with devs and we could have this change paste the command into a new terminal session."
+    },
+    {
+     "id": "R2",
+     "statement": "Each downloaded model can set its own context length, Keep loaded, GPU layers, and a free-text box of extra engine flags.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-2",
+     "note": "but, to be clear, the ui should still prioritize non-developers. things that would confuse people should be hidden by and \"advanced settings\" menu or something of the like, with (i) explainers for concepts",
+     "verdict": "pass",
+     "evidence": "Real app, Settings > Model Providers > Installed > Settings for Qwen3.5-2B. Dialog rows in order: 'Context length' (plain row, 'Same as engine'), 'Keep loaded' (plain row + toggle), 'Advanced' (collapsed by default) unfolding 'Layers on graphics chip' (i) with an Auto select and a free-text 'Extra engine flags' box (i) placeholder 'e.g. --temp 0.6 --repeat-penalty 1.1'. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/model-settings-advanced.png (and model-settings.png for the collapsed state). Matches the approved model-settings crop in local-engine-upgrades.review-3.json P-17."
+    },
+    {
+     "id": "R3",
+     "statement": "A model that can see images always downloads its vision file; there is no switch to skip it.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-3",
+     "note": "how do others like unsloth studio handle this? i lean towards always download, but am open to providing an option if we REALLY feel like this may bother users"
+    },
+    {
+     "id": "R4",
+     "statement": "Speculative decoding and Compress context memory are visible switches under Advanced on the engine card, both on by default.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#Q-4",
+     "note": "fine with this being in advanced, along with some earlier settings. we should set the best defaults (like speculative decoding should probably default to \"on\").",
+     "verdict": "pass",
+     "evidence": "Real app, engine card > Advanced. Both rows present as standard toggle rows: 'Speculative decoding' and 'Compress context memory'. On a never-touched config both read aria-checked=\"true\" (queried live: [\"Speculative decoding=true\",\"Compress context memory=true\"]), i.e. on by default. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-advanced.png."
+    },
+    {
+     "id": "R5",
+     "statement": "A faster-engine button appears only for the matching graphics chip; you never land on a processor-only engine labelled CUDA or ROCm.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-1"
+    },
+    {
+     "id": "R6",
+     "statement": "Choosing the CUDA engine always brings its runtime files along; there is no separate second download to remember.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-1"
+    },
+    {
+     "id": "R7",
+     "statement": "On a shared-memory machine, the fit verdict counts the graphics pool limit and the memory available right now.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-2"
+    },
+    {
+     "id": "R8",
+     "statement": "On a 'tight' or 'too large' verdict, the size bubble ends with 'Lower this model's context length in its Settings to shrink this.'",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#S-6"
+    },
+    {
+     "id": "R9",
+     "statement": "The before-load warning is asked once per model at a given context length and remembers your answer on this computer.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-2"
+    },
+    {
+     "id": "R10",
+     "statement": "Adding vision downloads the file and moves the model into its own folder in one step; nothing on disk is rearranged otherwise.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-3"
+    },
+    {
+     "id": "R11",
+     "statement": "Models whose family has no vision file show nothing new on their row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-3",
+     "verdict": "pass",
+     "evidence": "Real app, Installed list. gemma-4-E2B-it reports vision:'none' from window.claude.models.installed() and its row carries NO 'Add vision' link, while the five families that do have one show 'Add vision (0.6/0.8/0.9 GB)'. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/models-installed.png. NOTE for Destin: a text-only row is not literally unchanged \u2014 it does gain the small page glyph, because R22 requires that mark on every downloaded model. 'Nothing new' holds for the vision ACTION only."
+    },
+    {
+     "id": "R12",
+     "statement": "While the engine runs, the card shows the chip in use, GB of models loaded, and the last reply's read and write speed, live.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-questions#S-4"
+    },
+    {
+     "id": "R13",
+     "statement": "The engine card is a title with its state, one fact line, a faster-engine row when your chip has one, and an Advanced row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-9",
+     "note": "goood boy",
+     "verdict": "pass",
+     "evidence": "Real app, engine card with Advanced closed: title 'Local engine' + state 'Stopped'; one fact line 'Engine b10665 \u00b7 Vulkan \u00b7 starts on first message'; a 'Faster engine for your AMD chip' row (this machine has an AMD chip, so the row is offered) with a Switch button; an 'Advanced' row. Nothing else on the card. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-card.png."
+    },
+    {
+     "id": "R14",
+     "statement": "Set up shows one sentence, the command with Copy beside it, then Run in terminal and Check again \u2014 nothing else.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-10",
+     "note": "goooood boyyyyyyy",
+     "verdict": "pass",
+     "evidence": "This machine HAS ROCm installed, so the box never appears normally. Re-run with the real detector seeing a machine without ROCm (electron launched under `bwrap --tmpfs /opt/rocm` plus an ldconfig shim that filters the three ROCm sonames \u2014 no code changed): window.claude.engine.prereqs('rocm') returned satisfied:false with the real CachyOS command. The Set up box then contains, in order: heading 'Install AMD\u2019s ROCm software first' with an (i), one sentence 'Run this in a terminal (CachyOS). It will ask for your password.', the command 'sudo pacman -S --needed rocm-hip-runtime hipblas rocblas' with 'Copy' beside it, then 'Run in terminal' and 'Check again'. Nothing else. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-rocm-setup.png. NOTE: the heading + (i) is an extra element beyond the row's literal 'one sentence', but it is exactly what the approved P-10 (local-engine-upgrades.review-2.json) specified, so this is the approved design, not drift."
+    },
+    {
+     "id": "R15",
+     "statement": "The switch is offered only once the app finds both the chip and its software; a failure after install shows the engine's own message.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-10"
+    },
+    {
+     "id": "R16",
+     "statement": "On a Linux flavour the app cannot recognise, the box offers AMD's guide and Check again instead of a command.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-10"
+    },
+    {
+     "id": "R17",
+     "statement": "Advanced opens in place: two speed switches with one-line hints, the context length, and one read-only row for version, backend and models folder.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-11",
+     "verdict": "pass",
+     "evidence": "Real app, Advanced expands inside the engine card (no new dialog). Children in order: 'Speculative decoding' \u2014 'Faster replies when text repeats.'; 'Compress context memory' \u2014 'Halves the memory long chats use.'; 'Context length' \u2014 'Default for every model.' with a number field (32768); one read-only 'Engine build' row whose description is the models folder and whose value is 'b10665 \u00b7 Vulkan'. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/engine-advanced.png."
+    },
+    {
+     "id": "R18",
+     "statement": "Every on/off setting on these screens is the app's standard toggle row, never a hand-drawn one.",
+     "checkedBy": "mechanical",
+     "guard": "youcoded/desktop/tests/setting-row-authority.test.tsx",
+     "threshold": "the named test passes \u2014 no toggle anywhere in the desktop renderer sits outside a standard settings row",
+     "source": "local-engine-upgrades-review-2#P-11",
+     "verdict": "pass",
+     "evidence": "npx vitest run tests/setting-row-authority.test.tsx (in /home/destin/youcoded-dev/worktrees/local-engine-upgrades/desktop) \u2014 'Test Files 1 passed (1) / Tests 13 passed (13)'. Read the test: its adoption guard scans src/renderer/App.tsx plus components/*.tsx, components/development and components/ui, which DOES include this feature's three files (EngineCard.tsx, LocalModelsSection.tsx, RuntimeBinding.tsx), and none of them was added to the TOGGLES_OUTSIDE_A_ROW exemption list \u2014 so every new on/off setting on these screens is inside a <SettingRow>, verified visually too. NOTE: the row's threshold sentence ('no toggle anywhere in the desktop renderer') is broader than what the test actually asserts \u2014 it allows 14 documented exemptions in other files and does not scan marketplace / project-view / game / git / tags / context-menu / buddy. The statement about THESE screens is genuinely tested; the parenthetical about the whole renderer is not."
+    },
+    {
+     "id": "R19",
+     "statement": "Changing a speed switch restarts the engine; a model in use reloads on its next message.",
+     "checkedBy": "live-app",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-11"
+    },
+    {
+     "id": "R20",
+     "statement": "A model's size is one dotted number; hover or tap opens a small table of model file, download total and memory while running.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-12",
+     "note": "can't tell if its a deck bug but this is not really visible or positioned properly. bad boy :(",
+     "verdict": "fail",
+     "evidence": "HOVER half passes: the size is one dotted-underlined number and hovering it opens 'What this needs' \u2014 Model file 4.8 GB / Vision file (sees images) 0.9 GB / Download 5.7 GB / Memory while running 6.2 GB / includes 0.5 GB for a 32k context. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/size-bubble-hover.png. TAP half FAILS. With Emulation.setTouchEmulationEnabled on, a real touch tap on the number fires pointerdown, touchstart, pointerup, touchend, mouseover, mouseenter, focus, click, mouseout, mouseleave \u2014 AnchorTip's hover mode opens on mouseenter/focus and closes on mouseleave, so the trailing mouseleave shuts the bubble in the same frame. Polled every 60 ms for 1.5 s after the tap: the bubble was never once on screen ([0,0,0,\u2026]), while a programmatic .focus() on the same button opens it. The same is true of the eye/page marks. Destin uses a touchscreen, so on his machine the breakdown is hover-only in practice."
+    },
+    {
+     "id": "R21",
+     "statement": "The size breakdown bubble opens below the number, lined up with its left edge, and stays inside the dialog.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-16",
+     "verdict": "fail",
+     "evidence": "Alignment and direction pass: measured trigger left 654.7 / bubble left 654.7 (exact), trigger bottom 522.5 / bubble top 528.5 (opens below). 'Stays inside the dialog' FAILS: AnchorTip clamps to the viewport, not to the dialog, and has no flip. On a FULLY VISIBLE recommended row low in the list (Gemma 4 12B), the bubble measured top 710.1 / bottom 845.1 against a dialog bottom of 794 \u2014 it hangs 51.1 px outside the Model Providers panel, over the page behind it. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/size-bubble-low.png. Any size number within roughly the bottom 120 px of the panel does this."
+    },
+    {
+     "id": "R22",
+     "statement": "An eye marks a downloaded model that sees images and a page marks text-only; hovering either names it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-13",
+     "verdict": "pass",
+     "evidence": "Real app, after adding the vision file to Qwen3.5-2B: that row shows an eye glyph and hovering it names it \u2014 'Sees images' / 'You can attach pictures and screenshots; the model reads them.' Every text-only row shows a page glyph, hover names it 'Text only'. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/modality-eye-hover.png and real/models-installed-vision-hover.png. The row says 'hovering', which holds; note that tapping does not open either bubble (see R20)."
+    },
+    {
+     "id": "R23",
+     "statement": "Under a model that could see, 'Add vision (0.9 GB)' is a short link and its hover points to it.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-2#P-13",
+     "verdict": "pass",
+     "evidence": "Real app: the link under an eligible model reads exactly 'Add vision (0.9 GB)' (also 0.6 / 0.8 GB for other families), rendered as a short underlined text link (class 'underline text-fg-2 hover:text-fg'), not a button. 'Its hover points to it' is carried by the page glyph on the same row, whose bubble reads 'Text only \u2014 Reads text only for now. Add its vision file below to let it see images.' \u2014 which is exactly what the approved P-13 asked for. The link itself has no tooltip of its own. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/add-vision-hover.png, real/models-installed.png."
+    },
+    {
+     "id": "R24",
+     "statement": "A model's Settings button opens a small dialog of its own, 'Model settings' with the model's name; the Installed list is unchanged.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-17",
+     "verdict": "pass",
+     "evidence": "Real app: the row's Settings button opens a separate small dialog titled 'Model settings' with the subtitle 'Qwen3.5-2B'; the Installed list stays exactly as it was behind it. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/model-settings.png."
+    },
+    {
+     "id": "R25",
+     "statement": "Context length and Keep loaded are plain rows; Advanced unfolds Layers on graphics chip and Extra engine flags, each with an (i).",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-17",
+     "verdict": "pass",
+     "evidence": "Real app, dialog rows in order: 'Context length' (plain), 'Keep loaded' (plain), 'Advanced' (disclosure) \u2192 'Layers on graphics chip' with an (i) (aria-label 'About GPU layers') and 'Extra engine flags' with an (i) (aria-label 'About extra engine flags'). Shot: /home/destin/youcoded-dev/scratch/le-accept/real/model-settings-advanced.png."
+    },
+    {
+     "id": "R26",
+     "statement": "A mistyped extra flag stops only that model from loading and shows the engine's own message in its settings.",
+     "checkedBy": "human",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-3#P-17"
+    },
+    {
+     "id": "R27",
+     "statement": "The memory warning is an expandable row: one amber sentence with a chevron that opens to the numbers line and the toggle row.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-5#P-20",
+     "note": "put the \"warn me about this\" as a sub-card inside the expanded \"model may not fit card\". then this is good.",
+     "verdict": "pass",
+     "evidence": "Real app, new-session form with Qwen3.8-Flash-Next selected (real verdict 'tight' from the real estimator). Closed: one amber sentence 'This model may not fit in available memory' with a chevron. Clicking it opens the numbers line and the toggle row inside the same card. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/memory-warning-closed.png and real/memory-warning-open.png."
+    },
+    {
+     "id": "R28",
+     "statement": "Open, the row's second line is the model size plus its context memory and what is already loaded \u2014 one line, no paragraph.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-5#P-20",
+     "verdict": "pass",
+     "evidence": "Real app, opened: the second line is '103.7 GB model + 1.0 GB for 32k context, with 0.0 GB already loaded.' \u2014 one sentence, model size + context memory + what is already loaded, no paragraph. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/memory-warning-open.png. NOTE for Destin: the new-session card is about 285 px wide, so that one sentence WRAPS onto three visual lines there. It is one line of content, not one line on screen."
+    },
+    {
+     "id": "R29",
+     "statement": "Open, the 'Warn me about this model' toggle is nested inside the warning card as its own small card, indented and tinted.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#P-21",
+     "note": "put the \"warn me about this\" as a sub-card inside the expanded \"model may not fit card\". then this is good.",
+     "verdict": "pass",
+     "evidence": "Real app, measured: the 'Warn me about this model' row (title + 'Off skips this next time.' + toggle) sits inside the warning card (outer contains it), is inset 6 px on each side by a px-1.5/pb-1.5 wrapper (outer 684.7\u2013915.3, sub-card 690.7\u2013909.3), has its own rounded-lg, and is painted a different shade \u2014 opaque bg-inset rgb(33,38,45) against the card's half-opacity bg-inset/50. Shot: /home/destin/youcoded-dev/scratch/le-accept/real/memory-warning-open.png."
+    },
+    {
+     "id": "R30",
+     "statement": "Closed, the warning is one amber line, and on Halftone and Meadow it still reads as a warning against the theme.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-5#P-20",
+     "verdict": "fail",
+     "evidence": "Closed, it is one amber line in every theme, and on Halftone Dimension it reads clearly as a warning \u2014 measured contrast of the amber text against its painted background is 9.53:1 (text #FAB501 on #251432). Shot: /home/destin/youcoded-dev/scratch/le-accept/real/warning-closed-halftone-dimension.png. On Meadow Mist it does NOT: the same amber sits on that theme's pale-green card for a measured contrast of 1.05:1 (text #FEB903 on #BAD0B6) \u2014 effectively invisible, far under the 4.5:1 minimum, and it does not read as a warning at all. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/warning-closed-meadow-mist.png and the magnified crop real/meadow-warn-crop.png. Both themes were installed into the dev profile from the real marketplace and applied in the real app."
+    },
+    {
+     "id": "R31",
+     "statement": "A too-large model shows the same row in the danger colour and opens to the numbers line only \u2014 no 'Warn me' toggle.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#S-5",
+     "verdict": "pass",
+     "evidence": "No installed model scores 'too-large' on this 128 GB machine (the largest, 103.7 GB, scores 'tight'), so the run was repeated with the real estimator reading a low-memory machine (electron under `bwrap --ro-bind fake-meminfo /proc/meminfo`, MemAvailable 2 GB \u2014 no code changed). The row is then the same expandable row in the danger colour rgb(212,92,92) reading 'This model is too large for this computer', opening to the numbers line '103.7 GB model + 1.0 GB for 32k context, with 0.0 GB already loaded.' and nothing else \u2014 queried live, no 'Warn me about this model' toggle exists in the DOM. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/warning-open-too-large.png, real/too-large-crop.png."
+    },
+    {
+     "id": "R32",
+     "statement": "The size bubble lists 'Vision file (sees images)' as its own line, between Model file and Download, only for models that have one.",
+     "checkedBy": "deck",
+     "threshold": "pass/fail",
+     "source": "local-engine-upgrades-review-6#S-7",
+     "verdict": "pass",
+     "evidence": "Real app: for Gemma 4 E4B the bubble lists 'Model file 4.8 GB', then 'Vision file (sees images) 0.9 GB', then 'Download 5.7 GB' \u2014 its own line, between Model file and Download. For a model without one (GPT-OSS 20B) the same bubble reads Model file / Download / Memory while running with no vision line at all. Shots: /home/destin/youcoded-dev/scratch/le-accept/real/size-bubble-hover.png and real/size-bubble-bottom.png."
+    }
+   ],
+   "yes": "Yes, accept",
+   "no": "No, something is wrong"
+  },
+  {
+   "id": "R1",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "When AMD's ROCm software is missing on Linux, the app shows the install command and types it into its own terminal for you to run.",
+   "changed": "Checked by you. Your note at review: \u201conly half-related, but this makes me think we should add a simple \"Terminal\" entry to the provider list when creating a new session, and allow users to have just a bare terminal window as a \"youcoded\" session. this would ingratiate us with devs and we could have this change paste the command into a new terminal session.\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R3",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "A model that can see images always downloads its vision file; there is no switch to skip it.",
+   "changed": "Checked by you. Your note at review: \u201chow do others like unsloth studio handle this? i lean towards always download, but am open to providing an option if we REALLY feel like this may bother users\u201d",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R5",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "A faster-engine button appears only for the matching graphics chip; you never land on a processor-only engine labelled CUDA or ROCm.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R6",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "Choosing the CUDA engine always brings its runtime files along; there is no separate second download to remember.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R7",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "On a shared-memory machine, the fit verdict counts the graphics pool limit and the memory available right now.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R8",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "On a 'tight' or 'too large' verdict, the size bubble ends with 'Lower this model's context length in its Settings to shrink this.'",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R9",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "The before-load warning is asked once per model at a given context length and remembers your answer on this computer.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R10",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "Adding vision downloads the file and moves the model into its own folder in one step; nothing on disk is rearranged otherwise.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R12",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "While the engine runs, the card shows the chip in use, GB of models loaded, and the last reply's read and write speed, live.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R15",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "The switch is offered only once the app finds both the chip and its software; a failure after install shows the engine's own message.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R16",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "On a Linux flavour the app cannot recognise, the box offers AMD's guide and Check again instead of a command.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R19",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "Changing a speed switch restarts the engine; a model in use reloads on its next message.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  },
+  {
+   "id": "R26",
+   "words": true,
+   "surface": "Settings \u2192 Model Providers \u2192 Local models, and the new-session form",
+   "path": "Acceptance",
+   "headline": "A mistyped extra flag stops only that model from loading and shows the engine's own message in its settings.",
+   "changed": "Checked by you.",
+   "notice": "pass/fail",
+   "yes": "Holds",
+   "no": "Fails"
+  }
+ ]
+}

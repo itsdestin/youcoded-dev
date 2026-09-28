@@ -408,16 +408,53 @@ function ancestors(value) {
   return parts.slice(0, -1).map((_, index) => parts.slice(0, index + 1).join('/'));
 }
 
-function indexEntries(root, revision, relativePath) {
-  const output = runGit(root, revision ? ['ls-tree', '-z', revision, '--', relativePath] : ['ls-files', '-s', '-z', '--', relativePath], { buffer: true });
-  return splitNul(output).filter(Boolean).map(field => field.toString('utf8'));
+// WHY: preflight used to call `git ls-tree`/`ls-files` once per ancestor of every incoming
+// path (2 revisions x ~2 candidates x thousands of paths). These three batched lookups
+// replace that with a fixed, small number of Git subprocess spawns regardless of how many
+// paths changed — one full-tree walk per revision, one check-ignore call for the whole
+// path set, and one ls-files dump — while returning exactly the same per-path facts
+// (mode/type, ignored, tracked) the old per-path calls produced.
+function buildTreeMap(root, revision) {
+  const map = new Map();
+  for (const field of splitNul(runGit(root, ['ls-tree', '-r', '-t', '-z', '--full-tree', revision], { buffer: true }))) {
+    if (!field.length) continue;
+    const tab = field.indexOf(0x09);
+    if (tab < 0) continue;
+    const match = /^(\d+) (\w+) [0-9a-f]+$/.exec(field.subarray(0, tab).toString('ascii'));
+    if (match) map.set(field.subarray(tab + 1).toString('utf8'), { mode: match[1], type: match[2] });
+  }
+  return map;
 }
 
-function treeEntry(root, revision, relativePath) {
-  const entry = indexEntries(root, revision, relativePath).find(value => value.endsWith(`\t${relativePath}`));
-  if (!entry) return null;
-  const match = /^(\d+) (\w+) [0-9a-f]+\t/.exec(entry);
-  return match ? { mode: match[1], type: match[2] } : null;
+function ignoredPathSet(root, values) {
+  if (!values.length) return new Set();
+  const input = Buffer.concat(values.flatMap(value => [Buffer.from(value, 'utf8'), Buffer.from([0])]));
+  const result = spawnSync('git', ['-C', root, 'check-ignore', '--no-index', '-z', '--stdin'], {
+    input, encoding: null, stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: Number.MAX_SAFE_INTEGER,
+  });
+  // WHY: check-ignore exits 1 (not an error) whenever none of the batch is ignored; only a
+  // genuine spawn failure should fall back to "nothing is ignored", matching how a failed
+  // per-path `-q` call previously produced a false/not-ignored result rather than throwing.
+  // A batch failure is different, though: one unreadable path (git exits 128 for the WHOLE
+  // stdin batch) would mark every path "not ignored" at once, where the old per-path calls
+  // isolated the failure to that one path. So on a batch failure, redo it per path — the
+  // exact old behavior — rather than widening one bad path into a blanket answer
+  // (independent review, 2026-09-23; not reachable from real diff names today).
+  if (result.error || (result.status !== 0 && result.status !== 1)) {
+    return new Set(values.filter(value =>
+      spawnSync('git', ['-C', root, 'check-ignore', '--no-index', '-q', '--', value], { stdio: 'ignore' }).status === 0));
+  }
+  return new Set(splitNul(result.stdout ?? Buffer.alloc(0)).filter(field => field.length).map(field => field.toString('utf8')));
+}
+
+function trackedPathSet(root) {
+  const set = new Set();
+  for (const field of splitNul(runGit(root, ['ls-files', '-s', '-z'], { buffer: true }))) {
+    if (!field.length) continue;
+    const tab = field.indexOf(0x09);
+    if (tab >= 0) set.add(field.subarray(tab + 1).toString('utf8'));
+  }
+  return set;
 }
 
 function componentRoots(root) {
@@ -451,27 +488,53 @@ function preflight(root, head, remoteOid, changes, actualBranch) {
   const names = affectedPaths(changes);
   const dirty = statusInventory(root);
   const dirtyNames = dirty.flatMap(item => [item.path, item.originalPath].filter(Boolean));
+  // WHY: this used to be `dirtyNames.some(...)` per incoming path — O(names x dirty) string
+  // scans that took the bulk of preflight's time at thousands of paths (measured: 500 paths
+  // ~3s, 3,000 ~27s). A path only overlaps local work if it exactly matches a dirty path, is
+  // an ancestor directory of one, or has a dirty path as one of its own ancestors — all three
+  // are O(1) Set/prefix lookups once the dirty set and its ancestor directories are collected
+  // up front, so the whole check becomes O(names + dirty) instead of O(names x dirty).
+  const dirtySet = new Set(dirtyNames);
+  const dirtyAncestorSet = new Set();
+  for (const local of dirtyNames) for (const ancestor of ancestors(local)) dirtyAncestorSet.add(ancestor);
   for (const name of names) {
     if (!name.supported) blockers.push('An incoming path has unsupported encoding.');
-    if (dirtyNames.some(local => local === name.value || local.startsWith(`${name.value}/`) || name.value.startsWith(`${local}/`))) blockers.push(`Incoming path overlaps local work: ${name.value}`);
+    const overlaps = dirtySet.has(name.value) || dirtyAncestorSet.has(name.value) ||
+      ancestors(name.value).some(ancestor => dirtySet.has(ancestor));
+    if (overlaps) blockers.push(`Incoming path overlaps local work: ${name.value}`);
   }
   const roots = componentRoots(root);
-  for (const name of names.map(item => item.value)) {
+  const nameValues = names.map(item => item.value);
+  // WHY: replaces ~4-6 Git subprocess spawns per incoming path (a treeEntry lookup for every
+  // ancestor and self in both revisions, check-ignore, and an ls-files lookup) with a fixed
+  // number of batched calls: one full-tree walk per revision, one check-ignore over the whole
+  // path set, and one ls-files dump of the index. Each per-path decision below is unchanged —
+  // only how the underlying facts (tree entry type, ignored, tracked) are fetched changed.
+  const headTree = nameValues.length ? buildTreeMap(root, head) : new Map();
+  const remoteTree = nameValues.length ? buildTreeMap(root, remoteOid) : new Map();
+  const ignoredSet = nameValues.length ? ignoredPathSet(root, nameValues) : new Set();
+  const trackedSet = nameValues.length ? trackedPathSet(root) : new Set();
+  const pathStateCache = new Map();
+  const cachedPathState = candidate => {
+    if (!pathStateCache.has(candidate)) pathStateCache.set(candidate, pathState(path.join(root, candidate)));
+    return pathStateCache.get(candidate);
+  };
+  for (const name of nameValues) {
     if (roots.some(component => name === component || name.startsWith(`${component}/`) || component.startsWith(`${name}/`))) blockers.push(`Incoming path collides with component root: ${name}`);
     for (const candidate of [...ancestors(name), name]) {
-      const state = pathState(path.join(root, candidate));
-      const oldEntry = treeEntry(root, head, candidate);
-      const newEntry = treeEntry(root, remoteOid, candidate);
+      const state = cachedPathState(candidate);
+      const oldEntry = headTree.get(candidate) ?? null;
+      const newEntry = remoteTree.get(candidate) ?? null;
       if (candidate !== name && state.type !== 'absent' && state.type !== 'directory') blockers.push(`Incoming path ancestor is not a directory: ${candidate}`);
       if (state.type === 'symlink') blockers.push(`Incoming path collides with a symlink: ${candidate}`);
       if (candidate !== name && oldEntry?.type === 'blob' && newEntry?.type === 'tree') blockers.push(`Incoming path changes a file into a directory: ${candidate}`);
       if (candidate === name && oldEntry?.type === 'tree' && newEntry?.type === 'blob') blockers.push(`Incoming path changes a directory into a file: ${candidate}`);
     }
-    const ignored = spawnSync('git', ['-C', root, 'check-ignore', '-q', '--no-index', '--', name]).status === 0;
-    const tracked = indexEntries(root, null, name).length > 0;
-    if (ignored && !tracked && pathState(path.join(root, name)).type !== 'absent') blockers.push(`Incoming path would overwrite ignored content: ${name}`);
+    const ignored = ignoredSet.has(name);
+    const tracked = trackedSet.has(name);
+    if (ignored && !tracked && cachedPathState(name).type !== 'absent') blockers.push(`Incoming path would overwrite ignored content: ${name}`);
     const componentCollision = roots.some(component => name === component || name.startsWith(`${component}/`) || component.startsWith(`${name}/`));
-    if (!componentCollision && treeEntry(root, head, name)?.type === 'tree' && treeEntry(root, remoteOid, name)?.type === 'blob') {
+    if (!componentCollision && headTree.get(name)?.type === 'tree' && remoteTree.get(name)?.type === 'blob') {
       // WHY: query Git's ignored index only for the replaced tree; never walk component directories or follow filesystem links.
       const hidden = splitNul(runGit(root, ['ls-files', '-z', '--others', '--ignored', '--exclude-standard', '--', name], { buffer: true }));
       if (hidden.some(Boolean)) blockers.push(`Incoming directory replacement contains ignored descendants: ${name}`);

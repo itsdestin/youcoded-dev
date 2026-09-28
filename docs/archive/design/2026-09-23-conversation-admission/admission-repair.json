@@ -1,0 +1,79 @@
+{
+  "title": "Moving a conversation between computers",
+  "key": "conversation-admission-repair",
+  "out": "admission-repair.html",
+  "images": "images/admission-repair",
+  "stage": "review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/repair-runs/before",
+    "after": "../../../../scratch/lease-handoff/repair-runs/after"
+  },
+  "labels": { "before": "Earlier version", "after": "Repaired version" },
+  "themes": ["midnight", "light"],
+  "crops": {
+    "known-holder": ["admission", "known-holder", "520x200+460+350"],
+    "denied": ["admission", "denied", "520x200+460+350"],
+    "info": ["admission", "info", "460x175+490+460"]
+  },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Resume a conversation",
+      "path": "All Sessions → Resume → a conversation → Resume Session",
+      "crop": "known-holder",
+      "headline": "An active conversation asks directly whether you want to take over.",
+      "changed": "A conversation active on your laptop now leads straight to Take over, instead of making you retry first.",
+      "notice": "Choose a model first, then decide whether to move the conversation.",
+      "risk": "An unconfirmed handoff still asks before proceeding. These pictures use simulated computers.",
+      "highlight": { "box": [8, 14, 84, 74] }
+    },
+    {
+      "id": "R-2",
+      "surface": "Resume a conversation",
+      "path": "Another computer claims the conversation while this computer is opening it",
+      "crop": "denied",
+      "headline": "Try again retries opening; it never changes into a takeover request.",
+      "changed": "Try again retries opening, even after another denial. It no longer leads into a takeover question.",
+      "notice": "Leave it opens nothing. To request a takeover, leave this attempt and start Resume again.",
+      "risk": "Retries can keep failing while the other computer holds the conversation.",
+      "highlight": { "box": [8, 14, 84, 74] }
+    },
+    {
+      "id": "R-3",
+      "surface": "Backup & Sync",
+      "path": "Settings → Backup & Sync → information button → Using the same conversation on two devices",
+      "crop": "info",
+      "headline": "The explanation describes the limits without promising that nothing can be lost.",
+      "changed": "Replaced the one-device-only and nothing-is-lost promises with the actual handoff and conflict-copy limits.",
+      "notice": "Offline access stays available. Conflicting chats are not automatically combined.",
+      "risk": "Recent messages may still be missing after a forced or incomplete handoff."
+    },
+    {
+      "id": "Q-6",
+      "words": true,
+      "surface": "The first handoff question",
+      "path": "Opening a conversation that another computer is already using",
+      "headline": "Where should we explain that conflicting messages can become a separate copy?",
+      "today": "The ordinary handoff asks only whether to take over. The unconfirmed-handoff question already explains separate copies, and Backup & Sync has a short explanation.",
+      "problem": "Git can merge compatible changes, but competing conversation histories are not guaranteed to become one combined chat. Your earlier question about this was never resolved into a copy decision.",
+      "proposal": "Keep the ordinary confirmation short. Explain the risk when the handoff cannot be confirmed, rather than showing the same warning for every normal handoff.",
+      "options": [
+        {
+          "id": "keep-short",
+          "label": "Keep the first question short",
+          "summary": "Keep the separate-copy explanation in the unconfirmed-handoff question and Backup & Sync.",
+          "pros": ["Normal handoffs stay quick to understand.", "The warning appears when it is most relevant."],
+          "cons": ["Someone who never opens the explanation may not know about conflict copies until a handoff fails."],
+          "recommended": true
+        },
+        {
+          "id": "explain-first",
+          "label": "Explain it in the first question too",
+          "summary": "Add a brief separate-copy warning before every handoff.",
+          "pros": ["The limitation is visible before the user starts any handoff."],
+          "cons": ["Every normal handoff carries extra warning text.", "The same information repeats if confirmation fails."]
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,12 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] A red outlined button that is busy ("Stopping…" on a running command's Stop) is hard to
+      read: its dimmed label measured 3.98:1 on Midnight, under the 4.5:1 minimum for small
+      text. Found by the admin-password UX review 2 (U3), 2026-09-26; the dimming is the shared
+      button's disabled look, so every such button has it
+      `all` `confirmed` `checked 2026-09-26` → docs/archive/reviews/2026-09-26-admin-password-ux-review-2.md
+
 - [ ] The design check still lists about 530 places where a screen overrides a shared button’s
       look, types a size in by hand, or uses a color outside the theme. Only the mechanical
       fixes were made on 2026-09-16; each remaining group needs its own design call.
@@ -85,10 +91,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       tool card (findings U18-U20 and U22)
       `desktop` `confirmed` `checked 2026-09-09` → docs/archive/reviews/2026-09-09-session-context-panel-ux-review-1.md
 
-- [ ] A second window keeps showing the old default model or project folder until its own
-      Settings panel is opened and closed
-      `settings/defaults` `desktop` `confirmed` `checked 2026-09-07`
-
 - [ ] While a session pill is being dragged from one window into another, nothing follows the cursor
       inside the SECOND window until it is dropped — the bar and chat area light up, but the pill
       itself is only drawn by the window it came from. The receiving window cannot read what is
@@ -118,8 +120,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `all` `confirmed` `checked 2026-09-11` `v1.3.1` → docs/active/investigations/2026-09-10-error-inventory/README.md
 
 - [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
-      sessions showed no "Start a conversation" text; Destin said ignore for now
-      `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
+      sessions showed no "Start a conversation" text; Destin said ignore for now. 2026-09-27: a
+      friend on Windows and Destin on Linux saw messages disappear MID-conversation behind
+      "Start a conversation" while Claude and the terminal still had them. Four causes fixed
+      (youcoded#582); what rebuilds the chat mid-conversation in the built app is still unknown —
+      next step is a tripwire that logs what emptied an open chat, or the friend's desktop.log
+      `chat` `desktop` `needs-verify` `checked 2026-09-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
 - [ ] Switching sessions in terminal view redraws the letters of EVERY open terminal each time
       (the black-glyph safety net in `TerminalView.tsx`). Measured 2026-09-10 with the new perf-lab
@@ -162,10 +168,13 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       tasks 1,217 → 0 ms; Marketplace 58,706 → 3,281 page elements, model search 24,679 →
       1,255; the preview and buddy chat fold like the chat, and entries present when a chat
       opens can now fold too (they never could). Left for later, each measured first: the
-      Resume browser's kept-built previews for Projects; splitting ArtifactContext so no
-      reader redraws on another session's file write; a selector-scoped marketplace store
-      (an install click still redraws the ≤100 visible cards)
-      `all` `confirmed` `checked 2026-09-18` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
+      Resume browser's kept-built previews for Projects; a selector-scoped marketplace store
+      (an install click still redraws the ≤100 visible cards). 2026-09-23 "many tabs" batch
+      (docs/active/investigations/2026-09-16-smoothness-sweep.md → Status 2026-09-23): tabs
+      you are not looking at now do no drawing, ticking or listening — Batch B built, a file
+      change in one tab no longer redraws the others, typing a / command no longer redraws the
+      whole app — with a whole-app test that fails if hidden tabs start working again
+      `all` `confirmed` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Text fields nested in cards are the same colour as the card — the model picker's
       trigger, the close-prompt editor and the resume tag sheet all read as labels, not

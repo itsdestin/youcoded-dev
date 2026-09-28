@@ -403,6 +403,17 @@ dev-workspace).
 
 ### Found after the consolidation
 
+- **Swiping the app away and reopening it leaves every running conversation's chat blank**
+  (2026-09-27). Swiping from recents closes the screen but the background service keeps the
+  sessions running (`SessionService.onTaskRemoved` does nothing, on purpose). The reopened
+  screen asks each session for its first history page, and Android has no `transcript:page`
+  handler (the shim refuses it quietly) while its transcript watcher only pushes new lines — so
+  the chat shows "Start a conversation" while the terminal and Claude still have everything,
+  until close + resume. Read from the code during the desktop blank-chat fix (youcoded#582),
+  not reproduced on a handset. The desktop cure (read a rebuilt screen's first page to the end)
+  needs the Kotlin tail reader the paging item already asks for.
+  `android` `needs-verify` `checked 2026-09-27`
+
 - **Dogfood APKs count as a separate person in our own numbers** (2026-09-13). Android's device
   id is scoped to the app-signing key, and `android-test-build.yml` signs with a throwaway debug
   key — so a dogfood build installed beside the real app on one phone reports a DIFFERENT device
@@ -411,6 +422,21 @@ dev-workspace).
   numbers stay inflated. Read from the code (`AnalyticsService.kt` + `app/build.gradle.kts` build
   types), not measured on a handset — the SDK was absent that day.
   `n/a` `needs-verify` `checked 2026-09-13`
+
+- **Lease handoff is desktop-only: a phone using the app on-device can open a conversation its
+  other machine is live in with no warning, no takeover dialog, no handoff** (2026-09-21). The
+  lease/takeover RPCs are stubbed desktop-only in `SessionService.kt` (4311–4318), the shared
+  renderer gate treats that reject as "no protection here" and proceeds, and `session:create`
+  drops `resumeSessionId` (935–954), so the phone's local "resume" doesn't actually resume the
+  selected conversation. An on-device session has no lease protection or SyncHub participation.
+  A paired phone driving the desktop remotely is different — the desktop stays the holder and its
+  remote server supports the lease RPCs. Decide Android's place in "cross-device" before calling
+  the feature that: explicitly exclude it in copy, or add parity in the rebuild. Lease/handoff
+  audit finding H6. **Decided 2026-09-21 (lease-handoff deck Q-9): copy says so** — the (i) popup
+  and the dialog state plainly that live handoffs work between desktops, and the phone joins when
+  its rebuild lands; no new scope on the rebuild.
+  `n/a` `needs-verify` `checked 2026-09-21` →
+  docs/active/investigations/2026-09-21-conversation-lease-handoff-audit.md
 
 - **Google Play would likely refuse the app as built: it downloads programs after install**
   (2026-09-23). Play's Device and Network Abuse policy forbids downloading executable code

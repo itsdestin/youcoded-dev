@@ -26,10 +26,17 @@ writeFileSync(path.join(CWD, 'notes.md'), '');
 process.on('exit', () => rmSync(CWD, { recursive: true, force: true }));
 
 /** @returns {{blocked: boolean, message: string}} */
+// WHY an empty fake /proc: the hook refuses to signal Destin's LIVE app, looked up
+// by pid in /proc. Against the real one, a literal like `kill -9 4321 5678` failed
+// the day pid 4321 was the live app's zygote (2026-09-27). The live-app cases below
+// build their own fake /proc (runProc); every other case sees no processes at all.
+const NO_PROC = mkdtempSync(path.join(tmpdir(), 'glob-guard-noproc-'));
+process.on('exit', () => rmSync(NO_PROC, { recursive: true, force: true }));
+
 function run(command, tool_name = 'Bash') {
   const r = spawnSync('python3', [HOOK], {
     input: JSON.stringify({ tool_name, tool_input: { command }, cwd: CWD }),
-    encoding: 'utf8',
+    encoding: 'utf8', env: { ...process.env, GLOB_GUARD_PROC: NO_PROC },
   });
   return { blocked: r.status === 2, message: (r.stderr || '').trim() };
 }

@@ -23,22 +23,14 @@ A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `deskt
 ## Release flows
 
 ### App (Desktop + Android)
-1. Bump `versionCode` + `versionName` in `youcoded/app/build.gradle.kts`
-2. Regenerate the landing-page demos: `bash scripts/ui-review/site-assets.sh <worktree>`, review `docs/gallery` + `docs/media`, commit them with the version bump — the site's loops and embed are built from the renderer and go stale otherwise.
-3. Tag `vX.Y.Z` in youcoded on master
-4. Both platform workflows trigger → single GitHub Release with all artifacts
-5. Confirm `youcoded-release.json` and `youcoded-release.json.sig` are on the release — without them
-   the in-app Update button refuses the release. If `Sign release manifest` warned instead, sign by
-   hand: download every desktop installer from the release into one folder, then from `youcoded/`
-   run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key
-   ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with
-   desktop/src/main/update-signing-key.ts` and `gh release upload vX.Y.Z <folder>/youcoded-release.json
-   <folder>/youcoded-release.json.sig`.
 
-### Toolkit (youcoded-core)
-1. Bump `version` field in `youcoded-core/plugin.json` on master
-2. `auto-tag.yml` compares `HEAD` vs `HEAD~1` plugin.json versions
-3. If changed, creates `vX.Y.Z` tag automatically
+The release procedure is `youcoded-admin/skills/release/SKILL.md`: review the app diff and readiness, prepare an isolated candidate, review its PR and candidate-specific checks where authorized, then obtain Destin's explicit go/no-go **to merge, push master and tag**. Tag the verified result on remote master. A candidate branch push solely for CI requires its own permission and is not release approval; when candidate CI cannot run, disclose that at go/no-go. Never commit or tag in a shared checkout to stage a release. `youcoded-core` is archived; it has no release steps.
+
+1. Regenerate the landing-page demos with `bash scripts/ui-review/site-assets.sh <app-worktree>`; inspect the gallery and media output and include approved files in the candidate. The site's loops and embed come from the renderer and otherwise go stale.
+2. Review one app CHANGELOG entry and check the candidate on desktop and Android. The **tag**, not locally edited version files, sets the shipped version: desktop CI patches `package.json`; Android CI stamps `versionName` and a monotonic `versionCode`. Local Gradle values are not Play release values.
+3. After candidate review, explicit release go/no-go, and the authorized merge/push, tag `vX.Y.Z` on the verified app commit on remote master. Its two workflows must both pass: desktop waits for every OS before upload; Android uploads APK/AAB. They contribute to one GitHub Release, but the tag push alone does not prove the release finished.
+4. Check the actual release assets, including `youcoded-release.json` and `youcoded-release.json.sig` — without both the in-app Update button refuses the release even if installers uploaded. **Verify contents, not just names:** download all release installers and the manifest/signature into an empty temporary directory, confirm the manifest version and every installer's SHA-256/byte size match the downloaded files, and verify the signature against `desktop/src/main/update-signing-key.ts` (helpers exported by `desktop/scripts/generate-release-manifest.mjs`). If `Sign release manifest` warned, diagnose it and get approval for manual signing: use a NEW EMPTY folder containing ONLY installers downloaded from that exact release, then from `youcoded/` run `node desktop/scripts/generate-release-manifest.mjs --dir <folder> --version vX.Y.Z --key ~/system/youcoded-release-signing/update-signing-key.private.pem --verify-with desktop/src/main/update-signing-key.ts`. Inspect the newly generated manifest before upload. If the release already has either manifest file, check what is there first; use `gh release upload vX.Y.Z <folder>/youcoded-release.json <folder>/youcoded-release.json.sig --clobber` only after confirming an intentional replacement of the pair. Never mix installers from another release into the signing folder.
+5. PartyKit deploys on a master push touching `desktop/partykit/**` (or explicit dispatch), not because a later release tag was pushed. Verify the actual relevant deployment run if game-server changes are part of the release.
 
 ### Worker (wecoded-marketplace)
 **The Cloudflare Worker auto-deploys on push to master — never tell Destin to run `wrangler deploy` manually.** `.github/workflows/worker-deploy.yml` runs on `push` to `master` (filtered to `worker/**` and the workflow file itself) plus `workflow_dispatch`. The job runs `npm ci` → `npm run typecheck` → `npm test` → `wrangler d1 migrations apply --remote` → `wrangler deploy` → `wrangler secret put` for every required secret. Cloudflare credentials live in repo secrets (`CF_API_TOKEN`, `CF_ACCOUNT_ID`); no local `wrangler login` needed.
@@ -281,8 +273,14 @@ files and the Android `mipmap-*` layers from it (needs `rsvg-convert`, `magick`,
 Pillow). The design rounds and the one-off generator that made the mascot drawing are in
 `docs/archive/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
+The RUNNING app resets its taskbar/Dock icon on every theme load, so `desktop/src/main/app-icon.ts`
+picks the same file per platform (`icon-mac.png` is the `.icns`'s PNG twin) and shrinks any
+edge-to-edge icon — a theme's included — onto Apple's grid before it reaches the Dock;
+`desktop/tests/app-icon-runtime.test.ts` pins that. Resetting to `icon.png` made the Mac Dock icon
+oversized until 2026-09-27.
 <!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "icon-mascot.svg"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/app-icons.test.ts"} -->
+<!-- verify: {"test": "youcoded/desktop/tests/app-icon-runtime.test.ts"} -->
 
 **macOS ships two dmgs, and the x64 one is built on an arm64 runner.** `electron-builder.yml`
 targets both `x64` and `arm64`, but both workflows run on `macos-latest` (Apple Silicon) and cut

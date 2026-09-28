@@ -1,0 +1,53 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&lease=held:Devins%20laptop",
+  "boot": 4000,
+  "width": 1440,
+  "height": 900,
+  "pre": [],
+  "shots": [
+    {
+      "name": "resume-browser-idle",
+      "actions": [
+        {
+          "eval": "(function(){const b=document.querySelector('[aria-label=\\'All Sessions\\']');if(!b)throw new Error('no All Sessions');b.click();})",
+          "settle": 400
+        },
+        {
+          "eval": "(function(){const m=[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Resume'&&b.querySelector('svg'));if(!m.length)throw new Error('no menu Resume');m[m.length-1].click();})",
+          "settle": 600
+        },
+        {
+          "eval": "(async function(){for(let i=0;i<40;i++){if([...document.querySelectorAll('[aria-label=\"fix chat scroll stick\"]')].some(b=>b.offsetParent!==null))break;await new Promise(r=>setTimeout(r,250));}const rows=[...document.querySelectorAll('[aria-label=\"fix chat scroll stick\"]')].filter(b=>b.offsetParent!==null);if(!rows.length)throw new Error('no row visible');rows[rows.length-1].click();await new Promise(r=>setTimeout(r,600));})()",
+          "settle": 300
+        }
+      ],
+      "expect": "js:[...document.querySelectorAll('h2')].some(h=>h.textContent.trim()==='Resume Session') && [...document.querySelectorAll('[aria-label=\"fix chat scroll stick\"]')].some(b=>b.offsetParent!==null)"
+    },
+    {
+      "name": "resume-gate-dialog",
+      "actions": [
+        {
+          "eval": "(function(){const b=document.querySelector('[aria-label=\\'All Sessions\\']');if(!b)throw new Error('no All Sessions');b.click();})",
+          "settle": 400
+        },
+        {
+          "eval": "(function(){const m=[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Resume'&&b.querySelector('svg'));if(!m.length)throw new Error('no menu Resume');m[m.length-1].click();})",
+          "settle": 600
+        },
+        {
+          "eval": "(async function(){for(let i=0;i<40;i++){if([...document.querySelectorAll('[aria-label=\"fix chat scroll stick\"]')].some(b=>b.offsetParent!==null))break;await new Promise(r=>setTimeout(r,250));}const rows=[...document.querySelectorAll('[aria-label=\"fix chat scroll stick\"]')].filter(b=>b.offsetParent!==null);if(!rows.length)throw new Error('no row visible');rows[rows.length-1].click();await new Promise(r=>setTimeout(r,600));})()",
+          "settle": 300
+        },
+        {
+          "eval": "(function(){const b=[...document.querySelectorAll('button')].filter(b=>b.textContent.trim()==='Resume Session'&&b.offsetParent!==null)[0];if(!b)throw new Error('no Resume Session button');b.click();})",
+          "settle": 400
+        },
+        {
+          "eval": "(async function(){for(let i=0;i<30;i++){await new Promise(r=>setTimeout(r,300));if(document.querySelector('[aria-label=\"Take over conversation\"]'))return;}throw new Error('dialog never appeared');})()",
+          "settle": 400
+        }
+      ],
+      "expect": "js:!!document.querySelector('[aria-label=\"Take over conversation\"]')"
+    }
+  ]
+}

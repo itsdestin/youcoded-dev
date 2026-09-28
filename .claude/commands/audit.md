@@ -29,9 +29,9 @@ the claims live in the documents themselves and are harvested at run time. (The 
 
 ## Process
 
-### 0. Sync
+### 0. Isolate and orient
 
-Run `bash setup.sh` from the workspace root. Stale git state invalidates findings.
+Run `node scripts/workspace-start.mjs --session <stable-key> [needed-component-repos…]` before edits; use the returned workspace and component worktrees, read its reorientation report and changed guidance. `bash setup.sh` is installation/explicit maintenance, not session startup. If an anchor needs a component that is absent, request that component with the same session key or report it as unverified; never turn a missing checkout into a false drift finding. A read-only request is not permission to run this fix-executing command.
 
 ### 1. Mechanical pass (always full, always first)
 

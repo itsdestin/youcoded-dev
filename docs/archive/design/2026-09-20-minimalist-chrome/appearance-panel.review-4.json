@@ -1,0 +1,166 @@
+{
+  "_why": "Round 4 of the Appearance panel, built from Destin's review-3 answers (AR3-1 pictures with better renders, 'Auto', 'Message bubbles', no Terminal; AR3-2 Look tucked away, a real themes container ~1.5 cards tall with Browse/Build inside it, cards scrolling under them, and the new masked fade). Whole-panel pictures have the popup's height cap lifted in the screenshot only.",
+  "title": "Appearance panel — round 4: the themes box, and pictures for every Look choice",
+  "key": "appearance-panel-review-4",
+  "out": "appearance-panel.review-4.html",
+  "images": "images/appearance-panel.review-4",
+  "stage": "review",
+  "runs": {
+    "before": "runs/ap4-before",
+    "after": "runs/ap4"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "meadow-mist",
+    "dark",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "themes": [
+      "ap4",
+      "closed",
+      "430x330+505+560"
+    ],
+    "themes-scrolled": [
+      "ap4",
+      "scrolled",
+      "430x300+505+585"
+    ],
+    "look-open": [
+      "ap4",
+      "open",
+      "430x580+505+625"
+    ]
+  },
+  "steps": [
+    {
+      "id": "AR4-1",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Themes",
+      "crop": "themes",
+      "themes": [
+        "meadow-mist",
+        "dark"
+      ],
+      "headline": "The themes now sit in a filled box about one and a half cards tall, with Browse and Build inside it at the bottom.",
+      "changed": "The outline became a filled, rounded box. It shows about one and a half theme cards, and Browse Marketplace and Build New Theme are pinned inside the box's bottom edge, so the section is shorter overall.",
+      "measured": "about 225 px tall with the buttons inside, down from about 270 px",
+      "notice": "Your active theme is scrolled into view when the panel opens, so it may open part-way down the box.",
+      "risk": "With only one or two favourite themes the box shrinks to fit them, so it isn't always the same height."
+    },
+    {
+      "id": "AR4-2",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Themes, scrolled part-way",
+      "crop": "themes-scrolled",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          1,
+          72,
+          98,
+          24
+        ]
+      },
+      "headline": "Scrolled part-way, the cards fade out at the top and slide under the buttons at the bottom.",
+      "changed": "This is the new fade from the design-guidelines work: the cards themselves fade to see-through at the edge, instead of a band of panel colour painted over them. At the bottom they disappear just where the buttons start, so they look like they pass underneath.",
+      "notice": "Over a wallpaper theme the fade blends into whatever is behind it, with no coloured strip.",
+      "risk": "The fade appears and disappears instantly as you start and stop scrolling. It doesn't ease in, because the smooth version relies on a technique that slows the app down."
+    },
+    {
+      "id": "AR4-3",
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Customize look (tapped open)",
+      "crop": "look-open",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          0,
+          4,
+          100,
+          26
+        ]
+      },
+      "headline": "Customize look opens to small pictures of each choice, drawn in your theme's own colours.",
+      "changed": "Message bubbles, message box and roundness are rows of picture tiles, and so is Layout at the top. Each tile is a tiny chat window painted in the current theme's colours, so Outlined bubbles show their outline and a pill looks like a pill. The first tile is always 'Auto', with what the theme itself uses written under it. Glass stays a row of four words: Auto, Clear, Frosted, Solid. 'Bubble shape' is now 'Message bubbles', and Terminal is gone from Message box.",
+      "notice": "Roundness is three steps (Square, Soft, Round) with no slider. Someone who set an in-between roundness before sees no tile picked until they choose one.",
+      "risk": "You wrote 'Auto (Theme)' for Glass, but in a four-word strip it wrapped onto two lines. So every picker's first choice says just 'Auto', with the theme's pick shown under it where there's room."
+    },
+    {
+      "id": "AR4-4",
+      "words": true,
+      "surface": "Appearance panel",
+      "path": "Settings → Appearance → Customize look → Message box",
+      "headline": "Should the Message box setting stay in Customize look?",
+      "today": "Message box changes the frame around the typing area at the bottom of the chat: a full-width bar (Standard), a rounded card floating above the bottom edge (Floating), or no bar at all, just the text line and send button (Minimal). Of the 8 community themes, 4 use Floating, 1 uses Minimal and 3 use Standard. The built-in themes all use Standard. No theme uses Terminal.",
+      "problem": "Layout already decides most of this. Floating bars layout floats the typing area anyway, and Minimalist layout removes its frame entirely. So for many people, Message box either does nothing they can see or repeats what Layout did.",
+      "proposal": "Keep it or remove it. Removed, each theme keeps its own message box and nobody can change it for every theme.",
+      "options": [
+        {
+          "id": "remove",
+          "label": "Remove it",
+          "pros": [
+            "One less setting, in a section you said should be minimal.",
+            "No setting that seems to do nothing under Minimalist layout."
+          ],
+          "cons": [
+            "Someone who likes the floating card on every theme loses that choice."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep it",
+          "pros": [
+            "Every choice a theme can make stays yours to override."
+          ],
+          "cons": [
+            "Under Floating bars or Minimalist layout, some tiles look like they do nothing."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AR4-5",
+      "words": true,
+      "surface": "Whole app",
+      "path": "Every scrolling list that fades at its edge",
+      "headline": "Where should the new fade replace the old painted one, beyond the themes box?",
+      "today": "Only the themes box uses the new fade in this work. The separate design-guidelines work already switched popups, the session list and a few overlays to it on its own branch, which isn't finished or merged yet.",
+      "problem": "You asked for it 'here and anywhere else it appears'. Doing the rest here would change the same files the design-guidelines work is changing, and the two sets of changes would collide when merged.",
+      "proposal": "Leave the rest of the app to the design-guidelines work, which is already doing it, and make sure it covers every remaining list.",
+      "options": [
+        {
+          "id": "guidelines",
+          "label": "Leave it to that work",
+          "pros": [
+            "No colliding changes; one place decides how fades look everywhere.",
+            "This panel can merge on its own."
+          ],
+          "cons": [
+            "Until that work merges, the app has both fade styles."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "here",
+          "label": "Do it all here",
+          "pros": [
+            "One fade style everywhere, sooner."
+          ],
+          "cons": [
+            "Makes this bigger to check and slower to merge.",
+            "Likely clashes with the other branch's changes."
+          ]
+        }
+      ]
+    }
+  ]
+}

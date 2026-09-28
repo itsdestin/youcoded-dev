@@ -1,0 +1,21 @@
+{
+ "deck": "bubble-steps",
+ "started": "2026-09-02T10:10:52.306Z",
+ "submitted": "2026-09-02T10:22:46Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "other",
+   "seconds": 654,
+   "theme": "midnight",
+   "zoom": 1,
+   "note": "no this is really odd. within a single bubble, there should only ever be a single reasoning card, a single assistant message, and a single tool group. in that order. the reasoning sections within the \"after\" bubble should merge into a single reasonoing section at the top. should be possible without fucking with transcripts, just renderer?"
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 57,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

@@ -1,0 +1,185 @@
+{
+  "title": "New screenshot tool — do its Settings pictures match the old one's?",
+  "key": "shoot-phase1-review",
+  "out": "shoot.review.html",
+  "images": "images/shoot.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Old tool (clicks its way there)",
+    "after": "New tool (opens it directly)"
+  },
+  "themes": [
+    "meadow-mist",
+    "halftone-dimension"
+  ],
+  "crops": {
+    "panel-appearance": [
+      "settings",
+      "appearance",
+      "468x636+486+132"
+    ],
+    "panel-bugreport": [
+      "settings",
+      "bugreport",
+      "648x713+396+94"
+    ],
+    "panel-sync": [
+      "settings",
+      "sync",
+      "468x636+486+132"
+    ],
+    "panel-drawer": [
+      "settings",
+      "drawer",
+      "368x300+0+0"
+    ],
+    "panel-cloud": [
+      "settings",
+      "cloud",
+      "868x400+286+76"
+    ],
+    "panel-performance": [
+      "settings",
+      "performance",
+      "468x380+486+132"
+    ],
+    "panel-help": [
+      "settings",
+      "help",
+      "388x472+526+214"
+    ]
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Settings",
+      "path": "The gear, top left",
+      "crop": "panel-appearance",
+      "headline": "Appearance looks the same from both tools, pixel for pixel.",
+      "changed": "The new tool opens Appearance by its name instead of clicking the gear and then the row. 32 of the 34 pictures both tools took were identical like this one.",
+      "measured": "32 of 34 pairs identical",
+      "notice": "Nothing — the picture you review is the same. It just arrives faster, and cannot break when a button is renamed.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          5.1,
+          3.8,
+          89.7,
+          92.5
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Settings",
+      "path": "Settings → Development → Report a bug",
+      "crop": "panel-bugreport",
+      "headline": "A screen two levels deep also matches exactly.",
+      "changed": "The new tool opens the bug report form straight away. The old one clicked Settings, then Development, then the report row.",
+      "notice": "Same picture, fewer steps that could go wrong.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          3.7,
+          3.4,
+          92.6,
+          93.3
+        ]
+      }
+    },
+    {
+      "id": "S-3",
+      "surface": "Settings",
+      "path": "Settings → Backup & Sync",
+      "crop": "panel-sync",
+      "headline": "Backup & Sync matches too, and the new tool waits for it to finish loading.",
+      "changed": "This panel shows a spinner first. The new tool waits until the real panel is on screen instead of guessing a time.",
+      "notice": "No more pictures of a half-loaded panel.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          5.1,
+          3.8,
+          89.7,
+          92.5
+        ]
+      }
+    },
+    {
+      "id": "S-4",
+      "surface": "Settings",
+      "path": "The gear, top left",
+      "crop": "panel-drawer",
+      "headline": "The Settings drawer matches; only the theme's moving background dots differ.",
+      "changed": "The drawer itself is the same. These two themes animate their background, so the dots were caught at a different moment.",
+      "notice": "Pictures of animated themes will always differ a little in the background, from either tool.",
+      "risk": "A real change hidden in a moving background is easy to miss; the new tool's automatic check does not compare pictures, only that each screen opened.",
+      "highlight": {
+        "box": [
+          0.0,
+          0.0,
+          87.0,
+          100.0
+        ]
+      }
+    },
+    {
+      "id": "S-5",
+      "surface": "Settings",
+      "path": "Settings → Assistant settings → Cloud providers",
+      "crop": "panel-cloud",
+      "headline": "The old tool could no longer open Cloud providers. The new one can.",
+      "changed": "The old tool's plan clicked a button name that changed, so it failed. The new tool opens the page by its name.",
+      "notice": "A renamed button no longer breaks the pictures.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          2.8,
+          6.0,
+          94.5,
+          94.0
+        ]
+      }
+    },
+    {
+      "id": "S-6",
+      "surface": "Settings",
+      "path": "Settings → Performance",
+      "crop": "panel-performance",
+      "headline": "Performance had never been photographed. Now it is.",
+      "changed": "This row only appears on computers with two graphics chips. The practice copy can now pretend to be one of those.",
+      "notice": "One more Settings screen you can review.",
+      "risk": "The two chip names shown are made up for the practice copy.",
+      "highlight": {
+        "box": [
+          5.1,
+          6.4,
+          89.7,
+          93.6
+        ]
+      }
+    },
+    {
+      "id": "S-7",
+      "surface": "Settings",
+      "path": "Settings → Help & feedback",
+      "crop": "panel-help",
+      "headline": "Help & feedback had no plan in the old tool. Every Settings screen is now covered.",
+      "changed": "All 21 Settings screens are in the new tool's list, including this one, which the old tool never had.",
+      "measured": "21 screens, 42 pictures in 19 seconds; the old tool took 58 seconds for 36",
+      "notice": "Asking for 'every Settings screen' now really means every one.",
+      "risk": "",
+      "highlight": {
+        "box": [
+          6.2,
+          5.1,
+          87.6,
+          89.8
+        ]
+      }
+    }
+  ]
+}

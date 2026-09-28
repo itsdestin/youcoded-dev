@@ -17,7 +17,7 @@ for (const d of dirs) {
   // Order every entry by (run id, file time) and let the later one win per surface × theme.
   // WHY run id first (hand-off gap 6): under load an EARLIER sweep's shard can write its manifest
   // AFTER a newer sweep's, and "newest file wins" then resurrected a stale MISSED row. The run id
-  // (UI_REVIEW_RUN, stamped by run-review.sh) says which sweep an entry belongs to; file time only
+  // (UI_REVIEW_RUN, stamped by the retired run-review.sh; old run folders still carry it) says which sweep an entry belongs to; file time only
   // breaks ties and orders manifests from before 2026-08-27, which carry no run id (-1).
   // Nothing is discarded: a surface only an older sweep captured stays listed — dropping
   // everything but the newest run would silently erase the surfaces of a shard that crashed.

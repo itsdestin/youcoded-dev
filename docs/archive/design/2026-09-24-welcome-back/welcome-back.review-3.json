@@ -1,0 +1,55 @@
+{
+  "title": "Welcome back — three loose ends",
+  "key": "welcome-back-review-3",
+  "out": "welcome-back.review-3.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "S-parity",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Opening YouCoded after it closed with sessions open",
+      "headline": "Welcome back is the full Resume browser for those sessions: preview, tags, notes, rename and complete all work.",
+      "changed": "Stated, not asked: this is what you tried on the round-1 deck. Your notes there changed the spacing and buttons but never said yes or no to the whole idea.",
+      "notice": "Anything you can do to a session in Resume Session, you can do here before reopening it.",
+      "yes": "Yes, that's it",
+      "no": "Trim it down"
+    },
+    {
+      "id": "S-inapp",
+      "words": true,
+      "surface": "Quit warning",
+      "path": "Closing the app window while sessions are open",
+      "headline": "The quit warning is a YouCoded window, styled like 'Close session', not your computer's pop-up.",
+      "changed": "Stated, not asked: you asked for this in round 1 and shaped its wording in round 2, but never confirmed the window itself.",
+      "notice": "It follows your theme. If the app is frozen and can't draw it, the window closes after a few seconds anyway.",
+      "yes": "Confirmed",
+      "no": "Keep OS pop-up"
+    },
+    {
+      "id": "Q-label",
+      "words": true,
+      "surface": "Quit warning",
+      "path": "Closing the app window while sessions are open",
+      "headline": "Where does 'Resume on Next Launch?' go?",
+      "today": "Built as the switch's label, beside Close window. The window's title is 'Close window'.",
+      "problem": "Your round-2 note can be read either way, and a helper reading it cold took it as the title.",
+      "proposal": "Pick which one you meant.",
+      "options": [
+        {
+          "id": "switch",
+          "label": "The switch's label",
+          "pros": ["The question sits right next to the switch that answers it."],
+          "cons": ["The title stays the plainer 'Close window'."],
+          "recommended": true
+        },
+        {
+          "id": "title",
+          "label": "The window's title",
+          "pros": ["The first thing you read is the choice."],
+          "cons": ["The switch then needs its own shorter label, and the title no longer says the window will close."]
+        }
+      ]
+    }
+  ]
+}

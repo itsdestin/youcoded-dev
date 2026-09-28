@@ -2,7 +2,7 @@
 date: 2026-09-01
 status: active
 type: investigation
-topic: remote first-connect is slow — ~2.5 s of scripted dead time is proven; the white-screen bottleneck is not
+topic: remote first-connect is slow — the ~2.5 s of scripted dead time is fixed (2026-09-10); the white-screen bottleneck is still open and still unmeasured
 ---
 
 # Remote first-connect: what is proven and what is not
@@ -11,22 +11,24 @@ topic: remote first-connect is slow — ~2.5 s of scripted dead time is proven; 
 chat takes a further beat to fill in. Destin confirmed on his phone (2026-07-20) that the
 Tier-1 byte-shaving merge (youcoded `0cbb72ba`) changed nothing he could feel on LAN.
 
-## Proven: ~2.5 s of scripted dead time before chat replays (pay it on every connect)
+## Proven: ~2.5 s of scripted dead time before chat replays — FIXED 2026-09-10 (`youcoded@4f9320217`)
 
-`youcoded/desktop/src/main/remote-server.ts` → `replayBuffers()` sends the session list,
-then `await this.requestSnapshot()` (2000 ms internal timeout — on timeout it costs the
-full 2 s AND returns `degraded: true`), then a hardcoded `setTimeout(…, 500)` before it
-replays PTY buffers and hook events. The comment above the timer concedes the worst case.
-<!-- claim: {"path": "youcoded/desktop/src/main/remote-server.ts", "contains": "worst-case total delay before PTY/hook"} -->
+`youcoded/desktop/src/main/remote-server.ts` → `replayBuffers()` used to send the session list,
+then `await this.requestSnapshot()` (2000 ms internal timeout — on timeout it cost the
+full 2 s AND returned `degraded: true`), then a hardcoded `setTimeout(…, 500)` before it
+replayed PTY buffers and hook events. The comment above the timer conceded the worst case.
 
-Inside that timer the hook buffers are replayed **one WS frame per event**, up to
-10,000 per session — batch them. This delay is post-auth, so it lengthens
-time-to-first-CHAT, not necessarily time-to-first-PAINT; measure which one Destin is
-seeing before assuming.
+**This is the exact fix shape below, now shipped.** The client sends `client:ready` once
+React has mounted and registered its listeners; the host holds everything behind a gated
+queue (`runRestore`'s "THE CUT LINE") until that ack arrives, instead of guessing a fixed
+delay. The hardcoded 500 ms timer and the sequential snapshot→PTY wait are both gone —
+`rg` for either returns 0 hits, re-verified 2026-09-23 — and `remote-readiness.test.ts`
+pins a source guard against any 500 ms timer reappearing, plus the timing cases, the cut
+line and the hook-pass rule. Hook buffers now flush from the same gated queue rather than
+one WS frame per event.
 
-**Fix shape.** Have the client ACK `chat:hydrate` instead of guessing 500 ms; stop
-serialising snapshot → PTY. This is the same change as commit 2 of the hydration plan —
-see `docs/active/investigations/2026-09-01-remote-hydration-ordering-and-view-parity.md`.
+This delay was post-auth, so it lengthened time-to-first-CHAT, not time-to-first-PAINT —
+see "Unproven" below, which this fix does not touch.
 
 ## Unproven: the seconds of white before React mounts
 

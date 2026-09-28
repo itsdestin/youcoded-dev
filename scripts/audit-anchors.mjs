@@ -316,6 +316,20 @@ export function harvestMapPaths(text) {
   return [...paths];
 }
 
+// Workspace scripts named in LIVE instructions — skills, slash commands, CLAUDE.md — must
+// exist. WHY (2026-09-26): the /ui-review skill still sent sessions to a deleted
+// `scripts/ui-review/run-review.sh` after the sweep was retired; MAP paths were checked, the
+// skill that a session actually follows was not, and only a hand search caught it. A line
+// that says the script is retired/deleted/archived is history, not an instruction.
+export function harvestScriptPaths(text) {
+  const paths = new Set();
+  for (const line of text.split(/\r?\n/)) {
+    if (/\b(retired|deleted|archived|removed)\b/i.test(line)) continue;
+    for (const m of line.matchAll(/(?<![\w./-])(scripts\/[\w./-]+\.(?:sh|mjs|js|py))\b/g)) paths.add(m[1]);
+  }
+  return [...paths];
+}
+
 // Just enough glob for the rules' paths: frontmatter: ** crosses slashes, * doesn't.
 // WHY `**/` is "zero or more folders" (2026-09-16): it used to compile to `.*/`, which
 // needs at least one folder in front — so `**/docs/*/plans/**` could never match the
@@ -763,7 +777,13 @@ function main() {
     anchors: { total: 0, failed: [] },
     mapPaths: { total: 0, missing: [] },
     ruleGlobs: { failed: [] },
-    budgets: { violations: [], eagerTokens: 0, eagerLimit: BUDGETS.eagerTokens },
+    // WHY ruleBodyWarnings is separate from violations (2026-09-23): an over-budget rule
+    // body is a trim-when-convenient signal, not a build-blocking one — result.ok below
+    // never reads this array. Rule-body warnings only (pty-io.md et al were measured
+    // over budget by whole-file `wc -w`, which counts the frontmatter too; the real,
+    // frontmatter-stripped body count is what this budget means, and conflating the two
+    // is how "nothing flagged" got reported for files that were actually compliant).
+    budgets: { violations: [], ruleBodyWarnings: [], eagerTokens: 0, eagerLimit: BUDGETS.eagerTokens },
     diffScope: null,
     currentShas: {},
   };
@@ -771,6 +791,13 @@ function main() {
   // 1. rules: verify: anchors + per-rule body budget
   const rulesDir = path.join(root, '.claude', 'rules');
   const rules = [];
+  // WHY (2026-09-23): a rule with NO frontmatter block has no `paths:` scope, so Claude
+  // Code loads it EAGERLY on every session — exactly like README.md before it got real
+  // frontmatter. Such a rule never enters `rules[]` below (it's skipped as a parse
+  // failure), so the eager-token total silently missed it. Tracked here and folded into
+  // eagerWords at budget time so a frontmatter-less rule counts the same as any other
+  // eager one, instead of vanishing from the estimate it should inflate.
+  let noFrontmatterWords = 0;
   for (const f of fs.readdirSync(rulesDir).filter(f => f.endsWith('.md') && f !== 'README.md').sort()) {
     const text = fs.readFileSync(path.join(rulesDir, f), 'utf8');
     const fm = parseRuleFrontmatter(text);
@@ -779,6 +806,7 @@ function main() {
     if (!fm) {
       result.anchors.total++;
       result.anchors.failed.push({ source: `.claude/rules/${f}`, reason: 'no frontmatter block' });
+      noFrontmatterWords += countBodyWords(text);
       continue;
     }
     if (fm.errors.length) {
@@ -798,7 +826,7 @@ function main() {
     }
     const words = countBodyWords(text);
     if (words > BUDGETS.ruleBodyWords) {
-      result.budgets.violations.push({ file: `.claude/rules/${f}`, words, limit: BUDGETS.ruleBodyWords });
+      result.budgets.ruleBodyWarnings.push({ file: `.claude/rules/${f}`, words, limit: BUDGETS.ruleBodyWords });
     }
   }
 
@@ -836,6 +864,21 @@ function main() {
     }
   } else {
     result.mapPaths.missing.push('docs/MAP.md (the map itself is missing)');
+  }
+
+  // 3b. scripts named in skills, slash commands and CLAUDE.md must exist
+  result.scriptPaths = { total: 0, missing: [] };
+  {
+    const sources = [path.join(root, 'CLAUDE.md')];
+    const walk = (dir) => { if (!fs.existsSync(dir)) return; for (const e of fs.readdirSync(dir, { withFileTypes: true })) { const f = path.join(dir, e.name); if (e.isDirectory()) walk(f); else if (f.endsWith('.md')) sources.push(f); } };
+    walk(path.join(root, '.claude', 'skills')); walk(path.join(root, '.claude', 'commands'));
+    for (const file of sources) {
+      if (!fs.existsSync(file)) continue;
+      for (const p of harvestScriptPaths(fs.readFileSync(file, 'utf8'))) {
+        result.scriptPaths.total++;
+        if (!fs.existsSync(path.join(root, p))) result.scriptPaths.missing.push(`${path.relative(root, file)}: ${p}`);
+      }
+    }
   }
 
   // 4. every rule glob must still match >=1 tracked file (catches renamed dirs)
@@ -879,7 +922,10 @@ function main() {
       result.budgets.violations.push({ file: 'docs/PITFALLS.md', words, limit: BUDGETS.pitfallsWords });
     }
   }
-  let eagerWords = countBodyWords(fs.readFileSync(path.join(root, 'CLAUDE.md'), 'utf8'));
+  // WHY += noFrontmatterWords: a rule that failed to parse above (no frontmatter at all)
+  // is missing from `rules[]`, but it is EAGER — Claude Code has no `paths:` to scope it
+  // by, so it loads every session exactly like an unscoped rule below would.
+  let eagerWords = countBodyWords(fs.readFileSync(path.join(root, 'CLAUDE.md'), 'utf8')) + noFrontmatterWords;
   for (const rule of rules) {
     if (!rule.fm.paths.length || rule.fm.paths.includes('**')) eagerWords += countBodyWords(rule.text);
   }
@@ -916,6 +962,7 @@ function main() {
   }
 
   result.ok = !result.anchors.failed.length && !result.mapPaths.missing.length
+    && !result.scriptPaths.missing.length
     && !result.ruleGlobs.failed.length && !result.budgets.violations.length
     && !result.yamlUnsafe.length && !result.worktreeGlobs.blind.length
     && !(result.strayRules || []).length && !(result.shadowedDocs || []).length;
@@ -949,6 +996,7 @@ function printHuman(r, root = process.cwd()) {
   };
   dump('anchors', r.anchors.failed);
   dump('MAP paths missing', r.mapPaths.missing);
+  dump('scripts named in skills/commands/CLAUDE.md that do not exist', r.scriptPaths?.missing ?? []);
   warn('MAP paths in a repo that is not on disk (unverifiable here, not drift)', r.mapPaths.skipped || []);
   dump('rule globs matching nothing', r.ruleGlobs.failed);
   // A FAILURE since 2026-09-02: the one stray fork (youcoded/.claude/rules/android-runtime.md)
@@ -961,6 +1009,11 @@ function printHuman(r, root = process.cwd()) {
        (r.strandedWork || []).map(x => `${x.branch ?? '(detached)'}: ${x.dirtyFiles} uncommitted, ${x.unpushedCommits} unpushed, idle ${x.idleHours}h  ->  ${x.path}`));
   warn('workbench switches the shot rig\'s README never names (a plan that omits one captures an EMPTY card, which reads as a missing feature)',
        (r.undocumentedSwitches || []).map(s => `?${s}=  ->  document it in scripts/ui-review/README.md`));
+  // A WARNING, not a failure: trim when convenient. A rule over its word budget still
+  // loads correctly (it's path-scoped); the budget is about session-cost hygiene, not
+  // correctness, so it must not turn the whole mechanical pass red.
+  warn('rule bodies over the word budget (trim when convenient — not build-blocking)',
+       (r.budgets.ruleBodyWarnings || []).map(x => `${x.file}: ${x.words} words (limit ${x.limit})`));
   if (r.worktreeGlobs) {
     console.log(`worktree-safe globs: ${r.worktreeGlobs.blind.length} blind · `
       + `${r.worktreeGlobs.exempt.length} exempt (named) · `

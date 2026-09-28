@@ -69,7 +69,7 @@ Wait for the positive signal, then settle for the negative.
 More needs a named constant with its measurement; a budget raised twice is a treadmill — wait
 on a signal. **A file's one-time cost — a heavy lazy `import()`, a huge fixture — is warmed in
 `beforeAll` under its own named budget, never inside the first test** (~3s here, over 30s on
-the Windows runner: two red release builds).
+Windows: two red releases).
 **Why:** a timeout looks like a logic bug. **Guard:** none — candidate.
 
 ## Real output goes to a temp dir, and its teardown retries
@@ -92,10 +92,9 @@ Run only the test you are proving (`-t "<name>"`); break the real site, not a lo
 CSS↔TSX coupling).
 
 ## A test lives with its feature and is named for its behaviour
-**Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), the file
-named for what it renders or calls — never a new file per task. Titles state behaviour: no
-dates, `§`, task ids or review rounds. Shared setup lives in
-`tests/helpers/`. **Why:** 826 files, 62% in name clusters (2026-09-16).
+**Invariant:** a new test goes in `tests/<module>.test.ts` (or `<Surface>.test.tsx`), named for
+what it renders or calls — never a new file per task. Titles state behaviour: no dates, `§`,
+task ids or review rounds. Shared setup lives in `tests/helpers/`. **Why:** 826 files, 62% in name clusters (2026-09-16).
 **Guard:** `scripts/ast-grep/rules/test-name-describes-behaviour.yml`.
 
 ## Before calling a failure "flake"

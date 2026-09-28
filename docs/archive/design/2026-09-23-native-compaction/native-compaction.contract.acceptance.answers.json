@@ -1,0 +1,32 @@
+{
+ "deck": "native-compaction-release2-contract-acceptance",
+ "started": "2026-09-24T00:19:06.532Z",
+ "submitted": "2026-09-24T00:19:24Z",
+ "cur": 3,
+ "answers": {
+  "C": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "R1": {
+   "v": "yes",
+   "seconds": 4,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "R2": {
+   "v": "yes",
+   "seconds": 1,
+   "theme": "morning-rounds",
+   "zoom": 1
+  },
+  "R3": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "morning-rounds",
+   "zoom": 1
+  }
+ }
+}

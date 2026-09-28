@@ -1,0 +1,27 @@
+{
+  "title": "When trying again still cannot open the conversation",
+  "key": "conversation-admission-escalation",
+  "out": "escalation-review.html",
+  "images": "images/escalation-review",
+  "stage": "review",
+  "runs": {
+    "before": "../../../../scratch/lease-handoff/escalation-runs/before",
+    "after": "../../../../scratch/lease-handoff/escalation-runs/after"
+  },
+  "labels": { "before": "Repeated retry", "after": "Explicit takeover choice" },
+  "themes": ["midnight", "light"],
+  "crops": { "retry": ["escalation", "retry", "520x220+460+340"] },
+  "steps": [
+    {
+      "id": "R-4",
+      "surface": "Resume a conversation",
+      "path": "Resume Session → Try again → another refusal",
+      "crop": "retry",
+      "headline": "A second refusal now asks whether to take over.",
+      "changed": "Instead of repeating Try again, the second refusal opens the existing takeover confirmation. This replaces R-2's endless retry behavior, as you requested.",
+      "notice": "Take over requests the handoff; Never mind opens nothing. If the handoff cannot be confirmed, proceeding still needs a separate confirmation.",
+      "risk": "These are real renderer screens with simulated computers, not proof of cross-device transfer. Before uses the previous review's denial capture; After was reached by clicking Try again in the updated flow.",
+      "highlight": { "box": [9, 16, 83, 67] }
+    }
+  ]
+}

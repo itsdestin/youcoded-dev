@@ -120,6 +120,22 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
         # wecoded-themes' default branch is `main`, everyone else's is `master` —
         # ask the remote rather than assuming, or every themes worktree reports "?".
         repo_base=$(git -C "$WORKSPACE/$repo" symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || echo "origin/master")
+        # WHY collapsing (2026-09-23): a merged/empty, clean, fully-pushed worktree has
+        # nothing left to say — no work to lose, nothing to push, nothing ahead to review.
+        # Measured in this workspace: ~14 of ~60 lines in this section were exactly that
+        # sentence repeated with a different name, drowning the handful of ⚠ lines (dirty,
+        # unpushed, missing dir) a session actually needs to notice. Only THIS shape
+        # collapses — ahead==0 AND the plain "-" marker, i.e. no dirty files and no
+        # unpushed commits — so a worktree that is merged but still holds unpushed or
+        # uncommitted work always stays listed individually.
+        #
+        # A second shape collapses to NAMES only (2026-09-23): clean, fully pushed, but
+        # with commits ahead of master. Nothing there can be lost (it is on GitHub), yet a
+        # session hunting for existing work on a topic still needs the branch name — so
+        # one comma-joined line keeps the names at a fraction of a full row each. Measured
+        # that day: ~40 of the ~55 remaining rows were this shape.
+        repo_collapsed=0
+        repo_pushed=()
         while IFS= read -r wt_path; do
             [[ "$wt_path" == "$WORKSPACE/$repo" ]] && continue   # skip the main checkout
             # A worktree still REGISTERED against a directory that no longer
@@ -174,9 +190,25 @@ if [[ ${#SUB_REPOS[@]} -gt 0 ]]; then
             elif [[ "$wt_dirty" != "0" ]]; then
                 wt_mark="⚠"
             fi
+            if [[ "$wt_ahead" == "0" && "$wt_mark" == "-" ]]; then
+                repo_collapsed=$((repo_collapsed + 1))
+                WT_ANY=1
+                continue
+            fi
+            if [[ "$wt_mark" == "-" && "$wt_ahead" != "?" ]]; then
+                repo_pushed+=("${wt_branch:-$(basename "$wt_path") (detached)}")
+                WT_ANY=1
+                continue
+            fi
             echo "  $wt_mark $(basename "$wt_path") [$repo: ${wt_branch:-detached}] — ${wt_note}"
             WT_ANY=1
         done < <(git -C "$WORKSPACE/$repo" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
+        if [[ ${#repo_pushed[@]} -gt 0 ]]; then
+            echo "  - ${#repo_pushed[@]} clean, fully-pushed worktree(s) in $repo with work not yet on $repo_base: $(IFS=,; echo "${repo_pushed[*]}" | sed 's/,/, /g')"
+        fi
+        if [[ $repo_collapsed -gt 0 ]]; then
+            echo "  + ${repo_collapsed} more worktree(s) in $repo are merged/empty and clean — candidates for cleanup (\`git -C $repo worktree list\`)"
+        fi
     done
 
     # Directories under worktrees/ that git doesn't know about — leftovers from a

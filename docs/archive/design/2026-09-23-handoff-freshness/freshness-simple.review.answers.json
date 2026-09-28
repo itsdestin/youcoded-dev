@@ -1,0 +1,22 @@
+{
+ "deck": "handoff-freshness-simple-review",
+ "started": "2026-09-23T09:06:45.430Z",
+ "submitted": "2026-09-23T09:10:03Z",
+ "cur": 1,
+ "answers": {
+  "F-4": {
+   "note": "actually, could we make this create the conversation tab and just show this above the input area? that way they don't \"leave\" the box before it feels like the session has resumed?",
+   "v": "other",
+   "seconds": 61,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-5": {
+   "v": "other",
+   "note": "i still think the messages not confirmed screen is confusing. when would users actually encounter this? what are the causes? how can we simplify this to communicate what it means for the user and how they should interpret it and proceed.",
+   "seconds": 137,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

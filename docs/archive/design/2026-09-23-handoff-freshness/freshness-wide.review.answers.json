@@ -1,0 +1,27 @@
+{
+ "deck": "handoff-freshness-wide-review",
+ "started": "2026-09-23T10:20:16.399Z",
+ "submitted": "2026-09-23T10:20:45Z",
+ "cur": 2,
+ "answers": {
+  "F-10": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-11": {
+   "note": "",
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "F-12": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

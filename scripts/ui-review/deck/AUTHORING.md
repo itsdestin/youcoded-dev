@@ -11,6 +11,17 @@ Copy a template from `scripts/ui-review/templates/` — one per kind, every fiel
 explained in place. `_comment` keys (at any depth, including `_comment_<field>`) are stripped
 when the deck is built, so leave them or delete them as you like.
 
+## Start here
+
+| Want to… | Read |
+|---|---|
+| Build and serve any deck, start to finish | "Order of work" (bottom of this file) |
+| Ask Destin 4+ questions at once | "Question — words only", "Page markers" |
+| Pick which step kind fits | `.claude/rules/review-deck.md`'s table, then "The step kinds" |
+| Get a field or refusal exactly right | "Deck-level fields", "What the builder refuses" |
+| Know what a submission writes | "The answers file", "What he sees when he submits" |
+| Run `build`/`preview`/`serve`/etc. | "Commands" |
+
 ## Where a deck lives, and what it is called
 
 A feature's decks sit in `docs/active/design/<date>-<feature>/` **of the session's workspace
@@ -30,11 +41,11 @@ spec. Answers files are committed (they are the record of Destin's decisions); `
 | `out` | yes | the HTML file `build` writes, beside the spec |
 | `steps` | yes | the steps, in the order he reads them |
 | `images` | pictures only | folder the cut crops land in, relative to the spec. Must contain the spec's own name, or two decks overwrite each other |
-| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `run-review.sh` output folder. **Paths resolve from the spec's own folder** — write `runs/after` beside the spec; a workspace-root path such as `docs/active/design/<feature>/runs/after` is looked up UNDER the spec's folder and fails (measured 2026-09-10; a 2026-09-09 note said the opposite and cost one build). A slide shows all of them unless it names its own (below) |
+| `runs` | pictures only | every capture this deck can show: `today`, `before` and/or `after`, each a `shoot` output folder (`node scripts/shoot/shoot.mjs <screens> --before <branch> --after <worktree> --out runs` writes `runs/before` and `runs/after`), or an old sweep's folder. **Paths resolve from the spec's own folder** — write `runs/after` beside the spec; a workspace-root path such as `docs/active/design/<feature>/runs/after` is looked up UNDER the spec's folder and fails (measured 2026-09-10; a 2026-09-09 note said the opposite and cost one build). A slide shows all of them unless it names its own (below) |
 | `labels` | no | renames the run captions, e.g. `{"before": "Round 1", "after": "Round 2"}`; a slide may override its own |
 | `themes` | no | which palettes the deck offers; defaults to all six. The first one is what it opens on (see Themes below) |
 | `theme` | no | only `"fixed"`, which keeps the deck on its own theme order |
-| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json` |
+| `crops` | no | extra crop regions this deck needs: `{"name": ["<plan>", "<shot>", "WxH+X+Y"]}` on the 1440x900 shots. Shared names come from `scripts/ui-review/crops.json`. **A `shoot` screen name (`settings/sound`, from `shoot --list`) needs no entry here** — the whole picture is the screen |
 | `live` | live only | `{"worktree": "<name>", "paneWidth": 460}` — the build every pane comes from |
 | `branch` | contract | the branch the contract will be built on |
 | `stage` | no | `ask`, `design`, `contract`, `review` or `accept` — the tool then checks this deck carries that stage's slide. It never says which OTHER slides are allowed |
@@ -80,12 +91,12 @@ Two runs; the rig boxes the pixels that differ.
 
 | Field | Required | What it is |
 |---|---|---|
-| `crop` | yes | which region of the screenshots to show |
+| `crop` | yes | which region of the screenshots to show — a `crops` name, or a `shoot` screen name |
 | `changed` | yes | the *What changed* card — the real difference, one or two sentences |
 | `notice` | yes | the *You'll notice* card — what is different for him while using it |
 | `risk` | no | the *Risk* card. Keep it to one sentence |
 | `measured` | no | a number that proves it (must contain a digit) |
-| `highlight` | no | `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
+| `highlight` | no | on a `shoot` screen with one run: the screen's own panel, measured by `shoot` (write none). `"auto"` (the default on two runs), `{"text": "…"}`, `{"selector": "…"}` or `{"box": [left, top, width, height]}` — **percent of the crop (0–100), not pixels**; the build refuses a box that leaves the picture |
 
 He answers **Yes keep it / No revert it / Other**.
 
@@ -110,8 +121,8 @@ last run.
 
 He **picks one**, or *None of these* / Other.
 
-Pictures that are not workbench shots (a Remotion still, a frame of a film, a montage) go in
-a run folder by hand: `<run>/shots-<plan>/<theme>/<shot>.png`, with the spec's `crops` naming
+Pictures `shoot` can take come from `shoot`. Pictures it cannot (a Remotion still, a frame of a
+film, a montage) go in a run folder by hand: `<run>/shots-<plan>/<theme>/<shot>.png`, with the spec's `crops` naming
 `["<plan>", "<shot>", "WxH+0+0"]` at the picture's own size. Every run's picture must be the
 same size, or the before/after diff cannot box the change.
 
@@ -130,7 +141,9 @@ he should DRIVE, use Live instead.
 
 ### Live — panes of the running app (`live.json`)
 
-Deck-level `live.worktree` names the build. A pane shows one of two things:
+Deck-level `live.worktree` names the build — a checkout holding `desktop/`, so for a session
+worktree it is `sessions/<key>/youcoded`, not `sessions/<key>` (that fails serve with "not a
+checkout with a desktop/ folder"). A pane shows one of two things:
 
 | A pane's `live` (or a variant's) | What it shows |
 |---|---|

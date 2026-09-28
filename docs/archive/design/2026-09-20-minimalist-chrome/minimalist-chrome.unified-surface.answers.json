@@ -1,0 +1,15 @@
+{
+ "deck": "minimalist-unified-surface",
+ "started": "2026-09-23T23:17:41.121Z",
+ "submitted": "2026-09-23T23:20:24Z",
+ "cur": 0,
+ "answers": {
+  "U-1": {
+   "note": "i think i like B (a light), but it still has issues. the minimize/maximize/close buttons are styled differently from everything else. the files/games panels need to keep a \"selected\" state, modeled after the existing selected state and the changes we made for the chat/terminal toggle. the text input area should also adopt the same styling as the buttons and header elements. the tag/note status bar chip doesn't match the others, nore does the edit button for the quick chips. i also want that edit button to parallel the status bar edit button. it should be to quick chips what the other button is to status bar chips visually/proportionally. ",
+   "v": "other",
+   "seconds": 162,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
