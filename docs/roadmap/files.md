@@ -31,6 +31,11 @@ searched or resumed (chat-data).
       is saved yet and the assistant cannot see comments
       `files-panel` `desktop` `in-flight` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 
+- [ ] On the phone, an open comments panel does not update by itself when the file's comments
+      change somewhere else (the assistant, another device, another app); reopening the file shows
+      the change. Desktop and the web version update live. Destin: fine for now (2026-09-28)
+      `files-panel` `android` `confirmed` `checked 2026-09-28`
+
 - [ ] Saving a comment into a Word or Excel file keeps one backup copy per file, and those
       copies are never cleared out, so they pile up for every document ever commented on
       `files-panel` `all` `confirmed` `checked 2026-09-27`
