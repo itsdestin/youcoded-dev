@@ -1,0 +1,243 @@
+{
+  "title": "Office — contract",
+  "key": "office-contract",
+  "out": "office.contract.html",
+  "themes": ["midnight"],
+  "branch": "session/office-suite-investigation",
+  "sources": {
+    "office-questions": "office.questions.json",
+    "office-base": "office-base.questions.json",
+    "office-review": "office.review.json",
+    "office-review-2": "office.review-2.json",
+    "office-review-3": "office.review-3.json"
+  },
+  "steps": [
+    {
+      "id": "C",
+      "surface": "Office",
+      "path": "The Office page, the file-viewer editor, and the files Office can open",
+      "headline": "This is what done means for Office — the app's document, spreadsheet and presentation editor.",
+      "rows": [
+        {
+          "id": "R1",
+          "statement": "Office is built on the Euro-Office editors, not the original OnlyOffice ones with its logo rule.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-base#Q-base-final"
+        },
+        {
+          "id": "R2",
+          "statement": "Office ships inside the YouCoded installer as a separate program, with its licence notices and a code link included.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review-3#S-installer"
+        },
+        {
+          "id": "R3",
+          "statement": "Office ships about 25 common look-alike fonts, plus whatever fonts are already installed on your computer.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-fonts"
+        },
+        {
+          "id": "R4",
+          "statement": "Office lives at the top of your Pages list; pinning it uses one of your four pinned-page spots, like any other page.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-home"
+        },
+        {
+          "id": "R5",
+          "statement": "Office's start screen offers new blank files, your recent Office documents, and this project's other Office files.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-home"
+        },
+        {
+          "id": "R6",
+          "statement": "On a new install, Office's start screen says your files will appear here instead of showing an empty Recent list.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-empty"
+        },
+        {
+          "id": "R7",
+          "statement": "Several open Office documents appear as tabs across the top of one Office page.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-document"
+        },
+        {
+          "id": "R8",
+          "statement": "A document tab left idle for a while sleeps to save memory, shown dimmed with a moon, and wakes back where you left it.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-document"
+        },
+        {
+          "id": "R9",
+          "statement": "Spreadsheet and presentation tabs get your theme around the editor, keep the sheet or slide itself neutral, and switch instantly when awake.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-spreadsheet"
+        },
+        {
+          "id": "R10",
+          "statement": "Office saves your work automatically and keeps earlier versions you can restore from a Versions window.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-versions"
+        },
+        {
+          "id": "R11",
+          "statement": "Every version from the last day is kept, then daily for 30 days, capped at 50 versions per file and 1 GB total.",
+          "checkedBy": "human",
+          "threshold": "matches the tiered-30 keeping rule",
+          "measured": "24h: every version; then 1/day for 30 days; cap 50/file, 1GB total",
+          "source": "office-review-2#Q-versions-keep"
+        },
+        {
+          "id": "R12",
+          "statement": "OnlyOffice's own Version History menu inside the editor is hidden; Office's Versions button is the only place to see and restore versions.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review-2#S-history"
+        },
+        {
+          "id": "R13",
+          "statement": "Office saves your changes to the real file automatically, without needing you to press Save.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-save"
+        },
+        {
+          "id": "R14",
+          "statement": "The small editor inside the file viewer uses YouCoded's own slim toolbar, not OnlyOffice's ribbon.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-slim"
+        },
+        {
+          "id": "R15",
+          "statement": "Opening an Office file in the file viewer shows an instant preview first; editing starts only after you press Edit.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-open-mode"
+        },
+        {
+          "id": "R16",
+          "statement": "Pressing Edit on a Word, Excel or PowerPoint file swaps the preview for the real editor; there is no Save or Cancel, only Done.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review#B-inline"
+        },
+        {
+          "id": "R17",
+          "statement": "The file panel's header shows an Office briefcase icon instead of open-in-default-app, and the document zooms so its text fills the panel's width.",
+          "checkedBy": "deck",
+          "threshold": "≥65% zoom in the default panel width",
+          "measured": "51% → 65% zoom in the default panel width",
+          "source": "office-review-2#A-inline"
+        },
+        {
+          "id": "R18",
+          "statement": "In the file viewer, the editor's scroll bars and the gap above the page are gone; the document fills the panel edge to edge.",
+          "checkedBy": "deck",
+          "threshold": "pass/fail",
+          "source": "office-review-3#A-slim-clean"
+        },
+        {
+          "id": "R19",
+          "statement": "The Edit button on an Office file stays hidden while the session-files list is open, same as it works today.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review#Q-edit-button"
+        },
+        {
+          "id": "R20",
+          "statement": "Pressing Escape while a document is open closes any open editor menu first; with none open, it goes back to chat.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review#Q-escape"
+        },
+        {
+          "id": "R21",
+          "statement": "Office edits Word, Excel and PowerPoint files (.docx, .xlsx, .pptx).",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-types"
+        },
+        {
+          "id": "R22",
+          "statement": "Office opens old .doc, .xls and .ppt files; saving converts them to the modern format, after asking first.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-types"
+        },
+        {
+          "id": "R23",
+          "statement": "LibreOffice's .odt, .ods and .odp files are supported in the first version of Office, not added later.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review-3#Q-odf"
+        },
+        {
+          "id": "R24",
+          "statement": "Office edits CSV tables and warns before saving if something added, such as colours or formulas, cannot be kept in CSV.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review-3#S-csv-warn"
+        },
+        {
+          "id": "R25",
+          "statement": "Office's editor takes on your theme's colours, font and glass effects, so wallpaper themes stay beautiful behind it.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-theme"
+        },
+        {
+          "id": "R26",
+          "statement": "Office's editor also matches your theme's roundness — buttons, menus, fields and dialogs use your corner-size setting.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review-3#S-roundness"
+        },
+        {
+          "id": "R27",
+          "statement": "This version of Office adds nothing to the assistant: it neither sees nor edits a document you have open.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-review-3#S-no-assistant"
+        },
+        {
+          "id": "R28",
+          "statement": "Office reaches desktop first; on phones, Office files stay preview-only until a later version.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-phones"
+        },
+        {
+          "id": "R29",
+          "statement": "The first testable version of Office includes the Office page and tabs: start screen, open, edit, save.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-first-demo"
+        },
+        {
+          "id": "R30",
+          "statement": "The first testable version of Office already matches your theme, not OnlyOffice's default look.",
+          "checkedBy": "human",
+          "threshold": "pass/fail",
+          "source": "office-questions#Q-first-demo"
+        },
+        {
+          "id": "R31",
+          "statement": "Opening Office, opening a Recent file, switching tabs, opening Versions, and editing a file from a conversation all work in a dev instance.",
+          "checkedBy": "live-app",
+          "threshold": "the described click-through completes without error, in a dev instance",
+          "source": "office-review-2#L-try-2"
+        }
+      ]
+    }
+  ]
+}
