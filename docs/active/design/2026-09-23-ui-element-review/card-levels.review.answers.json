@@ -1,0 +1,136 @@
+{
+ "deck": "ui-card-levels",
+ "started": "2026-09-28T09:49:00.998Z",
+ "submitted": "2026-09-28T10:01:39Z",
+ "cur": 19,
+ "answers": {
+  "L-1": {
+   "v": "yes",
+   "seconds": 70,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-2": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-3": {
+   "note": "i think the device lines can be bare names like they were but in a single shared container instead of 3 separate containers.",
+   "v": "other",
+   "seconds": 75,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-4": {
+   "v": "other",
+   "seconds": 99,
+   "theme": "light",
+   "zoom": 1,
+   "note": "for this and previous questions, the after images seem to have lost an outline around the cards that was more prominent in the before images, and now dont separate well from the background. not right now, but i will also want to do a comprehensive review of how different levels of stacked surfaces contrast against eachother in various themes, and probably add a lot more outlines around various elements."
+  },
+  "L-5": {
+   "v": "yes",
+   "note": "install tailsacel at the bottom should probably also be a card?",
+   "seconds": 55,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-6": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-7": {
+   "v": "yes",
+   "note": "kinda mentioned before, but i think i want to, as part of this work, establish a clear heirarchy of surfaces and guidelines for the color/transparenct/etc of each level of a stacked surface, so things are visually consistent across all menus. like do the first-level cloud providers cards match first-level back up and sync or appearance cards?",
+   "seconds": 107,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-8": {
+   "v": "yes",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-9": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-10": {
+   "note": "the spacing for the intelligence tiers card is really weird. big gap after budget selector, for example. want to remove the \"set to\" lines, as these are repetive of the clear setting chosen above. remove the clear button altogether, and make sure users can select \"no selection\" as the top item in each picker to clear either option individually. ",
+   "v": "yes",
+   "seconds": 104,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-11": {
+   "note": "this is weird. this button is size oddly, the text doesnt seem to match settings/spacing rules used elsewhere, and copy can be clearer.]/more concise",
+   "v": "other",
+   "seconds": 54,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-12": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-13": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-14": {
+   "v": "other",
+   "note": "this still seems like the left/right/top/bottom margins are all inconsistent with other settings popups? same for text sizing? this whole development popup is strange.",
+   "seconds": 40,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-15": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-16": {
+   "v": "yes",
+   "seconds": 3,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-17": {
+   "v": "yes",
+   "seconds": 10,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-18": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-19": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "light",
+   "zoom": 1
+  },
+  "L-21": {
+   "note": "want to include these in the contrast/outline review mentioned earlier.",
+   "v": "yes",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
