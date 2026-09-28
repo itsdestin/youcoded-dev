@@ -236,5 +236,6 @@ So neither disappears outright. Google shrinks to "advanced Gmail reading", and 
 - **To-dos:** a follow-up, not the first release (Destin: "we can have to-dos be a follow up").
 - **Connections are per device** for now. Syncing them across devices is parked on the roadmap
   (`docs/roadmap/sync.md`). Destin: "i dont want to deal with the risk rn".
-- **Still open:** how to handle the AI-provider risk in section 4. Destin found the question
-  confusing; it is re-explained in chat and belongs on the next deck.
+- **AI-provider risk (section 4): deferred** (Destin, 2026-09-27). It'll be handled by per-model
+  data-retention information shown in the model picker, then used to warn about or block
+  Google-connected chats on models that keep or train on data. Roadmap: `docs/roadmap/user-interface.md`.

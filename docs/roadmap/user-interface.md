@@ -277,6 +277,16 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       a row that already carries a name, a source and a favourite star.
       `model-picker` `all` `confirmed` `checked 2026-09-06`
 
+- [ ] Nothing tells you what happens to your data when you pick a model — whether the provider
+      keeps it, or trains its AI on it. Destin wants this beside the cost and intelligence tags
+      above, visible for every model and provider (2026-09-27): "whether or not their data is gonna
+      be retained, um, or trained on, or anything". It matters for connected accounts too: Google
+      forbids Gmail/Calendar data being used to train AI, and some OpenRouter providers may train on
+      what they receive. Once this information exists, a Google-connected chat on such a model can
+      warn or be blocked. Deferred until connections are built; undesigned: where the retention
+      facts come from (OpenRouter publishes some per-provider data policies), and how they stay current.
+      `model-picker` `all` `parked` `checked 2026-09-27` `security` → docs/active/design/2026-09-26-everyday-actions/proposal.md
+
 - [ ] Closing a dialog opened from the Development menu closes the menu behind it too, and
       "Known issues" closes everything with nothing on screen acknowledging it. Found by a
       context-free UX tester on 2026-09-10 (`docs/archive/reviews/2026-09-10-error-states-unit-a-ux-review-2.md`
