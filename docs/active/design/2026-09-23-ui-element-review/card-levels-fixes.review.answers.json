@@ -1,0 +1,53 @@
+{
+ "deck": "ui-card-levels-fixes",
+ "started": "2026-09-28T11:08:23.381Z",
+ "submitted": "2026-09-28T11:11:21Z",
+ "cur": 6,
+ "answers": {
+  "F-1": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-2": {
+   "note": "why did you add an outline around additional backups? i didn't ask for that/ its worse.",
+   "v": "other",
+   "seconds": 38,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-3": {
+   "v": "yes",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-4": {
+   "v": "other",
+   "note": "still a big gap after the budget selector before frontierr",
+   "seconds": 36,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-5": {
+   "note": "did you look at this? think about everything i've told you about my preferences and the designs with built, then look at this card.",
+   "v": "other",
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-6": {
+   "v": "yes",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "F-7": {
+   "v": "yes",
+   "seconds": 16,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
