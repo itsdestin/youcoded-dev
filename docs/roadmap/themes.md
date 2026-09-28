@@ -3,6 +3,14 @@ Filing test: how the app looks under a theme — engine, editor, a theme renderi
 here: installing or browsing themes (marketplace).
 
 
+- [ ] After the UI consistency work lands: a broad review, across every theme, of the colours,
+      see-through levels and contrast used for each card level, then make the theme builder and
+      its checks fast and accurate enough that a new theme comes out usable, with good contrast,
+      on the first try (Destin, 2026-09-28). Starting point: on 2026-09-28 card fills measured
+      only a shade off their background in all 8 themes tested, and the theme's own faint
+      outline nearly vanished on three glass themes, so the app now forces a stronger shared outline
+      `settings/themes` `all` `confirmed` `checked 2026-09-28`
+
 - [ ] A theme whose mascot has companions (sun, motes, sparkles around it on the welcome
       screen) still animates them smoothly at the screen's full refresh rate. The mascot
       itself moved to 30 redraws a second on 2026-09-26 (youcoded#573: idle welcome screen
