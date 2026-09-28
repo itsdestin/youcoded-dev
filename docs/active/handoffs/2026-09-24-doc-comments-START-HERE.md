@@ -213,3 +213,12 @@ workbench latency quirk in ui-probe.
    remote — ask Destin first. (Mockup-only code deleted; PR #263 closed 2026-09-24.)
 6. **Later, separate projects** — comments syncing across devices; sharing documents with
    other people through the account (roadmap: other-features → accounts).
+
+## Acceptance (2026-09-28)
+
+- Acceptance deck submitted: every row accepted (`doc-comments.contract.acceptance.answers.json`).
+- Chat decisions + three new screens confirmed on `doc-comments.confirm-2.json` (all yes).
+- Deck-page CSS fix (Meadow Mist blur, `page.css`): the selfie's sample deck has no one-pane live
+  step, so it showed no change; the sign-off is Destin's live check at review ("well now both
+  seem fine"). Roadmap item filed to add that step to the sample.
+- Open: Destin will open one YouCoded-saved .xlsx in real Excel (confirm-2 C-8).
