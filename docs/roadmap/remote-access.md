@@ -1,6 +1,13 @@
 # remote-access — reaching the app from another device
 Filing test: reaching the app from another device — the protocol, the browser client.
 
+- [ ] A phone connected to the computer can lose the messages it is showing: when the computer
+      sends its copy of the conversations and its copy of one is empty (it had not loaded that
+      conversation yet, or its own chat went blank), that empty copy replaces the phone's. Read
+      from the code during the 2026-09-27 blank-chat fix; left out when Destin scoped that work
+      to desktop
+      `desktop` `needs-verify` `checked 2026-09-27`
+
 - [ ] With a phone connected, the computer sends it the terminal output and chat events of every
       open session, not only the one the phone is showing — more sessions running means a busier
       computer and phone. Found by the 2026-09-23 performance review; not built because remote

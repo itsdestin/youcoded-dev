@@ -3,6 +3,11 @@ Filing test: everything kept about a chat — transcript, title, tags, notes, se
 resume state. Not here: the model is running right now (native-harness); the files a chat
 produced and the panel that shows them (files).
 
+- [ ] A streamed reply was split mid-sentence across two chat bubbles ("…for your review. Now" |
+      "the invites.") in one practice-app run while the computer was busy; seen once in ~30
+      loaded runs (2026-09-27), not yet seen in the real app
+      `chat` `desktop` `needs-verify` `checked 2026-09-27` `needs-repro`
+
 - [ ] The Projects page's conversation list shows only Claude Code conversations and carries no
       tags, note or last-used model, so its cards look sparser than the same conversations in the
       Resume browser, and assistant conversations in that folder never appear there (seen while
