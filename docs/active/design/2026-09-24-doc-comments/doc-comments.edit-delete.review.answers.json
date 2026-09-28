@@ -1,0 +1,44 @@
+{
+ "deck": "doc-comments-edit-delete-review",
+ "started": "2026-09-28T23:48:47.869Z",
+ "submitted": "2026-09-28T23:49:56Z",
+ "cur": 4,
+ "answers": {
+  "D-1": {
+   "v": "yes",
+   "t": 1790639338118,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-2": {
+   "note": "i think i want to undo my dark editing pill idea. keep editing and the icon, but leave as bare text without pill/container.",
+   "t": 1790639370639,
+   "v": "other",
+   "seconds": 33,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-3": {
+   "v": "yes",
+   "t": 1790639374612,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-4": {
+   "v": "yes",
+   "t": 1790639385210,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "D-5": {
+   "v": "yes",
+   "t": 1790639391985,
+   "seconds": 7,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
