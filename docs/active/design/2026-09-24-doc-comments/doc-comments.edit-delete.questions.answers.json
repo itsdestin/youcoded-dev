@@ -1,0 +1,51 @@
+{
+ "deck": "doc-comments-edit-delete-questions",
+ "started": "2026-09-28T12:13:10.171Z",
+ "submitted": "2026-09-28T12:15:33Z",
+ "cur": 0,
+ "answers": {
+  "E-1": {
+   "v": "pick",
+   "pick": "icons",
+   "t": 1790597731827,
+   "note": "next to resolve. this is how most other editors do it.",
+   "seconds": 24,
+   "theme": "meadow-mist"
+  },
+  "E-2": {
+   "v": "pick",
+   "pick": "anyone",
+   "t": 1790597731827,
+   "note": "keep same as word/excel. easier to implement since we dont have to guard some comments, and more in line with what people would typically expect.",
+   "seconds": 24,
+   "theme": "meadow-mist"
+  },
+  "E-3": {
+   "v": "pick",
+   "pick": "whole-thread",
+   "t": 1790597731827,
+   "seconds": 24,
+   "theme": "meadow-mist"
+  },
+  "E-4": {
+   "v": "pick",
+   "pick": "confirm",
+   "t": 1790597731827,
+   "seconds": 24,
+   "theme": "meadow-mist"
+  },
+  "E-5": {
+   "v": "no",
+   "t": 1790597731827,
+   "seconds": 24,
+   "theme": "meadow-mist"
+  },
+  "E-6": {
+   "v": "pick",
+   "pick": "none",
+   "t": 1790597731827,
+   "seconds": 24,
+   "theme": "meadow-mist"
+  }
+ }
+}
