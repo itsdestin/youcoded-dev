@@ -281,6 +281,33 @@ Prior art worth borrowing beyond OnlyOffice itself (all AGPL, so fine inside the
 worker), its embed postMessage API, its compact-viewport logic, and an `agent-plugin/` that
 already drives the live editor from an LLM.
 
+## Euro-Office trial (2026-09-28)
+
+Destin's questions-deck answer (`office-questions#Q-base`): test Euro-Office first.
+
+- **File fidelity: identical.** Native x2t from Euro-Office DocumentServer `v9.3.5-rc.1` and from
+  OnlyOffice Desktop 9.4 both round-tripped all six samples (file → Editor.bin → file,
+  `roundtrip.py` + `compare.py`) with zero measured differences — every paragraph, table, image,
+  hyperlink, formula, conditional format, all 2.88 M values, every slide/picture/note. Speed within
+  ~10–20% of each other (Euro slightly slower on small files).
+- **Its server package's editors do not run offline as-is:** they open a websocket to a document
+  server (`/doc/<id>/c/`) and sit on the loading skeleton. ranuts' vendor is a "third-party
+  compiled offline build" of OnlyOffice 9.3.0 (its `NOTICE`) — the desktop-style build with an
+  in-process server responder. Swapping server-build editors under ranuts' guards is therefore not
+  a valid test of the editor UI.
+- **The right architecture for desktop already exists for Euro-Office:**
+  [euro-office-lite](https://github.com/delmarguillen/euro-office-lite) (alpha, Tauri) runs
+  *unmodified* Euro-Office sdkjs/web-apps in a webview, a `bridge.js` implementing the
+  `AscDesktopEditor` API the editors expect from a desktop host, and **native x2t** for
+  conversion. That is exactly the "native translator" fix from the performance section, and it
+  replaces most of ranuts' 16 serverless guards on desktop. ranuts' WASM path stays relevant for
+  phones and the phone remote.
+- **Governance (research, sourced in chat 2026-09-28):** Euro-Office is on 9.3.x while OnlyOffice
+  shipped 9.4 in May; one upstream resync since April; ~a dozen active contributors; config and
+  plugin APIs unchanged from OnlyOffice (its own docs say OnlyOffice plugins are "generally
+  compatible"); OnlyOffice publicly denies any settlement of the logo dispute, so treat it as
+  unresolved. Switching base later is cheap because the embedding surface is identical.
+
 ## Suggested order, if you go ahead
 
 0. ~~Decide the licence route~~ — decided: A.

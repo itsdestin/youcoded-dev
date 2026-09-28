@@ -57,7 +57,7 @@ def pptx_stats(p):
             'notes': notes, 'layouts': len(pr.slide_layouts), 'has_mark': MARK in text}
 
 for name in sorted(os.listdir(f'{S}/samples')):
-    a, b = f'{S}/samples/{name}', f'{S}/rig/out/saved-{name}'
+    a, b = f'{S}/samples/{name}', (sys.argv[1] if len(sys.argv) > 1 else f'{S}/rig/out') + f'/saved-{name}'
     if not os.path.exists(b):
         print(name, 'NO SAVED COPY'); continue
     fn = {'docx': docx_stats, 'xlsx': xlsx_stats, 'pptx': pptx_stats}[name.rsplit('.', 1)[1]]
