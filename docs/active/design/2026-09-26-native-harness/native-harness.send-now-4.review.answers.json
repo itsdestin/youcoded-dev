@@ -1,0 +1,30 @@
+{
+ "deck": "native-harness-send-now-review-4",
+ "started": "2026-09-28T22:40:43.921Z",
+ "submitted": "2026-09-28T22:41:23Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "note": "no background on the edit button",
+   "t": 1790635258096,
+   "v": "other",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1790635266314,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-3": {
+   "v": "yes",
+   "t": 1790635282279,
+   "seconds": 16,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}
