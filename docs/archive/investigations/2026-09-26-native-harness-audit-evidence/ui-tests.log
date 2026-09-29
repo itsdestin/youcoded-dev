@@ -1,0 +1,113 @@
+UI test files ["tests/ToolCard.test.tsx","tests/ask-user-question-card-other.test.tsx","tests/native-send-unconfirmed.test.tsx","tests/permissions-section.test.tsx","tests/session-context-banner.test.tsx","tests/session-context-panel.test.tsx","tests/session-terminal-lazy-native.test.tsx","tests/skill-invocation-card.test.tsx","tests/specialist-actions.test.tsx","tests/specialist-ask-block.test.tsx","tests/specialist-envelope.test.tsx","tests/specialists-chip-claude-code.test.tsx","tests/specialists-section.test.tsx","tests/tool-card-answered-elsewhere.test.tsx","tests/tool-card-external-ask.test.tsx","tests/tool-card-full-auto-stop.test.tsx","tests/tool-card-grant-width.test.tsx","tests/tool-card-preparing.test.tsx","tests/usage-card-native.test.tsx","tests/use-native-session-totals.test.tsx"]
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop
+
+(node:3935528) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ tests/specialists-section.test.tsx (17 tests) 361ms
+(node:3935525) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ tests/permissions-section.test.tsx (33 tests) 567ms
+stderr | tests/ToolCard.test.tsx > a stray Enter > a permission card in the chat on screen > still reaches Always Allow deliberately: one arrow press, then Enter
+In HTML, <button> cannot be a descendant of <button>.
+This will cause a hydration error.
+
+  <ChatProvider>
+    <ToolCard sessionId="s1" tool={{id:"tool-1", ...}}>
+      <div className={"border b..."} data-tool-use-id={undefined}>
+        <button>
+        <PermissionButtons requestId="native-abc123" noKeyboard={false} suggestions={undefined} denyListed={undefined} ...>
+          <div className="px-3 py-2 ...">
+            <p>
+            <p>
+            <RadioGroup options={[...]} value="exact" onChange={function onChange} aria-label="How much t..." ...>
+              <div role="radiogroup" className="flex flex-..." onKeyDown={function onKeyDown} aria-label="How much t...">
+>               <button
+>                 type="button"
+>                 disabled={false}
+>                 onClick={function onClick}
+>                 className="flex items-start gap-2 text-left disabled:opacity-50 rounded-md px-1 -mx-1 state-layer"
+>               >
+                  <Radio checked={true} onChange={function onChange} className="mt-0.5">
+>                   <button
+>                     ref={null}
+>                     type="button"
+>                     role="radio"
+>                     aria-checked={true}
+>                     disabled={undefined}
+>                     onClick={function onChange}
+>                     className="inline-flex items-center justify-center w-3.5 h-3.5 shrink-0 rounded-full transition-..."
+>                   >
+                  ...
+                ...
+            ...
+
+<button> cannot contain a nested <button>.
+See this log for the ancestor stack trace.
+
+ ✓ tests/ToolCard.test.tsx (18 tests) 258ms
+ ✓ tests/ask-user-question-card-other.test.tsx (6 tests) 274ms
+stderr | tests/tool-card-grant-width.test.tsx > grant width — what the card sends > sends grantScope "exact" when the narrow option is chosen (the default)
+In HTML, <button> cannot be a descendant of <button>.
+This will cause a hydration error.
+
+  <ChatProvider>
+    <ToolCard tool={{id:"tool-1", ...}} sessionId="s1">
+      <div className={"border b..."} data-tool-use-id={undefined}>
+        <button>
+        <PermissionButtons requestId="native-abc123" noKeyboard={false} suggestions={undefined} denyListed={false} ...>
+          <div className="px-3 py-2 ...">
+            <p>
+            <p>
+            <RadioGroup options={[...]} value="exact" onChange={function onChange} aria-label="How much t..." ...>
+              <div role="radiogroup" className="flex flex-..." onKeyDown={function onKeyDown} aria-label="How much t...">
+>               <button
+>                 type="button"
+>                 disabled={false}
+>                 onClick={function onClick}
+>                 className="flex items-start gap-2 text-left disabled:opacity-50 rounded-md px-1 -mx-1 state-layer"
+>               >
+                  <Radio checked={true} onChange={function onChange} className="mt-0.5">
+>                   <button
+>                     ref={null}
+>                     type="button"
+>                     role="radio"
+>                     aria-checked={true}
+>                     disabled={undefined}
+>                     onClick={function onChange}
+>                     className="inline-flex items-center justify-center w-3.5 h-3.5 shrink-0 rounded-full transition-..."
+>                   >
+                  ...
+                ...
+            ...
+
+<button> cannot contain a nested <button>.
+See this log for the ancestor stack trace.
+
+ ✓ tests/specialist-envelope.test.tsx (19 tests) 348ms
+ ✓ tests/tool-card-grant-width.test.tsx (14 tests) 221ms
+ ✓ tests/usage-card-native.test.tsx (27 tests) 175ms
+ ✓ tests/tool-card-full-auto-stop.test.tsx (22 tests) 244ms
+ ✓ tests/specialist-actions.test.tsx (8 tests) 132ms
+(node:3935654) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ tests/native-send-unconfirmed.test.tsx (3 tests) 154ms
+ ✓ tests/session-context-panel.test.tsx (11 tests) 144ms
+ ✓ tests/tool-card-preparing.test.tsx (5 tests) 77ms
+ ✓ tests/specialists-chip-claude-code.test.tsx (13 tests) 70ms
+ ✓ tests/session-context-banner.test.tsx (4 tests) 72ms
+ ✓ tests/tool-card-external-ask.test.tsx (2 tests) 86ms
+ ✓ tests/tool-card-answered-elsewhere.test.tsx (3 tests) 65ms
+ ✓ tests/specialist-ask-block.test.tsx (3 tests) 83ms
+ ✓ tests/session-terminal-lazy-native.test.tsx (4 tests) 20ms
+ ✓ tests/skill-invocation-card.test.tsx (6 tests) 31ms
+ ✓ tests/use-native-session-totals.test.tsx (4 tests) 13ms
+
+ Test Files  20 passed (20)
+      Tests  222 passed (222)
+   Start at  12:54:56
+   Duration  4.25s (transform 2.10s, setup 809ms, import 4.56s, tests 3.40s, environment 5.29s)
+

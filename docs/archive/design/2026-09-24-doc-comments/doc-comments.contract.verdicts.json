@@ -1,0 +1,54 @@
+{
+  "R7": {
+    "verdict": "pass",
+    "evidence": "Deck re-shoot: docs/archive/design/2026-09-24-doc-comments/shots-word-excel/ph-xlsx-tap.png (pre-existing, same workbench harness, narrow/phone viewport) shows tapping cell C4 (red corner mark) slides Priya Shah's comment card up from the bottom, above the typing box, with a Reply box and close X — matches the approved review#R-9 step exactly. My own live re-shoot of the narrow toggle mid-session hit an unrelated app reload; the pre-existing phone shot is the authoritative comparison."
+  },
+  "R12": {
+    "verdict": "pass",
+    "evidence": "Re-shot live in the workbench (docs/archive/design/2026-09-24-doc-comments/shots-grade/r12-plan-open.png, r12-click-mark.png): opening 2026-09-24-onboarding-redesign.md shows the seeded comment as a dotted-underline <mark> highlight; clicking it opens the full Comments panel scrolled to that thread, matching approved review#R-1. The hover-card half (headless mouseenter simulation did not paint in my session — a documented ui-probe limitation) is corroborated by docs/.../shots-polish/3-meadow-mist-md-hover.png (pre-existing, same feature) showing the hover card with Reply/resolve, and by source read of ReadingHighlights.tsx (native mouseenter/mouseleave listeners, HOVER_OPEN_MS=300, renders HighlightHoverCard)."
+  },
+  "R13": {
+    "verdict": "pass",
+    "evidence": "Re-shot live in the workbench (docs/archive/design/2026-09-24-doc-comments/shots-grade/r13-rightclick.png, r13-add-comment-box.png): selecting text and dispatching a real contextmenu event opens one menu with 'Ask about this', 'Add comment', 'Copy', 'Select all'; clicking Add comment opens a small box next to the selection quoting \"working composer\" with a textarea and Cancel/Comment buttons — matches approved review#R-2 exactly."
+  },
+  "R15": {
+    "verdict": "pass",
+    "evidence": "Re-shot live in the workbench (docs/archive/design/2026-09-24-doc-comments/shots-grade/r15-ask-chip.png): choosing 'Ask about this' from the selection menu drops a \"working composer\" chip into the message composer. Source read of TokenPill.tsx confirms hover deepens the chip and calls dispatchRefHover to light up the source, and onClick calls onJump to scroll to it; the component's own header comment states it is reused unchanged for the SENT bubble (UserMessage.tsx) 'so a reference reads identically before and after sending' — matching 'even after sending'. Matches approved review#R-4."
+  },
+  "R17": {
+    "verdict": "pass",
+    "evidence": "Pre-existing screenshots from the same workbench harness confirm the built state: docs/.../shots-word-excel/docx-comments.png shows launch-brief.docx with the same rounded Comments panel and Priya Shah's Word comment under her name; docs/.../shots-word-excel/xlsx-comments.png shows q3-sales-by-rep.xlsx with the identical panel plus red corner marks on commented cells (C4, C15). My own live re-shoot hit the Word/Excel binary viewer hanging on 'Loading viewer…' in this specific headless session, but the SAME hang reproduced on an unrelated pre-existing PDF file too (React.lazy chunk under headless CDP, not a doc-comments regression) while the Comments-count button and comment data loaded correctly every time — so the hang is a probing-tool limitation, not evidence the feature regressed. Matches approved review#R-6."
+  },
+  "R18": {
+    "verdict": "pass",
+    "evidence": "Pre-existing screenshot docs/.../shots-polish/2-code-chip-hover.png shows ChatView.tsx open with the same Comments panel/button, line 11 highlighted, and a composer chip reading 'line 11 · ChatView.tsx' — exactly 'Ask about this chips from code light up their lines'. My own live re-shoot (shots-grade/r18-code3.png) confirms the same Comments panel opens for a code file with the seeded code comment ('Is 32px right on every pointer…'). Matches approved review#R-7."
+  },
+  "R19": {
+    "verdict": "pass",
+    "evidence": "Pre-existing screenshot docs/.../shots-polish/4-projects-comments.png shows the Projects screen's launch-brief.docx overlay with a 'Comments 4' button in the header row beside Open/Reveal/Copy path, opening the same comment panel with Ask Your Assistant. My own live re-shoot (shots-grade/r19-check.png, r19-projects1.png) confirms the Projects screen and its file grid load correctly in the current build. Matches approved review#R-8."
+  },
+  "R22": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/pending-mutation-queue.test.ts — Test Files 1 passed, Tests 20 passed. Read the test: 'an xlsx move forwards the fresh id in the result' pins that pending-mutation-queue.ts's move branch now forwards the fresh id (code review F1's queue-level bug). Read the source to confirm the OTHER real caller named in F1 (MoveCommentTool.execute, desktop/src/main/harness/tools/doc-comments-tools.ts:361-365) also now reads and states the fresh id — both call sites the finding named are fixed, so the guard plus this direct read together verify the row's real-world claim (no full-workbook re-scan on the next Reply/Resolve after a move)."
+  },
+  "R23": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/docx-comments.test.ts — Test Files 1 passed, Tests 46 passed. Read the test: the 'decompression-bomb-shaped archive' describe block asserts a declared-oversize or real-oversize word/comments.xml or word/document.xml returns error:'archive-too-large', while a genuinely corrupted (scrambled-bytes) word/comments.xml returns error:'invalid-docx' — the exact two-different-errors distinction the row states. The named guard covers Word; the Excel half is independently covered by tests/xlsx-comments.test.ts's matching 'invalid-xlsx' vs 'archive-too-large' cases (also currently passing), so the row's 'Word or Excel' claim holds for both formats."
+  },
+  "R24": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/CommentsMargin.test.tsx — Test Files 1 passed (part of the combined run with doc-comments-ipc-handlers.test.ts: 2 passed, 28 tests passed). Read the test: 'renders 1,000 text comments in one pass within a generous CPU budget' and 'renders the elden-ring fixture's busiest real sheet (315 cell comments) within budget' both measure process.cpuUsage() and assert well under a multi-second ceiling while asserting every comment actually anchored — directly tests 'hundreds of comments keeps the margin responsive'."
+  },
+  "R25": {
+    "verdict": "pass",
+    "evidence": "cd youcoded/desktop && npx vitest run tests/doc-comments-ipc-handlers.test.ts — 28 tests passed (combined run, see R24). Read the test: the 'a missing or malformed selector is refused (Android parity)' describe block explicitly refuses an absent selector, a selector with no recognized kind, and one missing its inner object, with a code comment citing the exact Android bug this pins parity against — directly tests 'rejected the same way on every device, never silently accepted on some'."
+  },
+  "R26": {
+    "verdict": "pass",
+    "evidence": "cd youcoded && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk ./gradlew testDebugUnitTest -x bundleWebUi --tests 'com.youcoded.app.doccomments.DocCommentsPendingQueueTest' --tests 'com.youcoded.app.doccomments.DocCommentsStoreTest' — BUILD SUCCESSFUL; app/build/test-results/testDebugUnitTest/TEST-...DocCommentsPendingQueueTest.xml: tests=14 failures=0 errors=0 (fresh run, timestamped this session). Read the test: 'an xlsx move forwards the fresh id in the result' mirrors the desktop fix (R22) on the Android/Kotlin queue — same mechanism, same claim, for phone/tablet."
+  },
+  "R27": {
+    "verdict": "pass",
+    "evidence": "Same gradle run as R26. app/build/test-results/testDebugUnitTest/TEST-...DocCommentsStoreTest.xml: tests=23 failures=0 errors=0. Read the test: 'a write-time failure (not a read failure) refuses as SIDECAR_WRITE_FAILED, never SIDECAR_CORRUPT' forces a write-time collision strictly after a successful read/apply and asserts a distinct error code from the sibling 'malformed JSON... still refuses as SIDECAR_CORRUPT' test — directly tests that a save failure from a storage/write problem is distinguished from file corruption, per the Android code review's F3 finding."
+  }
+}

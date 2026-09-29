@@ -1,0 +1,20 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded/desktop
+
+ ✓ tests/native-send.test.ts (3 tests) 38ms
+(node:191435) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ tests/native-send-unconfirmed.test.tsx (3 tests) 274ms
+ ✓ tests/native-session-host.test.ts (213 tests) 8047ms
+     ✓ a message typed while the session is still starting is HELD, not refused  321ms
+     ✓ a run finishing after its session was destroyed is dropped with the shell log line, not the permission one  368ms
+     ✓ shell-event fires with the ShellRunView and shellRunsFor replays it  317ms
+
+ Test Files  3 passed (3)
+      Tests  219 passed (219)
+   Start at  16:54:32
+   Duration  8.92s (transform 1.09s, setup 129ms, import 1.47s, tests 8.36s, environment 273ms)
+

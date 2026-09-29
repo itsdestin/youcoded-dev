@@ -12,7 +12,7 @@ verify:
   - path: youcoded/desktop/src/renderer/components/SessionStrip.tsx
     contains: "if [(]dotIdsRef.current.has[(]id[)][)] continue;"
   - path: youcoded/desktop/src/renderer/components/header/drag-order.ts
-    contains: "margin: -14"
+    contains: "margin: -12"
   - path: youcoded/desktop/src/renderer/components/header/pack-sessions.ts
     contains: "overflowChipWidth"
   - path: scripts/ui-review/drag-fuzz.mjs
@@ -41,7 +41,7 @@ dated WHY comment at its edit site; the pins are the `session-strip-*` ast-grep 
 
 ## A crossed dot has two images; the swap is at its centre; dots never FLIP
 **Invariant:** the flow draws a covered dot at its box and at its mirror one pill-width
-across, sizes summing to one; the yield (`DRAG_TUNE.margin = −14`) only swaps which is the
+across, sizes summing to one; the yield (`DRAG_TUNE.margin = −12`) only swaps which is the
 box; the flow runs as a layout effect on every commit that changes `overId`/`settle`; dots
 are skipped in the settle's FLIP; only dot-sized pills flow or are veiled.
 **Why:** a one-frame race doubled the dot (R9); a FLIP'd dot popped whole under the settling

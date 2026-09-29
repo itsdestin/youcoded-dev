@@ -131,7 +131,7 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
   // equals it was. The point is checked against what is really under it just before use: a
   // row that arrived late once pushed the message box down, and the click hit a quick chip.
   async function where(target, n) {
-    if (n) { const p = await tab.evaluate(inPage(locate, n)); if (p && await tab.evaluate(inPage(hits, n, p.x, p.y))) return { ...p, n }; }
+    if (n) { const p = await tab.evaluate(inPage(locate, n)); if (p && await tab.evaluate(inPage(hits, n, p.x, p.y))) return p; }
     // A journey step may run before the control has arrived: look again for up to 5 s.
     let controls = [];
     for (const t0 = Date.now(); ; await sleep(250)) {
@@ -140,10 +140,7 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
       ({ controls } = await tab.evaluate(inPage(listControls, { all: true })));
       const same = controls.filter((c) => c.role === target.role && c.label === target.label);
       const hit = same[(target.nth ?? 1) - 1] ?? same[0];
-      if (hit) {
-        const p = await tab.evaluate(inPage(locate, hit.n));
-        if (p && await tab.evaluate(inPage(hits, hit.n, p.x, p.y))) return { ...p, n: hit.n };
-      }
+      if (hit) { const p = await tab.evaluate(inPage(locate, hit.n)); if (p && await tab.evaluate(inPage(hits, hit.n, p.x, p.y))) return p; }
       if (Date.now() - t0 > 5000) break;
     }
     const shown = controls.slice(0, 60).map((c) => `${c.role} "${c.label}"`).join(', ');
@@ -180,17 +177,15 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
     switch (step.do) {
       case 'click': case 'double-click': case 'right-click': case 'hover': {
         let p = await where(step.target, n);
-        // Follow the control if the pointer's own travel moved it. WHY (2026-09-28): the header's
-        // session pills widen on hover, so gliding toward "All Sessions" pushed it right and the
-        // press landed on the pill beside it — the resume journey's load-dependent flake.
-        for (let tries = 0; tries < 3; tries++) {
-          await moveTo(p.x, p.y);
-          await tab.still(1000);
-          const q = await tab.evaluate(inPage(locate, p.n));
-          if (!q || (Math.abs(q.x - p.x) < 1 && Math.abs(q.y - p.y) < 1)) break;
-          p = { ...q, n: p.n };
+        await moveTo(p.x, p.y);
+        // WHY look again after the move (2026-09-27): the travel crosses other controls,
+        // and one it rests on can react and move the target. Under load a mouse step over
+        // the header's last session dot outlasted its hover dwell, the dot opened its name,
+        // the centred row shifted, and the click meant for "All Sessions" hit the dot.
+        if (step.do !== 'hover') {
+          p = await where(step.target, n);
+          await press(p.x, p.y, step.do === 'right-click' ? 'right' : 'left', step.do === 'double-click' ? 2 : 1);
         }
-        if (step.do !== 'hover') await press(p.x, p.y, step.do === 'right-click' ? 'right' : 'left', step.do === 'double-click' ? 2 : 1);
         break;
       }
       case 'type': {

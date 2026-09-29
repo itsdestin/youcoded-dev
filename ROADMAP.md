@@ -43,7 +43,6 @@ Target: `v1.3.1`
 - chat-data: Smaller reads left over from cycle 2 still do more work than they need to: two reads take whole files where…
 - dev-workspace: Waiting on CI runs eats whole sessions
 - dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
-- dev-workspace: Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56…
 - dev-workspace: Every macOS download since 2026-07-23 is unopenable, and the download page sends people to a button that no…
 - dev-workspace: Windows and macOS installers still hit the security wall
 - dev-workspace: No Google Play listing
@@ -71,14 +70,14 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 104 | 35 | 4 | 9 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 105 | 34 | 4 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 40 | 16 | 2 | 6 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 30 | 14 | 1 | 10 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 39 | 16 | 2 | 5 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 34 | 15 | 2 | 10 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 30 | 7 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 26 | 10 | 8 | 5 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 7 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 23 | 8 | 2 | 2 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 22 | 5 | 6 | 5 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |

@@ -24,6 +24,27 @@ searched or resumed (chat-data).
       of "no results". Builds on the Stage 2 item just above
       `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
 
+- [ ] Comment times are only relative ("5h ago"): hovering one could show the exact date and
+      time, a resolved comment could say when it was resolved (not possible for Word/Excel,
+      which don't record it), and the assistant could see comment times when it reads them.
+      Offered 2026-09-28, not chosen for the first version
+      `files-panel` `all` `decision` `checked 2026-09-28`
+
+- [ ] On the phone, an open comments panel does not update by itself when the file's comments
+      change somewhere else (the assistant, another device, another app); reopening the file shows
+      the change. Desktop and the web version update live. Destin: fine for now (2026-09-28)
+      `files-panel` `android` `confirmed` `checked 2026-09-28`
+
+- [ ] Saving a comment into a Word or Excel file keeps one backup copy per file, and those
+      copies are never cleared out, so they pile up for every document ever commented on
+      `files-panel` `all` `confirmed` `checked 2026-09-27`
+
+- [ ] "This file looks open in another app" (shown before a comment is saved into a Word or
+      Excel file) can keep appearing for a file that is actually closed, after Word or Excel
+      crashes and leaves its hidden marker file behind. (Long file names, whose marker Word names
+      differently, are now recognised — fixed 2026-09-28.)
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
 - [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
       but still a visible pause. What is left is the sheer number of elements syntax
       highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576

@@ -1,0 +1,24 @@
+---
+status: shipped
+---
+
+# Native harness B3 — retained-rule visibility (2026-09-27)
+
+Scope: B3 only, isolated session worktree; preserve uncommitted A1–A4/B1/B2 work. No commits, live app, configuration edits, new IPC/events or paid calls. The fixed system prompt and first-write policy are unchanged.
+
+## Behavior and interfaces
+
+- `youcoded/desktop/src/main/harness/injection/retained-rule-visibility.ts` extracts **complete, source-labelled, app-generated** rule messages at history replacement boundaries. It keeps literal full rule messages, not IDs guessed from summary prose or a user quotation. The driver checks the current fitted body + exact source-label against that retained set; an old version of a rule at the same source does not suppress current guidance. Once matched, the source ID is cached for subsequent tool calls.
+- `youcoded/desktop/src/main/harness/harness-session.ts` reconciles its dedupe set after seed/resume, clear, committed automatic/manual summary and an actual prune. Failed rewrites leave it intact. No history scan runs on a streamed token or an unchanged prune. Newly injected guidance still has null origins, `markAppGenerated` provenance and capture mutation; restored checkpoint literals retain their provenance. Read/skill reset, image dedupe and the fixed prompt are unchanged. The driver stays at the 4165-line guard, without raising the limit.
+- `youcoded/docs/native-runtime.md` now describes retained-context dedupe rather than the stale session-lifetime guarantee.
+- Desired cases live in `rule-injection.test.ts`, `harness-compaction.test.ts`, `native-compact.test.ts`, `native-clear-barrier.test.ts`, `harness-accepted-history.test.ts`. The defect-expecting, clear-only `native-instructions-audit-probe.test.ts` was removed after its replacement went green; other audit probes were left untouched.
+
+## Evidence
+
+- RED before edit: `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/rule-injection.test.ts -t 'reinjects a rule after clear'` — exit **1**, 1 failed / 11 skipped: post-clear prompt lacked the rule (`/tmp/b3-red.log`). Additional seed case `-t 'seeded .* source-labelled rule|reinjects a rule after clear'` — exit **1**, 2 failed / 1 passed, 11 skipped (`/tmp/b3-red-seed.log`).
+- GREEN focused clear/seed: same `-t 'seeded .* source-labelled rule|reinjects a rule after clear'` — exit **0**, 3 passed / 11 skipped (`/tmp/b3-green-seed.log`). Successful/failed/retained manual summaries, automatic summary, prune, changed same-source body and accepted-checkpoint origin regressions are included in the named suites.
+- Named suite command: `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/rule-injection.test.ts tests/harness-compaction.test.ts tests/native-compact.test.ts tests/native-clear-barrier.test.ts tests/harness-accepted-history.test.ts` — **113 passed (5 files), exit 0** (`/tmp/b3-named-ultimate.log`). `cd youcoded/desktop && npm run typecheck` — both tsgo projects completed, exit 0 (`/tmp/b3-type-ultimate.log`). `cd /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926 && bash scripts/verify.sh` — **PASS types, related tests, knip, lint, design lint, ast-grep, screens open and journeys; OK — all checks passed**, exit 0 (`/tmp/b3-verify.log`). After the reference doc correction, the same `bash scripts/verify.sh` command again reported **PASS types, related tests, knip, lint, design lint, ast-grep, screens open and journeys; OK — all checks passed**, exit 0 (`/tmp/b3-verify-final.log`). After strengthening automatic-summary's next-path reinjection assertion, the same named command still passed **113/113 tests** (`/tmp/b3-named-postreview.log`), `npm run typecheck` completed both tsgo projects (`/tmp/b3-type-postreview.log`), and `bash scripts/verify.sh` again passed types, related tests, knip, lint, design lint, ast-grep, screens and journeys, **OK — all checks passed** (`/tmp/b3-verify-postreview.log`). `git -C youcoded diff --check` exited 0; driver is 4165/4165 lines.
+
+## Limits
+
+Restored rule identity uses the complete, fitted source-labelled message; if the rule body or fitting budget changed after restore, current guidance is reinserted rather than treating an old source label as proof of current contents. A legacy transcript without an accepted-history checkpoint never contained eventless rule literals; it correctly re-arms matching rules. This is guidance visibility, not permission approval, instruction hot-reload or B4 first-write enforcement.

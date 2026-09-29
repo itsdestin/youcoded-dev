@@ -1,0 +1,32 @@
+{
+ "deck": "native-harness-send-now-review-2",
+ "started": "2026-09-28T22:20:09.184Z",
+ "submitted": "2026-09-28T22:21:38Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "note": "what is this? syle it to look like existing send buttons and such elsewhere in the app",
+   "t": 1790634066515,
+   "v": "other",
+   "seconds": 57,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "color/arrow/alignment/sizing are all wacky",
+   "t": 1790634088366,
+   "v": "other",
+   "seconds": 22,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "accent",
+   "t": 1790634097201,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

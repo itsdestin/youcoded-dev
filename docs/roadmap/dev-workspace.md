@@ -10,6 +10,19 @@ seen-on is always n/a here.
       editor's ordinary features working
       `n/a` `needs-verify` `checked 2026-09-28`
 
+- [ ] The review-page before-and-after check (`review-cards.py selfie`) renders a fixed sample
+      deck that has no live step shown on its own, so a change to how those steps look shows
+      "nothing moved" on every page (2026-09-27: 18 empty pages sent to Destin for the Meadow Mist
+      blur fix, which he had confirmed by eye). Add that kind of step to the sample deck
+      `n/a` `confirmed` `checked 2026-09-28`
+
+- [ ] A headless page check (`scripts/ui-probe.mjs`) shows Word, Excel, PDF and image files
+      stuck on "Loading viewer…" when it waits a fixed time after a click. The tab it opens is
+      never brought to the front, so Chrome holds back the page's queued work until the next
+      check runs; waiting with `--wait` instead of `--settle` works. Bring the tab to the front
+      when it opens (found 2026-09-27, the same on master)
+      `n/a` `confirmed` `checked 2026-09-27`
+
 - [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`)
       still holds ~650 "unreviewed" calls. The 2026-09-24 triage ranked them and six batches
       shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
@@ -731,8 +744,13 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-18`
 
 - [ ] Close-out can say "the work landed" for a new branch whose edits are still uncommitted,
-      then recommend deleting its worktree; it should notice unfinished edits before declaring success
-      `n/a` `needs-verify` `checked 2026-09-05`
+      then recommend deleting its worktree; it should notice unfinished edits before declaring success.
+      Reproduced 2026-09-27 on the release-skill session worktrees in both workspace and
+      `youcoded-admin`: the tip was just fetched master and the remote branch did not exist,
+      but both worktrees hold uncommitted edits. `close-out.sh` printed "the work landed",
+      "remote branch deleted" and TODOs to delete both worktrees. Those verdicts refer only to
+      the branch tip, not the unfinished files; do NOT follow those deletion suggestions.
+      `n/a` `confirmed` `checked 2026-09-27`
 
 - [ ] Recheck the old cleanup handoff's remaining unused-code and bug-hunt ideas before
       treating them as completed; its retired tooling instructions are no longer a safe starting point
@@ -872,17 +890,6 @@ seen-on is always n/a here.
       click Update on his Arch install once a beta carrying youcoded#546 ships; the macOS halves
       (Rosetta detection, the removed any-dmg fallback) have no machine here at all
       `n/a` `needs-verify` `checked 2026-09-20` `v1.3.1`
-
-- [ ] Strip every youcoded-core step out of the release skill (`youcoded-admin`
-      `skills/release/SKILL.md`, 56 references). The repo was archived 2026-09-20, so a commit,
-      push, tag or `gh release create` against it now FAILS — the skill would die mid-release at
-      Phase 4 Step 6. A header note at the top currently says "skip every youcoded-core step",
-      which holds the next release together but leaves the two-repo flow written out below it:
-      Repository Details, Phase 1 Steps 1–7, the review-mandates and review-update-compat agents,
-      the two-CHANGELOG generation, the YOUCODED-CORE release block, Steps 8a–8c and the error
-      table. Also drop the youcoded-core rows from `setup.sh`/`workspace-start.mjs` if nothing
-      needs the checkout any more
-      `n/a` `confirmed` `checked 2026-09-20` `v1.3.1`
 
 - [ ] Every macOS download since 2026-07-23 is unopenable, and the download page sends people to
       a button that no longer appears — a routine dependency update quietly stopped the Mac build

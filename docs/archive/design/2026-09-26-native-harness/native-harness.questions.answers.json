@@ -1,0 +1,114 @@
+{
+ "deck": "native-harness-audit-questions",
+ "started": "2026-09-26T20:25:51.406Z",
+ "submitted": "2026-09-26T20:32:01Z",
+ "cur": 0,
+ "answers": {
+  "Q-1": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "note": "i also want to look more into when/if/how queued messages force send between messages. ik claude code will sometimes inject a message in the middle of an assistant response (i may be mistaken). sometimes annoying to wait like 20 minutes before my message sends. how does this work, and how should it?",
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-6": {
+   "v": "other",
+   "t": 1790454719713,
+   "note": "how do other harnesses handle this specifically?",
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-8": {
+   "v": "other",
+   "t": 1790454719713,
+   "note": "how do other harnesses handle?",
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-9": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-10": {
+   "v": "pick",
+   "pick": "deny",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-11": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-12": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-13": {
+   "v": "other",
+   "t": 1790454719713,
+   "note": "confused",
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-14": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  },
+  "Q-15": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790454719713,
+   "seconds": 25,
+   "theme": "meadow-mist"
+  }
+ }
+}
