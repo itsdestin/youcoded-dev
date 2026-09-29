@@ -1,0 +1,137 @@
+{
+  "title": "Usage statistics — the first look",
+  "key": "usage-stats-review",
+  "out": "usage-stats.review.html",
+  "stage": "design",
+  "images": "images/usage-stats.review",
+  "runs": {
+    "today": "runs/today",
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "labels": {
+    "before": "Today",
+    "after": "Proposed"
+  },
+  "steps": [
+    {
+      "id": "B-1",
+      "runs": [
+        "after"
+      ],
+      "surface": "Chat",
+      "path": "Click the 5h, 7d or Cost chip in the bar along the bottom of the window",
+      "crop": "chat/usage",
+      "headline": "Clicking a usage or cost chip opens a Usage window instead of a website.",
+      "changed": "A new Usage window. Top: every limit and balance right now, each with a button to that provider's own site. Below: your history, same as Settings.",
+      "notice": "One click from any chat shows how close you are to every limit, and which provider and model used the most this week.",
+      "risk": "The chips no longer open claude.ai directly; that is now the claude.ai button inside the window."
+    },
+    {
+      "id": "C-1",
+      "runs": [
+        "today"
+      ],
+      "surface": "Settings",
+      "path": "Settings → Assistant settings",
+      "headline": "Where should the full usage view live in Settings?",
+      "notice": "The outside tester could not find usage under Cloud providers, and saw the history before the limits there.",
+      "risk": "Either way the numbers are identical; this only decides where you look.",
+      "variants": [
+        {
+          "id": "cloud-top",
+          "label": "Top of Cloud providers",
+          "crop": "settings/assistant/cloud",
+          "summary": "What you asked for first: history at the top of the Cloud providers page, limits stay on each provider's card below.",
+          "risk": "Nothing named Usage in Settings, and the limits are below the history."
+        },
+        {
+          "id": "own-tab",
+          "label": "Its own Usage tab",
+          "crop": "settings/assistant/usage",
+          "summary": "A Usage tab next to Cloud providers, laid out exactly like the popup: limits first, then history. Cloud providers keeps its cards and new lines.",
+          "risk": "One more tab in Assistant settings."
+        }
+      ]
+    },
+    {
+      "id": "A-1",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "surface": "Settings",
+      "path": "Settings → Assistant settings → Cloud providers → ChatGPT",
+      "crop": "settings/assistant/cloud",
+      "headline": "The ChatGPT card shows its per-model limit and extra credits under the plan bars.",
+      "changed": "Two new lines appear only when ChatGPT reports them: a limit that applies to one model, and extra credits left.",
+      "notice": "A stop caused by one model's limit, or credits running out, is visible here instead of unexplained.",
+      "risk": "ChatGPT does not document these figures, so a line may vanish if they change what they send."
+    },
+    {
+      "id": "A-2",
+      "runs": [
+        "before",
+        "after"
+      ],
+      "surface": "Settings",
+      "path": "Settings → Assistant settings → Cloud providers → OpenRouter",
+      "crop": "openrouter-card",
+      "headline": "The OpenRouter card shows your credit left once your key works.",
+      "changed": "A Credit left line on the connected OpenRouter card, refreshed every few minutes and after each reply.",
+      "notice": "You see credit running down before a reply fails for lack of it.",
+      "risk": "Only shown for a key that works; a broken or missing key shows no balance.",
+      "highlight": {
+        "box": [
+          23,
+          66,
+          75,
+          17
+        ]
+      }
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Warnings",
+      "path": "The Settings gear and the usage chips",
+      "headline": "How should the app warn you that a limit or balance is running low?",
+      "today": "The 5h and 7d chips already turn amber at 50% and red at 80%. A red dot on the Settings gear already means backup is failing.",
+      "problem": "My earlier proposal (amber 80%, red 95%, on the gear) clashes with both: two colour scales, and a red gear dot that could mean two different things.",
+      "proposal": "Pick one. None of these moves the chips' existing colours.",
+      "options": [
+        {
+          "id": "amber-dot",
+          "label": "Amber gear dot",
+          "summary": "An amber dot on the gear when any limit passes 80% or OpenRouter credit drops under $2. Never red.",
+          "pros": [
+            "Visible even with the chips turned off.",
+            "Red keeps meaning backup trouble only."
+          ],
+          "cons": [
+            "One more dot that can appear on the gear."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "chips-only",
+          "label": "Chips only",
+          "summary": "Keep today's chip colours as the only warning; add nothing.",
+          "pros": [
+            "Nothing new on screen."
+          ],
+          "cons": [
+            "No warning at all if the chips are turned off, and none for OpenRouter credit."
+          ]
+        }
+      ]
+    }
+  ],
+  "crops": {
+    "openrouter-card": [
+      "or",
+      "openrouter",
+      "820x700+310+100"
+    ]
+  }
+}

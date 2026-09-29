@@ -1,0 +1,182 @@
+[
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/cloud/dark.png",
+    "ms": 1163,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/cloud/creme.png",
+    "ms": 1165,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/cloud/light.png",
+    "ms": 1167,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/cloud/midnight.png",
+    "ms": 1176,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/cloud/halftone-dimension.png",
+    "ms": 2378,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/cloud",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/cloud/meadow-mist.png",
+    "ms": 2416,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/usage/light.png",
+    "ms": 1403,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/usage/midnight.png",
+    "ms": 1421,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/usage/creme.png",
+    "ms": 1631,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/usage/halftone-dimension.png",
+    "ms": 2128,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/usage/dark.png",
+    "ms": 2356,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  },
+  {
+    "name": "settings/assistant/usage",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/usage-visibility-20260929/docs/active/design/2026-09-29-usage-stats/runs/today/settings/assistant/usage/meadow-mist.png",
+    "ms": 3501,
+    "errors": [],
+    "panel": {
+      "x": 310,
+      "y": 100,
+      "w": 820,
+      "h": 700
+    }
+  }
+]
