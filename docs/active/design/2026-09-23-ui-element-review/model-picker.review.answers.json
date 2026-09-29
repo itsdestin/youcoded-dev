@@ -1,0 +1,17 @@
+{
+ "deck": "ui-model-picker",
+ "started": "2026-09-29T09:41:46.746Z",
+ "submitted": "2026-09-29T09:43:55Z",
+ "cur": 0,
+ "answers": {
+  "MP-1": {
+   "note": "i kinda like popup above the status bar, but i done like how manage models is separate from the actual models. also, for claude code, i don't thinke we should bother showing the \"search all models\" menu since you cant switch to anything aside from the 4 claude models",
+   "t": 1790675034471,
+   "v": "pick",
+   "pick": "b",
+   "seconds": 128,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
