@@ -133,7 +133,7 @@ searched or resumed (chat-data).
       the home folder itself is watched two levels deep (`watchDepthFor`); deeper files still
       list and open, they just do not live-refresh while Home is the project. SECOND CAUSE
       2026-09-29: sync's own watcher watched every file in folders that never sync (~249k on one
-      Python project) — fixed on branch session/sync-watch-scope. Re-measure the watch count on a
+      Python project) — MERGED 2026-09-29 (youcoded#590). Re-measure the watch count on a
       fresh install (or with Home as the project) after both ship, then close
       `desktop` `needs-verify` `checked 2026-09-29` `performance`
 
