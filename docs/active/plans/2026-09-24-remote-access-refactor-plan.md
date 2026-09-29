@@ -207,6 +207,26 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 
 ### R2 — the contract and the empty table (S3) · 1–2 runs · no visible change · v1.3.1 blocker
 
+> **State 2026-09-29: built and reviewed ("ship"), awaiting merge.** App branch
+> `session/simplify-r2` (`148c8baa`, stacked on R1). `shared/backend-contract.ts` holds the
+> channel names, `ChannelDef`, the bridge types and the `window.claude` type
+> (`bridge-types.ts` is gone; `useIpc.ts` went from 590 to 34 lines). Preload's list is
+> generated as a static literal block, fresh-checked in build, dev and CI typecheck. The table
+> is empty and both doors iterate it. The name lists had drifted: 50 names existed only in
+> preload, 15 only in the contract, and 74 were bare strings; all are now in one list. 181
+> channels send one object on the wire. Still positional: `remote:set-password`,
+> `dev:log-tail`, `favorites:set`, `game:setIncognito` and two `first-run` local-download
+> channels.
+> **Carry into R3:**
+> (1) The `ChannelDef` fields `sessionScoped`, `messageKind` and `rejectOnNotOk` are not read
+> anywhere yet. Implement them before the first entry relies on them, or drop them.
+> (2) The phone door consults the table *before* its switch, so every remote-only guard in a
+> case body must be restated in the entry.
+> (3) The `first-run` local-download handlers ignore the `sessionId` they receive; this is
+> kept as a `TODO(one-core R3)`.
+> (4) The wire-shape guard missed the submodule channel maps (artifacts, git, project,
+> chatsearch, voice); a follow-up commit on the R2 branch closes this.
+
 - Add `shared/backend-contract.ts`. Move `bridge-types.ts` into it. Delete `useIpc.ts`'s
   `declare global` and derive `Window['claude']` from the contract (type-only, zero runtime
   risk).
