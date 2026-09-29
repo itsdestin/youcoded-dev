@@ -146,6 +146,9 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 
 ### R0 — clear the road (no code)
 
+- **The edit lock is a check, not a promise:** `docs/active/locks/phase4.json` lists the locked
+  paths and exempt branches (`session/simplify-r*`); `scripts/close-out.sh` flags any other
+  branch that touches them. R3 edits its `paths` per run.
 - **Branches that edit the door files do NOT block R1 (Destin, 2026-09-29).** They keep going
   and are **rewritten onto the new layout after R2**, when the full lock ends: their edits to
   `ipc-handlers.ts`/`remote-server.ts`/`preload.ts`/`remote-shim.ts` are redone by hand as
