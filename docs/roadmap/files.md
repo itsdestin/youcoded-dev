@@ -138,3 +138,53 @@ searched or resumed (chat-data).
       listed — it appears only after leaving the page and coming back. Accepted for now in
       the Office build (the lists refresh each time the page is shown)
       `files-panel` `desktop` `confirmed` `checked 2026-09-28`
+
+- [ ] When the app quits in the middle of an Office save, a hidden leftover folder from that
+      save can stay beside the document; it is cleaned up on that file's next save, but not when
+      the file is only opened again
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] On Windows, the private folder an Office save writes into relies on the parent folder's
+      inherited permissions, so another account on the PC might read a document while it is
+      being saved (matters once Windows builds of Office exist)
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28` `security`
+
+- [ ] An unsaved text-file draft parked in a window that is not the last one open is lost
+      without a question when that window is closed with its X
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] If the app is so busy at quit that an Office tab can't hand over its latest typing within
+      5 seconds, the last few seconds of edits are lost; accepted so that quitting can never
+      hang
+      `files-panel` `desktop` `parked` `checked 2026-09-28`
+
+- [ ] Restoring a kept version of an Office document copies all of the document's pictures every
+      time, even when nobody kept typing in the old version, which makes restores of picture-
+      heavy files slower than they need to be
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28` `performance`
+
+- [ ] In a rare case, a copy saved from an Office tab that was kept open across a restore can
+      come out missing some of its pictures
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] Letting go of an Office tab's kept typing after a restore is done straight away instead
+      of waiting its turn behind that document's other work, so it could remove pictures a
+      "Save a copy…" still in progress needs
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] If one project's file list hangs while loading on the Office page, pressing New can use up
+      both of the page's file-list slots, so the next project's list can't load until the first
+      finishes
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] When the Office page gives up listing a very large project's files, the "In <project>"
+      section looks the same as a project with no Office files at all
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] Reloading the app window, or a crash of its page, leaves that page's open Office documents
+      open in the background until the window itself closes
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] An error line from the Office editor can copy up to 300 characters of the document's text
+      into the app's log file
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28` `security`

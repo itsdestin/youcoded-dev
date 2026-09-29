@@ -5,6 +5,11 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] The Office add-on's early editor script (the one that silences external-link checks and
+      peer-to-peer connections) is only tested for what it blocks, never for leaving the
+      editor's ordinary features working
+      `n/a` `needs-verify` `checked 2026-09-28`
+
 - [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`)
       still holds ~650 "unreviewed" calls. The 2026-09-24 triage ranked them and six batches
       shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
@@ -302,6 +307,14 @@ seen-on is always n/a here.
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
 ## rigs
+
+- [ ] Dev instances of the app write their per-device Office files (Recent list, kept versions)
+      into the real ~/YouCoded/Personal folder instead of the dev profile's own
+      `desktop` `needs-verify` `checked 2026-09-28`
+
+- [ ] Two screenshot runs of Office screens at the same time can race to start and stop the one
+      shared Office editor server, so one run's pictures can fail
+      `n/a` `needs-verify` `checked 2026-09-28`
 
 - [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
       ChatGPT sign-in that never renews, so the real app is never signed out). Destin
