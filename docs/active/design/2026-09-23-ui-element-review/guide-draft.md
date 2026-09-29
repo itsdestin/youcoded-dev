@@ -61,6 +61,8 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 - The screen names itself **centered in the window's top strip, small (14px medium), with
   its icon**. Reference: Pages or the Projects view.
 - The way out is a **filled small button reading "Esc · Back to chat"**, top right.
+- In framed themes every pane (chat, side pane, full-screen pane) has a **thin outline in the
+  card-outline colour** where it meets the frame.
 - Big groups on the screen use the *Large* heading, one row per group: heading left (a one-line
   description under it, never beside it), its tools right. Lists scroll under a see-through
   fade at both edges, tall enough to fade a whole card edge.
