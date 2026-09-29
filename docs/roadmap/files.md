@@ -47,10 +47,10 @@ searched or resumed (chat-data).
       `files-panel` `all` `confirmed` `checked 2026-09-27`
 
 - [ ] "This file looks open in another app" (shown before a comment is saved into a Word or
-      Excel file) can be wrong both ways: after Word or Excel crashes it can keep appearing for a
-      closed file, and for a very long file name Word's hidden marker is named differently, so an
-      open file is not noticed and saving in Word later wipes the comment
-      `files-panel` `desktop` `needs-verify` `checked 2026-09-27`
+      Excel file) can keep appearing for a file that is actually closed, after Word or Excel
+      crashes and leaves its hidden marker file behind. (Long file names, whose marker Word names
+      differently, are now recognised — fixed 2026-09-28.)
+      `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
 
 - [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
       but still a visible pause. What is left is the sheer number of elements syntax

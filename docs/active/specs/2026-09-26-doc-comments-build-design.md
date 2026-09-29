@@ -1,10 +1,21 @@
 ---
 status: active
 date: 2026-09-26
-contract: docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json (21 rows, signed)
+contract: docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json (27 rows, signed)
 handoff: docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
 related: docs/roadmap/files.md → "Document comments"
 changelog:
+  - 2026-09-28: PR-review fixes. **`<legacyDrawing>` placement corrected** — the "always the
+    worksheet's LAST child, even after `<extLst>`" rule (§4.3 step 1, §4.3a; design review 2 F4) was
+    copied from ExcelJS's writer, not the schema. `CT_Worksheet` is a strict sequence ending
+    `… legacyDrawing, legacyDrawingHF, drawingHF, picture, oleObjects, controls, webPublishItems,
+    tableParts, extLst`, so both writers now insert it before the first of those the sheet has
+    (the real `elden` file already showed it before `<tableParts>`). Also fixed: Word run splits
+    now move a run's other children instead of dropping them; `xmlns:w14` is declared before
+    `w14:paraId` is written; every save checks that no part newly uses an undeclared namespace
+    prefix; saves keep DEFLATE compression; the verify rollback writes the original bytes back
+    beside the file instead of renaming the backup across drives; the Word owner-file check
+    covers Word's shortened `~$` names; Android caps one in-memory part at 32MB.
   - 2026-09-27: revised after review round 3 (final) of the xlsx threaded-comments-only redesign
     (docs/active/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-3.md) — 5 findings, all
     accepted and fixed (see the review's own per-finding "Triage:" lines). **This design's build
@@ -1871,7 +1882,7 @@ app's own calls) is the concrete failure this guards against.
      `_x0000_sNNNN` id already present in the part (Notes' and threaded placeholders' alike) and use
      `max + 1` — never assumed to start fresh at `1025` just because this rewrite touches a
      different part type. This is existing, working logic being carried forward, not new design.
-   - **`<legacyDrawing>` is always appended as the worksheet's absolute LAST child element, even
+   - **SUPERSEDED 2026-09-28 (see changelog): `<legacyDrawing>` goes at its schema position, before `<tableParts>`/`<extLst>`. The rule below is kept only as history.** ~~`<legacyDrawing>` is always appended as the worksheet's absolute LAST child element, even~~
      after an existing `<extLst>` if the worksheet already has one — restated explicitly here, not
      assumed carried over silently (design review round 2, F4 — High: this exact rule was found and
      fixed once already, for the now-retired legacy-Notes design, and this rewrite's own §4.2/§4.3
@@ -2000,7 +2011,7 @@ plus new work with no legacy-Notes precedent at all:
   well-defined meaning at all; this case is accepted as out of this check's reach, the same way the
   check's own desktop-side limitations (a program with no lock-file convention) are named rather
   than solved.
-- **`<legacyDrawing>` is always appended as the worksheet's absolute last child element, even after
+- **SUPERSEDED 2026-09-28 (see changelog): schema position, before `<tableParts>`/`<extLst>`, on Kotlin too.** ~~`<legacyDrawing>` is always appended as the worksheet's absolute last child element, even after~~
   an existing `<extLst>` — restated for Kotlin identically to §4.3's own restatement (design review
   round 2, F4 — High).** `DocxComments.kt`'s own equivalent Word-side logic already gets this right
   for `document.xml`'s unrelated element-ordering rules; `XlsxComments.kt` needs the SAME explicit
