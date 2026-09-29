@@ -277,6 +277,24 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   - Everything refused before is refused byte-for-byte; `account:export` and
 >     `update:launch` stay desktop-only.
 >
+> - **R3-3** (app `session/simplify-r3-3` `e48c5316`): skills, marketplace,
+>   theme-marketplace and first-run, 55 channels. This includes both of `main.ts`'s first-run
+>   registration sites. The first-run `sessionId` was dead and is removed end to end.
+>   Reviewer said "ship", 701 tests.
+>   Phone changes:
+>   - Uninstalling a bundled plugin is now refused, as on the computer. Narrower.
+>   - Favourites, chips, overrides and delete-prompt now answer empty rather than `{ok:true}`.
+>     No caller reads it.
+>   - A skills failure shows an error.
+>   **Open questions for Destin**, with the old refusals kept until he answers:
+>   - May the phone browse the theme marketplace?
+>   - May it see the featured and update-available skills?
+>   - May it rate, vote and comment as the owner? A phone can already install, uninstall and
+>     publish as the owner.
+>   Found, and older than this work: the bundled guard matches only an exact plugin id, so a
+>   `plugin:skill` id bypasses it on both doors. It is fixed in R3-4. The flaky
+>   permission-approve journey, a load flake on the mock backend, is also fixed in R3-4.
+
 > **Doc sweep at merge** (these must describe master, so they are not edited while the branches
 > are unmerged): the `.claude/rules/ipc-bridge.md` "Settings → Development" section, which
 > still says `dev:*` lives in `ipc-handlers.ts` and gives the old count; the `docs/MAP.md`
