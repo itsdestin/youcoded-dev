@@ -1,0 +1,40 @@
+{
+ "deck": "ui-quick-fixes",
+ "started": "2026-09-29T08:48:53.861Z",
+ "submitted": "2026-09-29T08:56:30Z",
+ "cur": 3,
+ "answers": {
+  "QF-1": {
+   "v": "yes",
+   "t": 1790671784149,
+   "note": "i think i also want to reduce the number of sessions shown my default to like 6.5",
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "QF-2": {
+   "note": "x is good, don't like the row change. want to change how the file/chat numbers are displayed. and how sync appears. should probably be a status like the working/inactive/etc chips in session swithcer. and a remove icon somewhere. ",
+   "t": 1790671934911,
+   "v": "other",
+   "seconds": 151,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "QF-3": {
+   "note": "dont like the warning/sign in banner. it should be at the top, and should be replaced by a new friends panel/menu when signed in with games below. remove \"flappy and 2048 play without an account\", just limit to \"sign in to play with friends and put your scores on the board\" with centered filled sign in. grey/disable unplayable games.",
+   "t": 1790672051931,
+   "v": "other",
+   "seconds": 117,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "QF-4": {
+   "note": "i think \"add a friend\" could be subsumed into \"friends\" somehow. i also think the friend cards could be cleaned up. online status should be a status pill probably. most of this should be moved out of the game menu into the new friends/social panel. this game panel should just show scores for each person and such with challenge. no add friend in game panels",
+   "t": 1790672189734,
+   "v": "other",
+   "seconds": 138,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
