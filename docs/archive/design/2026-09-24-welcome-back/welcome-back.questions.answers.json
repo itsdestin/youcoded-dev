@@ -1,0 +1,74 @@
+{
+ "deck": "welcome-back-questions",
+ "started": "2026-09-24T07:52:33.999Z",
+ "submitted": "2026-09-24T07:55:49Z",
+ "cur": 2,
+ "answers": {
+  "Q-route": {
+   "v": "pick",
+   "pick": "full",
+   "seconds": 5,
+   "theme": "morning-rounds"
+  },
+  "S-sent": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "Q-quit": {
+   "v": "pick",
+   "pick": "ask-at-quit",
+   "note": "\"Reopen on next launch?\" with toggle, otherwise all crashes/unexpected exits",
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "S-x": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "S-device": {
+   "v": "yes",
+   "seconds": 20,
+   "theme": "morning-rounds"
+  },
+  "Q-where": {
+   "v": "pick",
+   "pick": "replace",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-ticks": {
+   "v": "pick",
+   "pick": "all",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-actions": {
+   "v": "picks",
+   "picks": [
+    "complete"
+   ],
+   "note": "i think this surface should basically be the full resume browser for the given sessions. tags/notes/renames/preview/etc.",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-leftover": {
+   "v": "pick",
+   "pick": "forget",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "Q-model": {
+   "v": "pick",
+   "pick": "reuse",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  },
+  "S-phone": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "morning-rounds"
+  }
+ }
+}

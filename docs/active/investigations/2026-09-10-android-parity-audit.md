@@ -410,6 +410,17 @@ dev-workspace).
 
 ### Found after the consolidation
 
+- **Swiping the app away and reopening it leaves every running conversation's chat blank**
+  (2026-09-27). Swiping from recents closes the screen but the background service keeps the
+  sessions running (`SessionService.onTaskRemoved` does nothing, on purpose). The reopened
+  screen asks each session for its first history page, and Android has no `transcript:page`
+  handler (the shim refuses it quietly) while its transcript watcher only pushes new lines — so
+  the chat shows "Start a conversation" while the terminal and Claude still have everything,
+  until close + resume. Read from the code during the desktop blank-chat fix (youcoded#582),
+  not reproduced on a handset. The desktop cure (read a rebuilt screen's first page to the end)
+  needs the Kotlin tail reader the paging item already asks for.
+  `android` `needs-verify` `checked 2026-09-27`
+
 - **Dogfood APKs count as a separate person in our own numbers** (2026-09-13). Android's device
   id is scoped to the app-signing key, and `android-test-build.yml` signs with a throwaway debug
   key — so a dogfood build installed beside the real app on one phone reports a DIFFERENT device

@@ -1,0 +1,98 @@
+{
+  "title": "Welcome back — round 2",
+  "key": "welcome-back-review-2",
+  "out": "welcome-back.review-2.html",
+  "stage": "design",
+  "images": "images/welcome-back.review-2",
+  "runs": {
+    "after": "runs/r2"
+  },
+  "themes": [
+    "midnight"
+  ],
+  "theme": "fixed",
+  "crops": {
+    "stacked": [
+      "wb",
+      "stacked",
+      "440x300+211+492"
+    ],
+    "pair": [
+      "wb",
+      "pair",
+      "440x300+211+492"
+    ],
+    "link": [
+      "wb",
+      "link",
+      "440x300+211+492"
+    ],
+    "quit": [
+      "wb",
+      "quit",
+      "380x220+530+340"
+    ]
+  },
+  "steps": [
+    {
+      "id": "C-1",
+      "surface": "Welcome back screen",
+      "path": "The two buttons under the list",
+      "headline": "Which style should Resume and Start fresh use?",
+      "notice": "The tags and folder line now sit under each session's name, not under its tick box (your note from round 1). That change is in all three pictures.",
+      "risk": "Only the buttons differ; the list above them is identical in all three.",
+      "variants": [
+        {
+          "id": "stacked",
+          "label": "Stacked, full width",
+          "crop": "stacked",
+          "summary": "Resume on top, Start fresh under it, both the full width. How the app's other pop-ups lay out their buttons."
+        },
+        {
+          "id": "pair",
+          "label": "Side by side",
+          "crop": "pair",
+          "summary": "Two equal buttons on one row: Start fresh on the left, Resume on the right. Shorter footer, more room for the list."
+        },
+        {
+          "id": "link",
+          "label": "One button and a link",
+          "crop": "link",
+          "summary": "One big Resume button; 'Start fresh instead' is a quiet text button under it, so the main action is obvious."
+        }
+      ]
+    },
+    {
+      "id": "B-quit",
+      "surface": "Quit warning",
+      "path": "Closing the app window while sessions are open",
+      "headline": "The quit warning, now inside the app. Build it like this?",
+      "crop": "quit",
+      "runs": [
+        "after"
+      ],
+      "highlight": {
+        "box": [
+          8,
+          56,
+          86,
+          15
+        ]
+      },
+      "changed": "Your computer's pop-up is replaced by an app window like 'Close session'. The ✕ cancels; 'Close window' ends the sessions. The new switch starts off, as you chose.",
+      "notice": "Turn 'Reopen them next time' on before closing and they come back on the Welcome back screen.",
+      "risk": "A frozen app can't draw this, so if it doesn't answer within a few seconds the window closes anyway."
+    },
+    {
+      "id": "S-model",
+      "words": true,
+      "surface": "Welcome back screen",
+      "path": "Resuming a session that ran on a local or non-Claude model",
+      "headline": "You're right: both screens start on the last model; Welcome back just skips the extra click.",
+      "changed": "Stated, not asked: my round-1 note was wrong. The Resume browser fills in the last model and you press Resume. Welcome back does the same without showing the picker, unless that model isn't on this computer.",
+      "notice": "No change to the Resume browser.",
+      "yes": "Clear now",
+      "no": "Still confusing"
+    }
+  ]
+}

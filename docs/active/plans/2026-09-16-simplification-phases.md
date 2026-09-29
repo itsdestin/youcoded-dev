@@ -48,7 +48,7 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 | 2 | Always-on timers | W2, W7, W8, W9, W11, W12, W18, W19, W23 | 2 + 1 | Batch C merged or dropped |
 | 3 | Launch path | W3, W4+D5, W15, W16, W17, W25, W21, W22 | 2 + 1 | Batches A and C merged or dropped |
 | 4 | One door for desktop and phone — run as R1–R4 of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md` | D2, D1, D3, M5 | ~12–20 + one reviewer per run | R0 of that plan; runs alone (R1–R3) |
-| 5 | Structure B | D4, D7, D8, D11, D12, W5, W6, W1 | 4–5 + 1 each | Phase 4 done (R4); native-session-host test split merged; Batch C merged or dropped |
+| 5 | Structure B | D4, D7, D8, D11, D12, W5 (W6, W1 shipped early — youcoded#573) | 4–5 + 1 each | Phase 4 done (R4); native-session-host test split merged; Batch C merged or dropped |
 
 1a, 1b and T are independent and may run at the same time in three worktrees. 1a and 1b both touch `main.ts` only in different regions (1a: none; 1b: buddy branches), and neither touches T's files.
 
@@ -139,11 +139,11 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 **For Destin.** Today the desktop window and a phone reach the app's features through two different doors, and behind them 182 features are written out twice by hand — some already behave differently on the phone. The cause is that the code which registers the desktop features also *builds* the assistant runtime inside itself, so the phone door cannot share it. What changes: the runtime is built once and handed to both doors; then each group of features is moved to a table both doors read, one group at a time; then the three copies of "turn a chat event into a screen update" become one; then the event type gets a proper shape the compiler can check. End state: one body per feature, and the phone bug where already-open sessions show in Resume is fixed by construction (Phase 1a's one-liner is the interim). **You would notice:** where the phone had drifted from the desktop, it now matches the desktop — that is a change on the phone, listed per group in each run's report. The buddy's three known missing behaviours (it does not clear on `/clear`, etc.) stay missing in this phase; closing them is visible and is its own decision.
 
-**Where the run list lives now (2026-09-24).** Phase 4 is executed as phases **R1–R4** of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`, which holds the current run list, files, gates and traps: D2 = R1, D1 = R2 (contract, object arguments) + R3 (one run per family), D3 + M5 = R4. Its R0 names what must happen first (branches that edit the two door files land first; owed phone passes; the edit lock becomes a `close-out.sh` check). The one ordered list of this and the Android rebuild is `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`. This section keeps only the phase's purpose, its sequencing decision and its overall gate; the execution protocol above still applies to every run.
+**Where the run list lives now (2026-09-24).** Phase 4 is executed as phases **R1–R4** of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`, which holds the current run list, files, gates and traps: D2 = R1, D1 = R2 (contract, object arguments) + R3 (one run per family), D3 + M5 = R4. Its R0 names what must happen first (the edit lock becomes a `close-out.sh` check; owed phone passes before R3; branches already editing the door files are rewritten onto the new layout after R2 — Destin, 2026-09-29). The one ordered list of this and the Android rebuild is `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`. This section keeps only the phase's purpose, its sequencing decision and its overall gate; the execution protocol above still applies to every run.
 
-**Must run alone.** Nothing else edits `main/ipc-handlers.ts` or `main/remote-server.ts` from R1 to the end of R3. R4 does not edit them.
+**Must run alone.** Nothing else merges into `main/ipc-handlers.ts` or `main/remote-server.ts` during R1–R2; during R3 the lock covers only the family being moved. R4 does not edit them.
 
-**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/active/plans/2026-09-24-android-rebuild-plan.md`, A2–A4) serves over a local socket, and remote access already ships and pays the drift daily. On hold as a 1.3.1 release blocker since 2026-09-18 (Destin); roadmap items: `docs/roadmap/remote-access.md` (`## one-core`) and the phase 5 items in native-harness, user-interface, local-models and chat-data.
+**Sequencing decision (2026-09-18).** Phase 4 goes BEFORE the Android rebuild, not inside it: its channel table is the foundation the rebuild's Node-runtime-on-phone direction (`docs/active/plans/2026-09-24-android-rebuild-plan.md`, A2–A4) serves over a local socket, and remote access already ships and pays the drift daily. A 1.3.1 release blocker; held 2026-09-18, hold lifted 2026-09-29 (Destin); roadmap items: `docs/roadmap/remote-access.md` (`## one-core`) and the phase 5 items in native-harness, user-interface, local-models and chat-data.
 
 **Gate for the phase.** G2's line budgets drop for `ipc-handlers.ts` and `remote-server.ts` on every run (the worker lowers the budget; never leaves headroom). B1's 1a fix is deleted when its group moves. Dev-instance check after the last D1 run: a phone session (remote web) opens Resume, installs a skill, pages history.
 
@@ -152,6 +152,8 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 ## Phase 5 — structure B
 
 **For Destin.** Today the remaining oversized pieces: one 4,756-line object that runs conversations and also orchestrates helper agents (which already have their own home); three copies of the file downloader; two parallel settings screens sharing 14 of 17 rows; a history-replay path that reads a 112 MB file into memory with no caller; the Resume browser re-reading every conversation file on every open. What changes: each is split, merged or cached along the seam the audit names. End state: files a session can hold in its head, and Resume that opens from a cache. **You would notice:** Resume opens faster on a big history; the settings screen's row order may shift slightly — D8 gets a before/after review deck before it is kept. Nothing else.
+
+**Shipped early (2026-09-26, youcoded#573, at Destin's request):** W1 and W6. Resume remembers every conversation file by size + mtime on disk across restarts (`main/scan-cache.ts`, native and Claude Code halves), and each slug directory's R1 answer until the directory changes. Settled open 1.7 s -> 0.3 s on a 2,600-conversation history. The rows below are kept as the record; do not redo them.
 
 **Precondition.** Phase 4 done (D4 and D7 touch the runtime Phase 4 moves). Batch C merged or dropped (C6 edits `session-browser.ts`, W1's file).
 
@@ -165,8 +167,8 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 | D11 | `injected` is the discriminant; `kind` optional-and-ignored for one release | `shared/types.ts:385-405, 951-995`; `state/chat-reducer.ts:1401` |
 | D12 | Manager's three engine calls go through `supervisor.trackedFetch` | `main/engine/engine-manager.ts:703, 1189, 1594, 1783, 1954`; `engine-supervisor.ts:339-345, 609-613, 916` |
 | W5 | Verify no caller, then delete `TRANSCRIPT_REPLAY`, its preload binding and `getHistory` | `main/transcript-watcher.ts:615-655`; `ipc-handlers.ts:3168-3178, 3241-3249`; `preload.ts:1232` |
-| W6 | Memoize slug → path per process; cap the fallback | `main/session-browser.ts:189-215`; `main/transcript-cwd.ts:76-104` |
-| W1 | `(size, mtime) → meta` map in front of the per-file reader; short memo of the list | `main/session-browser.ts:401-505, 299-385`; callers `ipc-handlers.ts:1853`, `projects-index.ts:134`, `remote-server.ts:1780` |
+| W6 | **DONE youcoded#573** (remembered per slug directory, on disk) — memoize slug → path per process; cap the fallback | `main/session-browser.ts:189-215`; `main/transcript-cwd.ts:76-104` |
+| W1 | **DONE youcoded#573** (`scan-cache.ts`; no list memo — identical in-flight browses share one scan instead) — `(size, mtime) → meta` map in front of the per-file reader; short memo of the list | `main/session-browser.ts:401-505, 299-385`; callers `ipc-handlers.ts:1853`, `projects-index.ts:134`, `remote-server.ts:1780` |
 
 **Gate.** `verify.sh` green. Guards: D7 — one downloader test covers disk-full mid-stream for all three callers; D11 — `tests/chat-reducer.test.ts` case for a persisted turn with `kind` absent; W1 — `tests/session-browser.test.ts` case: second listing of an unchanged directory performs zero file reads (count via an injected `fs`), a touched file is re-read; W5 — `rg -n "TRANSCRIPT_REPLAY|getHistory\(" desktop/src` returns nothing after; D8 — the deck, answered. G2 budgets lowered for every file that shrank.
 
@@ -187,5 +189,5 @@ D9 (Android rebuild — now phase A3 of `docs/active/plans/2026-09-24-android-re
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
-| 4 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker. Plan C's `remote-` cluster merged 2026-09-18 (#527); next gate is R0 (branches that edit the door files land first). Runs as R1–R4 of the remote-access refactor plan |
-| 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition) |
+| 4 | IN FLIGHT — hold lifted 2026-09-29 (Destin: "i want to do the remote stuff"). Still a 1.3.1 release blocker. Runs as R1–R4 of the remote-access refactor plan; branches editing the door files do not block R1 — they rebase after R2 (Destin, 2026-09-29) |
+| 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition). W1 + W6 shipped early 2026-09-26 (youcoded#573) |

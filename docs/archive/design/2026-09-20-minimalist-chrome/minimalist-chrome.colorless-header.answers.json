@@ -1,0 +1,15 @@
+{
+ "deck": "minimalist-colorless-header",
+ "started": "2026-09-23T07:50:23.821Z",
+ "submitted": "2026-09-23T07:52:42Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "v": "other",
+   "note": "this is good, but i think we will need to do some work on the coloring/vibrance of the various header bar buttons/elements and the session status dots. they are currently somewhat hard to see. i do think they could all appear to have a bit more of a glow within their respective containers, and maybe different theme tokens on this theme given the lack of the panel background? compute against image background? also want the selected session container to be a bit more transparent",
+   "seconds": 137,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

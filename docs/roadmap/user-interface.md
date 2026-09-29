@@ -2,6 +2,12 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
+- [ ] A red outlined button that is busy ("Stopping…" on a running command's Stop) is hard to
+      read: its dimmed label measured 3.98:1 on Midnight, under the 4.5:1 minimum for small
+      text. Found by the admin-password UX review 2 (U3), 2026-09-26; the dimming is the shared
+      button's disabled look, so every such button has it
+      `all` `confirmed` `checked 2026-09-26` → docs/archive/reviews/2026-09-26-admin-password-ux-review-2.md
+
 - [ ] The design check still lists about 530 places where a screen overrides a shared button’s
       look, types a size in by hand, or uses a color outside the theme. Only the mechanical
       fixes were made on 2026-09-16; each remaining group needs its own design call.
@@ -114,8 +120,12 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       `all` `confirmed` `checked 2026-09-11` `v1.3.1` → docs/active/investigations/2026-09-10-error-inventory/README.md
 
 - [ ] Chat panel vanished from a live session (beta.16, 2026-08-27) — no messages, and new
-      sessions showed no "Start a conversation" text; Destin said ignore for now
-      `chat` `desktop` `needs-verify` `checked 2026-08-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
+      sessions showed no "Start a conversation" text; Destin said ignore for now. 2026-09-27: a
+      friend on Windows and Destin on Linux saw messages disappear MID-conversation behind
+      "Start a conversation" while Claude and the terminal still had them. Four causes fixed
+      (youcoded#582); what rebuilds the chat mid-conversation in the built app is still unknown —
+      next step is a tripwire that logs what emptied an open chat, or the friend's desktop.log
+      `chat` `desktop` `needs-verify` `checked 2026-09-27` `needs-repro` → docs/archive/investigations/2026-08-27-terminal-black-glyphs-mipmap-driver.md
 
 - [ ] Switching sessions in terminal view redraws the letters of EVERY open terminal each time
       (the black-glyph safety net in `TerminalView.tsx`). Measured 2026-09-10 with the new perf-lab
@@ -191,10 +201,6 @@ layout, copy. Not here: one screen only — that screen's area, with the surface
       links and file pills only)
       `desktop` `needs-verify` `checked 2026-09-01`
 
-- [ ] "Ask about this" native treatment (lift the message to screen centre, dim the window,
-      trace the selection) — built on draft PR youcoded#263, still open; Destin 2026-07-28:
-      decent for messages, "janky af" for the file viewer, needs more work before integrating
-      `desktop` `parked` `checked 2026-09-01`
 
 - [ ] The project-folder picker should be a dropdown with recently used folders like every
       other dropdown — but the app keeps no recents list at all yet (2026-07-24)

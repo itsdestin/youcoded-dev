@@ -1,0 +1,212 @@
+{
+ "title": "Native harness \u2014 implementation scope \u2014 acceptance",
+ "key": "native-harness-audit-contract-acceptance",
+ "out": "native-harness.contract.acceptance.html",
+ "themes": [
+  "midnight"
+ ],
+ "branch": "session/native-harness-audit-20260926",
+ "sources": {
+  "native-harness-audit-questions": "native-harness.questions.json",
+  "native-harness-audit-follow-up": "native-harness.follow-up.questions.json"
+ },
+ "steps": [
+  {
+   "id": "C",
+   "surface": "Native assistant",
+   "path": "Conversations, project guidance, actions, and connections",
+   "headline": "Accept the 17 verified requirements, with process-group stopping explicitly deferred?",
+   "yes": "Yes, accept",
+   "no": "No, something is wrong",
+   "notice": "17 requirements passed their checks. R17 is intentionally not passed: you deferred the larger process-stopping change. Native question answers are fixed; Claude Code keeps its existing behavior. These are completed worktree changes, not a release.",
+   "risk": "Item 10 stays excluded. Unapproved audit findings are not bundled in. No release, live-app changes or paid evaluation is authorized by this sign-off.",
+   "rows": [
+    {
+     "id": "R1",
+     "statement": "A failed permission check reports the error without running the action or breaking the next message.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-1",
+     "guard": "youcoded/desktop/tests/harness-session-loop.test.ts",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && node node_modules/vitest/vitest.mjs run [15 named guard files] --maxWorkers=2 \u2014 770 passed / 15 files, /tmp/native-harness-grader-guards.log. harness-session-loop.test.ts:256-350 exercises both decision and approval failures, not-run calls, paired history and next send."
+    },
+    {
+     "id": "R2",
+     "statement": "Messages accepted during a background report continue in order without needing another nudge.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-2",
+     "guard": "youcoded/desktop/tests/native-session-host.test.ts",
+     "note": "i also want to look more into when/if/how queued messages force send between messages. ik claude code will sometimes inject a message in the middle of an assistant response (i may be mistaken). sometimes annoying to wait like 20 minutes before my message sends. how does this work, and how should it?",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files, /tmp/native-harness-grader-guards.log. native-session-host.test.ts:1921-2102 tests FIFO busy delivery and pending host notices, including notice failure without stranding queued dispatch."
+    },
+    {
+     "id": "R3",
+     "statement": "Stop ends the current turn but preserves messages already queued for delivery.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-2",
+     "guard": "youcoded/desktop/tests/native-session-host.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. native-session-host.test.ts:2154-2189 tests interrupted current turn with previously queued message subsequently drained."
+    },
+    {
+     "id": "R4",
+     "statement": "Project rules missing after a conversation is cleared or summarized return when needed, without repeating rules still present.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-3",
+     "guard": "youcoded/desktop/tests/rule-injection.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. rule-injection.test.ts:348-475 tests once-per-session injection, clear, summary, dropped versus retained prune and stale same-source content."
+    },
+    {
+     "id": "R5",
+     "statement": "Project rule patterns respect supported comments and folder boundaries, matching intended files but not similarly named folders.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-4",
+     "guard": "youcoded/desktop/tests/path-triggers.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. path-triggers.test.ts:222-275 tests owner-relative nesting, quoted YAML comments, globstar boundaries, question marks and similarly named folders."
+    },
+    {
+     "id": "R6",
+     "statement": "Before a dedicated file action first changes a governed file, the assistant receives its rules and can reconsider the change without bypassing permission checks.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-5",
+     "guard": "youcoded/desktop/tests/rule-injection.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. rule-injection.test.ts:53-301 tests pre-Write deferral, refreshed model request, denial after reissue, interrupted deferral and omitted-rule not-run siblings."
+    },
+    {
+     "id": "R7",
+     "statement": "A specialist with shell access can read and stop its own background commands, without gaining access to another conversation's commands.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-7",
+     "guard": "youcoded/desktop/tests/native-session-host.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. native-session-host.test.ts:2458-2508 runs real BashOutput/KillShell tool implementations over per-child registries; foreign root/peer IDs refused, Bash-enabled worker authorized. No OS subprocess used in this case."
+    },
+    {
+     "id": "R8",
+     "statement": "A failed background handoff settles with an accurate error and safely stops work that cannot remain tracked.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-9",
+     "guard": "youcoded/desktop/tests/bash-background.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. bash-background.test.ts:153-215 tests failed adoption with output, abort racing failure, no phantom registry run, and cleanup."
+    },
+    {
+     "id": "R9",
+     "statement": "New conversations use updated connection settings or credentials while existing conversations keep their current connection until they finish.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-11",
+     "guard": "youcoded/desktop/tests/mcp-manager.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. mcp-manager.test.ts:39-109 covers credential/config generations, unchanged holder snapshots and disabled new leases; mcp-manager.test.ts:311-456 covers overlapping releases/acquisitions."
+    },
+    {
+     "id": "R10",
+     "statement": "After a successful automatic retry, the displayed and saved reply contain only the replacement attempt, without rerunning completed actions.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-12",
+     "guard": "youcoded/desktop/tests/harness-session-loop.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. harness-session-loop.test.ts:939-1007 checks failed/replacement attempts; session-store.test.ts:222-316 pins persisted retry tombstones (including already flushed parts); harness-history-rebuild.test.ts:168 checks discarded parts omitted on reconstruction. Raw retained retry records are not a displayed/saved reply."
+    },
+    {
+     "id": "R11",
+     "statement": "A repeated file read returns current contents when an earlier copy cannot be verified, even if its modification time stayed unchanged.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-14",
+     "guard": "youcoded/desktop/tests/native-tools-polish.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. native-tools-polish.test.ts:280-363 checks a fresh async read on every call and returns changed same-size bytes with unchanged mtime, never falsely claiming earlier content current."
+    },
+    {
+     "id": "R12",
+     "statement": "Two questions with identical wording retain separate choices and return separate answers without changing what you see.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-questions#Q-15",
+     "guard": "youcoded/desktop/tests/ask-user-question-card-other.test.tsx",
+     "amendment": "Q-22: native conversations only; Claude Code duplicate-wording legacy limitation remains.",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. ask-user-question-card-other.test.tsx:40-101 checks independently selected duplicate-worded native choices through Submit and unchanged Claude Code legacy behavior; ask-user-question-tool.test.ts:25 ordered formatting was reviewed but is not in this grouped guard. Scope is NATIVE ONLY per Q-22; CC duplicate-wording limitation remains."
+    },
+    {
+     "id": "R13",
+     "statement": "A message appears queued while the assistant works, then automatically reaches it at the next safe pause rather than the turn's end.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-follow-up#Q-16",
+     "guard": "youcoded/desktop/tests/native-session-host.test.ts",
+     "note": "Subsequent explicit chat supersedes the optional steering choice: one queued-send flow, with no separate After this finishes action, steering picker, or new status mode.",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. native-session-host.test.ts:1964-2047 checks acknowledged busy send accepted inside active turn and ready input at second empty response; harness-session-loop.test.ts:197-239 checks FIFO delivery before turn ends."
+    },
+    {
+     "id": "R14",
+     "statement": "There is no new urgent-send control; Stop remains available when an ongoing action cannot yet reach a safe pause.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-follow-up#Q-17",
+     "guard": "youcoded/desktop/src/renderer/components/InputBar.test.tsx",
+     "verdict": "pass",
+     "evidence": "cd youcoded/desktop && node node_modules/vitest/vitest.mjs run src/renderer/components/InputBar.test.tsx -t 'keeps Stop beside native busy queued input' \u2014 exit 0; Test Files 1 passed (1), Tests 1 passed | 58 skipped (59), /tmp/native-harness-grader-r14.log. InputBar.test.tsx:476-524 mounts real native InputBar and queued strip from reducer busy/queued state, asserts enabled Stop beside Send through pending permission, native-only interrupt, exact Edit/Cancel queue-button inventory and forbidden urgent labels; a test-only extra button makes the inventory fail. This is the native busy composer/queue surface, not an app-wide absence guarantee."
+    },
+    {
+     "id": "R15",
+     "statement": "Conversations load one instruction file per parent folder from the filesystem root to the working folder, with nearer guidance last.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-follow-up#Q-18",
+     "guard": "youcoded/desktop/tests/prompt-assembly.test.ts",
+     "note": "Resolved by subsequent explicit chat approval; original deck answer was Other. Full ancestor chain above Git, one file per folder: AGENTS.md preferred, otherwise CLAUDE.md; no new dedicated global files or imports.",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. prompt-assembly.test.ts:129-208 checks per-level preferred AGENTS.md/CLAUDE.md, full captured ancestor ordering above Git, deduplicated physical files; legacy nearest-only helper tests elsewhere in this file are not the captured-session behavior."
+    },
+    {
+     "id": "R16",
+     "statement": "Conversations and specialists starting in subfolders still receive applicable project folder rules from the Git root down, without adding personal or cross-project rules.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-follow-up#Q-19",
+     "guard": "youcoded/desktop/tests/path-triggers.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. path-triggers.test.ts:211-275 checks inherited project root/child rule stacking for a narrowed specialist, external exclusion, owner-relative patterns, physical dedupe and scoped YAML parsing."
+    },
+    {
+     "id": "R17",
+     "statement": "Stopping a command allows a graceful exit, then stops remaining work in its verified group even if the original shell exited.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-follow-up#Q-20",
+     "guard": "youcoded/desktop/tests/shell-registry.test.ts",
+     "amendment": "Deferred by user (C2). Additional uncommitted evidence test youcoded/desktop/tests/shell-audit-disposable.test.ts demonstrates known surviving descendant; a green test is NOT success for this row. Grade fail.",
+     "verdict": "fail",
+     "evidence": "Deferred by user (C2); no supervisor implementation. cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/shell-registry.test.ts --maxWorkers=2 \u2014 28 passed / 1 file, /tmp/native-harness-grader-shell-registry.log, but does not establish descendant cleanup after leader exit. Additional existing uncommitted shell-audit-disposable.test.ts:20-43 passed in grouped 770 and ASSERTS TERM-ignoring descendant SURVIVES grace (then cleans up exact test group); opposite of signed statement. No passing claim."
+    },
+    {
+     "id": "R18",
+     "statement": "Stop and the existing time limit end a stalled website-address lookup promptly, ignoring late results and canceling underlying work where supported.",
+     "checkedBy": "mechanical",
+     "threshold": "exit 0 and guard asserts the statement",
+     "source": "native-harness-audit-follow-up#Q-21",
+     "guard": "youcoded/desktop/tests/net-guard.test.ts",
+     "verdict": "pass",
+     "evidence": "Grouped vitest --maxWorkers=2 \u2014 770 passed / 15 files. net-guard.test.ts:107-194 tests abort, first-hop deadline, redirect DNS shared deadline and ignored late resolutions; web-fetch-tool.test.ts:68-86 checks Stop pending DNS and no HTTP dispatch. Cancel underlying work where supported is bounded by abortable transport, not a promise that OS DNS can be canceled."
+    }
+   ]
+  }
+ ]
+}

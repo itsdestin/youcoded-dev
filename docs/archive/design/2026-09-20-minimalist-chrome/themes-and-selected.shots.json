@@ -1,0 +1,45 @@
+{
+ "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+ "width": 1440,
+ "height": 900,
+ "boot": 2500,
+ "sameThreshold": 0.001,
+ "shots": [
+  {
+   "name": "built",
+   "actions": []
+  },
+  {
+   "name": "files-open",
+   "actions": [
+    {
+     "eval": "(()=>{const b=document.querySelector('[aria-label=\"Session Files\"]');if(b&&!b.classList.contains('bg-accent'))b.click();return true})()"
+    }
+   ]
+  },
+  {
+   "name": "sel-accent",
+   "actions": [
+    {
+     "eval": "(()=>{const b=document.querySelector('[aria-label=\"Session Files\"]');if(b&&!b.classList.contains('bg-accent'))b.click();const s=document.createElement('style');s.textContent=\"[data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent, [data-chrome-style='float'] .header-bar .wide-view-toggle-indicator{background:color-mix(in srgb, var(--accent) 62%, transparent) !important;box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 90%, white 10%),0 2px 8px -3px rgba(0,0,0,.4) !important}[data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent, [data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent > svg, [data-chrome-style='float'] .header-bar .wide-view-toggle button[aria-pressed='true'], [data-chrome-style='float'] .header-bar .wide-view-toggle button[aria-pressed='true'] > svg{color:var(--on-accent) !important}\";document.head.append(s);return true})()"
+    }
+   ]
+  },
+  {
+   "name": "sel-bright",
+   "actions": [
+    {
+     "eval": "(()=>{const b=document.querySelector('[aria-label=\"Session Files\"]');if(b&&!b.classList.contains('bg-accent'))b.click();const s=document.createElement('style');s.textContent=\"[data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent, [data-chrome-style='float'] .header-bar .wide-view-toggle-indicator{background:color-mix(in srgb, var(--panel) 85%, transparent) !important;box-shadow:inset 0 0 0 1px var(--edge),0 2px 8px -2px rgba(0,0,0,.42) !important}[data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent, [data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent > svg, [data-chrome-style='float'] .header-bar .wide-view-toggle button[aria-pressed='true'], [data-chrome-style='float'] .header-bar .wide-view-toggle button[aria-pressed='true'] > svg{color:var(--fg) !important}\";document.head.append(s);return true})()"
+    }
+   ]
+  },
+  {
+   "name": "sel-ring",
+   "actions": [
+    {
+     "eval": "(()=>{const b=document.querySelector('[aria-label=\"Session Files\"]');if(b&&!b.classList.contains('bg-accent'))b.click();const s=document.createElement('style');s.textContent=\"[data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent, [data-chrome-style='float'] .header-bar .wide-view-toggle-indicator{background:color-mix(in srgb, var(--inset) 16%, transparent) !important;box-shadow:inset 0 0 0 1.5px var(--accent),0 2px 8px -3px rgba(0,0,0,.35) !important}[data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent, [data-chrome-style='float'] .header-bar > .header-controls-right > div > button.bg-accent > svg, [data-chrome-style='float'] .header-bar .wide-view-toggle button[aria-pressed='true'], [data-chrome-style='float'] .header-bar .wide-view-toggle button[aria-pressed='true'] > svg{color:var(--accent) !important}\";document.head.append(s);return true})()"
+    }
+   ]
+  }
+ ]
+}

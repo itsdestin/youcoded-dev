@@ -4,6 +4,12 @@ has passed ~8 items — graduate it to its own file.
 
 ## accounts
 
+- [ ] Share a document with someone through your YouCoded account, with its comments and
+      their history coming along (Destin, 2026-09-24). Needs online file storage and
+      permissions that do not exist yet; the comments feature keeps its records
+      account-ready so this can follow
+      `all` `parked` `checked 2026-09-24` → docs/archive/handoffs/2026-09-24-doc-comments-START-HERE.md
+
 - [ ] One rejected server call quietly signs you out of your account, with no notice. Friends
       then see you offline forever and you only find out by opening the friends panel. The LOG
       half shipped 2026-09-02 (youcoded#386) so it is diagnosable; the user-facing notice is
@@ -143,6 +149,14 @@ has passed ~8 items — graduate it to its own file.
       (back/forward, its own approval wording, an answer for the phone where it likely cannot
       work). Deferred to its own round on the Phase 2 follow-up deck (2026-09-19).
       `window-chrome` `desktop` `decision` `checked 2026-09-19`
+
+- [ ] Idea: a fediverse page with a native, Threads-like feel, "an interesting idea once pages is
+      built out fully" (2026-09-28). It would talk to one home server (a Mastodon account), which
+      already reaches Threads users who opt in. A key page could read, post, reply and follow today,
+      but it would not feel native: a key page cannot show pictures from other servers, there are no
+      live updates or background notifications, sign-in means pasting a token, and the phone cannot
+      add a key. Revisit when Pages has sign-in, wider picture loading and background refresh
+      `window-chrome` `desktop` `parked` `checked 2026-09-28`
 
 - [ ] Pages on a phone: the page view opens with the list always beside the page and the same band
       as on desktop, and nobody has designed what that becomes at phone width — on a narrow remote

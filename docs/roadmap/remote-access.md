@@ -25,17 +25,25 @@ Filing test: reaching the app from another device — the protocol, the browser 
       that the real fix deletes). Wanted: the runtime hoisted out, one channel table both doors
       read, and the three transcript-event translators merged — simplification phase 4, about
       5–6k lines removed, now run as phases R1–R4 of the one-core work. Where the phone had
-      drifted it will match the desktop afterwards, listed per group. On hold since 2026-09-18
-      (Destin). Its written precondition, Plan C's `remote-` tests, merged 2026-09-18 (#527); the
-      branches that edit the same two files land first (R0; six on 2026-09-24). Nothing else
-      may edit the two door files from R1 to the end of R3. Goes before the Android rebuild, not
-      inside it
-      `remote` `blocked` `checked 2026-09-24` `v1.3.1` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
+      drifted it will match the desktop afterwards, listed per group. Held 2026-09-18; Destin
+      lifted the hold 2026-09-29 ("i want to do the remote stuff"). Branches that edit the same
+      two files do not block it: they are rewritten onto the new layout after R2 (Destin,
+      2026-09-29). Nothing else may edit the two door files from R1 to the end of R2. Goes before
+      the Android rebuild, not inside it
+      `remote` `in-flight` `checked 2026-09-29` `v1.3.1` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
 
 - [ ] Over remote access the assistant-settings model picker offers models the browser cannot
       actually run, so choosing one saves a default that quietly does nothing there
       Planned: R4 — the capabilities object tells the picker what this device can run.
       `settings/defaults` `remote` `confirmed` `checked 2026-09-07`
+
+- [ ] A phone connected to the computer can lose the messages it is showing: when the computer
+      sends its copy of the conversations and its copy of one is empty (it had not loaded that
+      conversation yet, or its own chat went blank), that empty copy replaces the phone's. Read
+      from the code during the 2026-09-27 blank-chat fix; left out when Destin scoped that work
+      to desktop
+      Planned: R5 — the computer's record replaces the snapshot that can overwrite the phone's copy.
+      `desktop` `needs-verify` `checked 2026-09-27`
 
 - [ ] With a phone connected, the computer sends it the terminal output and chat events of every
       open session, not only the one the phone is showing — more sessions running means a busier

@@ -1,0 +1,27 @@
+{
+ "deck": "startup-perf-review",
+ "started": "2026-09-26T07:17:06.399Z",
+ "submitted": "2026-09-26T07:17:45Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 15,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "midnight",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "leave",
+   "seconds": 9,
+   "theme": "midnight",
+   "zoom": 1
+  }
+ }
+}

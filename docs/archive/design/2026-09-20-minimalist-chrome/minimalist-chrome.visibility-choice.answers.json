@@ -1,0 +1,15 @@
+{
+ "deck": "minimalist-header-visibility-choice",
+ "started": "2026-09-23T08:22:11.873Z",
+ "submitted": "2026-09-23T08:22:55Z",
+ "cur": 0,
+ "answers": {
+  "C-1": {
+   "note": "the colors just don't contrast well against the background. how do we fix this for other surfaces that exist against the bare background? why is this so hard.",
+   "v": "other",
+   "seconds": 42,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

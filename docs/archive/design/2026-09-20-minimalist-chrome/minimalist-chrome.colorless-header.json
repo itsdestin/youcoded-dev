@@ -1,0 +1,22 @@
+{
+  "title": "Minimalist header — wallpaper through every control",
+  "key": "minimalist-colorless-header",
+  "out": "minimalist-chrome.colorless-header.html",
+  "images": "images/minimalist-chrome.colorless-header",
+  "runs": { "before": "runs/lenses-structural", "after": "runs/lenses-colorless" },
+  "labels": { "before": "With a little colour", "after": "Colourless glass" },
+  "themes": ["meadow-mist"],
+  "theme": "fixed",
+  "crops": { "header": ["main", "cushion", "1440x50+0+0"] },
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "Header over Meadow Mist",
+      "crop": "header",
+      "headline": "Every header control now lets the wallpaper show through.",
+      "changed": "Removed the colour and gradient from individual buttons, the session switcher backing and the Chat/Terminal selection. Each retains a local blur and soft shadow; the full-width veil stays off.",
+      "notice": "The count badge and active session name keep their own colours so they remain legible. This is the header only; message box and chips are unchanged."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+✔ a crashed run's browsers are stopped, and a process that only shares the pid file is not (4.956907ms)
+✔ a record whose owner is still running is left alone (0.233697ms)
+✔ the pool never has more tabs than jobs, or fewer than one browser (1.069049ms)
+✔ two tabs on the same address each keep their own theme (308.102327ms)
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+✔ no marker, no attaching (2.272178ms)
+✔ a marker naming a finished process is ignored (2.972717ms)
+✔ a marker naming a live process that is not run-dev.sh is ignored (1.427779ms)
+✔ a marker naming a live run-dev.sh is used (101.190786ms)
+✔ controls: labels, roles, what is covered, and the top layer first (482.999584ms)
+✔ a click re-aims after pointer arrival moves its target instead of hitting the old-position decoy (698.979165ms)
+✔ start, click, back, stop on the practice app (5634.88813ms)
+✔ journeys: a passing path passes; a missing button fails naming the step and what is on screen (6374.342099ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13365.017358

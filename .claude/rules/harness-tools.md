@@ -93,7 +93,7 @@ Session lifecycle: `native-runtime.md`. **Depth + why for every bullet: `youcode
 ## Skills & injection (M3) — guards: `skill-catalog`/`skill-tool-gating`/`injection-budget`/`path-triggers`/`rule-injection`/`slash-routing` tests
 - **Injection is MESSAGES, never a prompt edit** (`prompt-assembly.ts` stays byte-stable) — a prompt change discards the KV cache prefix.
 - **Injected content is bounded by the profile; truncation announces itself** (budgets from the REAL window; unmeasured = small).
-- **The ROOT project-instruction file is OUTLINED to fit (`fitProjectInstructions`), never tail-cut** — every heading survives, announced; **sizing is fixed at session start — `setBinding` does NOT re-apply it.**
+- **Startup instruction files span filesystem-root → cwd, one AGENTS.md (else CLAUDE.md) per folder** — async discovery and one aggregate `fitProjectInstructions` budget with source-labelled cuts; no fresh re-selection for the context panel. **Sizing is fixed at session start — `setBinding` does NOT re-apply it.**
 - **`Skill` is CONDITIONAL and absent from `NATIVE_TOOL_NAMES`** — attached only when the profile affords its catalog; re-synced on `setBinding`; `/skill-name` works on every model.
 - **A rule with no `paths:` is SKIPPED, never global** — eager rules ride every turn.
 - **`native:*` four-surface parity is pinned** (`ipc-channels.test.ts` → "native:* channel parity").

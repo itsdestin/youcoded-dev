@@ -1,0 +1,52 @@
+{
+  "title": "Editing and deleting comments — try it",
+  "key": "doc-comments-edit-delete-review",
+  "out": "doc-comments.edit-delete.review.html",
+  "stage": "review",
+  "themes": ["midnight", "light"],
+  "live": { "worktree": "comments-mock-a" },
+  "steps": [
+    {
+      "id": "D-1",
+      "surface": "File viewer",
+      "path": "File button (top right) → 2026-09-24-onboarding-redesign.md → Comments button → hover a comment's name line, then a reply's name line",
+      "headline": "Hovering a comment or a reply shows pencil and trash icons beside the checkmark, and the pointer stays steady while you move across all three.",
+      "notice": "They stay hidden until you hover — a reply's icons are its own, never the whole thread's. On a touch screen they show all the time, since there's nothing to hover.",
+      "risk": "A touch screen shows the icons at rest, so the row reads a little busier there than on a mouse.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "D-2",
+      "surface": "File viewer",
+      "path": "Same comment panel → click the pencil icon on any comment or reply",
+      "headline": "Clicking the pencil turns the note into a box to type in; the reply box, checkmark and trash icon vanish behind a dark 'Editing' pill.",
+      "notice": "Save (dark) and Cancel (quiet) sit inside the box's own bottom-right corner, the same box the reply box uses. Clicking the 'Editing' pill cancels, same as Cancel.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "D-3",
+      "surface": "File viewer",
+      "path": "Same edit box → clear out all the words",
+      "headline": "Clear all the words in that box and Save turns into a red Delete button, which asks first before removing anything.",
+      "notice": "It names how many replies would go with it, e.g. \"Delete this comment and its 2 replies?\" Cancel backs out with nothing lost.",
+      "risk": "Clearing a REPLY's box only asks about that one reply — the comment above it is never touched.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "D-4",
+      "surface": "File viewer",
+      "path": "Open the file (starts in reading view) → select a sentence → Add comment in the small menu that appears; or Comments button → the box at the bottom of the panel",
+      "headline": "A new comment starts as one line and grows as you type, with a round send arrow built into the box.",
+      "notice": "Press Escape, or click elsewhere, while it's still empty and the box disappears with nothing saved. The quoted words above a floating box show as one plain grey line, no box or side bar around them. desktop/src/renderer/components/ChatView.tsx shows the same box over code, quoting the code line instead of a sentence.",
+      "live": { "app": "default" }
+    },
+    {
+      "id": "D-5",
+      "surface": "File viewer",
+      "path": "Same comment panel → type a reply under any comment",
+      "headline": "Replying uses the exact same box as a new comment — one line, growing, with the same round send arrow inside.",
+      "notice": "Typing a reply looks and behaves identically to starting or editing a comment, so moving between them never feels different.",
+      "live": { "app": "default" }
+    }
+  ]
+}

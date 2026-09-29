@@ -1,0 +1,80 @@
+{
+ "deck": "doc-comments-review",
+ "started": "2026-09-26T09:15:23.207Z",
+ "submitted": "2026-09-26T09:26:41Z",
+ "cur": 10,
+ "answers": {
+  "R-1": {
+   "v": "yes",
+   "seconds": 241,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 34,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-3": {
+   "note": "move \"show resolved\" to be at the top of the panel under the title/header divider line. add an \"x\" in the top right of the comment panel",
+   "v": "other",
+   "seconds": 45,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-4": {
+   "note": "",
+   "v": "yes",
+   "seconds": 90,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-5": {
+   "note": "the \"ask your assistant\" button doesnt seem clickable. also it should not be transparent (no other buttons in the app are). same for the edit button. i think one chip per comment is probably not the way to go, but i can't see this currently.",
+   "v": "other",
+   "seconds": 83,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-6": {
+   "v": "yes",
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-7": {
+   "v": "yes",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-8": {
+   "v": "yes",
+   "seconds": 68,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-9": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "project-chat",
+   "note": "show a popup requesting model and such. kinda like we do for the \"build a page\" button in page view",
+   "seconds": 46,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-2": {
+   "v": "pick",
+   "pick": "delete",
+   "seconds": 31,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

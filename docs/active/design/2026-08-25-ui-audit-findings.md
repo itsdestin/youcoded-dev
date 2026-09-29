@@ -507,7 +507,7 @@ counts, not fixture values. "1 installs" (singular/plural) is a copy bug: → P-
 ## 7. Method notes for the next pass
 
 - The rig now lives in the repo: `scripts/ui-review/` (README there) and the `/ui-review`
-  skill. `bash scripts/ui-review/run-review.sh <worktree>` reproduces this whole review in
+  skill. (2026-09-26: `run-review.sh` is retired; `node scripts/shoot/shoot.mjs --all --themes all --contrast --worktree <worktree>` now captures the same screens.) At the time, `bash scripts/ui-review/run-review.sh <worktree>` reproduced this whole review in
   ~15 minutes: every plan × 6 themes, each shot self-verified, sheets + `coverage.md` +
   `contrast.md` + `gallery.html`. The real-app plans (`electron-*`) need the dev instance
   from the README. `--reports-only` rebuilds the reports after a hand re-run of one plan.

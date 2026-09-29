@@ -1,0 +1,16 @@
+{
+  "base": "http://127.0.0.1:5233/?mode=workbench&child=1&scenario=default&chrome=float&pop=bordered",
+  "width": 1440,
+  "height": 900,
+  "boot": 2800,
+  "sameThreshold": 0.001,
+  "shots": [{
+    "name": "tuned-ink",
+    "actions": [{
+      "eval": "new Promise((resolve, reject) => { const ready = () => !!document.querySelector('.header-bar[data-wallpaper-ink] .session-strip .session-dot[data-status=gray]'); if (ready()) return resolve(true); const observer = new MutationObserver(() => { if (ready()) { observer.disconnect(); clearTimeout(timer); resolve(true); } }); observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['data-wallpaper-ink'] }); const timer = setTimeout(() => { observer.disconnect(); reject(new Error('wallpaper ink and sessions did not load')); }, 8000); })"
+    }],
+    "expect": "js:document.querySelector('.header-bar[data-wallpaper-ink]')?.style.getPropertyValue('--wallpaper-header-ink').startsWith('rgb(') === true",
+    "sameAsBaseline": false,
+    "probe": false
+  }]
+}

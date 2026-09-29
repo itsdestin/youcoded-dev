@@ -1,0 +1,37 @@
+{
+  "title": "Minimalist chat — messages fade at the controls",
+  "key": "minimalist-message-edge-fade",
+  "out": "minimalist-chrome.message-fade.review.html",
+  "images": "images/minimalist-chrome.message-fade.review",
+  "runs": { "before": "runs/message-fade-before", "after": "runs/message-fade-after" },
+  "labels": { "before": "Previous sharp cutoff", "after": "Fade at the controls" },
+  "themes": ["meadow-mist", "golden-sunbreak", "halftone-dimension"],
+  "theme": "fixed",
+  "crops": {
+    "top": ["message-fade", "fade-mid-scroll", "1280x145+0+0"],
+    "bottom": ["message-fade", "fade-mid-scroll", "1280x205+0+435"]
+  },
+  "steps": [
+    {
+      "id": "F-1",
+      "surface": "Chat",
+      "path": "Scroll a conversation under the top buttons",
+      "crop": "top",
+      "highlight": { "box": [2, 26, 56, 20] },
+      "headline": "Messages fade out as they reach the top controls, without fading the buttons.",
+      "changed": "The chat content stays clear until eight pixels from the top edge, then fades as it meets the buttons. The wallpaper and header stay clear.",
+      "notice": "Compare the first line under the top controls, then try Meadow Mist, Golden Sunbreak and Halftone Dimension.",
+      "risk": "The previous side is a controlled capture of this renderer with only the fade disabled and the previous top spacing restored. It is not a second running build."
+    },
+    {
+      "id": "F-2",
+      "surface": "Chat",
+      "path": "Scroll a conversation behind the chips and message box",
+      "crop": "bottom",
+      "highlight": { "box": [2, 38, 57, 18] },
+      "headline": "Messages fade as they pass behind the bottom controls; the last message stays readable at rest.",
+      "changed": "The lower edge tracks the measured height of the chips, message box and status row, including a raised keyboard or queued messages. No background veil was added.",
+      "notice": "The chips and message box keep their colors and clarity. Scrolling content alone fades beneath them."
+    }
+  ]
+}

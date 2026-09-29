@@ -11,8 +11,8 @@ topic: Remote access refactor — one assistant core with one feature list that 
 > `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`, which has the one ordered list of
 > every phase, remote and Android together. This plan **is** the run list for simplification
 > Phase 4 (`docs/active/plans/2026-09-16-simplification-phases.md`): Phase 4 = R1–R4. It also
-> covers what follows (R5–R6). Phase 4 stays on hold, and a v1.3.1 blocker, per Destin
-> (2026-09-18). The decisions table at the end is still open. Companion:
+> covers what follows (R5–R6). Held 2026-09-18; **Destin lifted the hold 2026-09-29** ("i want
+> to do the remote stuff"). Still a v1.3.1 blocker. The decisions table at the end is still open. Companion:
 > `docs/active/plans/2026-09-24-android-rebuild-plan.md` (phases A0–A6).
 >
 > **Evidence.** Six read-only investigations (I1–I6) on 2026-09-24 against app master `ab15a5858`.
@@ -137,8 +137,8 @@ sites, `shell.openExternal`, and 3 dialogs (I1 §3).
 Phase ids are **R0–R6** here and **A0–A6** in the Android plan. The one ordered list of both,
 with what can run in parallel, is
 `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`. **Simplification Phase 4 = R1–R4**
-(D2 = R1, D1 = R2 + R3, D3 + M5 = R4). Its v1.3.1 release-blocker status and its "must run
-alone" rule apply to R1–R4 only. R5 and R6 are new work and are not release blockers.
+(D2 = R1, D1 = R2 + R3, D3 + M5 = R4). Its v1.3.1 release-blocker status applies to R1–R4 only; its "must run alone" rule is the
+R1–R2 full lock plus R3's per-family lock (R0). R5 and R6 are new work and are not release blockers.
 
 Each phase is one or more worker runs, each with a fresh reviewer, per the Phase 4 execution
 protocol (`docs/active/plans/2026-09-16-simplification-phases.md` → Execution protocol).
@@ -146,17 +146,21 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 
 ### R0 — clear the road (no code)
 
-- **Branches that edit the door files land (or are shelved) first.** On 2026-09-24 six
-  unmerged app branches touched `ipc-handlers.ts`/`remote-server.ts`. Three were active that
-  day: `feat/specialists-plans-ui`, `session/plugin-project-controls` and
-  `session/session-resume-20260924`. Three were older: `feat/specialists-plans-5b`,
-  `session/files-drawer-honesty` and `session/onedrive-no-auto-download`. The fix batches in
-  `docs/active/investigations/2026-09-24-main-blocking-calls-triage.md` that edit
-  `ipc-handlers.ts` belong in the same group. Recompute the list the day R1 starts (a
-  `git diff --name-only origin/master...<branch>` over the two files). Starting earlier would
-  force painful merges into 12–20 in-flight runs.
-- **The owed real-phone passes happen now** (remote roadmap: the batch 2/3 pass and the
-  2026-09-23 fixes pass). Then the behaviour changes R3 reports can be told apart from existing
+- **Branches that edit the door files do NOT block R1 (Destin, 2026-09-29).** They keep going
+  and are **rewritten onto the new layout after R2**, when the full lock ends: their edits to
+  `ipc-handlers.ts`/`remote-server.ts`/`preload.ts`/`remote-shim.ts` are redone by hand as
+  entries in the contract and the family file (git cannot carry an edit into a file that did
+  not exist). The rest of each branch rebases normally. Each rewrite runs the branch's own
+  tests plus a review that checks no phone-only guard was dropped. On 2026-09-29 six branches
+  qualified, about 700 lines in those files, roughly half of it the remote/preload copies the
+  refactor deletes anyway: `feat/specialists-plans-ui` (~270), `session/plugin-project-controls`
+  (~140), `session/office-suite-investigation` (~60), and three stale ones already 1,000+
+  commits behind (`feat/specialists-plans-5b`, `session/files-drawer-honesty`,
+  `session/onedrive-no-auto-download`), which need redoing anyway. Recompute the list after R2
+  (`git diff --name-only origin/master...<branch>` over the four files).
+- **The owed real-phone passes happen before R3** (remote roadmap: the batch 2/3 pass and the
+  2026-09-23 fixes pass). They need Destin's phone; R1–R2 change nothing visible, so they do
+  not wait for them. Then the behaviour changes R3 reports can be told apart from existing
   bugs. The Android WebView origin check and pairing-credential reuse stay in A2, as Destin
   decided on 2026-09-11.
 - **Shrink the freeze.** Only R1–R2 need the two door files fully locked, and they are short
@@ -326,7 +330,7 @@ waits for R3 to finish, or goes in once its family file exists.
 
 | # | Question | Recommendation | Why |
 |---|---|---|---|
-| 1 | Start R1 only after `feat/specialists-plans-ui` merges? | **Yes** | Starting now forces a merge into a moving target. The branch is active today |
+| 1 | ~~Start R1 only after `feat/specialists-plans-ui` merges?~~ | **Decided 2026-09-29:** start now; in-flight branches are rewritten onto the new layout after R2 | Destin chose not to wait for other branches |
 | 2 | Generate preload's channel list from one contract (reopens D10)? | **Yes, as static generated code** | The security boundary stays an explicit list you can read. Only its source changes, and four hand copies become one |
 | 3 | R5 (computer keeps the record): is it wanted, as its own phase after Phase 4? | **Yes** | It is the fix for the slow reconnect, "every session sent to every phone", and screens disagreeing. It changes how the phone behaves, so it is outside the release-blocker scope |
 | 4 | Should the "working / needs you" status be computed on the computer itself, so a phone is accurate even with no computer window open? | **Measure first, then likely yes** | It is the one piece of live state only a window knows. Moving it costs some background work on the computer |

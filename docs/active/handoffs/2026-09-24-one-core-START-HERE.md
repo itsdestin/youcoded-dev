@@ -34,7 +34,7 @@ Rows with the same **When** can run side by side; **Needs first** is the hard de
 | **Now** | A0 | Phone experiments: Node + harness from inside the app; `nodejs-mobile` compared; app size | — | — |
 | **Now** | A1 | Play packaging: every program inside the app, no first-run download, consent screen, `specialUse` property | — | Play |
 | **Now** | — | Skill-settings wipe fix on Android (destroys data; not worth waiting for A3) | — | — |
-| **Now** | R0 | Branches editing the two door files land or are shelved (six on 2026-09-24, incl. Specialists plans); owed real-phone passes; edit-lock check in `close-out.sh` | — | — |
+| **Now** | R0 | Edit-lock check in `close-out.sh`; owed real-phone passes (Destin's phone, before R3). Branches editing the door files do NOT block — they are rewritten onto the new layout after R2 (Destin, 2026-09-29) | — | — |
 | Now, any time | A5 (design only) | Phone default-UI mockup round and other A5 design decks | — | — |
 | After A1 | A6 | Google Play listing (Android decision 6: list right after A1, or wait for A4) | A1 | v1.3.1 roadmap item |
 | 1 | R1 | Hoist the runtime out of the desktop door; `Platform` interface; runtime loads with no Electron | R0 | v1.3.1 |
@@ -45,13 +45,15 @@ Rows with the same **When** can run side by side; **Needs first** is the hard de
 | 6 | R6 · A4 | R6: native sessions from the phone, instant buttons, more features over remote. A4: Node owns the phone's socket | R5 (R6); A3 + R5 (A4) | — |
 | 7 | A5 (build) | Phone-native features, each after its design round | A4 | — |
 
-**The edit lock.** From R1 to the end of R3, nothing else edits
-`desktop/src/main/ipc-handlers.ts` or `desktop/src/main/remote-server.ts` (Destin,
-2026-09-18). Once a family has moved into `main/ipc/<family>.ts`, feature work edits that
-file instead. R0 makes the lock a check rather than a promise.
+**The edit lock.** During R1–R2 nothing merges into
+`desktop/src/main/ipc-handlers.ts` or `desktop/src/main/remote-server.ts`. From R3 the lock
+covers only the family being moved; once a family is in `main/ipc/<family>.ts`, feature work
+edits that file instead. Branches already open when R1 starts are rewritten onto the new
+layout after R2 (Destin, 2026-09-29). R0 makes the lock a check rather than a promise.
 
-**On hold.** Phase 4 (R1–R4) and Phase 5 are v1.3.1 blockers, on hold since 2026-09-18
-(Destin). R0's first item, landing the branches that edit the door files, is the practical gate.
+**Status.** Destin lifted the Phase 4 hold on 2026-09-29 ("i want to do the remote stuff"):
+R0 and R1 are in flight. Phase 4 (R1–R4) and Phase 5 stay v1.3.1 blockers; Phase 5 is still
+on hold until R4 and the native-session-host test split.
 
 ## Open decisions
 

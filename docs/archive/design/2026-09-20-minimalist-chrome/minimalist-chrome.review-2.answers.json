@@ -1,0 +1,28 @@
+{
+ "deck": "minimalist-chrome-r2",
+ "started": "2026-09-22T23:33:53.358Z",
+ "submitted": "2026-09-22T23:35:40Z",
+ "cur": 2,
+ "answers": {
+  "R-1": {
+   "note": "these indiviual buttons still have an obvious ass panel behind them. the point of this new theme style is to remove the panel, so all of the individual buttons appear to be floating directly over the wallpaper and each individual button appears to blend into or rise out of the wallpaper behind it in some fashion",
+   "v": "other",
+   "seconds": 80,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "R-2": {
+   "v": "yes",
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "C-1": {
+   "v": "pick",
+   "pick": "bordered",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

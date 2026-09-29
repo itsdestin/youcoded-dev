@@ -1,0 +1,149 @@
+{
+  "title": "Comments — editing and deleting",
+  "key": "doc-comments-edit-delete-questions",
+  "out": "doc-comments.edit-delete.questions.html",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "E-1",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Every comment and reply, in the panel and the hover card",
+      "headline": "Where should Edit and Delete live on a comment?",
+      "today": "Once a comment or reply is posted it can only be resolved. There is no way to fix a typo or remove one.",
+      "problem": "A typo, a wrong comment, or a leftover test comment stays forever.",
+      "proposal": "Each comment and each reply gets Edit and Delete.",
+      "options": [
+        {
+          "id": "menu",
+          "label": "A ⋯ menu",
+          "pros": ["Same as Google Docs and Word", "Cards stay uncluttered", "Room to add more actions later"],
+          "cons": ["One extra click to reach Edit or Delete", "On the phone the ⋯ must always show, since there is no hover"],
+          "recommended": true
+        },
+        {
+          "id": "icons",
+          "label": "Small icons on hover",
+          "pros": ["One click, no menu"],
+          "cons": ["Two more icons on every card and reply", "Easy to hit Delete by accident beside Resolve"]
+        }
+      ]
+    },
+    {
+      "id": "E-2",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Every comment and reply",
+      "headline": "Whose comments can you edit or delete?",
+      "today": "Comments come from you, the assistant, and — in Word or Excel files — colleagues who commented in Word or Excel.",
+      "problem": "Letting you delete anyone's note is handy but can wipe a colleague's comment from a shared file.",
+      "proposal": "Pick who you can change.",
+      "options": [
+        {
+          "id": "own-plus-assistant",
+          "label": "Yours and the assistant's",
+          "pros": ["You can clean up anything the assistant wrote", "A colleague's comment in a shared Word or Excel file can't be wiped by mistake"],
+          "cons": ["To remove a colleague's comment you'd resolve it, or delete it in Word or Excel"],
+          "recommended": true
+        },
+        {
+          "id": "own-only",
+          "label": "Only your own",
+          "pros": ["Same rule as Google Docs"],
+          "cons": ["You couldn't delete a comment the assistant made by mistake"]
+        },
+        {
+          "id": "anyone",
+          "label": "Anyone's",
+          "pros": ["Same as Word and Excel, which let you delete anyone's comment"],
+          "cons": ["Easy to delete a colleague's note in a file you'll send back to them"]
+        }
+      ]
+    },
+    {
+      "id": "E-3",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Deleting the first comment of a thread that has replies",
+      "headline": "Deleting a thread's first comment — what happens to its replies?",
+      "today": "A thread is the first comment plus its replies.",
+      "problem": "Replies make no sense without the comment they answer.",
+      "proposal": "Pick what deleting the first comment does.",
+      "options": [
+        {
+          "id": "whole-thread",
+          "label": "Deletes the whole thread",
+          "pros": ["Same as Google Docs, Word and Excel", "No orphaned replies left hanging"],
+          "cons": ["Removes replies you might have wanted — the confirmation below says how many"],
+          "recommended": true
+        },
+        {
+          "id": "keep-replies",
+          "label": "Keeps replies, marks it deleted",
+          "pros": ["Nothing anyone else wrote disappears"],
+          "cons": ["A \"deleted comment\" stub stays in the thread", "Word and Excel have no such state, so in those files the whole thread still goes"]
+        }
+      ]
+    },
+    {
+      "id": "E-4",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "Delete",
+      "headline": "Should deleting ask first?",
+      "today": "Nothing can be deleted yet.",
+      "problem": "A mis-click could remove a comment for good — in Word and Excel files it's removed from the file itself.",
+      "proposal": "Pick how deleting is protected.",
+      "options": [
+        {
+          "id": "confirm",
+          "label": "Ask first",
+          "pros": ["No accidental deletes", "Can say \"and its 3 replies\""],
+          "cons": ["One more click every time"],
+          "recommended": true
+        },
+        {
+          "id": "undo",
+          "label": "Delete now, offer Undo",
+          "pros": ["Fastest"],
+          "cons": ["If you miss the Undo, it's gone", "For Word and Excel, undo means rewriting the file a second time"]
+        }
+      ]
+    },
+    {
+      "id": "E-5",
+      "words": true,
+      "surface": "File viewer comments",
+      "path": "An edited comment or reply",
+      "headline": "Should an edited comment say it was edited?",
+      "today": "Comments show who wrote them and when.",
+      "problem": "Without a mark, someone replying to the old wording can look confusing.",
+      "proposal": "A small muted \"edited\" after the time, like Google Docs and Slack. Word and Excel files don't record edits, so it would only show on other files — and only for edits made in YouCoded."
+    },
+    {
+      "id": "E-6",
+      "words": true,
+      "surface": "The assistant",
+      "path": "The assistant's comment tools",
+      "headline": "Should the assistant be able to edit or delete comments?",
+      "today": "The assistant can read, reply, resolve, reopen, add and move comments — not edit or delete them.",
+      "problem": "Letting it edit or delete means it could change or remove what people wrote.",
+      "proposal": "Pick what the assistant may do.",
+      "options": [
+        {
+          "id": "none",
+          "label": "Neither",
+          "pros": ["It can never change or remove what anyone wrote", "It can still resolve, which hides without losing anything"],
+          "cons": ["To fix its own typo it replies again instead"],
+          "recommended": true
+        },
+        {
+          "id": "own",
+          "label": "Only its own",
+          "pros": ["It can tidy up its own mistakes"],
+          "cons": ["Two more tools for it to learn", "Word and Excel changes would ask permission, as today"]
+        }
+      ]
+    }
+  ]
+}

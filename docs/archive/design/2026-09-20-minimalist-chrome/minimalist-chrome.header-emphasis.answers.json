@@ -1,0 +1,15 @@
+{
+ "deck": "minimalist-header-emphasis",
+ "started": "2026-09-23T08:06:02.833Z",
+ "submitted": "2026-09-23T08:06:55Z",
+ "cur": 0,
+ "answers": {
+  "R-1": {
+   "note": "that looks quite terrible. the white backround/outline around the status dots is too stark, and the black on the buttons is very jarring/ugly",
+   "v": "other",
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
