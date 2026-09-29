@@ -2862,9 +2862,34 @@ the structural "no dangling range markers, rel/content-type consistency" pin), `
 (same four ops, incl. the from-scratch last-comment-cleanup pin and a five-independent-threads-on-
 one-cell delete), `doc-comments-ipc-handlers.test.ts`/`doc-comments-remote-relay.test.ts` (format
 dispatch and containment on both the desktop IPC and remote WS surfaces), `mock-shim-doc-comments.test.ts`.
-**Not extended in this pass**: the T21 golden-fixture cross-platform-parity suite (§9.3's
-`write-golden/*.json` recipe-replay mechanism plus the Kotlin `*CrossPlatformParityTest.kt` files) —
-its recipes cover add/reply/resolve/reopen/move only; adding edit/delete recipes plus regenerated
-golden bytes was judged not cheap enough to fold into this pass (its own generator scripts and the
-Kotlin-side parity tests would both need new cases) and is left as a follow-up rather than silently
-assumed covered.
+**Now extended (2026-09-28, session `comments-mock-a`, follow-up to the note below)**: the T21
+golden-fixture cross-platform-parity suite now covers edit/delete too. Word — edit a comment's
+text, edit a reply, delete a reply, delete a whole thread (root + replies, anchors gone); Excel —
+edit a thread's text, edit a reply, delete a reply, delete a whole thread, and delete a sheet's
+LAST comment (proving `cleanupEmptyCommentPartsIfNeeded` removes every comment part/rel/
+content-type override/`<legacyDrawing>`, via a new from-scratch `fresh-single-comment.xlsx`
+fixture — no existing fixture has a sheet with only one comment); plain sidecar — edit + delete.
+New cases: `generate-docx-write-golden.mjs`'s `edit-launch-brief`/`edit-reply-launch-brief`/
+`delete-reply-launch-brief`/`delete-thread-launch-brief`; `generate-xlsx-write-golden.mjs`'s
+`edit-docling`/`edit-reply-docling`/`delete-reply-docling`/`delete-thread-docling`/
+`delete-last-comment-fresh`; matching `DocxCommentsCrossPlatformParityTest.kt`/
+`XlsxCommentsCrossPlatformParityTest.kt` `@Test`s; matching cases in
+`doc-comments-write-golden-staleness.test.ts`; new edit/delete tests in
+`doc-comments-json-sidecar-fixture-parity.test.ts` and its Kotlin mirror in
+`DocCommentsStoreTest.kt`. The reverse direction (§9.3, Kotlin writes, desktop reads) gained one
+docx and one xlsx case — `docx-edit-delete`/`xlsx-edit-delete` in `shared-fixtures/doc-comments/
+kotlin-write-golden/`, each combining an edit AND a delete against two of that fixture's real
+pre-existing comments — read by new cases in `doc-comments-kotlin-write-golden.test.ts`. Both
+`write-golden/` directories (desktop's and the reverse one) now carry their own `README.md`/
+`manifest.json` indexing every case. `bash scripts/verify.sh` and the full Android unit test
+suite (`./gradlew test -x bundleWebUi`) both green after this extension; no cross-platform parity
+bug was found — desktop's and Kotlin's edit/delete implementations already agreed byte-for-byte
+(ignoring `createdAt` and a brand-new xlsx thread's own GUID, the same exclusions every other
+T21 case already makes).
+
+**Previously not extended in this pass (superseded by the paragraph above, left as history)**: the
+T21 golden-fixture cross-platform-parity suite (§9.3's `write-golden/*.json` recipe-replay
+mechanism plus the Kotlin `*CrossPlatformParityTest.kt` files) — its recipes cover add/reply/
+resolve/reopen/move only; adding edit/delete recipes plus regenerated golden bytes was judged not
+cheap enough to fold into this pass (its own generator scripts and the Kotlin-side parity tests
+would both need new cases) and is left as a follow-up rather than silently assumed covered.
