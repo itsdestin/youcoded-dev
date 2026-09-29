@@ -81,7 +81,7 @@ as unjudgeable, by design. Re-take the baseline, or compare with `--only` phases
 
 It builds the **packaged** app, boots it repeatedly against a throwaway fixture HOME
 under a virtual X display, and writes **one JSON report** (plus a Markdown summary)
-that `compare.mjs` can later use to judge a code change as KEEP or REJECT.
+that `compare.mjs` can later use to judge a code change as KEEP, REJECT or INCONCLUSIVE.
 
 The point is not "get a number". It is to get a number you can *defend* — measured on
 a quiet machine, repeated enough times to know its own noise band, taken against a
@@ -134,6 +134,29 @@ but **no per-run samples** behind it, which would make `spreadPct()` report 0% n
 and let pure jitter through the gate as a proven win. The report is still written
 (the numbers cost real minutes) but it is stamped `incomplete` in both the JSON and
 the Markdown.
+
+### Comparing reports
+
+`node scripts/perf-lab/compare.mjs <baseline.json> <candidate.json> --target <PRIMARY-path>`
+prints `VERDICT: KEEP`, `REJECT`, or `INCONCLUSIVE`. Only KEEP exits 0;
+REJECT and INCONCLUSIVE exit nonzero. `verdict()` also returns `keep`, `status`
+and `comparability: { comparable, reasons, warnings }`. Numeric spread, missing
+PRIMARY metrics, screens and error gates still apply; an inconclusive report
+**cannot** certify a win even if the target improves.
+
+Comparisons require complete, non-aborted reports with valid machine identity
+(CPU, RAM, kernel, Node and the actual GL renderer, acceleration and compositing
+mode), acceptable pre-boot noise readings and matching measured scenario
+descriptors. Unknown/failed GPU readings, changed software/GPU lanes, or missing
+provenance return INCONCLUSIVE. Historical JSON lacking this provenance remains
+readable but cannot prove KEEP. The comparison requires exact known identity;
+it does not infer equivalence across runtime or driver revisions. `--only`
+phases neither report ran stay out of scope, as before.
+
+**Limit:** the runner's noise samples are taken before boots, not during the
+timed measurements. A green noise summary does *not* prove there was no midrun
+interference; investigate suspicious numbers and repeat matched runs. The app's
+own `cpuDuringPct` is not a measure of external background load.
 
 ### Waiting for a quiet machine
 

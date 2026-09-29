@@ -28,6 +28,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import {
   assertSafeNeedles, killableFamily, protectedAncestor, removeSingletonLocks, selfChain, sweep,
@@ -325,6 +326,15 @@ test('exactly the three Chromium lock files inside the fixture profile are remov
 
 test('no profile given means nothing is deleted', () => {
   assert.deepEqual(removeSingletonLocks(undefined, NEEDLES, () => { throw new Error('must not delete'); }), []);
+});
+
+test('launch teardown finalizes protocol receipt after the owned family sweep, not before', () => {
+  // WHY: the stream unit tests prove draining, while this pins the actual kill path
+  // without launching an app or touching /proc (the live app must stay untouched).
+  const source = readFileSync(new URL('../launch.mjs', import.meta.url), 'utf8');
+  const kill = source.slice(source.indexOf('    async kill() {'));
+  assert.match(kill, /await sweep\(familyNeedles, fixture\.userData, \{ groupPid: proc\.pid \}\);\s*}\s*finally \{ if \(protocolDrain\) app\.protocolCapture = await protocolDrain\.finish\(protocolLog\);/);
+  assert.doesNotMatch(kill, /get bytes\(\)|get error\(\)/);
 });
 
 // ── launchApp's own front-door guards (they run before anything is spawned) ──
