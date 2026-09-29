@@ -126,7 +126,9 @@ underline under its words. Labels over short settings groups stay plain.
   roundness.
 
 ### Settings
-- **Small controls (switches) sit beside** the setting's title and hint, on the right.
+- **Small controls (switches) sit beside** the setting's title and hint, on the right, **vertically centred**.
+  Only a long explanation (a big block, like Performance's) puts the title and switch on one line with the
+  text full width below.
   **Wide controls (text boxes, sets of choices) go below** the title and hint, full width.
 - Offering choices: 2–4 short choices → a tab strip; many choices or long names → a
   dropdown; choices that each need an explanation → a boxed list.
