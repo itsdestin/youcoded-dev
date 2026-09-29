@@ -1,23 +1,65 @@
 {
- "title": "Account — signed in",
+ "title": "Account (signed in) + model menu",
  "key": "ui-account",
  "out": "account.review.html",
  "images": "images/account.review",
- "runs": {"before": "runs/ac-before", "after": "runs/ac-after"},
- "labels": {"before": "Today", "after": "Cards"},
- "themes": ["meadow-mist", "midnight", "light"],
+ "runs": {
+  "before": "runs/acmp-before",
+  "after": "runs/acmp-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Cards"
+ },
+ "themes": [
+  "meadow-mist",
+  "midnight",
+  "light"
+ ],
  "crops": {
-  "view": ["ac", "view", "480x620+480+140"],
-  "edit": ["ac", "edit", "480x660+480+120"]
+  "view": [
+   "ac",
+   "view",
+   "480x620+480+140"
+  ],
+  "edit": [
+   "ac",
+   "edit",
+   "480x660+480+120"
+  ],
+  "menu": [
+   "mp",
+   "menu",
+   "440x520+0+380"
+  ]
  },
  "steps": [
-  {"id": "AC-1", "surface": "Account (signed in)", "path": "Settings → Account, while signed in", "crop": "view",
-   "headline": "Signed-in Account as labelled cards — keep?",
+  {
+   "id": "AC-1",
+   "surface": "Account (signed in)",
+   "path": "Settings \u2192 Account, while signed in",
+   "crop": "view",
+   "headline": "Signed-in Account as labelled cards \u2014 keep?",
    "changed": "Your profile: one card with your picture, name and @handle, Edit account on the right; below it \"Signs in with GitHub\" with Sign out beside it. Your data: one line saying what the download is, with Download my data beside it. Connections: the Connected services row now has its own label. (Blocked users, when you have any, get their own labelled card with one row per person.)",
-   "notice": "The three big full-width buttons become small outlined ones next to what they act on, so the popup is shorter. The buttons keep their exact words."},
-  {"id": "AC-2", "surface": "Account → Edit account", "path": "Settings → Account → Edit account", "crop": "edit",
-   "headline": "Edit account as cards — keep?",
+   "notice": "The three big full-width buttons become small outlined ones next to what they act on, so the popup is shorter. The buttons keep their exact words."
+  },
+  {
+   "id": "AC-2",
+   "surface": "Account \u2192 Edit account",
+   "path": "Settings \u2192 Account \u2192 Edit account",
+   "crop": "edit",
+   "headline": "Edit account as cards \u2014 keep?",
    "changed": "Display name and Handle sit in one Your profile card, with Done as a full-width button at its foot (it used to float at the top right beside a second \"Edit account\" label). Delete account sits in its own card under Danger zone.",
-   "notice": "Saving still happens with each field's own Save button; Done only returns to the view above."}
+   "notice": "Saving still happens with each field's own Save button; Done only returns to the view above."
+  },
+  {
+   "id": "MP4-1",
+   "surface": "Model menu",
+   "path": "Claude Code session \u2192 click the model chip",
+   "crop": "menu",
+   "headline": "Model menu: Effort and Fast mode as plain headings \u2014 keep?",
+   "changed": "Back to Effort as a bare heading over the segmented bar, with no explanation line. Fast mode matches it: the same plain heading with its short note and switch, with no lightning bolt and no card.",
+   "notice": "Before shows the card version you turned down, so you can compare the two."
+  }
  ]
 }

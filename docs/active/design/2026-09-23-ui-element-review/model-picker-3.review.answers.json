@@ -1,0 +1,23 @@
+{
+ "deck": "ui-model-picker-3",
+ "started": "2026-09-29T10:11:03.802Z",
+ "submitted": "2026-09-29T10:13:03Z",
+ "cur": 1,
+ "answers": {
+  "MP3-1": {
+   "note": "no that;s worse dont like the copt for effor. dont like lightning bolt for fast mode. dont think these match ui rulse e've used elsewhere. i liked effort being a bare header.",
+   "t": 1790676772698,
+   "v": "other",
+   "seconds": 109,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "MP3-2": {
+   "v": "yes",
+   "t": 1790676781875,
+   "seconds": 9,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
