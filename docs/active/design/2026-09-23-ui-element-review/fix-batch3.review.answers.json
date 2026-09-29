@@ -1,0 +1,40 @@
+{
+ "deck": "ui-fix-batch3",
+ "started": "2026-09-29T21:46:57.773Z",
+ "submitted": "2026-09-29T21:48:50Z",
+ "cur": 3,
+ "answers": {
+  "FB-1": {
+   "v": "pick",
+   "pick": "box",
+   "t": 1790718435058,
+   "seconds": 17,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FB-2": {
+   "note": "i think this whole menu needs to be rebuilt/reimagined a bit",
+   "t": 1790718460563,
+   "v": "other",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FB-3": {
+   "note": "fine, but did you remember the other changes we need for these panels?",
+   "t": 1790718505379,
+   "v": "yes",
+   "seconds": 45,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "FB-4": {
+   "v": "yes",
+   "t": 1790718528135,
+   "note": "remove the lighting bolt icon thing",
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

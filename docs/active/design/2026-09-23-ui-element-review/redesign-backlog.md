@@ -19,3 +19,4 @@ Source keys point at `<deck>.answers.json`. Status: **open** until a deck answer
 | 12 | Welcome / new session screen | "i want to rebuild this screen i think. as a follow up" | Rebuild — a follow-up. | open (follow-up) | `ui-labels-batch#LB-17` |
 | 13 | Submit a ticket | "i want to come back to this page specifically, i think some of the ux is still a bit odd" | Revisit its UX (also on the roadmap, other-features). | open (roadmap) | `ui-rest-sweep#RS-1` |
 | 14 | Marketplace and Library headings | Follow-on from the Projects view pick (2026-09-29): full-screen group headings became 16px medium. | Bring Marketplace rails and Library sections from 18px to the new 16px Large heading. | open | `ui-projects-view-2#PV2-2` |
+| 15 | Manage tags | "i think this whole menu needs to be rebuilt/reimagined a bit" (2026-09-29, after Archive/Delete became outlined buttons). | Rethink the Manage tags menu. | open | `ui-fix-batch3#FB-2` |
