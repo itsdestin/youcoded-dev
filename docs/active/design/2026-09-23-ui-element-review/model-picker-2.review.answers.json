@@ -1,0 +1,16 @@
+{
+ "deck": "ui-model-picker-2",
+ "started": "2026-09-29T09:49:06.924Z",
+ "submitted": "2026-09-29T09:50:11Z",
+ "cur": 0,
+ "answers": {
+  "MP2-1": {
+   "v": "yes",
+   "t": 1790675410413,
+   "note": "let me see for gpt/openrouter models. style fast mode/effort better. fast mode doesn't match existing ui elements",
+   "seconds": 63,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

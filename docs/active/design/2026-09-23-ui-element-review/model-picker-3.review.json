@@ -1,0 +1,23 @@
+{
+ "title": "Model menu — effort, fast mode, other models",
+ "key": "ui-model-picker-3",
+ "out": "model-picker-3.review.html",
+ "images": "images/model-picker-3.review",
+ "runs": {"before": "runs/mp3-before", "after": "runs/mp3-after"},
+ "labels": {"before": "Before", "after": "Now"},
+ "themes": ["meadow-mist", "midnight", "light"],
+ "crops": {
+  "menu": ["mp", "menu", "440x520+0+380"],
+  "native": ["mp", "native", "1440x900+0+0"]
+ },
+ "steps": [
+  {"id": "MP3-1", "surface": "Model menu", "path": "Claude Code session → click the model chip", "crop": "menu",
+   "headline": "Effort and Fast mode as Settings cards — keep?",
+   "changed": "Effort is now a card like Remote Access's \"Keep awake\": its title, the segmented bar, and the one-line explanation inside. Fast mode is the standard switch row every Settings screen uses. The two sit 8px apart under the model list.",
+   "notice": "The menu is a little taller than before, because the explanation is back and the two are boxed."},
+  {"id": "MP3-2", "surface": "Model menu, other models", "path": "An OpenRouter session (\"claude via openrouter\") → click the model chip", "crop": "native",
+   "headline": "The same menu for an OpenRouter session — keep?",
+   "changed": "Today this session gets a centred popup. Now it gets the same menu above the chip: search box, your starred models first, then the rest, fading after about six and a half rows, with Manage models… as the last row.",
+   "notice": "Sessions like this have no Effort or Fast mode (those are Claude Code features), so the menu ends at Manage models."}
+ ]
+}
