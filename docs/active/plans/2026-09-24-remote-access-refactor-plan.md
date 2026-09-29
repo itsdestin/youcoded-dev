@@ -250,6 +250,19 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 > come").** So each run's list of phone behaviour changes is the main record for telling new
 > phone issues from old ones. Runs stack on R2 (`session/simplify-r3-<n>`) and nothing merges
 > until Destin says so.
+>
+> **Run log.** Every run stacks on the one before it; nothing is merged.
+> - **R3-1** (app `session/simplify-r3-1` `6620047f`; workspace `session/simplify-r3-1`
+>   `300014c2`, which retargets the ast-grep rules): tags, folders, defaults, modes, analytics
+>   and settings, 17 channels in all. Reviewer said "ship". The pattern is written up in
+>   `main/ipc/*.ts`. `remoteOnError` gives the phone a soft answer when a handler throws, and
+>   `ctx.broadcast` reaches the phones and the desktop windows. The three unread policy
+>   fields were dropped.
+>   Phone changes:
+>   - A tag edited on the phone now refreshes the computer's windows and the search index.
+>   - The phone's tag input is cleaned the same way as on the desktop.
+>   - A handler that throws now answers `{ok:false}` where the phone used to get no reply.
+>     **The shim does not reject that yet, so R3-2 makes it do so, generically.**
 
 Lowest risk first (I1 §4). Each run moves one family into `main/ipc/<family>.ts`, deletes its
 remote `case` bodies and desktop registrations, adds its request/response types, and deletes
