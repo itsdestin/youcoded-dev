@@ -263,6 +263,24 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   - The phone's tag input is cleaned the same way as on the desktop.
 >   - A handler that throws now answers `{ok:false}` where the phone used to get no reply.
 >     **The shim does not reject that yet, so R3-2 makes it do so, generically.**
+>
+> - **R3-2** (app `session/simplify-r3-2` `fb96b5dd`): dev, update and account, 26 channels.
+>   Reviewer said "ship". Pattern fix: a failed table reply carries `tableHandlerFailed`, the
+>   shim rejects it, and `remoteOnError` now warns. There is a new `main/update-service.ts`,
+>   one lazy singleton.
+>   Phone changes:
+>   - A handler failure shows an error instead of a malformed value.
+>   - Switching to the beta channel re-checks for updates, as on the computer.
+>   - `account:user` fills an empty cached profile and refreshes against `/auth/me`. If the
+>     computer's token is already invalid, that signs the computer out, as its own next call
+>     would. Accepted, as it matches the computer.
+>   - Everything refused before is refused byte-for-byte; `account:export` and
+>     `update:launch` stay desktop-only.
+>
+> **Doc sweep at merge** (these must describe master, so they are not edited while the branches
+> are unmerged): the `.claude/rules/ipc-bridge.md` "Settings → Development" section, which
+> still says `dev:*` lives in `ipc-handlers.ts` and gives the old count; the `docs/MAP.md`
+> rows for the moved families and for `create-runtime.ts`; and every family moved after this.
 
 Lowest risk first (I1 §4). Each run moves one family into `main/ipc/<family>.ts`, deletes its
 remote `case` bodies and desktop registrations, adds its request/response types, and deletes
