@@ -241,7 +241,7 @@ though a real one is half-built underneath it.
     breaks its own documented threshold for when a segmented control stops being
     appropriate (five options don't fit comfortably and this is visibly the widest,
     most cramped segmented control in the app).
-    <!-- verify: {"path": "youcoded/desktop/src/renderer/components/SettingsPanel.tsx", "contains": "K3: four short options"} -->
+    (The code comment this pointed at was replaced when Keep awake moved into its card, 2026-09-28; Keep awake still awaits its own redesign — roadmap, remote-access.)
 - **Clutter read:** one popup, one topic ("remote access"), and it still manages three
   different row shapes (real SettingRow, hand-rolled label+field, hand-rolled
   label+segmented) plus a nested intro card, in the same screenful.
