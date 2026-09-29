@@ -270,7 +270,7 @@ came back empty for this popup specifically) — judged from code only.
   popup (Help, Buddy Floater, Sound) has 16px, because the wrapper div double-applies
   padding the shell already provides. Small, but it's a measurable, silent difference in
   how "roomy" this popup feels versus its neighbors.
-  <!-- verify: {"path": "youcoded/desktop/src/renderer/components/development/DevelopmentPopup.tsx", "contains": "className=\"p-4\""} -->
+  (Resolved: the doubled padding was removed 2026-09-28, and the Development popup itself was folded into Help & feedback the same day.)
 - **Bug report ("Submit a ticket"):** a `document`-sized (600px) dialog — by far the
   densest single screen: a 2-tab segmented control (Bug/Feature), a text input, a
   textarea, an "INCLUDE WITH TICKET" eyebrow over three checkbox rows (a fourth row shape:
