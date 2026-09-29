@@ -1,0 +1,37 @@
+---
+status: shipped
+---
+
+# Native harness A1 implementation — permission failure finalization
+
+Scope: Task A1 only, app baseline `6c4411faa66fcf000b0d5e711ba095c0aa20be6d`. No commits, pushes, live-app interactions, configuration changes or paid calls. The pre-existing audit probes and other untracked workspace work were preserved; only the obsolete permission-failure case within the untracked `native-permission-audit-probe.test.ts` was removed after owning-suite coverage existed. Its separate comma/question observation remains unchanged. A separately appearing untracked workspace review (`2026-09-27-native-harness-question-transport-note.md`) was not edited.
+
+## Change
+
+- `youcoded/desktop/src/main/harness/harness-session.ts`: a thrown permission decision or approval-broker callback is tagged before tool execution. At the driver boundary, completed results remain intact, the failed call gets an error result with the actual callback detail, and every unstarted sibling gets a distinct not-run result. One complete tool message and corresponding origins are appended before the original error is rethrown to the existing session-error/settlement path. No callback exception becomes an allow, a human decline, or an action cancellation. The old explicit human-cancel and dismissed-question paths retain their semantics.
+- `youcoded/desktop/src/main/harness/tool-group-finalization.ts`: small internal seam for callback-failure tagging and deterministic remaining-call result emission, shared by error, cancel and question-dismissal branches. No public API or IPC change. The extraction also keeps `harness-session.ts` within its 4165-line source budget.
+- `youcoded/desktop/tests/harness-session-loop.test.ts`: failing decide and failing preapproval broker, both on the first call and after a real completed first call. Assert call/result IDs, truthful text, zero or exactly one execution, real session error, and a subsequent send reaching the scripted model.
+- `youcoded/desktop/tests/harness-history-rebuild.test.ts`: real `SessionStore` persistence/rebuild deep-equals live grouped history both before and after the next send, with completed, failed and unstarted calls and no replay of the completed execution. Existing cancellation/back-fill tests also run in the owning suites.
+
+## Evidence
+
+1. Before production edits, `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/harness-session-loop.test.ts tests/harness-history-rebuild.test.ts > /tmp/a1-red.log 2>&1` exited **1**: `Test Files 2 failed (2); Tests 4 failed | 162 passed (166)`. Both first-call cases lacked results, the later-decision case had only the first result, and rebuilt history did not equal live history. Log: `/tmp/a1-red.log`.
+2. After the first fix, the same two suites exited **0**: `Test Files 2 passed (2); Tests 166 passed (166)` (`/tmp/a1-green1.log`).
+3. After the seam extraction and expanded broker coverage, `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/harness-session-loop.test.ts tests/harness-history-rebuild.test.ts tests/native-session-host.test.ts tests/session-store.test.ts tests/native-permission-audit-probe.test.ts` exited **0**: `Test Files 5 passed (5); Tests 414 passed (414)` (`/tmp/a1-named-final.log`). `npm run typecheck` exited **0**, output: `tsgo --noEmit -p tsconfig.json && tsgo --noEmit -p tsconfig.tests.json`.
+4. The first `bash scripts/verify.sh /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded` exited **1** solely on `line-budgets.test.ts`: `harness-session.ts: 4199 lines, budget 4165 (+34)`; other stages passed (`/tmp/a1-verify-fg.log`). Extracted the finalization seam and shortened obsolete duplicated commentary. The final same command exited **0** with `PASS types`, `PASS types in tests/`, `PASS tests (related)`, `PASS dead code (knip)`, `PASS lint`, `PASS design lint`, `PASS invariants` (`/tmp/a1-verify-final.log`). `git -C youcoded diff --check` exited **0**.
+
+## Boundary and concerns
+
+This change intentionally does not implement queue delivery, in-turn instruction barriers, automatic retry cleanup, or denied MCP reconciliation. A normal explicit broker `canceled` response still uses canceled back-fill and `user-interrupt`; a thrown broker callback is a session error instead. Permission callback tagging covers `decide`, interactive/doom-loop asks and the pre-execution normal approval ask. Errors after execution begins, or exceptions from non-permission event/persistence listeners, are not silently reclassified as permission failures by this patch. No interactive app run or paid harness evaluation was performed; scripted model and persisted-store checks are the verification here.
+
+## Fresh-review correction: callback AbortError is not itself a user interrupt
+
+Review identified an A1 exception to the original report's blanket claim that thrown broker callbacks surface as session errors. The driver finalized the tool group then rethrew the **original** error; the outer catch regarded any named `AbortError` as `user-interrupt`, including a permission store/broker rejection while the turn's abort signal remained live. That hid the real session error.
+
+The driver now carries the `PermissionCallbackFailure` tag through its outer catch, where it unwraps the actual cause for the session-error's detail and classification. Only `this.interrupted` or the aborted turn signal can classify a tagged permission callback failure as an interruption. Non-permission provider `AbortError` behavior remains unchanged. This does not treat a callback's error name as user consent, denial, or cancellation; existing grouped results are finalized before propagation. The `harness-session.ts` line count remains at the 4165-line budget.
+
+- Added `harness-session-loop.test.ts` parameterized regressions for `decide` and approval broker rejecting a named `AbortError` without aborting the turn: both emitted two error results, reported the original session-error detail, did not emit `user-interrupt` or execute tools, and permitted a subsequent send. Separate cases call `session.interrupt()` inside each callback before rejecting and require the finalized results plus a genuine `user-interrupt`, without a session-error.
+- **RED before correction:** `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/harness-session-loop.test.ts -t 'permission .* AbortError' > /tmp/a1-abort-red.log 2>&1` exited **1**, `Test Files 1 failed (1); Tests 2 failed | 2 passed | 135 skipped (139)`. Both live-turn cases lacked `session-error`; the two true-interrupt cases passed.
+- **GREEN after correction:** same focused command redirected to `/tmp/a1-abort-green.log` exited **0**, `Test Files 1 passed (1); Tests 4 passed | 135 skipped (139)`. `cd youcoded/desktop && node node_modules/vitest/vitest.mjs run tests/harness-session-loop.test.ts tests/harness-history-rebuild.test.ts > /tmp/a1-abort-owning.log 2>&1 && npm run typecheck > /tmp/a1-abort-typecheck.log 2>&1` exited **0**, `Test Files 2 passed (2); Tests 171 passed (171)`; typecheck output: `tsgo --noEmit -p tsconfig.json && tsgo --noEmit -p tsconfig.tests.json`.
+- **Full desktop verification:** from workspace root, `bash scripts/verify.sh /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded > /tmp/a1-abort-verify.log 2>&1` exited **0**: `PASS types`, `PASS types in tests/`, `PASS tests (related)`, `PASS dead code (knip)`, `PASS lint`, `PASS design lint`, `PASS invariants`.
+

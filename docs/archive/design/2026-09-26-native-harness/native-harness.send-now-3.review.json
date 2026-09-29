@@ -1,0 +1,75 @@
+{
+  "title": "Send now, round 3 — matching the app's send button",
+  "key": "native-harness-send-now-review-3",
+  "out": "native-harness.send-now-3.review.html",
+  "images": "images/native-harness.send-now-3.review",
+  "runs": {
+    "before": "runs-send-now-3/before",
+    "after": "runs-send-now-3/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "The right end of a waiting message, above the message box",
+      "crop": "chat/queued",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "Send now now looks like the message box's own send button: the theme's accent colour and the same arrow.",
+      "changed": "Round 2's hand-styled black button with an up arrow is replaced by the app's standard send button style, the same one the message box uses, just slightly smaller to fit the row.",
+      "notice": "It matches the send button below it in every theme, and lines up with the pencil and trash icons.",
+      "risk": "It points right like the message box's send arrow, not up as you first described.",
+      "highlight": {
+        "box": [
+          80,
+          10,
+          19,
+          78
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Hovering Send now on a waiting message",
+      "crop": "chat/queued-hover",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "On hover, \"Interrupt and Send Now\" rolls out inside the accent button; the trash slides left with it.",
+      "changed": "Same roll-out as round 2, now inside the matching button.",
+      "notice": "You see what it will do before you click.",
+      "risk": "Phones have no hover, so there it stays the arrow alone.",
+      "highlight": {
+        "box": [
+          58,
+          10,
+          41,
+          78
+        ]
+      }
+    },
+    {
+      "id": "S-3",
+      "surface": "Chat",
+      "path": "The same button in the Midnight theme — at rest (top) and hovered (bottom)",
+      "crop": "chat/queued-dark",
+      "themes": [
+        "midnight"
+      ],
+      "headline": "In Midnight it takes that theme's accent, like the message box's send button does.",
+      "changed": "Your pick from round 2: the theme's accent colour in every theme.",
+      "notice": "Top picture at rest, bottom picture hovered.",
+      "risk": "Nothing new beyond S-2.",
+      "highlight": {
+        "box": [
+          58,
+          10,
+          41,
+          78
+        ]
+      }
+    }
+  ]
+}

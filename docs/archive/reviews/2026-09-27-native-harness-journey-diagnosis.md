@@ -1,0 +1,23 @@
+---
+status: shipped
+---
+
+# Resume-conversation journey failure: bounded investigation
+
+Scope: investigate the C1 full-verify journey failure without changing product navigation or altering existing uncommitted A/B/C1 work. No live app, new interactive rig, commits, pushes or paid calls.
+
+## Observed evidence
+
+- `bash scripts/verify.sh --full /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded` (first run `/tmp/c1-verify.log`) exited 0, all checks passed. The subsequent full run (`/tmp/c1-final-verify.log`) exited 1 with **only** `resume-conversation` failing at step 3/9: button `sync health primary system` missing. Six other journeys passed, as did full unit tests, types, knip, lint, invariants and screen checks. Failure image: `scratch/journeys/20260928-020608/resume-conversation.png`. It shows the chat screen with no Resume Browser and no All Sessions dropdown, rather than a wrong named conversation card or a Resume Browser spinner. The failure's control inventory likewise lists only the app's normal controls; no page error was recorded in the journey log.
+- The saved journey (`youcoded/desktop/tests/journeys/resume-conversation.json`) first clicks `All Sessions`, then `Resume`, then seeks the named past conversation. The fixture actually defines `sync health primary system` in `desktop/src/renderer/dev/workbench/scenarios.ts` (line 129). The failure therefore occurs *before* the fixture row is examined: the browser is not on screen after step 2, not simply missing that conversation from a loaded list.
+- The isolated `resume-conversation` run (`node scripts/shoot/journeys.mjs --worktree /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded resume-conversation > /tmp/c1-resume-journey.log 2>&1`) exited 0, `1/1 passed in 6.8s`. The next full verify (`/tmp/c1-verify-repeat.log`) exited 0 with every check passing. One additional bounded run of the seven journeys together (`node scripts/shoot/journeys.mjs --worktree /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded first-conversation open-project permission-approve switch-model marketplace-install change-theme resume-conversation > /tmp/journey-diagnosis-bounded.log 2>&1`) exited 0, `7/7 passed in 21.0s`.
+
+## Navigation and harness path inspected
+
+- `scripts/shoot/journeys.mjs` loads each journey into its own private browser-context tab through `openPool`/`runQueue`. `driver.perform()` handles each step serially. The click helper (`scripts/shoot/driver.mjs`, lines 133–147, 175–202) locates the target, verifies the hit point, sends mouse press/release and then waits for `tab.still(3000)`. A subsequent `where` checks controls repeatedly for up to 5 seconds; it is not an immediate lookup. `tab.still` (`engine.mjs`, lines 189–196, 223) observes fetches, finite animations and images, **not** an event handler having committed the intended UI transition. `settle` samples geometry and control count; it does not assert that a just-clicked button caused navigation.
+- The actual `SessionStrip.tsx` Resume button (line 2748 in this worktree) invokes `setMenuOpen(false)` and `onOpenResumeBrowser()` in one click handler; `App.tsx` supplies `setResumeRequested(true)` and renders `<ResumeBrowser open={resumeRequested}>`. The same App state is set false on modal close, session-resume success, and an app screen switch. The captured image cannot distinguish whether the button's handler was skipped, an outside click/Escape closed it, or an asynchronous transition reset the state. The logs contain no intermediate state/event trace to establish which happened.
+- This failure is **not shown to be caused by C1**: C1's production edit is the native host's child tool allowlist, whereas the failing flow is a practice-app renderer click before any specialist tool use. That is a scope inference, not proof the journey is generally reliable.
+
+## Verdict and limit
+
+**Follow-up (2026-09-28): a stale-coordinate driver bug has now been reproduced and fixed; the original intermittent event's exact cause remains unproven.** A deterministic isolated-browser test moved a labelled target once on pointer arrival, placed a decoy at the old coordinates, and showed the old driver clicked the decoy. The reviewed move-then-re-resolve hunk now clicks the moved target. See `docs/archive/reviews/2026-09-28-native-harness-journey-fix.md` for RED/GREEN commands and saved-journey results. The original failure still has no press/release event trace, so this proven hazard is **consistent with**, not proof of, the original missing Resume Browser. No timeout, sleep, product navigation behavior, or roadmap flake was added.

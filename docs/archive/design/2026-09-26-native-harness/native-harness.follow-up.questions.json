@@ -1,0 +1,99 @@
+{
+  "title": "Native harness — follow-up decisions",
+  "key": "native-harness-audit-follow-up",
+  "out": "native-harness.follow-up.questions.html",
+  "stage": "ask",
+  "_comment_sources": {
+    "research": "native-harness.follow-up-research.md",
+    "original_decisions": "native-harness.questions.answers.json",
+    "Q-16": "Q-2 additional scope: normal message timing; original stranded-queue fix remains approved",
+    "Q-17": "Q-2 additional scope: explicit urgent delivery, distinct from default timing",
+    "Q-18": "Q-6: ancestor instruction files, preserve one-per-directory AGENTS then CLAUDE fallback",
+    "Q-19": "Q-6: ancestor project path rules, separate from filename and global/eager policies",
+    "Q-20": "Q-8: owned POSIX process-group termination, not changing Stop/background policy",
+    "Q-21": "Q-13: cancellation and timeout during DNS, no new permissions"
+  },
+  "steps": [
+    {
+      "id": "P-follow-up",
+      "page": "Four follow-ups, six separate decisions",
+      "intro": "Your 11 approvals still stand, and item 10 remains denied. Message timing and instruction inheritance each need two separate choices. These are new questions 16–21; nothing below reopens an approved fix. Other lets you change the proposal."
+    },
+    {
+      "id": "Q-16", "words": true,
+      "surface": "Messages while the assistant works", "path": "Follow-up to item 2 · normal Enter behavior",
+      "headline": "16. Should Enter guide the ongoing task instead of waiting for the whole task to finish?",
+      "today": "Native YouCoded waits for the entire turn, which can contain many rounds of work. You were right about Claude Code: messages queued during tools can reach it after those tools finish, within the same turn. Pi's Enter also steers; OpenClaw can check between actions.",
+      "problem": "A correction can sit unread for twenty minutes while the assistant keeps following the old direction. A queued message is not necessarily a message the model has read.",
+      "proposal": "Add steering at a safe pause: finish the active response or action, then let the assistant read your message before starting more work. Never run two simultaneous turns or treat text as permission approval. Decide whether this is the default or a separate action.",
+      "options": [
+        {"id":"steer-default","label":"Steer by default","recommended":true,"pros":["Enter delivers corrections during the ongoing task rather than after it.","A separate After this finishes choice keeps unrelated follow-up tasks out of the current work."],"cons":["Changes what Enter means while busy.","Still waits for an active long command or an unresolved approval; question 17 covers urgent delivery."]},
+        {"id":"queue-default","label":"Queue by default","pros":["Preserves today's predictable follow-up behavior.","Add an explicit Guide current task choice when your message is a correction."],"cons":["Ordinary Enter can still wait for the whole turn; you must choose the steering action for faster delivery."]},
+        {"id":"keep-timing","label":"Keep current timing","pros":["No new message-delivery choices to learn."],"cons":["Fixing the stranded queue alone will not solve long waits during a healthy, ongoing turn."]}
+      ]
+    },
+    {
+      "id": "Q-17", "words": true,
+      "surface": "Urgent messages", "path": "Follow-up to item 2 · getting past a long-running action",
+      "headline": "17. Add an explicit way to send now when the current action would otherwise keep you waiting?",
+      "today": "Native YouCoded has Edit and Cancel for queued messages, but no Send now. Current Claude Code moves eligible running shell or specialist work to the background; if it cannot, its Send now interrupts the turn instead.",
+      "problem": "Even steering at the next safe pause must wait for a long action. Stopping that action and letting it continue in the background have very different consequences.",
+      "proposal": "Choose an urgent-delivery action independently of Enter's default. With backgrounding, keep supported work tracked and bring its result back later. For work that cannot move to the background, show an explicit Stop and send action rather than silently canceling it. Preserve earlier queued messages in order.",
+      "options": [
+        {"id":"background-then-send","label":"Background when possible","recommended":true,"pros":["You can redirect the conversation while an eligible build or specialist keeps running.","Follows the distinction in current Claude Code rather than always killing useful work."],"cons":["Background work may still consume resources or finish an earlier action after you redirect the conversation.","Unsupported work still needs an explicit stop; this requires more lifecycle handling than simple interruption."]},
+        {"id":"stop-and-send","label":"Stop and send","pros":["One clear urgent action: interrupt the current turn, then deliver the queued messages.","Does not need to move active work into background tracking."],"cons":["Can cut off a reply, cancel a pending approval or stop a foreground command.","Completed changes are not undone, and interrupted work may need restarting."]},
+        {"id":"no-urgent-action","label":"No urgent control","pros":["No additional send action; the existing Stop control remains available."],"cons":["Normal delivery still waits for its chosen boundary, and you must manually stop work to get past a long foreground action."]}
+      ]
+    },
+    {
+      "id": "Q-18", "words": true,
+      "surface": "Project instruction files", "path": "Follow-up to item 6 · where the instruction-file search stops",
+      "headline": "18. How far above the working folder should native conversations look for project instructions?",
+      "today": "Hermes documents a Git-root-to-folder instruction chain. Pi and Claude Code walk farther, through all parent folders. OpenClaw instead uses an explicit agent workspace plus execution-folder guidance. Native YouCoded currently keeps only the nearest instruction file and stops at the Git boundary.",
+      "problem": "The nearest file can omit broader project guidance. Stopping at an individual repository's Git root can also omit useful instructions in the enclosing workspace, including layouts like this development workspace.",
+      "proposal": "Choose the ancestor-search boundary. A chain loads broader files first and nearer ones last, with their sources identified. Preserve today's one-file-per-folder rule: AGENTS.md if present, otherwise CLAUDE.md. This choice does not add dedicated personal-global files, imports or every Claude Code compatibility feature.",
+      "options": [
+        {"id":"git-root-chain","label":"Project root only","recommended":true,"pros":["Restores broader instructions inside the current Git project, similar to Hermes's project boundary.","Does not unexpectedly load instructions from unrelated enclosing folders."],"cons":["A worktree still will not inherit workspace instructions above its Git root.","More than one project file may consume context, and conflicting guidance is not automatically resolved."]},
+        {"id":"all-ancestors","label":"All parent folders","pros":["Like Pi and Claude Code's ancestor walk, reaches enclosing workspace guidance above a Git boundary.","Useful when projects and worktrees share higher-level instructions."],"cons":["May also load unrelated instructions from a home or other parent folder.","Matches their search breadth, not their complete filename, personal-memory or rule-loading policies."]},
+        {"id":"nearest-only","label":"Keep nearest only","pros":["Keeps the smallest and simplest startup instruction load."],"cons":["Broader project and workspace guidance can remain missing."]}
+      ]
+    },
+    {
+      "id": "Q-19", "words": true,
+      "surface": "Folder-rule inheritance", "path": "Follow-up to item 6 · rules when a conversation or specialist starts in a subfolder",
+      "headline": "19. Keep applicable project folder rules when the working folder narrows?",
+      "today": "Claude Code's ordinary subagents inherit its main instruction hierarchy and project rules, with documented exceptions. Pi and Hermes do not establish the same Claude Code folder-rule behavior. Native YouCoded starts rule discovery at the conversation's or specialist's own folder.",
+      "problem": "A specialist assigned only a source subfolder can miss rules defined higher in the same project, even though those rules apply to the files it edits.",
+      "proposal": "Discover applicable path-scoped project rules from the Git project root down to the working folder, including for specialists. Match each rule relative to the folder that owns it. This is separate from question 18: no personal-global rules, cross-project rules or change to unscoped-rule loading is included.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["Narrowing a task's working folder no longer strips its applicable project rules."],"cons":["More relevant guidance may load; overlapping rules need deduplication and clear source labels."]},
+        {"id":"deny","label":"Deny","pros":["Keep rule discovery local to each conversation's or specialist's folder."],"cons":["Rules in higher project folders can remain missing from narrower tasks."]}
+      ]
+    },
+    {
+      "id": "Q-20", "words": true,
+      "surface": "Stopping command subprocesses", "path": "Follow-up to item 8 · a shell exits before the program it started",
+      "headline": "20. Keep graceful stopping, but finish stopping the command group even after its shell exits?",
+      "today": "Pi immediately force-stops the Unix process group. OpenClaw first requests exit, then checks the group—not just its original shell—before forcing remaining work to stop. Hermes uses group-aware cleanup, but its exact escalation condition was not verified in this research.",
+      "problem": "YouCoded requests exit and waits two seconds, but skips the force-stop once the shell exits. The audit reproduced a program started by that shell continuing to run.",
+      "proposal": "Keep the two-second chance to exit cleanly, then stop remaining programs still in that command's verified group. Never search by process name. This fixes cleanup for work already being stopped; it does not change which background jobs survive ordinary Stop. Deliberately detached programs remain outside this guarantee.",
+      "options": [
+        {"id":"graceful-group","label":"Graceful, then force","recommended":true,"pros":["Uses the group-liveness approach seen in OpenClaw while retaining our graceful-exit chance.","Fixes the reproduced surviving-subprocess case without targeting unrelated programs."],"cons":["May wait up to the existing two-second grace period.","A forced program can lose unsaved work; Windows requires separate verification."]},
+        {"id":"immediate-group","label":"Force immediately","pros":["Follows Pi's immediate group-stop approach on Unix.","Avoids waiting for programs that ignore a graceful stop."],"cons":["Programs lose the chance to save or clean up before termination.","Does not promise to catch programs that detached from the tracked group."]},
+        {"id":"keep-stop","label":"Keep current stopping","pros":["No change to process cleanup."],"cons":["A program can still survive when its original shell exits first."]}
+      ]
+    },
+    {
+      "id": "Q-21", "words": true,
+      "surface": "Stopping a web lookup", "path": "Follow-up to item 13 · before a webpage starts downloading",
+      "headline": "21. Make Stop work while the app is still looking up a website's address?",
+      "today": "Before downloading a webpage, the computer looks up its network address—like finding its phone number. That lookup can get stuck before any page content arrives.",
+      "problem": "The audit reproduced the app continuing to wait at that stage even after Stop. The existing web-request time limit does not end that particular wait either.",
+      "proposal": "Stop should immediately end the conversation's wait for the address lookup, and the existing request time limit should cover it too. Ignore any late result and cancel underlying work where supported. No new website restrictions, permission prompts or automatic retries are included.",
+      "options": [
+        {"id":"approve","label":"Approve","recommended":true,"pros":["A stuck website-address lookup cannot keep the conversation waiting after you stop it."],"cons":["A slow lookup can time out; fetching that page again requires a new attempt."]},
+        {"id":"deny","label":"Deny","pros":["Leave web lookup behavior unchanged."],"cons":["This stage can still keep waiting after Stop or the normal request deadline."]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "title": "Send now, round 5 — plain pencil",
+  "key": "native-harness-send-now-review-5",
+  "out": "native-harness.send-now-5.review.html",
+  "images": "images/native-harness.send-now-5.review",
+  "runs": {
+    "before": "runs-send-now-5/before",
+    "after": "runs-send-now-5/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "The right end of a waiting message, above the message box",
+      "crop": "chat/queued",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "The waiting message's pencil has no background now; it sits plain beside the trash.",
+      "changed": "Same pencil and size as the quick chips' edit button, without its box. The quick chips keep theirs.",
+      "notice": "Pencil and trash now look like a matching pair next to the send button.",
+      "risk": "Nothing new.",
+      "highlight": {
+        "box": [
+          78,
+          10,
+          21,
+          78
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "The same row in the Midnight theme",
+      "crop": "chat/queued-dark",
+      "themes": [
+        "midnight"
+      ],
+      "headline": "In Midnight too, the pencil sits plain beside the trash.",
+      "changed": "Same change, in a dark theme.",
+      "notice": "Nothing else moves.",
+      "risk": "Nothing new.",
+      "highlight": {
+        "box": [
+          78,
+          10,
+          21,
+          78
+        ]
+      }
+    }
+  ]
+}

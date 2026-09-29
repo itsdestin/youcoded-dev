@@ -1,0 +1,54 @@
+{
+  "title": "Send now on a waiting message — keep or revert",
+  "key": "native-harness-send-now-review",
+  "out": "native-harness.send-now.review.html",
+  "images": "images/native-harness.send-now.review",
+  "runs": {
+    "before": "runs-send-now/before",
+    "after": "runs-send-now/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "The strip of waiting messages above the message box, while the assistant is busy",
+      "crop": "chat/queued",
+      "headline": "Each waiting message now has a Send now button next to Edit and Cancel.",
+      "changed": "Pressing Send now stops the current task, exactly like the Stop button, and sends that message next, ahead of any other waiting messages. The others follow in their usual order.",
+      "notice": "You no longer have to wait for the assistant to finish, or press Stop and retype, to get an urgent correction in. If the message was already on its way when you pressed it, you see \"Already sending.\"",
+      "risk": "It stops whatever was running, including a command partway through, just like Stop; the button's words alone don't say so.",
+      "highlight": {
+        "box": [
+          1.5,
+          36,
+          97,
+          28
+        ]
+      },
+      "themes": [
+        "meadow-mist"
+      ]
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "The same strip on a phone (remote access)",
+      "crop": "chat/queued-phone",
+      "headline": "On a phone the button fits beside Edit and Cancel; the message is shortened to make room.",
+      "changed": "Same button at phone width.",
+      "notice": "The waiting message's text is cut off sooner, because the button takes some of the row.",
+      "risk": "Phones cannot show the hover explanation, so there the button is labelled only \"Send now\".",
+      "highlight": {
+        "box": [
+          5,
+          80,
+          90,
+          6
+        ]
+      },
+      "themes": [
+        "meadow-mist"
+      ]
+    }
+  ]
+}

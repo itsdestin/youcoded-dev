@@ -1,0 +1,51 @@
+{
+ "deck": "native-harness-audit-follow-up",
+ "started": "2026-09-26T21:04:48.378Z",
+ "submitted": "2026-09-26T21:10:47Z",
+ "cur": 0,
+ "answers": {
+  "Q-16": {
+   "v": "pick",
+   "pick": "steer-default",
+   "t": 1790457046031,
+   "note": "",
+   "seconds": 60,
+   "theme": "meadow-mist"
+  },
+  "Q-17": {
+   "v": "pick",
+   "pick": "no-urgent-action",
+   "t": 1790457046031,
+   "seconds": 60,
+   "theme": "meadow-mist"
+  },
+  "Q-18": {
+   "v": "other",
+   "t": 1790457046031,
+   "note": "still a bit confused about the pros/cons of the different approaches, and which competitors do what",
+   "seconds": 60,
+   "theme": "meadow-mist"
+  },
+  "Q-19": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790457046031,
+   "seconds": 60,
+   "theme": "meadow-mist"
+  },
+  "Q-20": {
+   "v": "pick",
+   "pick": "graceful-group",
+   "t": 1790457046031,
+   "seconds": 60,
+   "theme": "meadow-mist"
+  },
+  "Q-21": {
+   "v": "pick",
+   "pick": "approve",
+   "t": 1790457046031,
+   "seconds": 60,
+   "theme": "meadow-mist"
+  }
+ }
+}
