@@ -80,6 +80,7 @@ verify:
 
 ## Engine & service (`engine.ts`, `service.ts`)
 - **Engine:** single-flight per space + one coalesced rerun; `addSpace` awaits chokidar `ready`; a persistent `watcher.on('error')` is required; `stop()` clears the state map FIRST.
+- **Watch only what can sync:** scope = `isOutOfWatchScope` (transport `ignoredDirs()` from git + DEFAULT_IGNORES folder names), never a hand-kept list; over `WATCH_BUDGET` → poll-only + `notice`. Prove scope with watched-path assertions, never a timed "nothing synced".
 - **A remote-less space NEVER emits `synced`; green is evidence-gated** (`deriveSyncBoxState`).
 - **Conversation Store `native/` lanes ride this SAME engine — no native-only `synced` path.**
 - **Corrupt-repo heal is ONCE per space per launch** (`healedSpaces`, marked BEFORE attempting). **Self device-row recency derives from `lastSyncFor` evidence**, never `.sync-marker`.
