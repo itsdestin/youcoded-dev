@@ -232,7 +232,7 @@ the answer its own build implies: a `1.3.0-beta.77` build checks the beta channe
 does not. That default is the whole point — a flat `false` would strand exactly the people already
 running betas, who are the ones the channel exists for. An explicit choice wins in both directions,
 and turning it off while on a beta is safe: the next stable release still sorts above every beta of
-its line. Settings → Development → **Get beta builds** (the fifth card in that list, no heading of its own), and the same switch under the release
+its line. Settings → Help & feedback → **Get beta builds** (under "Help build YouCoded"), and the same switch under the release
 notes in the version pill's update popup (Destin moved it out of About on 2026-09-13: the rows it now
 sits with are the ones for people helping with the app rather than only using it). Desktop only,
 because Android has no in-app updater. Changing it re-checks immediately rather than leaving the 30-minute cache showing an

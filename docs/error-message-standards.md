@@ -20,7 +20,7 @@ If a child process, network call, or file op can fail, capture its real error an
 When you genuinely can't surface a specific cause at that layer, use a *general* message that does NOT assert a cause — e.g. **"Error: Unable to run local models."** — paired with two actions:
 
 1. **Report bug / submit PR** — link the user to the issue-report path.
-2. **Diagnose with Claude** — hand the real error context to Claude for investigation (the same pattern as **Settings → Development** — `dev:summarize-issue` / `dev:submit-issue`, which shell to `claude -p` with logs).
+2. **Diagnose with Claude** — hand the real error context to Claude for investigation (the same pattern as the bug report in **Settings → Help & feedback** — `dev:summarize-issue` / `dev:submit-issue`, which shell to `claude -p` with logs).
 
 A general message is acceptable. A general message that *invents a plausible-sounding cause* is not.
 

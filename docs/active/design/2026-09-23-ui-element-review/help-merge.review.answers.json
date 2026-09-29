@@ -1,0 +1,30 @@
+{
+ "deck": "ui-help-merge",
+ "started": "2026-09-29T04:19:58.372Z",
+ "submitted": "2026-09-29T04:21:23Z",
+ "cur": 2,
+ "answers": {
+  "HM-1": {
+   "v": "yes",
+   "t": 1790655666657,
+   "note": "",
+   "seconds": 50,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "HM-2": {
+   "v": "yes",
+   "seconds": 19,
+   "theme": "meadow-mist",
+   "zoom": 1,
+   "t": 1790655668150
+  },
+  "HM-3": {
+   "v": "yes",
+   "t": 1790655682388,
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
