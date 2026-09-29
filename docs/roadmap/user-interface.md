@@ -2,11 +2,6 @@
 Filing test: does the fix change more than one screen? Yes — shared primitives, chrome,
 layout, copy. Not here: one screen only — that screen's area, with the surface token.
 
-- [ ] Revisit the "Submit a ticket" screen (Settings → Help & feedback → Report a bug). Destin, 2026-09-28,
-      after its regrouping was approved: "i want to come back to this page specifically, i think some of the
-      ux is still a bit odd" (earlier: "some of these should maybe be grouped/arranged/displayed differently.
-      it just looks off"). The review step after "Review ticket" was not regrouped yet
-      `settings/development` `all` `confirmed` `checked 2026-09-28`
 
 - [ ] A red outlined button that is busy ("Stopping…" on a running command's Stop) is hard to
       read: its dimmed label measured 3.98:1 on Midnight, under the 4.5:1 minimum for small

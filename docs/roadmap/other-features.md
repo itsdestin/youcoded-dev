@@ -69,6 +69,12 @@ has passed ~8 items — graduate it to its own file.
 
 ## misc
 
+- [ ] Revisit the "Submit a ticket" screen (Settings → Help & feedback → Report a bug). Destin, 2026-09-28,
+      after its regrouping was approved: "i want to come back to this page specifically, i think some of the
+      ux is still a bit odd" (earlier: "some of these should maybe be grouped/arranged/displayed differently.
+      it just looks off"). The review step after "Review ticket" was not regrouped yet
+      `settings/development` `all` `confirmed` `checked 2026-09-28`
+
 - [ ] The dev log shows React's "Cannot update a component while rendering a different
       component" warning when sessions arrive (seen during the 2026-09-11 phone pass, when a
       phone's catch-up delivers every session at once). Nothing visibly wrong yet; the handler

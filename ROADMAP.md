@@ -72,11 +72,11 @@ Target: `v1.3.1`
 |---|---|---|---|---|
 | [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 100 | 31 | 4 | 9 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
-| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 42 | 16 | 3 | 6 |
+| [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 41 | 16 | 3 | 6 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 31 | 7 | 2 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 26 | 10 | 8 | 5 |
+| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 6 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 23 | 8 | 2 | 2 |
-| [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 23 | 5 | 6 | 6 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 20 | 7 | 0 | 5 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 17 | 4 | 0 | 9 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 12 | 3 | 1 | 4 |
