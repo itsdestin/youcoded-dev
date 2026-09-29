@@ -397,7 +397,9 @@ fi
 #   its "-missing" fixture; app-composer-disabled-through-helper's fixture fires once. 408 + 4 = 412.
 # 2026-09-24 (startup prompts, dev-instance finding): +2 — app-existing-sessions-started-through-helper's
 #   fixture fires twice (the map form and the loop form). 412 + 2 = 414.
-EXPECTED_VIOLATIONS=414
+# 2026-09-30 (one-core R3-1): -3 — tags-list-no-empty-fallback-remote retired (its `case` moved into the
+#   channel table; the main rule now guards the one shared entry). Its two fixtures fired 2 + 1 = 3. 414 - 3 = 411.
+EXPECTED_VIOLATIONS=411
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
