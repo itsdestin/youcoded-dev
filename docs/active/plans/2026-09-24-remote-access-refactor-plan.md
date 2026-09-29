@@ -245,6 +245,12 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 
 ### R3 — move the families (S3 + S4) · ~1 run per family, ~12–16 runs · phone changes listed per run · v1.3.1 blocker
 
+> **2026-09-30 — started without the owed phone passes (Destin: "everything on the phone is
+> currently janky in some capacity, so i'd rather just start r3 and fix issues as they
+> come").** So each run's list of phone behaviour changes is the main record for telling new
+> phone issues from old ones. Runs stack on R2 (`session/simplify-r3-<n>`) and nothing merges
+> until Destin says so.
+
 Lowest risk first (I1 §4). Each run moves one family into `main/ipc/<family>.ts`, deletes its
 remote `case` bodies and desktop registrations, adds its request/response types, and deletes
 that family's hand-written blocks in `ipc-channels.test.ts`:
