@@ -1,0 +1,65 @@
+{
+ "title": "Help & feedback absorbs Development",
+ "key": "ui-help-merge",
+ "out": "help-merge.review.html",
+ "images": "images/help-merge.review",
+ "runs": {
+  "before": "runs/hm-before",
+  "after": "runs/hm-after"
+ },
+ "labels": {
+  "before": "Today",
+  "after": "Merged"
+ },
+ "themes": [
+  "meadow-mist",
+  "light",
+  "midnight"
+ ],
+ "crops": {
+  "settings": [
+   "hm",
+   "settings",
+   "344x900+0+0"
+  ],
+  "settings__help": [
+   "hm",
+   "settings__help",
+   "516x684+462+108"
+  ],
+  "help-rest": [
+   "hm",
+   "help-rest",
+   "516x684+462+108"
+  ]
+ },
+ "steps": [
+  {
+   "id": "HM-1",
+   "surface": "Settings list",
+   "path": "Settings",
+   "crop": "settings",
+   "headline": "One row for help, instead of two?",
+   "changed": "The \"Development\" row is gone from the Settings list; everything it held now lives in \"Help & feedback\" (its description now reads \"Tour, tips, feedback, contributing\").",
+   "notice": "The Settings list gets one row shorter. Nothing is lost — see the next two steps."
+  },
+  {
+   "id": "HM-2",
+   "surface": "Help & feedback",
+   "path": "Settings → Help & feedback",
+   "crop": "settings__help",
+   "headline": "Help & feedback in three labelled groups — better?",
+   "changed": "\"Getting started\" (the tour, tips), \"Questions and feedback\" (Reddit, report a bug, known issues, the roadmap), \"Help build YouCoded\" (contribute, beta builds). \"Known issues and planned features\" becomes two rows, Known issues and Roadmap, like Development had.",
+   "notice": "The small \"YouCoded 1.3.0\" line at the bottom is gone — About shows the version, and a loose line broke the nothing-bare rule. The popup is a little wider (the standard Settings width) to fit the groups."
+  },
+  {
+   "id": "HM-3",
+   "surface": "Help & feedback",
+   "path": "Settings → Help & feedback, scrolled down",
+   "crop": "help-rest",
+   "headline": "Development's rows, now at the bottom of Help — right place?",
+   "changed": "Left: today's separate Development popup. Right: the same rows inside Help & feedback. Report a bug, Known issues and Roadmap appear once instead of twice; Contribute and Get beta builds sit under \"Help build YouCoded\".",
+   "notice": "The Development popup's intro sentence (\"Help make YouCoded better…\") is dropped; the group label says it."
+  }
+ ]
+}
