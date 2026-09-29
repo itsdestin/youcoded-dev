@@ -61,7 +61,9 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 - The screen names itself **centered in the window's top strip, small (14px medium), with
   its icon**. Reference: Pages or the Projects view.
 - The way out is a **filled small button reading "Esc · Back to chat"**, top right.
-- Big groups on the screen use the *Large* heading.
+- Big groups on the screen use the *Large* heading, one row per group: heading left (a one-line
+  description under it, never beside it), its tools right. Lists scroll under a see-through
+  fade at both edges, tall enough to fade a whole card edge.
 
 ### Popups and side panels
 - Every popup and side panel uses the shared popup (`Dialog`): a **one-line 16px semibold
@@ -75,7 +77,7 @@ for a new situation, ask rather than bending it or copying one screen's quirk.
 ### Headings
 | Level | Use | Style |
 |---|---|---|
-| Large | Big groups on a full screen ("Favorites", "Destin's picks") | 18px medium, main text colour |
+| Large | Big groups on a full screen ("Recent conversations", "Favorites") | 16px medium, main text colour |
 | Title | A popup or side panel's name | 16px semibold (above) |
 | Small label | A group inside a screen, popup or list ("Volume", "Privacy") | 12px medium, grey, normal case, no letter-spacing |
 
