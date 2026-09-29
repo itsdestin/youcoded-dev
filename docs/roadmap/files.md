@@ -132,3 +132,9 @@ searched or resumed (chat-data).
       font bug and the phone layout. Next: design decks
       Would also resolve the look-only spreadsheet item above
       `files-panel` `all` `decision` `checked 2026-09-24` → docs/active/investigations/2026-09-24-office-suite.md
+
+- [ ] Office's Home tab can show an out-of-date Recent list: open a document, switch back to
+      the Home tab without leaving the Office page, and the file you just opened is not yet
+      listed — it appears only after leaving the page and coming back. Accepted for now in
+      the Office build (the lists refresh each time the page is shown)
+      `files-panel` `desktop` `confirmed` `checked 2026-09-28`
