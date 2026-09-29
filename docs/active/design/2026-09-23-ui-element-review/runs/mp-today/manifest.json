@@ -1,0 +1,122 @@
+[
+  {
+    "name": "chat/resume/pick-model",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/resume/pick-model/midnight.png",
+    "ms": 912,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 371,
+      "w": 420,
+      "h": 159
+    }
+  },
+  {
+    "name": "chat/model-picker",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/model-picker/midnight.png",
+    "ms": 913,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 193,
+      "w": 420,
+      "h": 514
+    }
+  },
+  {
+    "name": "chat/model-picker",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/model-picker/light.png",
+    "ms": 931,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 193,
+      "w": 420,
+      "h": 514
+    }
+  },
+  {
+    "name": "chat/resume/pick-model",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/resume/pick-model/light.png",
+    "ms": 949,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 371,
+      "w": 420,
+      "h": 159
+    }
+  },
+  {
+    "name": "chat/commands",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/commands/midnight.png",
+    "ms": 1181,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 500,
+      "w": 1440,
+      "h": 400
+    }
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/sessions/light.png",
+    "ms": 1182,
+    "errors": [],
+    "panel": {
+      "x": 528,
+      "y": 34,
+      "w": 384,
+      "h": 377
+    }
+  },
+  {
+    "name": "chat/commands",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/commands/light.png",
+    "ms": 1183,
+    "errors": [],
+    "panel": {
+      "x": 0,
+      "y": 500,
+      "w": 1440,
+      "h": 400
+    }
+  },
+  {
+    "name": "chat/sessions",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/ui-consistency-audit/docs/active/design/2026-09-23-ui-element-review/runs/mp-today/chat/sessions/midnight.png",
+    "ms": 1200,
+    "errors": [],
+    "panel": {
+      "x": 528,
+      "y": 34,
+      "w": 384,
+      "h": 377
+    }
+  }
+]
