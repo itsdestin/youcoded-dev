@@ -1,0 +1,20 @@
+# Redesign backlog — screens Destin wants rethought
+
+Collected from review-deck notes. Each row is his words (verbatim) and what it asks for.
+Source keys point at `<deck>.answers.json`. Status: **open** until a deck answers it.
+
+| # | Screen | His words | What it asks for | Status | Source |
+|---|---|---|---|---|---|
+| 1 | Appearance | "i want to maybe rearrange/regroup the layout/frames/additional customizations stuff." | Regroup Layout / frames / Additional customizations. | open | `ui-labels-batch#LB-1` |
+| 2 | Appearance → edit a theme | "i hate this. i think i want to move this out and merge it or remove it or something because the glass tab in additional customizations? i want to remove this separate per-theme edit menu." | Remove the separate per-theme edit menu; fold what's needed into Additional customizations (its Glass tab). | open | `ui-labels-batch#LB-2` |
+| 3 | Skills drawer | "we need to make the skill drawer start much higher on the screen, and the little handle at the top should let me maximize it or adjust it. should always reset to the original position after close/open, no memory of last position." | Opens taller; the handle drags to resize/maximise; always reopens at its default height. | open | `ui-labels-batch#LB-3` |
+| 4 | Skill editor | "i don't like this menu. idk what it does or when it's applicable. either way this sizing looks vary off and does not match any of our other popup menus or settings or anything?" | Explain or rethink its purpose; bring it to the shared popup sizes and look. | open | `ui-labels-batch#LB-4` |
+| 5 | Session switcher / sessions menu | "this needs to adopt the new real fade if not already established. this screenshot looks like it still has the old paint fade in the sesion switcher." | Use the see-through scroll fade (like popups), not the painted one. | open | `ui-labels-batch#LB-5` |
+| 6 | Specialists list | "i don't like how permissions attach to/integrate with these cards. it looks janky." | Rethink how a specialist's permission ask sits on its card. | open | `ui-labels-batch#LB-6` |
+| 7 | Model picker | "i hate this menu. it feels inconsistent, and i also feel like it has a lot of wasted space? the model search element feels oddly integrated, and the effort level thing looks dated and inconsistent" | Redesign: tighter, search integrated properly, modern effort control. | open | `ui-labels-batch#LB-7` |
+| 8 | Checkbox menus: status bar editor, tags & notes, quick chips | "i want to rethink these kinds of checkbox menus, including this and the tags/notes and quick chips menus i think. this still doesn't look/feel right to me" | One rethought pattern for "pick which things show" menus. | open | `ui-labels-batch#LB-9` |
+| 9 | Marketplace detail pages | "these pages also feels dated/inconsistent. from an earlier era of the app, not synced with all of our modern command drawer/settings menus/session switcher/resume browser/etc changes. i want to rethink how we show these pages or this information." | Rethink detail pages in the modern style. | open | `ui-labels-batch#LB-10` |
+| 10 | Project switcher | "want to replace esc with our X. to max this a bit more consistent with other popups. also the checkmarks and such are odd here, and there's no way to delete some projects currently." | ✕ instead of "esc" (already agreed, Q-2); rethink the check marks; add a way to remove a project. | open | `ui-labels-batch#LB-11` |
+| 11 | Games lobby | "this needs the card styling and such established earlier for other similar menus. not the fulll horizontal lines. just want to make sure htat's done or recorded." | Card levels + no full-width lines (existing rules, not yet applied there). | open | `ui-labels-batch#LB-16` |
+| 12 | Welcome / new session screen | "i want to rebuild this screen i think. as a follow up" | Rebuild — a follow-up. | open (follow-up) | `ui-labels-batch#LB-17` |
+| 13 | Submit a ticket | "i want to come back to this page specifically, i think some of the ux is still a bit odd" | Revisit its UX (also on the roadmap, other-features). | open (roadmap) | `ui-rest-sweep#RS-1` |

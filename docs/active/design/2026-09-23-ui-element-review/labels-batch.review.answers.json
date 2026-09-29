@@ -1,0 +1,139 @@
+{
+ "deck": "ui-labels-batch",
+ "started": "2026-09-29T08:01:33.752Z",
+ "submitted": "2026-09-29T08:22:20Z",
+ "cur": 16,
+ "answers": {
+  "LB-1": {
+   "note": "yes. i want to maybe rearrange/regroup the layout/frames/additional customizations stuff.",
+   "t": 1790669214655,
+   "v": "other",
+   "seconds": 321,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-2": {
+   "v": "other",
+   "t": 1790669312840,
+   "note": "i hate this. i think i want to move this out and merge it or remove it or something because the glass tab in additional customizations? i want to remove this separate per-theme edit menu. ",
+   "seconds": 98,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-3": {
+   "note": "we need to make the skill drawer start much higher on the screen, and the little handle at the top should let me maximize it or adjust it. should always reset to the original position after close/open, no memory of last position.",
+   "t": 1790669427665,
+   "v": "yes",
+   "seconds": 115,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-4": {
+   "note": "i don't like this menu. idk what it does or when it's applicable. either way this sizing looks vary off and does not match any of our other popup menus or settings or anything? ",
+   "t": 1790669494853,
+   "v": "other",
+   "seconds": 67,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-5": {
+   "note": "this needs to adopt the new real fade if not already established. this screenshot looks like it still has the old paint fade in the sesion switcher.",
+   "t": 1790669560062,
+   "v": "yes",
+   "seconds": 65,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-6": {
+   "note": "i don't like how permissions attach to/integrate with these cards. it looks janky.",
+   "t": 1790669600565,
+   "v": "other",
+   "seconds": 41,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-7": {
+   "note": "i hate this menu. it feels inconsistent, and i also feel like it has a lot of wasted space? the model search element feels oddly integrated, and the effort level thing looks dated and inconsistent",
+   "t": 1790669678638,
+   "v": "other",
+   "seconds": 78,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-8": {
+   "v": "yes",
+   "t": 1790669690716,
+   "seconds": 12,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-9": {
+   "note": "i want to rethink these kinds of checkbox menus, including this and the tags/notes and quick chips menus i think. this still doesn't look/feel right to me",
+   "t": 1790669737296,
+   "v": "other",
+   "seconds": 47,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-10": {
+   "note": "these pages also feels dated/inconsistent. from an earlier era of the app, not synced with all of our modern command drawer/settings menus/session switcher/resume browser/etc changes. i want to rethink how we show these pages or this information.",
+   "t": 1790669824182,
+   "v": "other",
+   "seconds": 87,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-11": {
+   "note": "want to replace esc with our X. to max this a bit more consistent with other popups. also the checkmarks and such are odd here, and there's no way to delete some projects currently.",
+   "t": 1790669888577,
+   "v": "yes",
+   "seconds": 64,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-12": {
+   "v": "yes",
+   "t": 1790669954435,
+   "seconds": 66,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-13": {
+   "v": "yes",
+   "t": 1790669968425,
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-14": {
+   "v": "yes",
+   "t": 1790669976018,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-15": {
+   "v": "yes",
+   "t": 1790670007760,
+   "seconds": 32,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-16": {
+   "note": "this needs the card styling and such established earlier for other similar menus. not the fulll horizontal lines. just want to make sure htat's done or recorded.",
+   "t": 1790670071593,
+   "v": "yes",
+   "seconds": 64,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "LB-17": {
+   "note": "i want to rebuild this screen i think. as a follow up",
+   "t": 1790670139265,
+   "v": "yes",
+   "seconds": 68,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
