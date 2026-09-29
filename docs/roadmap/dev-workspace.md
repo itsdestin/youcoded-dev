@@ -5,6 +5,19 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] The review-page before-and-after check (`review-cards.py selfie`) renders a fixed sample
+      deck that has no live step shown on its own, so a change to how those steps look shows
+      "nothing moved" on every page (2026-09-27: 18 empty pages sent to Destin for the Meadow Mist
+      blur fix, which he had confirmed by eye). Add that kind of step to the sample deck
+      `n/a` `confirmed` `checked 2026-09-28`
+
+- [ ] A headless page check (`scripts/ui-probe.mjs`) shows Word, Excel, PDF and image files
+      stuck on "Loading viewer…" when it waits a fixed time after a click. The tab it opens is
+      never brought to the front, so Chrome holds back the page's queued work until the next
+      check runs; waiting with `--wait` instead of `--settle` works. Bring the tab to the front
+      when it opens (found 2026-09-27, the same on master)
+      `n/a` `confirmed` `checked 2026-09-27`
+
 - [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`)
       still holds ~650 "unreviewed" calls. The 2026-09-24 triage ranked them and six batches
       shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme

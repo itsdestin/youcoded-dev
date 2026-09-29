@@ -1,0 +1,48 @@
+{
+ "deck": "doc-comments-confirm",
+ "started": "2026-09-26T10:08:34.157Z",
+ "submitted": "2026-09-26T10:10:03Z",
+ "cur": 0,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-2": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-3": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-4": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-5": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-6": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-7": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-8": {
+   "v": "yes",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  }
+ }
+}
