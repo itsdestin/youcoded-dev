@@ -175,6 +175,19 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 
 ### R1 — hoist the runtime (S1 + S2) · 1–2 runs · no visible change · v1.3.1 blocker
 
+> **State 2026-09-29: built and reviewed ("ship"), awaiting merge.** App branch
+> `session/simplify-r1` (`3cad11b4`). `main/create-runtime.ts` builds the runtime from
+> `{ userDataDir, appVersion, platform }`. `main/platform.ts` + `electron-platform.ts` hold
+> three touchpoints: open a URL, encrypt secrets, and locate the askpass helpers. **No dialogs
+> were needed**, so the "three dialogs" below turned out not to be runtime touchpoints. The
+> shared maps live in `main/ipc/session-state.ts`, and the other handler-local maps stay for
+> R3. The broadcasters are returned values, `setNativeRuntime` is gone, and `RemoteServer`
+> reads the runtime through a `getNativeRuntime` accessor, because it is built before the
+> runtime exists and returns null until then, as before. `ipc-handlers.ts` went from 5,754 to
+> 5,198 lines. Guard: `tests/create-runtime.test.ts`, which is blind to an Electron import
+> arriving through an npm package or a non-literal `require` (reviewer, low severity).
+> On merge, add `create-runtime.ts` to `docs/MAP.md`.
+
 - `main/create-runtime.ts` returns `{ …runtime objects, sessionNamer, applyAutomaticTitle,
   cleanup }`, taking `{ userDataDir, appVersion, platform }`.
 - `platform` covers **every** Electron touchpoint the runtime has: `openExternal`, the three

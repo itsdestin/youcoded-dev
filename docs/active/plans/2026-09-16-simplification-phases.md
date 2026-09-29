@@ -189,5 +189,5 @@ D9 (Android rebuild — now phase A3 of `docs/active/plans/2026-09-24-android-re
 | T | merged 2026-09-16 (youcoded#499 `41ab097b`; verify step + ast-grep rule youcoded-dev#119 `d23c3945`) |
 | 2 | merged 2026-09-17 (youcoded#503 `88f286a1`) |
 | 3 | merged 2026-09-17 (youcoded#504 `f1bb55dd`) |
-| 4 | IN FLIGHT — hold lifted 2026-09-29 (Destin: "i want to do the remote stuff"). Still a 1.3.1 release blocker. Runs as R1–R4 of the remote-access refactor plan; branches editing the door files do not block R1 — they rebase after R2 (Destin, 2026-09-29) |
+| 4 | IN FLIGHT — hold lifted 2026-09-29 (Destin: "i want to do the remote stuff"). R1 built and reviewed ("ship") 2026-09-29 on app branch `session/simplify-r1` (`3cad11b4`), awaiting Destin's merge; R2 next. Still a 1.3.1 release blocker. Runs as R1–R4 of the remote-access refactor plan; branches editing the door files do not block R1 — they rebase after R2 (Destin, 2026-09-29) |
 | 5 | ON HOLD (Destin, 2026-09-18) — 1.3.1 release blocker; resume after the native-session-host test split has merged (and phase 4, per its precondition). W1 + W6 shipped early 2026-09-26 (youcoded#573) |
