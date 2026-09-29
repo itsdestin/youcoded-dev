@@ -1,0 +1,78 @@
+{
+ "deck": "usage-stats-questions",
+ "started": "2026-09-29T09:29:37.132Z",
+ "submitted": "2026-09-29T09:32:42Z",
+ "cur": 1,
+ "answers": {
+  "Q-1": {
+   "note": "i think it should both be integrated in the cloud providers page somehow but then also shown when a user clicks the usage/cost chips in the status bar. currently these link out directly to provider pages, but that should now be an action in this popup/menu.",
+   "t": 1790674307543,
+   "v": "pick",
+   "pick": "both",
+   "seconds": 33,
+   "theme": "meadow-mist"
+  },
+  "Q-2": {
+   "v": "picks",
+   "picks": [
+    "by-day",
+    "by-provider",
+    "by-model"
+   ],
+   "t": 1790674307543,
+   "note": "both tokens and percentage of plan/cost.",
+   "seconds": 33,
+   "theme": "meadow-mist"
+  },
+  "Q-3": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1790674307543,
+   "seconds": 33,
+   "theme": "meadow-mist"
+  },
+  "Q-4": {
+   "v": "pick",
+   "pick": "both",
+   "t": 1790674307543,
+   "seconds": 33,
+   "theme": "meadow-mist"
+  },
+  "Q-5": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1790674361768,
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "Q-6": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1790674361768,
+   "note": "also want to investigate 5h limit.",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "Q-7": {
+   "v": "pick",
+   "pick": "quiet",
+   "t": 1790674361768,
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "Q-8": {
+   "v": "pick",
+   "pick": "90d",
+   "t": 1790674361768,
+   "seconds": 11,
+   "theme": "meadow-mist"
+  },
+  "S-1": {
+   "v": "other",
+   "t": 1790674361768,
+   "note": "dont bother with android",
+   "seconds": 11,
+   "theme": "meadow-mist"
+  }
+ }
+}
