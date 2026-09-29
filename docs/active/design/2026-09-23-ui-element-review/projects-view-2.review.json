@@ -1,0 +1,31 @@
+{
+ "title": "Projects view — wider fade, heading size",
+ "key": "ui-projects-view-2",
+ "out": "projects-view-2.review.html",
+ "images": "images/projects-view-2.review",
+ "runs": {"before": "runs/pv2-before", "after": "runs/pv2-after"},
+ "labels": {"before": "40px fade", "after": "72px fade"},
+ "themes": ["meadow-mist", "midnight", "light"],
+ "crops": {
+  "scroll": ["pv", "scroll", "1100x560+170+330"],
+  "v18": ["pv", "a", "1100x1180+0+0"],
+  "v16": ["pv", "mid16", "1100x1180+0+0"],
+  "v14": ["pv", "mid14", "1100x1180+0+0"],
+  "v12": ["pv", "b", "1100x1180+0+0"]
+ },
+ "steps": [
+  {"id": "PV2-1", "surface": "Projects view, scrolling", "path": "Projects → Conversations, a long list scrolled down", "crop": "scroll",
+   "headline": "Wider fade (72px instead of 40px) — keep?",
+   "changed": "The fade at the top and bottom of each tab's list is almost twice as tall, so a card passing under the edge fades out completely (its outline and rounded corners too), not just its first line.",
+   "notice": "The heading in these pictures is the 14px option from the next step."},
+  {"id": "PV2-2", "surface": "Projects view, all three tabs", "path": "Files, Conversations, Instructions & Memories (stacked)",
+   "headline": "Which heading size?",
+   "variants": [
+    {"id": "18", "label": "18px · Large (A)", "crop": "v18", "summary": "The guide's Large heading, as last time."},
+    {"id": "16", "label": "16px", "crop": "v16", "summary": "Main text colour, medium weight: the same size as a popup's title, but lighter."},
+    {"id": "14", "label": "14px", "crop": "v14", "summary": "Main text colour, medium weight: the size of normal text, set apart by weight and colour."},
+    {"id": "12", "label": "12px · small label (B)", "crop": "v12", "summary": "The small grey label, as last time."}
+   ],
+   "notice": "The guide allows three heading sizes. A 16px or 14px pick would become the full-screen size, replacing 18px Large, so Marketplace and Library would follow it later rather than a fourth size being added."}
+ ]
+}

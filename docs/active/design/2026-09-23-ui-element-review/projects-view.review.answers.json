@@ -1,0 +1,24 @@
+{
+ "deck": "ui-projects-view",
+ "started": "2026-09-29T10:36:02.556Z",
+ "submitted": "2026-09-29T10:37:00Z",
+ "cur": 1,
+ "answers": {
+  "PV-1": {
+   "v": "yes",
+   "t": 1790678193422,
+   "note": "may need to widen fade a bit to get edges of the cards.",
+   "seconds": 30,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PV-2": {
+   "note": "somewhre between?",
+   "t": 1790678219449,
+   "v": "other",
+   "seconds": 26,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
