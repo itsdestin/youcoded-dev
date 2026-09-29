@@ -1,0 +1,15 @@
+verify: /home/destin/youcoded-dev/worktrees/sessions/native-harness-audit-20260926/youcoded (base origin/master)
+  tests: FULL suite (--full)
+
+PASS  types (tsgo --noEmit)
+PASS  types in tests/ (tsgo --noEmit, 47 file(s) still excluded)
+PASS  tests (full suite)
+PASS  dead code (knip)
+PASS  lint (oxlint)
+PASS  design lint (oxlint --max-warnings ratchet)
+PASS  invariants (ast-grep)
+PASS  screens open (shoot --check)
+PASS  journeys (click paths)
+
+OK — all checks passed.
+   Not covered: Android (./gradlew test), marketplace worker.

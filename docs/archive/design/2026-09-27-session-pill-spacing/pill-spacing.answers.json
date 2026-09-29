@@ -1,0 +1,22 @@
+{
+ "deck": "session-pill-spacing",
+ "started": "2026-09-28T06:35:33.422Z",
+ "submitted": "2026-09-28T06:35:58Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1790577344269,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1790577355613,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

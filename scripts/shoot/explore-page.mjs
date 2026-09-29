@@ -26,7 +26,11 @@ export function listControls({ all = false } = {}) {
   const found = new Set(real);
   // React click handlers leave no trace in the page, but they nearly always come with a
   // pointer cursor. Only the outermost such element counts (its children inherit the cursor).
-  for (const e of document.querySelectorAll('div,span,li,img,svg,label,p,h1,h2,h3,h4,td,tr')) {
+  // `mark`: doc-comments' clickable/hoverable highlight spans (use-quote-marks.ts's
+  // `markAll`) are real `<mark>` elements with `cursor-pointer` — without this tag in the
+  // scan they were entirely invisible to `explore`, so a highlight could never be clicked
+  // or hovered by number (found screenshotting the edit-mode restyle, 2026-09-28).
+  for (const e of document.querySelectorAll('div,span,li,img,svg,label,p,h1,h2,h3,h4,td,tr,mark')) {
     if (found.has(e)) continue;
     const cs = getComputedStyle(e);
     if (cs.cursor !== 'pointer') continue;

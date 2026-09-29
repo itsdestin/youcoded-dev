@@ -97,6 +97,21 @@ check, read its output, then merge; read the merge result, then clean up. A guar
 
 ## Development Workflow
 
+### Choosing a workflow
+
+Choose by the action being requested, not by whether a skill happens to be installed:
+
+| Request | Route |
+|---|---|
+| Investigate, review, compare or recommend | Read-only findings. Do not run a fix-executing `/audit`, edit files or publish unless Destin also asked for changes. |
+| Change code, docs or guidance | Start/resume an isolated session with `workspace-start`; read MAP's rule and guard for the affected area, then verify the changed branch. A correction to docs is still an edit. |
+| Design a new YouCoded interface | Follow `.claude/rules/feature-flow.md`: questions and Workbench UI before backend, then approval through review decks. The short route for a clear small UI change requires Destin's agreement; it does not apply to read-only reviews or non-UI doc corrections. |
+| Audit workspace guidance | `/audit` is fix-executing maintenance, not the read-only review above. Run it only when edits are authorized, in an isolated session; its command file owns the audit procedure. |
+| Wrap up a session | Use `.claude/skills/wrap-up/SKILL.md` to review and account for this session's work. Wrap-up by itself authorizes neither publishing a branch nor merging; follow the explicit scope and report unfinished work. |
+| Ship a release | Use `youcoded-admin/skills/release/SKILL.md` for the app release, subject to its own go/no-go. A request to review release readiness is not permission to tag or publish. |
+
+If a named skill cannot be invoked in the current runtime, read its repository `SKILL.md` or command instructions and follow the applicable procedure; if neither exists, report the missing procedure rather than improvising approval or shipping steps. **The root `CLAUDE.md` and live-app safety rule win over a conflicting skill or older recipe.** This table routes tasks; it does not grant permission to perform them.
+
 Release builds happen through GitHub Actions CI in the relevant sub-repo. For iterating on desktop changes locally alongside Destin's installed/built app:
 
 ```bash

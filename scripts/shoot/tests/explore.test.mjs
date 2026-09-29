@@ -12,6 +12,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { findDevWindow, openBrowser } from '../engine.mjs';
 import { hits, inPage, listControls, listLayers } from '../explore-page.mjs';
+import { makeDriver } from '../driver.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const EXPLORE = resolve(HERE, '..', 'explore.mjs');
@@ -71,7 +72,12 @@ test('controls: labels, roles, what is covered, and the top layer first', { skip
     const tab = await b.newTab();
     await tab.prepare({ theme: 'light', width: 800, height: 600 });
     await tab.navigate(`data:text/html,${encodeURIComponent(PAGE)}`);
-    await new Promise((r) => setTimeout(r, 300));
+    // WHY wait on the page, not a fixed 300 ms: navigate() returns before the
+    // document exists, and on a loaded CI runner 300 ms was not enough —
+    // listLayers read a null body (youcoded-dev#212, 2026-09-27).
+    for (let i = 0; i < 100 && !(await tab.evaluate('document.readyState === "complete" && !!document.body')); i++) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
     const { layers } = await tab.evaluate(inPage(listLayers));
     assert.deepEqual(layers.map((l) => `${l.kind} ${l.name}`), ['menu First item / Second item', 'dialog Rename']);
     const { controls, covered, offscreen } = await tab.evaluate(inPage(listControls, {}));
@@ -94,6 +100,42 @@ test('controls: labels, roles, what is covered, and the top layer first', { skip
     const save = again.controls.find((c) => c.label === 'Save');
     assert.equal(await tab.evaluate(inPage(hits, save.n, save.x, save.y)), true);
     assert.equal(await tab.evaluate(inPage(hits, save.n, 5, 590)), false);
+  } finally { b.close(); }
+});
+
+test('a click re-aims after pointer arrival moves its target instead of hitting the old-position decoy', { skip: !hasChrome && 'needs Chrome' }, async () => {
+  const b = await openBrowser({ width: 800, height: 600 });
+  try {
+    const tab = await b.newTab();
+    await tab.prepare({ theme: 'light', width: 800, height: 600 });
+    const page = `<!doctype html><body style="margin:0">
+      <button id="target" style="position:absolute;left:100px;top:100px;width:100px;height:40px">Target</button>
+      <button id="decoy" style="display:none;position:absolute;left:100px;top:100px;width:100px;height:40px">Decoy</button>
+      <script>
+        window.clicked = [];
+        target.addEventListener('pointerenter', () => {
+          if (target.dataset.moved) return;
+          target.dataset.moved = 'yes';
+          target.style.left = '350px';
+          decoy.style.display = 'block';
+        });
+        target.onclick = () => window.clicked.push('target');
+        decoy.onclick = () => window.clicked.push('decoy');
+      </script>`;
+    await tab.navigate(`data:text/html,${encodeURIComponent(page)}`);
+    // Page.navigate acknowledges navigation, not script execution. Wait for the
+    // fixture's signal with a bounded deadline, never a fixed hover delay.
+    let ready = false;
+    for (const deadline = Date.now() + 5_000; Date.now() < deadline;) {
+      ready = await tab.evaluate('document.readyState === "complete" && !!window.clicked').catch(() => false);
+      if (ready) break;
+      await new Promise((r) => setTimeout(r, 25));
+    }
+    assert.ok(ready, 'click fixture did not load within 5 s');
+    const driver = makeDriver(tab, { width: 800, height: 600 });
+    await driver.perform({ do: 'click', target: { role: 'button', label: 'Target' } });
+    assert.deepEqual(await tab.evaluate('window.clicked'), ['target']);
+    assert.equal(await tab.evaluate('target.dataset.moved'), 'yes');
   } finally { b.close(); }
 });
 

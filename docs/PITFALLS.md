@@ -9,8 +9,8 @@ This file now holds **only cross-repo invariants** — constraints that span two
 - **CI stamps the Android version: `versionName` from the tag or `<base>.<run>`, `versionCode` = `100 + run_number` of `android-release.yml`.** Hand-set values in the gradle file are local-only. *Why:* every beta shipped as `20 / 1.2.4`; a run counter is monotonic, as Play requires. *Guard:* `desktop/tests/android-honest-build.test.ts`.
 - **One `vX.Y.Z` tag on youcoded master ships all platforms.** It triggers both `android-release.yml` and `desktop-release.yml` → a single GitHub Release with APK/AAB + Win/Mac/Linux installers. *Why:* coordinated cross-platform release. *Guard:* CI workflows.
 - **Desktop version comes from the git tag, not `package.json`.** CI extracts the version from the tag and patches `package.json` during build. *Guard:* `desktop-release.yml`.
-- **youcoded-core auto-tags on `plugin.json` version change** on master — `youcoded-core/.github/workflows/auto-tag.yml` compares `HEAD` vs `HEAD~1` and creates the tag. There is one manifest (no layer-level `plugin.json`). *Guard:* `auto-tag.yml`.
-- **Multi-repo release coordination lives in the `youcoded-admin` release skill** (`youcoded-admin/skills/release/SKILL.md`) across the app, `youcoded-core`, and admin. See build order + flows in `docs/build-and-release.md`. History: v2.3.0 lessons (fragile auto-tag, untested hooks, protocol-parity blind spots) — memory `project_release_lessons_2_3_0`.
+- **`youcoded-core` is archived and read-only, never a release target.** Hook fixes land in the app's bundled desktop/Android copies, not the old plugin. *Guard:* `youcoded/desktop/tests/write-guard-contract.test.ts` and `.claude/rules/youcoded-toolkit.md`.
+- **App release coordination lives in the `youcoded-admin` release skill** (`youcoded-admin/skills/release/SKILL.md`). The app tag starts both platform workflows; admin owns the procedure and platform checklist, not a separate product release. See `docs/build-and-release.md`. *Guard:* `youcoded-admin/skills/release/release-skill.test.mjs` and platform CI workflows.
 
 ## IPC and cross-platform parity
 

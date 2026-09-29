@@ -40,6 +40,12 @@ topic: Where the remaining hiccups and freezes come from — a five-angle code s
 > markdown groups render once while a reply streams, only the live tail re-parses; the
 > visible chat no longer redraws non-reply entries per word; six main-process blocking-call
 > batches shipped (see `2026-09-24-main-blocking-calls-triage.md`).
+>
+> **Status 2026-09-29:** B5's other half shipped (youcoded#589): the chat's homemade wheel
+> engine is deleted and scrolling is the browser's own. A raw-event probe on the Z13
+> (Electron 41, Wayland) showed Chromium already coasts a flick, stops it on resting fingers
+> and boosts repeated flicks; the homemade multiplier made one slow drag run 4× ahead of the
+> fingers (Destin: "jellowy", "keeps scrolling"). Guard: `tests/wheel-scroll-stays-native.test.ts`.
 
 Session key `perf-smoothness-20260916`. Read-only sweep of `origin/master` at `18cc8cbc` (workspace) /
 the fetched app master, from five angles: main-process blocking work, renderer click paths, the

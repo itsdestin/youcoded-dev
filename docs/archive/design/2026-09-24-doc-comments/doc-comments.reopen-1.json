@@ -1,0 +1,38 @@
+{
+  "title": "Document comments: Word and Excel comments on the phone",
+  "key": "doc-comments-reopen-1",
+  "out": "doc-comments.reopen-1.html",
+  "steps": [
+    {
+      "id": "Q-1", "words": true, "surface": "Phone app", "path": "A Word document or spreadsheet opened on the phone",
+      "headline": "Should Word and Excel comments work on the phone in this first version?",
+      "today": "You signed that tapping a commented cell on a phone opens its comment. The technical plan found that reading and saving comments inside Word and Excel files can only run in the desktop app as planned.",
+      "problem": "Keeping the promise means building the Word and Excel comment reading and saving a second time for the phone, which makes the first version bigger. Regular documents and code files work on the phone either way.",
+      "proposal": "Three options.",
+      "options": [
+        {
+          "id": "full-phone",
+          "label": "Full support on the phone",
+          "summary": "Read, add, reply and resolve Word and Excel comments on the phone too.",
+          "pros": ["Keeps the promise you signed; the phone behaves exactly like desktop."],
+          "cons": ["Roughly two to three more build tasks, and a second copy of the riskiest code (writing into Word and Excel files) to test."],
+          "recommended": true
+        },
+        {
+          "id": "read-only-phone",
+          "label": "Read-only on the phone",
+          "summary": "The phone shows Word and Excel comments and lets you open them, but adding, replying and resolving happen on desktop.",
+          "pros": ["Tapping a commented cell still opens its comment, as signed.", "Only reading is duplicated, which is the low-risk half."],
+          "cons": ["On the phone, the reply box on a Word or Excel comment is replaced by a note saying replies are desktop-only."]
+        },
+        {
+          "id": "desktop-only",
+          "label": "Desktop only for now",
+          "summary": "The phone says Word and Excel comments are not available on this device yet; a later project adds them.",
+          "pros": ["Smallest, fastest first version."],
+          "cons": ["Breaks line 7 of what you signed for spreadsheets.", "Highlights you left on desktop are invisible on the phone for those two file types."]
+        }
+      ]
+    }
+  ]
+}

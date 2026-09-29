@@ -1,0 +1,75 @@
+{
+  "title": "Send now, round 4 — up arrow, shared pencil, centred words",
+  "key": "native-harness-send-now-review-4",
+  "out": "native-harness.send-now-4.review.html",
+  "images": "images/native-harness.send-now-4.review",
+  "runs": {
+    "before": "runs-send-now-4/before",
+    "after": "runs-send-now-4/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "The right end of a waiting message, above the message box",
+      "crop": "chat/queued",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "The arrow points up, and the pencil is now the same edit button as the quick chips row.",
+      "changed": "Up arrow in the accent send button. The pencil is the quick chips' own edit button, now one shared piece used in both places.",
+      "notice": "The waiting message's edit button looks exactly like the quick chips' edit button just below it.",
+      "risk": "The pencil box is a little more visible than the plain trash icon beside it.",
+      "highlight": {
+        "box": [
+          70,
+          10,
+          29,
+          78
+        ]
+      }
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Hovering Send now on a waiting message",
+      "crop": "chat/queued-hover",
+      "themes": [
+        "meadow-mist"
+      ],
+      "headline": "\"Interrupt and Send Now\" now sits centred in the button instead of slightly high.",
+      "changed": "The words are centred on the letters themselves, so they sit right in every theme's font.",
+      "notice": "In Meadow Mist the words no longer ride about a pixel high.",
+      "risk": "Nothing new.",
+      "highlight": {
+        "box": [
+          52,
+          10,
+          47,
+          78
+        ]
+      }
+    },
+    {
+      "id": "S-3",
+      "surface": "Chat",
+      "path": "Hovering Send now in the Midnight theme",
+      "crop": "chat/queued-dark",
+      "themes": [
+        "midnight"
+      ],
+      "headline": "In Midnight: the same up arrow, shared pencil and centred words.",
+      "changed": "Same changes, in a dark theme.",
+      "notice": "The pencil takes Midnight's own edit-button look, like the quick chips.",
+      "risk": "Nothing new.",
+      "highlight": {
+        "box": [
+          52,
+          10,
+          47,
+          78
+        ]
+      }
+    }
+  ]
+}
