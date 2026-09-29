@@ -1,0 +1,37 @@
+{
+ "deck": "ui-rest-sweep",
+ "started": "2026-09-29T04:40:03.819Z",
+ "submitted": "2026-09-29T04:41:12Z",
+ "cur": 3,
+ "answers": {
+  "RS-1": {
+   "v": "yes",
+   "t": 1790656849475,
+   "note": "but as a roadmap item i want to come back to this page specifically, i think some of the ux is still a bit odd",
+   "seconds": 46,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "RS-2": {
+   "v": "yes",
+   "t": 1790656859603,
+   "seconds": 10,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "RS-3": {
+   "v": "yes",
+   "t": 1790656868075,
+   "seconds": 8,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "RS-4": {
+   "v": "yes",
+   "t": 1790656871561,
+   "seconds": 3,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
