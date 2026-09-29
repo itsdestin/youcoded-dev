@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-27
 reviewer: adversarial review (read-only), fresh session
 scope: T8 only — commits 067af27269 (six native tools) and 06f5fcb9b (permission baseline)
@@ -9,7 +9,7 @@ verified: `cd desktop && npx vitest run tests/doc-comments-tools.test.ts tests/p
 # T8 review — document-comment native tools + permission baseline
 
 Read-only review. No files edited, nothing committed or stashed. Scope: the two named
-commits against `docs/active/specs/2026-09-26-doc-comments-build-design.md` §5/§5.2a
+commits against `docs/archive/specs/2026-09-26-doc-comments-build-design.md` §5/§5.2a
 (option 1, decided) and the T8 task-table row (~line 1611).
 
 ## Summary verdict

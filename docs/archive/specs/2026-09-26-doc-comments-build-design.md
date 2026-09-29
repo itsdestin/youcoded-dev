@@ -1,8 +1,8 @@
 ---
-status: active
+status: shipped
 date: 2026-09-26
-contract: docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json (27 rows, signed)
-handoff: docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
+contract: docs/archive/design/2026-09-24-doc-comments/doc-comments.contract.json (27 rows, signed)
+handoff: docs/archive/handoffs/2026-09-24-doc-comments-START-HERE.md
 related: docs/roadmap/files.md → "Document comments"
 changelog:
   - 2026-09-28: PR-review fixes. **`<legacyDrawing>` placement corrected** — the "always the
@@ -17,7 +17,7 @@ changelog:
     beside the file instead of renaming the backup across drives; the Word owner-file check
     covers Word's shortened `~$` names; Android caps one in-memory part at 32MB.
   - 2026-09-27: revised after review round 3 (final) of the xlsx threaded-comments-only redesign
-    (docs/active/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-3.md) — 5 findings, all
+    (docs/archive/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-3.md) — 5 findings, all
     accepted and fixed (see the review's own per-finding "Triage:" lines). **This design's build
     stage is now complete apart from the follow-up fixes named below** — round 3 checked the design
     against the ACTUAL built tree (T3/T5/T10/T11 have shipped since round 2) rather than only its own
@@ -97,7 +97,7 @@ changelog:
     §4.3a, with a required synthetic (not real-fixture-sourced) worksheet-with-`<extLst>` pinning
     test shared between T12/T13 and T18/T19.
   - 2026-09-27: revised after review 1 of the xlsx threaded-comments redesign
-    (docs/active/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-1.md) — 12 findings,
+    (docs/archive/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-1.md) — 12 findings,
     11 accepted and fixed here, 1 informational/already-handled (see the review's own per-finding
     "Triage:" lines for the reasoning behind each). **F1 (High, the one correctness-risk finding):**
     the app-level thread id was a positional ordinal (`xt-{sheetId}-{cell}-{n}`, `n` by ascending
@@ -231,7 +231,7 @@ changelog:
     it rather than accumulating), KEPT after a successful write as a standing safety net rather than
     deleted. See `desktop/src/main/doc-comments/write-pipeline.ts` for the mechanics; both docx and
     xlsx share them.
-  - 2026-09-26: revised after review 1 (docs/active/reviews/2026-09-26-doc-comments-design-review-1.md)
+  - 2026-09-26: revised after review 1 (docs/archive/reviews/2026-09-26-doc-comments-design-review-1.md)
     — 17/17 findings accepted. Moved docx/xlsx comment parse+mutate from the renderer into the main
     process (§3.2, §3.3, §4; resolves the F1/F2 renderer-vs-main contradiction with no new binary IPC
     channel); added a path-containment check and pinning tests to the comments store (§1.5, F3); added
@@ -252,7 +252,7 @@ changelog:
     Android as already designed. This is a technical scope call, not a change to any signed contract
     row — flagged to Destin for awareness, not blocking.
   - 2026-09-26: revised for reopen-1 (full phone support). Destin reopened R7 via
-    `docs/active/design/2026-09-24-doc-comments/doc-comments.reopen-1.json`/`.answers.json` and picked
+    `docs/archive/design/2026-09-24-doc-comments/doc-comments.reopen-1.json`/`.answers.json` and picked
     "Full support on the phone": read, add, reply and resolve Word/Excel comments work the same on
     Android as on desktop. This **supersedes the desktop-only scope decision the previous revision
     made while resolving F1** (§3.2, §4.3, §1.6, §9, §10, §0/R7) — that decision is no longer in
@@ -269,7 +269,7 @@ changelog:
     Android docx read/write, xlsx read/write, the Android half of the MCP pending-mutation queue, and
     the golden-fixture parity test proving desktop and Android produce/read equivalent
     `comments.xml`/`commentsExtended.xml`/xlsx-note output.
-  - 2026-09-26: revised after review 2 (docs/active/reviews/2026-09-26-doc-comments-design-review-2.md)
+  - 2026-09-26: revised after review 2 (docs/archive/reviews/2026-09-26-doc-comments-design-review-2.md)
     — 18/21 findings accepted, 2 already handled (F19: PR #263/branch cleanup already done — T15
     marked no-op; F21: a bucket of spot-checked non-findings, no change needed), 1 (F8, the
     permission-gate default for the six new comment tools) accepted-as-a-real-gap but its SPECIFIC
@@ -309,7 +309,7 @@ changelog:
     excluded the pending-mutation queue's .pending/ subdirectory from chokidar's watch (§1.5, F20);
     F21 needed no design change. Self-consistency pass: every task-table row, §0's coverage table, and
     the changelog above were re-read together to confirm no fix left a dangling cross-reference.
-  - 2026-09-26: revised after review 3 (final) (docs/active/reviews/2026-09-26-doc-comments-design-review-3.md)
+  - 2026-09-26: revised after review 3 (final) (docs/archive/reviews/2026-09-26-doc-comments-design-review-3.md)
     — 2/2 findings accepted (both blockers; round 3 is feature-flow's capped final round). Added a
     required, containment-checked `path` field to `reply`/`resolve`/`reopen`/`move`'s IPC payloads
     (§1.6), native-tool and MCP `inputSchema`s (§5, §5.3), and task rows/pinning tests (T1/T3/T4/T8/
@@ -2778,7 +2778,7 @@ concurrently with this revision:**
 
 **Supersedes §4.3's "deletion... out of scope" paragraph and §10's "no delete-a-comment capability"
 bullet** — both are left in place as history, marked superseded, rather than deleted, per this
-document's own convention elsewhere. Decisions: `docs/active/design/2026-09-24-doc-comments/
+document's own convention elsewhere. Decisions: `docs/archive/design/2026-09-24-doc-comments/
 doc-comments.edit-delete.questions.answers.json`. **Anyone's comment or reply can be edited or
 deleted — no author check, unlike resolve/reopen's `by` field.** No "edited" marker is ever stored
 or shown (no new field on `PersistedComment`, no placeholder text). **The assistant gets NO new

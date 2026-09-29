@@ -1,15 +1,15 @@
 ---
-status: draft
+status: shipped
 date: 2026-09-27
 reviewed: youcoded/app/src/main/kotlin/com/youcoded/app/doccomments/{XlsxComments.kt,
   DocCommentsDispatch.kt, DocCommentsBridge.kt, DocCommentsZipSizeGuard.kt} and
   app/src/test/kotlin/com/youcoded/app/doccomments/{XlsxCommentsTest.kt,
   DocCommentsBridgeTest.kt, DocCommentsDispatchTest.kt} at commit `ad7a60dd5`
-  (Android T18/T19), against docs/active/specs/2026-09-26-doc-comments-build-
+  (Android T18/T19), against docs/archive/specs/2026-09-26-doc-comments-build-
   design.md §4 (all), §9.3, T18/T19/T21, and against the reference
   implementation desktop/src/main/doc-comments/{xlsx-comments.ts,write-
   pipeline.ts,zip-size-guard.ts} plus the prior desktop adversarial review
-  (docs/active/reviews/2026-09-27-doc-comments-xlsx-t12-t13-review.md, findings
+  (docs/archive/reviews/2026-09-27-doc-comments-xlsx-t12-t13-review.md, findings
   F1-F7 and their triage/fixes at commit `ffda4b654`).
 method: read-only adversarial review. Read XlsxComments.kt in full (1895
   lines), DocCommentsDispatch.kt/DocCommentsBridge.kt in full, the full

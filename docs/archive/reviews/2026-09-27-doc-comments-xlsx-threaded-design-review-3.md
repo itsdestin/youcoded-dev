@@ -1,12 +1,12 @@
 ---
-status: resolved
+status: shipped
 date: 2026-09-27
 resolved: 2026-09-27, same day — all 5 findings accepted and fixed; see each finding's own
   "Triage:" line below, and the design doc's own changelog entry naming this review. This was the
   final (round 3 of 3) design review for the xlsx threaded-comments redesign — the design's build
   stage is now complete apart from the follow-up fixes this round's own findings require against
   already-shipped code (T3, T5, T11).
-reviewed: docs/active/specs/2026-09-26-doc-comments-build-design.md (commit 6c612cb9) — the three
+reviewed: docs/archive/specs/2026-09-26-doc-comments-build-design.md (commit 6c612cb9) — the three
   newest changelog entries, §1.5, §1.6, §4 (all), §7, §9.2, §9.3, and task rows T3/T5/T9b/T12/T13/
   T18/T19/T20/T21 — against youcoded/shared-fixtures/doc-comments/xlsx-threaded-reference/ (both
   real files unzipped and independently re-checked) AND, this round, against the ACTUAL already-

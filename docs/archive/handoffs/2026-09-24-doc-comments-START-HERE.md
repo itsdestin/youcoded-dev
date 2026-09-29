@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 date: 2026-09-24
 supersedes: docs/archive/specs/2026-07-26-ask-claude-reference-ux-design.md (Destin discarded the July work)
 roadmap: docs/roadmap/files.md → "Document comments"
@@ -19,7 +19,7 @@ nothing is saved and the assistant cannot see comments yet.
 | The chosen mockup | youcoded branch `session/comments-mock-a` (pushed), worktree `worktrees/sessions/comments-mock-a` |
 | Round-1 version of it (kept for reference) | youcoded branch `session/comments-mock-a-v1` |
 | Rejected mockups | youcoded branches `session/comments-mock-b` (pins & tray), `session/comments-mock-c` (inline threads); worktrees `worktrees/sessions/comments-mock-{b,c}` |
-| Scratch screenshots (untracked) | `worktrees/sessions/comments-mock-a/docs/active/design/2026-09-24-doc-comments/` |
+| Scratch screenshots (untracked) | `worktrees/sessions/comments-mock-a/docs/archive/design/2026-09-24-doc-comments/` |
 
 Run it: `YOUCODED_PORT_OFFSET=61 bash scripts/run-workbench.sh <abs path>/worktrees/sessions/comments-mock-a/youcoded`
 → `http://localhost:5234/?mode=workbench`, header file-count button → `2026-09-24-onboarding-redesign.md`
@@ -79,7 +79,7 @@ Chat answers, not deck answers — the contract step still has to ratify them on
 
 ## Decided by Destin (questions deck, 2026-09-24)
 
-Deck `docs/active/design/2026-09-24-doc-comments/doc-comments.questions.json`, answers beside it.
+Deck `docs/archive/design/2026-09-24-doc-comments/doc-comments.questions.json`, answers beside it.
 Three follow-ups were answered in chat (marked *chat*) — the contract deck must ratify them.
 
 - **Storage (Q-1):** a hidden comments folder inside each project. Files with native comments
@@ -108,7 +108,7 @@ Three follow-ups were answered in chat (marked *chat*) — the contract deck mus
 
 ## Review deck (2026-09-26)
 
-`docs/active/design/2026-09-24-doc-comments/doc-comments.review.json`, answers beside it.
+`docs/archive/design/2026-09-24-doc-comments/doc-comments.review.json`, answers beside it.
 R-1, R-2, R-4, R-6–R-9 approved as shown. Changed after review:
 - **R-3:** Show Resolved sits under the title divider; the panel has a × that leaves
   Comments mode.
@@ -170,12 +170,12 @@ workbench latency quirk in ui-probe.
   workbook — `DocComment.sheet`); fixture `reports/q3-sales-by-rep.xlsx` is a two-tab workbook
   (`fixtures/sheets/make-by-rep.mjs`).
   Colleague authors are `person:<name>` ("Priya Shah"). Screenshots:
-  `docs/active/design/2026-09-24-doc-comments/shots-word-excel/` (untracked).
+  `docs/archive/design/2026-09-24-doc-comments/shots-word-excel/` (untracked).
 - Phone: markdown/Word/Excel all show the marker rail; a tap opens that comment's sheet (now
   portaled above the composer); no hover card on touch; a long-press selection opens the menu
   after it settles. Checked at 390px in headless Chrome only — not on a real Android WebView,
   where the native selection toolbar may also appear.
-- **Polish pass (2026-09-26)**, screenshots in `docs/active/design/2026-09-24-doc-comments/shots-polish/`
+- **Polish pass (2026-09-26)**, screenshots in `docs/archive/design/2026-09-24-doc-comments/shots-polish/`
   (untracked):
   - Ask Your Assistant's sent message: plain lead + one chip per comment, one per line
     (grouped at render in UserMessage — the sent text is flattened for the terminal).

@@ -24,13 +24,6 @@ searched or resumed (chat-data).
       of "no results". Builds on the Stage 2 item just above
       `projects` `desktop` `confirmed` `checked 2026-09-18` `v1.3.1` → docs/active/specs/2026-09-18-project-files-background-index.md
 
-- [ ] Document comments, like Google Docs or Word: highlight text in the file viewer, leave
-      notes, reply, resolve them (you or the assistant) and see the history, then have the
-      assistant work through every open comment; "Ask about this" becomes a pill inside your
-      sentence instead of pasted text. The look is settled in a preview (2026-09-24); nothing
-      is saved yet and the assistant cannot see comments
-      `files-panel` `desktop` `in-flight` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-doc-comments-START-HERE.md
-
 - [ ] Comment times are only relative ("5h ago"): hovering one could show the exact date and
       time, a resolved comment could say when it was resolved (not possible for Word/Excel,
       which don't record it), and the assistant could see comment times when it reads them.

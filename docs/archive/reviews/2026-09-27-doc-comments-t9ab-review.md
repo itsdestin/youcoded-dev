@@ -1,12 +1,12 @@
 ---
-status: active
+status: shipped
 ---
 
 # Adversarial review — T9a/T9b (doc-comments Claude Code MCP + pending-mutation queue)
 
 Reviewed read-only against `youcoded` worktree branch `session/comments-mock-a`, commits
 `95db76e75` (T9a/T9b) and `568985ac6` (accept-edits permission_mode follow-up). Spec:
-`docs/active/specs/2026-09-26-doc-comments-build-design.md` §1, §5 (esp. §5.2a, decided
+`docs/archive/specs/2026-09-26-doc-comments-build-design.md` §1, §5 (esp. §5.2a, decided
 option 1), §9. No files were edited; `npx vitest run tests/claude-code-doc-comments-mcp.test.ts
 tests/pending-mutation-queue.test.ts tests/permission-auto-approve.test.ts` was run for
 evidence only — **51/51 passed**.

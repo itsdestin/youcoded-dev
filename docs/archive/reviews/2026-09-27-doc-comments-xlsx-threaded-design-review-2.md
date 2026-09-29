@@ -1,9 +1,9 @@
 ---
-status: resolved
+status: shipped
 date: 2026-09-27
 resolved: 2026-09-27, same day — all 4 findings accepted and fixed; see each finding's own
   "Triage:" line below, and the design doc's own changelog entry naming this review.
-reviewed: docs/active/specs/2026-09-26-doc-comments-build-design.md (commit f9ea621d — the
+reviewed: docs/archive/specs/2026-09-26-doc-comments-build-design.md (commit f9ea621d — the
   post-review-1 revision of the xlsx threaded-comments-only redesign), against
   youcoded/shared-fixtures/doc-comments/xlsx-threaded-reference/ (both real files unzipped and
   independently re-checked, not read from the manifest/README), the currently-built

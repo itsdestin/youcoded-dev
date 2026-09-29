@@ -1,5 +1,5 @@
 ---
-status: active
+status: shipped
 ---
 
 # Doc comments — live refresh review: T3 per-document watcher, T5 reply reconcile, T11 file-open-elsewhere

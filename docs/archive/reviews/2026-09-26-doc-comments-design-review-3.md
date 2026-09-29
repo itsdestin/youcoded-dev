@@ -1,12 +1,12 @@
 ---
 date: 2026-09-26
-status: active
+status: shipped
 type: review
 ---
 
 # Document comments — build design review (round 3, final capped round)
 
-Reviewing: `docs/active/specs/2026-09-26-doc-comments-build-design.md` (as revised after round 1
+Reviewing: `docs/archive/specs/2026-09-26-doc-comments-build-design.md` (as revised after round 1
 and round 2) against the signed contract (`doc-comments.contract.json`), Destin's reopen-1 answer
 (`doc-comments.reopen-1.answers.json`, "full-phone"), the app code at
 `/home/destin/youcoded-dev/worktrees/sessions/comments-mock-a/youcoded` (branch
@@ -43,7 +43,7 @@ file** (`.youcoded/comments/<relative/path>.json`). Given that model, mutating a
 requires knowing which sidecar file contains it. But every actual call surface for
 `reply`/`resolve`/`reopen`/`move` is specified WITHOUT a `path`:
 
-- IPC payloads (`docs/active/specs/2026-09-26-doc-comments-build-design.md:389-392`):
+- IPC payloads (`docs/archive/specs/2026-09-26-doc-comments-build-design.md:389-392`):
   `docComments:reply` → `{id, text, author}`, `docComments:resolve` → `{id, by}`,
   `docComments:reopen` → `{id, by}`, `docComments:move` → `{id, newSelector}` — none carry `path`.
 - Native/MCP tool schemas (`...build-design.md:888-892`): `ReplyToComment {commentId, text}`,

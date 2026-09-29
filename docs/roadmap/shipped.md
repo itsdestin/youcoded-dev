@@ -98,6 +98,7 @@ decision either way.
 - [x] 2026-09-26 dev-workspace — `run-review.sh` refuses to start when another session’s workbench already holds its default port (5473), and the only way on is to guess a free… (7ad1d9da — sweep retired; review tools build and serve on a free port)
 - [x] 2026-09-27 native-harness — Admin commands work from chat: you type your computer password in a card (never saved, never shown to the assistant); every admin command stops for approval (youcoded#580)
 - [x] 2026-09-28 dev-workspace — Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56 references) (youcoded-admin#14; youcoded-dev#217)
+- [x] 2026-09-29 files — Document comments, like Google Docs or Word: highlight text in the file viewer, leave notes, reply, resolve them (you or the assistant) and see the history,… (itsdestin/youcoded#587, itsdestin/youcoded-dev#222)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

@@ -1,9 +1,9 @@
 ---
 status: superseded
 date: 2026-09-27
-superseded-by: docs/active/specs/2026-09-26-doc-comments-build-design.md §4 (2026-09-27 threaded-
+superseded-by: docs/archive/specs/2026-09-26-doc-comments-build-design.md §4 (2026-09-27 threaded-
   comments-only redesign) — see also shared-fixtures/doc-comments/xlsx-threaded-reference/
-related: docs/active/specs/2026-09-26-doc-comments-build-design.md §4.3a, T18
+related: docs/archive/specs/2026-09-26-doc-comments-build-design.md §4.3a, T18
 ---
 
 **SUPERSEDED 2026-09-27 (same day, later in the session):** Destin decided Excel comments use ONLY

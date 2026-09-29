@@ -1,15 +1,15 @@
 ---
 date: 2026-09-26
-status: active
+status: shipped
 type: review
 ---
 
 # Document comments — build design review (round 2)
 
-Reviewing: `docs/active/specs/2026-09-26-doc-comments-build-design.md` (as revised after round 1,
-`docs/active/reviews/2026-09-26-doc-comments-design-review-1.md`, and after Destin's reopen-1
+Reviewing: `docs/archive/specs/2026-09-26-doc-comments-build-design.md` (as revised after round 1,
+`docs/archive/reviews/2026-09-26-doc-comments-design-review-1.md`, and after Destin's reopen-1
 answer — full Word/Excel comment support on the phone,
-`docs/active/design/2026-09-24-doc-comments/doc-comments.reopen-1.json`/`.answers.json`) against
+`docs/archive/design/2026-09-24-doc-comments/doc-comments.reopen-1.json`/`.answers.json`) against
 the signed contract (`doc-comments.contract.json`), the app code at
 `/home/destin/youcoded-dev/worktrees/sessions/comments-mock-a/youcoded` (branch
 `session/comments-mock-a`), and `CLAUDE.md` / `.claude/rules/feature-flow.md` /

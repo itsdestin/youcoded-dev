@@ -1,12 +1,12 @@
 ---
-status: draft
+status: shipped
 date: 2026-09-27
 reviewed: youcoded/desktop/src/main/doc-comments/xlsx-comments.ts (commit afebe3df5, the T12/T13
   threaded-comments rewrite) and its own tests/fixtures — youcoded/desktop/tests/xlsx-comments.test.ts,
   shared-fixtures/doc-comments/{xlsx-threaded-reference/,id-parse-test-vectors.json,
-  synthetic-worksheet-with-extlst.xlsx} — against docs/active/specs/2026-09-26-doc-comments-build-
+  synthetic-worksheet-with-extlst.xlsx} — against docs/archive/specs/2026-09-26-doc-comments-build-
   design.md §4 (all), §9.2/§9.3, T12/T13/T21, and the three prior design reviews
-  (docs/active/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-{1,2,3}.md).
+  (docs/archive/reviews/2026-09-27-doc-comments-xlsx-threaded-design-review-{1,2,3}.md).
 method: read-only adversarial review. Read the full module (1850 lines), the full test file, the
   relevant spec/design-review sections, and write-pipeline.ts's shared backup/verify/rollback
   infrastructure. Ran the real test suite (`npx vitest run tests/xlsx-comments.test.ts`, 35/35

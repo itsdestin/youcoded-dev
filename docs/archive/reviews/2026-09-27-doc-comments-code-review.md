@@ -5,7 +5,7 @@ MCP script, desktop tests). `youcoded/app/` (Android Kotlin) is a separate revie
 no desktop/Android mismatch was found from this side.
 
 Inputs used: the diff `origin/master...session/comments-mock-a` under `youcoded/desktop/`, the
-contract at `docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json`, every
+contract at `docs/archive/design/2026-09-24-doc-comments/doc-comments.contract.json`, every
 `.claude/rules/*.md` whose `paths:` matched a touched file (`performance.md`, `renderer-lists.md`,
 `react-renderer.md`, `harness-tools.md`, `native-runtime.md`, `native-permissions.md`,
 `ipc-bridge.md`, `narrow-viewport.md`), and `docs/PITFALLS.md`. Two post-contract product

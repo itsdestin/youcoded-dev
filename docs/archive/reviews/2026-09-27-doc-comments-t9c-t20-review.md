@@ -1,11 +1,11 @@
 ---
-status: active
+status: shipped
 ---
 
 # Adversarial review — T9c/T20 (Android doc-comments MCP asset + pending-mutation queue)
 
 Reviewed read-only against `youcoded` worktree branch `session/comments-mock-a`, commit
-`627ca7426`. Spec: `docs/active/specs/2026-09-26-doc-comments-build-design.md` §5.2a, §5.3, §9.
+`627ca7426`. Spec: `docs/archive/specs/2026-09-26-doc-comments-build-design.md` §5.2a, §5.3, §9.
 No files were edited. `JAVA_HOME=/usr/lib/jvm/java-21-openjdk ANDROID_HOME=$HOME/.android-sdk
 ./gradlew testDebugUnitTest -x bundleWebUi --tests '*DocComments*' --tests '*ClaudeCode*'` was
 run for evidence only — **BUILD SUCCESSFUL, 95/95 tests green** across
@@ -22,7 +22,7 @@ parser/HookEvent.kt`, `app/src/main/assets/{doc-comments-mcp.js,hook-relay-block
 targeted reads of `Bootstrap.kt` (homeDir) and `desktop/src/main/claude-code-doc-comments-mcp.ts`
 (deploy function) for cross-platform comparison. Test files skimmed for coverage shape, not
 read line-by-line. Desktop's own adversarial review
-(`docs/active/reviews/2026-09-27-doc-comments-t9ab-review.md`) was read first and used as the
+(`docs/archive/reviews/2026-09-27-doc-comments-t9ab-review.md`) was read first and used as the
 baseline Android must not regress.
 
 ---

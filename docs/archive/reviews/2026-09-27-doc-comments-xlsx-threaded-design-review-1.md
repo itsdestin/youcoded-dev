@@ -1,7 +1,7 @@
 ---
-status: resolved
+status: shipped
 date: 2026-09-27
-reviewed: docs/active/specs/2026-09-26-doc-comments-build-design.md (commit 8937f0c4, xlsx §4
+reviewed: docs/archive/specs/2026-09-26-doc-comments-build-design.md (commit 8937f0c4, xlsx §4
   redesign for threaded-comments-only), against youcoded/shared-fixtures/doc-comments/
   xlsx-threaded-reference/ (app commit d0d4bedd1) and the currently-built code it will replace
   (xlsx-comments.ts, write-pipeline.ts, zip-size-guard.ts, doc-comments-dispatch.ts,
@@ -63,7 +63,7 @@ gone — never by "the nth thread currently at this ref." An ordinal can still d
 order (already-open cards shouldn't visually jump around), but must not be the identity key a
 mutation targets.
 
-**Triage: Accepted.** Fixed in `docs/active/specs/2026-09-26-doc-comments-build-design.md` §4.2
+**Triage: Accepted.** Fixed in `docs/archive/specs/2026-09-26-doc-comments-build-design.md` §4.2
 ("Id scheme, corrected...") and mirrored in §4.3's write steps and §4.3a's Android bullet list. The
 app-level id is now `xt-{sheetId}-{cell}-{GUID, braces stripped}` — the full GUID, not a truncated
 one, since there is no reason to accept even a theoretical truncation-collision risk for an

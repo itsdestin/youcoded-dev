@@ -1,13 +1,13 @@
 ---
 date: 2026-09-26
-status: active
+status: shipped
 type: review
 ---
 
 # Document comments — build design review (round 1)
 
-Reviewing: `docs/active/specs/2026-09-26-doc-comments-build-design.md` against
-`docs/active/design/2026-09-24-doc-comments/doc-comments.contract.json` (signed,
+Reviewing: `docs/archive/specs/2026-09-26-doc-comments-build-design.md` against
+`docs/archive/design/2026-09-24-doc-comments/doc-comments.contract.json` (signed,
 `doc-comments.contract.answers.json` → `C: yes`), the app code at
 `/home/destin/youcoded-dev/worktrees/sessions/comments-mock-a/youcoded` (branch
 `session/comments-mock-a`), and `CLAUDE.md` / `.claude/rules/feature-flow.md` /
@@ -32,7 +32,7 @@ falsely marked done.
 
 ### F1 — [blocker] Word/Excel comment-mutation code is specified for the renderer, but must run from main — and Node has no DOMParser
 
-Evidence: `docs/active/specs/2026-09-26-doc-comments-build-design.md` §3.2 ("New module
+Evidence: `docs/archive/specs/2026-09-26-doc-comments-build-design.md` §3.2 ("New module
 `desktop/src/renderer/components/artifact-views/docx-comments.ts`, run in the **renderer**
 (not main)... Parsing uses the browser's native `DOMParser`/`XMLSerializer`") directly
 contradicts §9 ("For `.docx`/`.xlsx` writes specifically, only implementation #1 [**the TS
@@ -99,7 +99,7 @@ docx/xlsx logic to main (no new binary channel needed, §3.2/§3.3/§4).
 
 ### F3 — [blocker] No path-containment check specified for the comments sidecar path — path traversal / arbitrary-file-write risk
 
-Evidence: `docs/active/specs/2026-09-26-doc-comments-build-design.md` §1.3 derives the
+Evidence: `docs/archive/specs/2026-09-26-doc-comments-build-design.md` §1.3 derives the
 sidecar path by directly templating a caller-supplied `path` into
 `<project root>/.youcoded/comments/<relative/path/to/file.md>.json`. §1.5 ("Main-process
 service: reads, writes, watching") never mentions validating that `path` is actually inside
