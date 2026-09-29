@@ -178,7 +178,7 @@ topic: Executing the 2026-09-16 simplification audit in seven phases — small f
 
 ## Not scheduled (recorded so the list stays honest)
 
-D9 (Android rebuild — now phase A3 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`), D10 (measured; R2 proposes generating preload's list as static code, which reopens it — decision 2 in the remote plan), W26 (replaced by the two guards), M6 (`YOUCODED_NATIVE` half-enforced flag — retire or enforce at one chokepoint; one line, whenever a Phase 4 run passes it), M9 beyond G1's ratchet, B4 (in-view class after compaction — filed with the smoothness sweep's D-batch), B5 (`stableStringify` in `chat-reducer.ts:1115` — one line, take it in 1a if the worker has room, else file), G5–G8, G10–G12, and the unread native turn loop (`harness-session.ts:2263-3719`).
+D9 (Android rebuild — now phase A3 of `docs/active/plans/2026-09-24-android-rebuild-plan.md`), D10 (measured; **reversed 2026-09-29 by Destin** — R2 generates preload's list from the contract as static code, still explicitly enumerated), W26 (replaced by the two guards), M6 (`YOUCODED_NATIVE` half-enforced flag — retire or enforce at one chokepoint; one line, whenever a Phase 4 run passes it), M9 beyond G1's ratchet, B4 (in-view class after compaction — filed with the smoothness sweep's D-batch), B5 (`stableStringify` in `chat-reducer.ts:1115` — one line, take it in 1a if the worker has room, else file), G5–G8, G10–G12, and the unread native turn loop (`harness-session.ts:2263-3719`).
 
 ## State
 

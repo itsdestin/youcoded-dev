@@ -217,8 +217,8 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
   time as a static list** from the contract. **This reopens decision D10** ("bridge stays
   hand-enumerated because it is the security boundary"). The proposal keeps it statically
   enumerated: generated code lists every channel explicitly, with no runtime Proxy. The source
-  of the list changes; the boundary does not. **Needs Destin's OK (decision 2). Until then R2
-  keeps preload hand-written and adds a test that it matches the contract.**
+  of the list changes; the boundary does not. **Decided 2026-09-29 (Destin: "ok, do it"):
+  generated. A committed generated file plus a freshness test.**
 - Keep `mock-shim.ts` (the Workbench's fake backend) compiling against the contract. Run
   `node scripts/workbench-boot-check.mjs` in every phase that changes the contract.
 - **Gate:** `tsc` green; the preload list matches the contract; workbench boot-check green.
@@ -347,7 +347,7 @@ waits for R3 to finish, or goes in once its family file exists.
 | # | Question | Recommendation | Why |
 |---|---|---|---|
 | 1 | ~~Start R1 only after `feat/specialists-plans-ui` merges?~~ | **Decided 2026-09-29:** start now; in-flight branches are rewritten onto the new layout after R2 | Destin chose not to wait for other branches |
-| 2 | Generate preload's channel list from one contract (reopens D10)? | **Yes, as static generated code** | The security boundary stays an explicit list you can read. Only its source changes, and four hand copies become one |
+| 2 | ~~Generate preload's channel list from one contract (reopens D10)?~~ | **Decided 2026-09-29: generated, as static code** | Destin approved; the list stays explicit and readable, only its source changes |
 | 3 | R5 (computer keeps the record): is it wanted, as its own phase after Phase 4? | **Yes** | It is the fix for the slow reconnect, "every session sent to every phone", and screens disagreeing. It changes how the phone behaves, so it is outside the release-blocker scope |
 | 4 | Should the "working / needs you" status be computed on the computer itself, so a phone is accurate even with no computer window open? | **Measure first, then likely yes** | It is the one piece of live state only a window knows. Moving it costs some background work on the computer |
 | 5 | Should the computer's own window eventually talk over the socket door too (one client, not two)? | **Not now** | The generated contract gets most of the benefit. A socket door on the computer adds a local attack surface, for little gain |

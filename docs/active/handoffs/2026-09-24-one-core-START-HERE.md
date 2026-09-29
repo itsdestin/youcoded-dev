@@ -59,8 +59,6 @@ on hold until R4 and the native-session-host test split.
 
 Each plan ends with a decisions table. None blocks the "Now" rows. The ones that change the
 order above:
-- Remote decision 2: generate preload's channel list from the contract (reopens D10). R2
-  proceeds either way.
 - Remote decision 3: whether R5 is wanted as its own phase after Phase 4.
 - Android decision 2: which Node goes on the phone. A0 settles it.
 - Android decision 6: list on Play right after A1, or wait for the rebuilt app (A4).
