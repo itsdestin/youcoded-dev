@@ -1,6 +1,18 @@
 # sync — moving your stuff between devices
 Filing test: moving your stuff between devices, and the GitHub transport under it.
 
+- [ ] Sync notices changes by watching every single file, when one watch per folder would do (on
+      Mac and Windows, one per project). Even with the 2026-09-29 fix a big synced project costs
+      several times the watches it needs. A leaner change-detector (the one VS Code uses) fixes
+      that at the root, but it has to be built per platform and must be tested on Mac, Windows
+      and Linux so it never misses an edit.
+      `settings/sync` `desktop` `decision` `checked 2026-09-29` `performance`
+
+- [ ] A synced code project that already keeps its own version history (and its own GitHub copy)
+      gets a second, hidden history from sync over the same files, which doubles some of the work.
+      Whether such projects should sync differently is an open product question.
+      `settings/sync` `desktop` `decision` `checked 2026-09-29`
+
 - [ ] A project where a password file (like `.env`) was uploaded by an older app version keeps that copy
       online and in its history. New edits now stay on the device, but nothing removes what already went up;
       removing it means rewriting the project's history on every device. Decided out of scope, 2026-09-23.
