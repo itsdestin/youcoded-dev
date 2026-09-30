@@ -2,7 +2,7 @@ id: get-meta-marks-failed-read-unreadable
 language: typescript
 severity: error
 message: >-
-  main's session:get-meta handler must answer `unreadable: …` both when the
+  The session:get-meta table entry must answer `unreadable: …` both when the
   conversation store is missing (`if (!store) return { …, unreadable: … }`) and
   when the read throws (`catch (e) { … unreadable: … }`). Answering blank tags
   and note instead makes the close prompt show "No note" for a conversation that
@@ -11,32 +11,27 @@ note: |
   Invariant source: tests/close-prompt-meta-unreadable.test.tsx › "main's
   session:get-meta marks a thrown read or a missing store as unreadable"
   (retired by Plan B, 2026-09-16; error inventory 2026-09-10, false message 12).
-  The retired case sliced ipc-handlers.ts (comments blanked) from
-  `ipcMain.handle(IPC.SESSION_GET_META` to the next `ipcMain.handle(` and
-  required /if \(!store\) return \{[^}]*unreadable:/ and
-  /catch \(\w+\) \{[^}]*unreadable:/ in that slice.
-  Here, searched inside the handler call:
+  RETARGETED 2026-09-30 (one-core R3-4): session:get-meta used to be written
+  twice, an `ipcMain.handle(IPC.SESSION_GET_META, …)` in ipc-handlers.ts (this
+  rule) and a `case 'session:get-meta':` in remote-server.ts (the retired
+  sibling rule get-meta-marks-failed-read-unreadable-remote). Both doors now run
+  ONE table entry in main/ipc/session.ts, so one rule guards it.
+  THE REGION is the object literal that names `IPC.SESSION_GET_META`
+  (`defineChannel({ name: IPC.SESSION_GET_META, … })`). Searched inside it:
     - an `if (!store)` whose consequence returns an object with an
       `unreadable:` pair (a braced `{ return … }` is accepted too — looser
       than the old regex, never stricter; the object may also be wrapped in
       `as`/`satisfies`, added 2026-09-16 review round 1 item 2);
     - a catch clause WITH a parameter whose body holds an `unreadable:` pair.
-  The old slice also ran past the handler's closing paren to the next
-  ipcMain.handle( — today only comments sit there, and an `unreadable` fallback
-  outside the handler would never reach the prompt, so this rule looks inside
-  the handler only.
-  Presence branch: fires when ipc-handlers.ts registers no
-  ipcMain.handle(IPC.SESSION_GET_META, …) at all (the old test failed on
-  `start >= 0`). The remote host's twin is
-  get-meta-marks-failed-read-unreadable-remote.
+  Presence branch: fires when session.ts has no such entry at all.
 files:
-  - "**/src/main/ipc-handlers.ts"
+  - "**/src/main/ipc/session.ts"
   - "**/fixtures/get-meta-marks-failed-read-unreadable.ts"
   - "**/fixtures/get-meta-marks-failed-read-unreadable-missing.ts"
 utils:
   get-meta-handler:
-    kind: call_expression
-    pattern: ipcMain.handle(IPC.SESSION_GET_META, $H)
+    kind: object
+    has: { kind: pair, regex: "^name:\\s*IPC\\.SESSION_GET_META$" }
   unreadable-pair:
     kind: pair
     has:

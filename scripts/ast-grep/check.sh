@@ -399,7 +399,10 @@ fi
 #   fixture fires twice (the map form and the loop form). 412 + 2 = 414.
 # 2026-09-30 (one-core R3-1): -3 — tags-list-no-empty-fallback-remote retired (its `case` moved into the
 #   channel table; the main rule now guards the one shared entry). Its two fixtures fired 2 + 1 = 3. 414 - 3 = 411.
-EXPECTED_VIOLATIONS=411
+# 2026-09-30 (one-core R3-4): -3 — get-meta-marks-failed-read-unreadable-remote retired (its `case` moved into
+#   the channel table; the main rule now guards the one shared session:get-meta entry). Its fixtures fired 2 + 1 = 3.
+#   The session:create shell-refusal rule keeps one fixture finding. 411 - 3 = 408.
+EXPECTED_VIOLATIONS=408
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.
