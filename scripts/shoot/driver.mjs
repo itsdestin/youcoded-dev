@@ -5,9 +5,15 @@
 import { hits, inPage, layoutSignature, listControls, listLayers, locate } from './explore-page.mjs';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-// How long an `expect` waits: a scripted reply takes seconds to stream. Only a failing
-// check ever waits this long.
+// How long an `expect` waits. WHY it is a quiet time, not a fixed 10 s (2026-09-30 one-core
+// R3-4): a scripted reply streams word by word on real timers, and on a busy machine the
+// words arrive slowly while still arriving. permission-approve failed under load with the
+// reply half-typed on screen ("Now the" / "invites.") when a flat 10 s ran out. So the
+// clock only counts time in which the page's text stood still — a page still changing is
+// still working. A check on a page that has really stopped fails after EXPECT_MS as before;
+// EXPECT_CAP_MS keeps a page that changes forever (a ticking clock) from waiting for ever.
 const EXPECT_MS = 10_000;
+const EXPECT_CAP_MS = 90_000;
 
 /** The practice app's address for a start block ({ scenario, latency, params }). */
 export function appUrl(base, start) {
@@ -147,29 +153,52 @@ export function makeDriver(tab, { width = 1440, height = 900 } = {}) {
     throw new Error(`${describe(target)} is not on screen. On screen: ${shown}${controls.length > 60 ? ', …' : ''}`);
   }
 
+  // The page's words, as one comparable value: a streaming reply changes it, a stalled page does not.
+  const pageSignature = () => tab.evaluate('(() => { const t = document.body.innerText; return t.length + ":" + t.slice(-80); })()').catch(() => null);
+  // Time an expect has spent with the page standing still, and time overall (see EXPECT_MS).
+  function quietClock() {
+    const t0 = Date.now(); let quietFrom = t0; let last;
+    return {
+      live: () => Date.now() - quietFrom < EXPECT_MS && Date.now() - t0 < EXPECT_CAP_MS,
+      see: (sig) => { if (sig !== last) { last = sig; quietFrom = Date.now(); } },
+      spent: () => Math.round((Date.now() - t0) / 1000),
+    };
+  }
+
   // What a person would check with their eyes: some words are showing (or not), or a named
   // screen is showing. Waits up to EXPECT_MS — a reply or a closing animation takes a moment.
   async function expect(step) {
     if (step.control) {
       // A control a person can see, by role and label (labels can be split across elements,
       // so the page's text alone would miss "Haiku | Auto Effort").
-      for (const t0 = Date.now(); Date.now() - t0 < EXPECT_MS; await sleep(200)) {
+      const clock = quietClock();
+      for (; clock.live(); await sleep(200)) {
         await tab.evaluate(inPage(listLayers));
         const { controls } = await tab.evaluate(inPage(listControls, {}));
         const there = controls.some((c) => c.role === step.control.role && c.label === step.control.label);
         if (there !== Boolean(step.not)) return;
+        clock.see(await pageSignature());
       }
-      throw new Error(`${step.not ? 'still showing' : 'not showing'} after ${EXPECT_MS / 1000} s: ${describe(step.control)}`);
+      throw new Error(`${step.not ? 'still showing' : 'not showing'} after ${clock.spent()} s: ${describe(step.control)}`);
     }
     const probe = step.screen
       // Showing = some copy's section is in the window and visible. A closed drawer stays
       // mounted just off the edge (Settings at x −320), which must not count as showing.
       ? `[...document.querySelectorAll('[data-screen=${JSON.stringify(step.screen)}]')].some((m) => { const p = m.parentElement; if (!p) return false; const r = p.getBoundingClientRect(); if (r.width < 2 || r.height < 2 || r.right <= 0 || r.bottom <= 0 || r.left >= innerWidth || r.top >= innerHeight) return false; for (let e = p; e && e !== document.body; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) return false; } return true; })`
-      : `document.body.innerText.includes(${JSON.stringify(step.text)})`;
-    for (const t0 = Date.now(); Date.now() - t0 < EXPECT_MS; await sleep(200)) {
+      // WHY whitespace is collapsed on both sides (R3-4): a sentence a person reads as one line
+      // can be two blocks in the page — under load permission-approve's reply landed as "…Now
+      // the" and "invites." in separate bubbles, which innerText joins with a newline, so the
+      // plain match failed on a screen that read correctly.
+      : `document.body.innerText.replace(/\\s+/g, ' ').includes(${JSON.stringify(String(step.text).replace(/\s+/g, ' '))})`;
+    const clock = quietClock();
+    for (; clock.live(); await sleep(200)) {
       if (Boolean(await tab.evaluate(probe).catch(() => false)) !== Boolean(step.not)) return;
+      clock.see(await pageSignature());
     }
-    throw new Error(`${step.not ? 'still showing' : 'not showing'} after ${EXPECT_MS / 1000} s: ${step.screen ? `screen ${step.screen}` : `"${step.text}"`}`);
+    // WHY the page's words go in the message (R3-4): "not showing" alone could not tell a slow
+    // reply from words split across two bubbles — the picture showed one, the log the other.
+    const words = step.screen ? '' : await tab.evaluate('document.body.innerText.slice(-400)').catch(() => '');
+    throw new Error(`${step.not ? 'still showing' : 'not showing'} after ${clock.spent()} s: ${step.screen ? `screen ${step.screen}` : `"${step.text}"`}${words ? `\n  the page's last words: ${JSON.stringify(words)}` : ''}`);
   }
 
   // ─── Doing one step ──────────────────────────────────────────────────────
