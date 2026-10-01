@@ -1,0 +1,15 @@
+{
+ "deck": "appearance-review-2",
+ "started": "2026-10-01T09:36:17.275Z",
+ "submitted": "2026-10-01T09:36:40Z",
+ "cur": 0,
+ "answers": {
+  "AR2-1": {
+   "v": "yes",
+   "t": 1790847398120,
+   "seconds": 21,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

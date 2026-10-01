@@ -1,0 +1,31 @@
+{
+ "deck": "appearance-review",
+ "started": "2026-10-01T09:28:47.385Z",
+ "submitted": "2026-10-01T09:30:26Z",
+ "cur": 2,
+ "answers": {
+  "AR-1": {
+   "note": "",
+   "t": 1790846954757,
+   "v": "yes",
+   "seconds": 27,
+   "theme": "light",
+   "zoom": 1
+  },
+  "AR-2": {
+   "v": "other",
+   "t": 1790847013927,
+   "note": "no, we should collapse everything aside from the layout/frame into additional customizations.",
+   "seconds": 59,
+   "theme": "light",
+   "zoom": 1
+  },
+  "AR-3": {
+   "v": "other",
+   "t": 1790847025462,
+   "seconds": 12,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

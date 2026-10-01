@@ -1,0 +1,39 @@
+{
+ "deck": "appearance-questions",
+ "started": "2026-10-01T08:42:56.704Z",
+ "submitted": "2026-10-01T08:44:18Z",
+ "cur": 1,
+ "answers": {
+  "AQ-1": {
+   "v": "pick",
+   "pick": "remove",
+   "t": 1790844240552,
+   "seconds": 21,
+   "theme": "golden-sunbreak"
+  },
+  "AQ-2": {
+   "v": "picks",
+   "picks": [
+    "particles"
+   ],
+   "t": 1790844240552,
+   "note": "",
+   "seconds": 21,
+   "theme": "golden-sunbreak"
+  },
+  "AQ-3": {
+   "v": "pick",
+   "pick": "card-icon",
+   "t": 1790844240552,
+   "seconds": 21,
+   "theme": "golden-sunbreak"
+  },
+  "AQ-4": {
+   "v": "pick",
+   "pick": "open-groups",
+   "t": 1790844256906,
+   "seconds": 16,
+   "theme": "golden-sunbreak"
+  }
+ }
+}

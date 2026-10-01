@@ -1,0 +1,35 @@
+{
+  "title": "Manage rows — match the model menu",
+  "key": "manage-rows-review",
+  "out": "manage-rows.review.html",
+  "images": "images/manage-rows",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light"],
+  "crops": {
+    "proj": ["proj", "picker", "380x290+530+435"],
+    "tags": ["tags", "dialog", "400x270+510+230"]
+  },
+  "steps": [
+    {
+      "id": "MR-1",
+      "surface": "New session",
+      "path": "Sessions menu → New session → Project folder",
+      "crop": "proj",
+      "headline": "\"Manage projects…\" now reads as the list's last row, like \"Manage models…\" in the model menu.",
+      "changed": "The centred grey line above it is gone. It now has a small folder icon, lined up with the project icons, and soft grey words aligned with the project names.",
+      "notice": "The three pickers (models, projects, tags) end the same way, so the way out to their manage screens is in the same spot with the same look.",
+      "risk": "Its folder icon matches the project rows, so at a glance it could be mistaken for a project. The softer grey and the \"…\" are what set it apart."
+    },
+    {
+      "id": "MR-2",
+      "surface": "Tags & note",
+      "path": "A session's tag chip → Tags & note",
+      "crop": "tags",
+      "headline": "\"Manage tags…\" gets a tag icon and lines up with the tag names.",
+      "changed": "It was tiny loose text under the list. Now it is a full row, slightly larger, with a tag icon in the colour-square column and a hover highlight like the tags above it.",
+      "measured": "Text goes from 9 px to 10 px, the size of the tag names",
+      "notice": "Easier to spot and to click; it behaves like the rows above it.",
+      "risk": "The box grows by about 4 px."
+    }
+  ]
+}

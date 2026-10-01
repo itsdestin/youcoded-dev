@@ -1,0 +1,21 @@
+{
+  "title": "Appearance — round 2: the fold is back, with particles",
+  "key": "appearance-review-2",
+  "out": "appearance-2.review.html",
+  "images": "images/appearance-2",
+  "runs": { "before": "runs/before", "after": "runs/after" },
+  "themes": ["light"],
+  "crops": { "ap2-bottom": ["ap", "bottom", "420x540+510+200"] },
+  "steps": [
+    {
+      "id": "AR2-1",
+      "surface": "Appearance",
+      "path": "Settings → Appearance → Additional customizations (opened), scrolled to the bottom",
+      "crop": "ap2-bottom",
+      "headline": "Same screen as today, with Particles added inside Additional customizations.",
+      "changed": "The open-cards trial is undone. Layout stays out in the open; Additional customizations folds bubbles, roundness, glass and now particles; Reduce visual effects and Message timestamps stay outside under Effects & chat. The row's subtitle now says \"…glass, particles\".",
+      "notice": "Particles (Auto, None, Rain, Dust, Ember, Snow) work on every theme. The share icon from page 1 of the last deck stays.",
+      "risk": "Particles only show on themes with a wallpaper; on plain themes the line under it says so."
+    }
+  ]
+}
