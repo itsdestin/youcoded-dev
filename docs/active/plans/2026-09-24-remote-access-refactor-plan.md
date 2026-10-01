@@ -720,6 +720,27 @@ The R5-0 investigation (scratchpad `r5-0-investigation.md`) produced:
 
 R5-1 was started before the answers and does not depend on them.
 
+**R5-1 log** (app `session/simplify-r5-1`: `da32bc854`, `39f54e62e`, `6d59c8963`, `126355b36`;
+workspace `6284fef5`):
+- **The record.** `main/session-record.ts` is built by `createRuntime` as `runtime.records`.
+  Each session has an epoch, a ring (2,000 events or 2M UTF-16 units, sized with
+  `estimateSize`, never stringify), open asks kept outside the ring, and live facts. It also
+  holds a resume rule (events, or a fresh page) for R5-2.
+- **One publish.** `publish(sessionId, type, payload, {afterWindows})` replaces 12 paired
+  send+broadcast sites. The ast-grep rule `no-paired-session-send-and-broadcast` and a coverage
+  test guard it. Claude Code hook events and `pty:output` stay split-delivery, with reasons.
+- **Phones in the registry.** Phones join `WindowRegistry` as a separate sockets set, with ids
+  of -1000 or lower. Delivery is unchanged.
+- **New `session:summary` push**, unread so far.
+- **Checks.**
+  - A shadow compare against the real reducer.
+  - 31 audience-equivalence tests.
+  - Measured memory: 5–15 MB for 10 sessions, at 7 µs per event.
+- **Review:** "ship with fixes". The fixes are a cheap size estimate, a phone id range, the
+  buffer order restored, and the hook note fenced.
+- **Visible change:** none. In the dev smoke the pushes are identical, apart from the summary.
+- **For R5-3:** `releaseSession` also wipes phone watches.
+
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
 be measured on a **real phone** (dev-mode timing does not count, per the roadmap).
