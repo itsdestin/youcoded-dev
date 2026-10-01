@@ -546,6 +546,28 @@ The investigation for D3 and M5 (producers, consumers, disk shapes, the three tr
 differences, the proposed union and the commit order) was taken on 2026-10-01 from
 `simplify-r3-sec`.
 
+**R4-1 log** (app `session/simplify-r4-1`: `31c344eaa`, `34aafee6b`, `71e3ff113`, `cfbf69ca5`;
+workspace `ec655c97`):
+- **Guard.** `channel-table-complete.test.ts` now scans all of `main/`. It catches once,
+  addListener, aliased, property-aliased and computed registrations, and any dispatcher outside
+  the door.
+- **Detach tests.** detach, drag-adopt and drop-resolve have behaviour tests
+  (`tests/detach-handlers.test.ts`).
+- **Capabilities.** `shared/capabilities.ts` holds `PROTOCOL_VERSION` (1) and a 13-key
+  `Capabilities`. `auth:ok` carries both; Kotlin `MessageRouter.buildAuthOkResponse` is pinned
+  by a parity test. The preload exposes them, and the shim starts conservative.
+- **One platform module.** `renderer/platform.ts`; `platform-bootstrap.ts`,
+  `state/platform.ts` and build-menu's `isDesktop` are deleted.
+- **Capability reads.** 29 capability-gap checks became capability reads, equivalent on every
+  screen (reviewer table). `FolderSwitcher:260` and `Icons:322` stay as they are, because
+  converting them would change the Android-paired screen.
+- **Visible change:** pickers that choose what *this* screen runs (new session, default model)
+  hide native models on a phone browser, on Android, and with `YOUCODED_NATIVE=0`.
+  Host-run pickers (`runsOn="host"`: naming, specialists, switching a native session's model,
+  resuming a native conversation) keep them. An empty list shows a sentence.
+- **Review:** "ship with fixes". All of them were fixed in `cfbf69ca5`.
+- **Gates:** `verify --full` green, and 595 Android unit tests pass.
+
 **Destin's answers (2026-10-01):**
 1. The buddy's live compaction marker unifies with the main window: "freed N tokens", with
    the duplicate marker suppressed. This is the one visible change in D3.
