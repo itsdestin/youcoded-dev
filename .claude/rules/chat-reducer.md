@@ -20,6 +20,9 @@ verify:
     contains: "PAGE_TURNS"
   - path: youcoded/desktop/src/renderer/state/transcript-page-actions.ts
     contains: "pageEventToAction"
+  - path: youcoded/desktop/src/renderer/state/transcript-event-actions.ts
+    contains: "eventToAction"
+  - test: youcoded/desktop/tests/transcript-event-surface-parity.test.ts
   - path: youcoded/desktop/src/renderer/hooks/useAttentionClassifier.ts
     contains: "hasBuffer"
   - path: youcoded/desktop/src/renderer/state/attention-classifier.ts
@@ -56,7 +59,8 @@ verify:
 
 ## Paged history (perf cycle 2)
 - **History arrives one PAGE at a time** (`transcript-page.ts`; 30 turns / 2 MB). `HISTORY_LOADED` and "See previous messages" are RETIRED.
-- **`HISTORY_PAGE_LOADED` PREPENDS by replaying through the live per-event cases**, on scratch state seeded with the session's `seenUuids` — never hand-build history entries, never drop the seed (unseeded, it re-renders what is on screen).
+- **A transcript event becomes reducer actions in ONE place, `eventToAction`** (`transcript-event-actions.ts`) — main window, buddy and history pages all call it; never add a per-event case to `App.tsx` or `BubbleFeed.tsx`. The buddy's differences are the typed `BUDDY_LIVE` ledger. · why: three hand-mirrored switches drifted · guard: `transcript-event-surface-parity.test.ts`.
+- **`HISTORY_PAGE_LOADED` PREPENDS by replaying through the same translator (`live:false`)**, on scratch state seeded with the session's `seenUuids` — never hand-build history entries, never drop the seed (unseeded, it re-renders what is on screen).
 - **Set `HISTORY_PAGE_REQUESTED` BEFORE awaiting**: `history.loading` is the whole of paging's idempotency. The tailer starts at EOF and page one ends at `getStartOffset()` — that keeps page and live non-overlapping.
 - **Enumerate a broadcast's listeners by CHANNEL before removing it** — dropping whole-file replay broke FOUR features relying on it, none caught by ~7,000 tests.
 
