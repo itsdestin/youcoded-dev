@@ -22,6 +22,16 @@ chat-data).
       window 2026-09-30, CC 2.1.286). Next step: catch it live and send "1 thing" from chat
       `chat` `all` `needs-verify` `checked 2026-09-30` `needs-repro`
 
+- [ ] Idea: fewer trips to terminal view for Claude Code pop-ups the app only blocks today
+      (proposed 2026-09-30 after the pop-up guard; Destin deferred it to "test and wrap up").
+      (1) A Continue / Dismiss card, showing the pop-up's text, for notices that have no
+      options — only "Enter to continue · Esc to cancel" (the auto-mode billing notice opened
+      mid-reply). (2) A card that shows the full body for review pop-ups — "Review proposed
+      auto-mode setup" lists the permission rules it would save; a card with only its two
+      buttons would have them approved unseen. (3) First, a local log line whenever the
+      guard refuses a send or a pop-up gets no card, to learn which ones actually occur
+      `chat` `all` `idea` `checked 2026-09-30`
+
 - [ ] When `~/.claude/settings.json` could not be read at launch (a stray comma, a half-written
       save), the app now quietly moves it aside as `settings.json.corrupt-<time>` and writes a
       fresh one so its hooks keep working — but it only says so in its log. Anything the user had
