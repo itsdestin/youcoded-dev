@@ -199,6 +199,8 @@ Settings → Backup & Sync, Assistant → General, Account.
 - A notice **about one thing sits inside that thing** — inside the setting's or the list
   item's own box — and **its buttons (Try again, Resume, Show details) go inside the notice,
   at the right**.
+- A **short error line** under a field or on an item is the notice box in miniature: one line
+  of normal grey text in a small red-tinted box with a red border. Never red text.
 - Errors follow `docs/error-message-standards.md`.
 
 ### Empty states
