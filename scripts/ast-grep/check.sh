@@ -413,7 +413,9 @@ fi
 #   (4 findings: the comment, the call and the `case` in one fixture, the `new` backstop in another). The old rule's
 #   fixtures fired 10. The appearance-broadcast and buddy-show rules were retargeted at their table entries with
 #   fixtures of the same count. 407 - 10 + 9 + 4 = 410.
-EXPECTED_VIOLATIONS=411
+# 2026-10-01 (one-core R5-1): +1 — no-paired-session-send-and-broadcast (its fixture fires once; its -ok twin is clean).
+#   411 + 1 = 412.
+EXPECTED_VIOLATIONS=412
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

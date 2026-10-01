@@ -1,0 +1,42 @@
+id: no-paired-session-send-and-broadcast
+language: typescript
+severity: error
+message: >-
+  A block here sends a session's push to the windows (`sendForSession`) AND to the phones (`broadcast`,
+  `remoteBroadcast`, `sendToPhones`) by hand. Send it with ONE call, `publish(sessionId, type, payload)`
+  (main/publish.ts): it reaches the same windows and phones and also appends to the session's record
+  (main/session-record.ts). A hand-kept pair is where the two audience lists drift, and the record would
+  silently miss the event.
+note: |
+  Invariant source: one-core R5-1 (seam S6, one audience model). Before R5-1 about a dozen sites did
+  `sendForSession(id, channel, ...)` and then `remoteServer.broadcast({ type, payload })`; the two lists drifted
+  whenever one line was edited and the other was not. tests/session-publish-coverage.test.ts pins that every
+  session-scoped push is sent through publish and that any other phone-side send is classified; tests/
+  session-publish-equivalence.test.ts pins that each converted site delivers what the pair did. THIS rule is
+  the cheap early catch for a NEW pair.
+  THE REGION is a statement block that directly holds a `sendForSession(...)` call statement and, in the same
+  block (looking into nested `if (remoteServer) { ... }` blocks but not into a nested function), a call whose
+  name ends in broadcast, remoteBroadcast or sendToPhones. A push to windows only (session:created / destroyed /
+  renamed, which are global to the session list), or to phones only, is not a pair.
+files:
+  - "**/src/main/**/*.ts"
+  - "**/fixtures/no-paired-session-send-and-broadcast*.ts"
+ignores:
+  - "**/src/main/publish.ts"
+rule:
+  kind: statement_block
+  all:
+    - has:
+        kind: expression_statement
+        has:
+          kind: call_expression
+          has: { field: function, regex: "(^|\\.)sendForSession$" }
+    - has:
+        stopBy:
+          any:
+            - kind: arrow_function
+            - kind: function_declaration
+            - kind: function_expression
+            - kind: method_definition
+        kind: call_expression
+        has: { field: function, regex: "(broadcast|remoteBroadcast|sendToPhones)$" }
