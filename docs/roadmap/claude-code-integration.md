@@ -13,6 +13,15 @@ chat-data).
       the keystroke trace on (found 2026-09-23 from transcripts 1b802f05, 327bd6e1)
       `chat` `desktop` `needs-verify` `checked 2026-09-23` `needs-repro`
 
+- [ ] Claude Code sometimes shows "How is Claude doing this session? 1: Bad 2: Fine 3: Good
+      0: Dismiss" ABOVE a live message box, and that rating listens for number keys. A chat
+      message that starts with a digit may lose the digit to the rating (and send a rating the
+      user never chose). The pop-up guard does not block it, because the message box is still
+      live. Unverified: Claude Code shows the rating on its own schedule, so it could not be
+      triggered on demand; its code takes the digit only while the box is empty (seen in a dev
+      window 2026-09-30, CC 2.1.286). Next step: catch it live and send "1 thing" from chat
+      `chat` `all` `needs-verify` `checked 2026-09-30` `needs-repro`
+
 - [ ] When `~/.claude/settings.json` could not be read at launch (a stray comma, a half-written
       save), the app now quietly moves it aside as `settings.json.corrupt-<time>` and writes a
       fresh one so its hooks keep working — but it only says so in its log. Anything the user had
