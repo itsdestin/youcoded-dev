@@ -1,0 +1,32 @@
+{
+ "deck": "ui-provider-notices-2",
+ "started": "2026-10-01T07:28:48.330Z",
+ "submitted": "2026-10-01T07:29:44Z",
+ "cur": 2,
+ "answers": {
+  "PN2-1": {
+   "note": "lets just shorten the copy to see if we can fit in one line",
+   "t": 1790839757627,
+   "v": "other",
+   "seconds": 29,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN2-2": {
+   "note": "same",
+   "t": 1790839763258,
+   "v": "other",
+   "seconds": 6,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "PN2-3": {
+   "note": "why is this red box so tall now?",
+   "t": 1790839783348,
+   "v": "other",
+   "seconds": 20,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
