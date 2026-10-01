@@ -402,7 +402,10 @@ fi
 # 2026-09-30 (one-core R3-4): -3 — get-meta-marks-failed-read-unreadable-remote retired (its `case` moved into
 #   the channel table; the main rule now guards the one shared session:get-meta entry). Its fixtures fired 2 + 1 = 3.
 #   The session:create shell-refusal rule keeps one fixture finding. 411 - 3 = 408.
-EXPECTED_VIOLATIONS=408
+# 2026-09-30 (one-core R3-6): -1 — run-in-terminal-entry-points-validate-remote retired (its `case` moved into
+#   the channel table; the main rule now guards the one shared engine:run-in-terminal entry). Its fixture fired 1.
+#   408 - 1 = 407.
+EXPECTED_VIOLATIONS=407
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

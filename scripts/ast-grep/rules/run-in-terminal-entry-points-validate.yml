@@ -2,7 +2,8 @@ id: run-in-terminal-entry-points-validate
 language: typescript
 severity: error
 message: >-
-  The desktop "Run in terminal" handler must build its shell session through
+  The "Run in terminal" channel entry (main/ipc/engine.ts, served to the computer's windows AND to a
+  phone's WebSocket frame) must build its shell session through
   prepareRunInTerminal(command) — the validator that refuses a command
   carrying a carriage return (which would run itself at the user's prompt)
   and mints the token createSession demands.
@@ -12,10 +13,13 @@ note: |
   asserted ipc-handlers.ts's text contains `prepareRunInTerminal(command)`.
   Matched as a real call (bare, member or optional-chained callee), whatever
   the whitespace; a mention only in a comment or string no longer counts —
-  a comment is not a call. Twin: run-in-terminal-entry-points-validate-remote
-  (the remote-server.ts half, which needs a different argument).
+  a comment is not a call.
+  2026-09-30 (one-core R3-6): engine:run-in-terminal is ONE channel-table entry, so this one rule guards
+  what used to be two (the ipc-handlers.ts handler and the remote-server.ts case, whose twin rule
+  run-in-terminal-entry-points-validate-remote is retired). A phone's command arrives in a frame a remote
+  browser controls; the validator is what refuses one carrying a carriage return.
 files:
-  - "**/src/main/ipc-handlers.ts"
+  - "**/src/main/ipc/engine.ts"
   - "**/fixtures/run-in-terminal-entry-points-validate.ts"
 rule:
   kind: program
