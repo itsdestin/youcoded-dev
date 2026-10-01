@@ -335,8 +335,11 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 > 2. A phone may see the featured and update-available skills. **Yes.**
 > 3. A phone may rate, vote and comment as the owner. **Yes.**
 > 4. A phone may set session flags (complete, priority). **Yes.**
-> 5 and 6 (keeping a phone's backup set-up changes and sync setup steps computer-only):
-> explained to Destin; awaiting his answer.
+> 5. A phone may keep changing backup set-up (add, edit or remove destinations, force a sync,
+>    sync settings). **Unchanged, as today** ("fine with your recommendations").
+> 6. A phone may keep triggering the fixed sync setup steps (check prereqs, install rclone,
+>    start the Drive or GitHub sign-in on the computer, create a private repo). **Unchanged,
+>    as today.**
 
 > **Doc sweep at merge** (these must describe master, so they are not edited while the branches
 > are unmerged): the `.claude/rules/ipc-bridge.md` "Settings → Development" section, which
