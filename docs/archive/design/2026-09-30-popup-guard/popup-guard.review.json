@@ -1,0 +1,67 @@
+{
+  "title": "When a message can't be sent yet — the warning and its buttons",
+  "key": "popup-guard-review",
+  "out": "popup-guard.review.html",
+  "images": "images/popup-guard.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "crops": {
+    "card-toast": ["explore", "card", "760x66+340+780"],
+    "terminal-toast": ["dev", "terminal", "1400x170+620+1260"]
+  },
+  "stage": "review",
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Send a message while a permission card is still waiting for you",
+      "crop": "card-toast",
+      "themes": ["meadow-mist"],
+      "headline": "The warning now has a Show card button that takes you to the card that needs your answer.",
+      "changed": "Same sentence as before. A Show card button now sits before Send anyway; clicking it scrolls the chat to the waiting card and lights its edge up for a moment.",
+      "notice": "You no longer hunt for the card when it has scrolled out of view. Your typed message stays in the box either way.",
+      "risk": "If the card is very far up the chat, the app switches to terminal view instead, where the same question is waiting."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Send a message while a Claude Code pop-up is open in terminal view (here: /status)",
+      "crop": "terminal-toast",
+      "runs": ["after"],
+      "labels": {"after": "Now"},
+      "themes": ["creme"],
+      "highlight": {"box": [1, 5, 98, 90]},
+      "headline": "A pop-up open only in the terminal now stops the send, with an Open terminal button. Before, the message vanished.",
+      "changed": "Before this change there was no warning at all: the message looked sent but went into the pop-up and was lost. Captured in a dev window with real Claude Code.",
+      "notice": "Open terminal switches this chat to terminal view so you can answer or close the pop-up; Send anyway closes it and sends.",
+      "risk": "Send anyway presses Esc first, which cancels whatever the pop-up was asking."
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Chat",
+      "path": "The warning above the message box when a send is refused",
+      "headline": "Are these the right words for each reason a message can't be sent yet?",
+      "today": "Two sentences exist now — \"Your assistant is waiting for your response — answer the card in the chat first.\" (a permission or question card) and \"… answer the prompt first.\" (a Claude Code menu shown as a card). Both have only Send anyway.",
+      "problem": "Three new situations need their own words: a pop-up only in the terminal, the agents list (where a message would start a NEW session), and history search.",
+      "proposal": "Card waiting: the two sentences above, plus Show card. Pop-up in the terminal: \"Claude Code has something open in the terminal — answer or close it first.\" plus Open terminal. Agents list: \"Claude Code's terminal is showing its agents list — anything sent there would start a new session. Press Esc in terminal view first.\" History search: \"Claude Code's terminal is searching your past prompts — press Esc in terminal view first.\" If Send anyway cannot close it: \"Claude Code didn't close it — switch to terminal view to answer it. Your message is still here.\"",
+      "options": [
+        {
+          "id": "keep",
+          "label": "Keep these words",
+          "pros": ["Each sentence says what is in the way and what to do.", "The card sentences you already know stay the same."],
+          "cons": ["The agents-list and search sentences are long for a small bubble."],
+          "recommended": true
+        },
+        {
+          "id": "shorter",
+          "label": "One short sentence",
+          "pros": ["Every warning reads the same: \"Claude Code is waiting on something — answer it first.\""],
+          "cons": ["You lose the hint that a send from the agents list would start a new session.", "The button is then the only clue to where to look."]
+        }
+      ]
+    }
+  ]
+}

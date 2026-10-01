@@ -1,0 +1,40 @@
+{
+  "title": "When a message can't be sent yet — round 2",
+  "key": "popup-guard-review-2",
+  "out": "popup-guard.review-2.html",
+  "images": "images/popup-guard.review-2",
+  "runs": {
+    "before": "runs/after",
+    "after": "runs/round2"
+  },
+  "labels": {"before": "Round 1", "after": "Round 2"},
+  "crops": {
+    "card-toast": ["explore", "card", "760x66+340+780"],
+    "terminal-toast": ["dev", "terminal", "1400x170+620+1260"]
+  },
+  "stage": "review",
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Chat",
+      "path": "Send a message while a permission card is still waiting for you",
+      "crop": "card-toast",
+      "themes": ["meadow-mist"],
+      "headline": "One short sentence; Show card is now the dark button on the right, with Send anyway in its old style just left of it.",
+      "changed": "Your three answers from round 1: the shorter sentence, the button order reversed, and Show card filled in the theme's main colour.",
+      "notice": "The way forward is the button that stands out; Send anyway looks exactly as it always did.",
+      "risk": "In this green theme the dark button takes the theme's accent colour, so it is green rather than black."
+    },
+    {
+      "id": "S-2",
+      "surface": "Chat",
+      "path": "Send a message while a Claude Code pop-up is open in terminal view (here: /status)",
+      "crop": "terminal-toast",
+      "themes": ["creme"],
+      "headline": "The same sentence and order when the pop-up is only in the terminal: Send anyway, then a dark Open terminal.",
+      "changed": "Same changes as the card case. Captured again in the dev window with real Claude Code, after a real refused send.",
+      "notice": "Every refused send now reads the same; only the right-hand button changes with where the question is.",
+      "risk": "The sentence no longer says the question is in the terminal; the Open terminal button is the only hint."
+    }
+  ]
+}
