@@ -702,9 +702,23 @@ The R5-0 investigation (scratchpad `r5-0-investigation.md`) produced:
 - **ast-grep:** the verify failure comes from master's rules against the unrebased stack,
   and clears at the rebase.
 
-**Waiting on Destin:** the questions deck
-`docs/active/design/2026-10-01-r5-phone-record-questions.json` (follow live, stuck check in
-main, the phone queue, the lost-send note, shared notice lines).
+**Destin's answers (2026-10-01, deck `r5-phone-record-questions`, answers file committed):**
+1. **Follow live:** leave it as is. Hydration Commit 3 is closed; each screen picks its own
+   conversation and view.
+2. **The "working / may be stuck" check** runs in the computer's core (built last, in R5-4).
+3. **Queued messages:** native-session queued messages are shown on the phone and can be
+   cancelled there, with the same rights as the computer.
+4. **The lost-send note** ("Not sure this was sent / Send again") goes in. Destin asked
+   "would this self heal on reconnect?", so the design must do this: on reconnect the phone
+   checks the send's id against the record.
+   - If the computer got it, the note clears itself.
+   - If it provably did not, the note says so and offers Send again (never automatically,
+     to avoid duplicates).
+   - "Not sure" stays only when the computer cannot tell (Claude Code sessions, where the
+     check is approximate).
+5. **Notice lines and prompt cards** become shared record events, the same on every screen.
+
+R5-1 was started before the answers and does not depend on them.
 
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
