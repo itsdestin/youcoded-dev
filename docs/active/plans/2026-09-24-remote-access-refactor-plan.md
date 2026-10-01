@@ -359,6 +359,14 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 > 6. A phone may keep triggering the fixed sync setup steps (check prereqs, install rclone,
 >    start the Drive or GitHub sign-in on the computer, create a private repo). **Unchanged,
 >    as today.**
+>
+> **Destin's answers (2026-09-30)** to the questions from R3-5:
+> 7. Answering permission prompts, permission mode (incl. full-auto), compact, interrupt and
+>    retry stay allowed from a phone. **Yes, unchanged.**
+> 8. A phone may clear a session and run a skill command (refused today). **Yes, opened in R6.**
+> 9. The phone's "what the assistant was given" panel may read the project and user
+>    instruction files for Claude Code sessions, as the computer's does. **Yes, opened in R6.**
+>    Always-allow rule removal and specialist tiers stay allowed from a phone, as today.
 
 > **Doc sweep at merge** (these must describe master, so they are not edited while the branches
 > are unmerged): the `.claude/rules/ipc-bridge.md` "Settings → Development" section, which
@@ -470,7 +478,7 @@ be measured on a **real phone** (dev-mode timing does not count, per the roadmap
   add or change provider keys? Needs R3 group 5 only, so it may run earlier if Destin wants.
 - **Instant buttons:** Stop, permission answer, close, send, permission mode. The phone updates
   its own screen at once and undoes the change if the computer refuses. Needs R5's record.
-- **Destin's 2026-09-30 yeses** (see the R3 run log): theme-marketplace browsing, featured/update-available skills, rate/vote/comment, session flags. Each is a policy flip on an existing table entry; test that the refusal is gone and that nothing else opened.
+- **Destin's 2026-09-30 yeses** (see the R3 run log): theme-marketplace browsing, featured/update-available skills, rate/vote/comment, session flags, `native:clear`, `native:invoke-skill`, and the instruction-file read in `native:session-context-text` for Claude Code sessions. Each is a policy flip on an existing table entry; test that the refusal is gone and that nothing else opened.
 - **More features over remote** (`social`, most `artifacts`, `project`, `theme`, `marketplace`,
   `dialog`). Each becomes a one-line table policy change. *Which* to open is Destin's call
   (`docs/active/investigations/2026-09-01-remote-unbridged-channels.md`).
