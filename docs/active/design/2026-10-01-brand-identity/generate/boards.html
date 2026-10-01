@@ -1,0 +1,197 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- boards.html — one 1440x900 concept board per option in the brand exploration deck.
+     shoot-boards.sh opens it as boards.html?b=<id> and screenshots each. WHY one file: every
+     board shares the same contexts (site header, technical page, taskbar), so options differ
+     only in the thing being chosen, never in how they were staged. -->
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+:root{--purple:#8B47B8;--deep:#5E2A86;--ink:#1E1A2B;--paper:#FBF8FD;--lav:#E7D4EF;--muted:#6E6680}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:var(--paper);font-family:'DM Sans',sans-serif;color:var(--ink)}
+.board{width:1440px;height:900px;padding:40px 48px;display:none;flex-direction:column;gap:22px}
+.board.on{display:flex}
+.cap{font:500 13px 'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.row{display:flex;gap:22px;align-items:stretch}
+.card{background:#fff;border:1px solid #E6DEEE;border-radius:18px;padding:22px;flex:1;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.card .cap{font-size:11px}
+.lock{display:flex;align-items:center;gap:14px}
+.wm{font-weight:800;letter-spacing:-.03em;line-height:1}
+.wm .y{color:var(--purple)}
+.rule{font-size:17px;line-height:1.45;color:var(--ink)}
+.rule b{color:var(--purple)}
+.px{image-rendering:pixelated}
+.strip{display:flex;align-items:center;gap:14px;padding:0 16px;border-radius:10px}
+.sys{width:16px;height:16px}
+.n{font:500 11px 'JetBrains Mono',monospace;color:var(--muted)}
+</style></head><body>
+<script>
+const O = 'out/', A = 'assets/';
+const q = new URLSearchParams(location.search).get('b');
+const el = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
+const img = (src, w, extra = '') => `<img src="${src}" width="${w}" height="${w}" style="display:block;${extra}">`;
+const wordmark = (size, font = "'DM Sans'", color = 'var(--ink)') =>
+  `<span class="wm" style="font-size:${size}px;font-family:${font};color:${color}"><span class="y">You</span>Coded</span>`;
+
+// Shared contexts. `mark(ctx)` returns the mark html for that context, so a strategy board
+// changes only what sits in the logo slot.
+function contexts(mark, opts = {}) {
+  const wmFont = opts.font || "'DM Sans'";
+  const lock = (ctx, size, color) => opts.lockup ? opts.lockup(ctx, size, color) :
+    `<div class="lock">${mark(ctx, size * 1.5)}${wordmark(size, wmFont, color)}</div>`;
+  return `<div class="row" style="flex:1">
+    <div class="card" style="background:linear-gradient(120deg,#E9D8F6,#F6D9EE 60%,#DCD3F7)">
+      <div class="cap">Website header</div>
+      <div style="background:rgba(255,255,255,.55);border-radius:16px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between">
+        ${lock('site', 26)}<span style="font:600 14px ${wmFont};background:var(--ink);color:#fff;padding:9px 14px;border-radius:999px">Download</span></div>
+      <div style="margin-top:auto;font:800 40px/1.02 ${wmFont};letter-spacing:-.04em">An assistant<br>that's <span style="color:var(--purple)">yours.</span></div>
+    </div>
+    <div class="card" style="background:#14121C;border-color:#14121C;color:#EDE7F5">
+      <div class="cap" style="color:#9A90AE">App, first-run screen (Midnight theme)</div>
+      <div style="margin:auto;display:flex;flex-direction:column;align-items:center;gap:16px">${lock('app', 30, '#EDE7F5')}
+      <span style="font-size:15px;color:#9A90AE">Let's get you set up.</span></div>
+    </div>
+    <div class="card" style="background:#fff">
+      <div class="cap">Technical page (privacy, docs)</div>
+      <div style="border-bottom:1px solid #EEE;padding-bottom:12px">${lock('tech', 18)}</div>
+      <div style="font:700 24px ${wmFont};letter-spacing:-.02em">Privacy &amp; Data</div>
+      <div style="font-size:14px;line-height:1.55;color:#444">Your conversations stay on this device. Only the model you choose receives a message, and only when you send it.</div>
+      <div style="font:400 12.5px 'JetBrains Mono';background:#F5F2F8;border-radius:8px;padding:10px">~/.youcoded/sessions/</div>
+    </div>
+  </div>`;
+}
+
+const THEMES = [['out/mark-dot.svg', 'Default'], [A + 'golden-sunbreak.svg', 'Golden Sunbreak'], [A + 'halftone-dimension.svg', 'Halftone'], [A + 'kuromi-dreamer.svg', 'Kuromi Dreamer'], [A + 'strawberry-kitty.svg', 'Strawberry Kitty']];
+const badge = (size) => `<span style="display:inline-grid;place-items:center;width:${size}px;height:${size}px;border-radius:${size * .28}px;background:linear-gradient(160deg,#A35CD6,#5E2A86)"><img src="out/mark-dot-white.svg" width="${size * .74}" height="${size * .74}"></span>`;
+// The wordmark where the first "o" is the mascot's head — strategy C's whole idea.
+const oHead = (size, font, color = 'var(--ink)') => `<span class="wm" style="font-size:${size}px;font-family:${font};color:${color};display:inline-flex;align-items:baseline"><span class="y">Y</span><svg viewBox="4.4 3.4 15.2 13.2" style="width:${size * .62}px;height:${size * .54}px;margin:0 ${size * .02}px;align-self:center;transform:translateY(${size * .1}px)"><use href="#head"/></svg><span class="y">u</span>Coded</span>`;
+
+const boards = {
+  // ---------- Strategy ----------
+  's-costume': () => `<div class="cap">Option A — one shape, any costume</div>
+    <div class="row"><div class="card" style="flex:.9;justify-content:center"><div class="lock">${img('out/mark-dot.svg', 96)}${wordmark(54)}</div></div>
+      <div class="card" style="flex:2"><div class="cap">The logo wears your theme</div><div style="display:flex;gap:26px;align-items:flex-end">
+      ${THEMES.map(([s, n]) => `<div style="text-align:center">${img(s, 92)}<div class="n" style="margin-top:6px">${n}</div></div>`).join('')}</div></div></div>
+    <div class="rule">Fixed: <b>the silhouette</b> (head, two arms, two feet) and <b>the wordmark</b>. Free: colour, face and costume. Technical pages use the plain one-colour shape.</div>
+    ${contexts((ctx, s) => ctx === 'app' ? img(A + 'golden-sunbreak.svg', s * 1.3) : ctx === 'tech' ? img('out/mark-dot-ink.svg', s) : img('out/mark-dot.svg', s))}`,
+
+  's-badge': () => `<div class="cap">Option B — one fixed badge, never themed</div>
+    <div class="row"><div class="card" style="flex:.9;justify-content:center"><div class="lock">${badge(96)}${wordmark(54)}</div></div>
+      <div class="card" style="flex:2"><div class="cap">Your theme changes the app, not the badge</div><div style="display:flex;gap:26px;align-items:flex-end">
+      ${['#F4EFFA', '#FFE6B8', '#1B1530', '#2A2233', '#FFE3EA'].map((c, i) => `<div style="text-align:center"><div style="width:92px;height:92px;border-radius:16px;background:${c};display:grid;place-items:center">${badge(58)}</div><div class="n" style="margin-top:6px">${THEMES[i][1]}</div></div>`).join('')}</div></div></div>
+    <div class="rule">Fixed: <b>a purple tile with a white mascot</b>, identical everywhere. Theme mascots stay inside the app as characters, not as the logo.</div>
+    ${contexts((ctx, s) => badge(s))}`,
+
+  's-wordmark': () => `<div class="cap">Option C — the name is the logo</div>
+    <div class="row"><div class="card" style="flex:.9;justify-content:center">${oHead(64, "'DM Sans'")}</div>
+      <div class="card" style="flex:2"><div class="cap">Mascots become illustrations, not the logo</div><div style="display:flex;gap:26px;align-items:flex-end">
+      ${THEMES.map(([s, n]) => `<div style="text-align:center;opacity:.9">${img(s, 92)}<div class="n" style="margin-top:6px">${n}</div></div>`).join('')}</div></div></div>
+    <div class="rule">Fixed: <b>the word "YouCoded"</b>, with the mascot's head as its first "o". The full mascot appears as decoration (hero art, stickers) but is not needed to recognise us.</div>
+    ${contexts(null, { lockup: (ctx, size, color) => oHead(size * 1.15, "'DM Sans'", color) })}`,
+
+  // ---------- Mark drawing ----------
+  ...Object.fromEntries([
+    ['k-cut', 'mark-cut', 'Flat, squint eyes  (the website\'s mark today)', 'mark-cut-ink'],
+    ['k-dot', 'mark-dot', 'Flat, round eyes  (new: the app icon\'s face, simplified)', 'mark-dot-ink'],
+    ['k-gloss', 'mark-gloss', 'Glossy, outlined, waving  (the app icon today)', null],
+  ].map(([id, f, title, ink]) => [id, () => `<div class="cap">${title}</div>
+    <div class="row" style="flex:1">
+      <div class="card" style="flex:1.2;align-items:center;justify-content:center">${img(`out/${f}-256.png`, 256)}</div>
+      <div class="card" style="flex:1"><div class="cap">Real sizes, light and dark</div>
+        ${['#FFFFFF', '#17141F'].map(bg => `<div style="background:${bg};border:1px solid #E6DEEE;border-radius:12px;padding:16px;display:flex;gap:22px;align-items:flex-end">
+          ${[64, 32, 24, 16].map(p => `<div style="text-align:center">${img(`out/${f}-${p}.png`, p)}<div class="n">${p}px</div></div>`).join('')}</div>`).join('')}
+        <div class="cap" style="margin-top:6px">16px, magnified 8×</div>
+        <div style="display:flex;gap:16px">${img(`out/${f}-16.png`, 128, 'image-rendering:pixelated;background:#fff;border:1px solid #eee;border-radius:8px')}${img(`out/${f}-16.png`, 128, 'image-rendering:pixelated;background:#17141F;border-radius:8px')}</div>
+      </div>
+      <div class="card" style="flex:.9"><div class="cap">One colour (print, stamp, fax-proof)</div>
+        <div style="margin:auto">${ink ? img(`out/${ink}.svg`, 200) : `<div style="width:240px;text-align:center;font-size:15px;color:var(--muted);line-height:1.5">${img(`out/${f}-256.png`, 140, 'filter:grayscale(1) contrast(1.4);margin:0 auto 10px')}Shading and outline don't survive one colour — needs a separate flat version.</div>`}</div>
+      </div>
+    </div>`])),
+
+  // ---------- Type ----------
+  ...Object.fromEntries([
+    ['t-dm', "'DM Sans'", "'DM Sans'", "'JetBrains Mono'", 800, 'DM Sans + JetBrains Mono  (today\'s fonts, used consistently)'],
+    ['t-brico', "'Bricolage Grotesque'", "'Instrument Sans'", "'JetBrains Mono'", 800, 'Bricolage Grotesque + Instrument Sans  (more personality)'],
+    ['t-round', "'Fredoka'", "'Nunito'", "'IBM Plex Mono'", 600, 'Fredoka + Nunito  (rounded, like the mascot)'],
+  ].map(([id, disp, body, mono, w, title]) => [id, () => `<div class="cap">${title}</div>
+    <div class="row" style="flex:1">
+      <div class="card" style="flex:1.25;gap:20px;background:linear-gradient(120deg,#EEE2F8,#F8E2F0)">
+        <div class="lock">${img('out/mark-dot.svg', 52)}<span class="wm" style="font:${w} 34px ${disp};letter-spacing:-.025em"><span class="y">You</span>Coded</span></div>
+        <div style="font:500 13px ${mono};letter-spacing:.16em">FREE · EASY · OPEN SOURCE</div>
+        <div style="font:${w} 76px/0.98 ${disp};letter-spacing:-.045em">An assistant that's <span style="color:var(--purple)">yours.</span></div>
+        <div style="font:400 20px/1.5 ${body};max-width:600px">An AI agent you own and shape. Use any AI model from any provider to work and build your way.</div>
+        <div style="display:flex;gap:12px"><span style="font:600 16px ${body};background:var(--ink);color:#fff;padding:13px 20px;border-radius:999px">Download for Windows</span><span style="font:600 16px ${body};border:1.5px solid var(--ink);padding:12px 20px;border-radius:999px">See it work</span></div>
+      </div>
+      <div class="card" style="flex:1;gap:14px">
+        <div class="cap">Technical page</div>
+        <div style="font:${w} 34px ${disp};letter-spacing:-.025em">Privacy &amp; Data</div>
+        <div style="font:${w === 600 ? 600 : 700} 19px ${disp}">What leaves your device</div>
+        <div style="font:400 15.5px/1.6 ${body};color:#333">Your conversations are stored on this device. A message is sent only to the model provider you choose, at the moment you send it. YouCoded's servers never see its contents.</div>
+        <div style="font:400 13.5px/1.7 ${mono};background:#F5F2F8;border-radius:10px;padding:12px 14px">~/.youcoded/sessions/<br>~/.youcoded/settings.json</div>
+        <div style="font:${w === 600 ? 600 : 700} 19px ${disp}">Analytics</div>
+        <div style="font:400 15.5px/1.6 ${body};color:#333">One anonymous count per day of how many installs are open. No names, no messages, no files. Turn it off in Settings › Privacy.</div>
+        <div style="font:400 15.5px/1.6 ${body};color:#888;margin-top:auto">0123456789 · Il1 O0 · “quotes” — dashes</div>
+      </div>
+    </div>`])),
+
+  // ---------- Tray ----------
+  ...Object.fromEntries([
+    ['r-current', 'icon-current', 'icon-current', 'Today: the full app icon, shrunk'],
+    ['r-mono', 'tray-mono-white', 'tray-mono-black', 'One-colour silhouette, matches the system  (white on dark bars, black on light)'],
+    ['r-color', 'tray-color', 'tray-color', 'Purple silhouette, no tile'],
+  ].map(([id, dark, light, title]) => [id, () => {
+    const sys = (c) => ['<path d="M2 6.5a9 9 0 0 1 12 0M4.3 9a5.5 5.5 0 0 1 7.4 0M6.6 11.5a2 2 0 0 1 2.8 0" fill="none" stroke="C" stroke-width="1.4" stroke-linecap="round"/>',
+      '<path d="M2 6h3l4-3v10l-4-3H2z" fill="C"/><path d="M11 5.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="C" stroke-width="1.3" stroke-linecap="round"/>',
+      '<rect x="1" y="4.5" width="12" height="7" rx="1.6" fill="none" stroke="C" stroke-width="1.2"/><rect x="2.6" y="6.1" width="7" height="3.8" rx=".6" fill="C"/><rect x="13.6" y="6.6" width="1.4" height="2.8" rx=".5" fill="C"/>',
+      '<circle cx="8" cy="8" r="5.5" fill="none" stroke="C" stroke-width="1.3"/><path d="M8 5v3l2 1.5" stroke="C" stroke-width="1.3" fill="none" stroke-linecap="round"/>']
+      .map(p => `<svg class="sys" viewBox="0 0 16 16">${p.replaceAll('"C"', `"${c}"`)}</svg>`);
+    const bar = (label, bg, fg, ours, px, h) => `<div><div class="n" style="margin-bottom:6px">${label}</div>
+      <div class="strip" style="background:${bg};height:${h}px;justify-content:flex-end">${img(`out/${ours}-${px}.png`, px)}${sys(fg).join('')}
+      <span style="font:500 12.5px 'Segoe UI','DM Sans';color:${fg};margin-left:6px">9:41 AM</span></div></div>`;
+    return `<div class="cap">${title}</div>
+    <div class="row" style="flex:1">
+      <div class="card" style="flex:1.4;gap:16px"><div class="cap">Actual size, next to the system's own icons</div>
+        ${bar('Windows 11, dark taskbar', '#1F1F23', '#FFFFFF', dark, 16, 48)}
+        ${bar('Windows 11, light taskbar', '#EEF0F5', '#1A1A1A', light, 16, 48)}
+        ${bar('Mac menu bar, light', '#E9E8EE', '#1A1A1A', light, 16, 26)}
+        ${bar('Mac menu bar, dark', '#2B2A30', '#FFFFFF', dark, 16, 26)}
+        ${bar('Linux (KDE) panel, high-res screen', '#232029', '#FFFFFF', dark, 24, 44)}
+      </div>
+      <div class="card" style="flex:1"><div class="cap">16px, magnified 14×</div>
+        <div style="display:flex;gap:16px;margin:auto">${img(`out/${dark}-16.png`, 224, 'image-rendering:pixelated;background:#1F1F23;border-radius:10px')}${img(`out/${light}-16.png`, 224, 'image-rendering:pixelated;background:#EEF0F5;border-radius:10px')}</div>
+      </div>
+    </div>`; }])),
+
+  // ---------- App + installer icon ----------
+  ...Object.fromEntries([
+    ['a-current', 'icon-current', 'icon-current-inst', 'Today: lilac tile, glossy mascot; installer has a purple strip'],
+    ['a-bold', 'icon-bold', 'icon-bold-inst', 'Bold purple tile, white mascot; installer adds a download badge'],
+    ['a-ink', 'icon-ink', 'icon-ink-inst', 'Dark ink tile, purple mascot; installer adds a download badge'],
+  ].map(([id, f, inst, title]) => [id, () => {
+    const others = ['#2D7FF9', '#E8453C', '#1DB954', '#F5A623', '#5865F2', '#202124'];
+    const tile = (c, s) => `<span style="display:block;width:${s}px;height:${s}px;border-radius:${s * .23}px;background:${c}"></span>`;
+    return `<div class="cap">${title}</div>
+    <div class="row" style="flex:1">
+      <div class="card" style="flex:1;align-items:center;justify-content:center;gap:22px">${img(`out/${f}-256.png`, 256)}
+        <div style="display:flex;gap:20px;align-items:flex-end">${[64, 32, 24, 16].map(p => `<div style="text-align:center">${img(`out/${f}-${p}.png`, p)}<div class="n">${p}px</div></div>`).join('')}</div></div>
+      <div class="card" style="flex:1.35;gap:18px">
+        <div class="cap">Windows taskbar (dark, then light)</div>
+        ${['#1F1F23', '#EEF0F5'].map(bg => `<div class="strip" style="background:${bg};height:52px;justify-content:center;gap:18px">${others.slice(0, 3).map(c => tile(c, 24)).join('')}${img(`out/${f}-24.png`, 24)}${others.slice(3).map(c => tile(c, 24)).join('')}</div>`).join('')}
+        <div class="cap">Mac Dock</div>
+        <div class="strip" style="background:rgba(30,26,43,.08);height:84px;justify-content:center;gap:14px;border-radius:22px">${others.slice(0, 3).map(c => tile(c, 56)).join('')}${img(`out/${f}-64.png`, 56)}${others.slice(3).map(c => tile(c, 56)).join('')}</div>
+        <div class="cap">Installer, in Downloads</div>
+        <div style="display:flex;gap:34px;align-items:flex-end;background:#F7F5FA;border-radius:12px;padding:18px">
+          ${img(`out/${inst}-64.png`, 64)}<div style="font:400 13px 'Segoe UI','DM Sans';margin-bottom:4px">YouCoded-Setup-1.3.1.exe</div>
+          ${img(`out/${inst}-32.png`, 32)}${img(`out/${inst}-16.png`, 16)}</div>
+      </div>
+    </div>`; }])),
+};
+
+document.body.insertAdjacentHTML('afterbegin', `<svg width="0" height="0" style="position:absolute"><defs>
+  <mask id="hm"><rect x="0" y="0" width="24" height="24" fill="white"/><path d="M8.55 9.6a1.15 1.65 0 1 0 2.3 0a1.15 1.65 0 1 0 -2.3 0ZM13.15 9.6a1.15 1.65 0 1 0 2.3 0a1.15 1.65 0 1 0 -2.3 0Z" fill="black"/></mask>
+  <path id="head" fill="#8B47B8" mask="url(#hm)" d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z"/></defs></svg>`);
+for (const [id, fn] of Object.entries(boards)) {
+  const b = el(`<section class="board${id === q ? ' on' : ''}" id="${id}">${fn()}</section>`);
+  document.body.append(b);
+}
+</script></body></html>
