@@ -741,6 +741,48 @@ workspace `6284fef5`):
 - **Visible change:** none. In the dev smoke the pushes are identical, apart from the summary.
 - **For R5-3:** `releaseSession` also wipes phone watches.
 
+**R5-2 log (one fill path)** — app `session/simplify-r5-2`: `e8e6499e0` (old-path golden),
+`821269ea2`, `e4d5524f6`, `2e302cfb9`, `289abd30b`, `a45fb0dd8`, `3043f188d`; workspace
+`b84e6669`.
+
+- **One open path.** `session:open` (newest page, record tail, open asks and pty buffer;
+  resume by `{epoch, seq}`) replaces all of these:
+  - the phone snapshot and `RemoteSnapshotExporter`;
+  - the restore cut line and hold-queue;
+  - the 10k hook replay and `awaitingInSnapshot`;
+  - `replay-from-start` and `replayLiveState`;
+  - `chat:hydrate`.
+
+  `claimPending` is kept for the hand-off only.
+- **Merged.** The pty buffer now lives in the record, and the two `transcript:page` bodies
+  are merged into one.
+- **Size.** `remote-server.ts` went from 1909 to about 1281 lines.
+- **Bytes.** A long first open is 988 KB. Reconnecting after 10 missed events sends 1.7 KB,
+  and after 110 missed events 16.9 KB.
+- **Review: "ship with fixes".** All of these were fixed:
+  - a pty hole during a fill (the cut is now taken after the page read);
+  - tear-off double delivery and freeze;
+  - `gone` sessions;
+  - optimistic sends lost across a fill;
+  - Claude Code `/clear` leaking pre-clear messages (`startNewTranscript`);
+  - hold timeout ordering (dropped and refilled; queue cap 5,000).
+- **Old clients.**
+  - The new page sends `protocolVersion: 2`.
+  - A v1.3.0 phone page gets a degraded hydrate saying "Refresh this page to finish
+    updating", tested against a verbatim old shim.
+  - New pages show an `unsupported-version` gate with a Refresh button.
+  - **Release:** an older paired Android app silently falls back to its own runtime, so
+    Android and desktop must ship together.
+- **Visible changes:**
+  - A torn-off window gains asks, streamed text, error and stall cards, and the compacted
+    line.
+  - The phone reconnects incrementally, and "empty copy replaces my messages" is fixed.
+  - Lost: the "answered on the computer" note for a card answered before the phone
+    connected, and the compaction spinner when joining mid-compaction (comes back in R5-4).
+- **Flakes fixed:** the CommentsMargin 315-cell ratio (now counts queries) and a
+  ThemeProvider setState after unmount.
+- **Owed:** real-phone first-connect timing.
+
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
 be measured on a **real phone** (dev-mode timing does not count, per the roadmap).
