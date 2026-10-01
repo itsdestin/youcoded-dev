@@ -405,7 +405,14 @@ fi
 # 2026-09-30 (one-core R3-6): -1 — run-in-terminal-entry-points-validate-remote retired (its `case` moved into
 #   the channel table; the main rule now guards the one shared engine:run-in-terminal entry). Its fixture fired 1.
 #   408 - 1 = 407.
-EXPECTED_VIOLATIONS=407
+# 2026-10-01 (one-core R3-8): +3 — remote-admin-case-refuses retargeted at the channel-table entries in
+#   main/ipc/remote-admin.ts (its fixtures now fire 9: one per missing entry, the performed rename and the
+#   desktop-only get-config share one fixture, plus the disconnect-client entry and the lost refusal constant); the
+#   retired address-check and disconnect-handler bans moved to the new remote-server-no-address-check-or-disconnect
+#   (4 findings: the comment, the call and the `case` in one fixture, the `new` backstop in another). The old rule's
+#   fixtures fired 10. The appearance-broadcast and buddy-show rules were retargeted at their table entries with
+#   fixtures of the same count. 407 - 10 + 9 + 4 = 410.
+EXPECTED_VIOLATIONS=410
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

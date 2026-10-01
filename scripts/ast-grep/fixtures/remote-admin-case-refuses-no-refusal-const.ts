@@ -1,11 +1,10 @@
-// Violation fixture for remote-admin-case-refuses, presence branch: the entry for
-// IPC.REMOTE_SET_CONFIG is gone (fires once, on the whole file).
+// Violation fixture for remote-admin-case-refuses: the hostAdminRefusal constant no
+// longer holds the sentence's name (fires once, on the whole file).
 declare const defineChannel: any, IPC: any;
-const HOST_ADMIN_REFUSAL = 'Change this on the computer itself.';
-const hostAdminRefusal = { kind: 'reply', payload: { ok: false, error: HOST_ADMIN_REFUSAL } };
+const hostAdminRefusal = { kind: 'reply', payload: { ok: true } };
 export const entries = [
   defineChannel({ name: IPC.REMOTE_SET_PASSWORD, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
-  // defineChannel({ name: IPC.REMOTE_SET_CONFIG }) is only a comment now
+  defineChannel({ name: IPC.REMOTE_SET_CONFIG, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
   defineChannel({ name: IPC.REMOTE_DEVICES_RENAME, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
   defineChannel({ name: IPC.REMOTE_DEVICES_UNPAIR, kind: 'handle', remoteAllowed: false, refusal: hostAdminRefusal, handler: () => false }),
   defineChannel({ name: IPC.REMOTE_GET_CONFIG, kind: 'handle', handler: () => ({}) }),
