@@ -463,7 +463,9 @@ installer test ran entirely this way, with nothing painted on Destin's screen.
 spice-webdavd and the virtio GPU driver) from the virtio ISO, and exposes it at
 `<vm>/<vm>-agent.sock`. That makes the guest scriptable — no SSH, no `sendkey` roulette.
 
-**Linux guests need the agent installed once, by hand.** quickemu wires the host-side channel for
+**Linux guests: use SSH, not the agent.** Measured 2026-10-01: quickemu's generated
+`ubuntu-24.04.sh` has no agent channel at all (no `<vm>-agent.sock` appears), so `vm.sh` reaches
+Ubuntu over SSH instead. Earlier text, kept for history: quickemu wires the host-side channel for
 every guest, but only Windows gets the software auto-installed — on Ubuntu nothing answers the socket
 until you install it, and you can't do that *through* the agent. Run this once in the guest's own
 terminal, then re-take the `clean` snapshot so every revert keeps it:
@@ -608,19 +610,14 @@ Do these interactively in the VM window with real credentials (Destin drives; th
 - Reverting to `clean` discards guest-side tokens, but the server side may accumulate authorized devices/sessions. Occasionally prune at claude.ai settings and GitHub → Settings → Applications.
 - Never copy `~/.claude/.credentials.json` from the host into a guest to "skip" sign-in — the whole point is exercising the real flow.
 
-## Claude-driven testing (phase 2, unverified)
+## Claude-driven testing
 
-For automated smoke tests, two hooks exist without extra tooling:
-
-- **QEMU monitor socket** (quickemu creates `<vm>/<vm>-monitor.socket`): `screendump` writes a screenshot Claude can read; `sendkey` types keys. Enough for "boot → revert → launch installer → screenshot-verify" loops driven from a session. Verified working — `sendkey ret` drove Windows Setup's screens, and `screendump` + ImageMagick (`magick x.ppm -format "%[mean]" info:`) is a cheap "has the screen changed?" probe. Three traps, all hit for real:
-  - **Never send `quit`** — it terminates the VM. (Killed a booted VM mid-session.)
-  - **`echo cmd | socat -` loses the command**: socat closes on EOF before QEMU processes it. Keep the connection open: `( echo "cmd"; sleep 2 ) | socat - unix-connect:<sock>`.
-  - **`pkill -f qemu-system-x86_64` kills the shell running it** — the pattern matches its own command line, so the rest of your script silently never runs (exit 144). Use the bracket trick: `pkill -f "[q]emu-system-x86_64"`. Same for `pgrep` — it self-matches and reports a dead VM as alive.
-- **Guest SSH:** quickemu forwards guest port 22 to a host port (printed at boot). Enable OpenSSH Server in the Windows baseline before snapshotting `clean`, and command-level assertions (`Get-Command claude`, registry PATH checks) become scriptable.
-
-Alternative zero-setup path: [dockur/windows](https://github.com/dockur/windows) runs Windows-in-KVM inside the already-installed Docker with a browser-based viewer (`-p 8006:8006`) — handy if quickemu ever misbehaves, but snapshots are manual file copies, so quickemu remains the primary recommendation.
-
-Wrap this into `scripts/vm/` helpers only after the first real pass validates the commands above — the 2026-04-29 investigation's lesson is that untested provisioning scripts fail silently.
+Use `scripts/vm/vm.sh` (Quick loop above): `--headless` start, `shot`, `exec`, and for Ubuntu/Mac
+SSH with `~/vms/vm-key`. Keys and typing without remote access: `scripts/vm/vmctl.sh keys|type`
+(set `VMCTL_VM`). Two monitor-socket traps still apply when driving by hand: keep the socket open
+for the reply (`( echo cmd; sleep 1 ) | socat - unix-connect:<sock>`), and `quit` ends the guest —
+which is exactly what `vm.sh stop` uses it for. The whole-path automated test is a parked roadmap
+idea (`docs/roadmap/dev-workspace.md`, "Nothing tests a new user's whole path").
 
 ## Costs
 
