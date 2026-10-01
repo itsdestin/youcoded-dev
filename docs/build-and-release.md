@@ -17,6 +17,9 @@ CI extracts version from the `vX.Y.Z` tag and patches `package.json` before buil
 ### Android version is stamped in CI
 Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
+### Office add-on is fetched per platform at build time
+`npm run build` starts with `node scripts/fetch-office.mjs --release --required`, which downloads every bundle `desktop/office-pin.json` pins for the build machine's OS into `desktop/office-build/<platform>-<arch>/` (the Mac runner gets both `darwin-x64` and `darwin-arm64`); `electron-builder.yml` packs `office-build/${platform}-${arch}` as the installer's `resources/office`. A platform with no pin (ARM Linux: upstream ships no converter) builds without Office and the app opens Office files with the default app. Bumping the add-on means a new `itsdestin/youcoded-office` tag (its CI smoke-tests each converter on its own OS before publishing) and updating every platform's url and sha256 in the pin. `desktop/office-addon/` is only the dev copy for this machine.
+
 ### One tag, all platforms
 A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `desktop-release.yml`. Both upload artifacts (APK/AAB + Win/Mac/Linux installers) to the same GitHub Release.
 
