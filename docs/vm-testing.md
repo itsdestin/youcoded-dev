@@ -4,6 +4,56 @@ How to spin up clean Windows and Linux virtual machines on the current dev machi
 
 > **History:** the archived `docs/archive/local-dev-vm.md` covered the same goal for a **Windows host** (VirtualBox + `docs/archive/setup-test-vm.ps1`, moved out of `scripts/` 2026-09-23 since this path was never used). That path was blocked by the Hyper-V conflict (`docs/archive/investigations/2026-04-29-vbox-hyperv-conflict.md`) and never used. None of that applies here — this host runs native KVM with no competing hypervisor, so installs run at full speed (~20–30 min for Windows, once, then snapshot-revert in seconds). The snapshot-revert methodology and "when to use this" list carry over.
 
+## Quick loop — `scripts/vm/vm.sh` (start here)
+
+Since 2026-10-01 this is how a session puts a build in front of Destin, or checks one itself, on
+any of the three guests. Use it whenever a change touches what a new user sees **before the app's
+own UI**: installer, signing (SmartScreen / Gatekeeper), first launch, prerequisite install,
+sign-in, first chat. **After any signing change, run the first-run wall on Windows and Mac with a
+build that carries it** — that is the only place the user-facing result is visible.
+
+```bash
+scripts/vm/vm.sh win start            # restore the saved "ready" desktop (~5 s) + open a window on Destin's screen
+scripts/vm/vm.sh win load beta        # newest pre-release installer -> guest Downloads, marked as an internet download
+scripts/vm/vm.sh win stop             # throw the session away; next start is pristine again
+```
+
+| Guest | Name | Restore | Window | Remote access |
+|---|---|---|---|---|
+| Windows 11 | `win` | ~5 s | SPICE viewer (`spicy`), close/reopen freely with `view` | QEMU agent (runs as SYSTEM) |
+| Ubuntu 24.04 | `ubuntu` | ~3 s | SPICE viewer | SSH `youcoded-testin@127.0.0.1:22221`, passwordless sudo |
+| macOS Sonoma | `mac` | ~6 s | QEMU's own GTK window (GL on); closing it stops the guest | SSH `destinmoss@127.0.0.1:22222`, **no sudo** |
+
+All SSH uses `~/vms/vm-key` (host-only keypair). `load` takes `release`, `beta`, a tag (`v1.3.0`),
+`run:<CI run id>` (test-build artifacts) or a local file; Linux defaults to the AppImage
+(`VM_LINUX_FMT='*.deb'` for the deb). `--headless` on `start` skips the window when a session only
+needs `shot` / `exec`. Other verbs: `view`, `shot <name>`, `exec <cmd…>`, `save-ready`.
+
+**How it works, and the traps it encodes** (each has a WHY comment in the script):
+- **"ready" = a RAM snapshot** (`<vm>/ready.state`, 3–7 GB) paired with the disk snapshot `ready`.
+  It only works with a migratable machine, so `vm.sh` launches its own copy of quickemu's
+  generated `<vm>.sh` with: no `+invtsc` / `migratable=no` / `hv_passthrough` (explicit Hyper-V
+  enlightenments instead), 8 GB RAM instead of 32, and the Mac's `virtio-sound` swapped for Intel
+  HDA (macOS has no driver for it, so the Mac guest is silent). **The same edits must apply at save
+  and restore** — if quickemu regenerates `<vm>.sh` with a different device list, re-run
+  `save-ready` from a fresh boot.
+- **The clock is reset after every restore** (the guest wakes believing it is still the save
+  moment): Windows via `guest-set-time` *with an explicit time* (no-argument form re-reads the
+  stale RTC), Ubuntu via `sudo date`. The Mac has no passwordless sudo, so its clock runs behind
+  until macOS re-syncs on its own — harmless for install testing; give Destin's Mac password to a
+  session and it can add a sudoers entry like Ubuntu's.
+- **Files arrive over HTTP from `~/vms/serve`** (host `127.0.0.1:8010`, guest `10.0.2.2:8010`) and
+  get the browser's mark: Windows `Zone.Identifier` (ZoneId=3), Mac `com.apple.quarantine`. Without
+  it SmartScreen and Gatekeeper never assess the file, which is the whole point.
+- **Each guest has a fixed SSH forward** (22220 Windows, 22221 Ubuntu, 22222 Mac); quickemu gave
+  Windows and Mac the same port, so the second to start died.
+- **Without a ready state, `start` boots the disk as it is** (setup mode) — it never reverts to
+  `clean`, because that erased a half-finished Mac setup once.
+
+Re-creating a ready state: `start` (boots the current disk), get the desktop how you want it,
+then `save-ready` (stops the guest, ~1 min). Older disk snapshots (`clean`, Mac's
+`beta8-signed-in-2026-07-20`) are untouched and still usable with `qemu-img snapshot -a`.
+
 ## Why VMs
 
 - **Clean-machine fidelity.** The failure modes that matter — `spawn EINVAL`, missing winget, no Node/Git, fresh-PATH propagation, AppImage-without-libfuse2 — only exist on a machine that has never seen a dev tool. The host masks all of them.
@@ -338,11 +388,15 @@ snapshot it reverts to — the same reason the archived Windows-host script docu
 |---|---|---|
 | windows-11 | `Quickemu` | `quickemu` (quickemu's answer-file default) |
 | ubuntu-24.04 | `youcoded-testin` | `youcodedtesting` |
+| macos-sonoma | `destinmoss` ("Destin Moss", admin, auto-login) | Destin's — not recorded; ask him |
 
 The Ubuntu username really is `youcoded-testin` — read from `getent passwd 1000`, not from memory
 (Ubuntu's installer truncated what was typed). Password is the full `youcodedtesting`.
 
 ## Testing a beta / dev build — the loop
+
+> **Superseded for everyday use by the Quick loop above** (`vm.sh start` + `vm.sh load`), which
+> avoids the stale-share and SYSTEM-copy traps below. Kept for the manual commands and history.
 
 Verified end-to-end 2026-07-16 with the real `YouCoded.Setup.1.2.4.exe` (111 MB).
 

@@ -235,10 +235,21 @@ seen-on is always n/a here.
       highest-value set: stale-closure bugs) are unguarded
       `n/a` `needs-verify` `checked 2026-09-01`
 
-- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) but
-      the open half is untested: a clean-winget Windows snapshot, the deb/rpm/pacman installers in
-      the guests, and the full first-run → setup → sign-in pass itself
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) and
+      since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
+      install of any build as a real download), but the open half is untested: a clean-winget Windows
+      snapshot, the deb/rpm/pacman installers in the guests, and the full first-run → setup → sign-in
+      pass itself
+      `n/a` `needs-verify` `checked 2026-10-01`
+
+- [ ] Nothing tests a new user's whole path — download from youcoded.ai, install, setup, sign-in,
+      first chat — on every platform without Destin clicking through it. Destin (2026-10-01): "could
+      be interesting to set up". Proposed shape: on-demand GitHub Actions runs on real Windows, Apple
+      Silicon Mac and Linux machines (free for the public repo), driving the installed app with the
+      existing click-path tooling, OpenRouter key sign-in, screenshot report per step; dev tools
+      hidden so the prerequisite installer still runs. Local VMs stay for the SmartScreen /
+      Gatekeeper wall and home-edition Windows, which runners don't show
+      `n/a` `parked` `checked 2026-10-01`
 
 - [ ] Visual-regression harness for the renderer's chrome invariants (single-backdrop chrome-glass,
       framed-shell insets, overlay layers) — they are guarded only by eyeballing; the UI review sweep

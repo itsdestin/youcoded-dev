@@ -355,6 +355,12 @@ How it fits together (`desktop/electron-builder.win-sign.yml` explains each choi
 Pinned by `desktop/tests/windows-signing-config.test.ts`. SmartScreen reputation builds per
 certificate with downloads, so the blue warning fades over weeks rather than vanishing.
 
+**What users see is checked in a clean guest, not here.** CI proves the signature is valid; only
+a real first launch shows the SmartScreen / Gatekeeper wall. After any signing change:
+`scripts/vm/vm.sh win start && scripts/vm/vm.sh win load beta` (and `mac` once Apple signing
+lands) puts the newest beta in the guest's Downloads with the internet mark — see
+`docs/vm-testing.md` → Quick loop.
+
 ## Local verification (typecheck + CI-style build)
 
 When you need to confirm something compiles or passes tests — not just runs:
