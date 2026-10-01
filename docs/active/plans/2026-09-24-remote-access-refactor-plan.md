@@ -403,6 +403,28 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >     folders for phones (the temp upload folder allowed), and a size cap plus cleanup for
 >     `file:upload`.
 
+> - **R3-8, the last R3 run** (app `session/simplify-r3-8` `9217f00b` and `a67afdb0`;
+>   workspace `c4ef3587`): 128 channels, bringing the table to 417. They cover doc comments,
+>   themes and appearance, favourites, game and arcade, zoom, shell, dialog and clipboard,
+>   window/detach/drag/replay (desktopOnly), buddy, integrations, voice, social and `remote:*`
+>   admin (refusals byte-identical; `remote:disconnect-client` still has no entry and gets
+>   `unsupported`). Reviewer said "ship" (1,501 tests; the bodies are identical line for line).
+>   The phone-open set is pinned at exactly 39 channels, the same as before.
+>   `channel-table-complete.test.ts` fails on any feature registration outside the table. Its
+>   exceptions are 3 transport registrations and 4 cases.
+>   Final sizes: `ipc-handlers.ts` 5,754 → 2,551, `remote-server.ts` 4,615 → 1,863, `main.ts`
+>   2,655 → 2,042. The smoke run found and fixed a zoom bug: a phone's zoom did nothing after
+>   the main window closed.
+>   Phone change: an empty doc-comment field gets the computer's `missing-field` refusal.
+>   **Owed to Destin's eyes:** the buddy window on KDE. The machine's consent gate refused in the
+>   smoke run, so nothing was installed to bypass it.
+>   **Fix at the start of R4** (reviewer, low):
+>   - The completeness test misses a non-literal `case IPC.X:`, `handleOnce`/`addListener`/an
+>     aliased `ipcMain`, and a dispatcher outside `remote-server.ts`.
+>   - No behavioural tests cover the detach, drag-adopt or drop-resolve bodies.
+>
+> **R3 is complete:** every feature channel is served from the table by both doors.
+
 >
 > **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
 > change that widens what a phone can do, applied in R6 once R3 is complete:
