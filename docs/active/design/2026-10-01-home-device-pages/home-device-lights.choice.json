@@ -1,0 +1,52 @@
+{
+  "title": "The Home page's light controls — three designs, pick one",
+  "key": "home-device-lights-choice",
+  "out": "home-device-lights.choice.html",
+  "images": "images/home-device-lights.choice",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["golden-sunbreak", "midnight", "meadow-mist"],
+  "steps": [
+    {
+      "id": "C-lights",
+      "surface": "Pages",
+      "path": "Pages → Home, a room's lights",
+      "headline": "Which light controls should the Home page use?",
+      "notice": "All three add colour: press Colour on a light that is on to open its palette (three whites, then eight colours; only the colours that light can make are shown). Shown here with the palette open on two lights.",
+      "risk": "Whichever you pick, the room's \"all lights\" switch, the TV and the speaker keep the plain switch for now; they can follow the chosen style once it is picked.",
+      "variants": [
+        {
+          "id": "tile",
+          "label": "Tiles",
+          "crop": "pages/page/page-home-tile",
+          "summary": "The whole tile is the power button: press anywhere on it. A lit light's bulb glows in its own colour and the tile takes a soft tint of it. Brightness is a thick coloured bar under the name.",
+          "risk": "The biggest of the three: fewer lights fit on screen before scrolling."
+        },
+        {
+          "id": "power",
+          "label": "Glowing power buttons",
+          "crop": "pages/page/page-home-power",
+          "summary": "A round power button that glows in the light's colour when it is on. Brightness is a slim bar shading from dim to the light's colour, with a round handle, and the percentage beside the name.",
+          "risk": "The power button is the only place to press; the rest of the row does nothing."
+        },
+        {
+          "id": "slider",
+          "label": "Big sliders",
+          "crop": "pages/page/page-home-slider",
+          "summary": "No separate power button: each light is one wide bar filled to its brightness in its own colour. Drag to dim, drag to the far left to turn off, press the bulb to switch on or off.",
+          "risk": "Text sits on the light's colour, so it carries a dark halo to stay readable; a stray drag while scrolling on a touchscreen could change a light."
+        }
+      ]
+    },
+    {
+      "id": "S-key-button",
+      "surface": "Pages",
+      "path": "Pages → Home → Continue",
+      "crop": "pages/page/page-home#key",
+      "headline": "The Open Home Assistant button now runs the full width of the card, as you asked.",
+      "changed": "It was a small button under the steps; it now matches the full-width buttons below it.",
+      "notice": "Easier to spot as the next thing to press after reading the steps.",
+      "risk": ""
+    }
+  ]
+}
