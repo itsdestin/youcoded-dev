@@ -393,8 +393,15 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   temp upload folder allowed for the attach preview.
 >   Also old: `file:upload` has no size cap beyond the 50 MB socket limit, and uploads are never
 >   cleaned up.
->   **Questions for Destin**: keep phone upload? Keep pages approve and delete-saved-key from a
->   phone? Which fix for the credential reads?
+>   **Destin's answers (2026-10-01):**
+>   - Phone upload stays.
+>   - Pages approve and delete-saved-key stay allowed from a phone.
+>   - Installing Claude Code, the engine and models, and saving keys stay allowed from a phone
+>     (R3-6 question).
+>   - The credential reads get **the recommended fix: R3-SEC, right after R3-8 and stacked on
+>     it.** It covers the extended deny list on every phone read, `fs:read-head` gated to known
+>     folders for phones (the temp upload folder allowed), and a size cap plus cleanup for
+>     `file:upload`.
 
 >
 > **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
