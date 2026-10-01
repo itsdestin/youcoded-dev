@@ -1,0 +1,32 @@
+{
+ "deck": "home-page-v2-r2c",
+ "started": "2026-10-01T23:45:30.164Z",
+ "submitted": "2026-10-01T23:47:19Z",
+ "cur": 2,
+ "answers": {
+  "S-power": {
+   "note": "put the youtube/etc buttons at the bottom of the remote. replace chevron on tv with remote icon",
+   "t": 1790898384228,
+   "v": "other",
+   "seconds": 54,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-now": {
+   "v": "yes",
+   "t": 1790898423557,
+   "note": "if we can determine source, we should show spotify/etc icon for speakers",
+   "seconds": 39,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-remote2": {
+   "v": "yes",
+   "t": 1790898438038,
+   "note": "",
+   "seconds": 14,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}
