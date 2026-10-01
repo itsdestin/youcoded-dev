@@ -1,0 +1,32 @@
+{
+ "deck": "popup-guard-review",
+ "started": "2026-10-01T01:16:15.848Z",
+ "submitted": "2026-10-01T01:19:34Z",
+ "cur": 2,
+ "answers": {
+  "S-1": {
+   "note": "make show card a dark button on the right, and send anyway should keep its old original style but be directly to the left of show card",
+   "t": 1790817481053,
+   "v": "other",
+   "seconds": 105,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "note": "reverse buttons and update styling.",
+   "t": 1790817498987,
+   "v": "other",
+   "seconds": 18,
+   "theme": "creme",
+   "zoom": 1
+  },
+  "Q-1": {
+   "v": "pick",
+   "pick": "shorter",
+   "t": 1790817573665,
+   "seconds": 75,
+   "theme": "creme",
+   "zoom": 1
+  }
+ }
+}
