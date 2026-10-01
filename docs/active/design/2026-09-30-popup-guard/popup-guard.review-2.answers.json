@@ -1,0 +1,22 @@
+{
+ "deck": "popup-guard-review-2",
+ "started": "2026-10-01T01:24:20.919Z",
+ "submitted": "2026-10-01T01:24:49Z",
+ "cur": 1,
+ "answers": {
+  "S-1": {
+   "v": "yes",
+   "t": 1790817865116,
+   "seconds": 4,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-2": {
+   "v": "yes",
+   "t": 1790817882999,
+   "seconds": 18,
+   "theme": "creme",
+   "zoom": 1
+  }
+ }
+}
