@@ -1,0 +1,44 @@
+{
+ "deck": "home-page-v2-r1",
+ "started": "2026-10-01T11:40:19.312Z",
+ "submitted": "2026-10-01T11:42:44Z",
+ "cur": 4,
+ "answers": {
+  "S-fold": {
+   "v": "other",
+   "t": 1790854876052,
+   "note": "the groups don't nest properly.",
+   "seconds": 57,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-all": {
+   "v": "yes",
+   "t": 1790854884476,
+   "seconds": 8,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-favs": {
+   "v": "yes",
+   "t": 1790854895292,
+   "seconds": 11,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-off": {
+   "v": "yes",
+   "t": 1790854931916,
+   "seconds": 37,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-edit": {
+   "v": "yes",
+   "t": 1790854962777,
+   "seconds": 31,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}
