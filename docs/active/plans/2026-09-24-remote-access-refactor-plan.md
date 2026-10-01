@@ -674,6 +674,38 @@ The biggest addition beyond Phase 4. It fixes most of the remote roadmap's "prot
    listener). With numbered events the phone can usually learn what happened, not just
    "unknown".
 
+**R5 state (2026-10-01).**
+
+The R5-0 investigation (scratchpad `r5-0-investigation.md`) produced:
+- a 17-item renderer-only inventory;
+- a map of the fill paths;
+- an attention-classifier measurement: in main, at the real Claude Code rate, about 1 ms/s
+  per session, 2.8% of a core for 10 busy sessions, idle near zero, and about 1 MB per
+  session with 60 rows of scrollback;
+- a correction: hydration Commit 3 was mostly settled on 2026-09-10
+  (`remote-place.ts:84-94`; view is per-screen per contract R4), leaving only "follow live?".
+
+**My calls (technical):**
+- **Run order** is R5-pre dropPart, then R5-1 (one audience plus the record, additive), R5-2
+  (one fill path, deleting the old ones), R5-3 (per-session delivery with dots from the
+  summary), and R5-4 (live facts, the stuck check, outcome-unknown). Per-session delivery
+  needs the new fill path first.
+- **The ring** holds 2,000 events or 2 MB per session. Its epoch changes only when the record
+  is created. Open asks are kept outside the ring.
+
+**R5-pre** (app `session/simplify-r5-pre` `458e56a62`, stacked on r4-4):
+- **Fix:** history pages honour persisted `dropPart` markers, so a reopened conversation no
+  longer shows a retry's discarded text.
+- **Edge left unfixed:** a single turn over 2 MB split mid-turn keeps the ghost. It is pinned
+  by a test.
+- **Review:** "ship".
+- **ast-grep:** the verify failure comes from master's rules against the unrebased stack,
+  and clears at the rebase.
+
+**Waiting on Destin:** the questions deck
+`docs/active/design/2026-10-01-r5-phone-record-questions.json` (follow live, stuck check in
+main, the phone queue, the lost-send note, shared notice lines).
+
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
 be measured on a **real phone** (dev-mode timing does not count, per the roadmap).
