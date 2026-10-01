@@ -328,6 +328,16 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   cases. The largest: native 18, remote-admin 13 (stays refused), models 13, artifacts 13,
 >   pages 10, engine 9, provider 6, integrations 6, specialists 5.
 
+>
+> **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
+> change that widens what a phone can do, applied in R6 once R3 is complete:
+> 1. A phone may browse the theme marketplace. **Yes.**
+> 2. A phone may see the featured and update-available skills. **Yes.**
+> 3. A phone may rate, vote and comment as the owner. **Yes.**
+> 4. A phone may set session flags (complete, priority). **Yes.**
+> 5 and 6 (keeping a phone's backup set-up changes and sync setup steps computer-only):
+> explained to Destin; awaiting his answer.
+
 > **Doc sweep at merge** (these must describe master, so they are not edited while the branches
 > are unmerged): the `.claude/rules/ipc-bridge.md` "Settings → Development" section, which
 > still says `dev:*` lives in `ipc-handlers.ts` and gives the old count; the `docs/MAP.md`
@@ -438,6 +448,7 @@ be measured on a **real phone** (dev-mode timing does not count, per the roadmap
   add or change provider keys? Needs R3 group 5 only, so it may run earlier if Destin wants.
 - **Instant buttons:** Stop, permission answer, close, send, permission mode. The phone updates
   its own screen at once and undoes the change if the computer refuses. Needs R5's record.
+- **Destin's 2026-09-30 yeses** (see the R3 run log): theme-marketplace browsing, featured/update-available skills, rate/vote/comment, session flags. Each is a policy flip on an existing table entry; test that the refusal is gone and that nothing else opened.
 - **More features over remote** (`social`, most `artifacts`, `project`, `theme`, `marketplace`,
   `dialog`). Each becomes a one-line table policy change. *Which* to open is Destin's call
   (`docs/active/investigations/2026-09-01-remote-unbridged-channels.md`).
