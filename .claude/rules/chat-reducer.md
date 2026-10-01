@@ -5,7 +5,7 @@ paths:
   - "**/desktop/src/renderer/components/ChatView.tsx"
   - "**/desktop/src/main/transcript-watcher.ts"
   - "**/desktop/src/main/subagent-watcher.ts"
-  - "**/desktop/src/renderer/state/attention-classifier.ts"
+  - "**/desktop/src/shared/attention-classifier.ts"
   - "**/desktop/src/renderer/hooks/usePtyRawBytes.ts"
   - "**/terminal-emulator-vendored/**"
   - "**/shared-fixtures/**"
@@ -26,7 +26,7 @@ verify:
   - test: youcoded/desktop/tests/transcript-routing.test.ts
   - path: youcoded/desktop/src/renderer/hooks/useAttentionClassifier.ts
     contains: "hasBuffer"
-  - path: youcoded/desktop/src/renderer/state/attention-classifier.ts
+  - path: youcoded/desktop/src/shared/attention-classifier.ts
     contains: "SPINNER_RE"
   - path: youcoded/terminal-emulator-vendored/VENDORED.md
   - test: youcoded/desktop/tests/chat-reducer.test.ts

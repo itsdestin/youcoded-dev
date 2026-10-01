@@ -305,7 +305,7 @@ seen-on is always n/a here.
       turns up when Destin opens a dev window by hand — it did again 2026-09-03, chat view
       pinned on "Initializing session..." behind CC's trust-folder prompt while terminal view
       showed it fine. These are Ink TUI menus parsed by screen-scrape
-      (`renderer/parser/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
+      (`shared/ink-select-parser.ts` → `PromptCard` / `TrustGate`), so they break
       whenever CC rewords one, and the app has no fixture for any of them. The perf rig resumes
       sessions by a path that skips the gate entirely, and the UI workbench has no session
       launch at all. Wants a launch-prompt fixture set — trust folder, theme picker, login
