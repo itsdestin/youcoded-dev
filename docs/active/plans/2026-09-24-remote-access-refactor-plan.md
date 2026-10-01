@@ -783,6 +783,31 @@ workspace `6284fef5`):
   ThemeProvider setState after unmount.
 - **Owed:** real-phone first-connect timing.
 
+**R5-3 log (per-session delivery)** (app `session/simplify-r5-3`: `2a9d81314`, `e4e79cf86`,
+`c176df52d`, `094a51235`, `4bcdabbd1`; workspace `58f64c41`):
+- **Watching.** `session:open` starts a watch and `session:unwatch` ends it. The phone keeps
+  the on-screen session plus the 2 previous ones watched.
+- **Terminal bytes** are filtered to watchers.
+- **Dots, the attention sound and the finished chime** read `session:summary`
+  (`useSessionSummaries`). It is pushed about 50 ms after a change, with a 10 s backstop, and
+  only when a phone is connected. Blue stays per-screen.
+- **Session lifetime.** `releaseSession` keeps phone watches, and a new `endSession` handles
+  a session that actually ends.
+- **Tags and notes** go to every phone again; a regression since R5-2 was found and fixed.
+- **Bytes.** With 10 busy sessions and one watched, the phone receives 10.0% (198 KB vs
+  1.97 MB).
+- **Review:** "ship with fixes", all of them fixed:
+  - an eviction mid-open froze the conversation, so `loader.abandon` was added;
+  - resumed sessions showed gray on the phone vs blue on the computer, so `noteHistory` was
+    added;
+  - helper and password asks were added to the parity test;
+  - `summaryKey` now carries the queue length and the permission mode;
+  - the chime and viewed effects moved out of App.tsx.
+- **Visible changes:**
+  - With several sessions, the phone does less work.
+  - A chat not viewed recently shows "Catching up with your computer…" when opened.
+- **Not verified:** the green and blue dots live, and the sounds.
+
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
 be measured on a **real phone** (dev-mode timing does not count, per the roadmap).
