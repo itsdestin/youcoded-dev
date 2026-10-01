@@ -1,0 +1,102 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- sheet.html — one picture per option for the round-3 deck.
+     ?k=w|l|a|f&i=<id>  → a 1200x620 card showing that option where it would really appear.
+     ?icon=a|f&i=<id>   → the bare icon at 512px on transparent, which shoot.sh shrinks to true
+     taskbar/tab sizes (WHY: small icons must be judged as real small pixels, not CSS-scaled). -->
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:transparent}
+.card{width:1200px;height:620px;position:relative;overflow:hidden;background:#F6F1F9}
+.chip{position:absolute;left:18px;top:16px;z-index:5;font:600 13px 'JetBrains Mono';letter-spacing:.06em;padding:6px 10px;border-radius:8px;background:rgba(33,21,44,.82);color:#fff}
+.cap{font:500 11px 'JetBrains Mono';letter-spacing:.12em;text-transform:uppercase;opacity:.65}
+.nav a{font:500 15px 'DM Sans';opacity:.8}
+</style>
+<script src="defs.js"></script>
+</head><body>
+<script>
+const q = new URLSearchParams(location.search);
+const { TH, bgOf, glass, M, W, L, A, F } = D;
+const k = q.get('k'), id = q.get('i'), iconK = q.get('icon');
+
+// A site header exactly like today's: glass pill over the theme's wallpaper, links on the right.
+const header = (t, inner, w, h, fs = 15) => `<div style="width:${w}px;height:${h}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${h * .32}px;${glass(t, 22)}">
+  ${inner}<div class="nav" style="display:flex;gap:${fs * 1.4}px;color:${t.fg}">${['About', 'Features', 'FAQ'].map(x => `<span style="font:500 ${fs}px 'DM Sans';opacity:.8">${x}</span>`).join('')}</div></div>`;
+const mini = (t, inner) => `<div style="flex:1;height:100%;background:${bgOf(t)};border-radius:16px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
+  ${header(t, inner, 348, 64, 12)}<div class="cap" style="color:${t.dark ? '#fff' : t.fg};text-align:right">${t.name} theme</div></div>`;
+
+function nameCard(opt, isLockup) {
+  const c = TH.cotton;
+  const big = isLockup ? opt.f(c, 64) : opt.f(c, 104);
+  const hs = opt.hs || 1;
+  const inHeader = isLockup ? opt.f(c, 24 * hs) : opt.f(c, 28);
+  return `<div class="card" style="background:${bgOf(c)}">
+    <div class="chip">${opt.id.toUpperCase()} · ${opt.label}</div>
+    <div style="position:absolute;left:50px;right:50px;top:62px">${header(c, inHeader, 1100, 76)}</div>
+    <div style="position:absolute;left:0;right:0;top:${isLockup ? 170 : 160}px;height:${isLockup ? 220 : 200}px;display:grid;place-items:center">${big}</div>
+    <div style="position:absolute;left:24px;right:24px;bottom:24px;height:${isLockup ? 200 : 190}px;display:flex;gap:16px">
+      ${[TH.midnight, TH.golden, TH.straw].map(t => mini(t, isLockup ? opt.f(t, 18 * hs) : opt.f(t, 22))).join('')}
+    </div></div>`;
+}
+
+const png = (kind, i, px) => `out/${kind}-${i}-${px}.png`;
+const other = (i, s) => {
+  const C = ['#2D7FF9', '#E8453C', '#1DB954', '#F5A623', '#5865F2', '#6B6F76'][i];
+  return `<span style="display:block;width:${s}px;height:${s}px;border-radius:${s * .23}px;background:${C}"></span>`;
+};
+const taskbar = (bg, ours) => `<div style="display:flex;align-items:center;justify-content:center;gap:18px;height:52px;border-radius:10px;background:${bg}">${[0, 1, 2].map(i => other(i, 24)).join('')}${ours}${[3, 4, 5].map(i => other(i, 24)).join('')}</div>`;
+
+function appCard(opt) {
+  const sizes = [64, 32, 24, 16].map(p => `<div style="text-align:center"><img src="${png('a', opt.id, p)}" width="${p}" height="${p}" style="display:block;margin:0 auto"><div class="cap" style="margin-top:6px">${p}px</div></div>`).join('');
+  const themed = opt.variants ? `<div style="display:flex;gap:14px;margin-top:4px">${opt.variants.map(([bg, m]) => D.tile(bg, D.center(m, .95, .02))(72)).join('')}</div><div class="cap">Other themes</div>` : '';
+  return `<div class="card" style="height:470px;background:linear-gradient(135deg,#F8F2FB,#EFE4F6)">
+    <div class="chip">${opt.id.toUpperCase()} · ${opt.label}</div>
+    <div style="position:absolute;left:40px;top:70px;width:470px;display:flex;flex-direction:column;align-items:center;gap:22px">
+      <div style="filter:drop-shadow(0 18px 30px rgba(80,30,120,.22))">${opt.f(250)}</div>
+      ${themed || `<div style="display:flex;gap:28px;align-items:flex-end">${sizes}</div>`}
+    </div>
+    <div style="position:absolute;left:560px;right:40px;top:70px;display:flex;flex-direction:column;gap:16px;color:#21152C">
+      <div class="cap">Windows taskbar, dark and light (real size)</div>
+      ${taskbar('#1F1F23', `<img src="${png('a', opt.id, 24)}" width="24" height="24">`)}
+      ${taskbar('#EEF0F5', `<img src="${png('a', opt.id, 24)}" width="24" height="24">`)}
+      <div class="cap" style="margin-top:8px">Mac Dock</div>
+      <div style="display:flex;justify-content:center;padding:22px 0;border-radius:16px;background:url(assets/cotton-candy-sky.webp) center/cover">
+        <div style="display:flex;gap:12px;padding:10px 14px;border-radius:22px;background:rgba(255,255,255,.45);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6)">
+          ${[0, 1, 2].map(i => other(i, 54)).join('')}<img src="${png('a', opt.id, 128)}" width="54" height="54">${[3, 4].map(i => other(i, 54)).join('')}</div></div>
+      ${opt.variants ? `<div style="display:flex;gap:22px;align-items:flex-end;margin-top:4px">${sizes}</div>` : ''}
+    </div></div>`;
+}
+
+function favCard(opt) {
+  const tab = (dark, title) => {
+    const bar = dark ? '#202124' : '#DEE1E6', act = dark ? '#35363A' : '#FFFFFF', fg = dark ? '#E8EAED' : '#202124';
+    return `<div style="background:${bar};border-radius:12px 12px 0 0;padding:8px 10px 0;display:flex;gap:4px;align-items:flex-end">
+      <div style="background:${act};border-radius:10px 10px 0 0;height:36px;width:260px;display:flex;align-items:center;gap:9px;padding:0 12px">
+        <img src="${png('f', opt.id, 16)}" width="16" height="16"><span style="font:400 12.5px 'DM Sans';color:${fg};white-space:nowrap;overflow:hidden">${title}</span></div>
+      ${['Inbox (3)', 'Docs — Notes'].map((tt, i) => `<div style="height:36px;width:180px;display:flex;align-items:center;gap:9px;padding:0 12px;opacity:.75"><span style="width:16px;height:16px;border-radius:4px;background:${['#E8453C', '#2D7FF9'][i]}"></span><span style="font:400 12.5px 'DM Sans';color:${fg}">${tt}</span></div>`).join('')}
+    </div><div style="height:30px;background:${act};border-radius:0 0 12px 12px"></div>`;
+  };
+  const variants = opt.variants ? `<div class="cap" style="margin-top:6px">With other site themes</div><div style="display:flex;gap:14px">${opt.variants.map(([bg, m]) => `<div style="width:64px;height:64px;border-radius:17px;overflow:hidden;position:relative;background:${bg}">${D.center(m, 1.15, .03)(64)}</div>`).join('')}</div>` : '';
+  return `<div class="card" style="height:${opt.variants ? 480 : 390}px;background:linear-gradient(135deg,#F8F2FB,#EFE4F6)">
+    <div class="chip">${opt.id.toUpperCase()} · ${opt.label}</div>
+    <div style="position:absolute;left:40px;top:76px;width:700px;display:flex;flex-direction:column;gap:22px">
+      <div class="cap" style="color:#21152C">Browser tab, real size</div>
+      ${tab(false, 'YouCoded — An assistant that\'s yours')}${tab(true, 'YouCoded — An assistant that\'s yours')}
+      ${variants}
+    </div>
+    <div style="position:absolute;left:790px;right:40px;top:76px;display:flex;flex-direction:column;gap:18px;align-items:center;color:#21152C">
+      <div class="cap">Tab size, magnified 10×</div>
+      <img src="${png('f', opt.id, 16)}" width="160" height="160" style="image-rendering:pixelated;background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.08)">
+      <div style="display:flex;gap:26px;align-items:flex-end;margin-top:6px">${[64, 32, 16].map(p => `<div style="text-align:center"><img src="${png('f', opt.id, p)}" width="${p}" height="${p}" style="display:block;margin:0 auto"><div class="cap" style="margin-top:6px">${p}px</div></div>`).join('')}</div>
+    </div></div>`;
+}
+
+let html;
+if (iconK) { const o = (iconK === 'a' ? A : F).find(x => x.id === id); html = `<div style="width:512px;height:512px">${o.f(512)}</div>`; }
+else if (k === 'w') html = nameCard(W.find(x => x.id === id), false);
+else if (k === 'l') html = nameCard(L.find(x => x.id === id), true);
+else if (k === 'a') html = appCard(A.find(x => x.id === id));
+else if (k === 'f') html = favCard(F.find(x => x.id === id));
+document.body.innerHTML = html;
+</script></body></html>
