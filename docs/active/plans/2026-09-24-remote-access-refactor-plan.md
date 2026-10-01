@@ -882,6 +882,37 @@ be measured on a **real phone** (dev-mode timing does not count, per the roadmap
   `dialog`). Each becomes a one-line table policy change. *Which* to open is Destin's call
   (`docs/active/investigations/2026-09-01-remote-unbridged-channels.md`).
 
+**R6-1 log (approved phone abilities)** (app `session/simplify-r6-1`: `048fb3bb3`, `8e81a6e94`,
+`c375602e9`, `8a1c1c7f4`; workspace `9681dd71`):
+- **13 channels opened.** The phone-open set went from 246 to 259, pinned in full by
+  `tests/fixtures/phone-open-channels.json`. The new channels are:
+  - theme-marketplace list and detail;
+  - featured skills and packages;
+  - rate, thumb, comment and like;
+  - `session:set-flag`;
+  - `native:clear` and `native:invoke-skill`.
+- **Instruction-file read.** `native:session-context-text` now reads instruction files for a
+  phone, with these limits:
+  - project and user kinds only;
+  - the folder comes from the host's session list;
+  - the R3-SEC deny list is applied to the real path, which is read once;
+  - regular files only, up to 1 MB;
+  - a non-reading async locator, which fixed a hang on a named pipe before the deny check ran.
+- **Native sessions from a phone.** The `nativeSessions` capability on `YOUCODED_NATIVE` makes
+  the shim's `native.supported` live.
+- **Divider fix.** A duplicate "Conversation cleared" on reopen (record plus page) is fixed by
+  dedupe on marker id in `HISTORY_PAGE_LOADED`.
+- **Review:** ship with fixes. The fixes were a bogus `kind` reaching a skill file, the
+  double-locate, no size cap, and weak tests.
+- **Final checks:** `verify --full` green, run by me on `8a1c1c7f4`.
+- **"Inactive" grey-dot wording:** consistent on both screens. Destin may change it.
+
+**Waiting on Destin:** deck `docs/active/design/2026-10-01-r6-phone-abilities-questions.json`.
+It covers skill update, theme install/remove/update, theme publish, the install count, the
+report button, the skill file in the context panel, and `folders:add`.
+
+**Next: R6-2, instant buttons.**
+
 ## What this plan deliberately does not touch
 
 Independent remote items that do not need the refactor and may land any time: password
