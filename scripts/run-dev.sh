@@ -246,6 +246,12 @@ export YOUCODED_TOOLKIT_STATE_DIR="$HOME/.claude/toolkit-state-$PROFILE"
 # It follows the same offset scheme as every other port so concurrent worktrees
 # don't collide (9222 + offset; 9272 at the default offset 50).
 # `--no-devtools` opts out.
+# WHY (2026-10-01 one-core R6-3): a throwaway HOME alone does NOT isolate GitHub — `gh` keeps its login in the OS keyring, and a
+# smoke's theme publish opened a real pull request. When HOME is not the real home, point every XDG dir and GH_CONFIG_DIR inside
+# it, drop the token variables, and run under an empty D-Bus session. Details: scripts/dev-isolation.sh.
+source "$ROOT/scripts/dev-isolation.sh"
+dev_isolate_accounts
+
 if [[ "$DEVTOOLS" == "1" ]]; then
   export YOUCODED_DEVTOOLS_PORT="$((9222 + OFFSET))"
 fi
@@ -272,6 +278,7 @@ echo "Starting YouCoded dev"
 echo "  Checkout:      $CHECKOUT"
 echo "  Branch:        $BRANCH"
 echo "  Window title:  YouCoded - $YOUCODED_DEV_LABEL"
+if [[ -n "$DEV_ISOLATION_PREFIX" || "${GH_TOKEN:-}" == isolated-dev-home-* ]]; then echo "  Accounts:      isolated (throwaway HOME: GitHub login blocked)"; fi
 echo "  Profile:       $PROFILE  (userData → %APPDATA%/youcoded-$PROFILE/)"
 echo "  Vite:          http://localhost:$((5173 + YOUCODED_PORT_OFFSET))"
 echo "  Remote server: port $((9900 + YOUCODED_PORT_OFFSET)) (if enabled in dev)"
@@ -318,4 +325,4 @@ if [[ "$PHONE_BUILD" == "1" ]]; then
   npx vite build || die "phone build failed"
   export YOUCODED_REMOTE_BUILT=1
 fi
-npm run dev
+$DEV_ISOLATION_PREFIX npm run dev
