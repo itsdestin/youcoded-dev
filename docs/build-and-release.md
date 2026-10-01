@@ -324,6 +324,37 @@ Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "verify-mac-signature.sh"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/verify-mac-signature.test.ts"} -->
 
+### Windows signing
+
+Since 2026-10-01 the Windows installer of a `v*` release and of every **master** beta is
+signed with Azure Artifact Signing; every other Windows build (desktop-ci, local, other
+branches, forks) stays unsigned. The certificate is Destin's own (individual validation —
+Microsoft refuses organisations under three years old), so the publisher reads
+**"Destin Moss"**; the company can take over around 2029-09. Account facts and the
+decision live in the brain (`~/system/legal/playbooks.md` → Azure Artifact Signing).
+
+How it fits together (`desktop/electron-builder.win-sign.yml` explains each choice):
+
+- The base `electron-builder.yml` has no Windows signing. The overlay
+  `electron-builder.win-sign.yml` extends it, adds `win.azureSignOptions` (account
+  `destinmoss`, profile `youcoded-public`, endpoint `https://wus3.codesigning.azure.net`)
+  and `win.forceCodeSigning`. Workflows select it with
+  `npm run build -- --config electron-builder.win-sign.yml`.
+- GitHub signs in to Azure with **no stored password**: the Windows leg runs in the
+  `windows-signing` GitHub environment, and Azure's app registration
+  `youcoded-github-signing` trusts exactly the subject
+  `repo:itsdestin/youcoded:environment:windows-signing`. The environment's variables
+  `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` are IDs, not secrets.
+  Its deployment rule admits only `master` and `v*` tags.
+- After the build, Windows' own `Get-AuthenticodeSignature` must report **Valid** for the
+  installer and `win-unpacked/YouCoded.exe`, or the leg fails — and a failed leg withholds
+  the whole release, as with the Mac check.
+- The in-app updater is unaffected: it trusts the signed release manifest, whose hashes are
+  taken from the already-signed installers.
+
+Pinned by `desktop/tests/windows-signing-config.test.ts`. SmartScreen reputation builds per
+certificate with downloads, so the blue warning fades over weeks rather than vanishing.
+
 ## Local verification (typecheck + CI-style build)
 
 When you need to confirm something compiles or passes tests — not just runs:
