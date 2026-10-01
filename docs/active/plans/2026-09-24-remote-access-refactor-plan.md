@@ -606,6 +606,25 @@ workspace `ec655c97`):
 - **Visible change:** a message and a /clear, compaction or skill card arriving in the same
   frame keep their sent order.
 
+**R4-4 log (M5)**:
+- **Commits.** App `session/simplify-r4-4` has 9 commits, ending `f665c2e91`.
+- **The union.** `TranscriptEvent` is a union keyed on `type`, in
+  `shared/transcript-event-types.ts`, which `types.ts` re-exports. The loose bag is deleted.
+- **Producers** are typed: `emitEvent<T>`, `commitSummaryCandidate`, `abandonedTurnUsage`, one
+  `stampSubagent()`, and the watcher.
+- **Disk readers** go through `looseData()` (`data ?? {}`).
+- **Bridge listeners** take `TranscriptEvent`.
+- **Test helpers:** `ev<T>` and `loose`.
+- **Not done:** a single `fromDisk()`, because the readers validate differently.
+- **Review:** ship with fixes. The fix restored tolerance for a disk line with no `data` (it
+  threw, which failed resume), with 6 tests shown red then green.
+- **Visible change:** none.
+- **Gates:** `verify --full` green. The reviewer's dev smoke had a phone socket receive
+  well-formed events.
+- **Bisect:** commits 3 to 6 do not compile alone.
+
+**R4 is complete** (2026-10-01): R4-1 to R4-4, stacked on R3-SEC. Next is R5.
+
 **Destin's answers (2026-10-01):**
 1. The buddy's live compaction marker unifies with the main window: "freed N tokens", with
    the duplicate marker suppressed. This is the one visible change in D3.
