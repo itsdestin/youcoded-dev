@@ -367,6 +367,35 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >      handler has moved; make it robust.
 >   4. A stale shim comment on `claude-code:install` goes in the doc sweep.
 
+> - **R3-7** (app `session/simplify-r3-7` `10703530`): artifacts 21, project 5, git 9,
+>   chatsearch 2, pages 10, `fs:read-head`, `file:upload` (phone-only) and `get-home-path`, 50
+>   channels. Reviewer said "ship" (1,140 tests). The read-service, read-binary-access,
+>   editable-path-policy, write-authorization and fs-read-head code is untouched. The phone
+>   folder gate, the 1 MiB / 10 MiB size ceilings and the 4-per-socket watch cap are now
+>   per-entry policy, forced by the door. All 18 phone refusals are byte-identical. The three
+>   submodule constant files are deleted. R3-6's fixes are in: one shared
+>   `main/atomic-write.ts`, `String(err)` restored, and the parity check scans the table.
+>   Phone changes:
+>   - `pages:list` also watches `Pages/`.
+>   - Three channels that hung on failure now answer an error.
+>   **SECURITY, older than this refactor (checked against r3-6), for Destin's decision:** phone
+>   reads have no credential deny list (`.git` is only in the write-deny list).
+>   - `fs:read-head` has **no folder gate**, so a paired phone can read the first 4 KB of any
+>     file on the computer: `~/.git-credentials`, `~/.claude.json`, `youcoded-remote.json` (the
+>     remote password hash), `native-secrets.json` and `~/.npmrc`.
+>   - Within project roots, `artifacts:read-binary` and Download serve `.git/config`,
+>     `.git-credentials`, `id_rsa` and `*.pem`.
+>   - `artifacts:get` serves `.env` inside known folders by design.
+>   A reusable list exists: `isCredentialPath` in `harness/tools/credential-paths.ts`, which
+>   lacks `.git/config`, private-key names outside `.ssh`, and `youcoded-remote.json`.
+>   Recommended fix, a separate change and not part of R3-7: apply an extended credential deny
+>   list to every phone read, and gate `fs:read-head` to known folders for phones only, with the
+>   temp upload folder allowed for the attach preview.
+>   Also old: `file:upload` has no size cap beyond the 50 MB socket limit, and uploads are never
+>   cleaned up.
+>   **Questions for Destin**: keep phone upload? Keep pages approve and delete-saved-key from a
+>   phone? Which fix for the credential reads?
+
 >
 > **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
 > change that widens what a phone can do, applied in R6 once R3 is complete:
