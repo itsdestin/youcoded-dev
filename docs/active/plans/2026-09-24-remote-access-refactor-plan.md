@@ -295,6 +295,39 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   `plugin:skill` id bypasses it on both doors. It is fixed in R3-4. The flaky
 >   permission-approve journey, a load flake on the mock backend, is also fixed in R3-4.
 
+> - **R3-4** (app `session/simplify-r3-4` `f571f686`; workspace `session/simplify-r3-4`
+>   `d7cc63e1`): sync 17, syncspaces 14, github 5, and session/naming/transcript 23, 59
+>   channels. Reviewer said "ship" (1,045 tests). `remoteGuard` is a new phone-only policy
+>   hook; session:create's shell refusal is now that policy. B1, the phone Resume list showing
+>   already-open sessions, is fixed by construction and its interim one-liner is deleted.
+>   The `on` entries call the handler directly with `ctx.sender`, and the table lookup costs
+>   4 ns per message on the computer's door and 118 ns on the phone's.
+>   Phone changes:
+>   - session:destroy now does the computer's full teardown, so no more "welcome back"
+>     leftovers.
+>   - session:list carries `providerType`.
+>   - session:get-meta carries the reserved flags.
+>   - Plain-language refusal wording is the computer's.
+>   - A failure shows an error.
+>   Extras fixed: the permission-approve journey flake (workspace `7f7dbc75`; 3 of 18 runs
+>   failed before, 18 of 18 pass after under load), the bundled-plugin guard gap for
+>   `plugin:skill` ids, and a quadratic comment-highlight pass.
+>   **Open questions for Destin** (old refusals kept): may a phone set session flags? The phone
+>   can already change backup and sync set-up and run fixed sync setup commands; should any of
+>   that be computer-only?
+>   **Fix in R3-5** (reviewer, low): (F2) a brand-new native session can briefly be offered as
+>   resumable on a phone, because the old phone lookup excluded unmapped live ids; exclude live
+>   native ids. (F3) `session:history` reads the projects folder on every call, so probe the
+>   slug hint first. (F4) disclose or fix: in the boot window before bind, a phone's session and
+>   naming calls get "Sessions are not ready yet". (F1) Desktop windows hear `session:destroyed`
+>   twice when a phone closes a session. The renderer is idempotent, so this is only noted.
+>   **Not moved, and why**: replay-from-start and replay-live-state, detach/drag/window:*
+>   (computer-only), handoff:* (8), and permission:respond, which shares a path with the native
+>   group.
+>   **Still to move after R3-4** (measured 2026-09-30): ~174 `ipcMain.handle` and 154 remote
+>   cases. The largest: native 18, remote-admin 13 (stays refused), models 13, artifacts 13,
+>   pages 10, engine 9, provider 6, integrations 6, specialists 5.
+
 > **Doc sweep at merge** (these must describe master, so they are not edited while the branches
 > are unmerged): the `.claude/rules/ipc-bridge.md` "Settings → Development" section, which
 > still says `dev:*` lives in `ipc-handlers.ts` and gives the old count; the `docs/MAP.md`
