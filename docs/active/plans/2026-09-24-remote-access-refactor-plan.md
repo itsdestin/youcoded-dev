@@ -568,6 +568,26 @@ workspace `ec655c97`):
 - **Review:** "ship with fixes". All of them were fixed in `cfbf69ca5`.
 - **Gates:** `verify --full` green, and 595 Android unit tests pass.
 
+**R4-2 log (D3)** (app `session/simplify-r4-2`, 8 commits ending `8e62fd653`; workspace
+`4e2d908e`):
+- **One translator.** A pure `eventToAction` in `renderer/state/transcript-event-actions.ts`
+  replaces App's, BubbleFeed's and the page path's translators. `pageEventToAction` is now a
+  wrapper.
+- **Buddy.** The buddy filters through a typed `BUDDY_LIVE` ledger, which keeps its 3 gaps.
+- **Tool-use timestamp.** `TRANSCRIPT_TOOL_USE.timestamp` is required.
+- **Golden.** A characterisation golden was recorded from the old code first, covering 50
+  payload variants.
+- **Size.** App.tsx went from 5000 to 4695 lines, and BubbleFeed.tsx from 665 to 440.
+- **Visible change:** only the approved one. The buddy's compaction marker reads "freed N
+  tokens", and duplicates are suppressed.
+- **Also changed, invisible:** the buddy now gets `NATIVE_HISTORY_REWRITTEN` (totals only;
+  the reviewer verified it never touches the timeline), `promptProcessing`, and session-error
+  `uuid`/`usage`.
+- **Review:** "ship". The reviewer watched it work in the workbench. The low findings
+  (F1 App wiring unpinned, F2 missing-text tests, F3 empty user bubble, F5, F6 rule
+  over budget) went into R4-3.
+- **Bisect note:** commits 3 and 4 alone leave two old guards red; the tip is green.
+
 **Destin's answers (2026-10-01):**
 1. The buddy's live compaction marker unifies with the main window: "freed N tokens", with
    the duplicate marker suppressed. This is the one visible change in D3.
