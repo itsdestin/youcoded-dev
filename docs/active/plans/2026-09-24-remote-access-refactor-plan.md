@@ -328,6 +328,25 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   cases. The largest: native 18, remote-admin 13 (stays refused), models 13, artifacts 13,
 >   pages 10, engine 9, provider 6, integrations 6, specialists 5.
 
+> - **R3-5** (app `session/simplify-r3-5` `594517fd`): native 20, permission:respond and
+>   permissions 3, specialists 5, model 3, handoff 8, 40 channels. Reviewer said "ship" (611
+>   tests). R3-4's F2, F3 and F4 are fixed; F4 now waits up to 15 s for the bind and then runs.
+>   The `YOUCODED_NATIVE` kill switch is consolidated into one function.
+>   Phone changes:
+>   - A phone's model swap is recorded for Resume.
+>   - A bad permission mode shows an error.
+>   - native:clear and native:invoke-skill are still refused, with the same wording.
+>   **Questions for Destin**: should answering permission prompts, permission mode
+>   (incl. full-auto), compact, interrupt and retry from a phone be computer-only (allowed
+>   today)? May a phone clear a session or run a skill command (refused today)? May the phone's
+>   "what the assistant was given" panel read instruction files for Claude Code sessions
+>   (refused today)? Always-allow removal and specialist tiers are allowed today.
+>   **Fix in R3-6** (reviewer, low):
+>   1. A request queued during the boot wait still runs after its phone disconnected; skip it.
+>   2. `model:*` preference writes can race and leave a half-written file; write via a temp
+>      file and rename, or serialise.
+>   3. The wire-shape-parity floor keeps needing lowering; assert an exact count instead.
+
 >
 > **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
 > change that widens what a phone can do, applied in R6 once R3 is complete:
