@@ -588,6 +588,24 @@ workspace `ec655c97`):
   over budget) went into R4-3.
 - **Bisect note:** commits 3 and 4 alone leave two old guards red; the tip is green.
 
+**R4-3 log (ordering)** (app `session/simplify-r4-3`: `976861861`, `d51cebcd7`, `2230d27b4`,
+`17be73295`, `223c11d7d`; workspace `a0e254f9`, `678e9c57`):
+- **Ordering.** Every transcript action goes through the frame batcher in arrival order
+  (`routeTranscriptEvent`, `routeTranscriptShrink`), and `DIRECT_DISPATCH_TYPES` is gone. No
+  recorded reason for the old direct dispatches was found.
+- **Guard.** It is pinned by the ast-grep rule `app-transcript-listeners-batched.yml` and by
+  behavioural tests.
+- **Empty messages.** An empty user-message draws no bubble on every path. The reviewer
+  verified that no producer sends a legitimate empty one.
+- **Flakes fixed on the way:**
+  - update-installer cleanup race (retrying delete);
+  - the CommentsMargin 1,000-comment pin, which now counts visits and is green with 8
+    parallel copies.
+- **Review:** "ship with fixes". The shrink path is now batched and the source scan is
+  replaced by a rule.
+- **Visible change:** a message and a /clear, compaction or skill card arriving in the same
+  frame keep their sent order.
+
 **Destin's answers (2026-10-01):**
 1. The buddy's live compaction marker unifies with the main window: "freed N tokens", with
    the duplicate marker suppressed. This is the one visible change in D3.
