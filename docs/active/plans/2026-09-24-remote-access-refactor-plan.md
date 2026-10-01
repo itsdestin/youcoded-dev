@@ -911,7 +911,27 @@ be measured on a **real phone** (dev-mode timing does not count, per the roadmap
 It covers skill update, theme install/remove/update, theme publish, the install count, the
 report button, the skill file in the context panel, and `folders:add`.
 
-**Next: R6-2, instant buttons.**
+**R6-2 log (instant buttons)** (app `session/simplify-r6-2`: `cea7358e5`, `6281f5424`,
+`ed44c72de`; workspace `4e0f051f`):
+- **One mechanism.** `state/pending-action.ts` (`runPending`), plus
+  `hooks/usePhoneSessionActions.ts`, makes Stop, permission answers, Close, native send into an
+  idle conversation, and the mode chip apply at once on a phone. Each confirms from the reply
+  or record, undoes on refusal, and settles after a drop. Nothing is resent.
+- **Phone only.** It applies to phone screens; the computer window is unchanged.
+- **Speed.** With 0.8 s of added latency, the screen changes in about 15–31 ms.
+- **Review: "ship with fixes".**
+  - The REQUIRED fix was consent safety. A lost permission answer could stay drawn as
+    "allowed". Now the fill's open-ask list reconciles every answered-pending card: one still
+    open goes back to answerable with a "couldn't confirm" note, never resent. A failed or
+    throwing resume counts as a failed check. This is tested on the real resume path.
+  - Also fixed: Stop clears at once if the turn has already ended, the stale-idle bubble
+    flash is reduced, and the adapters moved out of App.tsx.
+- **Limits:**
+  - A native send into a busy conversation still waits for the computer.
+  - AskUserQuestion answers and the keyboard Esc stop keep the old path.
+
+**R6 status:** R6-1 and R6-2 are built. The rest of R6 (more phone abilities) waits on
+Destin's deck.
 
 ## What this plan deliberately does not touch
 
