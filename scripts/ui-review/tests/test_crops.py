@@ -185,3 +185,12 @@ class ShootCropTests(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
+
+
+class ImageNameTests(unittest.TestCase):
+    def test_a_screen_state_never_puts_a_fragment_mark_in_the_file_name(self):
+        # An <img src> containing "#" loads nothing: the browser reads the rest as a fragment.
+        name = image_name('pages/page/page-home#key', 'midnight', 'after')
+        self.assertNotIn('#', name)
+        self.assertNotIn('/', name)
+        self.assertNotEqual(name, image_name('pages/page/page-home', 'midnight', 'after'))
