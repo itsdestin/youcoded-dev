@@ -65,7 +65,7 @@ verify:
 `SessionProvider` is `'claude' | 'native' | 'shell'`; shell is a terminal, not AI. Every provider branch handles it. **Depth: `youcoded/docs/native-runtime.md`, `provider-dependencies.md`; siblings: `harness-tools.md`, `native-permissions.md`.**
 
 ## Provider seam (Phase 0) — guard: `ipc-channels.test.ts`
-- **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim hardcodes `false`, hiding desktop-only sections off Electron.
+- **`'gemini'` is GONE** — never reintroduce it. **`native.supported` is the ONLY gate** — a boolean, not IPC; ON by default, kill switch `YOUCODED_NATIVE=0`; remote-shim's `native.supported` reads the host's `capabilities.nativeSessions` (R6-1: a phone drives a native session that runs on the computer; false on an older computer and on Android's own runtime).
 - **`createSession` throws only for a fresh native session without a binding**; the native branch builds NO PTY worker — guard every `session.worker.X`.
 
 ## Native sessions (Plan A) — guards: `harness-session`/`native-session-host`/`native-send`/`native-home`

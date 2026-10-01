@@ -50,3 +50,4 @@ Desktop, Android and a remote browser render the SAME React UI over the SAME JSO
 - **`setup.sh` re-run is the canonical workspace-install idempotency path** — an existing `~/youcoded-dev` gets `git pull` + `bash setup.sh`, not a clone.
 - **The summarizer shells `claude -p` with the prompt piped via STDIN** (reuses CC's OAuth token, avoids the Windows ~32KB arg cap), never a positional arg. `DevTools.runStreamed` writes stdin before reading stdout — safe under 64KB (`smartTruncateLog` bounds it); larger would deadlock.
 - **Cross-platform tasks port the CURRENT implementation, not the original plan** — re-read the desktop signatures before writing the Kotlin handler.
+- **What a phone may call is pinned whole** in `tests/phone-open-set.test.ts` + `tests/fixtures/phone-open-channels.json` (R6-1). Opening or closing a channel for phones means editing that list, which is Destin's decision.
