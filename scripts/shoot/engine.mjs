@@ -161,7 +161,14 @@ async function launchBrowser(width, height, record) {
   }
   if (!port) { proc.kill('SIGKILL'); throw new Error('Chrome did not start within 10 s'); }
   const conn = await connect(port);
-  return { ...conn, close: () => { conn.close(); proc.kill('SIGKILL'); rmSync(profile, { recursive: true, force: true, maxRetries: 3 }); } };
+  // WHY the catch: Chrome's helper processes outlive the SIGKILL by a beat and
+  // keep writing into the profile, so its removal can throw ENOTEMPTY. That
+  // failed a green run of explore.test.mjs on CI (2026-10-01, youcoded-dev#225).
+  // A leftover temp profile is harmless; a cleanup must never fail the caller.
+  return { ...conn, close: () => {
+    conn.close(); proc.kill('SIGKILL');
+    try { rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); } catch { /* left in tmp */ }
+  } };
 }
 
 /** One DevTools connection to a browser's debugging port: `send` with a time limit, per-tab event routing. */
