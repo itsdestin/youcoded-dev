@@ -930,8 +930,18 @@ report button, the skill file in the context panel, and `folders:add`.
   - A native send into a busy conversation still waits for the computer.
   - AskUserQuestion answers and the keyboard Esc stop keep the old path.
 
-**R6 status:** R6-1 and R6-2 are built. The rest of R6 (more phone abilities) waits on
-Destin's deck.
+**Destin's answers (2026-10-01, deck `r6-phone-abilities-questions`, answers file committed).**
+All of the following are allowed from a phone, and they become R6-3:
+- skill Update (`skills:update`);
+- theme install, remove and update;
+- **theme publish**, against my recommendation of computer-only;
+- the marketplace install count (`marketplace:install` report);
+- the Report button (`marketplace:report`);
+- a skill's own file in the "what the assistant was given" panel, under the R3-SEC deny list.
+
+`folders:add` stays as it is: a phone may add any folder, and the deny list still applies.
+
+**R6 status:** R6-1 and R6-2 are built, and R6-3 opens the abilities above.
 
 ## What this plan deliberately does not touch
 
