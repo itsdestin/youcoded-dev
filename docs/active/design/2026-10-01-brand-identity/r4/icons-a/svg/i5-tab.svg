@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512"><defs>
+  <linearGradient id="tb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3A1A58"/><stop offset=".55" stop-color="#6A34A0"/><stop offset="1" stop-color="#A45BD8"/>
+  </linearGradient>
+  <radialGradient id="th" cx=".3" cy=".18" r=".75">
+    <stop offset="0" stop-color="#fff" stop-opacity="0.12"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="tr" x1="0" y1="0" x2="0" y2="1">
+    <stop offset=".62" stop-color="#FFB36B" stop-opacity="0"/>
+    <stop offset="1" stop-color="#FFB36B" stop-opacity="0.75"/>
+  </linearGradient>
+  <linearGradient id="tl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4A2370"/><stop offset="1" stop-color="#B068E0"/>
+  </linearGradient><linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1A1033"/><stop offset="1" stop-color="#4A1F66"/></linearGradient>
+     <radialGradient id="pool" cx=".5" cy="1" r=".8"><stop offset="0" stop-color="#FFC27A"/><stop offset="1" stop-color="#FFC27A" stop-opacity="0"/></radialGradient><clipPath id="c"><rect width="512" height="512" rx="120"/></clipPath></defs><g clip-path="url(#c)"><rect width="512" height="512" fill="url(#night)"/><rect width="512" height="512" fill="url(#pool)" opacity=".8"/>
+     <g transform="translate(-48 -60) scale(25.4)"><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="url(#tb)" stroke="#3E1758" stroke-width=".5"/>
+     <ellipse cx="9.6" cy="10.4" rx="1.8" ry="2.4" fill="#120820"/><ellipse cx="14.4" cy="10.4" rx="1.8" ry="2.4" fill="#120820"/></g></g></svg>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- page.html — ?icon=jN renders the 512px master (transparent) for shoot.sh to shrink;
+     ?card=jN renders the 1200x620 review card for that concept. -->
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:transparent;font-family:'DM Sans',sans-serif;color:#21152C}
+.cap{font:500 10.5px 'JetBrains Mono';letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+.px{image-rendering:pixelated}
+</style>
+<script src="lib.js"></script></head><body>
+<script>
+const q = new URLSearchParams(location.search);
+const out = (id, what, p) => `out/${id}-${what}-${p}.png`;
+const other = (i, s) => {
+  const C = ['#2D7FF9', '#E8453C', '#1DB954', '#F5A623', '#5865F2', '#6B6F76'][i];
+  return `<span style="display:block;width:${s}px;height:${s}px;border-radius:${s * .23}px;background:${C}"></span>`;
+};
+function card(id) {
+  const o = J.OPTIONS.find(x => x.id === id);
+  const bar = (bg) => `<div style="display:flex;align-items:center;justify-content:center;gap:16px;height:44px;border-radius:9px;background:${bg}">${[0, 1, 2].map(i => other(i, 24)).join('')}<img src="${out(id, 'app', 24)}" width="24" height="24">${[3, 4, 5].map(i => other(i, 24)).join('')}</div>`;
+  const tab = (dark) => {
+    const b = dark ? '#202124' : '#DEE1E6', a = dark ? '#35363A' : '#FFFFFF', f = dark ? '#E8EAED' : '#202124';
+    return `<div style="background:${b};border-radius:9px;padding:6px 8px 0;display:flex;gap:4px;align-items:flex-end;height:40px">
+      <div style="background:${a};border-radius:8px 8px 0 0;height:34px;width:250px;display:flex;align-items:center;gap:8px;padding:0 11px"><img src="${out(id, 'tab', 16)}" width="16" height="16"><span style="font:400 12.5px 'DM Sans';color:${f};white-space:nowrap">YouCoded — An assistant that's yours</span></div>
+      <div style="height:34px;display:flex;align-items:center;gap:8px;padding:0 11px;opacity:.7"><span style="width:16px;height:16px;border-radius:4px;background:#E8453C"></span><span style="font:400 12.5px 'DM Sans';color:${f}">Inbox (3)</span></div></div>`;
+  };
+  const sizes = [64, 32, 24, 16].map(p => `<div style="text-align:center"><img src="${out(id, 'app', p)}" width="${p}" height="${p}" style="display:block;margin:0 auto"><div class="cap" style="margin-top:5px">${p}</div></div>`).join('');
+  const mag = (src, bg, label) => `<div style="text-align:center"><img class="px" src="${src}" width="112" height="112" style="display:block;background:${bg};border-radius:10px"><div class="cap" style="margin-top:5px">${label}</div></div>`;
+  return `<div style="width:1200px;height:620px;position:relative;overflow:hidden;background:#F7F1FA">
+    <div style="position:absolute;left:0;top:0;width:470px;height:620px;background:url(cotton-candy-sky.webp) 30% 40%/cover">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(250,240,252,.55),rgba(250,240,252,.25))"></div>
+      <div style="position:absolute;left:85px;top:150px;width:300px;height:300px;filter:drop-shadow(0 24px 34px rgba(70,20,100,.35))">${J.ICONS[id]()}</div>
+      <div style="position:absolute;left:24px;right:24px;bottom:22px;font:500 15px/1.4 'DM Sans';color:#21152C;background:rgba(255,255,255,.62);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);border-radius:14px;padding:12px 14px">${o.note}</div>
+    </div>
+    <div style="position:absolute;left:18px;top:16px;font:600 13px 'JetBrains Mono';letter-spacing:.05em;padding:6px 10px;border-radius:8px;background:rgba(33,21,44,.85);color:#fff">${id.toUpperCase()} · ${o.label}</div>
+    <div style="position:absolute;left:500px;right:30px;top:22px;display:flex;flex-direction:column;gap:9px">
+      <div class="cap">Windows taskbar · real 24px</div>${bar('#1F1F23')}${bar('#EEF0F5')}
+      <div class="cap" style="margin-top:4px">Mac Dock</div>
+      <div style="display:flex;justify-content:center;padding:12px 0;border-radius:12px;background:url(cotton-candy-sky.webp) center/cover">
+        <div style="display:flex;gap:11px;padding:8px 12px;border-radius:20px;background:rgba(255,255,255,.45);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6)">${[0, 1, 2].map(i => other(i, 52)).join('')}<img src="${out(id, 'app', 128)}" width="52" height="52">${[3, 4].map(i => other(i, 52)).join('')}</div></div>
+      <div class="cap" style="margin-top:4px">Browser tab · real 16px (its own simpler drawing)</div>${tab(false)}${tab(true)}
+      <div style="display:flex;gap:22px;align-items:flex-end;margin-top:8px">
+        <div><div class="cap" style="margin-bottom:8px">App icon, real sizes</div><div style="display:flex;gap:16px;align-items:flex-end">${sizes}</div></div>
+        ${mag(out(id, 'tab', 16), '#fff', 'Tab 16px ×7')}
+        ${mag(out(id, 'tray-w', 16), '#1F1F23', 'Tray 16px ×7')}
+        <div style="text-align:center"><div style="display:flex;gap:10px;align-items:center;justify-content:center;height:112px;padding:0 12px;border-radius:10px;background:#1F1F23"><img src="${out(id, 'tray-w', 16)}" width="16" height="16"><span style="font:500 11px 'DM Sans';color:#fff">9:41</span></div><div class="cap" style="margin-top:5px">Tray, real</div></div>
+      </div>
+    </div></div>`;
+}
+const id = q.get('icon') || q.get('card');
+document.body.innerHTML = q.get('icon') ? `<div style="width:512px;height:512px">${J.ICONS[id]()}</div>` : card(id);
+</script></body></html>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512"><defs>
+  <linearGradient id="tb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#B57AE4"/><stop offset=".5" stop-color="#8B47B8"/><stop offset="1" stop-color="#5C2689"/>
+  </linearGradient>
+  <radialGradient id="th" cx=".3" cy=".18" r=".75">
+    <stop offset="0" stop-color="#fff" stop-opacity="0.5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="tr" x1="0" y1="0" x2="0" y2="1">
+    <stop offset=".62" stop-color="#FF9BD6" stop-opacity="0"/>
+    <stop offset="1" stop-color="#FF9BD6" stop-opacity="0.42"/>
+  </linearGradient>
+  <linearGradient id="tl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#A766D6"/><stop offset="1" stop-color="#6A2F9C"/>
+  </linearGradient><linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9C6BE0"/><stop offset="1" stop-color="#FFC0DA"/></linearGradient><clipPath id="c"><rect width="512" height="512" rx="120"/></clipPath></defs><g clip-path="url(#c)"><rect width="512" height="512" fill="url(#dawn)"/><ellipse cx="256" cy="470" rx="300" ry="90" fill="#fff"/>
+     <g transform="translate(-48 -40) scale(25.4)"><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="url(#tb)" stroke="#3E1758" stroke-width=".6"/>
+     <ellipse cx="9.6" cy="10" rx="1.8" ry="2.5" fill="#23102F"/><ellipse cx="14.4" cy="10" rx="1.8" ry="2.5" fill="#23102F"/></g></g></svg>

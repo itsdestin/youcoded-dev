@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="512" height="512"><defs>
+  <linearGradient id="cb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#B57AE4"/><stop offset=".5" stop-color="#8B47B8"/><stop offset="1" stop-color="#5C2689"/>
+  </linearGradient>
+  <radialGradient id="ch" cx=".3" cy=".18" r=".75">
+    <stop offset="0" stop-color="#fff" stop-opacity="0.5"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="cr" x1="0" y1="0" x2="0" y2="1">
+    <stop offset=".62" stop-color="#FF9BD6" stop-opacity="0"/>
+    <stop offset="1" stop-color="#FF9BD6" stop-opacity="0.42"/>
+  </linearGradient>
+  <linearGradient id="cl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#A766D6"/><stop offset="1" stop-color="#6A2F9C"/>
+  </linearGradient><clipPath id="tc"><rect width="512" height="512" rx="115"/></clipPath><filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter><filter id="sh2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="30"/></filter>
+      <linearGradient id="dawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9C6BE0"/><stop offset=".55" stop-color="#D99BE6"/><stop offset="1" stop-color="#FFC9DE"/></linearGradient>
+      <radialGradient id="sun" cx=".72" cy=".26" r=".3"><stop offset="0" stop-color="#FFF4E0" stop-opacity=".95"/><stop offset="1" stop-color="#FFF4E0" stop-opacity="0"/></radialGradient>
+      <linearGradient id="cloudg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F1DDF5"/></linearGradient></defs>
+      <g clip-path="url(#tc)">
+        <rect width="512" height="512" fill="url(#dawn)"/><rect width="512" height="512" fill="url(#sun)"/>
+        <g opacity=".5" fill="#fff"><ellipse cx="70" cy="140" rx="60" ry="14"/><ellipse cx="450" cy="210" rx="70" ry="12"/></g>
+        <g fill="#fff"><path d="M420 92 l6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6z"/><path d="M96 230 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" opacity=".85"/></g>
+        <g transform="translate(16 440)" opacity=".35" filter="url(#sh2)"><rect x="40" width="400" height="40" rx="20" fill="#6A2F9C"/></g>
+        <g fill="url(#cloudg)" stroke="#E2C6EE" stroke-width="5">
+  <path d="M86 410 C60 410 52 372 80 360 C76 326 118 310 140 330 C150 292 210 286 228 318 C246 290 300 292 312 326 C334 306 380 314 380 348 C414 342 434 380 410 402 C404 408 396 410 388 410 Z"/></g>
+        <ellipse cx="244" cy="352" rx="70" ry="10" fill="#7A4AA6" opacity=".38" filter="url(#sh)"/>
+        <g transform="translate(86 68) scale(13.6)"><g fill="url(#cl)" stroke="#3E1758" stroke-width=".55"><rect x="1" y="9" width="3" height="4" rx="0.9"/><g transform="rotate(-150 21.5 9.4)"><rect x="20" y="9" width="3" height="4" rx="0.9"/></g><rect x="7.2" y="16.6" width="3.5" height="4.2" rx="1.2"/><rect x="13.3" y="16.6" width="3.5" height="4.2" rx="1.2"/></g><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="url(#cb)" stroke="#3E1758" stroke-width=".55" stroke-linejoin="round"/>
+    <path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="url(#cr)"/><path d="M9 4 L15 4 A4 4 0 0 1 19 8 L19 12 A4 4 0 0 1 15 16 L9 16 A4 4 0 0 1 5 12 L5 8 A4 4 0 0 1 9 4 Z" fill="url(#ch)"/>
+    <ellipse cx="9.4" cy="6" rx="3" ry="1.2" fill="#fff" fill-opacity=".38" transform="rotate(-12 9.4 6)"/>
+    <ellipse cx="9.4" cy="9.7" rx="1.55" ry="2.15" fill="#23102F"/>
+    <circle cx="9.950000000000001" cy="9" r="0.42" fill="#fff"/>
+    <circle cx="9.05" cy="10.35" r="0.2" fill="#fff" fill-opacity=".75"/><ellipse cx="14.6" cy="9.7" rx="1.55" ry="2.15" fill="#23102F"/>
+    <circle cx="15.15" cy="9" r="0.42" fill="#fff"/>
+    <circle cx="14.25" cy="10.35" r="0.2" fill="#fff" fill-opacity=".75"/>
+    <ellipse cx="7.6" cy="12.5" rx="1.1" ry=".6" fill="#FF8FCB" fill-opacity=".55"/><ellipse cx="16.4" cy="12.5" rx="1.1" ry=".6" fill="#FF8FCB" fill-opacity=".55"/>
+    <path d="M10.9 13 Q12 14.3 13.1 13" fill="none" stroke="#23102F" stroke-width=".55" stroke-linecap="round"/></g>
+      </g></svg>

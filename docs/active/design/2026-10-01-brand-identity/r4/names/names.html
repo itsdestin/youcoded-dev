@@ -1,0 +1,119 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- names.html?i=n1..n12 — round-4 wordmark cards, staged like round 3 (r3/sheet.html nameCard):
+     Cotton Candy wallpaper + today's glass site header, the name big, then three mini headers in
+     other site themes. Built from the site's own theme values (r3/defs.js) and existing mascots.
+     WHY the mascot is sized from the font's measured x-height: in "mascot as the o" the head has to
+     match the lowercase letters exactly and the feet hang below the baseline like a descender —
+     a fixed pixel size drifts per font (round 3's L3 sat too high and too small). -->
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#000}
+.card{width:1200px;height:620px;position:relative;overflow:hidden}
+.chip{position:absolute;left:18px;top:16px;z-index:5;font:600 13px 'JetBrains Mono';letter-spacing:.06em;padding:6px 10px;border-radius:8px;background:rgba(33,21,44,.82);color:#fff}
+.cap{font:500 10px 'JetBrains Mono';letter-spacing:.12em;text-transform:uppercase;opacity:.7}
+.wm{display:inline-flex;align-items:baseline;white-space:nowrap;line-height:1}
+.seg{position:relative;display:inline-block}
+.seg > .ov{position:absolute;left:0;top:0;pointer-events:none}
+</style>
+<script src="../../r3/defs.js"></script>
+</head><body>
+<script>
+const { TH, bgOf, glass } = D;
+const R3 = '../../r3/';
+// Per-theme gradient pairs: accent into a warmer partner, so the fill follows the theme.
+const GR = {
+  cotton: ['#7E3BB0', '#D2499C'], midnight: ['#88B4D8', '#C9A4F0'], golden: ['#ffc030', '#FF7A59'],
+  straw: ['#CC4060', '#F08AA8'], meadow: ['#2F7D55', '#7CC08F'],
+};
+const keyOf = (t) => Object.keys(TH).find(k => TH[k] === t);
+const grad = (t, deg = 100) => { const [a, b] = GR[keyOf(t)]; return `linear-gradient(${deg}deg,${a} 8%,${b} 62%,${a} 108%)`; };
+const mascotFor = (t) => R3 + (keyOf(t) === 'midnight' ? 'assets/icon-mascot.svg' : t.mascot);
+const xhCache = {};
+// x-height and cap-height as fractions of font-size, measured from the loaded font.
+function metrics(family, weight) {
+  const k = family + weight; if (xhCache[k]) return xhCache[k];
+  const c = document.createElement('canvas').getContext('2d'); c.font = `${weight} 200px ${family}`;
+  const x = c.measureText('x').actualBoundingBoxAscent / 200, H = c.measureText('H').actualBoundingBoxAscent / 200;
+  return (xhCache[k] = { x, H });
+}
+
+// A text segment drawn as stacked layers (base in flow, the rest overlaid exactly on top).
+// Each layer is a style string; this is how gloss, extrude and sticker edges sit on one word.
+const seg = (txt, base, layers) => `<span class="seg"><span style="${layers[0]}">${txt}</span>${layers.slice(1).map(l => `<span class="ov" style="${l}">${txt}</span>`).join('')}</span>`;
+
+// The mascot standing in for "o": head = x-height box sitting on the baseline, feet below.
+// Mascot rig art: head spans 30–70% of the image height, arms 13–87% of its width.
+function mascotO(t, s, fam, w, opt = {}) {
+  const m = metrics(fam, w), xh = m.x * s * (opt.k || 1.12);
+  const img = xh / 0.40;            // head height = 40% of the image
+  const box = img * (opt.wbox || 0.6);   // arms tuck slightly into the neighbours
+  const lift = opt.lift || 0;
+  const filt = `filter:${opt.filter || 'drop-shadow(0 ' + s * .025 + 'px ' + s * .05 + 'px rgba(40,10,60,.28))'};`;
+  return `<span style="display:inline-block;position:relative;width:${box}px;height:${xh}px;margin:0 ${s * (opt.side ?? .004)}px;vertical-align:baseline">
+    <img src="${mascotFor(t)}" style="position:absolute;width:${img}px;height:${img}px;left:${(box - img) / 2}px;top:${xh - img * 0.70 + lift * s}px;${filt}"></span>`;
+}
+
+// ---------------- the options ----------------
+const fill = (t, extra = '') => `background:${grad(t)};-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 ${t.dark ? 1 : 2}px ${t.dark ? 2 : 6}px rgba(40,10,60,${t.dark ? .5 : .22}));${extra}`;
+const gloss = `background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.22) 30%,rgba(255,255,255,0) 52%);-webkit-background-clip:text;background-clip:text;color:transparent`;
+const darkOf = (t) => ({ cotton: '#5E2A86', midnight: '#3E5E7C', golden: '#A8661A', straw: '#8A2240', meadow: '#1C4D34' })[keyOf(t)];
+
+const O = [
+  { id: 'n1', label: 'Chunky gradient', note: 'W6 and W11 together: the chunky rounded lowercase from W6, filled with the theme-colour-to-pink fade from W11.',
+    f: (t, s) => { const F = "'Baloo 2'"; return `<span class="wm" style="font:800 ${s}px/1 ${F};letter-spacing:-.025em">${seg('youcoded', '', [fill(t)])}</span>`; } },
+  { id: 'n2', label: 'Chunky + mascot "o"', note: 'The W6 lowercase with the mascot standing in for the first "o", sized to the letters, feet hanging below the line.',
+    f: (t, s) => { const F = "'Baloo 2'", W = 800; return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.02em;color:${t.fg}"><span style="color:${t.accent}">y</span>${mascotO(t, s, F, W)}<span style="color:${t.accent}">u</span>coded</span>`; } },
+  { id: 'n3', label: 'Gradient + mascot "o"', note: 'The same mascot "o", with every letter in the colour fade, so the mascot pops out as the only solid shape.',
+    f: (t, s) => { const F = "'Baloo 2'", W = 800; return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.02em">${seg('y', '', [fill(t)])}${mascotO(t, s, F, W)}${seg('ucoded', '', [fill(t)])}</span>`; } },
+  { id: 'n4', label: 'Glossy, like the mascot', note: 'Rounded Fredoka letters with the mascot as the "o" and a shiny top highlight that matches the shine on the app icon\'s mascot.',
+    f: (t, s) => { const F = "'Fredoka'", W = 700; const L = (x) => seg(x, '', [fill(t), gloss]); return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.01em">${L('Y')}${mascotO(t, s, F, W, { k: 1.1 })}${L('uCoded')}</span>`; } },
+  { id: 'n5', label: 'Toy-block 3D', note: 'Fat Lilita One letters with a deep 3D edge underneath, like a plastic toy or a game logo.',
+    f: (t, s) => { const F = "'Lilita One'", W = 400, d = darkOf(t); const ext = Array.from({ length: 6 }, (_, i) => `0 ${(i + 1) * s * .012}px 0 ${d}`).join(',') + `,0 ${s * .1}px ${s * .1}px rgba(0,0,0,.25)`;
+      const L = (x) => seg(x, '', [`color:${d};text-shadow:${ext}`, fill(t), gloss]); return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:.005em">${L('YouCoded')}</span>`; } },
+  { id: 'n6', label: 'Sticker edge', note: 'Chunky lowercase with a thick white sticker border and soft shadow, so it pops on any wallpaper.',
+    f: (t, s) => { const F = "'Baloo 2'", W = 800; const sw = s * (s < 40 ? .1 : .16);
+      const L = (x) => seg(x, '', [`color:#fff;-webkit-text-stroke:${sw}px #fff;filter:drop-shadow(0 ${s * .05}px ${s * .06}px rgba(40,10,60,.28))`, fill(t)]);
+      const ring = `drop-shadow(${s * .04}px 0 0 #fff) drop-shadow(-${s * .04}px 0 0 #fff) drop-shadow(0 ${s * .04}px 0 #fff) drop-shadow(0 -${s * .04}px 0 #fff) drop-shadow(0 ${s * .05}px ${s * .05}px rgba(40,10,60,.25))`;
+      return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:.01em;padding:0 ${sw / 2}px">${L('y')}${mascotO(t, s, F, W, { filter: ring, side: .03 })}${L('ucoded')}</span>`; } },
+  { id: 'n7', label: 'Wallpaper inside the letters', note: 'The letters are cut out of your theme\'s own wallpaper, so the name literally wears your theme.',
+    f: (t, s) => { const F = "'Baloo 2'", W = 800; const img = t.wall ? `url(${R3}${t.wall}) 30% 45%/${s * 6}px auto` : grad(t);
+      const L = (x) => seg(x, '', [`color:transparent;-webkit-text-stroke:${s * .09}px #fff;filter:drop-shadow(0 ${s * .03}px ${s * .05}px rgba(30,10,50,.35))`, `background:${img};-webkit-background-clip:text;background-clip:text;color:transparent;filter:saturate(1.8) brightness(.6) contrast(1.3)`]);
+      return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.01em">${L('youcoded')}</span>`; } },
+  { id: 'n8', label: 'Bouncy', note: 'Grandstander letters that hop slightly up and down, playful like the mascot waving.',
+    f: (t, s) => { const F = "'Grandstander'", W = 900; const off = [-.03, .03, -.05, .02, -.02, .04, -.03, .02], rot = [-4, 3, -2, 4, -3, 2, -4, 3];
+      return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.01em">${[...'youcoded'].map((ch, i) => `<span style="display:inline-block;transform:translateY(${off[i] * s}px) rotate(${rot[i]}deg)">${seg(ch, '', [fill(t)])}</span>`).join('')}</span>`; } },
+  { id: 'n9', label: 'Clean + mascot "o"', note: 'The closest to today\'s site: Nunito capitals, colour fade on "You", mascot as the "o". The grown-up version.',
+    f: (t, s) => { const F = "'Nunito'", W = 900; return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.025em;color:${t.fg}">${seg('Y', '', [fill(t)])}${mascotO(t, s, F, W, { k: 1.1 })}${seg('u', '', [fill(t)])}Coded</span>`; } },
+  { id: 'n10', label: 'Soft two-tone', note: 'Sniglet: the roundest, softest letters, "you" in the theme colour with a gentle shine, "coded" in the text colour.',
+    f: (t, s) => { const F = "'Sniglet'", W = 800; return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.01em;color:${t.fg}">${seg('you', '', [fill(t), gloss])}${seg('coded', '', [`color:${t.fg}`])}</span>`; } },
+  { id: 'n11', label: 'Cartoon', note: 'Chewy, a hand-drawn cartoon font, in the colour fade: the most playful option.',
+    f: (t, s) => { const F = "'Chewy'", W = 400; const L = (x) => seg(x, '', [`color:${darkOf(t)};text-shadow:0 ${s * .045}px 0 ${darkOf(t)}`, fill(t)]); return `<span class="wm" style="font:${W} ${s * 1.05}px/1 ${F};letter-spacing:.01em">${L('YouCoded')}</span>`; } },
+  { id: 'n12', label: 'Two mascots', note: 'Both "o"s are mascots, one in "you" and one in "coded". Fun, but busier and harder to read small.',
+    f: (t, s) => { const F = "'Baloo 2'", W = 800; return `<span class="wm" style="font:${W} ${s}px/1 ${F};letter-spacing:-.02em">${seg('y', '', [fill(t)])}${mascotO(t, s, F, W)}${seg('uc', '', [fill(t)])}${mascotO(t, s, F, W)}${seg('ded', '', [fill(t)])}</span>`; } },
+];
+
+// ---------------- staging (as round 3) ----------------
+const header = (t, inner, w, h, fs = 15) => `<div style="width:${w}px;height:${h}px;display:flex;align-items:center;justify-content:space-between;padding:0 ${h * .32}px;${glass(t, 22)}">
+  ${inner}<div style="display:flex;gap:${fs * 1.4}px;color:${t.fg}">${['About', 'Features', 'FAQ'].map(x => `<span style="font:500 ${fs}px 'DM Sans';opacity:.8">${x}</span>`).join('')}</div></div>`;
+const bgR = (t) => t.wall ? `url(${R3}${t.wall}) center/cover` : t.bg;
+const mini = (t, inner) => `<div style="flex:1;height:100%;background:${bgR(t)};border-radius:16px;padding:18px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+  ${header(t, inner, 348, 64, 12)}<div class="cap" style="color:${t.dark ? '#fff' : t.fg};text-align:right">${t.name} theme</div></div>`;
+
+const id = new URLSearchParams(location.search).get('i');
+const opt = O.find(o => o.id === id);
+const fams = ["800 40px 'Baloo 2'", "700 40px 'Fredoka'", "40px 'Lilita One'", "800 40px 'Sniglet'", "900 40px 'Grandstander'", "900 40px 'Nunito'", "40px 'Chewy'", "500 40px 'DM Sans'", "600 40px 'JetBrains Mono'"];
+Promise.all(fams.map(f => document.fonts.load(f))).then(() => {
+  const c = TH.cotton;
+  document.body.innerHTML = `<div class="card" style="background:${bgR(c)}">
+    <div class="chip">${opt.id.toUpperCase()} · ${opt.label}</div>
+    <div style="position:absolute;left:50px;right:50px;top:62px">${header(c, opt.f(c, 30), 1100, 76)}</div>
+    <div style="position:absolute;left:0;right:0;top:160px;height:210px;display:grid;place-items:center">${opt.f(c, 116)}</div>
+    <div style="position:absolute;left:24px;right:24px;bottom:24px;height:190px;display:flex;gap:16px">
+      ${[TH.midnight, TH.golden, TH.straw].map(t => mini(t, opt.f(t, 24))).join('')}
+    </div></div>`;
+  document.title = 'ready';
+});
+window.OPTS = O;
+</script></body></html>
