@@ -101,6 +101,7 @@ fi
 # 2026-09-16 (t5c): +3 for type-scale-named-tokens-declared + no-arbitrary-text-size +
 #   its -ts twin.
 # 2026-09-16 (t5c): +2 for app-no-switch-view-broadcast + app-no-switch-view-receiver.
+# 2026-10-01: +1 for app-transcript-listeners-batched (one-core R4-3 review).
 # 2026-09-16 (t6a): +2 for private-continuation-dir-single-owner + its -devtools twin
 #   (accepted-history-privacy.test.ts).
 # 2026-09-16 (t6a): +2 for no-unstepped-infinite-animation (its fixture fires both
@@ -412,7 +413,7 @@ fi
 #   (4 findings: the comment, the call and the `case` in one fixture, the `new` backstop in another). The old rule's
 #   fixtures fired 10. The appearance-broadcast and buddy-show rules were retargeted at their table entries with
 #   fixtures of the same count. 407 - 10 + 9 + 4 = 410.
-EXPECTED_VIOLATIONS=410
+EXPECTED_VIOLATIONS=411
 
 count_findings() {
     # --json emits an array of matches; jq counts them. Fall back to grep if jq is absent.

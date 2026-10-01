@@ -43,6 +43,7 @@ verify:
   - path: scripts/ast-grep/rules/toolcalls-never-cleared.yml
   - path: scripts/ast-grep/rules/spinner-re-anchored.yml
   - path: scripts/ast-grep/rules/no-seenuuids-on-tool-use.yml
+  - path: scripts/ast-grep/rules/app-transcript-listeners-batched.yml
 ---
 # Chat reducer, transcript pipeline & terminal byte stream
 
