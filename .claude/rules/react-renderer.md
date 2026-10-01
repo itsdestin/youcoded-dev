@@ -9,7 +9,7 @@ verify:
   - path: youcoded/desktop/src/renderer/components/overlays/Overlay.tsx
   - path: youcoded/desktop/src/renderer/styles/globals.css
     contains: "chrome-glass"
-  - path: youcoded/desktop/src/renderer/components/RemoteSnapshotExporter.tsx
+  - path: youcoded/desktop/src/renderer/state/session-fill.ts
   - path: scripts/shoot/shoot.mjs
     contains: "not showing"
   - path: scripts/ui-review/shot.mjs
@@ -62,6 +62,6 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 - **Use `<Scrim>` + `<OverlayPanel>`** (or `.layer-surface` for scrimless popovers) — never hardcode scrim/blur/shadow/radius/z-index; pick a LAYER (L1–L4). `SessionStrip` `z-[9000]` is load-bearing; glassmorphism is var-driven.
 - **`.layer-surface` on a REPEATED element (grid tile, list row) is a paint bug** — N tiles = N backdrop-filters, and Windows Electron drops their paint per card (shipped twice: `516411a5`, `1f68a7f0`) · guard: `drawer-card-glass.test.ts`.
 
-## Remote access state sync (`main/remote-server.ts`, `RemoteSnapshotExporter.tsx`)
-- **Remote clients hydrate via `chat:hydrate` on connect** — no parallel replay buffer; extend `serializeChatState`/`deserializeChatState` instead. `chat:export-snapshot` has a 2s timeout.
+## Remote access state sync (`main/session-open.ts`, `state/session-fill.ts`)
+- **EVERY screen is filled by `session:open`** (a phone, a torn-off window, a reconnecting phone): the computer answers from its record with the newest page, its recent past (`before`) and what only memory holds (`after`), or only the events a reconnect missed (`have: {epoch, seq}`). `state/session-fill.ts` applies it through the SAME handlers a live push reaches — never a second set of rules for "drawing a filled session". Backfill new state by making it a numbered event or a record fact, not by copying a window's reducer. While a screen is filled its pushes for that session are held (`main/audience-fill.ts`).
 - **`attentionState` is authoritative on DESKTOP only** — remote browsers get `attentionMap` via `status:data` and MUST NOT run their own classifier. App's `statusData` handler's `attentionMap` diff is load-bearing.
