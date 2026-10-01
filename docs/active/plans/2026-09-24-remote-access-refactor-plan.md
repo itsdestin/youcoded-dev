@@ -836,6 +836,36 @@ workspace `70556d37`, `9e377321`):
   dialog card. A refusal capture does not exist, so the wording is an assumption
   (`cc-dependencies.md`).
 
+**R5-4b log (stuck check and lost sends)** (app `session/simplify-r5-4b`: `8871941f9`,
+`fca47d7bd`, `45cea1226`, `37421d72b`; workspace `68a1d83c`):
+- **Main reads every Claude Code terminal.** `main/session-screens.ts` keeps one always-on
+  headless terminal per live Claude Code session, from its first byte to its end. It uses
+  about 0.4 MB per idle session and about 0.8 ms/s of CPU per busy session.
+- **Main is the only writer** of attention ("stuck") and of setup-dialog cards. The renderer
+  hook is inert where `sessionRecord` is set.
+- **`session:prompt-report` is removed,** which closes the R5-4a injection surface.
+- **`@xterm/headless` ships** (pure JS, about 183 KB main file).
+- **Terminal bytes** are kept in the record only while the phone server runs, as `ptyBuffers`
+  were before.
+- **Send ids** with `session:send-outcomes` show an inline note (received: none; "This didn't
+  send — your computer never received it."; "Not sure this was sent."), with Send again and
+  never an automatic resend. The epoch is stored per send. This is phone only; the computer
+  keeps its toast and restores the draft.
+- **Review: "ship with fixes".** The review found a HIGH issue: the idle-dialog gate matched no
+  real output, so `/login`, `/resume` and auto-mode dialogs were missed. It is fixed by the
+  always-on terminal, plus a replay of every real capture into idle sessions with
+  8- and 40-byte splits. Also fixed:
+  - stale write callbacks;
+  - the send epoch;
+  - the spinner after "not sent".
+- **Flake fixed:** owner-lease tests used pid 999999 (`deadPid()`).
+- **Not seen live:** a real dialog card or stuck banner (the throwaway HOME is logged out). It
+  is covered by real-capture replays.
+
+**R5 is complete (2026-10-01):** R5-pre, R5-1, R5-2, R5-3, R5-4a and R5-4b.
+- **Owed to Destin:** real-phone first-connect timing and a real-phone pass.
+- **Release rule:** a paired Android app must ship with this desktop.
+
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
 be measured on a **real phone** (dev-mode timing does not count, per the roadmap).

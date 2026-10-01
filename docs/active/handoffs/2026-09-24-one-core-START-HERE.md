@@ -52,10 +52,10 @@ edits that file instead. Branches already open when R1 starts are rewritten onto
 layout after R2 (Destin, 2026-09-29). R0 makes the lock a check rather than a promise: `docs/active/locks/phase4.json`, read by `scripts/close-out.sh`.
 
 **Status (2026-10-01).** Destin lifted the Phase 4 hold on 2026-09-29.
-- **Built:** R0 to R4 and R3-SEC, as stacked app branches `session/simplify-r1` …
-  `session/simplify-r4-4`. **None of them is merged; merging waits for Destin.** Each run's
-  log is in the plan's R3/R4 sections.
-- **Next:** R5.
+- **Built:** R0 to R5 and R3-SEC, as stacked app branches `session/simplify-r1` …
+  `session/simplify-r5-4b`. **None of them is merged; merging waits for Destin.** Each run's
+  log is in the plan's R3/R4/R5 sections.
+- **Next:** R6.
 - **Release:** Phase 4 (R1–R4) and Phase 5 stay v1.3.1 blockers. Phase 5 still waits on the
   native-session-host test split.
 
