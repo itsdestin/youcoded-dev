@@ -424,6 +424,36 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >   - No behavioural tests cover the detach, drag-adopt or drop-resolve bodies.
 >
 > **R3 is complete:** every feature channel is served from the table by both doors.
+>
+> - **R3-SEC, the phone credential-read fix** (app `session/simplify-r3-sec` `b87fa76cf` and
+>   `870d2ea73`, stacked on R3-8). Phone door only; the computer's door and the native
+>   assistant's file tools are unchanged (`isPhoneDeniedFile` is a separate phone-only function
+>   beside `isCredentialPath`). It matches on the resolved real path, ignores case, and strips
+>   Windows trailing dots/spaces and `:stream` suffixes.
+>   - **Applied to:** `artifacts:get/read-binary/resolve-path/list-folder/search-content`,
+>     download (at link creation and again at fetch), `project:read-context-file`, and
+>     `project:list-context` enrichment. `project:repo-info` strips logins from the address.
+>   - **Denied:** `.git/`, `.ssh/`, `.aws/`, `.config/gh/`, git-credentials, `.netrc`, `.npmrc`,
+>     `.gitconfig`, `.vault-token`, rclone.conf, docker and kube configs, shell and REPL
+>     histories, `*.kdbx`, `*.pem/*.key/*.p12/*.pfx`, and `id_*` private keys (not `.pub`). Also
+>     the app's own secret files: remote config, native secrets, GitHub token, marketplace auth,
+>     search providers, page connections, ChatGPT account.
+>   - **Search:** a search rooted in a denied folder is refused, and the excluding globs ignore
+>     case.
+>   - **`fs:read-head`:** a phone may preview only its own uploads (its sole caller is
+>     `AttachmentChip`).
+>   - **`file:upload`:** capped at 25 MB per file and 200 MB for the whole folder, with a clear
+>     refusal sentence. `sweepOldUploads` also runs at start-up; the age stays 1 hour.
+>   - **Gates:** 88 tests in the new guards, each shown red then green; `verify --full` green;
+>     dev smoke.
+>   - **Review:** "ship with fixes", and all 7 findings were fixed in `870d2ea73`.
+>   - **Phone changes:**
+>     - `.key` Keynote files and anything under a `.git` folder are unreadable from a phone.
+>     - A phone sees "kept on the computer" for denied files.
+>     - `.env` stays readable through `artifacts:get` on purpose.
+>   - **Open for Destin (not blocking):** `folders:add` is still allowed from a phone, so a
+>     phone can make any folder browsable (minus the deny list). Restricting it to folders
+>     added on the computer is his call, because he wants the phone to match the computer.
 
 >
 > **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
