@@ -30,7 +30,7 @@ chat-data).
       auto-mode setup" lists the permission rules it would save; a card with only its two
       buttons would have them approved unseen. (3) First, a local log line whenever the
       guard refuses a send or a pop-up gets no card, to learn which ones actually occur
-      `chat` `all` `idea` `checked 2026-09-30`
+      `chat` `all` `parked` `checked 2026-09-30`
 
 - [ ] When `~/.claude/settings.json` could not be read at launch (a stray comma, a half-written
       save), the app now quietly moves it aside as `settings.json.corrupt-<time>` and writes a
