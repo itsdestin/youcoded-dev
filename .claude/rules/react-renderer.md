@@ -20,6 +20,8 @@ verify:
   - test: youcoded/desktop/tests/primitive-adoption.test.ts
   - path: scripts/ast-grep/rules/no-hardcoded-z-index-or-scrim.yml
   - test: youcoded/desktop/tests/drawer-card-glass.test.ts
+  - path: youcoded/desktop/src/renderer/platform.ts
+    contains: "getCapabilities"
   - path: scripts/ast-grep/rules/no-arbitrary-text-size.yml
   - path: youcoded/desktop/src/renderer/dev/workbench/mock-shim.ts
     contains: "MOCK_ONLY|HAND_WRITTEN"
@@ -31,7 +33,7 @@ This code runs in BOTH the Electron renderer AND a bundled Android WebView. **De
 
 ## Node vs browser boundary
 - **No `process.env`, `require()`, `fs`/`path`/`os`, or direct filesystem access** — the WebView has no Node. Go through `window.claude.*`; use ES `import`, browser APIs, `fetch`.
-- **Platform detection: `location.protocol === 'file:'` = Android** — use the `remote-shim.ts` helpers, not the check inline.
+- **One platform module: `renderer/platform.ts`.** "Can this screen do X?" is `getCapabilities().x` (host-reported via `auth:ok`/preload — `shared/capabilities.ts`), never `isAndroid()`/`isRemoteMode()`; those two are for look-and-feel and connection state. Never test `location.protocol` inline.
 - **Performance** (subscriptions, hidden tabs, per-event cost, layout/paint): `performance.md`; lists and timelines: `renderer-lists.md`.
 
 ## Framed shell & chrome-glass (`globals.css`, `App.tsx`)
