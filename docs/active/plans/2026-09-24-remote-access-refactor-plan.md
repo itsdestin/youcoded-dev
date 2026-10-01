@@ -347,6 +347,26 @@ Gates are `bash scripts/verify.sh <app worktree>` plus the phase's named checks.
 >      file and rename, or serialise.
 >   3. The wire-shape-parity floor keeps needing lowering; assert an exact count instead.
 
+> - **R3-6** (app `session/simplify-r3-6` `011f79fe`; workspace `9a1a06b4`): models 13,
+>   engine 9, provider 6 plus endpoints:detect, search 4, chatgpt 4, openrouter 3, claude-code 2,
+>   42 channels. Reviewer said "ship" (598 tests); keys are never carried in any reply. R3-5's
+>   A1–A3 are fixed: a boot-wait request is skipped if its socket left, model preference writes
+>   are atomic and serialised, and the parity floor is now a ratio.
+>   Phone changes:
+>   - Failures show as errors.
+>   - Saving a key during startup says "not ready" instead of a false "saved".
+>   - "Run in terminal" waits for startup.
+>   **Question for Destin**: should installing Claude Code, installing or restarting the engine,
+>   downloading or deleting models, and saving provider and search keys stay allowed from a
+>   phone (allowed today)? Recommendation: leave them.
+>   **Fix in R3-7** (reviewer, low):
+>   1. `model.ts` duplicates the async atomic-write helper in `sync-state.ts:241`; reuse it.
+>   2. A non-Error throw now reaches a phone as a generic sentence instead of `String(err)`;
+>      restore `String(err)`.
+>   3. The `wire-shape-parity` check `handlers.size > 0` will fail once every object-taking
+>      handler has moved; make it robust.
+>   4. A stale shim comment on `claude-code:install` goes in the doc sweep.
+
 >
 > **Destin's answers (2026-09-30)** to the questions from R3-3 and R3-4. Each is a policy
 > change that widens what a phone can do, applied in R6 once R3 is complete:
