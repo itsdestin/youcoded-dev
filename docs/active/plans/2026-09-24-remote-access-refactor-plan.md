@@ -536,6 +536,26 @@ None of this edits the two door files, so the edit lock ends when R3 ends.
 - M5: `TranscriptEvent.data` (`shared/types.ts:306-612` on `ab15a5858`) becomes a union keyed on `type`. It comes before R5 so R5's event log stores
   typed events. Kotlin's copy is left alone and is deleted by A3 rather than updated.
 
+**R4 run order:**
+1. R4-1: the R3-8 review fixes, capabilities with the protocol version, one platform module.
+2. R4-2: D3.
+3. R4-3: the ordering fix.
+4. R4-4: M5.
+
+The investigation for D3 and M5 (producers, consumers, disk shapes, the three translators'
+differences, the proposed union and the commit order) was taken on 2026-10-01 from
+`simplify-r3-sec`.
+
+**Destin's answers (2026-10-01):**
+1. The buddy's live compaction marker unifies with the main window: "freed N tokens", with
+   the duplicate marker suppressed. This is the one visible change in D3.
+2. App's direct dispatches (`skill-invoked`, `context-clear`, `compact-summary`) move into
+   the batch. This fixes same-frame ordering, as its own small run right after D3.
+3. Saved `dropPart` markers are ignored on the page path, so a discarded partial answer can
+   reappear in reopened history. This is fixed in R5, with the record rebuild.
+
+The buddy's three live gaps stay, as a typed ledger.
+
 **After R4, simplification Phase 5 may start**, once its other precondition (the
 native-session-host test split) has merged. Phase 5 and R5 may overlap; each run checks the
 other's files first.
