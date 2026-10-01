@@ -251,6 +251,20 @@ seen-on is always n/a here.
       Gatekeeper wall and home-edition Windows, which runners don't show
       `n/a` `parked` `checked 2026-10-01`
 
+- [ ] YouCoded's page in the Linux app catalog (appimage.github.io, request #8053, found by their
+      robot) would show an auto-captured setup screen; our own pictures ship in the next release's
+      Linux builds (youcoded#596, served from youcoded.ai/screenshots). After that release: comment
+      `/retest` on #8053 and reply that Destin is the author (their bot wants 15+ words and none of
+      "community build"/"repackaged") — both public, in Destin's name, so ask him first
+      `n/a` `blocked` `checked 2026-10-01`
+
+- [ ] Linux downloads: the AppImage needs libfuse2, which stock Ubuntu 22.04+ lacks, so it won't
+      open until the user installs it (the deb avoids this); electron-builder's newer AppImage
+      runtime likely removes the need — untested. The Linux build also warns that taskbars may not
+      tie the running window to YouCoded's icon (a missing window-class setting). Both seen
+      2026-10-01, neither touched
+      `desktop` `needs-verify` `checked 2026-10-01`
+
 - [ ] Visual-regression harness for the renderer's chrome invariants (single-backdrop chrome-glass,
       framed-shell insets, overlay layers) — they are guarded only by eyeballing; the UI review sweep
       now captures every screen per theme, so the missing piece is a baseline + diff verdict
@@ -949,6 +963,6 @@ seen-on is always n/a here.
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
-      data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
-      priority for the rebuilt app (deck Q-3)
-      `android` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      data-safety form, content rating and account-deletion link. Destin 2026-10-01: "google play
+      isnt priority" — Apple and Windows signing first (reverses 2026-09-10's deck Q-3)
+      `android` `parked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md

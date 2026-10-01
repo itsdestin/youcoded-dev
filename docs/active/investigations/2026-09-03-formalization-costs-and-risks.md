@@ -12,7 +12,21 @@ the outside world came from a September 2026 web search (sources at the end).
 Nothing here is legal advice — it is the map to bring to a one-hour lawyer
 conversation, so that hour is spent on decisions instead of discovery.
 
-## Status as of 2026-09-23 (read this first)
+## Status as of 2026-10-01 (read this first)
+
+- **Trade name "YouCoded" approved** (by 2026-10-01). **Bank: Mercury.**
+- **Windows signing DONE** — Destin chose *individual* validation; releases and master betas are
+  signed as "Destin Moss" (youcoded#594; how it works: `docs/build-and-release.md` → Windows
+  signing; account facts in the brain's `legal/playbooks.md`).
+- **Apple: blocked at step one** — Apple refused to create an Apple Account for
+  destin@youcoded.ai ("cannot be created at this time"; Microsoft also flagged that address as
+  "unusual activity" — a month-old domain is the likely common factor). Retry from an Apple
+  device, later, or via Apple Support. The developer name is account-wide and locks at the first
+  App Store app, which Developer ID signing never creates — Destin has not chosen it yet.
+- **Google Play: deprioritised** by Destin on 2026-10-01 ("google play isnt priority"; Apple and
+  Windows first), reversing 2026-09-10.
+
+## Status as of 2026-09-23 (superseded above where they differ)
 
 **Since 2026-09-03.** The D-U-N-S number arrived 2026-09-10 (value in the private worksheet), so
 the Apple and Google Play accounts are no longer waiting on it. The trade name is still in the
