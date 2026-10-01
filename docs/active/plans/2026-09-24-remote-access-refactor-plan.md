@@ -808,6 +808,34 @@ workspace `6284fef5`):
   - A chat not viewed recently shows "Catching up with your computer…" when opened.
 - **Not verified:** the green and blue dots live, and the sounds.
 
+**R5-4a log (live facts)** (app `session/simplify-r5-4a`: `a9b154c63`, `374e59227`, `bfd9bba94`;
+workspace `70556d37`, `9e377321`):
+- **One push for live facts.** A numbered `session:live` carries:
+  - the native queue (a phone can cancel; Destin approved);
+  - the model label (main reads `/model`; a refused switch is retracted);
+  - the compaction spinner (`/compact` with Enter; main owns the 180 s watchdog for
+    host-raised spinners);
+  - dividers ("cleared" from the SessionStart hook, or main after 3 s);
+  - prompt cards (reported by a window via `session:prompt-report`, deduped by id,
+    reconciled on reload, dismissed by newer output).
+- **Claude Code permission mode** is read from the footer line in main.
+- **Old clients.** Screen inference is off when `capabilities.sessionRecord` is set; a
+  missing value means false.
+- **Removed:** `streamingText` and `QUEUED_MESSAGE_ADDED`.
+- **Interim:** phones may also report cards, restricted to the watched conversation, with the
+  card rebuilt in the parser's shape (digit or nav buttons, at most 8, length caps), and
+  phones never sync. **R5-4b removes phone card reporting once main detects cards itself.**
+- **Review:** "ship with fixes", all fixed:
+  - resume spinner watchdog;
+  - stale card;
+  - capability default;
+  - `/clear` fallback;
+  - refused `/model`;
+  - footer gating.
+- **Not verified live:** the native queue, spinner and label; a real refused `/model`; a real
+  dialog card. A refusal capture does not exist, so the wording is an assumption
+  (`cc-dependencies.md`).
+
 **Gate:** a scripted reconnect test. Drop the connection mid-turn and reconnect; bytes sent
 must be proportional to what was missed, not to total history. The first-connect timing must
 be measured on a **real phone** (dev-mode timing does not count, per the roadmap).
