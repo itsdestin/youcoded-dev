@@ -160,6 +160,13 @@ searched or resumed (chat-data).
       the Office build (the lists refresh each time the page is shown)
       `files-panel` `desktop` `confirmed` `checked 2026-09-28`
 
+- [ ] Office isn't available on ARM Linux (Raspberry Pi, some newer Linux laptops): Word, Excel
+      and PowerPoint files open with the default app there instead. No ready-made converter
+      (x2t) exists for linux-arm64, so it would have to be built from Euro-Office/core source
+      (about 1–2 days of build setup; Destin, 2026-10-01: ship without it for now, record the
+      follow-up)
+      `files-panel` `desktop` `confirmed` `checked 2026-10-01`
+
 - [ ] When the app quits in the middle of an Office save, a hidden leftover folder from that
       save can stay beside the document; it is cleaned up on that file's next save, but not when
       the file is only opened again
