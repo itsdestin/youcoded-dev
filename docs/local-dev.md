@@ -207,9 +207,12 @@ live-acceptance run):
    runtime checks did exactly that. For scripted checks that must create sessions, launch
    against a throwaway `HOME` the way `scripts/perf-lab/launch.mjs` does, or say so to Destin first.
    A throwaway `HOME` does NOT hide the GitHub login (`gh` keeps it in the OS keyring), so a smoke could publish a theme or open a pull
-   request on his real account (it did, 2026-10-01). `run-dev.sh` now handles this whenever `HOME` is not the real home: XDG dirs and
-   `GH_CONFIG_DIR` inside the HOME, token variables unset, and an empty D-Bus session (`scripts/dev-isolation.sh`; without
-   `dbus-run-session` it falls back to a decoy token, so calls fail with a 401). Any other launcher: `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`.
+   request on his real account (it did, 2026-10-01). `run-dev.sh` handles this whenever `HOME` is not the real home (`scripts/dev-isolation.sh`):
+   XDG dirs and `GH_CONFIG_DIR` inside the HOME, the GitHub, SSH-agent, AWS, npm and API-key variables unset, a KWallet "create wallet" prompt
+   switched off, and a private empty D-Bus session (`--stop` ends it and the services it started, by exact pid; without a `dbus-daemon` it falls
+   back to a decoy token, so calls fail with a 401). `XDG_RUNTIME_DIR` stays because the window's display socket lives there; the bus is chosen
+   by its explicit address. A HOME that resolves to the real home (trailing slash, link) is NOT isolated, with a warning. This hides credentials;
+   it is not a sandbox. Any other launcher: `HOME=<throwaway> bash scripts/dev-isolation.sh <command>`.
    Check with `HOME=<throwaway> bash scripts/dev-isolation.sh gh auth status`, which must say not logged in.
 
 ## Testing on a phone
