@@ -147,18 +147,6 @@ searched or resumed (chat-data).
       hands `.xlsx`/`.docx`/`.pptx` to Office); on the phone and remote web it is still look-only
       `files-panel` `all` `confirmed` `checked 2026-10-02`
 
-- [ ] A full office suite inside the app — Word/Excel/PowerPoint-class editing of documents,
-      spreadsheets and slides, "almost on par with OnlyOffice or Microsoft Office", as its own
-      pinned Office page, with the session and Project View file viewers getting a slimmer
-      editor that can hand a file over to the full one (Destin, 2026-09-24). Investigation
-      recommends borrowing OnlyOffice/Euro-Office's editors whole as a download-on-first-use
-      add-on; licence route decided 2026-09-24: the app stays MIT and the editors ship as a
-      separate AGPL add-on (Option A). Trial done 2026-09-27: all six real files opened and
-      saved with nothing lost, themed cleanly, ran in the app's Electron; gaps are memory, a
-      font bug and the phone layout. Next: design decks
-      Would also resolve the look-only spreadsheet item above
-      `files-panel` `all` `decision` `checked 2026-09-24` → docs/archive/investigations/2026-09-24-office-suite.md
-
 - [ ] Office's Home tab can show an out-of-date Recent list: open a document, switch back to
       the Home tab without leaving the Office page, and the file you just opened is not yet
       listed — it appears only after leaving the page and coming back. Accepted for now in
