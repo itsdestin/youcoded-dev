@@ -1,0 +1,23 @@
+{
+ "deck": "home-page-v2-r3",
+ "started": "2026-10-02T09:44:43.687Z",
+ "submitted": "2026-10-02T09:47:05Z",
+ "cur": 1,
+ "answers": {
+  "S-room-bright": {
+   "v": "yes",
+   "t": 1790934344996,
+   "seconds": 61,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-media-head": {
+   "note": "can we try moving the icon/card for now playing cards to the right? instead of being to the left of text? just a test.",
+   "t": 1790934424297,
+   "v": "other",
+   "seconds": 79,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  }
+ }
+}
