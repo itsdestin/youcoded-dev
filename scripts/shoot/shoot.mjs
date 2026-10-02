@@ -187,6 +187,20 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     r.panel = why.panel;
+    // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
+    // back with the theme's font on one side and the fallback on the other, at random. A
+    // theme font (meadow-mist's Nunito) is a Google Fonts stylesheet fetched over the network,
+    // and its family list falls back to a monospace font, so a shot taken before it lands
+    // shows a different typeface. `document.fonts.status` alone is not enough: before the
+    // stylesheet arrives no font is pending, so it already reads 'loaded'.
+    await waitFor(tab, `(() => {
+      const l = document.getElementById('theme-google-font');
+      if (l && !l.sheet) return false;
+      const fam = getComputedStyle(document.documentElement).getPropertyValue('--font-sans').split(',')[0].trim();
+      if (fam) document.fonts.load('16px ' + fam);
+      return document.fonts.status === 'loaded' && (!fam || document.fonts.check('16px ' + fam));
+    })()`, 10_000);
+    await tab.still(500);
     const png = await tab.png();
     const dir = join(outDir, ...screen.name.split('/')); mkdirSync(dir, { recursive: true });
     r.file = join(dir, `${theme}.png`); writeFileSync(r.file, png);
