@@ -1,0 +1,78 @@
+{
+  "title": "The Home page, round 4 again — pick a chip style, and three fixes",
+  "key": "home-page-v3-r2-choice",
+  "out": "home-page-v3-r2.choice.html",
+  "images": "images/home-page-v3-r2.choice",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "C-chips",
+      "surface": "Pages",
+      "path": "Pages → Home, the four chips at the top",
+      "headline": "Which chip style should the Home page use?",
+      "notice": "All three replace the filled accent icon you did not like, say the same words, and open the same pages. Moving parts step rather than glide, so they stay cheap, and stop if your system asks for reduced motion.",
+      "risk": "The chips sit at the top of the picture; zoom in to see the detail.",
+      "variants": [
+        {
+          "id": "aura",
+          "label": "Aura",
+          "crop": "pages/page/page-home#chips-aura",
+          "highlight": { "box": [21.6, 12.0, 74.2, 8.9] },
+          "summary": "Each chip glows softly in its own colours: Lights in the colours of the lights that are on, Media in the playing app's colour with bars bouncing, Climate from blue (cold) to orange (hot) by the temperature, Problems red with a pulsing dot (green when all good). Icons are outlines.",
+          "risk": "The glow is subtle on purpose; on pale themes it is fainter still."
+        },
+        {
+          "id": "meter",
+          "label": "Meter",
+          "crop": "pages/page/page-home#chips-meter",
+          "highlight": { "box": [21.6, 12.0, 74.2, 8.9] },
+          "summary": "A big number (5, 2, 77°, 4) with a bar under it: one segment per light in its own colour, one per player lit when playing, the outside and inside temperatures on a cold-to-hot scale, one segment per problem coloured by urgency.",
+          "risk": "The most information, and no motion at all; the second line gets cut short sooner."
+        },
+        {
+          "id": "live",
+          "label": "Live icons",
+          "crop": "pages/page/page-home#chips-live",
+          "highlight": { "box": [21.6, 12.0, 74.2, 8.9] },
+          "summary": "A bigger icon carries the state: the bulb glows in your lights' colour with a slowly turning ring, the speaker sends out waves while something plays, the thermometer fills to the temperature in its colour, the warning turns red with a pulsing ring.",
+          "risk": "The most movement: with music playing and a problem open, two things move at once."
+        }
+      ]
+    },
+    {
+      "id": "S-probs-grid",
+      "surface": "Pages",
+      "path": "Pages → Home → Problems",
+      "crop": "pages/page/page-home#problems",
+      "highlight": { "box": [21.6, 26.4, 74.2, 38.7] },
+      "headline": "Problems are now cards in a grid that fills the page, each with a coloured icon for what kind of problem it is.",
+      "changed": "Your note: the narrow list on the left looked proportionally odd. Each card has its icon and title on top, the explanation, then its fix buttons at the bottom.",
+      "notice": "Red is urgent (sign-in, failed to start), amber is a device not responding or a nearly dead battery.",
+      "risk": "With one problem, a single card sits on the left of an otherwise empty row."
+    },
+    {
+      "id": "S-weather",
+      "surface": "Pages",
+      "path": "Pages → Home → Climate",
+      "crop": "pages/page/page-home#climate",
+      "highlight": { "box": [21.6, 26.4, 74.2, 13.8] },
+      "headline": "The weather is a wide card painted like the sky outside, with a big temperature, an icon, humidity and the inside temperature.",
+      "changed": "Your note: the old card's sizing was odd. Tonight is a deep night blue with a moon; a sunny day is blue to warm orange, rain is slate, cloud is grey.",
+      "notice": "Its text is always white, so the sky colours are kept deep enough to read it.",
+      "risk": "No forecast yet: say if you want the next few hours or days on it."
+    },
+    {
+      "id": "S-settings-page",
+      "surface": "Pages",
+      "path": "Pages → Home → the gear",
+      "crop": "pages/page/page-home#settings",
+      "highlight": { "box": [21.6, 26.4, 49.2, 25.0] },
+      "headline": "Settings are a full page now, like a chip's page, in two sections: At a glance (the chips) and In each room.",
+      "changed": "Your note: it should be a full page. Back, top left, returns home; so does the gear again.",
+      "notice": "Sections sit side by side when there is room; more sections can be added as the page grows.",
+      "risk": "The chip style you pick here will also become a setting on this page."
+    }
+  ]
+}
