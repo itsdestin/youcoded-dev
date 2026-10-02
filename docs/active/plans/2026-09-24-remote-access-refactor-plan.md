@@ -977,6 +977,8 @@ workspace `3822d495`, `5cde146a`):
 - **Review:** "ship with fixes" for both halves, and all of them are fixed.
 - **Final verify:** `verify --full` passes all 9 checks.
 
+**Parked by Destin (2026-10-02):** the blue "reply ready" dot stays per screen, as designed in R5-3. A reply read on the computer still shows blue on the phone. The option of making "seen" shared through the record was offered, and he said "leave it for now".
+
 **R6 status:** R6-1, R6-2 and R6-3 are built. **The remote refactor R1–R6 is code-complete.**
 What remains:
 - merge prep (rebase onto master, rewrite in-flight branches, the doc sweep);
