@@ -70,10 +70,10 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 108 | 35 | 4 | 11 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 110 | 35 | 4 | 11 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
+| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 44 | 15 | 2 | 10 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 39 | 16 | 2 | 5 |
-| [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 36 | 15 | 2 | 10 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 30 | 7 | 1 | 4 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 28 | 10 | 10 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 25 | 5 | 7 | 7 |
