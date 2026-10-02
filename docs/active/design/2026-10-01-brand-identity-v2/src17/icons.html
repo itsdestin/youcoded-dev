@@ -1,0 +1,423 @@
+<!doctype html>
+<!-- icons.html?i=<id>&px=<size> — round 7 icons, drawn in the site's own material: frosted glass
+     over the theme's wallpaper. WHY HTML, not SVG: real glass needs backdrop-filter (the blur
+     and colour-lift of whatever is behind), which only CSS gives. shoot.sh screenshots each at
+     512px on a transparent background, then shrinks to the small sizes, so a 16px icon is the
+     real thing shrunk, not a separate idealised drawing.
+     The mascot appears only as its SILHOUETTE: the rig's exact body (14×12, corner 4), arms
+     (3×4) and legs (3.5×4) on its own 24-unit grid — Destin, round 6: "we don't need to use an
+     actual mascot, just some part of its silhouette/shape/spirit." -->
+<meta charset="utf-8">
+<link href="../src6/fonts/fonts.css" rel="stylesheet">
+<link href="../src8/fonts/fonts.css" rel="stylesheet">
+<style>
+  html, body { margin:0; background:transparent; }
+  .ic { position:relative; width:var(--S); height:var(--S); }
+  .ic * { position:absolute; box-sizing:border-box; }
+  /* the theme wallpaper, blurred to pure colour: the site's sunset, as the tile's light */
+  .tile { inset:0; border-radius:22.5%; overflow:hidden; box-shadow: 0 calc(var(--S)*.03) calc(var(--S)*.06) rgba(60,20,90,.28); }
+  .tile .wall { inset:-20%; background:url(../src6/walls/cotton-candy-sky.jpg) 40% 55%/cover; filter:blur(calc(var(--S)*.045)) saturate(1.35); }
+  .tile .wall.v2 { background-position:62% 30%; }
+  .tile .tint { inset:0; }
+  .tile .edge { inset:0; border-radius:inherit; box-shadow: inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.75), inset 0 0 0 calc(var(--S)*.003) rgba(255,255,255,.45); }
+  .tile.glass .edge { box-shadow: inset 0 calc(var(--S)*.004) 0 #fff, inset 0 0 0 calc(var(--S)*.006) rgba(150,100,190,.32); }
+  .glass::after { content:''; position:absolute; inset:0; border-radius:inherit; background:radial-gradient(90% 55% at 28% 8%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%); pointer-events:none; }
+  /* frosted glass, the site's tile material */
+  .glass { background:linear-gradient(165deg, rgba(255,255,255,.62), rgba(255,255,255,.18) 48%, rgba(255,255,255,.30));
+           backdrop-filter: blur(calc(var(--S)*.03)) saturate(1.6) brightness(1.06);
+           box-shadow: inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.95), inset 0 0 0 calc(var(--S)*.0025) rgba(255,255,255,.55),
+                       inset 0 calc(var(--S)*-.03) calc(var(--S)*.05) rgba(120,50,170,.16), 0 calc(var(--S)*.025) calc(var(--S)*.05) rgba(70,20,110,.22); }
+  /* lit-from-inside colour glass: the brand gradient with a specular top */
+  .gem { background: radial-gradient(120% 90% at 30% 12%, rgba(255,255,255,.55), rgba(255,255,255,0) 42%),
+                     linear-gradient(170deg, #B07BE0 0%, #8B47B8 48%, #C2549B 100%);
+         box-shadow: inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.7), inset 0 calc(var(--S)*-.02) calc(var(--S)*.03) rgba(60,10,90,.35),
+                     0 calc(var(--S)*.02) calc(var(--S)*.045) rgba(90,30,130,.35); }
+  .gem.rim { box-shadow: inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.75), inset 0 calc(var(--S)*-.02) calc(var(--S)*.03) rgba(60,10,90,.35),
+               0 0 0 calc(var(--S)*.006) rgba(255,255,255,.75), 0 calc(var(--S)*.03) calc(var(--S)*.05) rgba(60,15,100,.45); }
+  .milk { background: radial-gradient(110% 80% at 30% 10%, #fff, rgba(255,255,255,0) 55%), linear-gradient(170deg, rgba(255,255,255,.96), rgba(244,234,250,.9));
+          box-shadow: inset 0 calc(var(--S)*-.025) calc(var(--S)*.04) rgba(140,80,190,.22), inset 0 0 0 calc(var(--S)*.003) rgba(255,255,255,.9),
+                      0 calc(var(--S)*.03) calc(var(--S)*.05) rgba(50,10,90,.4); }
+  .pane { background:linear-gradient(165deg, rgba(255,255,255,.5), rgba(255,255,255,.16) 55%, rgba(255,255,255,.26)); backdrop-filter: blur(calc(var(--S)*.05)) saturate(1.5);
+          box-shadow: inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.95), inset 0 0 0 calc(var(--S)*.003) rgba(255,255,255,.5), 0 calc(var(--S)*.02) calc(var(--S)*.04) rgba(60,20,100,.2); }
+  .milkt { background:linear-gradient(175deg,#fff 30%,#EBDDF6 95%); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 calc(var(--S)*.018) calc(var(--S)*.03) rgba(50,10,90,.45));  }
+  .night .wall { filter: blur(calc(var(--S)*.045)) saturate(1.4) brightness(.42) !important; }
+  .eye { background: radial-gradient(60% 40% at 62% 30%, rgba(255,255,255,.9) 0 30%, rgba(255,255,255,0) 32%), #241334; border-radius:50%; }
+  .eye.light { background: radial-gradient(60% 40% at 62% 30%, rgba(255,255,255,.95) 0 30%, rgba(255,255,255,0) 32%), #3b1d55; }
+  .txt { font-family:'Outfit'; font-weight:600; letter-spacing:-.035em; line-height:1; color:#fff; white-space:nowrap; }
+</style>
+<body><div id="r"></div>
+<script>
+const P = new URLSearchParams(location.search), I = P.get('i') || 'g1', S = +(P.get('px') || 512), u = S / 100;
+const THEME = { purple: ['cotton-candy-sky', '#B07BE0', '#8B47B8', '#C2549B', '#241334'], golden: ['golden-sunbreak', '#FFD27A', '#E9A21F', '#D2701E', '#3a2408'],
+  meadow: ['meadow-mist', '#8FD1A8', '#2F7D55', '#1F5A40', '#0f2a1c'], strawberry: ['strawberry-kitty', '#F7A3B5', '#CC4060', '#A52A4A', '#3A1420'],
+  kuromi: ['kuromi-dreamer', '#C9A8E8', '#6B4596', '#3B2A55', '#1a1028'], devils: ['devils-garden', '#FFD27A', '#E0632E', '#7a2a10', '#2a0e06'] }[P.get('t') || 'purple'];
+const SMALL = P.get('small') === '1';
+// [eye colour, sparkle colour, tile tint top, tile tint bottom, rim colour] per theme
+const EYE = { purple: ['#2A1046', '#FFFFFF', '#F6ECFB', '#E2CDF0', '#7A3FA8'], golden: ['#4A2805', '#FFF1CF', '#FFF4DF', '#F3D9A6', '#A86A12'],
+  meadow: ['#0E3A24', '#EAFFF2', '#EEF7EF', '#CDE5D2', '#2F7D55'], strawberry: ['#5A1428', '#FFEFF4', '#FFF0F3', '#F7CCD7', '#B8385A'],
+  kuromi: ['#2A1748', '#F4EAFF', '#F2ECFA', '#D9CCEC', '#5E4390'], devils: ['#3E0C06', '#FFE6CF', '#FFF0E6', '#F2C9B0', '#B2421C'] }[P.get('t') || 'purple'];
+const st = document.createElement('style');
+st.textContent = `.tile .wall{background-image:url(../src6/walls/${THEME[0]}.jpg)!important}
+  .gem{background:radial-gradient(120% 90% at 30% 12%, rgba(255,255,255,.55), rgba(255,255,255,0) 42%), linear-gradient(170deg, ${THEME[1]} 0%, ${THEME[2]} 48%, ${THEME[3]} 100%)!important}
+  .eye:not([style*="background"]){background:radial-gradient(60% 40% at 62% 30%, rgba(255,255,255,.9) 0 30%, rgba(255,255,255,0) 32%), ${THEME[4]}!important}`;
+document.head.appendChild(st);
+document.documentElement.style.setProperty('--S', S + 'px');
+const R = document.getElementById('r');
+
+// The silhouette on the rig's 24-unit grid, scaled so the BODY is `w` icon-units wide and its
+// centre (rig 12,10) sits at (cx,cy). Each part gets class `cls`. parts picks which appear.
+function buddy({ cx = 50, cy = 50, w = 50, cls = 'glass', limb = null, parts = 'abl', eyes = false, eyeCls = '', clipBelow = null, arms = [0, 0], eyeScale = 1 }) {
+  const k = (w / 14) * u, X = (x) => (cx * u + (x - 12) * k), Y = (y) => (cy * u + (y - 10) * k);
+  const box = (x, y, ww, hh, r, extra = '', c = cls) => `<div class="${c}" style="left:${X(x)}px;top:${Y(y)}px;width:${ww * k}px;height:${hh * k}px;border-radius:${r * k}px;${extra}"></div>`;
+  let h = '';
+  if (parts.includes('a')) {
+    h += box(1, 9, 3, 4, 0.8, arms[0] ? `transform-origin:${1.5 * k}px 0;transform:rotate(${arms[0]}deg)` : '', limb || cls);
+    h += box(20, 9, 3, 4, 0.8, arms[1] ? `transform-origin:${1.5 * k}px 0;transform:rotate(${arms[1]}deg)` : '', limb || cls);
+  }
+  if (parts.includes('l')) { h += box(7.2, 17, 3.5, 4, 1.2, '', limb || cls); h += box(13.3, 17, 3.5, 4, 1.2, '', limb || cls); }
+  if (parts.includes('b')) h += box(5, 4, 14, 12, 4);
+  if (eyes) { const ew = 1.6 * eyeScale, eh = 2.2 * eyeScale; h += `<div class="eye ${eyeCls}" style="left:${X(9.3 - ew)}px;top:${Y(9.55 - eh)}px;width:${2 * ew * k}px;height:${2 * eh * k}px"></div><div class="eye ${eyeCls}" style="left:${X(14.7 - ew)}px;top:${Y(9.25 - eh)}px;width:${2 * ew * k}px;height:${2 * eh * k}px"></div>`; }
+  return h;
+}
+const tile = (inner = '', v = '') => `<div class="tile"><div class="wall ${v}"></div>${inner}<div class="edge"></div></div>`;
+const smoke = (inner = '', top = '#8E879C', bot = '#5E5870') => `<div class="tile" style="background:radial-gradient(110% 70% at 28% 6%, rgba(255,255,255,.45), rgba(255,255,255,0) 55%), linear-gradient(165deg,${top},${bot});box-shadow:0 calc(var(--S)*.03) calc(var(--S)*.06) rgba(30,20,50,.35)">${inner}<div class="edge" style="box-shadow:inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.75), inset 0 0 0 calc(var(--S)*.004) rgba(255,255,255,.3)"></div></div>`;
+const dark = (inner = '') => `<div class="tile" style="background:linear-gradient(165deg,#2C1B40,#120A1C);box-shadow:0 calc(var(--S)*.03) calc(var(--S)*.06) rgba(20,5,40,.4)">${inner}<div class="edge" style="box-shadow:inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.35), inset 0 0 0 calc(var(--S)*.004) rgba(255,255,255,.12)"></div></div>`;
+const frost = (inner = '', tint = false) => `<div class="tile glass" style="backdrop-filter:none;background:linear-gradient(165deg,${tint ? EYE[2] : '#FBF6FD'},${tint ? EYE[3] : '#E9DCF2'})">${inner}<div class="edge"></div></div>`;
+
+const ICONS = {
+  // G1 — a glass mascot silhouette floating over the theme's light. No face: pure shape.
+  g1: () => tile(buddy({ cx: 50, cy: 44, w: 50 })),
+  // G2 — the same glass silhouette with its two eyes: the least you need for it to look back at you.
+  g2: () => tile(buddy({ cx: 50, cy: 44, w: 50, eyes: true })),
+  // G3 — the site's frosted mascot tile, with the silhouette as a glowing colour-glass shape inside.
+  g3: () => frost(buddy({ cx: 50, cy: 45, w: 46, cls: 'gem' })),
+  // G4 — the peek (your A2): the colour-glass body rises from the tile's bottom edge, eyes just clearing it.
+  g4: () => frost(`<div style="inset:0;border-radius:inherit;overflow:hidden">${buddy({ cx: 50, cy: 78, w: 72, cls: 'gem', parts: 'b', eyes: true, eyeCls: 'light' })}</div>`),
+  // G5 — the tile IS the body: a glass tile in the body's 14×12 proportion, standing on its two
+  // legs with its arms at its sides, "yc" on its face. The app icon as the mascot, minimally.
+  g5: () => { const k = u * 100 / 22.4;
+    return `<div style="left:${(50 - 7 * 100 / 22.4 * 1) * u}px;top:${(50 - 8.4 * 100 / 22.4) * u}px">${''}</div>` +
+      buddy({ cx: 50, cy: 44.6, w: 62.5, cls: 'gem', parts: 'al' }) +
+      `<div class="tile" style="left:${(50 - 31.25) * u}px;top:${(44.6 - 26.8) * u}px;width:${62.5 * u}px;height:${53.6 * u}px;border-radius:${17.9 * u}px"><div class="wall v2"></div><div class="edge"></div>
+         <div class="txt" style="left:0;right:0;top:${15.5 * u}px;text-align:center;font-size:${30 * u}px;text-shadow:0 ${u * .6}px ${u * 1.6}px rgba(70,20,110,.35)">yc</div></div>`; },
+  // G6 — the two eyes alone, on glass. The mascot's whole spirit in two shapes; the most minimal.
+  g6: () => tile(`<div class="glass" style="left:${18 * u}px;top:${22 * u}px;width:${64 * u}px;height:${55 * u}px;border-radius:${18.3 * u}px"></div>` +
+      buddy({ cx: 50, cy: 50, w: 64, parts: '', eyes: true })),
+
+  // ======== round 8: G2 / G5 / G6 directions, with the mascot lifted off the background ========
+  // K1 — G2, but the silhouette is milk-glass (near-opaque, bright rim, real shadow), not clear glass.
+  k1: () => tile(buddy({ cx: 50, cy: 44, w: 50, cls: 'milk', eyes: true })),
+  // K2 — G2 in layers: wallpaper, then a frosted pane, then the colour-glass mascot standing on it.
+  k2: () => tile(`<div class="pane" style="left:${9 * u}px;top:${9 * u}px;width:${82 * u}px;height:${82 * u}px;border-radius:${18 * u}px"></div>` +
+      buddy({ cx: 50, cy: 45, w: 44, cls: 'gem rim', eyes: true, eyeCls: 'light' })),
+  // K3 — G2 at night: the theme's wallpaper darkened, the milk-glass mascot glowing in front of it.
+  k3: () => tile(`<div style="left:${25 * u}px;top:${18 * u}px;width:${50 * u}px;height:${50 * u}px;border-radius:50%;background:radial-gradient(rgba(220,170,255,.55),rgba(220,170,255,0) 70%);filter:blur(${3 * u}px)"></div>` +
+      buddy({ cx: 50, cy: 44, w: 50, cls: 'milk', eyes: true }), 'night').replace('class="tile"', 'class="tile night"'),
+  // K4 — G6 refined: the face panel in milk-glass with a bright rim, bigger eyes, real lift.
+  k4: () => tile(`<div class="milk" style="left:${17 * u}px;top:${21 * u}px;width:${66 * u}px;height:${57 * u}px;border-radius:${19 * u}px"></div>` +
+      buddy({ cx: 50, cy: 50.5, w: 66, parts: '', eyes: true, eyeScale: 1.1 })),
+  // K5 — G6 inverted: the face panel in colour-glass on a frosted-white tile, white-sparkle eyes.
+  k5: () => frost(`<div class="gem rim" style="left:${17 * u}px;top:${21 * u}px;width:${66 * u}px;height:${57 * u}px;border-radius:${19 * u}px"></div>` +
+      buddy({ cx: 50, cy: 50.5, w: 66, parts: '', eyes: true, eyeCls: 'light', eyeScale: 1.1 })),
+  // K6 — G5 refined: the standing tile-body, wallpaper inside, its face now the two eyes (the "yc"
+  // smudged when small); colour-glass limbs with a rim so they stand off any background.
+  k6: () => buddy({ cx: 50, cy: 44.6, w: 62.5, cls: 'gem rim', parts: 'al' }) +
+      `<div class="tile" style="left:${(50 - 31.25) * u}px;top:${(44.6 - 26.8) * u}px;width:${62.5 * u}px;height:${53.6 * u}px;border-radius:${17.9 * u}px"><div class="wall v2"></div><div class="edge"></div></div>` +
+      buddy({ cx: 50, cy: 44.6, w: 62.5, parts: '', eyes: true, eyeScale: 1.05 }),
+  // K7 — G5 in milk-glass: a white glass body standing on colour-glass legs, "yc" in the brand gradient.
+  k7: () => buddy({ cx: 50, cy: 44.6, w: 62.5, cls: 'gem rim', parts: 'al' }) +
+      `<div class="milk" style="left:${(50 - 31.25) * u}px;top:${(44.6 - 26.8) * u}px;width:${62.5 * u}px;height:${53.6 * u}px;border-radius:${17.9 * u}px"></div>` +
+      `<div class="txt" style="left:0;right:0;top:${(44.6 - 26.8 + 13) * u}px;text-align:center;font-size:${32 * u}px;background:linear-gradient(170deg,#B07BE0,#8B47B8 50%,#C2549B);-webkit-background-clip:text;background-clip:text;color:transparent">yc</div>`,
+  // K8 — G5 on a tile: the standing mascot (wallpaper body) set on a frosted tile, for places that need a square.
+  k8: () => frost(buddy({ cx: 50, cy: 44, w: 44, cls: 'gem rim', parts: 'al' }) +
+      `<div class="tile" style="left:${(50 - 22) * u}px;top:${(44 - 18.86) * u}px;width:${44 * u}px;height:${37.7 * u}px;border-radius:${12.6 * u}px;box-shadow:0 0 0 ${0.6 * u}px rgba(255,255,255,.8),0 ${2 * u}px ${4 * u}px rgba(60,15,100,.4)"><div class="wall v2"></div><div class="edge"></div></div>` +
+      buddy({ cx: 50, cy: 44, w: 44, parts: '', eyes: true })),
+
+  // ======== installers, H3's family: wallpaper, a frosted band, the download arrow, the mascot ========
+  // J1 — H3 refined: the colour-glass mascot (rimmed) standing on the frosted band.
+  j1: () => tile(buddy({ cx: 50, cy: 34, w: 40, cls: 'gem rim', eyes: true, eyeCls: 'light' }) +
+      `<div class="pane" style="left:0;right:0;bottom:0;height:${30 * u}px;border-radius:0"></div>` + arrow(50, 86, 1)),
+  // J2 — sinking in: the mascot is halfway down through the frosted band; the glass blurs its lower half.
+  j2: () => tile(buddy({ cx: 50, cy: 50, w: 46, cls: 'gem rim', eyes: true, eyeCls: 'light' }) +
+      `<div class="pane" style="left:0;right:0;bottom:0;height:${44 * u}px;border-radius:0"></div>` + arrow(50, 86, 1)),
+  // J3 — peeking up from behind the band: only the top of the body and the eyes clear the glass.
+  j3: () => tile(buddy({ cx: 50, cy: 54.5, w: 58, cls: 'gem rim', parts: 'b', eyes: true, eyeCls: 'light' }) +
+      `<div class="pane" style="left:0;right:0;bottom:0;height:${36 * u}px;border-radius:0"></div>` + arrow(50, 84, 1)),
+  // J4 — the band IS the arrow: a frosted glass chevron pointing down, the mascot riding on top of it.
+  j4: () => tile(`<div class="pane" style="left:${14 * u}px;top:${52 * u}px;width:${72 * u}px;height:${40 * u}px;clip-path:polygon(0 0,100% 0,100% 30%,50% 100%,0 30%);border-radius:0"></div>` +
+      buddy({ cx: 50, cy: 33, w: 38, cls: 'gem rim', eyes: true, eyeCls: 'light' })),
+  // J5 — the band is a glass shelf with the arrow etched in, the mascot holding on from below it, falling into place.
+  j5: () => tile(`<div class="pane" style="left:${8 * u}px;top:${8 * u}px;width:${84 * u}px;height:${24 * u}px;border-radius:${9 * u}px"></div>` + arrow(50, 20, .9) +
+      buddy({ cx: 50, cy: 46, w: 40, cls: 'gem rim', eyes: true, eyeCls: 'light', arms: [168, -168] })),
+
+  // ======== round 9: name / "yc" integrated (Destin: "integrate the name or other stuff") ========
+  // Lettering follows the name's font (DM Sans here until a font is picked).
+  // Y1 — K4's face, and its mouth is "yc": the initials become the expression.
+  y1: () => tile(`<div class="milk" style="left:${17 * u}px;top:${21 * u}px;width:${66 * u}px;height:${57 * u}px;border-radius:${19 * u}px"></div>` +
+      buddy({ cx: 50, cy: 44, w: 66, parts: '', eyes: true, eyeScale: .95 }) + gemText('yc', 50, 55.5, 18)),
+  // Y2 — the initials alone: "yc" in milk-glass on the theme's colour. The standard for "yc" anywhere.
+  y2: () => tile(`<div class="txt milkt" style="left:0;right:0;top:${21 * u}px;text-align:center;font-size:${58 * u}px">yc</div>`),
+  // Y3 — K6 standing up, with "yc" as its mouth under the eyes.
+  y3: () => buddy({ cx: 50, cy: 44.6, w: 62.5, cls: 'gem rim', parts: 'al' }) +
+      `<div class="tile" style="left:${(50 - 31.25) * u}px;top:${(44.6 - 26.8) * u}px;width:${62.5 * u}px;height:${53.6 * u}px;border-radius:${17.9 * u}px"><div class="wall v2"></div><div class="edge"></div></div>` +
+      buddy({ cx: 50, cy: 41, w: 62.5, parts: '', eyes: true, eyeScale: .95 }) +
+      `<div class="txt" style="left:0;right:0;top:${55 * u}px;text-align:center;font-size:${16 * u}px;text-shadow:0 ${.4 * u}px ${1 * u}px rgba(60,15,100,.4)">yc</div>`,
+  // Y4 — the badge: K4's face above the full word on a frosted tile. For avatars and stores, not 16px.
+  y4: () => frost(`<div class="milk" style="left:${29 * u}px;top:${14 * u}px;width:${42 * u}px;height:${36 * u}px;border-radius:${12 * u}px;background:radial-gradient(110% 80% at 30% 10%, rgba(255,255,255,.6), rgba(255,255,255,0) 55%),linear-gradient(170deg,#B07BE0,#8B47B8 50%,#C2549B)"></div>` +
+      buddy({ cx: 50, cy: 32, w: 42, parts: '', eyes: true, eyeCls: 'light' }) + gemText('youcoded', 50, 66, 17, true)),
+
+  // ======== installers, rebuilt on H3's exact recipe with the icons Destin picked ========
+  i1: () => h3With(`<div class="milk" style="left:${26 * u}px;top:${12 * u}px;width:${48 * u}px;height:${41 * u}px;border-radius:${14 * u}px"></div>` + buddy({ cx: 50, cy: 32.5, w: 48, parts: '', eyes: true })),
+  i2: () => h3With(buddy({ cx: 50, cy: 31, w: 34, cls: 'gem rim', parts: 'al' }) +
+      `<div class="milk" style="left:${33 * u}px;top:${16.4 * u}px;width:${34 * u}px;height:${29.1 * u}px;border-radius:${9.7 * u}px"></div>` + buddy({ cx: 50, cy: 31, w: 34, parts: '', eyes: true })),
+  i3: () => h3With(`<div class="milk" style="left:${26 * u}px;top:${10 * u}px;width:${48 * u}px;height:${41 * u}px;border-radius:${14 * u}px"></div>` +
+      buddy({ cx: 50, cy: 25.5, w: 48, parts: '', eyes: true, eyeScale: .9 }) + gemText('yc', 50, 34.5, 13)),
+
+  // ======== round 10: the K4 family (Destin: "more variants like k4 … different but similar") ========
+  m1: () => tile(face({})),                                                    // K4 itself, for reference
+  m2: () => tile(face({ eyes: 'wink' })),                                      // a wink
+  m3: () => tile(face({ eyes: 'glance', tilt: -7 })),                          // glancing up and aside
+  m4: () => tile(face({ cy: 74, w: 70, eyesY: -8 }), ''),                      // peeking up from the bottom edge
+  m5: () => tile(face({ eyes: 'reflect' })),                                   // the sunset reflected in its eyes
+  m6: () => tile(face({ slab: true })),                                        // a thick slab of glass
+  m7: () => tile(`<div style="left:${18 * u}px;top:${16 * u}px;width:${64 * u}px;height:${64 * u}px;border-radius:50%;background:radial-gradient(rgba(225,180,255,.6),rgba(225,180,255,0) 68%);filter:blur(${3 * u}px)"></div>` + face({})).replace('class="tile"', 'class="tile night"'),
+  m8: () => tile(`<div style="left:${30 * u}px;top:${84 * u}px;width:${40 * u}px;height:${5 * u}px;border-radius:50%;background:radial-gradient(rgba(50,10,90,.45),rgba(50,10,90,0) 70%)"></div>` + face({ cy: 44, squash: true })), // mid-bounce
+  m9: () => frost(face({ inverse: true })),                                    // the wallpaper inside the face
+  m10: () => tile(face({ eyes: 'happy' })),                                    // happy, eyes closed
+  // ======== box installers (Destin: "kinda like the box idea better") — all in glass ========
+  n1: () => tile(face({ cx: 50, cy: 47, w: 44, eyesY: -3 }) + glassBox({ top: 56 })),                          // peeking out of an open glass box
+  n2: () => tile(face({ cx: 50, cy: 62, w: 40 }) + glassBox({ top: 46, closed: true }) + arrowOn(50, 37, .8)),  // inside, seen through frosted glass
+  n3: () => tile(face({ cx: 50, cy: 27, w: 36 }) + arrowOn(50, 51, .7) + glassBox({ top: 62, short: true })),  // being lowered in
+  n4: () => tile(face({ cx: 50, cy: 47, w: 44, eyesY: -3 }) + glassBox({ top: 56, ribbon: true })),            // a present
+  n5: () => tile(face({ cx: 50, cy: 33, w: 34, eyesY: -2 }) + glassBox({ top: 40, small: true }) +
+      `<div class="glass" style="left:0;right:0;bottom:0;height:${32 * u}px;border-radius:0"></div>` + arrowOn(50, 84, 1)),  // H3's band, with the box on it
+
+  // ---- round 11 icons ----
+  p1: () => frost(face2({ cy: 37, w: 58 }) + nameBelow(66, 15.5)),               // M9, higher, "youcoded" below
+  p2: () => frost(face2({ cy: 38, w: 58 }) + ycBelow(62, 24)),                    // M9, higher, "yc" below
+  p3: () => frost(face2({ cy: 50, w: 76 })),                                      // M9, bigger
+  p4: () => tile(face2({ cy: 74, w: 72, mat: 'milk', eyesY: -8 })),               // M4 (your pick), with the deeper shadow
+  // glass settings, on the bigger M9
+  gs1: () => frost(face2({ cy: 50, w: 76, blur: 'sharp' })),
+  gs2: () => frost(face2({ cy: 50, w: 76, blur: 'soft' })),
+  gs3: () => frost(face2({ cy: 50, w: 76, blur: 'heavy' })),
+  gs4: () => frost(face2({ cy: 50, w: 76, blur: 'haze' })),
+  // eye styles, on the bigger M9
+  e1: () => frost(face2({ cy: 50, w: 76, eye: 'ink' })),
+  e2: () => frost(face2({ cy: 50, w: 76, eye: 'rim' })),
+  e3: () => frost(face2({ cy: 50, w: 76, eye: 'white' })),
+  e4: () => frost(face2({ cy: 50, w: 76, eye: 'gem' })),
+  e5: () => frost(face2({ cy: 50, w: 76, eye: 'glow' })),
+  // ---- installers: N3, refined ----
+  q1: () => tile(streaks([[42, 47, 60], [50, 49, 61], [58, 47, 60]]) + face2({ cy: 31, w: 50, mat: 'milk' }) + box2({})),
+  q2: () => tile(streaks([[40, 40, 61, .6], [50, 43, 62], [60, 40, 61, .6]]) + face2({ cy: 24, w: 46, mat: 'milk', tilt: -6 }) + box2({})),
+  q3: () => tile(face2({ cy: 47, w: 50, mat: 'milk' }) + box2({ top: 60 }) + streaks([[18, 30, 46, .7], [82, 30, 46, .7], [14, 40, 52, .5], [86, 40, 52, .5]])),
+
+  // ---- round 12 ----
+  // R1 — P3 with heavy blur (Destin's pick), the all-sides shadow, and the contrast lift.
+  r1: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2 })),
+  // R2 — same face, same size, with "youcoded" squeezed in below.
+  r2: () => frost(face2({ cy: 41.5, w: 76, blur: 'heavy', around: true, lift: .2 }) + nameBelow(78.5, 13)),
+  // R0 — R1 without the lift, to show what it fixes.
+  r0: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true })),
+  // S1 — Q2 refined: lower, wider opening, flush flaps, tiny traces.
+  s1: () => tile(traces([[21, 31, 5, 10], [24, 39, 4, 10], [76, 25, 5, 10], [79, 33, 4, 10]]) + face2({ cy: 35, w: 50, mat: 'milk', tilt: -6, around: true }) + box2({ top: 66, L: 15, R: 85, B: 94, flush: true })),
+  s2: () => tile(traces([[20, 34, 4, 8], [80, 28, 4, 8]]) + face2({ cy: 38, w: 50, mat: 'milk', tilt: -6, around: true }) + box2({ top: 68, L: 13, R: 87, B: 95, flush: true })),
+
+  // ---- round 13 ----
+  // A — R1 with each theme's own eyes
+  ra: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme' })),
+  // B — A, on a tile tinted in the theme's colour instead of white
+  rb: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme' }), true),
+  // C — A, with a thin rim in the theme's colour around the face
+  rc: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true })),
+  // D — B + C together
+  rd: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true }), true),
+  // Installer: round 11's Q2 box exactly, flaps spread wider, short thin streaks under the face (u1) or whoosh arcs (u2)
+  u1: () => tile(trail([[44, 50, 6], [50, 51.5, 7.5], [56, 50, 6]]) + face2({ cy: 24, w: 46, mat: 'milk', tilt: -6 }) + box3({})),
+  u2: () => tile(whoosh() + face2({ cy: 24, w: 46, mat: 'milk', tilt: -6 }) + box3({})),
+
+  // ---- round 14: the finals ----
+  // FINAL app icon: R1 + each theme's own eyes + thin theme-coloured rim (Destin's pick C, round 13).
+  fin: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true })),
+  // FINAL installer: U1, face a little lower, streaks spread wider and a touch shorter (round 13 notes).
+  fini: () => tile(trail([[38, 53, 4.6], [50, 54, 5.4], [62, 53, 4.6]]) + face2({ cy: 29, w: 46, mat: 'milk', tilt: -6 }) + box3({})),
+
+  // ---- round 14b: mouths, dark version, inverted installer ----
+  ma: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'smile' })),
+  mb: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'open' })),
+  mc: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'o' })),
+  md: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'cat' })),
+  me: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'grin' })),
+  mf: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'flat' })),
+  dk: () => dark(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true })),
+  // the installer inverted like the app icon: white glass tile, the theme's picture inside the face,
+  // a lavender-glass box (white glass would vanish on white), streaks in the theme's colour
+  fiv: () => frost(trailC([[38, 53, 4.6], [50, 54, 5.4], [62, 53, 4.6]]) + face2({ cy: 29, w: 46, blur: 'heavy', lift: .2, eye: 'theme', rim: true, around: true, tilt: -6 }) +
+      box3({}).replace(/rgba\(255,255,255,\.(78|88)\),rgba\(255,255,255,\.(42|5)\)/g, 'rgba(226,208,244,.97),rgba(196,168,228,.95)')),
+
+  // ---- round 16 ----
+  mg: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'wide' })),
+  mh: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'dsmile' })),
+  mi: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'usoft' })),
+  mj: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'oval' })),
+  mk: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'tiny' })),
+  ma2: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'smile' })),
+  mc2: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'o' })),
+  // grey glass tiles, light to deep
+  gy1: () => smoke(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true }), '#C9C4D3', '#A29CB1'),
+  gy2: () => smoke(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true }), '#A9A3B6', '#7D7690'),
+  gy3: () => smoke(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true }), '#8E879C', '#5E5870'),
+  // installer: the inverted face (theme picture inside, rim, theme eyes), straight and a little smaller, on the colourful background
+  fv2: () => tile(trail([[39, 53, 4.6], [50, 54, 5.4], [61, 53, 4.6]]) + face2({ cy: 31, w: 42, blur: 'heavy', lift: .2, eye: 'theme', rim: true, around: true }) + box3({})),
+
+  // ---- round 17: soft / round / happy mouths ----
+  o1: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'halfmoon' })),
+  o2: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'bigo' })),
+  o3: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'roundd' })),
+  o4: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'halfmoon', blush: true })),
+  o5: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'oval', blush: true })),
+  o6: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'dsmile', blush: true })),
+  // ---- installers ----
+  // H1 — the app icon (G2 shown) on a glass base, with a glass download badge. Apple-plain.
+  h1: () => `<div style="left:${4 * u}px;top:${2 * u}px;width:${80 * u}px;height:${80 * u}px;--S:${80 * u}px">${tileIn(buddy, 0.8)}</div>` +
+      `<div class="glass" style="left:${58 * u}px;top:${58 * u}px;width:${38 * u}px;height:${38 * u}px;border-radius:50%;background:linear-gradient(165deg,rgba(255,255,255,.9),rgba(240,228,248,.75))"></div>` +
+      `<svg style="left:${58 * u}px;top:${58 * u}px;width:${38 * u}px;height:${38 * u}px" viewBox="0 0 38 38"><path d="M19 10 V27 M12 20.5 L19 27.5 L26 20.5" fill="none" stroke="#8B47B8" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  // H2 — arriving: the glass silhouette lowering into a frosted tile on a soft beam of light.
+  h2: () => frost(`<div style="left:${33 * u}px;top:0;width:${34 * u}px;height:${100 * u}px;background:linear-gradient(rgba(255,255,255,0),rgba(196,150,230,.45) 70%,rgba(196,150,230,0));filter:blur(${2 * u}px)"></div>` +
+      buddy({ cx: 50, cy: 40, w: 40, cls: 'gem', eyes: true, eyeCls: 'light' }) +
+      `<div style="left:${30 * u}px;top:${84 * u}px;width:${40 * u}px;height:${5 * u}px;border-radius:50%;background:radial-gradient(rgba(110,50,160,.35),rgba(110,50,160,0) 70%)"></div>`),
+  // H3 — the download arrow made of glass, with the silhouette standing on it: today's arrow strip, refined.
+  h3: () => tile(`<div class="glass" style="left:0;right:0;bottom:0;height:${32 * u}px;border-radius:0"></div>` +
+      `<svg style="left:${38 * u}px;top:${73 * u}px;width:${24 * u}px;height:${22 * u}px" viewBox="0 0 24 22"><path d="M12 2 V19 M5 12.5 L12 19.5 L19 12.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>` +
+      buddy({ cx: 50, cy: 36, w: 44, eyes: true })),
+};
+// A tile drawn at a fraction of the canvas (for H1's "icon on a base").
+
+// K4's face: a milk-glass panel in the body's shape (14:12, corner 4) and the two eyes, at the
+// rig's own eye positions. Options vary the expression, the material and the pose — never the shape.
+function face({ cx = 50, cy = 49.5, w = 66, eyes = 'open', tilt = 0, eyesY = 0, slab = false, squash = false, inverse = false }) {
+  const h = w * 12 / 14, r = w * 4 / 14, k = w / 14;
+  const tf = `transform:rotate(${tilt}deg)${squash ? ' scale(1.08,.88)' : ''};transform-origin:50% ${squash ? '100%' : '50%'}`;
+  const ex = [9.3 - 12, 14.7 - 12], ey = [9.55 - 10 + eyesY / k, 9.25 - 10 + eyesY / k], ew = 1.6 * 1.1 * k, eh = 2.2 * 1.1 * k;
+  const gx = eyes === 'glance' ? .9 * k : 0, gy = eyes === 'glance' ? -.7 * k : 0;
+  const eye = (i, kind) => { const x = w / 2 + ex[i] * k + gx, y = h / 2 + ey[i] * k + gy;
+    if (kind === 'arc' || kind === 'happy') return `<svg style="left:${x - ew}px;top:${y - eh * .5}px;width:${2 * ew}px;height:${eh}px;overflow:visible" viewBox="0 0 20 12"><path d="M2 ${kind === 'happy' ? 10 : 8} Q10 ${kind === 'happy' ? -2 : 0} 18 ${kind === 'happy' ? 10 : 8}" fill="none" stroke="#2a1340" stroke-width="3.4" stroke-linecap="round"/></svg>`;
+    const refl = kind === 'reflect' ? `, linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(196,110,230,.85) 62%, rgba(255,150,190,.95) 82%, rgba(255,200,160,1) 100%)` : '';
+    return `<div class="eye" style="left:${x - ew}px;top:${y - eh}px;width:${2 * ew}px;height:${2 * eh}px;background:radial-gradient(60% 40% at 62% 30%, rgba(255,255,255,.95) 0 30%, rgba(255,255,255,0) 32%)${refl}, #241334"></div>`; };
+  const kinds = eyes === 'wink' ? ['open', 'arc'] : eyes === 'happy' ? ['happy', 'happy'] : eyes === 'reflect' ? ['reflect', 'reflect'] : ['open', 'open'];
+  const panel = inverse
+    ? `<div class="tile" style="left:0;top:0;width:${w}px;height:${h}px;border-radius:${r}px;box-shadow:0 0 0 ${.6 * u}px #fff, 0 ${3 * u}px ${5 * u}px rgba(60,15,100,.4)"><div class="wall v2"></div><div class="edge"></div></div>`
+    : (slab ? `<div style="left:0;top:${3.2 * u}px;width:${w}px;height:${h}px;border-radius:${r}px;background:linear-gradient(180deg,#d9c3ea,#b996d6);box-shadow:0 ${3 * u}px ${5 * u}px rgba(50,10,90,.45)"></div>` : '') +
+      `<div class="milk" style="left:0;top:0;width:${w}px;height:${h}px;border-radius:${r}px"></div>`;
+  return `<div style="left:${(cx * u) - (w * u) / 2}px;top:${(cy * u) - (h * u) / 2}px;width:${w * u}px;height:${h * u}px;${tf}">` +
+    panel.replace(/width:\$\{w\}px/g, '').replace(new RegExp(`width:${w}px;height:${h}px`, 'g'), `width:${w * u}px;height:${h * u}px`).replace(new RegExp(`border-radius:${r}px`, 'g'), `border-radius:${r * u}px`) +
+    [0, 1].map(i => eye(i, kinds[i])).join('').replace(/(left|top|width|height):(-?[\d.]+)px/g, (m, a, v) => `${a}:${+v * u}px`) + `</div>`;
+}
+// A front-facing glass box: a darker inner back rim, the frosted front (which blurs whatever is
+// behind it — the face, when it's inside), and two flaps folded open. Optional ribbon / closed lid.
+function glassBox({ top = 56, closed = false, ribbon = false, short = false, small = false }) {
+  const L = small ? 30 : 20, R = small ? 70 : 80, W = R - L, B = small ? 66 : 92, H = B - top;
+  let h = closed ? '' : `<div style="left:${(L + 2) * u}px;top:${(top - 3) * u}px;width:${(W - 4) * u}px;height:${5 * u}px;border-radius:${1.5 * u}px;background:linear-gradient(#6b3d8e,#a77bc9);opacity:.75"></div>`;
+  h += `<div class="glass" style="left:${L * u}px;top:${top * u}px;width:${W * u}px;height:${H * u}px;border-radius:${flush ? 0 : 2.5 * u}px ${flush ? 0 : 2.5 * u}px ${5 * u}px ${5 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.72),rgba(255,255,255,.35))"></div>`;
+  if (closed) h += `<div class="glass" style="left:${(L - 2) * u}px;top:${(top - 6) * u}px;width:${(W + 4) * u}px;height:${8 * u}px;border-radius:${2.5 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.85),rgba(255,255,255,.5))"></div>`;
+  else if (!short) h += `<div class="glass" style="left:${(L - 15) * u}px;top:${(top - 5) * u}px;width:${16 * u}px;height:${5 * u}px;border-radius:${1.5 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.85),rgba(255,255,255,.5));transform:rotate(-22deg);transform-origin:100% 100%"></div>` +
+                        `<div class="glass" style="left:${(R - 1) * u}px;top:${(top - 5) * u}px;width:${16 * u}px;height:${5 * u}px;border-radius:${1.5 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.85),rgba(255,255,255,.5));transform:rotate(22deg);transform-origin:0 100%"></div>`;
+  if (ribbon) h += `<div style="left:${(50 - 3.5) * u}px;top:${top * u}px;width:${7 * u}px;height:${H * u}px;background:linear-gradient(170deg,#B07BE0,#8B47B8 55%,#C2549B);box-shadow:inset 0 ${.3 * u}px 0 rgba(255,255,255,.6)"></div>`;
+  return h;
+}
+function arrowOn(cx, cy, f) { const w = 24 * f * u, h = 22 * f * u; return `<svg style="left:${cx * u - w / 2}px;top:${cy * u - h / 2}px;width:${w}px;height:${h}px;filter:drop-shadow(0 ${.4 * u}px ${.9 * u}px rgba(60,15,100,.45))" viewBox="0 0 24 22"><path d="M12 2 V19 M5 12.5 L12 19.5 L19 12.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+
+// ======== round 11: M9 / M4 refinements (Destin: "make this POP. deeper shadow against the white/glassy background") ========
+// face2 draws the face panel directly in icon units, so every setting is one knob:
+//   mat:  'wall' (the theme's picture inside the face, M9) or 'milk' (white glass, K4/M4)
+//   blur: how much the picture inside is blurred — 'sharp' | 'soft' | 'heavy' | 'haze' (frosted over)
+//   eye:  'ink' | 'rim' (white ring) | 'white' (white eyes, dark pupils) | 'gem' (purple glass) | 'glow'
+//   deep: the deeper, two-layer shadow and bright rim that lift it off a pale tile
+function face2({ cx = 50, cy = 50, w = 66, mat = 'wall', blur = 'soft', eye = 'ink', deep = true, eyesY = 0, tilt = 0, lift = 0, around = false, rim = false, mouth = 'none', blush = false }) {
+  const h = w * 12 / 14, r = w * 4 / 14, k = w / 14, L = (cx - w / 2) * u, T = (cy - h / 2) * u;
+  const B = { sharp: .004, soft: .02, heavy: .06, haze: .02 }[blur];
+  // WHY around: Destin, round 11 — "darker shadow on all sides": a halo that darkens every edge, not just a drop below.
+  // WHY rim: a thin deep rim in the theme's colour draws the face's outline so it never melts into a pale tile.
+  const rimC = rim ? `0 0 0 ${1.1 * u}px ${EYE[4]}, ` : `0 0 0 ${.7 * u}px rgba(255,255,255,.95), `;
+  const shadow = around ? `${rimC}0 0 ${7 * u}px ${1 * u}px rgba(40,5,80,.42), 0 ${3 * u}px ${6 * u}px rgba(40,5,80,.4)` : deep ? `0 0 0 ${.7 * u}px rgba(255,255,255,.95), 0 ${4.5 * u}px ${8 * u}px rgba(40,5,80,.48), 0 ${1.2 * u}px ${2.2 * u}px rgba(40,5,80,.32)`
+                      : `0 0 0 ${.6 * u}px #fff, 0 ${3 * u}px ${5 * u}px rgba(60,15,100,.4)`;
+  const inside = mat === 'wall'
+    ? `<div style="inset:-25%;background:url(../src6/walls/${THEME[0]}.jpg) 62% 30%/cover;filter:blur(${B * S}px) saturate(1.35)"></div>` +
+      (blur === 'haze' ? `<div style="inset:0;background:linear-gradient(170deg,rgba(255,255,255,.5),rgba(255,255,255,.18))"></div>` : '') +
+      // WHY lift: on darker themes the blurred picture went murky and the dark eyes vanished; a white wash keeps the eye style and restores contrast.
+      (lift ? `<div style="inset:0;background:rgba(255,255,255,${lift})"></div><div style="inset:0;background:radial-gradient(62% 48% at 50% 46%, rgba(255,255,255,${Math.min(.75, lift * 3)}), rgba(255,255,255,0) 100%)"></div>` : '') +
+      `<div style="inset:0;background:radial-gradient(90% 55% at 28% 6%, rgba(255,255,255,.5), rgba(255,255,255,0) 60%)"></div>`
+    : `<div class="milk" style="inset:0;box-shadow:inset 0 ${-2.5 * u}px ${4 * u}px rgba(140,80,190,.22)"></div>`;
+  let eyesH = '';
+  [[9.3, 9.55], [14.7, 9.25]].forEach(([ex, ey]) => {
+    const es = SMALL ? 1.34 : 1.12, ew = 1.6 * es * k * u, eh = 2.2 * es * k * u, x = (cx + (ex - 12) * k) * u, y = (cy + (ey - 10) * k + eyesY) * u;
+    const spark = `radial-gradient(55% 38% at 62% 30%, rgba(255,255,255,.96) 0 30%, rgba(255,255,255,0) 32%)`;
+    let st = '';
+    if (eye === 'ink') st = `background:${spark}, #241334`;
+    if (eye === 'theme') st = `background:radial-gradient(55% 38% at 62% 30%, ${EYE[1]} 0 30%, rgba(255,255,255,0) 32%), ${EYE[0]}`;
+    if (eye === 'rim') st = `background:${spark}, #241334;box-shadow:0 0 0 ${.55 * k * u}px rgba(255,255,255,.95), 0 ${.3 * k * u}px ${.8 * k * u}px rgba(40,5,80,.4)`;
+    if (eye === 'gem') st = `background:${spark}, linear-gradient(170deg,#7B3FB0,#3A1258 70%);box-shadow:inset 0 ${-.3 * k * u}px ${.5 * k * u}px rgba(255,120,200,.5)`;
+    if (eye === 'glow') st = `background:${spark}, #241334;box-shadow:0 0 0 ${.3 * k * u}px rgba(255,215,255,.9), 0 0 ${1.6 * k * u}px ${.6 * k * u}px rgba(225,120,255,.95)`;
+    if (eye === 'white') st = `background:#fff;box-shadow:0 0 0 ${.35 * k * u}px #2a1340, 0 ${.25 * k * u}px ${.6 * k * u}px rgba(40,5,80,.35)`;
+    eyesH += `<div style="left:${x - ew}px;top:${y - eh}px;width:${2 * ew}px;height:${2 * eh}px;border-radius:50%;${st}"></div>`;
+    if (eye === 'white') eyesH += `<div style="left:${x - ew * .55 + ew * .15}px;top:${y - eh * .5 + eh * .12}px;width:${ew * 1.1}px;height:${eh * 1.15}px;border-radius:50%;background:${spark}, #241334"></div>`;
+  });
+  // Mouths (Destin, round 14: "variants with mouths of different shapes"). 10×6 box centred on the face kit's mouth line.
+  const MOUTH = { smile: 'M2 1.5 Q5 5 8 1.5', open: 'M2.2 1 Q5 1 7.8 1 Q7.8 5.2 5 5.2 Q2.2 5.2 2.2 1 Z', o: 'M5 1 A1.8 2.1 0 1 1 4.99 1 Z',
+    cat: 'M1.6 1.6 Q3.3 4.6 5 1.9 Q6.7 4.6 8.4 1.6',
+    wide: 'M0.8 1.4 Q5 6.2 9.2 1.4',
+    halfmoon: 'M2 1.4 H8 A3 3.4 0 0 1 2 1.4 Z', bigo: 'M5 0.6 A2.4 2.6 0 1 1 4.99 0.6 Z', roundd: 'M1.6 1.4 Q1.6 0.9 2.2 0.9 H7.8 Q8.4 0.9 8.4 1.4 Q8.4 5.4 5 5.4 Q1.6 5.4 1.6 1.4 Z', bean: 'M3 1.6 H7 A1.8 1.8 0 0 1 7 5.2 H3 A1.8 1.8 0 0 1 3 1.6 Z', dsmile: 'M1.8 1.2 Q5 1.2 8.2 1.2 Q7.6 5 5 5 Q2.4 5 1.8 1.2 Z', usoft: 'M3 1.2 Q3 4.4 5 4.4 Q7 4.4 7 1.2 Z', oval: 'M5 1.2 A2.2 1.7 0 1 1 4.99 1.2 Z', tiny: 'M3 1.4 Q3.2 3.6 5 3.6 Q6.8 3.6 7 1.4 Z', grin: 'M1 1 Q5 1 9 1 Q8.4 5.6 5 5.6 Q1.6 5.6 1 1 Z', flat: 'M3 2.6 H7' };
+  if (blush) [[8.2, 12.4], [15.8, 12.1]].forEach(([bx, by]) => { const bw = 2.6 * k * u, bh = 1.3 * k * u, x = (cx + (bx - 12) * k) * u, y = (cy + (by - 10) * k) * u;
+    eyesH += `<div style="left:${x - bw / 2}px;top:${y - bh / 2}px;width:${bw}px;height:${bh}px;border-radius:50%;background:radial-gradient(rgba(240,120,170,.55),rgba(240,120,170,0) 72%)"></div>`; });
+  if (mouth !== 'none') { const mw = 3.3 * k * u, mh = mw * .6, mx = cx * u - mw / 2, my = (cy + 3.1 * k) * u - mh / 2, filled = ['open', 'o', 'grin', 'dsmile', 'usoft', 'oval', 'tiny', 'halfmoon', 'bigo', 'roundd', 'bean'].includes(mouth);
+    eyesH += `<svg style="left:${mx}px;top:${my}px;width:${mw}px;height:${mh}px;overflow:visible" viewBox="0 0 10 6"><path d="${MOUTH[mouth]}" fill="${filled ? EYE[0] : 'none'}" stroke="${EYE[0]}" stroke-width="${filled ? .4 : 1.15}" stroke-linecap="round" stroke-linejoin="round"/>${mouth === 'open' || mouth === 'grin' ? `<path d="M3.4 4.4 Q5 3.2 6.6 4.4 Q5 5.2 3.4 4.4 Z" fill="#E77AB0"/>` : ''}</svg>`; }
+  return `<div style="left:${L}px;top:${T}px;width:${w * u}px;height:${h * u}px;transform:rotate(${tilt}deg)">` +
+    `<div style="inset:0;border-radius:${r * u}px;overflow:hidden;box-shadow:${shadow}">${inside}</div>` +
+    eyesH.replace(new RegExp('left:', 'g'), 'left:').replace(/(left|top):(-?[\d.]+)px/g, (m, a, v) => `${a}:${a === 'left' ? +v - L : +v - T}px`) + `</div>`;
+}
+// The name or initials in Outfit under the face: "you" in the glass gradient, "coded" in ink.
+const nameBelow = (y, size) => `<div class="txt" style="left:0;right:0;top:${y * u}px;text-align:center;font-size:${size * u}px;color:#21152C"><span style="position:static;background:linear-gradient(100deg,#9D5BD0,#D25AA0);-webkit-background-clip:text;background-clip:text;color:transparent">you</span>coded</div>`;
+const ycBelow = (y, size) => `<div class="txt" style="left:0;right:0;top:${y * u}px;text-align:center;font-size:${size * u}px;background:linear-gradient(100deg,#9D5BD0,#D25AA0);-webkit-background-clip:text;background-clip:text;color:transparent">yc</div>`;
+// N3, refined: an open glass box with its two side flaps standing up, a download symbol on its front.
+function box2({ top = 62, L = 22, R = 78, B = 92, flush = false }) {
+  const W = R - L, H = B - top;
+  return `<div style="left:${(L + 2) * u}px;top:${(top - 3) * u}px;width:${(W - 4) * u}px;height:${5 * u}px;border-radius:${1.5 * u}px;background:linear-gradient(#6b3d8e,#a77bc9);opacity:.8"></div>` +
+    (flush
+      // WHY flush: the flaps now hinge exactly on the box's top corners — same glass, same thickness as the box wall — so the joint reads as one object.
+      ? `<div class="glass" style="left:${L * u}px;top:${(top - 16) * u}px;width:${4.5 * u}px;height:${16.8 * u}px;border-radius:${1.4 * u}px ${1.4 * u}px 0 0;background:linear-gradient(170deg,rgba(255,255,255,.9),rgba(255,255,255,.55));transform:rotate(-14deg);transform-origin:0 100%"></div>` +
+        `<div class="glass" style="left:${(R - 4.5) * u}px;top:${(top - 16) * u}px;width:${4.5 * u}px;height:${16.8 * u}px;border-radius:${1.4 * u}px ${1.4 * u}px 0 0;background:linear-gradient(170deg,rgba(255,255,255,.9),rgba(255,255,255,.55));transform:rotate(14deg);transform-origin:100% 100%"></div>`
+      : `<div class="glass" style="left:${(L - 1) * u}px;top:${(top - 17) * u}px;width:${5 * u}px;height:${18 * u}px;border-radius:${1.6 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.88),rgba(255,255,255,.5));transform:rotate(-16deg);transform-origin:50% 100%"></div>` +
+        `<div class="glass" style="left:${(R - 4) * u}px;top:${(top - 17) * u}px;width:${5 * u}px;height:${18 * u}px;border-radius:${1.6 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.88),rgba(255,255,255,.5));transform:rotate(16deg);transform-origin:50% 100%"></div>`) +
+    `<div class="glass" style="left:${L * u}px;top:${top * u}px;width:${W * u}px;height:${H * u}px;border-radius:${flush ? 0 : 2.5 * u}px ${flush ? 0 : 2.5 * u}px ${5 * u}px ${5 * u}px;background:linear-gradient(170deg,rgba(255,255,255,.78),rgba(255,255,255,.42))"></div>` +
+    `<svg style="left:${(50 - 9) * u}px;top:${(top + H / 2 - 8.5) * u}px;width:${18 * u}px;height:${17 * u}px;filter:drop-shadow(0 ${.3 * u}px ${.6 * u}px rgba(60,15,100,.3))" viewBox="0 0 24 23"><path d="M12 2.5 V14 M7 9.5 L12 14.5 L17 9.5 M4 15.5 V20 H20 V15.5" fill="none" stroke="#8B47B8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+const traces = (pts) => pts.map(([x, y, len, rot]) => `<div style="left:${(x - .7) * u}px;top:${y * u}px;width:${1.4 * u}px;height:${len * u}px;border-radius:${u}px;background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(${rot}deg);box-shadow:0 0 ${.6 * u}px rgba(120,50,170,.3)"></div>`).join('');
+// Motion lines: soft white streaks below/beside something rising.
+const streaks = (lines) => lines.map(([x, y1, y2, o = .75]) => `<div style="left:${(x - 1.2) * u}px;top:${y1 * u}px;width:${2.4 * u}px;height:${(y2 - y1) * u}px;border-radius:${u}px;background:linear-gradient(rgba(255,255,255,${Math.min(1, o + .2)}),rgba(255,255,255,0));box-shadow:0 0 ${.8 * u}px rgba(120,50,170,.35)"></div>`).join('');
+
+// Round 11's Q2 box, unchanged except the flaps: they lean further out (±38° instead of ±16°), so the opening reads wider.
+function box3({ top = 62, L = 22, R = 78, B = 92 }) {
+  return box2({ top, L, R, B }).replace(/rotate\(-16deg\)/, 'rotate(-38deg)').replace(/rotate\(16deg\)/, 'rotate(38deg)');
+}
+// Speed streaks: thin, short, fading downward, starting just under the face and ending well above the box.
+const trailC = (pts) => pts.map(([x, y, len]) => `<div style="left:${(x - .55) * u}px;top:${y * u}px;width:${1.1 * u}px;height:${len * u}px;border-radius:${u}px;background:linear-gradient(${EYE[4]},rgba(255,255,255,0));opacity:.8;transform:rotate(-6deg)"></div>`).join('');
+const trail = (pts) => pts.map(([x, y, len]) => `<div style="left:${(x - .55) * u}px;top:${y * u}px;width:${1.1 * u}px;height:${len * u}px;border-radius:${u}px;background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(-6deg)"></div>`).join('');
+// Whoosh: two small curved arcs off the face's lower corners, like a cartoon "pop".
+const whoosh = () => `<svg style="left:${18 * u}px;top:${30 * u}px;width:${64 * u}px;height:${22 * u}px;overflow:visible" viewBox="0 0 64 22"><path d="M6 4 Q4 12 9 19 M58 2 Q61 10 57 17" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".95"/><path d="M11 8 Q10 13 13 17 M53 6 Q55 11 52 15" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7"/></svg>`;
+// H3's recipe (round 7, the one Destin flagged): theme colour, a frosted band along the bottom, a white arrow.
+function h3With(inner) { return tile(inner + `<div class="glass" style="left:0;right:0;bottom:0;height:${32 * u}px;border-radius:0"></div>` +
+  `<svg style="left:${38 * u}px;top:${73 * u}px;width:${24 * u}px;height:${22 * u}px" viewBox="0 0 24 22"><path d="M12 2 V19 M5 12.5 L12 19.5 L19 12.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`); }
+// Lettering in the mascot's colour-glass gradient, centred at (cx, top y), size in icon units.
+function gemText(t, cx, y, size, tight) { return `<div class="txt" style="left:0;right:0;top:${y * u}px;text-align:center;font-size:${size * u}px;letter-spacing:${tight ? '-.04em' : '-.06em'};background:linear-gradient(100deg,#9D5BD0,#C2549B);-webkit-background-clip:text;background-clip:text;color:transparent">${t}</div>`; }
+function arrow(cx, cy, f) { const w = 24 * f * u, h = 22 * f * u; return `<svg style="left:${cx * u - w / 2}px;top:${cy * u - h / 2}px;width:${w}px;height:${h}px;filter:drop-shadow(0 ${.4 * u}px ${.8 * u}px rgba(60,15,100,.35))" viewBox="0 0 24 22"><path d="M12 2 V19 M5 12.5 L12 19.5 L19 12.5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+function tileIn(b, f) { const save = u; return `<div class="tile" style="width:100%;height:100%"><div class="wall"></div>${buddyAt(f)}<div class="edge"></div></div>`; }
+function buddyAt(f) { const k = (50 / 14) * u * f, cx = 50 * u * f, cy = 44 * u * f;
+  const X = (x) => cx + (x - 12) * k, Y = (y) => cy + (y - 10) * k, bx = (x, y, w, h, r) => `<div class="glass" style="left:${X(x)}px;top:${Y(y)}px;width:${w * k}px;height:${h * k}px;border-radius:${r * k}px"></div>`;
+  return bx(1, 9, 3, 4, .8) + bx(20, 9, 3, 4, .8) + bx(7.2, 17, 3.5, 4, 1.2) + bx(13.3, 17, 3.5, 4, 1.2) + bx(5, 4, 14, 12, 4) +
+    `<div class="eye" style="left:${X(7.7)}px;top:${Y(7.35)}px;width:${3.2 * k}px;height:${4.4 * k}px"></div><div class="eye" style="left:${X(13.1)}px;top:${Y(7.05)}px;width:${3.2 * k}px;height:${4.4 * k}px"></div>`; }
+
+R.innerHTML = `<div class="ic">${ICONS[I]()}</div>`;
+document.fonts.load(`600 20px "Outfit"`).then(() => document.body.dataset.ready = 1);
+</script>
+</body>
