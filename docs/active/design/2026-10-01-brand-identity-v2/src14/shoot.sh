@@ -4,7 +4,7 @@
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 dest="$here/../runs/v14/shots-brand/light"; mkdir -p "$dest"
-ids="${*:-fin fini l1 l2 l4}"
+ids="${*:-mouths dk colour fiv}"
 for id in $ids; do
   google-chrome-stable --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
     --window-size=1200,700 --virtual-time-budget=9000 --allow-file-access-from-files \

@@ -6,9 +6,9 @@ here="$(cd "$(dirname "$0")" && pwd)"; mkdir -p "$here/out"; cd "$here/out"
 shot() { google-chrome-stable --headless=new --hide-scrollbars --force-device-scale-factor=1 --window-size=512,512 \
   --default-background-color=00000000 --virtual-time-budget=5000 --allow-file-access-from-files \
   --user-data-dir="$(mktemp -d)" --screenshot="$2" "file://$here/icons.html?i=$1&px=512${3:-}" >/dev/null 2>&1; }
-for i in ${*:-fin fini}; do
+for i in ${*:-ma mb mc md me mf dk fiv}; do
   for t in purple golden meadow strawberry kuromi devils; do
-    [[ $i == fini && $t != purple ]] && continue
+    [[ ($i == fini || $i == fiv) && $t != purple ]] && continue
     tag=$i; [[ $t != purple ]] && tag=$i-$t
     shot $i $tag-512.png "&t=$t"; shot $i $tag-small-512.png "&t=$t&small=1"
     for p in 256 96 64; do magick $tag-512.png -filter Lanczos -resize ${p}x${p} $tag-$p.png; done

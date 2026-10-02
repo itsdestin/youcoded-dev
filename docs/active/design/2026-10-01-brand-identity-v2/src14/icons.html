@@ -80,6 +80,7 @@ function buddy({ cx = 50, cy = 50, w = 50, cls = 'glass', limb = null, parts = '
   return h;
 }
 const tile = (inner = '', v = '') => `<div class="tile"><div class="wall ${v}"></div>${inner}<div class="edge"></div></div>`;
+const dark = (inner = '') => `<div class="tile" style="background:linear-gradient(165deg,#2C1B40,#120A1C);box-shadow:0 calc(var(--S)*.03) calc(var(--S)*.06) rgba(20,5,40,.4)">${inner}<div class="edge" style="box-shadow:inset 0 calc(var(--S)*.004) 0 rgba(255,255,255,.35), inset 0 0 0 calc(var(--S)*.004) rgba(255,255,255,.12)"></div></div>`;
 const frost = (inner = '', tint = false) => `<div class="tile glass" style="backdrop-filter:none;background:linear-gradient(165deg,${tint ? EYE[2] : '#FBF6FD'},${tint ? EYE[3] : '#E9DCF2'})">${inner}<div class="edge"></div></div>`;
 
 const ICONS = {
@@ -241,6 +242,19 @@ const ICONS = {
   // FINAL installer: U1, face a little lower, streaks spread wider and a touch shorter (round 13 notes).
   fini: () => tile(trail([[38, 53, 4.6], [50, 54, 5.4], [62, 53, 4.6]]) + face2({ cy: 29, w: 46, mat: 'milk', tilt: -6 }) + box3({})),
 
+  // ---- round 14b: mouths, dark version, inverted installer ----
+  ma: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'smile' })),
+  mb: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'open' })),
+  mc: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'o' })),
+  md: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'cat' })),
+  me: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'grin' })),
+  mf: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'flat' })),
+  dk: () => dark(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true })),
+  // the installer inverted like the app icon: white glass tile, the theme's picture inside the face,
+  // a lavender-glass box (white glass would vanish on white), streaks in the theme's colour
+  fiv: () => frost(trailC([[38, 53, 4.6], [50, 54, 5.4], [62, 53, 4.6]]) + face2({ cy: 29, w: 46, blur: 'heavy', lift: .2, eye: 'theme', rim: true, around: true, tilt: -6 }) +
+      box3({}).replace(/rgba\(255,255,255,\.(78|88)\),rgba\(255,255,255,\.(42|5)\)/g, 'rgba(226,208,244,.97),rgba(196,168,228,.95)')),
+
   // ---- installers ----
   // H1 — the app icon (G2 shown) on a glass base, with a glass download badge. Apple-plain.
   h1: () => `<div style="left:${4 * u}px;top:${2 * u}px;width:${80 * u}px;height:${80 * u}px;--S:${80 * u}px">${tileIn(buddy, 0.8)}</div>` +
@@ -297,7 +311,7 @@ function arrowOn(cx, cy, f) { const w = 24 * f * u, h = 22 * f * u; return `<svg
 //   blur: how much the picture inside is blurred — 'sharp' | 'soft' | 'heavy' | 'haze' (frosted over)
 //   eye:  'ink' | 'rim' (white ring) | 'white' (white eyes, dark pupils) | 'gem' (purple glass) | 'glow'
 //   deep: the deeper, two-layer shadow and bright rim that lift it off a pale tile
-function face2({ cx = 50, cy = 50, w = 66, mat = 'wall', blur = 'soft', eye = 'ink', deep = true, eyesY = 0, tilt = 0, lift = 0, around = false, rim = false }) {
+function face2({ cx = 50, cy = 50, w = 66, mat = 'wall', blur = 'soft', eye = 'ink', deep = true, eyesY = 0, tilt = 0, lift = 0, around = false, rim = false, mouth = 'none' }) {
   const h = w * 12 / 14, r = w * 4 / 14, k = w / 14, L = (cx - w / 2) * u, T = (cy - h / 2) * u;
   const B = { sharp: .004, soft: .02, heavy: .06, haze: .02 }[blur];
   // WHY around: Destin, round 11 — "darker shadow on all sides": a halo that darkens every edge, not just a drop below.
@@ -326,6 +340,11 @@ function face2({ cx = 50, cy = 50, w = 66, mat = 'wall', blur = 'soft', eye = 'i
     eyesH += `<div style="left:${x - ew}px;top:${y - eh}px;width:${2 * ew}px;height:${2 * eh}px;border-radius:50%;${st}"></div>`;
     if (eye === 'white') eyesH += `<div style="left:${x - ew * .55 + ew * .15}px;top:${y - eh * .5 + eh * .12}px;width:${ew * 1.1}px;height:${eh * 1.15}px;border-radius:50%;background:${spark}, #241334"></div>`;
   });
+  // Mouths (Destin, round 14: "variants with mouths of different shapes"). 10×6 box centred on the face kit's mouth line.
+  const MOUTH = { smile: 'M2 1.5 Q5 5 8 1.5', open: 'M2.2 1 Q5 1 7.8 1 Q7.8 5.2 5 5.2 Q2.2 5.2 2.2 1 Z', o: 'M5 1 A1.8 2.1 0 1 1 4.99 1 Z',
+    cat: 'M1.6 1.6 Q3.3 4.6 5 1.9 Q6.7 4.6 8.4 1.6', grin: 'M1 1 Q5 1 9 1 Q8.4 5.6 5 5.6 Q1.6 5.6 1 1 Z', flat: 'M3 2.6 H7' };
+  if (mouth !== 'none') { const mw = 3.3 * k * u, mh = mw * .6, mx = cx * u - mw / 2, my = (cy + 3.1 * k) * u - mh / 2, filled = ['open', 'o', 'grin'].includes(mouth);
+    eyesH += `<svg style="left:${mx}px;top:${my}px;width:${mw}px;height:${mh}px;overflow:visible" viewBox="0 0 10 6"><path d="${MOUTH[mouth]}" fill="${filled ? EYE[0] : 'none'}" stroke="${EYE[0]}" stroke-width="${filled ? .4 : 1.15}" stroke-linecap="round" stroke-linejoin="round"/>${mouth === 'open' || mouth === 'grin' ? `<path d="M3.4 4.4 Q5 3.2 6.6 4.4 Q5 5.2 3.4 4.4 Z" fill="#E77AB0"/>` : ''}</svg>`; }
   return `<div style="left:${L}px;top:${T}px;width:${w * u}px;height:${h * u}px;transform:rotate(${tilt}deg)">` +
     `<div style="inset:0;border-radius:${r * u}px;overflow:hidden;box-shadow:${shadow}">${inside}</div>` +
     eyesH.replace(new RegExp('left:', 'g'), 'left:').replace(/(left|top):(-?[\d.]+)px/g, (m, a, v) => `${a}:${a === 'left' ? +v - L : +v - T}px`) + `</div>`;
@@ -355,6 +374,7 @@ function box3({ top = 62, L = 22, R = 78, B = 92 }) {
   return box2({ top, L, R, B }).replace(/rotate\(-16deg\)/, 'rotate(-38deg)').replace(/rotate\(16deg\)/, 'rotate(38deg)');
 }
 // Speed streaks: thin, short, fading downward, starting just under the face and ending well above the box.
+const trailC = (pts) => pts.map(([x, y, len]) => `<div style="left:${(x - .55) * u}px;top:${y * u}px;width:${1.1 * u}px;height:${len * u}px;border-radius:${u}px;background:linear-gradient(${EYE[4]},rgba(255,255,255,0));opacity:.8;transform:rotate(-6deg)"></div>`).join('');
 const trail = (pts) => pts.map(([x, y, len]) => `<div style="left:${(x - .55) * u}px;top:${y * u}px;width:${1.1 * u}px;height:${len * u}px;border-radius:${u}px;background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,0));transform:rotate(-6deg)"></div>`).join('');
 // Whoosh: two small curved arcs off the face's lower corners, like a cartoon "pop".
 const whoosh = () => `<svg style="left:${18 * u}px;top:${30 * u}px;width:${64 * u}px;height:${22 * u}px;overflow:visible" viewBox="0 0 64 22"><path d="M6 4 Q4 12 9 19 M58 2 Q61 10 57 17" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".95"/><path d="M11 8 Q10 13 13 17 M53 6 Q55 11 52 15" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7"/></svg>`;
