@@ -941,7 +941,47 @@ All of the following are allowed from a phone, and they become R6-3:
 
 `folders:add` stays as it is: a phone may add any folder, and the deny list still applies.
 
-**R6 status:** R6-1 and R6-2 are built, and R6-3 opens the abilities above.
+**R6-3 log** (app `session/simplify-r6-3`: `9780bc94e`, `d5dc74afe`, `5ad841ed4`, `85708eb97`;
+workspace `3822d495`, `5cde146a`):
+- **Opened to the phone.** Eight more channels; the phone-open set goes from 259 to 267:
+  - `skills:update`
+  - theme install, uninstall, update and publish
+  - `marketplace:install` and `marketplace:report`
+  - `theme-marketplace:resolve-publish-state`: read-only, not on Destin's list, opened because
+    the Publish sheet needs it.
+- **Publish** takes a slug only and refuses marketplace-installed themes.
+- **A skill's own file reads on a phone.** The read is judged before any host is asked:
+  - the deny list applies to the real path;
+  - regular files only, up to 1 MB;
+  - the real path must sit inside `~/.claude/skills`, `~/.claude/plugins` or the session's
+    `.claude/skills`;
+  - the host's answer is deny-checked too.
+- **Main-process freeze fixed.** A FIFO saved as `SKILL.md` froze the main process; the skill
+  scan now stats before reading.
+- **INCIDENT, 2026-10-01.** The R6-3 dev smoke published a test theme from a throwaway HOME.
+  The OS keyring (Secret Service on the user's D-Bus) still handed out Destin's real `gh`
+  login, so a real pull request opened: https://github.com/itsdestin/wecoded-themes/pull/37.
+  Validation failed and there is no auto-merge. **Closing it is Destin's call.** The worker
+  also printed the token once into its own local transcript; whether to rotate it is Destin's
+  call.
+- **The fix: `scripts/dev-isolation.sh`.** `run-dev.sh` sources it. With a throwaway HOME it
+  sets up:
+  - a private D-Bus;
+  - XDG and `GH_CONFIG_DIR` inside the HOME;
+  - credential environment variables unset;
+  - a kwalletrc with the wallet disabled;
+  - `--stop` killing the bus tree by exact pid.
+
+  The real-home check uses `readlink -f`. It is tested by `scripts/dev-isolation.test.mjs`
+  and documented in `docs/local-dev.md` and `docs/PITFALLS.md`.
+- **Review:** "ship with fixes" for both halves, and all of them are fixed.
+- **Final verify:** `verify --full` passes all 9 checks.
+
+**R6 status:** R6-1, R6-2 and R6-3 are built. **The remote refactor R1–R6 is code-complete.**
+What remains:
+- merge prep (rebase onto master, rewrite in-flight branches, the doc sweep);
+- Destin's real-phone pass;
+- Android and desktop shipping together.
 
 ## What this plan deliberately does not touch
 
