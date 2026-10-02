@@ -157,7 +157,7 @@ searched or resumed (chat-data).
       saved with nothing lost, themed cleanly, ran in the app's Electron; gaps are memory, a
       font bug and the phone layout. Next: design decks
       Would also resolve the look-only spreadsheet item above
-      `files-panel` `all` `decision` `checked 2026-09-24` → docs/active/investigations/2026-09-24-office-suite.md
+      `files-panel` `all` `decision` `checked 2026-09-24` → docs/archive/investigations/2026-09-24-office-suite.md
 
 - [ ] Office's Home tab can show an out-of-date Recent list: open a document, switch back to
       the Home tab without leaving the Office page, and the file you just opened is not yet
@@ -279,3 +279,26 @@ searched or resumed (chat-data).
       pdf for now". Estimated 2–4 days (build the PDF editor into the add-on, route `.pdf`
       through it, version history and saving)
       `files-panel` `desktop` `parked` `checked 2026-10-02`
+
+- [ ] If the assistant or another program changes a Word/Excel/PowerPoint file while it is open
+      in Office, Office's next autosave writes over that change without asking — Office does
+      not watch the open file (only comments are routed into the open editor). Designed as the
+      "on-disk-change conflict" (design §4a) and put off by the build plan to its own plan,
+      which was never written
+      `files-panel` `desktop` `confirmed` `checked 2026-10-02` → docs/archive/specs/2026-09-28-office-build-design.md
+
+- [ ] Office opens only .docx, .xlsx and .pptx. Older .doc/.xls/.ppt files, OpenDocument
+      (.odt/.ods/.odp) and .csv still open in the default app or the look-only viewer, though
+      Save As can already write those formats. Designed (R21–R24, and the office-odf questions
+      deck) and put off by the build plan to its own plan, never written
+      `files-panel` `desktop` `confirmed` `checked 2026-10-02` → docs/archive/design/2026-09-27-office/office-odf.questions.json
+
+- [ ] Every open Office document keeps its editor loaded, so memory grows with each one left
+      open in a tab. The design's "tabs sleep after 20 minutes" (R8) was put off by the build
+      plan and never built (the `asleep` flag is only set by screenshots)
+      `files-panel` `desktop` `confirmed` `checked 2026-10-02` `performance`
+
+- [ ] Office's editors only offer the fonts that ship with the add-on; fonts installed on the
+      computer are not listed (only PDF export uses them). The design's user-fonts overlay was
+      put off by the build plan and never built
+      `files-panel` `desktop` `confirmed` `checked 2026-10-02`
