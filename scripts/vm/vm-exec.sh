@@ -28,8 +28,9 @@ PID=$(qga "{\"execute\":\"guest-exec\",\"arguments\":{\"path\":\"$BIN\",\"arg\":
 
 [ -z "${PID:-}" ] && { echo "ERROR: guest-exec failed (is qemu-ga running?)"; exit 1; }
 
-# Poll until the process exits
-for _ in $(seq 1 30); do
+# Poll until the process exits. WHY VM_EXEC_TIMEOUT: a 140 MB installer download outlives the
+# default 30 s, and an unfinished poll prints "exitcode: None" that reads like success.
+for _ in $(seq 1 "${VM_EXEC_TIMEOUT:-30}"); do
   OUT=$(qga "{\"execute\":\"guest-exec-status\",\"arguments\":{\"pid\":$PID}}")
   echo "$OUT" | grep -q '"exited": true' && break
   sleep 1

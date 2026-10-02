@@ -44,7 +44,7 @@ Target: `v1.3.1`
 - dev-workspace: Waiting on CI runs eats whole sessions
 - dev-workspace: The Linux package update path has never run on real hardware: `pkexec` raising the password dialog, `pacman…
 - dev-workspace: Every macOS download since 2026-07-23 is unopenable, and the download page sends people to a button that no…
-- dev-workspace: Windows and macOS installers still hit the security wall
+- dev-workspace: macOS installers still hit the security wall
 - dev-workspace: No Google Play listing
 - files: Searching a big project's files still stops at the first 2,000 files and says "This folder is large
 - files: Searching inside files' text in a project stops at 200 matches (20 per file, 5 seconds) and shows "200+",…
@@ -70,7 +70,7 @@ Target: `v1.3.1`
 ## Backlogs
 | Area | Open | Needs verify | Decisions | Parked |
 |---|---|---|---|---|
-| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 102 | 31 | 4 | 9 |
+| [dev-workspace](docs/roadmap/dev-workspace.md) — building the app, not the app | 105 | 32 | 4 | 11 |
 | [native-harness](docs/roadmap/native-harness.md) — the app's own agent doing work | 57 | 10 | 5 | 25 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 39 | 16 | 2 | 5 |
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 30 | 7 | 1 | 4 |

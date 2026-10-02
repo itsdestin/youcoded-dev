@@ -235,10 +235,35 @@ seen-on is always n/a here.
       highest-value set: stale-closure bugs) are unguarded
       `n/a` `needs-verify` `checked 2026-09-01`
 
-- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) but
-      the open half is untested: a clean-winget Windows snapshot, the deb/rpm/pacman installers in
-      the guests, and the full first-run → setup → sign-in pass itself
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) and
+      since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
+      install of any build as a real download), but the open half is untested: a clean-winget Windows
+      snapshot, the deb/rpm/pacman installers in the guests, and the full first-run → setup → sign-in
+      pass itself
+      `n/a` `needs-verify` `checked 2026-10-01`
+
+- [ ] Nothing tests a new user's whole path — download from youcoded.ai, install, setup, sign-in,
+      first chat — on every platform without Destin clicking through it. Destin (2026-10-01): "could
+      be interesting to set up". Proposed shape: on-demand GitHub Actions runs on real Windows, Apple
+      Silicon Mac and Linux machines (free for the public repo), driving the installed app with the
+      existing click-path tooling, OpenRouter key sign-in, screenshot report per step; dev tools
+      hidden so the prerequisite installer still runs. Local VMs stay for the SmartScreen /
+      Gatekeeper wall and home-edition Windows, which runners don't show
+      `n/a` `parked` `checked 2026-10-01`
+
+- [ ] YouCoded's page in the Linux app catalog (appimage.github.io, request #8053, found by their
+      robot) would show an auto-captured setup screen; our own pictures ship in the next release's
+      Linux builds (youcoded#596, served from youcoded.ai/screenshots). After that release: comment
+      `/retest` on #8053 and reply that Destin is the author (their bot wants 15+ words and none of
+      "community build"/"repackaged") — both public, in Destin's name, so ask him first
+      `n/a` `blocked` `checked 2026-10-01`
+
+- [ ] Linux downloads: the AppImage needs libfuse2, which stock Ubuntu 22.04+ lacks, so it won't
+      open until the user installs it (the deb avoids this); electron-builder's newer AppImage
+      runtime likely removes the need — untested. The Linux build also warns that taskbars may not
+      tie the running window to YouCoded's icon (a missing window-class setting). Both seen
+      2026-10-01, neither touched
+      `desktop` `needs-verify` `checked 2026-10-01`
 
 - [ ] Visual-regression harness for the renderer's chrome invariants (single-backdrop chrome-glass,
       framed-shell insets, overlay layers) — they are guarded only by eyeballing; the UI review sweep
@@ -927,17 +952,17 @@ seen-on is always n/a here.
       re-run them together now that the Kotlin half is in
       `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
-      The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
-      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads.
-      Windows needs a decision first (2026-09-23): Microsoft will not validate a company under
-      3 years old, so sign as Destin personally, buy a commercial certificate, or stay unsigned
-      — options in the report's Status block
-      `n/a` `blocked` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+- [ ] macOS installers still hit the security wall — nothing is signed or notarized. Windows is
+      done: releases and master betas are signed as "Destin Moss" (Azure Artifact Signing,
+      individual validation, youcoded#594), and its warning fades with downloads. Mac is blocked on
+      the Apple Developer account in the LLC's name: Apple's account creation refused
+      destin@youcoded.ai on 2026-10-01 ("cannot be created at this time"); retry from an Apple
+      device or via Apple Support, then it is CI wiring and the wall disappears at once
+      `n/a` `blocked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
-      data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
-      priority for the rebuilt app (deck Q-3)
-      `android` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      data-safety form, content rating and account-deletion link. Destin 2026-10-01: "google play
+      isnt priority" — Apple and Windows signing first (reverses 2026-09-10's deck Q-3)
+      `android` `parked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
