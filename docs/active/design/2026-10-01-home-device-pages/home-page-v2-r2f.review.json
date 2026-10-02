@@ -1,0 +1,55 @@
+{
+  "title": "The Home page, next version — round 2, sixth look",
+  "key": "home-page-v2-r2f",
+  "out": "home-page-v2-r2f.review.html",
+  "images": "images/home-page-v2-r2f.review",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "S-vol-in-np",
+      "surface": "Pages",
+      "path": "Pages → Home, Now playing on the TV, soundbar and speaker",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 62.0, 20.2, 18.8] },
+      "headline": "Volume sits inside Now playing, above previous/play/next, with − and + either side of the bar; the Playing line under the name is gone.",
+      "changed": "Speakers and the soundbar have the same layout. On the TV the bar is the soundbar's volume, because the TV's sound plays there.",
+      "notice": "Dragging is smooth now: the speaker follows while you drag, and the 5-second check never makes the bar jump under your finger.",
+      "risk": "A TV with no linked soundbar has − and + only, no bar: the TV box cannot say how loud it is."
+    },
+    {
+      "id": "S-remote-card",
+      "surface": "Pages",
+      "path": "Pages → Home, Destin's Room TV, Remote",
+      "crop": "pages/page/page-home#remote",
+      "highlight": { "box": [23.6, 81.6, 20.2, 18.0] },
+      "headline": "The remote is one card: a Remote header with a remote-shaped icon opens it, and the remote sits inside that same card.",
+      "changed": "The separate bar and separate remote box are now one container, like the lights card. The icon is a TV remote's shape.",
+      "notice": "Closed, it is just the header row; the arrow flips when open.",
+      "risk": "None beyond the earlier ones."
+    },
+    {
+      "id": "S-sound-link",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home → Edit, a TV",
+      "headline": "A TV links its volume to a soundbar only when there is no doubt, or when you choose it in Edit.",
+      "changed": "Stated, not asked: automatic only when the room has exactly one soundbar and exactly one TV with a paired remote. Otherwise nothing is linked. In Edit, each TV has a Sound list: automatic (it shows what it found), the TV itself, or any soundbar or speaker in the room. Your choice always wins.",
+      "notice": "Destin's Room links automatically: one soundbar, one paired TV. The Samsung TV shows automatic (none).",
+      "yes": "Holds",
+      "no": "Change it"
+    },
+    {
+      "id": "S-feel",
+      "words": true,
+      "surface": "Pages",
+      "path": "Pages → Home, everywhere",
+      "headline": "The whole page responds better: buttons ease and press in slightly, slider handles show on hover and grow while held, nothing redraws needlessly.",
+      "changed": "Stated, not asked: each part of the page now redraws only when something in it changed, so a hovered button stays hovered, the text box you are in keeps focus, and camera pictures stop reloading every 5 seconds. Brightness also follows while you drag.",
+      "notice": "Try it in the test app: this is about feel, which pictures cannot show. Reduced motion in your system settings turns the movement off.",
+      "yes": "Holds",
+      "no": "Change it"
+    }
+  ]
+}
