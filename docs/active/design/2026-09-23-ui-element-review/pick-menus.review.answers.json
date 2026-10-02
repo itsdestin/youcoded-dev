@@ -1,0 +1,41 @@
+{
+ "deck": "pick-menus",
+ "started": "2026-10-01T11:01:31.649Z",
+ "submitted": "2026-10-01T11:03:47Z",
+ "cur": 3,
+ "answers": {
+  "PM-1": {
+   "v": "pick",
+   "pick": "switch",
+   "t": 1790852532299,
+   "seconds": 41,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM-2": {
+   "v": "pick",
+   "pick": "one-line",
+   "t": 1790852551412,
+   "seconds": 19,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM-3": {
+   "v": "pick",
+   "pick": "rows-edit",
+   "t": 1790852580418,
+   "seconds": 29,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM-4": {
+   "v": "pick",
+   "t": 1790852626325,
+   "seconds": 46,
+   "theme": "light",
+   "zoom": 1,
+   "note": "may need to see this to understand fully though",
+   "pick": "merge"
+  }
+ }
+}

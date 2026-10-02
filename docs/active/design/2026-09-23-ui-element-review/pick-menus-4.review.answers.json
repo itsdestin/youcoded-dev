@@ -1,0 +1,34 @@
+{
+ "deck": "pick-menus-4",
+ "started": "2026-10-01T23:56:58.606Z",
+ "submitted": "2026-10-02T00:00:38Z",
+ "cur": 2,
+ "answers": {
+  "PM4-1": {
+   "v": "pick",
+   "pick": "page",
+   "t": 1790899135107,
+   "note": "need to fix the buttons.save should be on the righthand side, cancel directly to its left, remove with destructive theming on the far left side.",
+   "seconds": 116,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM4-2": {
+   "v": "other",
+   "t": 1790899182409,
+   "note": "these still just dont feel right. i don't like how tags themselves or these edit menus are styled.",
+   "seconds": 47,
+   "theme": "light",
+   "zoom": 1
+  },
+  "PM4-3": {
+   "v": "pick",
+   "t": 1790899236966,
+   "note": "but use the pinned icon from the pinned pill (option c)",
+   "pick": "by-status",
+   "seconds": 55,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

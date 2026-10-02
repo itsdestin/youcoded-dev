@@ -1,0 +1,76 @@
+{
+  "title": "Quick chips and Tags & note — round 3",
+  "key": "pick-menus-3",
+  "out": "pick-menus-3.review.html",
+  "images": "images/pick-menus-3",
+  "runs": { "today": "runs/today" },
+  "themes": ["light"],
+  "crops": {
+    "qc-rows": ["x", "qc-rows", "430x500+505+200"],
+    "qc-pills": ["x", "qc-pills", "430x270+505+320"],
+    "qc-fields": ["x", "qc-fields", "430x590+505+155"],
+    "tg-switch": ["x", "tg-switch", "430x580+505+160"],
+    "tg-chip": ["x", "tg-chip", "430x580+505+160"],
+    "menu-old": ["x", "menu-old", "430x330+505+330"],
+    "menu-new": ["x", "menu-new", "560x330+505+330"],
+    "pin-today": ["x", "pin-today", "390x110+528+60"],
+    "pin-new": ["x", "pin-new", "390x110+528+60"]
+  },
+  "steps": [
+    {
+      "id": "PM3-1",
+      "surface": "Quick chips",
+      "path": "The pencil at the end of the chips above the message box",
+      "headline": "Which quick chips editor?",
+      "notice": "All three: a labelled card, \"+ Add a chip\" below. B and C are sketches: their reordering gets wired up if picked.",
+      "variants": [
+        { "id": "rows", "label": "Rows", "crop": "qc-rows",
+          "summary": "Last round's: each chip a row with its message under the name, a grip to drag, a pencil to edit in place, ✕ to remove." },
+        { "id": "pills", "label": "The chips themselves", "crop": "qc-pills",
+          "summary": "The chips drawn as they look above the message box. Click one to edit its name and message in a box below (with Remove); drag one to move it.",
+          "risk": "You can't read what a chip sends until you click it." },
+        { "id": "fields", "label": "Always editable", "crop": "qc-fields",
+          "summary": "Every chip's name and message are open boxes you type into directly; no edit step. Grip and ✕ on each.",
+          "risk": "Long: about 4 chips fit before scrolling; easy to change one by accident." }
+      ]
+    },
+    {
+      "id": "PM3-2",
+      "surface": "Tags & note",
+      "path": "The tag chip in the status bar",
+      "headline": "Pin is its own switch at the top; no tick boxes. How should a tag show it's on?",
+      "notice": "Both: \"Pin to top\" card first (Priority's new name, same saved mark, so sessions marked Priority come up pinned); the note box no longer resizes; Priority is gone from the tag list.",
+      "variants": [
+        { "id": "switch", "label": "A switch on each tag", "crop": "tg-switch",
+          "summary": "The same switch as Pin and as the status bar menu, at the right of each tag, with its \"…\" just before it." },
+        { "id": "chip", "label": "The tag fills when on", "crop": "tg-chip",
+          "summary": "Click the tag itself: filled when it's on this session, a faint outline when it isn't. Only the \"…\" at the right.",
+          "risk": "On and off differ only by how strong the tag looks." }
+      ]
+    },
+    {
+      "id": "PM3-3",
+      "surface": "Tags & note",
+      "path": "The \"…\" on a tag",
+      "headline": "Tag actions: the app's small menu instead of a row of boxes and buttons.",
+      "notice": "Rename turns the tag into a name box in place; Change colour shows one row of colours; Archive is a menu item now, not a button on every row; Delete… asks first, with the red Delete where the main button goes.",
+      "variants": [
+        { "id": "old", "label": "Last round", "crop": "menu-old",
+          "summary": "Colour dot, name box, Archive and Delete all opened under the tag at once." },
+        { "id": "menu", "label": "Small menu", "crop": "menu-new",
+          "summary": "The same menu right-click uses: Rename, Change colour, Archive, Delete…; only the one you pick opens." }
+      ]
+    },
+    {
+      "id": "PM3-4",
+      "surface": "Sessions menu and Resume",
+      "path": "The session list at the top of the window",
+      "headline": "A pinned session shows a small pin instead of the amber \"Priority\" tag.",
+      "notice": "Same in the Resume cards and on the status bar's tag chip.",
+      "variants": [
+        { "id": "today", "label": "Today", "crop": "pin-today", "summary": "An amber \"Priority\" tag beside the other tags." },
+        { "id": "pin", "label": "Pin", "crop": "pin-new", "summary": "A pin before the tags; hover says \"Pinned to top\"." }
+      ]
+    }
+  ]
+}

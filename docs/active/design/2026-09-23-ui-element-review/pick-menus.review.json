@@ -1,0 +1,167 @@
+{
+  "title": "\"Pick what shows\" menus \u2014 one pattern",
+  "key": "pick-menus",
+  "out": "pick-menus.review.html",
+  "images": "images/pick-menus",
+  "runs": {
+    "today": "runs/today"
+  },
+  "themes": [
+    "light"
+  ],
+  "crops": {
+    "pm-today": [
+      "pm",
+      "today",
+      "420x260+510+500"
+    ],
+    "pm-switch": [
+      "pm",
+      "switch",
+      "420x260+510+500"
+    ],
+    "pm-tick": [
+      "pm",
+      "tick",
+      "420x260+510+500"
+    ]
+  },
+  "steps": [
+    {
+      "id": "PM-1",
+      "surface": "Status bar widgets",
+      "path": "The pencil at the right end of the status bar",
+      "headline": "Which row style should \"pick what shows\" menus use?",
+      "notice": "The row style you pick here becomes the one for every \"pick what shows\" menu. Both new versions: each group is a small label over a card (the guide's \"a label first, nothing bare\"), and each row shows a one-line hint under its name instead of an (i) you have to press. The theme cycle is a fold under the Theme row instead of a pencil. References: Settings \u2192 Sound and Performance use the same switch rows; the tick box is the one in Tags & note.",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pm-today",
+          "summary": "Bare tick boxes under small labels, an (i) on every row."
+        },
+        {
+          "id": "switch",
+          "label": "Switches on the right",
+          "crop": "pm-switch",
+          "summary": "Each row is name and hint on the left, a switch on the right, like the switches in Settings. The always-on four say \"Always shown\" instead of a switch.",
+          "risk": "Taller rows, so more scrolling: about 8 rows show at once instead of 13."
+        },
+        {
+          "id": "tick",
+          "label": "Tick boxes on the left",
+          "crop": "pm-tick",
+          "summary": "The same cards and hints, with a tick box on the left of each name; the whole row is the click target.",
+          "risk": "The same extra height; the greyed ticks on the always-on four can read as \"broken\" rather than \"fixed\"."
+        }
+      ]
+    },
+    {
+      "id": "PM-2",
+      "words": true,
+      "surface": "Status bar widgets",
+      "path": "The \"Always on\" group at the top",
+      "headline": "Should the four always-on items still be listed as rows?",
+      "today": "Model, Permissions, Tags & note and Announcements are listed first with ticks you can't change.",
+      "problem": "Four rows that can't be changed take the top of the menu, above the things you came to change.",
+      "proposal": "Two ways.",
+      "options": [
+        {
+          "id": "one-line",
+          "label": "One line instead",
+          "summary": "A short line at the top: \"Model, permissions, tags & note and announcements are always shown.\"",
+          "pros": [
+            "The menu starts with things you can change.",
+            "About 200 px shorter."
+          ],
+          "cons": [
+            "The four lose their one-line explanations."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep-rows",
+          "label": "Keep the rows",
+          "pros": [
+            "Every item in the bar is explained in one place."
+          ],
+          "cons": [
+            "The longest menu stays longest."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PM-3",
+      "words": true,
+      "surface": "Quick chips",
+      "path": "The pencil at the end of the chip row above the message box",
+      "headline": "How should the quick chips editor work?",
+      "today": "White rows with each chip's name and the start of its message, and an \u2715 to remove. You can't change the order, and long messages are cut off.",
+      "problem": "Its rows don't match any other menu, you can't reorder chips, and you can't read what a chip will send.",
+      "proposal": "Two ways, both in a labelled card like the status bar editor.",
+      "options": [
+        {
+          "id": "rows-edit",
+          "label": "Rows that open to edit",
+          "summary": "Each chip is a row: name, with its full message as the hint underneath. Click a row to edit both in place; a drag handle on the left reorders; a remove icon on the right.",
+          "pros": [
+            "See exactly what each chip sends.",
+            "Reorder without deleting and re-adding."
+          ],
+          "cons": [
+            "Taller rows when messages are long."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "restyle",
+          "label": "Restyle only",
+          "summary": "Same rows and \u2715, moved into a card; no reordering, no editing.",
+          "pros": [
+            "Smallest change."
+          ],
+          "cons": [
+            "Still can't reorder or edit a chip."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "PM-4",
+      "words": true,
+      "surface": "Tags",
+      "path": "A session's tag chip \u2192 Tags & note, and its \"Manage tags\u2026\"",
+      "headline": "Should Tags & note and Manage tags become one popup?",
+      "today": "Tags & note ticks tags onto this session and holds its note. Renaming, recolouring, archiving or deleting a tag happens in a second popup, Manage tags, with text boxes and two buttons on every row.",
+      "problem": "You said both need rebuilding. Two popups for one list of tags, and Manage tags' rows are busy.",
+      "proposal": "Two ways.",
+      "options": [
+        {
+          "id": "merge",
+          "label": "One popup",
+          "summary": "One list: tick a tag to put it on this session; a \"\u2026\" on each row renames, recolours, archives or deletes it. The note is its own labelled card below. Manage tags goes away.",
+          "pros": [
+            "Everything about tags in one place.",
+            "Rows stay quiet until you open the \"\u2026\"."
+          ],
+          "cons": [
+            "Rename and delete sit one click from the tick you use every day."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "two",
+          "label": "Keep two, restyle both",
+          "summary": "Tags & note and Manage tags both get the new cards and rows; Manage tags' rows show the name with a \"\u2026\" instead of text boxes and buttons.",
+          "pros": [
+            "Renaming and deleting stay out of the way of everyday tagging."
+          ],
+          "cons": [
+            "Two popups to learn."
+          ]
+        }
+      ]
+    }
+  ]
+}
