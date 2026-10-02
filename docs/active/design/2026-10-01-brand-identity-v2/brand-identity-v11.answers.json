@@ -1,0 +1,40 @@
+{
+ "deck": "brand-identity-v11",
+ "started": "2026-10-02T09:04:16.782Z",
+ "submitted": "2026-10-02T09:11:10Z",
+ "cur": 3,
+ "answers": {
+  "ICON": {
+   "note": "p3, darker shadow on all sides,, keep mascot same size but try squeezing youcoded in below it. we need to make the eyes contrast better in the other themes. ",
+   "t": 1790932038398,
+   "v": "other",
+   "seconds": 182,
+   "theme": "light",
+   "zoom": 1
+  },
+  "GLASS": {
+   "v": "pick",
+   "t": 1790932087096,
+   "pick": "gs3",
+   "seconds": 49,
+   "theme": "light",
+   "zoom": 1
+  },
+  "EYES": {
+   "note": "changing it up too much. just keep the current eye style while trying to fix the contrast/look at the smaller sizes on all of the themes. ",
+   "t": 1790932181904,
+   "v": "other",
+   "seconds": 95,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "wider opening for the box. keep the tilt of q2, but lower it a bit. make the lines much much much smaller, so they look like little speed traces rather than wires connecting the mascor to the box. fix the joint for the box/lid.",
+   "t": 1790932264145,
+   "v": "other",
+   "seconds": 82,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
