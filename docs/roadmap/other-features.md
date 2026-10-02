@@ -73,11 +73,14 @@ has passed ~8 items — graduate it to its own file.
       and final card; this remains the later replacement
       `onboarding` `all` `parked` `checked 2026-09-10`
 
-- [ ] On a fresh Windows PC without winget (App Installer), first-run setup dead-ends at Git:
-      "Failed to install Git: winget (App Installer) is missing…" with only Try Again. Node
-      installs fine there; Git has no non-winget way in. Seen in the clean Windows 11 VM on
-      2026-10-02 while testing the Office build; Git was put in by hand to keep testing
-      `onboarding` `desktop` `confirmed` `checked 2026-10-02`
+- [ ] Windows first-run setup installs Node and Git only through winget (App Installer), so a PC
+      without it — Windows Server, older LTSC, school/work PCs with it blocked — dead-ends with
+      "winget (App Installer) is missing…" and only Try Again. Mac and Linux already download
+      their own copy into the user's folder with no admin prompt; Windows could do the same
+      (Destin, 2026-10-02: "make downloads more simple/robust so users don't encounter these
+      kinds of errors"). The PATH bug that made winget vanish mid-setup on a normal PC is fixed
+      separately on `session/windows-setup-path`
+      `onboarding` `desktop` `decision` `checked 2026-10-02`
 
 ## misc
 
