@@ -1,0 +1,42 @@
+{
+ "deck": "brand-identity-v9",
+ "started": "2026-10-02T08:03:28.915Z",
+ "submitted": "2026-10-02T08:22:51Z",
+ "cur": 3,
+ "answers": {
+  "FONT": {
+   "t": 1790928798681,
+   "v": "picks",
+   "picks": [
+    "f2"
+   ],
+   "seconds": 590,
+   "theme": "light",
+   "zoom": 1
+  },
+  "ICON": {
+   "note": "i think i want to see more variants like k4. interesting/creative/edifferent but similar",
+   "t": 1790928909591,
+   "v": "other",
+   "seconds": 111,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "kinda like the box idea better maybe? want more options",
+   "t": 1790929233538,
+   "v": "other",
+   "seconds": 324,
+   "theme": "light",
+   "zoom": 1
+  },
+  "SLATE": {
+   "t": 1790929369944,
+   "note": "this is a bit more than i meant. i meant i just want a full slate of logos and text design layouts that could be used on various surfaces. some of the specific things (banners, announcment graphics, etc) can be later things. not a priority right this second. i think we already have the link preview card working well?",
+   "v": "other",
+   "seconds": 136,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
