@@ -1,0 +1,38 @@
+{
+ "deck": "office-review-2",
+ "started": "2026-09-28T10:05:56.723Z",
+ "submitted": "2026-09-28T10:24:46Z",
+ "cur": 3,
+ "answers": {
+  "A-inline": {
+   "note": "the scroll bars look janky, as does the gap between the top of the doc and the edit bar/menu",
+   "t": 1790590020881,
+   "v": "yes",
+   "seconds": 64,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "L-try-2": {
+   "v": "yes",
+   "t": 1790591037654,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-versions-keep": {
+   "v": "pick",
+   "pick": "tiered-30",
+   "t": 1790591058405,
+   "seconds": 21,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-history": {
+   "v": "yes",
+   "t": 1790591083094,
+   "seconds": 25,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

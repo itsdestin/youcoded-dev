@@ -1,0 +1,67 @@
+{
+  "title": "Office — LibreOffice files lose some formatting when saved",
+  "key": "office-odf",
+  "out": "office-odf.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-odf-save",
+      "words": true,
+      "surface": "Office",
+      "path": "Saving a LibreOffice document (.odt, .ods, .odp) in Office",
+      "headline": "LibreOffice documents gain unwanted bold when saved. How should Office handle saving them?",
+      "today": "You chose to include LibreOffice files in the first version. In testing, a real LibreOffice memo opened perfectly, but after one save, bulleted lines that were only partly bold came back fully bold (659 bold characters became 1,180).",
+      "problem": "The fault is in the file translator every OnlyOffice-based editor uses, including OnlyOffice's own newest version, so no choice of editor avoids it. Word, Excel and PowerPoint files are not affected.",
+      "proposal": "Three ways to handle it. Opening and reading LibreOffice files stays in the first version in all three.",
+      "options": [
+        {
+          "id": "save-as-word",
+          "label": "Save a Word copy",
+          "summary": "Editing a LibreOffice file saves your changes to a Word/Excel/PowerPoint copy beside it; the original is never rewritten.",
+          "pros": [
+            "Nothing in the original file is ever damaged.",
+            "The copy keeps its formatting exactly, from then on."
+          ],
+          "cons": [
+            "You end up with two files, and LibreOffice users you share with get a Word file."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "save-with-warning",
+          "label": "Save, with a warning",
+          "summary": "Office saves back to the LibreOffice file, after a one-time warning that some formatting may change.",
+          "pros": [
+            "One file, in the format it came in.",
+            "Most documents are unaffected."
+          ],
+          "cons": [
+            "The formatting drift still happens when it happens.",
+            "Easy to click past a warning and only notice later."
+          ]
+        },
+        {
+          "id": "read-only",
+          "label": "Open read-only",
+          "summary": "LibreOffice files open for reading only until the translator is fixed; Office offers \"Save as Word copy\" if you want to edit.",
+          "pros": [
+            "Clearest: nothing changes a LibreOffice file."
+          ],
+          "cons": [
+            "An extra step before editing any LibreOffice file."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-report-upstream",
+      "words": true,
+      "surface": "Office",
+      "path": "Euro-Office's public issue tracker on GitHub",
+      "headline": "Should I report this bug publicly to the Euro-Office project, under your GitHub account?",
+      "today": "The bug is in Euro-Office's translator (and OnlyOffice's). Nobody seems to have reported it for this case yet.",
+      "problem": "A public report is the only way it gets fixed upstream, but it is posted under your name and cannot be fully taken back.",
+      "proposal": "Yes: I post a short report with the steps and the bold counts, using neutral test files only — never your documents. No: nothing is posted."
+    }
+  ]
+}

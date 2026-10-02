@@ -1,0 +1,51 @@
+{
+ "deck": "office-review-3",
+ "started": "2026-09-28T10:38:38.032Z",
+ "submitted": "2026-09-28T10:39:57Z",
+ "cur": 5,
+ "answers": {
+  "A-slim-clean": {
+   "v": "yes",
+   "t": 1790591941018,
+   "seconds": 23,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "Q-odf": {
+   "v": "pick",
+   "pick": "first",
+   "t": 1790591952106,
+   "seconds": 11,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-csv-warn": {
+   "v": "yes",
+   "t": 1790591976591,
+   "seconds": 24,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-no-assistant": {
+   "v": "yes",
+   "t": 1790591981595,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-roundness": {
+   "v": "yes",
+   "t": 1790591983920,
+   "seconds": 2,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "S-installer": {
+   "v": "yes",
+   "t": 1790591996667,
+   "seconds": 13,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

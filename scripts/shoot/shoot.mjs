@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { ensureBuild, openPool, poolSize, resolveCheckout, runQueue, serve } from './engine.mjs';
 import { CONTRAST_PROBE } from '../ui-review/cdp-helpers.mjs';
 import { inPage, listLayers } from './explore-page.mjs';
+import { ensureOfficeEditor } from './office-editor.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
@@ -77,7 +78,7 @@ async function side(checkout, outDir, pick) {
   const dist = await ensureBuild(checkout, log);
   const server = await serve(dist);
   const base = `http://127.0.0.1:${server.port}/index.html`;
-  let pool;
+  let pool, editor;
   try {
     // One tab reads the screen list from the app itself, so the CLI never keeps a copy.
     const probe = await openPool({ tabs: 1, browsers: 1 });
@@ -93,6 +94,10 @@ async function side(checkout, outDir, pick) {
     if (opt.list) return { screens, results: [], server };
     if (!chosen.length) return { screens, results: [], server, empty: true };
     const jobs = chosen.flatMap((s) => themes.map((theme) => ({ screen: s, theme })));
+    // The Office editor, for the screens that show one (office-editor.mjs says why shoot owns it).
+    if (chosen.some((s) => s.tags.includes('office'))) {
+      try { editor = await ensureOfficeEditor(checkout, log); } catch (e) { die(`the Office screens need the editor: ${e.message}`); }
+    }
     const size = poolSize(jobs.length);
     log(`${chosen.length} screen(s) × ${themes.length} theme(s) = ${jobs.length} picture(s), ${size.browsers} browser(s) × ${Math.ceil(size.tabs / size.browsers)} tab(s)`);
     pool = await openPool({ ...size, width, height });
@@ -100,7 +105,7 @@ async function side(checkout, outDir, pick) {
     const results = await runQueue(pool, jobs, (tab, job) => shootOne(tab, base, job, outDir));
     log(`pictures taken in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
     return { screens, results, server };
-  } finally { pool?.close(); server.close(); }
+  } finally { pool?.close(); server.close(); editor?.stop(); }
 }
 
 async function waitFor(tab, expr, ms) {
