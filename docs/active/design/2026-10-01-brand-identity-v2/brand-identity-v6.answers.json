@@ -1,0 +1,32 @@
+{
+ "deck": "brand-identity-v6",
+ "started": "2026-10-02T00:13:58.339Z",
+ "submitted": "2026-10-02T00:19:00Z",
+ "cur": 2,
+ "answers": {
+  "NAME": {
+   "note": "this is worse, somehow . the mascot just feels flat and poorly integrated. i think i like the lowercase youcoded. a2/a5 are probably  the best, but still far from good",
+   "t": 1790900229638,
+   "v": "other",
+   "seconds": 191,
+   "theme": "light",
+   "zoom": 1
+  },
+  "ICON": {
+   "note": "just really bad. they all feel so flat and cartoonish. where's our polished glass minimalism used everywhere else? we don't need to use an actual mascot, just some part of its sillouette/shape/spirit",
+   "t": 1790900331524,
+   "v": "other",
+   "seconds": 102,
+   "theme": "light",
+   "zoom": 1
+  },
+  "INSTALLER": {
+   "note": "same as before",
+   "t": 1790900339550,
+   "v": "other",
+   "seconds": 8,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
