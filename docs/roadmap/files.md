@@ -167,6 +167,13 @@ searched or resumed (chat-data).
       follow-up)
       `files-panel` `desktop` `confirmed` `checked 2026-10-01`
 
+- [ ] On Mac and Windows, saving or opening an Office document that holds a picture given as a
+      web address can still make the converter download it, outside the app's own picture checks
+      (public addresses only, size cap). Linux blocks this by running the converter with no
+      network (unshare); the converter ignores proxy settings, so Mac/Windows need their own
+      no-network wrapper (macOS sandbox-exec is a candidate; Windows has no simple equivalent)
+      `files-panel` `desktop` `confirmed` `checked 2026-10-01` `security`
+
 - [ ] When the app quits in the middle of an Office save, a hidden leftover folder from that
       save can stay beside the document; it is cleaned up on that file's next save, but not when
       the file is only opened again
