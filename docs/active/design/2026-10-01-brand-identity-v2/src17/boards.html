@@ -276,6 +276,16 @@ function colourBoard() {
 }
 
 // ---- round 16 boards ----
+const MOUTHS4 = [['../src16/out/mj', 'Open oval (before)'], ['out/sm1', 'Soft smile · narrow'], ['out/sm2', 'Soft smile · medium'], ['out/sm3', 'Soft smile · wide'], ['out/o1', 'Half-moon (before)']];
+function mouths4() {
+  $(`<div class="tag">The soft smile · between the open oval and the half-moon</div><div class="lab" style="position:absolute;right:24px;top:24px">Rounded corners throughout · true small sizes and other themes underneath</div>
+    <div style="position:absolute;left:24px;right:24px;top:62px;bottom:22px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+    ${MOUTHS4.map(([id, n], i) => `<div class="c" style="justify-content:flex-start;padding-top:40px;gap:16px"><span class="cl">${String.fromCharCode(65 + i)} · ${n}</span>
+      <img src="${id}-256.png" width="190">
+      <div style="display:flex;gap:10px;align-items:center;background:#1f1d24;padding:8px 12px;border-radius:10px">${[48, 32, 24, 16].map(p => `<img src="${id}-${p}.png" width="${p}">`).join('')}</div>
+      <div style="display:flex;gap:10px;align-items:center;background:#ecebf0;padding:8px 12px;border-radius:10px">${[48, 32, 24, 16].map(p => `<img src="${id}-${p}.png" width="${p}">`).join('')}</div>
+      <div style="display:flex;gap:8px">${['golden', 'meadow', 'strawberry', 'kuromi'].map(t => `<img src="${id}-${t}-64.png" width="40">`).join('')}</div></div>`).join('')}</div>`);
+}
 const MOUTHS3 = [['../src16/out/mc2', 'Little "o" (pick)'], ['../src16/out/mj', 'Open oval (pick)'], ['../src16/out/mh', 'Open smile (pick)'], ['out/o1', 'Half-moon'], ['out/o2', 'Round "o"'], ['out/o3', 'Round open'], ['out/o4', 'Half-moon + cheeks'], ['out/o5', 'Oval + cheeks'], ['out/o6', 'Open smile + cheeks']];
 function mouths3() {
   $(`<div class="tag">Mouths · your three picks + six soft, round, happy ones</div><div class="lab" style="position:absolute;right:24px;top:24px">True small sizes underneath</div>
@@ -360,7 +370,7 @@ function installerBoard(k) {
     </div>`);
 }
 Promise.all(['600 20px "Outfit"','800 20px "Manrope"','700 20px "Figtree"','700 20px "Urbanist"','600 20px "Lexend"','600 20px "Outfit"','800 20px "M PLUS Rounded 1c"','800 20px "DM Sans"', '700 20px "DM Sans"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"'].map(f => document.fonts.load(f))).then(() => {
-  if (B === 'mouths3') mouths3(); else if (B === 'mouths2') mouths2(); else if (B === 'greys') greys(); else if (B === 'colours2') colours2(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
+  if (B === 'mouths4') mouths4(); else if (B === 'mouths3') mouths3(); else if (B === 'mouths2') mouths2(); else if (B === 'greys') greys(); else if (B === 'colours2') colours2(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
   document.body.dataset.ready = 1;
 });
 </script>

@@ -3,8 +3,8 @@
 # WHY device scale 1: the taskbar/tab rows must show TRUE small pixels, not a retina upscale.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
-dest="$here/../runs/v17/shots-brand/light"; mkdir -p "$dest"
-ids="${*:-mouths3}"
+dest="$here/../runs/v18/shots-brand/light"; mkdir -p "$dest"
+ids="${*:-mouths4}"
 for id in $ids; do
   google-chrome-stable --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \
     --window-size=1200,700 --virtual-time-budget=9000 --allow-file-access-from-files \
