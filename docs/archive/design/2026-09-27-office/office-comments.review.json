@@ -1,0 +1,36 @@
+{
+  "title": "Office \u2014 comments panel restyled, and assistant comments arrive live",
+  "key": "office-comments",
+  "out": "office-comments.review.html",
+  "images": "images/office-comments.review",
+  "runs": {
+    "before": "comments-runs/before",
+    "after": "comments-runs/after"
+  },
+  "themes": [
+    "midnight",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "C-word",
+      "surface": "Office",
+      "path": "A Word document \u2192 Comments panel (left strip, speech-bubble icon)",
+      "crop": "comments/word",
+      "headline": "Word's comments panel now looks like YouCoded's own comment cards.",
+      "changed": "Each comment thread is one rounded card in your theme's colours, with small initials instead of coloured circles, and a plain \"Add reply\" box at the bottom of each card. Edit and delete appear when you hover a comment.",
+      "notice": "Comments look the same whether you read a file in YouCoded or edit it in Office. When the assistant adds or answers a comment while the file is open, it appears in this panel within about a second and is saved with your document.",
+      "risk": "Pressing Ctrl+Z (undo) right after the assistant comments can remove its comment, because the editor treats it like your own change. The quoted text above each comment is no longer shown inside the card."
+    },
+    {
+      "id": "C-excel",
+      "surface": "Office",
+      "path": "An Excel workbook \u2192 Comments panel",
+      "crop": "comments/excel",
+      "headline": "Excel's comments panel gets the same card style.",
+      "changed": "Same card shape, initials, colours and reply box as Word.",
+      "notice": "The assistant's comments on cells also appear live while the workbook is open.",
+      "risk": ""
+    }
+  ]
+}
