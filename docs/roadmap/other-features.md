@@ -73,6 +73,12 @@ has passed ~8 items — graduate it to its own file.
       and final card; this remains the later replacement
       `onboarding` `all` `parked` `checked 2026-09-10`
 
+- [ ] On a fresh Windows PC without winget (App Installer), first-run setup dead-ends at Git:
+      "(Windows) "Failed to install Git: winget (App Installer) is missing…" with only Try Again. Node
+      installs fine there; Git has no non-winget way in. Seen in the clean Windows 11 VM on
+      2026-10-02 while testing the Office build; Git was put in by hand to keep testing
+      `onboarding` `desktop` `confirmed` `checked 2026-10-02`
+
 ## misc
 
 - [ ] The dev log shows React's "Cannot update a component while rendering a different
