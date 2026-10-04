@@ -123,6 +123,8 @@ function glyphFill(n) {
 }
 let lineBuf = '';
 let activeFlood = null;
+let inkFinal = null;      // set once the Ink-style animation finished (perf-lab-flood-modes)
+process.on('SIGWINCH', () => { if (inkFinal) { try { fs.writeSync(1, Buffer.from('\x1b[5A\x1b[0J' + inkFinal(-1))); } catch { /* pty full */ } } });
 
 process.stdin.resume();
 process.stdin.on('data', (buf) => {
@@ -194,10 +196,15 @@ process.stdin.on('data', (buf) => {
     if (modesRun) { try { fs.writeSync(1, Buffer.from('\x1b[?2004l\x1b[?25h')); } catch { /* pty full: the rig reads the result either way */ } }
     const state = { aborted: false, finished: false };
     activeFlood = state;
+    // WHY time-sliced (2026-10-04, review round 3): a blocking write to a full pty waits for the app to drain it, and 64 blocking
+    // 64 KB writes in one turn of the event loop took ~8 s while a hidden terminal drained at 0.5 MB/s — stdin was not
+    // read for that long, so "type a command into the flooding terminal" looked like a stalled reply. It was this producer,
+    // not the app. A turn now ends after ~40 ms of writing, so stdin is read between slices (like a real interactive program).
     const pump = () => {
       if (state.aborted) return;
+      const sliceStart = Date.now();
       try {
-        for (let i = 0; i < 64 && left > 0; i++) {
+        for (let i = 0; i < 64 && left > 0 && Date.now() - sliceStart < 40; i++) {
           if (!modesInjected && (total - left) >= total / 4) { fs.writeSync(1, Buffer.from('\x1b[?2004h\x1b[?25l')); modesInjected = true; }
           if (rate > 0 && (total - left) > rate * 1048576 * ((Date.now() - t0) / 1000 + 0.02)) return void setTimeout(pump, 5);
           const w = fs.writeSync(1, buf, off, Math.min(buf.length - off, left));
@@ -205,7 +212,19 @@ process.stdin.on('data', (buf) => {
           if (Date.now() - lastLog >= 250) { lastLog = Date.now(); log({ event: 'progress' }); }
         }
         if (left > 0) return void setImmediate(pump);
-        while (tailOff < tail.length) tailOff += fs.writeSync(1, tail, tailOff, tail.length - tailOff);
+        if (modesRun) {
+          // An Ink-style animation as the LAST output: a 5-line frame redrawn in place with RELATIVE cursor moves
+          // (up 5, erase to end of screen), ~5 MB of frames, so the part of the backlog a cut keeps begins in the middle
+          // of it. The final frame is redrawn on SIGWINCH (the app's repaint nudge) the way Ink does.
+          const frame = n => Array.from({ length: 5 }, (_, k) => `\x1b[36m| FRAME ${n === -1 ? 'FINAL' : n} line ${k + 1} ${'-'.repeat(60)}\x1b[0m\r\n`).join('');
+          let out = `\r\n[perf-lab] flood complete: ${mb} MB\r\n` + frame(0);
+          const flushOut = () => { const b = Buffer.from(out); let o = 0; while (o < b.length) o += fs.writeSync(1, b, o, b.length - o); out = ''; };
+          for (let n = 1; n <= 20000; n++) { out += '\x1b[5A\x1b[0J' + frame(n); if (out.length > 60000) flushOut(); }
+          out += '\x1b[5A\x1b[0J' + frame(-1); flushOut();
+          inkFinal = frame;
+        } else {
+          while (tailOff < tail.length) tailOff += fs.writeSync(1, tail, tailOff, tail.length - tailOff);
+        }
         state.finished = true;
         log({ event: 'done' });
       } catch (e) {

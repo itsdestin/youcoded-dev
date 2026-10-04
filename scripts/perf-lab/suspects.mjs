@@ -505,7 +505,8 @@ async function legMinimized(ctx, mb, modes = false) {
   const { cdp, bound, fixtureHome, app } = ctx, out = { mb };
   if (!ctx.mainPort) throw Error('minimized needs --main-inspect 1');
   const id = await toTerminalView(ctx);
-  const marker = `[perf-lab] flood complete: ${mb} MB`;
+  // The modes producer ends with ~7 MB of Ink-style frames, so the flood-complete line is in the cut part: the tail to look for is the final frame.
+  const marker = modes ? 'FRAME FINAL line 5' : `[perf-lab] flood complete: ${mb} MB`;
   const mainEval = async expr => { const targets = await (await fetch(`http://127.0.0.1:${ctx.mainPort}/json/list`)).json(); const m = await connect(targets.find(x => x.webSocketDebuggerUrl).webSocketDebuggerUrl); try { return await m.evaluate(expr); } finally { m.close?.(); } };
   const thrown = {}; await cdp.send('Runtime.enable').catch(() => {}); cdp.on('Runtime.exceptionThrown', p => { const m = String(p?.exceptionDetails?.exception?.description || p?.exceptionDetails?.text || '').split('\n')[0].slice(0, 100); thrown[m] = (thrown[m] || 0) + 1; });
   const pssBefore = pssMb(classifyPids(app));
@@ -536,6 +537,10 @@ async function legMinimized(ctx, mb, modes = false) {
     const text = await bound(cdp.evaluate(`window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 60) ?? ''`), 'screen text').catch(() => '');
     out.strayFragments = (text.match(/\[\d+(;\d+)*m|(^|\n)\d+(;\d+)*m/g) || []).slice(0, 5);
     out.screenRows = text.split('\n').length;
+    // Ink-style frame: exactly one copy of the final frame in the visible rows, and no frame of any other number left over.
+    out.screenDump = text.split('\n').map((l, i) => `${i}:${l.slice(0, 50)}`).filter(l => !/^\d+:\s*$/.test(l)).slice(-16);
+    out.finalFrameCopies = (text.match(/FRAME FINAL line 1 /g) || []).length;
+    out.staleFrames = (text.match(/FRAME \d+ line/g) || []).length;
     out.modesAfter = await bound(cdp.evaluate(`window.__terminalRegistry?.getTerminalModes(${JSON.stringify(id)})`), 'modes');
   }
   out.rendererErrors = thrown;
