@@ -130,6 +130,11 @@ def pane_url(spec, live, pane, theme):
             q['scenario'] = d['app']
         if d.get('stalled'):
             q['stalled'] = '1'
+        # `params`: extra workbench switches for this pane, e.g. {"openPage": "page-home",
+        # "pagesHome": "v-edit-a"} — WHY: a Pages design option is a screen of the app under
+        # its own switches, and the pane must open straight on it rather than on the chat.
+        for k, v in (d.get('params') or {}).items():
+            q[str(k)] = str(v)
     else:
         q.update({'view': 'live', 'surface': d['surface'], 'round': d['round'], 'candidate': d['candidate']})
     return f'{live_base(spec)}/app/index.html?{urlencode(q)}'

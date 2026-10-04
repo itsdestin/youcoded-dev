@@ -83,6 +83,13 @@ class AddressTests(unittest.TestCase):
     def test_a_named_view_is_a_screen_too(self):
         self.assertIn('view=tools', pane_url(self.spec, {}, {'view': 'tools'}, 'midnight'))
 
+    def test_app_pane_carries_its_params(self):
+        # A Pages design option opens straight on the page under its own switches.
+        u = pane_url(self.spec, {}, {'app': 'default', 'params': {'openPage': 'page-home', 'pagesHome': 'v-edit-a'}}, 'midnight')
+        self.assertIn('scenario=default', u)
+        self.assertIn('openPage=page-home', u)
+        self.assertIn('pagesHome=v-edit-a', u)
+
     def test_round_is_always_in_the_address(self):
         # Candidate ids are unique only WITHIN a round (close-prompt-body reuses 'labelled'
         # and 'one-line' across its ten), so an address without one shows the wrong design.
