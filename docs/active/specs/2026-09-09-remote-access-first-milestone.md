@@ -4,6 +4,8 @@ status: active
 
 # Remote access — first secure, reliable milestone
 
+> **2026-09-24 — where this goes now:** All three batches shipped (2026-09-10/11). What follows is scheduled as R0–R6 of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`; the ordered list is `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`. The "Next milestones" section below (account access, Mesh, Cloud) is still unscheduled.
+
 ## Decision and scope
 
 Destin approved narrowing the assignment on 2026-09-09. Keep Tailscale near term.

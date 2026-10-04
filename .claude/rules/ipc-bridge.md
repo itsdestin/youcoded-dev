@@ -29,14 +29,14 @@ Desktop, Android and a remote browser render the SAME React UI over the SAME JSO
 ## Core parity invariants
 - **`preload.ts` and `remote-shim.ts` must expose the same SHARED `window.claude` shape.** If one has a shared API the other lacks, React crashes there. Five closed exceptions: `window.claude.window` (Electron-only), `window.claude.android` (Android-only), the three below.
 - **The three voice ones.** `voice.sendAudio`, `voice.micAccess` and the `voice` namespace itself — absent from `remote-shim.ts` outside `android-local`, because a browser grants no mic without an encrypted connection; paired to a desktop every method refuses per call. Guard: `remote-shim-refusals.test.ts`.
-- **Message type strings must be IDENTICAL on every surface.** A typo silently breaks that feature on one platform (`SessionService.handleBridgeMessage()`: ~286 `when` labels, counted 2026-09-06).
+- **Message type strings must be IDENTICAL on every surface.** A typo breaks it on one platform.
 - **Desktop handlers return raw values; Android wraps in `JSONObject`.** The shim normalizes both before React.
 - **A desktop-only channel must REJECT elsewhere, never resolve.** Kotlin's not-implemented arm answers `{ok:false}`; the shim errors ONLY for channels in `REJECT_ON_NOT_OK`. Miss it and a caller expecting an array gets an object — the first `.filter()` takes the screen down.
 - **A channel Kotlin has NO branch for answers `{ok:false, unsupported:true}`** (`MessageRouter.buildUnsupportedResponse`, the final `else`): the shim rejects with a plain notice worded "on the phone". Channels polled on ordinary screens (`transcript:page`, `syncspaces:status`) are refused quietly by the shim. Guard: `android-honest-build.test.ts`, `remote-shim-refusals.test.ts`.
 
 ## Protocol & adding a method
 - Request `{type, id, payload}` → response `{type:"…:response", id, payload}`; push `{type, payload}`.
-- **A channel has FIVE surfaces, not four** — `preload.ts`, `ipc-handlers.ts`, `remote-shim.ts` (`invoke`/`fire`), **`remote-server.ts`** and `SessionService.kt`. `remote-server.ts` is the desktop's WS host for a remote browser; its `default:` answers `{unsupported:true}`, so a channel skipped there is dead over remote. Kotlin: a `when` case on the same type string, replying via `bridgeServer.respond`.
+- **A channel has FIVE surfaces, not four** — `preload.ts`, `ipc-handlers.ts`, `remote-shim.ts` (`invoke`/`fire`), **`remote-server.ts`** and `SessionService.kt` — until one-core R2–R3 move it into a family file (`docs/active/handoffs/2026-09-24-one-core-START-HERE.md`). `remote-server.ts` is the desktop's WS host for a remote browser; its `default:` answers `{unsupported:true}`, so a channel skipped there is dead over remote. Kotlin: a `when` case on the same type string, replying via `bridgeServer.respond`.
 - **CC-coupled code gets an entry in `youcoded/docs/cc-dependencies.md`** — it feeds the `review-cc-changes` release agent. Coupling = parsing CC output, consuming a CC file, depending on CLI behavior, or matching a CC text pattern.
 
 ## Shared-UI bundle

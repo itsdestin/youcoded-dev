@@ -233,7 +233,7 @@ before mutation, durability before memory, containment before autonomy**. All st
 5. **Agent memory** — chatsearch as a native tool + a bounded agent-maintained index + pre-compaction flush. The centerpiece.
 6. **Bash containment** (also §5.2).
 7. **Goal layer** — checkable goals on the existing step/doom-loop machinery. Deliberately last.
-8. **Formalize the remote protocol** — version the WS API, add a lifecycle event bus, eventually reconcile Android's Kotlin runtime.
+8. **Formalize the remote protocol** — version the WS API, add a lifecycle event bus, eventually reconcile Android's Kotlin runtime. *(2026-09-24: scheduled — protocol version in R4, event record in R5 of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`; Android joins the same protocol in A2–A4 of the Android rebuild plan.)*
 
 ### 5.5 Cost and model intelligence
 
@@ -333,6 +333,11 @@ LAN engine access first (the desktop's llama-server exposed behind an API key an
 on-device inference under Termux with a curated ≤4B list; then cloud keys in the Android
 keystore; then the Agents inbox and approvals on Android as pure UI while execution stays
 desktop-side. Parallelizable after Phase 2, which is done; nobody has started it.
+
+*(2026-09-24: the Android app's own sequencing now lives in
+`docs/active/plans/2026-09-24-android-rebuild-plan.md` (A0–A6). That plan treats on-device
+inference as out of scope — local models show "not available on this device", per the
+2026-09-10 decisions. LAN engine access is not scheduled in it.)*
 
 ### 6.3 Differentiators (Phase 6)
 

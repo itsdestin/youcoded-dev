@@ -156,7 +156,7 @@ figure, a specialist. Not here: a chat you already had (chat-data); getting a mo
       along the seam the audit names, with the registry, lifecycle and reserve/bind/release kept
       on one object — simplification phase 5, D4. Nothing changes on screen. On hold since
       2026-09-18 (Destin): resumes after the native-session-host test split has merged and
-      phase 4 is done, since phase 4 moves the runtime this touches
+      phase 4 (R1–R4 of the one-core work) is done, since phase 4 moves the runtime this touches
       `desktop` `blocked` `checked 2026-09-18` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
 - [ ] If a conversation moves to another device while it is being summarised to save space, the

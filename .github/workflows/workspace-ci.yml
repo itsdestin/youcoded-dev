@@ -241,6 +241,11 @@ jobs:
         if: ${{ !cancelled() }}
         run: bash scripts/ui-review/tests/close-out-untracked-warning.test.sh
 
+      # The refactor's edit lock (docs/active/locks/) is only a promise unless close-out says it aloud.
+      - name: close-out.sh flags a branch that edits locked files
+        if: ${{ !cancelled() }}
+        run: bash scripts/ui-review/tests/close-out-edit-lock.test.sh
+
       # A command printed in a doc is a promise nobody checks. The deck's test command sat
       # WRONG in two docs for months — `-t .` cannot start at all — which is why that suite
       # went unrun and eight theme colours drifted. Blocks marked `<!-- runnable -->` are

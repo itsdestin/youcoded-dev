@@ -1,0 +1,15 @@
+{
+  "repo": "youcoded",
+  "phase": "R1–R2",
+  "since": "2026-09-29",
+  "reason": "The remote-access refactor is moving these files onto a new layout; an edit made now cannot be carried across by git and has to be redone by hand.",
+  "paths": [
+    "desktop/src/main/ipc-handlers.ts",
+    "desktop/src/main/remote-server.ts",
+    "desktop/src/main/preload.ts",
+    "desktop/src/renderer/remote-shim.ts"
+  ],
+  "exemptBranches": ["session/simplify-r*"],
+  "handoff": "docs/active/handoffs/2026-09-24-one-core-START-HERE.md",
+  "howToEdit": "R1-R2: the four door files. From R3, replace `paths` with the one family being moved (per run). A `paths` array that is empty, or no file at all, means no lock. A path ending in / locks a whole folder."
+}

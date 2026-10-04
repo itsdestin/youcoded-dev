@@ -53,6 +53,8 @@ kind: plan
 
 # PR spec — remote-access hydration: IDs, ordering, view-state parity
 
+> **2026-09-24 — where this goes now:** Commits 1–2 shipped. Commit 3 (the phone follows the computer's active session and view) was never built. It now belongs to R5 of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`, whose live-state record would carry it. Whether the phone *should* follow is still Destin's call; the R0 phone pass answers whether the problem still happens.
+
 Single PR, three commits. Implements the recommended subset of
 `docs/archive/plans/2026-07-19-remote-hydration-single-source-of-truth.md`
 (Proposal A) plus Finding 3 from

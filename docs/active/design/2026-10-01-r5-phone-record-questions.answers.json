@@ -1,0 +1,44 @@
+{
+ "deck": "r5-phone-record-questions",
+ "started": "2026-10-01T11:19:43.259Z",
+ "submitted": "2026-10-01T11:22:32Z",
+ "cur": 0,
+ "answers": {
+  "Q-follow": {
+   "v": "pick",
+   "pick": "leave",
+   "t": 1790853750716,
+   "seconds": 33,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-stuck": {
+   "v": "pick",
+   "pick": "core",
+   "t": 1790853750716,
+   "seconds": 33,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-queue": {
+   "v": "pick",
+   "pick": "yes",
+   "t": 1790853750716,
+   "seconds": 33,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-lost-send": {
+   "v": "pick",
+   "t": 1790853750716,
+   "note": "would this self heal on reconnect? ",
+   "pick": "yes",
+   "seconds": 33,
+   "theme": "cotton-candy-sky"
+  },
+  "Q-shared-lines": {
+   "v": "pick",
+   "seconds": 33,
+   "theme": "cotton-candy-sky",
+   "t": 1790853750716,
+   "pick": "yes"
+  }
+ }
+}

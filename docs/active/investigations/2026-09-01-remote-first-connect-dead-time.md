@@ -7,6 +7,8 @@ topic: remote first-connect is slow — the ~2.5 s of scripted dead time is fixe
 
 # Remote first-connect: what is proven and what is not
 
+> **2026-09-24 — where this goes now:** These numbers are the baseline for R5's real-phone first-connect timing gate in `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`. The bundle-size white screen itself is independent of the refactor and may be fixed any time.
+
 **Symptom.** A first connect from a phone sits on a white screen for seconds, and the
 chat takes a further beat to fill in. Destin confirmed on his phone (2026-07-20) that the
 Tier-1 byte-shaving merge (youcoded `0cbb72ba`) changed nothing he could feel on LAN.
