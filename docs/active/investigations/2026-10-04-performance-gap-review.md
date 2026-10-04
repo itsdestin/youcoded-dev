@@ -129,6 +129,35 @@ a reply are not re-processed; windows only receive their own sessions' events; n
 timers; caches have limits; the phone connection serialises once, not per phone; nothing
 turns off graphics acceleration.
 
+## 4b. First measurements (2026-10-04) — suspects ranked by measured cost
+
+Destin's direction: measure first, fix in order of what is actually felt. Tool:
+`scripts/perf-lab/suspects.mjs` (new) plus the existing `input-stream.mjs`. Private packaged
+build of master `eebcdea`, invisible screen, six sessions open.
+
+**Read these with three cautions.** The machine was busy the whole time (load 4–7: the live
+app plus two other sessions' leftover test copies), so treat times as rough and comparisons
+between legs of the same run as the solid part. The invisible screen has no graphics card.
+One or two runs each — a first reading, not a baseline. Raw files:
+`scratch/perf-lab/suspects/` (local only).
+
+| Rank | Suspect | Measured | Verdict |
+|---|---|---|---|
+| 1 | **D7 — a long code block being written** (500 lines, 150 words/s) | The app's drawing thread was **100% busy** for the whole 33 s; **198–214 frames arrived more than 40 ms late**; 18–55 freezes over 50 ms (worst 92 ms). The same amount of ordinary prose: 50–55% busy, 1–10 late frames. Repeated twice, same result | **Confirmed, worst found.** Continuous stutter whenever a model writes a long file |
+| 2 | **D1 — sustained terminal flood** (200 MB) | The whole app stopped answering for **0.9 s and 1.6 s** (seven stalls over 0.1 s; 5 s total in one leg). Scroll delay rose to 180 ms. A short 40 MB burst passed in half a second with only a 73 ms hiccup | **Confirmed for long floods**, fine for short bursts. Open question: output stopped arriving at ~48 MB of 200 — not yet known whether the app or the test tool stopped; needs a producer-side log before fixing |
+| 3 | **D2 — scroll waits for the app** | Wait before a scroll can begin: idle 14 ms → reply streaming in a hidden chat 32 ms → reply streaming in the chat being scrolled **47 ms typical, 91 ms worst** → hidden terminal flooding up to 180 ms | **Confirmed.** Every busy moment becomes scroll lag: 3–5 frames typical on a 60 Hz screen, more on 180 Hz |
+| 4 | **Ordinary streaming is itself expensive** (new) | Plain prose at 150 words/s keeps the drawing thread 50–55% busy | **New finding.** Explains why everything else feels heavier during a reply; the fix for rank 1 likely helps here too |
+| 5 | **D13 — comparing two large files** | Two unrelated files of 2,000 lines: **0.65 s** freeze; 5,000 lines: **4.3 s**; 10,000: **19 s**. Similar files (10% changed): 0.09 s | **Real but rare** — both app engines normally supply a ready-made comparison, so this path is mostly reached by a pending or refused edit |
+| — | **D6 — message box re-measuring per key** | Key to visible text: 2–3 ms, with or without a reply streaming. No freezes | **Not felt.** Demoted |
+| — | **Typing stalls from background long chats** (the known backlog item) | Zero freezes over 50 ms in this run; September's runs showed 122–145 ms | **Did not reproduce on current master** in one run. Needs repeats before closing |
+
+**Not yet measured:** launch time and bundle size (D4, D5), long non-Claude history replay
+(D3), terminal switching (D10) — the standard rig refuses to run while the machine is busy;
+memory over hours (D8); many sessions (D9); big spreadsheets (D14). **Cannot be measured on
+the invisible screen:** particles, blur, wallpapers (T1–T3) — these need a real window on
+the real graphics card. **Cannot be measured here at all:** the phone items — no phone is
+attached to this computer.
+
 ## 5. What we cannot see today — and what to build
 
 Ordered by value. This is the "catch it in future" half.

@@ -150,6 +150,37 @@ process.stdin.on('data', (buf) => {
       } catch { /* pipe closed */ }
     }
   }
+  // WHY (2026-10-04): the glyph fill is one bounded write (<= ~1.8 MB). A noisy
+  // build log or `yes` is a SUSTAINED producer that only pauses when the pipe is
+  // full, which is the case the app has no brake for. `perf-lab-flood <mb>` emits
+  // that: 64 KB chunks, honouring stdout backpressure like a real program does.
+  for (const line of parts) {
+    const f = /^perf-lab-flood (\d{1,3})$/.exec(line.trim());
+    if (!f) continue;
+    const mb = Number(f[1]);
+    const row = `\x1b[32mbuild:\x1b[0m compiling module ${'x'.repeat(72)} ok\r\n`;
+    const chunk = row.repeat(Math.ceil(65536 / row.length));
+    // WHY writeSync and not stdout.write + 'drain': the first version stopped at
+    // 17.8 of 40 MB with the app idle — a 'drain' that never came, i.e. the
+    // producer stalled itself and the run blamed the app. A blocking write is also
+    // what `yes` or a compiler does. EAGAIN (non-blocking tty) retries a tick later.
+    let left = mb * 1024 * 1024, off = 0;
+    const buf = Buffer.from(chunk), tail = Buffer.from(`\r\n[perf-lab] flood complete: ${mb} MB\r\n> `);
+    let tailOff = 0;
+    const pump = () => {
+      try {
+        for (let i = 0; i < 64 && left > 0; i++) {
+          const w = fs.writeSync(1, buf, off, Math.min(buf.length - off, left));
+          off = (off + w) % buf.length; left -= w;
+        }
+        if (left > 0) return void setImmediate(pump);
+        while (tailOff < tail.length) tailOff += fs.writeSync(1, tail, tailOff, tail.length - tailOff);
+      } catch (e) {
+        if (e && e.code === 'EAGAIN') return void setTimeout(pump, 1);
+      }
+    };
+    pump();
+  }
   // A line that never ends must not grow without bound.
   if (lineBuf.length > 4096) lineBuf = lineBuf.slice(-256);
 });
