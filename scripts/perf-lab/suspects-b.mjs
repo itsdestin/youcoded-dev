@@ -262,6 +262,38 @@ async function legSheet(ctx) {
       })()`);
       return { ok: !res.error, ...res };
     }, { pingMs: 50 });
+    // (a) widths vs real text: no cell clipped, no column grossly over/under-sized (drawn cells of the open sheet)
+    const fit = await bound(cdp.evaluate(`(() => {
+      const tds = [...document.querySelectorAll('.drawer-pane td[data-r]')];
+      const cv = document.createElement('canvas').getContext('2d'); const byCol = new Map();
+      let clippedNum = 0, clippedText = 0;
+      for (const td of tds) {
+        const cs = getComputedStyle(td); cv.font = cs.fontSize + ' ' + cs.fontFamily;
+        const w = cv.measureText(td.textContent).width; const c = td.getAttribute('data-c');
+        const e = byCol.get(c) || { max: 0, col: td.getBoundingClientRect().width }; e.max = Math.max(e.max, w); byCol.set(c, e);
+        if (td.scrollWidth > td.clientWidth + 1) { if (cs.textAlign === 'right') clippedNum++; else clippedText++; }
+      }
+      const ratios = [...byCol.values()].filter(e => e.max > 0).map(e => Math.round(e.col / (e.max + 18) * 100) / 100).sort((a, b) => a - b);
+      return { cells: tds.length, clippedNumeric: clippedNum, clippedText, columns: ratios.length, ratioMin: ratios[0], ratioMedian: ratios[ratios.length >> 1], ratioMax: ratios.at(-1) };
+    })()`), 'fit check');
+    // (b) scroll with a Find query active (marks re-drawn per frame) against the plain scroll above
+    const scrollFind = await step(cdp, `sheet:scrollfind-${key}`, async () => {
+      await cdp.evaluate(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true, cancelable: true }))`);
+      await waitFor(cdp, `!!document.querySelector('input[aria-label="Find in document"]')`, { timeoutMs: 8000, everyMs: 25 });
+      await cdp.evaluate(`(() => { const i = document.querySelector('input[aria-label="Find in document"]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, 'item-1'); i.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+      await sleep(400);
+      const res = await cdp.evaluate(`(async () => {
+        const e = ${scroller}; if (!e) return { error: 'no scroller' };
+        const raf2 = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const jumps = [];
+        const go = async (top, left) => { const t0 = performance.now(); e.scrollTop = top; e.scrollLeft = left; await raf2(); jumps.push(Math.round((performance.now() - t0) * 10) / 10); };
+        for (let i = 1; i <= 12; i++) await go(i * 1500, i * 120);
+        await go(1e9, 1e9); await go(0, 0);
+        return { jumps, maxJumpMs: Math.max(...jumps) };
+      })()`);
+      await cdp.evaluate(`document.querySelector('input[aria-label="Find in document"]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))`);
+      return { ok: !res.error, ...res };
+    }, { pingMs: 50 });
     const mid = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
     if (mid) writeFileSync(`${ctx.out}.sheet-${key}-scrolled.png`, Buffer.from(mid.data, 'base64'));
     await cdp.evaluate(`(() => { const e = ${scroller}; if (e) { e.scrollTop = 0; e.scrollLeft = 0; } })()`);
@@ -294,7 +326,7 @@ async function legSheet(ctx) {
       await cdp.evaluate(`document.querySelector('input[aria-label="Find in document"]').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))`);
       return { ok: true, firstFindMs: Date.now() - t0, counter: label };
     }, { pingMs: 50 });
-    out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, closePrev: closed, copy, find, dom, cellClickToPaintMs: click, scroll, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
+    out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, closePrev: closed, copy, find, fit, scrollFind, dom, cellClickToPaintMs: click, scroll, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
     const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
     if (shot) writeFileSync(`${ctx.out}.sheet-${key}.png`, Buffer.from(shot.data, 'base64'));
   }

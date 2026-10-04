@@ -421,15 +421,35 @@ picture taken mid-sheet shows sticky letters/numbers and no blank holes.
   time it is opened.
 - There was no keyboard navigation, edit mode, or scroll restoration in either viewer; none added.
 
-**Independent-review fixes (2026-10-04, same day).** A review found the first version could show the wrong
-value under a column letter next to a merged cell, copy ~1% of a selection, give an incomplete Find, and cut
-formatted text short. All fixed, each with a test seen failing first (`sheet-window-layout`,
-`sheet-grid-review`): the final "after" numbers above are from the first version; the final-code runs
-(`fix2r-after-1..4`) agree: CSV 2,000 × 100 opens in 0.21–0.28 s (longest freeze 0.09–0.16 s), Excel in
-0.86–0.96 s (longest freeze 0.24–0.37 s, ExcelJS's own file reading), click 0.02–0.03 s, slowest scroll jump
-0.09–0.14 s, closing 0.06 s with no freeze, 1,517 page elements. New measures on the 2,000 × 100 sheets:
-select-all + copy 2,000 lines × 100 fields in 10–14 ms (plus 55–86 ms to paint the selection); the first
-Find ("item-1": 22,220 matches) answered in 12–36 ms in both CSV and Excel with no freeze. Load 6–18.
+**Independent-review fixes and final numbers (2026-10-04, same day).** Two independent reviews found the first
+versions could show a wrong value next to a merged cell, copy ~1% of a selection, give an incomplete Find, cut
+formatted text short, lose a merge's text when its corner was scrolled away, and leave Find marks stale while
+scrolling. All were fixed with tests seen failing first (`sheet-window-layout`, `sheet-grid-review`,
+`sheet-grid-round2`, `sheet-measure`). **Final measurement, app commit `06f094e47`, 2 runs, load 9–18**
+(`fix2f-final-1/2`):
+
+| 2000 × 100 | CSV | Excel |
+|---|---|---|
+| Open | 0.23–0.25 s | 0.73–0.84 s |
+| Longest freeze while opening | 0.11–0.15 s | 0.23 s (ExcelJS reading the file) |
+| One cell click | 0.03 s | 0.02–0.03 s |
+| Slowest scroll jump (12 jumps + end + back) | 0.10–0.12 s | 0.13–0.15 s |
+| Same, with a Find query active (marks redrawn) | 0.09–0.10 s | 0.09 s |
+| Close | 0.05 s, no freeze | 0.06 s, no freeze |
+| Page elements | 1,521 | 1,522 |
+| Select all + copy (2,000 lines × 100 fields) | 17–20 ms | 19–23 ms |
+| First Find ("item-1", 22,220 matches) | 12–32 ms | 12 ms |
+
+Against the first "after" table nothing regressed; Excel opens 0.15–0.25 s slower than the first version (0.65 s)
+because the shown text is now prepared for every cell (that is what makes column widths, Find and copy right); it
+no longer freezes. Scrolling with a Find query active costs no more than without. **Real-font check (same boot):**
+across 1,280 drawn cells of the Excel sheet, 0 numeric cells and 0 text cells were clipped, and every column was
+1.04× the width of its widest drawn text plus padding (no column over- or under-sized).
+
+**Pictures for approval:** `docs/active/design/2026-10-04-sheet-viewer-windowing/` (before = old viewer at
+`eebcdea31`, after = current; Midnight and Light), built from rig screenshots because no named screen opens the file
+viewer. The old viewer shows the same "Loading spreadsheet…" text, so the Loading state is not a new difference
+(only ~0.5 s longer on a very big Excel file).
 
 ### Fix 3 — scrolling no longer waits for the app
 
