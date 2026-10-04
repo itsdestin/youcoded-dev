@@ -1,0 +1,437 @@
+{
+  "title": "Developer tools — the questions before anything is drawn",
+  "key": "dev-tools-questions",
+  "out": "dev-tools.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-order",
+      "words": true,
+      "surface": "Both tools",
+      "path": "Settings → Development",
+      "headline": "These are two separate tools. Which should be designed and built first?",
+      "today": "Neither exists. The app has a Development page in Settings with bug reporting, Known issues and Roadmap, and nothing that shows what a session is really doing or how the app is performing.",
+      "problem": "Each tool is a full feature on its own. Designing both at once doubles the number of decisions in every review and delays having either one to use.",
+      "proposal": "Build one, use it for a while, then build the other. Both stay planned either way.",
+      "options": [
+        {
+          "id": "xray-first",
+          "label": "X-ray view first",
+          "pros": [
+            "It answers the question you hit most often: why is the model looping or acting strangely?",
+            "It reads files the app already saves, so it is the safer of the two to build.",
+            "Once built, it is also the best place to show the monitor's findings later."
+          ],
+          "cons": [
+            "Freezes and slowdowns stay as hard to track down as they are today until the monitor follows."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "monitor-first",
+          "label": "Live monitor first",
+          "pros": [
+            "Freezes and slowdowns get easier to catch sooner."
+          ],
+          "cons": [
+            "It touches how the running app reports on itself, so it needs a change to the safety rule (asked below) before it can be built.",
+            "A strange-model problem still means reading raw files by hand until X-ray follows."
+          ]
+        },
+        {
+          "id": "both",
+          "label": "Both together",
+          "pros": [
+            "Both arrive at the same time."
+          ],
+          "cons": [
+            "Every review deck covers twice as much.",
+            "Neither is usable until both are finished."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-route",
+      "words": true,
+      "surface": "Both tools",
+      "path": "How the work is run",
+      "headline": "Should these go through the full review route, or the short one?",
+      "today": "Big features go through the full route: these questions, picture decks, an outside tester trying the design, a written checklist of what counts as done that you sign, a stranger grading the result, then your final yes. Small, clear changes skip straight to one picture deck.",
+      "problem": "The full route asks more of your time and runs about a dozen helper sessions. The short route is faster but has nobody checking the work except me.",
+      "proposal": "Pick the route for both tools.",
+      "options": [
+        {
+          "id": "full",
+          "label": "Full route",
+          "pros": [
+            "These are new screens with many choices, which is exactly what the full route is for.",
+            "An outside tester and a grader catch things I would miss in my own work."
+          ],
+          "cons": [
+            "More decks for you to answer: roughly four or five per tool.",
+            "Takes longer to arrive."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "short",
+          "label": "Short route",
+          "pros": [
+            "Faster. You see one picture deck, then the finished thing."
+          ],
+          "cons": [
+            "Fewer chances to change direction before it is built.",
+            "Nobody but me checks the result before you do."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-xray",
+      "page": "X-ray view",
+      "intro": "A second way to view a session that shows every line of the conversation, in exact order, including everything the normal chat hides."
+    },
+    {
+      "id": "Q-xray-hidden",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any open session",
+      "headline": "Is this the right list of things X-ray should show that normal chat hides?",
+      "today": "Normal chat throws away a lot before you see it: hidden reminders the app and Claude Code slip to the model, hook messages, skill and instruction files loaded into the conversation, the model's thinking, the summary written when a long chat is shortened, repeated text, interruption notices, and the exact inputs and full outputs of tool calls.",
+      "problem": "When the model loops or acts oddly, the cause is usually in exactly those hidden parts — a reminder it keeps reacting to, a tool that returned something unexpected — and today you can't see them without opening raw files.",
+      "proposal": "X-ray shows all of those, each one labelled with what kind of line it is. Yes means this list is right; No or Other means tell me what is missing or should stay hidden.",
+      "yes": "That list is right",
+      "no": "Something is off"
+    },
+    {
+      "id": "Q-xray-source",
+      "words": true,
+      "surface": "Chat",
+      "path": "Any open session",
+      "headline": "Should X-ray show the session file exactly as saved, or what the app understood from it?",
+      "today": "Every session is saved as a file on your computer, one line per event. The app reads that file, turns lines into chat bubbles, and drops or merges some along the way.",
+      "problem": "If X-ray shows only what the app understood, a bug in the app's reading looks identical to a model misbehaving, and you can't tell which one is at fault.",
+      "proposal": "Three ways to fill the X-ray view.",
+      "options": [
+        {
+          "id": "both-marked",
+          "label": "Saved file, marked",
+          "summary": "Every saved line exactly as written, each tagged with what normal chat did with it: shown, hidden, or merged into another bubble.",
+          "pros": [
+            "Shows the true record and whether the app handled it right, side by side.",
+            "Lets you tell an app bug from a model problem at a glance."
+          ],
+          "cons": [
+            "Busier screen: every line carries a small tag.",
+            "Most work of the three."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "raw-only",
+          "label": "Saved file only",
+          "pros": [
+            "The exact truth, nothing interpreted.",
+            "Simpler to build."
+          ],
+          "cons": [
+            "Can't tell you when the app itself dropped or mangled something."
+          ]
+        },
+        {
+          "id": "app-only",
+          "label": "What the app understood",
+          "pros": [
+            "Closest to the normal chat, so least to get used to."
+          ],
+          "cons": [
+            "Hides app bugs, which is half of what you want this for.",
+            "Some hidden lines are thrown away before this point, so they could never appear."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-xray-switch",
+      "words": true,
+      "surface": "Chat",
+      "path": "Settings → Development, and the session's top bar",
+      "headline": "How should X-ray be switched on?",
+      "today": "There is no switch. Settings → Development has four rows, none of which change how chat looks.",
+      "problem": "Most people using the app should never stumble into X-ray, but when you need it you want it one press away, on the session that is misbehaving.",
+      "proposal": "Three ways to reach it.",
+      "options": [
+        {
+          "id": "unlock-then-button",
+          "label": "Unlock once, button per session",
+          "summary": "A 'Developer tools' switch in Settings → Development. Once on, an X-ray button appears in each session's top bar and flips just that session between X-ray and normal chat.",
+          "pros": [
+            "Invisible to anyone who hasn't turned developer tools on.",
+            "One press to flip the session you're looking at, and back.",
+            "Other open sessions stay in normal chat."
+          ],
+          "cons": [
+            "One more button in the top bar while developer tools are on."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "global",
+          "label": "One switch for everything",
+          "summary": "A single switch in Settings → Development turns every session into X-ray until you turn it off.",
+          "pros": [
+            "Nothing new in the top bar."
+          ],
+          "cons": [
+            "Three clicks into Settings every time you want to flip.",
+            "Every session changes, not just the one you're inspecting."
+          ]
+        },
+        {
+          "id": "shortcut",
+          "label": "Keyboard shortcut only",
+          "pros": [
+            "Nothing on screen at all."
+          ],
+          "cons": [
+            "Easy to forget, and impossible on the phone.",
+            "Easy to trigger by accident with no clue what happened."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-xray-tools",
+      "words": true,
+      "pick": "several",
+      "surface": "Chat",
+      "path": "The X-ray view",
+      "headline": "Which helpers should be built into the X-ray view?",
+      "today": "Nothing like this exists, so there are no helpers yet.",
+      "problem": "A plain list of every line is long. In a looping session it can be thousands of lines, and spotting the repeat by eye is slow.",
+      "proposal": "Pick every helper you want in the first version. Fewer means it arrives sooner; any left out can be added later.",
+      "options": [
+        {
+          "id": "loop",
+          "label": "Repeat finder",
+          "summary": "Flags when the model makes the same tool call, or near-same, several times in a row, and jumps between them.",
+          "pros": ["Points straight at a loop instead of you scrolling for it."],
+          "cons": ["Can flag normal repetition, like re-reading a file after editing it."],
+          "recommended": true
+        },
+        {
+          "id": "timing",
+          "label": "Time and gaps",
+          "summary": "Each line's time, and a marker where nothing happened for a long stretch.",
+          "pros": ["Shows where a session stalled or a tool hung."],
+          "cons": ["More numbers on every line."]
+        },
+        {
+          "id": "size",
+          "label": "Size of each line",
+          "summary": "How big each message, tool input and tool output is, so you can see what is eating the model's memory.",
+          "pros": ["Explains sudden shortening of long chats, and slow or costly turns."],
+          "cons": ["Only an estimate for Claude Code sessions; exact for the app's own sessions."]
+        },
+        {
+          "id": "filter",
+          "label": "Filter and search",
+          "summary": "Show only some kinds of line (say, only tool calls and their results) and search within them.",
+          "pros": ["Cuts a thousand-line session down to what matters."],
+          "cons": ["One more row of controls at the top."]
+        },
+        {
+          "id": "copy",
+          "label": "Copy any line",
+          "summary": "Copy one line, or a selected stretch, exactly as saved — to paste into a bug report or a fixing session.",
+          "pros": ["Hands a fixing session the exact evidence instead of a description."],
+          "cons": ["Copied text can include private content from the session."]
+        },
+        {
+          "id": "pair",
+          "label": "Call ↔ result jump",
+          "summary": "Click a tool call to jump to its result, and back.",
+          "pros": ["Results can land far below their call; this saves hunting."],
+          "cons": ["Small, but one more thing to learn."]
+        }
+      ]
+    },
+    {
+      "id": "Q-xray-type",
+      "words": true,
+      "surface": "Chat",
+      "path": "The X-ray view",
+      "headline": "While a session is in X-ray, should you still be able to type and send messages?",
+      "today": "Normal chat has the message box at the bottom and updates live as the model works.",
+      "problem": "If X-ray is look-only, you have to flip back to normal chat every time you want to answer or stop the model — and a looping model is exactly when you want to stop it fast.",
+      "proposal": "X-ray updates live as the session runs, and keeps the normal message box and Stop button. Yes builds it that way; No makes X-ray look-only.",
+      "yes": "Keep the message box",
+      "no": "Look-only"
+    },
+    {
+      "id": "Q-xray-where",
+      "words": true,
+      "surface": "Chat",
+      "path": "Desktop, phone, and remote web",
+      "headline": "Should X-ray work on the desktop app only at first, or everywhere at once?",
+      "today": "The desktop app, the Android app and the remote web page share the same chat screen.",
+      "problem": "Because the screen is shared, X-ray will mostly come along for free — but the part that reads the saved session file is separate on each, and doubles the work and testing.",
+      "proposal": "Two ways to roll it out.",
+      "options": [
+        {
+          "id": "desktop",
+          "label": "Desktop first",
+          "pros": [
+            "Arrives sooner.",
+            "Desktop is where you do this kind of inspecting."
+          ],
+          "cons": [
+            "The X-ray button is hidden on the phone and remote web until a follow-up."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "everywhere",
+          "label": "Everywhere at once",
+          "pros": [
+            "Works the same wherever you are."
+          ],
+          "cons": [
+            "Roughly twice the work, and the Android half can't always be tested on this computer."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P-monitor",
+      "page": "Live monitor",
+      "intro": "A way for a fixing session to see what your real app is doing — freezes, errors, slowdowns — while you use it."
+    },
+    {
+      "id": "Q-mon-rule",
+      "words": true,
+      "surface": "Safety rule",
+      "path": "The rule every development session follows",
+      "headline": "Should development sessions be allowed to watch your real, running app if you switch that on?",
+      "today": "A standing rule forbids any development session from connecting to, probing or touching your running app, because a 'harmless' look in May crashed it mid-session. Sessions may only read log files from outside.",
+      "problem": "Your request means a session watching the real app as you use it. That cannot be built without changing the rule, so the rule's change is your call before anything else.",
+      "proposal": "Allow watching only — never controlling — and only while you have a monitor switch on in Settings. Yes changes the rule that way; No means the monitor is limited to what the app writes to its log files.",
+      "yes": "Allow watching, when on",
+      "no": "Keep the rule"
+    },
+    {
+      "id": "Q-mon-shape",
+      "words": true,
+      "surface": "Live monitor",
+      "path": "Settings → Development",
+      "headline": "How should a fixing session see what your running app is doing?",
+      "today": "The app writes a log file and notes when its window freezes and for how long, but only in that log. Performance testing today is done on a separate copy of the app driven from outside, never on yours.",
+      "problem": "Freezes and errors that only happen in your real day-to-day use can't be reproduced on the test copy, and the log records too little to diagnose them.",
+      "proposal": "Three shapes, from safest to most powerful.",
+      "options": [
+        {
+          "id": "recorder",
+          "label": "Recorder file",
+          "summary": "While switched on, the app writes freezes, errors, slow moments and memory use to a file. A fixing session reads that file — live, as it grows. Nothing connects to the app.",
+          "pros": [
+            "Nothing ever connects to your app, so it can't crash it the way the May probe did.",
+            "Works whether or not a session is watching; the evidence is waiting afterwards.",
+            "Fits the safety rule with the smallest change."
+          ],
+          "cons": [
+            "A session can only see what the recorder was built to write, not ask new questions on the spot.",
+            "A small cost to the app's speed while it's on."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "panel",
+          "label": "On-screen panel",
+          "summary": "A small panel inside the app shows freezes, errors and speed as they happen, with a button to copy a report into a fixing session.",
+          "pros": [
+            "You see problems yourself without any session involved."
+          ],
+          "cons": [
+            "The panel itself takes screen space and some speed.",
+            "A fixing session only learns what you copy across."
+          ]
+        },
+        {
+          "id": "live-link",
+          "label": "Live connection",
+          "summary": "A fixing session connects directly into the running app and can look at anything inside it.",
+          "pros": [
+            "The most a session can learn; it can investigate on the spot."
+          ],
+          "cons": [
+            "Exactly the kind of connection that crashed your app in May.",
+            "Opens a door into the app that has to be locked down carefully.",
+            "The hardest to build safely."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-mon-what",
+      "words": true,
+      "pick": "several",
+      "surface": "Live monitor",
+      "path": "What the monitor records",
+      "headline": "What should the monitor record?",
+      "today": "Only window freezes and crashes are noted, and only in the app's general log.",
+      "problem": "Each extra thing recorded costs a little speed and makes the record longer, so only what you'd actually use should go in.",
+      "proposal": "Pick everything worth recording.",
+      "options": [
+        {
+          "id": "freezes",
+          "label": "Freezes and stutters",
+          "summary": "Every moment the screen stopped responding, how long, and what it was busy doing.",
+          "pros": ["The single most useful thing for 'the app froze'."],
+          "cons": ["Small speed cost while on."],
+          "recommended": true
+        },
+        {
+          "id": "errors",
+          "label": "Errors",
+          "summary": "Every error the app hit behind the scenes, including ones it recovered from silently.",
+          "pros": ["Catches problems you never saw an error message for."],
+          "cons": ["Can be noisy: some errors are harmless."]
+        },
+        {
+          "id": "stuck",
+          "label": "Stuck sessions",
+          "summary": "A tool call or model reply that has been waiting far longer than usual.",
+          "pros": ["Spots a hung session even when the screen looks fine."],
+          "cons": ["'Longer than usual' needs tuning, so early versions may cry wolf."]
+        },
+        {
+          "id": "memory",
+          "label": "Memory and processor use",
+          "summary": "How much memory and processor the app uses over time.",
+          "pros": ["Shows slow leaks that make the app sluggish after hours."],
+          "cons": ["Mostly useful over long stretches, not single moments."]
+        },
+        {
+          "id": "typing",
+          "label": "Typing and scrolling lag",
+          "summary": "How long the screen takes to show a keypress or a scroll.",
+          "pros": ["Measures the lag you feel, as a number."],
+          "cons": ["The costliest to record of the five."]
+        }
+      ]
+    },
+    {
+      "id": "Q-mon-signal",
+      "words": true,
+      "surface": "Live monitor",
+      "path": "The status bar at the bottom of the app",
+      "headline": "While the monitor is on, should the app show a small sign that it is recording?",
+      "today": "Nothing would tell you the monitor is running once you leave Settings.",
+      "problem": "A monitor forgotten for weeks quietly costs speed and grows a large file, and you'd have no reason to suspect it.",
+      "proposal": "A small 'Recording' dot in the status bar while it's on; clicking it opens the switch. Yes adds it; No leaves the status bar alone.",
+      "yes": "Show the sign",
+      "no": "No sign"
+    }
+  ]
+}
