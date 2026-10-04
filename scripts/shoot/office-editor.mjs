@@ -49,7 +49,17 @@ export async function ensureOfficeEditor(checkout, log = () => {}) {
     throw new Error(`port 4717 is held by ${there.desktop ? `the office editor of ${there.desktop}` : there.other} — stop it (by its pid) and run again`);
   }
   if (!existsSync(join(desktop, 'office-addon', 'manifest.json'))) {
-    throw new Error(`no Office add-on in ${desktop}/office-addon — run \`node scripts/fetch-office.mjs\` in desktop/ first`);
+    // WHY fetch here (2026-10-03): office-addon/ is downloaded, not in git, so every fresh
+    // worktree lacked it once Office merged, and `verify.sh`'s screens check failed in every new
+    // session until someone fetched it by hand. The pinned, checksum-verified download is the
+    // same one `npm run dev` does; offline it still ends in the error below.
+    log('office editor: no add-on in this checkout yet — fetching the pinned one');
+    try {
+      execFileSync(process.execPath, ['scripts/fetch-office.mjs'], { cwd: desktop, stdio: ['ignore', 'ignore', 'pipe'] });
+    } catch { /* reported just below */ }
+    if (!existsSync(join(desktop, 'office-addon', 'manifest.json'))) {
+      throw new Error(`no Office add-on in ${desktop}/office-addon, and fetching it failed — run \`node scripts/fetch-office.mjs\` in desktop/ to see why`);
+    }
   }
   ensureMainBuild(desktop, log);
   const child = spawn(process.execPath, ['scripts/office-workbench-server.mjs'], { cwd: desktop, stdio: ['ignore', 'ignore', 'pipe'] });
