@@ -156,13 +156,22 @@ async function legWheel(ctx) {
   return out;
 }
 
-async function legFence(ctx, lines) {
+async function legFence(ctx, lines, profileBase) {
+  // `lines` is also read by the completeness check below.
   const { cdp, fake, bound, sessions, ids, switchTo } = ctx;
   const natIdx = ids.indexOf(sessions.nat[1].id);
   await switchTo(natIdx); await sleep(800);
   const run = async (plan, label) => {
     await bound(installProbe(cdp), 'longtask probe');
     const s = await startStream(cdp, fake, sessions.nat[1].id, plan, bound);
+    // WHY opt-in CPU profile (SUSPECTS_PROFILE=1): names WHICH function the busy time is in.
+    // A profiled run is a diagnostic only (sampling slows the page) — never a before/after number.
+    const profiling = process.env.SUSPECTS_PROFILE === '1';
+    if (profiling) {
+      await bound(cdp.send('Profiler.enable'), 'profiler enable');
+      await bound(cdp.send('Profiler.setSamplingInterval', { interval: 200 }), 'profiler interval');
+      await bound(cdp.send('Profiler.start'), 'profiler start');
+    }
     const rows = []; let prev = await metrics(cdp), prevSent = s.rec.deltasSent;
     while (s.rec.endedAt === null) {
       await sleep(2000);
@@ -172,11 +181,29 @@ async function legFence(ctx, lines) {
       if (rows.length > 60) throw Error(`${label} stream ran past 120 s`);
     }
     const rec = await bound(s.completion, `${label} completion`, 60000);
+    if (profiling) {
+      const { profile } = await bound(cdp.send('Profiler.stop'), 'profiler stop', 60000);
+      writeFileSync(`${profileBase}.${label}.cpuprofile`, JSON.stringify(profile));
+      await cdp.send('Profiler.disable').catch(() => {});
+    }
     const longtasks = await bound(readLongtasks(cdp), 'longtasks'); await stopProbe(cdp).catch(() => {});
+    // WHY a picture right after the stream, per leg: the end-of-run screenshot only shows the LAST leg (prose),
+    // so it cannot show whether a long streamed code block came out complete and coloured.
+    // WHY wait first: the renderer can still be catching up when the producer has finished, and a
+    // picture of a half-drawn block would read as a defect (or hide one). Then check completeness
+    // from the page itself: the fence's last line must be on screen, and highlighted spans present.
+    await sleep(4000);
+    // NOTE the fake provider truncates the fence (it sent ~19k of 35k chars in every run so far, baseline
+    // included), so "complete" means: the last line it ACTUALLY sent is on screen.
+    const sentLines = [...(plan.text ?? '').slice(0, rec.chars).matchAll(/value(\d+) = /g)];
+    const lastSent = sentLines.length ? sentLines[sentLines.length - 1][1] : null;
+    const doneCheck = lastSent === null ? null : await bound(cdp.evaluate(`(() => { const t = document.body.textContent || ''; return { lastSentLine: ${lastSent}, lastLinePresent: t.includes('value${lastSent} = '), firstLinePresent: t.includes('value0 = '), hljsSpans: document.querySelectorAll('.hljs-keyword').length }; })()`), 'completeness check').catch(() => null);
+    const legShot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'leg screenshot').catch(() => null);
+    if (legShot) writeFileSync(`${profileBase}.${label}-final.png`, Buffer.from(legShot.data, 'base64'));
     const live = rows.filter(r => r.deltasInWindow > 0);
     const third = Math.max(1, Math.floor(live.length / 3));
     const avg = a => Math.round(a.reduce((x, r) => x + r.taskMs / Math.max(1, r.wallMs) * 100, 0) / Math.max(1, a.length));
-    return { status: rec.aborted || rec.deltasSent !== rec.plannedDeltas ? 'incomplete' : 'measured', deltas: rec.deltasSent, chars: rec.chars, streamMs: rec.streamMs, busyPctFirstThird: avg(live.slice(0, third)), busyPctLastThird: avg(live.slice(-third)), longtasks, windows: rows };
+    return { status: rec.aborted || rec.deltasSent !== rec.plannedDeltas ? 'incomplete' : 'measured', deltas: rec.deltasSent, chars: rec.chars, streamMs: rec.streamMs, busyPctFirstThird: avg(live.slice(0, third)), busyPctLastThird: avg(live.slice(-third)), longtasks, doneCheck, windows: rows };
   };
   const fence = fenceText(lines);
   const out = { lines, fence: await run({ deltas: fence.deltas, perSec: 150, text: fence.text }, 'fence') };
@@ -285,7 +312,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines) : await legFlood(ctx, opts.floodMb);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : await legFlood(ctx, opts.floodMb);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));
