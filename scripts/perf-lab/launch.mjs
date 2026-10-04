@@ -29,7 +29,7 @@
 //
 // Node built-ins only: the workspace root has no package.json and must not gain one.
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { closeSync, constants, existsSync, lstatSync, mkdirSync, openSync, readFileSync, rmSync, writeSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -421,6 +421,134 @@ function tailSink(store) {
   };
 }
 
+// WHY: an absolute, owner-controlled socket is the only allowed bridge from this
+// privately profiled app to the actual Wayland compositor. Never use the default
+// socket name (the app's XDG_RUNTIME_DIR is deliberately private).
+export function validateWaylandSocket(socket, { uid = process.getuid?.() } = {}) {
+  if (typeof socket !== 'string' || !isAbsolute(socket) || resolve(socket) !== socket) {
+    throw new Error('perf-lab launch: Wayland socket must be an absolute canonical path');
+  }
+  const info = lstatSync(socket);
+  if (!info.isSocket()) throw new Error('perf-lab launch: Wayland endpoint is not a Unix socket (symlinks refused)');
+  if (uid !== undefined && info.uid !== uid) throw new Error('perf-lab launch: Wayland socket is not owned by current user');
+  return socket;
+}
+
+// WHY: tests exercise the exact env/argv builder without launching any app.
+// Explicit native mode never inherits DISPLAY or the live session bus.
+export function launchConfiguration({ fixture, display = ':99', waylandSocket, protocolDebug = true, inherited = process.env }) {
+  const env = { ...inherited };
+  for (const k of [
+    'CLAUDECODE', 'CLAUDE_CODE_CHILD_SESSION', 'CLAUDE_CODE_SESSION_ID', 'CLAUDE_CODE_ENTRYPOINT',
+    'CLAUDE_CODE_EXECPATH', 'CLAUDE_EFFORT', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME',
+    'XDG_CACHE_HOME', 'XDG_RUNTIME_DIR', 'WAYLAND_DISPLAY', 'DISPLAY', 'WAYLAND_DEBUG',
+    'YOUCODED_PROFILE', 'DBUS_SESSION_BUS_ADDRESS', 'DBUS_STARTER_ADDRESS',
+    'DBUS_STARTER_BUS_TYPE', 'ELECTRON_RUN_AS_NODE', 'NODE_OPTIONS',
+  ]) delete env[k];
+  const runtimeDir = join(fixture.home, '.runtime');
+  Object.assign(env, {
+    HOME: fixture.home,
+    XDG_RUNTIME_DIR: runtimeDir,
+    DBUS_SESSION_BUS_ADDRESS: `unix:path=${join(runtimeDir, 'no-session-bus')}`,
+    XDG_SESSION_TYPE: waylandSocket ? 'wayland' : 'x11',
+    ELECTRON_OZONE_PLATFORM_HINT: waylandSocket ? 'wayland' : 'x11',
+    PATH: [fixture.bin, inherited.PATH].filter(Boolean).join(':'),
+    YOUCODED_PORT_OFFSET: '100',
+    YOUCODED_PERF_LOG: fixture.perfLog,
+    YOUCODED_NATIVE: '1',
+    ELECTRON_DISABLE_SECURITY_WARNINGS: '1',
+  });
+  if (waylandSocket) {
+    env.WAYLAND_DISPLAY = waylandSocket;
+    if (protocolDebug) env.WAYLAND_DEBUG = 'client';
+  } else {
+    env.DISPLAY = display;
+  }
+  return { env, args: [waylandSocket ? '--ozone-platform=wayland' : '--ozone-platform=x11'] };
+}
+
+// Raw bytes only, no splitting or attribution: children may inherit the same pipe.
+// The caller must retain this file and label overflow as incomplete.
+export function createProtocolSink(path, { maxBytes = 8 * 1024 * 1024 } = {}) {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 1) throw new Error('invalid protocol byte cap');
+  const fd = openSync(path, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+  let bytes = 0, truncated = false, closed = false;
+  return {
+    write(chunk) {
+      if (closed) throw new Error('protocol sink closed');
+      const data = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      const take = Math.min(data.length, maxBytes - bytes);
+      if (take) {
+        let offset = 0;
+        while (offset < take) offset += writeSync(fd, data, offset, take - offset);
+        bytes += take;
+      }
+      if (take < data.length) truncated = true;
+    },
+    close() { if (!closed) { closed = true; closeSync(fd); } },
+    get bytes() { return bytes; },
+    get truncated() { return truncated; },
+    get provenance() { return 'shared inherited stderr pipe; PID/Wayland connection not proven'; },
+  };
+}
+
+/** Own the stderr drain from spawn through teardown; only a finished drain yields a receipt. */
+export function captureProtocolStderr(stream, sink, { drainTimeoutMs = 1200 } = {}) {
+  let error = null;
+  let ended = stream.readableEnded;
+  let closed = stream.closed;
+  let finishPromise;
+  const onData = (buf) => {
+    if (!sink) return;
+    try { sink.write(buf); } catch (e) { error ??= String(e); }
+  };
+  const onError = (e) => { error ??= String(e); };
+  const onEnd = () => { ended = true; };
+  const onClose = () => { closed = true; };
+  stream.on('data', onData);
+  stream.on('error', onError);
+  stream.on('end', onEnd);
+  stream.on('close', onClose);
+
+  return {
+    finish(path) {
+      if (finishPromise) return finishPromise;
+      finishPromise = (async () => {
+        // WHY: /proc can be empty while Node still has bytes buffered on an inherited
+        // pipe. Conversely a descendant may hold that pipe forever: bound the wait.
+        if (!ended && !closed) {
+          await new Promise(resolve => {
+            let timer;
+            const done = () => {
+              clearTimeout(timer);
+              stream.off('end', done);
+              stream.off('close', done);
+              resolve();
+            };
+            stream.on('end', done);
+            stream.on('close', done);
+            timer = setTimeout(() => {
+              error ??= `protocol stderr drain timed out after ${drainTimeoutMs}ms (inherited pipe may remain open)`;
+              done();
+            }, drainTimeoutMs);
+          });
+        }
+        if (!ended) error ??= 'protocol stderr closed before end; capture may be incomplete';
+        stream.off('data', onData);
+        stream.off('end', onEnd);
+        stream.off('close', onClose);
+        // Keep the error observer for a timed-out pipe: a later error must not crash
+        // the rig, but cannot mutate the already-finalized verdict either.
+        if (ended || closed) stream.off('error', onError);
+        try { sink.close(); } catch (e) { error ??= String(e); }
+        return Object.freeze({ path, bytes: sink.bytes, truncated: sink.truncated,
+          error, provenance: sink.provenance });
+      })();
+      return finishPromise;
+    },
+  };
+}
+
 /**
  * Launch the packaged app against the fixture and connect CDP to its main window.
  *
@@ -428,7 +556,7 @@ function tailSink(store) {
  */
 // `extraArgs`: appended to the app's argv — e.g. `--inspect-brk=127.0.0.1:<port>` so a
 // caller can CPU-profile the main process from its first line (real-scale-startup.mjs).
-export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99', extraArgs = [] }) {
+export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, display = ':99', waylandSocket, protocolLog, protocolDebug = true, extraArgs = [], refuseExisting = false }) {
   if (!binary) throw new Error('perf-lab launch: launchApp needs { binary } — the packaged app executable.');
   if (!fixture?.home || !fixture?.userData) throw new Error('perf-lab launch: launchApp needs a fixture with { home, userData } from buildFixture().');
   // A fixture HOME that IS (or contains) the real home would put the rig's writes
@@ -440,90 +568,27 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   const familyNeedles = [appDir, fixture.home];
   assertSafeNeedles(familyNeedles);
 
-  const env = { ...process.env };
-  // No YOUCODED_PROFILE: a profile skips the install-hooks chore (main.ts:1339) and
-  // we must measure the boot users actually get.
-  // XDG_CONFIG_HOME is DELETED rather than set: on Linux Electron's userData is
-  // (XDG_CONFIG_HOME || $HOME/.config)/<appName>, so with it gone the profile is
-  // derived from the fixture HOME and lands at <fixture>/.config/youcoded — the dir
-  // buildFixture() already seeded. If it were inherited from this shell it would
-  // point at the REAL ~/.config and the run would write into the live app's profile.
-  // XDG_DATA_HOME / XDG_CACHE_HOME are deleted for the same reason: an inherited
-  // value would send Chromium's cache into ~/.cache/youcoded, which the live app
-  // also uses. (fixture.env pins the same three explicitly; deleting is equivalent
-  // here because HOME is the fixture.)
-  // ELECTRON_RUN_AS_NODE would make the binary run as a bare Node process — no
-  // window, no CDP — and NODE_OPTIONS could inject an inspector into it.
-  // DBUS_*: see the XDG_RUNTIME_DIR / DBUS_SESSION_BUS_ADDRESS note below — the
-  // session bus was the one live wire still running from this sandboxed app to
-  // Destin's real desktop. Both DBUS_STARTER_* variables are the same address under
-  // another name (systemd sets them for bus-activated services), so they go too.
-  for (const k of [
-    'CLAUDECODE', 'CLAUDE_CODE_CHILD_SESSION', 'CLAUDE_CODE_SESSION_ID', 'CLAUDE_CODE_ENTRYPOINT',
-    'CLAUDE_CODE_EXECPATH', 'CLAUDE_EFFORT',
-    'XDG_CONFIG_HOME', 'XDG_DATA_HOME', 'XDG_CACHE_HOME', 'XDG_RUNTIME_DIR',
-    'WAYLAND_DISPLAY', 'YOUCODED_PROFILE',
-    'DBUS_SESSION_BUS_ADDRESS', 'DBUS_STARTER_ADDRESS', 'DBUS_STARTER_BUS_TYPE',
-    'ELECTRON_RUN_AS_NODE', 'NODE_OPTIONS',
-  ]) delete env[k];
-  // A runtime dir INSIDE the fixture, created 0700 (the spec requires the directory
-  // be private to its owner or software refuses to use it).
+  if (waylandSocket) {
+    validateWaylandSocket(waylandSocket);
+    if (!protocolLog) throw new Error('perf-lab launch: native Wayland requires a bounded raw protocol log');
+    if (extraArgs.some(a => /^--(ozone-platform|user-data-dir|remote-debugging-port|enable-features|disable-features)(=|$)/.test(a))) {
+      throw new Error('perf-lab launch: native Wayland refuses backend/profile/port overrides');
+    }
+  } else if (protocolLog) {
+    throw new Error('perf-lab launch: protocol log requires native Wayland');
+  }
+  // The private runtime is not the Wayland socket directory; a native connection
+  // uses the validated absolute socket while DBus remains deliberately dead.
   const runtimeDir = join(fixture.home, '.runtime');
   mkdirSync(runtimeDir, { recursive: true, mode: 0o700 });
+  const { env, args: ozoneArgs } = launchConfiguration({ fixture, display, waylandSocket, protocolDebug });
 
-  Object.assign(env, {
-    HOME: fixture.home,
-    DISPLAY: display,
-    // ── CUTTING THE LAST WIRE TO THE REAL DESKTOP ────────────────────────────
-    // Deleting XDG_CONFIG/DATA/CACHE and WAYLAND_DISPLAY isolates the app's FILES
-    // and its WINDOW, but it left one live channel open: D-Bus, the bus every Linux
-    // desktop app uses to talk to the desktop itself. Over it the rig's app could
-    // raise real notifications, drive real file-picker portals, and register itself
-    // as the real session's handler for things — a sandboxed measurement run poking
-    // at Destin's working desktop, and any of that costs CPU that lands in the
-    // numbers we are here to measure.
-    //
-    // Unsetting DBUS_SESSION_BUS_ADDRESS alone does NOT close it. libdbus falls back,
-    // in order, to $XDG_RUNTIME_DIR/bus — the REAL session bus, still findable — and
-    // then to X11 autolaunch, which would fork a stray dbus-daemon under Xvfb that
-    // nothing in this rig knows how to clean up. So we do all three at once:
-    //   • XDG_RUNTIME_DIR points inside the fixture, so the "$XDG_RUNTIME_DIR/bus"
-    //     fallback finds nothing (and any other runtime file the app drops lands in
-    //     the throwaway fixture instead of /run/user/<uid>).
-    //   • DBUS_SESSION_BUS_ADDRESS names a socket inside the fixture that is never
-    //     created, so the connect fails instantly with ENOENT — that failure is what
-    //     suppresses the autolaunch fallback and its orphan daemon.
-    // Chromium tolerates having no session bus (this is exactly the situation in every
-    // headless container it runs in): it logs "Failed to connect to the bus" and boots
-    // normally, with notifications and portals degraded — neither of which the rig
-    // measures. XDG_RUNTIME_DIR is REDIRECTED rather than deleted for the same reason:
-    // absence is tolerated but is a slightly odder shape than a real, empty directory,
-    // and a run costs an hour, so the rig takes the shape closest to a normal desktop.
-    XDG_RUNTIME_DIR: runtimeDir,
-    DBUS_SESSION_BUS_ADDRESS: `unix:path=${join(runtimeDir, 'no-session-bus')}`,
-    // WHY these two, plus the --ozone-platform=x11 argv flag below: deleting
-    // WAYLAND_DISPLAY is NOT enough to keep Electron off the real desktop.
-    // Chromium's Ozone auto-detection sees XDG_SESSION_TYPE=wayland and connects
-    // to the DEFAULT socket name ($XDG_RUNTIME_DIR/wayland-0) on its own, so it
-    // silently ignored DISPLAY=:99 and opened on Destin's 2560x1440 screen —
-    // measured: screen.width 2560 while Xvfb :99 is 1600x1000. That both
-    // invalidates every number (real GPU compositing, his machine's activity in
-    // the sample) and pops a window onto his desktop on every one of the 5-7
-    // boots a run performs. Forcing x11 pins the app to the virtual display.
-    XDG_SESSION_TYPE: 'x11',
-    ELECTRON_OZONE_PLATFORM_HINT: 'x11',
-    // Read from process.env (the REAL environment) and written into `env` (our copy),
-    // so there is no self-reference. filter(Boolean) keeps an absent PATH from
-    // becoming the literal string "undefined" or a stray trailing colon (an empty
-    // PATH entry means "the current directory", which is a real hazard). The
-    // fixture's bin/ goes FIRST so its fake `claude` wins over any real one.
-    PATH: [fixture.bin, process.env.PATH].filter(Boolean).join(':'),
-    YOUCODED_PORT_OFFSET: '100',      // keeps the rig's remote server off the live app's ports
-    YOUCODED_PERF_LOG: fixture.perfLog,
-    YOUCODED_NATIVE: '1',
-    ELECTRON_DISABLE_SECURITY_WARNINGS: '1',
-  });
-
+  // WHY: a short-cycle rig using a shared --app-dir cannot claim every process
+  // under that package as its own. Refuse BEFORE the usual stale-process sweep;
+  // the default keeps existing perf-lab recovery behavior unchanged.
+  if (refuseExisting && killableFamily(familyNeedles).pids.length) {
+    throw new Error('perf-lab launch: app family already running; refusing to sweep another worker');
+  }
   // Never attach to a stale app from a crashed run: kill it FIRST, and refuse to
   // continue if it will not die (sweep throws).
   await sweep(familyNeedles, fixture.userData);
@@ -544,13 +609,18 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   // — a detached app outlives the rig — is covered three ways: the stdio pipes are
   // unref'd so the rig can exit, an exit/SIGINT/SIGTERM handler group-kills on the way
   // out, and the next run's sweep() would kill any orphan before launching anyway.
-  // --ozone-platform=x11 is the decisive half of the Wayland fix above: the env
-  // vars express the preference, this flag removes the choice.
-  const proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox', '--ozone-platform=x11', ...extraArgs], {
-    env, cwd: fixture.home, stdio: ['ignore', 'pipe', 'pipe'], detached: true,
-  });
+  // WHY: create the raw log exclusively before spawn, and cap every subsequent
+  // chunk. The stderr pipe may be shared by descendants: no PID attribution.
+  const protocolSink = protocolLog ? createProtocolSink(protocolLog) : null;
+  let proc;
+  try {
+    proc = spawn(binary, [`--remote-debugging-port=${cdpPort}`, '--no-sandbox', ...ozoneArgs, ...extraArgs], {
+      env, cwd: fixture.home, stdio: ['ignore', 'pipe', 'pipe'], detached: true,
+    });
+  } catch (e) { protocolSink?.close(); throw e; }
   proc.stdout.on('data', tailSink(out));
   proc.stderr.on('data', tailSink(err));
+  const protocolDrain = protocolSink ? captureProtocolStderr(proc.stderr, protocolSink) : null;
   proc.stdout.on('error', () => {});
   proc.stderr.on('error', () => {});
 
@@ -575,6 +645,7 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     // second round of SIGKILLs aimed at pids that may since have been reused.
     if (cleanedUp) return;
     cleanedUp = true;
+    try { protocolSink?.close(); } catch {}
     // Synchronous by necessity ('exit' allows no async work), and it goes through the
     // same killable/protected filter as everything else — an emergency is not a licence
     // to signal something we do not own.
@@ -639,11 +710,16 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
     await cdp.send('Page.enable');
   } catch (e) {
     try { cdp?.close(); } catch {}
-    await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }).catch(() => {});
-    // Disarm only AFTER the sweep: while it runs, a Ctrl-C must still reach
-    // hardCleanup. Disarming at all matters because the caller retries — see the
-    // listener-accumulation note on detachHandlers.
-    detachHandlers();
+    let cleanupError = null;
+    try { await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }); }
+    catch (failure) { cleanupError = failure; }
+    // Startup failure has no returned handle. Drain its own pipe separately before
+    // rethrowing; a late launch must not leave a writer holding an open raw log.
+    if (protocolDrain) await protocolDrain.finish(protocolLog);
+    // WHY: retain the emergency exit/signal handler if a process survived.
+    // The caller must retain the private fixture, not silently call it cleaned.
+    if (!cleanupError) detachHandlers();
+    if (cleanupError) throw new AggregateError([e, cleanupError], 'perf-lab launch: startup failed and owned-process cleanup is uncertain');
     throw e;
   }
 
@@ -653,8 +729,11 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
   proc.stdout.unref?.();
   proc.stderr.unref?.();
 
-  return {
+  const app = {
     proc, spawnedAt, pid: proc.pid, cdpPort, target, cdp, familyNeedles,
+    // A live getter is not a receipt: callers only receive immutable evidence
+    // after kill has waited for the owned stderr pipe to drain (or timed out).
+    protocolCapture: null,
     /** Every matching pid, including protected/self ones — for measurement, not signalling. */
     family: () => findFamily(familyNeedles),
     /** Last few KB the app printed; the thing to paste when a run misbehaves. */
@@ -670,7 +749,9 @@ export async function launchApp({ binary, appDir, fixture, cdpPort = 9555, displ
       cleanedUp = true;                 // the exit handler must not double-signal
       detachHandlers();
       try { cdp.close(); } catch {}
-      await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid });
+      try { await sweep(familyNeedles, fixture.userData, { groupPid: proc.pid }); }
+      finally { if (protocolDrain) app.protocolCapture = await protocolDrain.finish(protocolLog); }
     },
   };
+  return app;
 }

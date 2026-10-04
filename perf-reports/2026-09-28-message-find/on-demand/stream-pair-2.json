@@ -1,0 +1,1124 @@
+[
+  {
+    "name": "baseline",
+    "appDir": "/home/destin/youcoded-dev/worktrees/sessions/performance-history-audit/scratch/perf-lab/find-baseline-app",
+    "display": ":99",
+    "began": "2026-09-28T07:30:59.100Z",
+    "profile": null,
+    "renderer": {
+      "source": "SystemInfo",
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+      "softwareRendering": true,
+      "accelerated": false,
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "unavailable_off",
+        "vulkan": "disabled_off",
+        "webgl": "unavailable_off",
+        "video_decode": "unavailable_off"
+      },
+      "devices": [
+        {
+          "vendorId": 4098,
+          "deviceId": 5510,
+          "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+          "active": null
+        }
+      ],
+      "error": null,
+      "attempts": []
+    },
+    "scenario": {
+      "sessions": {
+        "names": [
+          "cc-0",
+          "cc-1",
+          "cc-2",
+          "cc-3",
+          "native-0",
+          "native-1"
+        ],
+        "sizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "streaming": "native-0",
+        "huge": "cc-0"
+      },
+      "deltas": {
+        "planned": 3000,
+        "perSecTarget": 150,
+        "requests": 3
+      },
+      "visible": {
+        "taskMs": 10944.1,
+        "scriptMs": 5352,
+        "taskPct": 54.3,
+        "deltasPlanned": 3000,
+        "deltasSent": 3000,
+        "perSecTarget": 150,
+        "perSecAchieved": 150,
+        "streamMs": 19993,
+        "backpressureWaits": 0,
+        "aborted": false,
+        "charsStreamed": 12136,
+        "charsShown": 9781,
+        "firstResponseMs": 36,
+        "turnMs": 20125,
+        "turnEndSignal": "stop-button",
+        "commits": 1204,
+        "layouts": 1207,
+        "layoutsPerFrame": 1.002,
+        "commitsPerFrame": 1,
+        "framesPerSec": 59.8,
+        "longtaskTotalMs": 85,
+        "longtaskMaxMs": 85,
+        "longtaskCount": 1,
+        "frameGapMaxMs": 87,
+        "windowMs": 20137,
+        "ipc": {
+          "everyMs": 100,
+          "pings": 201,
+          "totalStallMs": 0,
+          "maxMs": 19,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "openStallMs": null,
+          "rejectedPings": 0,
+          "missedTicks": 0
+        },
+        "stall": {
+          "verdict": "none",
+          "why": "worst IPC round trip was 19ms, under the 250ms stall threshold"
+        },
+        "profilePath": null
+      },
+      "switching": {
+        "switchCount": 8,
+        "duringStream": 8,
+        "verifiedSwitches": 8,
+        "failedSwitches": 0,
+        "menuSwitches": 0,
+        "switchPaintedMedianMs": 110.4,
+        "switchPaintedP95Ms": 212.2,
+        "intoStreamingMedianMs": 97.9,
+        "intoHugeMedianMs": 124.3,
+        "taskMs": 8313.2,
+        "taskPct": 41.3,
+        "deltasSent": 3000,
+        "perSecAchieved": 150,
+        "turnMs": 20126,
+        "longtaskTotalMs": 432,
+        "longtaskMaxMs": 106,
+        "frameGapMaxMs": 148,
+        "windowMs": 20138,
+        "ipc": {
+          "everyMs": 100,
+          "pings": 201,
+          "totalStallMs": 0,
+          "maxMs": 24,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "openStallMs": null,
+          "rejectedPings": 0,
+          "missedTicks": 0
+        },
+        "stall": {
+          "verdict": "none",
+          "why": "worst IPC round trip was 24ms, under the 250ms stall threshold"
+        },
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 164.9,
+            "paintedMs": 212.2,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 1,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 94.8,
+            "paintedMs": 95,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          },
+          {
+            "i": 2,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 75,
+            "paintedMs": 124.3,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 3,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 97.7,
+            "paintedMs": 97.9,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          },
+          {
+            "i": 4,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 65.1,
+            "paintedMs": 110.4,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 5,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 102.5,
+            "paintedMs": 102.6,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 70.1,
+            "paintedMs": 110.7,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 7,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 68.4,
+            "paintedMs": 68.5,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          }
+        ]
+      },
+      "hidden": {
+        "taskMs": 1824.8,
+        "scriptMs": 424.7,
+        "taskPct": 8.5,
+        "deltasPlanned": 3000,
+        "deltasSent": 3000,
+        "perSecTarget": 150,
+        "perSecAchieved": 150,
+        "streamMs": 19995,
+        "backpressureWaits": 0,
+        "aborted": false,
+        "charsStreamed": 12115,
+        "charsShown": 0,
+        "firstResponseMs": null,
+        "turnMs": 21515,
+        "turnEndSignal": "server",
+        "commits": 0,
+        "layouts": 3,
+        "layoutsPerFrame": null,
+        "commitsPerFrame": null,
+        "framesPerSec": 59.9,
+        "longtaskTotalMs": 54,
+        "longtaskMaxMs": 54,
+        "longtaskCount": 1,
+        "frameGapMaxMs": 55,
+        "windowMs": 21523,
+        "ipc": {
+          "everyMs": 100,
+          "pings": 215,
+          "totalStallMs": 0,
+          "maxMs": 1,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "openStallMs": null,
+          "rejectedPings": 0,
+          "missedTicks": 0
+        },
+        "stall": {
+          "verdict": "none",
+          "why": "worst IPC round trip was 1ms, under the 250ms stall threshold"
+        },
+        "profilePath": null
+      },
+      "probe": {
+        "longtaskCount": 13,
+        "longtaskTotalMs": 1604,
+        "longtaskMaxMs": 317,
+        "frameGapCount": 23,
+        "frameGapMaxMs": 323,
+        "longtaskSupported": true,
+        "observedMs": 67876,
+        "frames": 3963,
+        "framesPerSec": 58.4,
+        "marks": [
+          {
+            "t": 102,
+            "label": "cc-create:start"
+          },
+          {
+            "t": 934,
+            "label": "native-create:start"
+          },
+          {
+            "t": 2516,
+            "label": "native-stream:visible:start"
+          },
+          {
+            "t": 22653,
+            "label": "native-stream:visible:end"
+          },
+          {
+            "t": 23663,
+            "label": "native-stream:switching:start"
+          },
+          {
+            "t": 43801,
+            "label": "native-stream:switching:end"
+          },
+          {
+            "t": 46348,
+            "label": "native-stream:hidden:start"
+          },
+          {
+            "t": 67871,
+            "label": "native-stream:hidden:end"
+          }
+        ],
+        "errors": []
+      },
+      "warnings": []
+    },
+    "probeEvents": [
+      [
+        "mark",
+        102,
+        "cc-create:start"
+      ],
+      [
+        "longtask",
+        7,
+        94
+      ],
+      [
+        "frame-gap",
+        255,
+        130
+      ],
+      [
+        "longtask",
+        135,
+        118
+      ],
+      [
+        "frame-gap",
+        457,
+        67
+      ],
+      [
+        "frame-gap",
+        642,
+        68
+      ],
+      [
+        "frame-gap",
+        819,
+        61
+      ],
+      [
+        "mark",
+        934,
+        "native-create:start"
+      ],
+      [
+        "frame-gap",
+        977,
+        52
+      ],
+      [
+        "frame-gap",
+        1070,
+        46
+      ],
+      [
+        "frame-gap",
+        1120,
+        41
+      ],
+      [
+        "frame-gap",
+        1996,
+        323
+      ],
+      [
+        "longtask",
+        1678,
+        317
+      ],
+      [
+        "frame-gap",
+        2253,
+        257
+      ],
+      [
+        "longtask",
+        1999,
+        254
+      ],
+      [
+        "frame-gap",
+        2512,
+        259
+      ],
+      [
+        "mark",
+        2516,
+        "native-stream:visible:start"
+      ],
+      [
+        "longtask",
+        2261,
+        250
+      ],
+      [
+        "frame-gap",
+        22644,
+        87
+      ],
+      [
+        "longtask",
+        22557,
+        85
+      ],
+      [
+        "mark",
+        22653,
+        "native-stream:visible:end"
+      ],
+      [
+        "mark",
+        23663,
+        "native-stream:switching:start"
+      ],
+      [
+        "frame-gap",
+        25305,
+        148
+      ],
+      [
+        "longtask",
+        25165,
+        106
+      ],
+      [
+        "longtask",
+        25271,
+        51
+      ],
+      [
+        "frame-gap",
+        27243,
+        87
+      ],
+      [
+        "longtask",
+        27164,
+        59
+      ],
+      [
+        "frame-gap",
+        29234,
+        78
+      ],
+      [
+        "frame-gap",
+        31242,
+        86
+      ],
+      [
+        "longtask",
+        31165,
+        57
+      ],
+      [
+        "frame-gap",
+        33223,
+        67
+      ],
+      [
+        "frame-gap",
+        35250,
+        93
+      ],
+      [
+        "longtask",
+        35165,
+        63
+      ],
+      [
+        "frame-gap",
+        37227,
+        71
+      ],
+      [
+        "frame-gap",
+        39222,
+        66
+      ],
+      [
+        "frame-gap",
+        43790,
+        101
+      ],
+      [
+        "longtask",
+        43688,
+        96
+      ],
+      [
+        "mark",
+        43801,
+        "native-stream:switching:end"
+      ],
+      [
+        "frame-gap",
+        44870,
+        81
+      ],
+      [
+        "mark",
+        46348,
+        "native-stream:hidden:start"
+      ],
+      [
+        "frame-gap",
+        59589,
+        51
+      ],
+      [
+        "frame-gap",
+        66427,
+        55
+      ],
+      [
+        "longtask",
+        66371,
+        54
+      ],
+      [
+        "mark",
+        67871,
+        "native-stream:hidden:end"
+      ]
+    ],
+    "ended": "2026-09-28T07:32:08.060Z"
+  },
+  {
+    "name": "candidate",
+    "appDir": "/home/destin/youcoded-dev/worktrees/sessions/performance-history-audit/youcoded/desktop/release/linux-unpacked",
+    "display": ":99",
+    "began": "2026-09-28T07:32:08.833Z",
+    "profile": null,
+    "renderer": {
+      "source": "SystemInfo",
+      "glRenderer": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+      "glVendor": "Google Inc. (Mesa)",
+      "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+      "softwareRendering": true,
+      "accelerated": false,
+      "featureStatus": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "multiple_raster_threads": "enabled_on",
+        "opengl": "unavailable_off",
+        "vulkan": "disabled_off",
+        "webgl": "unavailable_off",
+        "video_decode": "unavailable_off"
+      },
+      "devices": [
+        {
+          "vendorId": 4098,
+          "deviceId": 5510,
+          "deviceString": "ANGLE (Mesa, llvmpipe (LLVM 22.1.6 256 bits), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+          "active": null
+        }
+      ],
+      "error": null,
+      "attempts": []
+    },
+    "scenario": {
+      "sessions": {
+        "names": [
+          "cc-0",
+          "cc-1",
+          "cc-2",
+          "cc-3",
+          "native-0",
+          "native-1"
+        ],
+        "sizes": {
+          "cc-0": "huge",
+          "cc-1": "medium",
+          "cc-2": "small",
+          "cc-3": "empty",
+          "native-0": "native",
+          "native-1": "native"
+        },
+        "streaming": "native-0",
+        "huge": "cc-0"
+      },
+      "deltas": {
+        "planned": 3000,
+        "perSecTarget": 150,
+        "requests": 3
+      },
+      "visible": {
+        "taskMs": 9694.2,
+        "scriptMs": 4878.3,
+        "taskPct": 48.2,
+        "deltasPlanned": 3000,
+        "deltasSent": 3000,
+        "perSecTarget": 150,
+        "perSecAchieved": 150,
+        "streamMs": 19994,
+        "backpressureWaits": 0,
+        "aborted": false,
+        "charsStreamed": 12136,
+        "charsShown": 9781,
+        "firstResponseMs": 27,
+        "turnMs": 20103,
+        "turnEndSignal": "stop-button",
+        "commits": 1203,
+        "layouts": 1208,
+        "layoutsPerFrame": 1.003,
+        "commitsPerFrame": 0.999,
+        "framesPerSec": 59.9,
+        "longtaskTotalMs": 57,
+        "longtaskMaxMs": 57,
+        "longtaskCount": 1,
+        "frameGapMaxMs": 59,
+        "windowMs": 20118,
+        "ipc": {
+          "everyMs": 100,
+          "pings": 201,
+          "totalStallMs": 0,
+          "maxMs": 12,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "openStallMs": null,
+          "rejectedPings": 0,
+          "missedTicks": 0
+        },
+        "stall": {
+          "verdict": "none",
+          "why": "worst IPC round trip was 12ms, under the 250ms stall threshold"
+        },
+        "profilePath": null
+      },
+      "switching": {
+        "switchCount": 8,
+        "duringStream": 8,
+        "verifiedSwitches": 8,
+        "failedSwitches": 0,
+        "menuSwitches": 0,
+        "switchPaintedMedianMs": 104.2,
+        "switchPaintedP95Ms": 121,
+        "intoStreamingMedianMs": 94.5,
+        "intoHugeMedianMs": 120.1,
+        "taskMs": 7182.4,
+        "taskPct": 35.7,
+        "deltasSent": 3000,
+        "perSecAchieved": 150,
+        "turnMs": 20098,
+        "longtaskTotalMs": 198,
+        "longtaskMaxMs": 77,
+        "frameGapMaxMs": 96,
+        "windowMs": 20108,
+        "ipc": {
+          "everyMs": 100,
+          "pings": 201,
+          "totalStallMs": 0,
+          "maxMs": 13,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "openStallMs": null,
+          "rejectedPings": 0,
+          "missedTicks": 0
+        },
+        "stall": {
+          "verdict": "none",
+          "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+        },
+        "switches": [
+          {
+            "i": 0,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 69,
+            "paintedMs": 120.1,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 1,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 94.4,
+            "paintedMs": 94.5,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          },
+          {
+            "i": 2,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 62.9,
+            "paintedMs": 104.2,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 3,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 98.5,
+            "paintedMs": 98.6,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          },
+          {
+            "i": 4,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 64.7,
+            "paintedMs": 104.7,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 5,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 70.4,
+            "paintedMs": 70.6,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          },
+          {
+            "i": 6,
+            "idx": 0,
+            "name": "cc-0",
+            "intoStreaming": false,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 71,
+            "paintedMs": 121,
+            "settled": true,
+            "entries": 60,
+            "reason": null
+          },
+          {
+            "i": 7,
+            "idx": 4,
+            "name": "native-0",
+            "intoStreaming": true,
+            "duringStream": true,
+            "ok": true,
+            "mode": "pill",
+            "ms": 66.9,
+            "paintedMs": 66.9,
+            "settled": true,
+            "entries": 4,
+            "reason": null
+          }
+        ]
+      },
+      "hidden": {
+        "taskMs": 1791.7,
+        "scriptMs": 520,
+        "taskPct": 8.3,
+        "deltasPlanned": 3000,
+        "deltasSent": 3000,
+        "perSecTarget": 150,
+        "perSecAchieved": 150,
+        "streamMs": 19995,
+        "backpressureWaits": 0,
+        "aborted": false,
+        "charsStreamed": 12115,
+        "charsShown": 0,
+        "firstResponseMs": null,
+        "turnMs": 21513,
+        "turnEndSignal": "server",
+        "commits": 0,
+        "layouts": 3,
+        "layoutsPerFrame": null,
+        "commitsPerFrame": null,
+        "framesPerSec": 59.8,
+        "longtaskTotalMs": 59,
+        "longtaskMaxMs": 59,
+        "longtaskCount": 1,
+        "frameGapMaxMs": 66,
+        "windowMs": 21524,
+        "ipc": {
+          "everyMs": 100,
+          "pings": 215,
+          "totalStallMs": 0,
+          "maxMs": 13,
+          "over250ms": 0,
+          "over1000ms": 0,
+          "openStallMs": null,
+          "rejectedPings": 0,
+          "missedTicks": 0
+        },
+        "stall": {
+          "verdict": "none",
+          "why": "worst IPC round trip was 13ms, under the 250ms stall threshold"
+        },
+        "profilePath": null
+      },
+      "probe": {
+        "longtaskCount": 11,
+        "longtaskTotalMs": 1458,
+        "longtaskMaxMs": 321,
+        "frameGapCount": 23,
+        "frameGapMaxMs": 350,
+        "longtaskSupported": true,
+        "observedMs": 68896,
+        "frames": 4030,
+        "framesPerSec": 58.5,
+        "marks": [
+          {
+            "t": 3,
+            "label": "cc-create:start"
+          },
+          {
+            "t": 2078,
+            "label": "native-create:start"
+          },
+          {
+            "t": 3571,
+            "label": "native-stream:visible:start"
+          },
+          {
+            "t": 23689,
+            "label": "native-stream:visible:end"
+          },
+          {
+            "t": 24700,
+            "label": "native-stream:switching:start"
+          },
+          {
+            "t": 44808,
+            "label": "native-stream:switching:end"
+          },
+          {
+            "t": 47367,
+            "label": "native-stream:hidden:start"
+          },
+          {
+            "t": 68891,
+            "label": "native-stream:hidden:end"
+          }
+        ],
+        "errors": []
+      },
+      "warnings": []
+    },
+    "probeEvents": [
+      [
+        "mark",
+        3,
+        "cc-create:start"
+      ],
+      [
+        "frame-gap",
+        123,
+        99
+      ],
+      [
+        "longtask",
+        31,
+        91
+      ],
+      [
+        "frame-gap",
+        291,
+        145
+      ],
+      [
+        "frame-gap",
+        641,
+        350
+      ],
+      [
+        "longtask",
+        147,
+        141
+      ],
+      [
+        "longtask",
+        314,
+        321
+      ],
+      [
+        "frame-gap",
+        1613,
+        73
+      ],
+      [
+        "longtask",
+        1547,
+        55
+      ],
+      [
+        "frame-gap",
+        1786,
+        62
+      ],
+      [
+        "frame-gap",
+        1967,
+        59
+      ],
+      [
+        "mark",
+        2078,
+        "native-create:start"
+      ],
+      [
+        "frame-gap",
+        2125,
+        50
+      ],
+      [
+        "frame-gap",
+        2222,
+        48
+      ],
+      [
+        "frame-gap",
+        3285,
+        261
+      ],
+      [
+        "longtask",
+        3030,
+        255
+      ],
+      [
+        "frame-gap",
+        3569,
+        284
+      ],
+      [
+        "mark",
+        3571,
+        "native-stream:visible:start"
+      ],
+      [
+        "longtask",
+        3287,
+        281
+      ],
+      [
+        "frame-gap",
+        23682,
+        59
+      ],
+      [
+        "longtask",
+        23622,
+        57
+      ],
+      [
+        "mark",
+        23689,
+        "native-stream:visible:end"
+      ],
+      [
+        "mark",
+        24700,
+        "native-stream:switching:start"
+      ],
+      [
+        "frame-gap",
+        26266,
+        77
+      ],
+      [
+        "frame-gap",
+        28285,
+        96
+      ],
+      [
+        "longtask",
+        28204,
+        59
+      ],
+      [
+        "frame-gap",
+        30260,
+        70
+      ],
+      [
+        "frame-gap",
+        32283,
+        94
+      ],
+      [
+        "longtask",
+        32205,
+        62
+      ],
+      [
+        "frame-gap",
+        34261,
+        73
+      ],
+      [
+        "frame-gap",
+        36263,
+        74
+      ],
+      [
+        "frame-gap",
+        38267,
+        78
+      ],
+      [
+        "frame-gap",
+        40260,
+        71
+      ],
+      [
+        "frame-gap",
+        44801,
+        79
+      ],
+      [
+        "longtask",
+        44722,
+        77
+      ],
+      [
+        "mark",
+        44808,
+        "native-stream:switching:end"
+      ],
+      [
+        "frame-gap",
+        45877,
+        72
+      ],
+      [
+        "mark",
+        47367,
+        "native-stream:hidden:start"
+      ],
+      [
+        "frame-gap",
+        58641,
+        66
+      ],
+      [
+        "frame-gap",
+        67448,
+        60
+      ],
+      [
+        "longtask",
+        67387,
+        59
+      ],
+      [
+        "mark",
+        68891,
+        "native-stream:hidden:end"
+      ]
+    ],
+    "ended": "2026-09-28T07:33:18.779Z"
+  }
+]

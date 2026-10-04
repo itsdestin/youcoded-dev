@@ -45,34 +45,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Planned: R5 — the computer's record replaces the snapshot that can overwrite the phone's copy.
       `desktop` `needs-verify` `checked 2026-09-27`
 
-- [ ] With a phone connected, the computer sends it the terminal output and chat events of every
-      open session, not only the one the phone is showing — more sessions running means a busier
-      computer and phone. Found by the 2026-09-23 performance review; not built because remote
-      code is being restructured
-      Planned: R5 — per-session delivery. Confirmed in code 2026-09-24: the computer's
-      broadcast has no per-session filter.
-      `remote` `confirmed` `checked 2026-09-24` `performance`
-
-- [ ] A reconnect costs far more than what was missed. The computer replays a full copy of every
-      conversation (the phone's reducer replaces its whole state, so every visible message is
-      redrawn) plus every buffered tool event per session — up to 10,000, all types, not only the
-      questions still waiting — and the screens then make about fifteen requests, with skills and
-      the / commands asked twice (the shim's re-ask list AND each screen's own reconnect listener).
-      Cheapest first step: replay only open asks and drop the duplicate pair. Found 2026-09-11 in
-      the speed/sync review (`docs/archive/reviews/2026-09-11-remote-batch-2-3-phone-pass.md`).
-      Destin: "it currently feels unresponsive and lags behind desktop sometimes." The duplicate
-      skills/commands pair was removed 2026-09-23 (youcoded#562); the full replay remains
-      Planned: R5 — replaced by resume from the computer's numbered record.
-      `remote` `confirmed` `checked 2026-09-23` `performance`
-
-- [ ] A dropped connection should resume rather than re-sync: number what the computer sends per
-      session, let a returning phone ask for "everything after N", and keep the full copy as the
-      fallback for a gap too old or a computer that restarted. The terminal already does exactly
-      this per session; nothing else does. Would also let a request cut off mid-flight be answered
-      from the computer's record instead of asked about. Big — file behind the cheaper items above.
-      Planned: R5.
-      `remote` `confirmed` `checked 2026-09-11` `performance`
-
 - [ ] Things only one window knows, so the phone and the computer disagree: YouCoded-runtime queued
       messages (renderer-local by design note), the YouCoded-runtime permission mode (never
       announced), the model label (corrects only on the next reply), the "working" dots on the
@@ -190,27 +162,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       to a device is distinct from choosing where an automation runs. Hosting/privacy design open.
       `remote` `parked` `checked 2026-09-08` `v1.4`
 
-- [ ] First connect from a phone sits on a white screen for seconds, then the chat takes a
-      further beat to fill in; the July byte-shaving merge changed nothing Destin could feel
-      on LAN. ~2.5 s of it is scripted waiting; the white part is unmeasured on a real phone
-      Destin 2026-09-02: probably much improved; keep for a future remote-access verification pass
-      Destin 2026-09-10, after batch 1: still "takes quite a while before showing any real app ui
-      or the password screen". Measured that day: the sign-in box ships INSIDE the whole app's
-      script, so a phone downloads and runs 2,444 KB (607 KB compressed) before it can draw a
-      text box, then fetches the 34 KB connection code as a second download, and only then
-      shows sign-in. His test ran against the dev window, which serves the 523 source files one
-      by one instead of one bundle, so the wait he felt is inflated by dev mode; the built app
-      has not been timed on his phone. Fix shape: a small first download holding only sign-in
-      and the connection code, with the app loading after the password is accepted.
-      **The 2.5 s of scripted waiting after sign-in (the proven half, below) shipped fixed
-      2026-09-10 (youcoded#4f9320217): the hardcoded 500 ms `setTimeout` and the sequential
-      snapshot→PTY wait are gone, replaced by a `client:ready` ack the phone sends once React
-      has mounted, pinned by `remote-readiness.test.ts`'s "no 500 ms timer" source guard.
-      What's left open here is only the UNPROVEN bundle-size white screen** — a different
-      bottleneck (first paint, not first chat) that fix does not touch
-      Destin 2026-09-10: "can just be a future issue, i'd rather finish our other work first" —
-      after the milestone's batches 2 and 3
-      `remote` `needs-verify` `checked 2026-09-23` `performance` → docs/active/investigations/2026-09-01-remote-first-connect-dead-time.md
 
 - [ ] The remote browser client has no mic while the desktop and Android apps will. Browsers
       only allow a microphone on a secure (https) page, and remote access is plain http, so the

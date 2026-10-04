@@ -1,0 +1,131 @@
+{
+  "title": "Office \u2014 frame, File tab, and two wording checks",
+  "key": "office-framing",
+  "out": "office-framing.review.html",
+  "images": "images/office-framing.review",
+  "runs": {
+    "before": "framing-runs/before",
+    "after": "framing-runs/after"
+  },
+  "themes": [
+    "midnight",
+    "meadow-mist"
+  ],
+  "steps": [
+    {
+      "id": "F-frame",
+      "surface": "Office",
+      "path": "An Excel workbook, nothing open",
+      "crop": "framing/sheet-rest",
+      "headline": "Toolbar, side strips and bottom bar now form one frame around the sheet: no gap at the left, no line under the header.",
+      "changed": "Ribbon, left/right icon strips and the bottom bar are one panel colour with no lines between them. The sheet sits in a single rounded, outlined window inside that frame, and the whole editor is a rounded card on the Office page.",
+      "notice": "The document area is clearly framed; the toolbar no longer floats as a separate card.",
+      "risk": "The editor's outer edge sits a few pixels in from the window edge, so the sheet is slightly narrower."
+    },
+    {
+      "id": "F-frame-doc",
+      "surface": "Office",
+      "path": "A Word document, nothing open",
+      "crop": "framing/doc-rest",
+      "headline": "Word gets the same frame.",
+      "changed": "Same one-piece frame and rounded document window as Excel.",
+      "notice": "Word, Excel and PowerPoint now look the same around the edges.",
+      "risk": ""
+    },
+    {
+      "id": "F-frame-slides",
+      "surface": "Office",
+      "path": "A PowerPoint presentation, nothing open",
+      "crop": "framing/slides-rest",
+      "headline": "PowerPoint gets the same frame.",
+      "changed": "Same frame; the slide list and the slide sit inside the same rounded window.",
+      "notice": "Consistent with Word and Excel.",
+      "risk": ""
+    },
+    {
+      "id": "F-file",
+      "surface": "Office",
+      "path": "A Word document \u2192 File \u2192 Info",
+      "crop": "framing/doc-file-info",
+      "headline": "The File tab's pages sit on YouCoded cards, inside the same frame.",
+      "changed": "The File menu list stays on the frame's panel colour; its page (Info here) sits in the rounded document window, with the content on a card.",
+      "notice": "The File tab no longer looks like a different program, and it is clearly separate from the tab row and the selected menu item.",
+      "risk": "The document's own thumbnail isn't shown on the Info page (the editor doesn't make one offline)."
+    },
+    {
+      "id": "F-file-export",
+      "surface": "Office",
+      "path": "A Word document \u2192 File \u2192 Export",
+      "crop": "framing/doc-file-export",
+      "headline": "Export (Save As) and Advanced Settings pages use the same cards.",
+      "changed": "Format choices and settings sit on cards in the same rounded window.",
+      "notice": "Every File page looks the same.",
+      "risk": ""
+    },
+    {
+      "id": "F-side",
+      "surface": "Office",
+      "path": "A Word document with a side panel open (paragraph settings)",
+      "crop": "framing/doc-side",
+      "headline": "Side panels open inside the frame, joined to the strip they open from.",
+      "changed": "The panel uses the frame colour and joins the icon strip; the document window shrinks beside it.",
+      "notice": "No floating panel edges or double borders.",
+      "risk": ""
+    },
+    {
+      "id": "F-gallery",
+      "surface": "Office",
+      "path": "A Word document \u2192 Home \u2192 styles gallery",
+      "crop": "framing/doc-gallery",
+      "headline": "The clean gallery look from the spreadsheet now applies to Word and PowerPoint too.",
+      "changed": "Square style tiles with one outline; the same menu edges and shadows as Excel.",
+      "notice": "What you approved for Excel now holds in all three editors.",
+      "risk": ""
+    },
+    {
+      "id": "W-copy",
+      "words": true,
+      "surface": "Office",
+      "path": "The status line at the top right of the Office page, after File \u2192 Save As",
+      "headline": "After a Save As, the status line says: \"Saved a copy as Budget.pdf in Documents.\"",
+      "changed": "Stated, not asked: Save As writes a separate copy and you keep editing the original. If you pick the file you're editing, it says \"That's the file you're editing. Choose another name.\"",
+      "notice": "You always know where the copy went and that your open document didn't change.",
+      "yes": "Wording is fine",
+      "no": "Change it"
+    },
+    {
+      "id": "W-saving",
+      "words": true,
+      "surface": "Office",
+      "path": "The status line at the top right of the Office page, while editing a large document",
+      "headline": "While changes wait to be saved, should the status line say \"Edited\" instead of \"Saving\u2026\"?",
+      "today": "Big documents now autosave up to 20 seconds after your last change (so typing isn't interrupted). During that wait the status line already says \"Saving\u2026\".",
+      "problem": "\"Saving\u2026\" for 20 seconds looks like the save is stuck, even though nothing is wrong.",
+      "proposal": "Show \"Edited\" while waiting, \"Saving\u2026\" only while the save actually runs, then \"Saved\".",
+      "options": [
+        {
+          "id": "edited",
+          "label": "Edited, then Saving\u2026",
+          "pros": [
+            "Says exactly what is happening.",
+            "\"Saving\u2026\" never looks stuck."
+          ],
+          "cons": [
+            "One more word to learn."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep \"Saving\u2026\"",
+          "pros": [
+            "No change."
+          ],
+          "cons": [
+            "Looks stuck on big documents for up to 20 seconds."
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,7 @@
 // regression to clear the baseline's own run-to-run spread before it counts.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { assessComparability } from './comparability.mjs';
 
 // The metrics every experiment is judged against. All are lower-is-better,
 // and every one has a `runs` array behind its median so spreadPct can be computed.
@@ -342,6 +343,11 @@ const errorTotal = (r) =>
  *  - the candidate didn't log more ERROR lines than the baseline
  */
 export function verdict(baseline, candidate, { target, improveMinPct = 5, regressMaxPct = 3, screens = {}, uxBugfix = false }) {
+  // Keep the invalid input visible to the pure provenance check before giving
+  // the pre-existing numeric gates empty records to inspect without throwing.
+  const comparability = assessComparability(baseline, candidate);
+  baseline = baseline && typeof baseline === 'object' ? baseline : {};
+  candidate = candidate && typeof candidate === 'object' ? candidate : {};
   const reasons = [];
 
   const errors = { base: errorTotal(baseline), cand: errorTotal(candidate) };
@@ -447,8 +453,14 @@ export function verdict(baseline, candidate, { target, improveMinPct = 5, regres
     reasons.push(`screens differ: ${failedScreens.map(([n, s]) => `${n} ${s.pct}%`).join(', ')}`);
   }
 
+  // WHY: a numeric win must not certify a run from a different measurement
+  // lane. Retain the old gate's reasons and detail, but never award KEEP when
+  // the report provenance is insufficient to compare those numbers.
+  const status = !comparability.comparable ? 'inconclusive' : (reasons.length ? 'reject' : 'keep');
   return {
-    keep: reasons.length === 0,
+    keep: status === 'keep',
+    status,
+    comparability,
     target: { path: target, base: tb, cand: tc, deltaPct: td, beyondSpread },
     regressions,
     missing,
@@ -468,7 +480,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   let screens = {};
   // Only pull in the screenshot comparator (written by a sibling task) when both
   // reports actually recorded a screenshot dir — keeps this file runnable standalone.
-  if (b.screens?.dir && c.screens?.dir) {
+  // WHY: missing screenshots must not throw before a provenance mismatch can
+  // issue its explicit INCONCLUSIVE verdict. Comparable runs still check screens.
+  if (assessComparability(b, c).comparable && b?.screens?.dir && c?.screens?.dir) {
     const { compareScreens } = await import('./screenshots.mjs');
     screens = await compareScreens(b.screens.dir, c.screens.dir, c.screens.names);
   }
@@ -501,6 +515,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const shifted = s.shift ? ` — looks like a ${s.shift.dy > 0 ? 'downward' : 'upward'} shift of ${Math.abs(s.shift.dy)}px (${s.shift.residualPct}% left over once aligned)` : '';
     console.log(`  screen ${n}: ${s.pct}% ${s.pass ? 'ok' : 'DIFF'}${s.pass ? '' : where + shifted}`);
   }
-  console.log(v.keep ? 'VERDICT: KEEP' : `VERDICT: REJECT — ${v.reasons.join('; ')}`);
+  for (const warning of v.comparability.warnings) console.log(`  WARNING — ${warning}`);
+  console.log(v.status === 'inconclusive'
+    ? `VERDICT: INCONCLUSIVE — ${v.comparability.reasons.join('; ')}${v.reasons.length ? `; numeric gates: ${v.reasons.join('; ')}` : ''}`
+    : v.keep ? 'VERDICT: KEEP' : `VERDICT: REJECT — ${v.reasons.join('; ')}`);
   process.exit(v.keep ? 0 : 1);
 }

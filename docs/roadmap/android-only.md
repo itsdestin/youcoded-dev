@@ -25,14 +25,3 @@ lands, a new Android-only finding goes into the audit report's appendix, not a n
       remote-access refactor to move every feature into one list (R1–R3), which goes first as
       decided 2026-09-18. Start at the one-core START-HERE
       `android` `in-flight` `checked 2026-09-24` → docs/active/handoffs/2026-09-24-one-core-START-HERE.md
-
-- [ ] The phone still reads long conversations over the desktop bridge rather than paging them
-      on the device, so opening a big conversation on Android pays for the whole thing instead
-      of the last few turns — the desktop stopped doing that in cycle 2 (2026-08-28) and the
-      phone never got the same treatment. Deferred at the time by Destin's own scope decision,
-      not by oversight. Needs the Kotlin half of the tail reader. Carried over from the cycle-3
-      handoff when that document was archived 2026-09-10; until now it existed only as a
-      sentence inside a shipped entry
-      Planned: A3, when the phone's conversation reading moves onto the computer's shared code
-      `android` `confirmed` `checked 2026-09-10` `performance`
-

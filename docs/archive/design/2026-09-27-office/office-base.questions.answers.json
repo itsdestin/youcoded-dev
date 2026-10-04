@@ -1,0 +1,15 @@
+{
+ "deck": "office-base",
+ "started": "2026-09-28T07:32:45.407Z",
+ "submitted": "2026-09-28T07:33:58Z",
+ "cur": 0,
+ "answers": {
+  "Q-base-final": {
+   "v": "pick",
+   "pick": "euro",
+   "t": 1790580837153,
+   "seconds": 72,
+   "theme": "meadow-mist"
+  }
+ }
+}
