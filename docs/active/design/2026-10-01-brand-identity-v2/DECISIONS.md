@@ -53,7 +53,8 @@ applied to the app or the website.
   **Dark and Clear** → the theme face on see-through clear glass (`mid1`); **Tinted** → no swap, the Liquid Glass icon stays.
   Needs the app to read which look the Mac uses — still to be confirmed on a real Mac. (v28 DOCK note)
 - Tray icon: **the app icon, shrunk** (`trT`), switching with the theme; red "needs you" dot stays. (v27 TRAY tc)
-- Mac menu bar: **one colour** (Apple's template style), but the eye sparkles must stay; v28's sparkle version "looks a little odd still" — eye styles open in v29. (v27 MENUBAR ka + note)
+- Mac menu bar: **one colour** (Apple's template style), **J1**: an outline face with full-size solid eyes, a sparkle cut into each eye's top right, and the eyes and
+  smile raised 0.35 of the 12-unit face (`tmplJ(h, color, 'tr')` in `src27/boards.html`). (v28–v30 notes, v31 EYES j1) (v27 MENUBAR ka + note)
 - Drawings: `src27/icons.html` (themes `cotton`, `halftone`, `morning`; `lgPanel`/`lgFeat` layers; `mid1`/`mid2`), boards `src27/boards.html`.
 
 ## Where the drawings live
