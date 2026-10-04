@@ -1007,9 +1007,16 @@ Destin tested the series in a dev instance.
 - sync-fix3 review fixes: da5618c32 … b9c941614. They cover the Reload bar for late screens, theme reconnect that never persists, the pill race, buddy ask-end routing, divider timestamps and the buddy refill.
 - `simplify-sync-fix4` e9ca4c0ac adds Discard/Dismiss on the phone's unsent-message note. Destin: "looks good so far" (2026-10-04).
 
+*Destin's answers, 2026-10-04:*
+- **Sounds:** at most one sound on reconnect, however many sessions are waiting. Done in `simplify-sync-fix5` e67716767: the phone coalesces each sound kind within a 1.5 s burst, and the computer is unchanged.
+- **The buddy shows what the main window shows.** All three ledger gaps are closed. `simplify-sync-fix6` (e9684f200, c647eb839, with the workspace rule update 93b7fd2b) does this:
+  - The buddy and App share `screen-feed.ts` (`attachTranscriptFeed`, `attachSessionLiveFeed`), and `BUDDY_LIVE` is deleted.
+  - "Conversation cleared" has one source, the record's `session:live`, for both runtimes.
+  - `clearDividerId` and `hasMarker` were each unified into one.
+  - Duplication found elsewhere is listed for Phase 5 in `scratchpad/sync-fix6-report.md`.
+- **Checks:** `verify --full` is green (run by me), shoot `--check` 189/189 and journeys 7/7.
+
 *Still open for Destin:*
-- whether the attention chime plays for a session first seen already red;
-- whether the buddy shows the live "Conversation cleared" line for Claude Code chats only (I recommend removing it, to match the ledger);
 - the real-phone pass.
 
 **Parked by Destin (2026-10-02):** the blue "reply ready" dot stays per screen, as designed in R5-3. A reply read on the computer still shows blue on the phone. The option of making "seen" shared through the record was offered, and he said "leave it for now".
