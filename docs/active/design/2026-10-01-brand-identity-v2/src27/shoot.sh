@@ -3,7 +3,7 @@
 # WHY device scale 1: the taskbar and menu-bar rows must show TRUE small pixels, not a retina upscale.
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
-dest="$here/../runs/v29/shots-brand/light"; mkdir -p "$dest"
+dest="$here/../runs/v30/shots-brand/light"; mkdir -p "$dest"
 for spec in ${*:-themes pair:halftone pair:morning glass dockswap tray menubar}; do
   b=${spec%%:*}; t=${spec#*:}; name=$b; q="b=$b"; [[ $t != "$spec" ]] && { name=$b-$t; q="$q&t=$t"; }
   google-chrome-stable --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 \

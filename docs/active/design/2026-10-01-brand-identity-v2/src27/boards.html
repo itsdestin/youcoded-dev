@@ -80,6 +80,24 @@ const neighbours = (m, s = 52) => [0, 1, 2].map(j => `<div class="sq" style="pos
 function tmplV(h, color, v) {
   const w = h * 14 / 12, id = `t${v}${h}${color.slice(1)}`;
   const E = [[4.3, 5.55], [9.7, 5.25]], M = 'M5.6 8.7 Q7 8.35 8.4 8.7 Q8.9 8.85 8.7 9.3 Q8 10.6 7 10.6 Q6 10.6 5.3 9.3 Q5.1 8.85 5.6 8.7Z';
+  // Round 30 blends of A (cut-out eyes + sparkle) and F (outline face, solid plain eyes) — Destin: "merge a/f".
+  //   ring: F's outline face, A's eyes as outlined ovals with the sparkle inside
+  //   frame: A's solid face and eyes, with F's outline echoed as a thin cut-in frame
+  //   big: F's outline face with A's full-size eyes, solid, no sparkle
+  if (v === 'ring' || v === 'frame' || v === 'big' || v === 'bigspark') {
+    let m = `<rect width="14" height="12" rx="4" fill="#fff"/>`, f = '';
+    if (v === 'frame') {
+      m += `<rect x="1.05" y="1.05" width="11.9" height="9.9" rx="3" fill="none" stroke="#000" stroke-width=".55"/>` + E.map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.5" ry="2.05" fill="#000"/>`).join('') + `<path d="${M}" fill="#000"/>`;
+      f = E.map(([x, y]) => `<circle cx="${x + .5}" cy="${y - .85}" r=".58" fill="${color}"/>`).join('');
+    } else {
+      m += `<rect x="1.15" y="1.15" width="11.7" height="9.7" rx="2.95" fill="#000"/>`;
+      f = v === 'ring'
+        ? E.map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.3" ry="1.9" fill="none" stroke="${color}" stroke-width=".75"/><circle cx="${x + .3}" cy="${y - .55}" r=".55" fill="${color}"/>`).join('') + `<path d="${M}" fill="${color}"/>`
+        : `<mask id="${id}s"><rect width="14" height="12" fill="#fff"/>${v === 'bigspark' ? E.map(([x, y]) => `<circle cx="${x + .55}" cy="${y - .9}" r=".62" fill="#000"/>`).join('') : ''}</mask>` +
+          `<g mask="url(#${id}s)">${E.map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.6" ry="2.2" fill="${color}"/>`).join('')}</g><path d="${M}" fill="${color}"/>`;
+    }
+    return `<svg width="${w}" height="${h}" viewBox="0 0 14 12"><defs><mask id="${id}">${m}</mask></defs><rect width="14" height="12" rx="4" fill="${color}" mask="url(#${id})"/>${f}</svg>`;
+  }
   const line = v === 'line' || v === 'lineplain';
   let mask = `<rect width="14" height="12" rx="4" fill="#fff"/>`, fg = '';
   if (line) {
@@ -100,7 +118,10 @@ function tmplV(h, color, v) {
 }
 const BOARDS = {
   eyes: () => {
-    const V = [['spark', 'A  Last round', 'Cut-out eyes, sparkle'], ['pupil', 'B  Pupils', 'Cut-out eyes, solid pupil inside'], ['dots', 'C  Small dot eyes', 'Smaller round eyes, no sparkle'],
+    const V = P.get('t') === 'af'
+      ? [['spark', 'A  (round 29)', 'For comparison'], ['ring', 'G  Outline + ringed eyes', 'F\'s outline, A\'s eyes as rings with a sparkle'], ['frame', 'H  Solid + frame line', 'A, with F\'s outline as a thin inner line'],
+         ['big', 'I  Outline + big eyes', 'F\'s outline, A\'s full-size eyes'], ['bigspark', 'J  I, with sparkle', 'Big solid eyes, sparkle cut out'], ['lineplain', 'F  (round 29)', 'For comparison']]
+      : [['spark', 'A  Last round', 'Cut-out eyes, sparkle'], ['pupil', 'B  Pupils', 'Cut-out eyes, solid pupil inside'], ['dots', 'C  Small dot eyes', 'Smaller round eyes, no sparkle'],
       ['happy', 'D  Happy eyes', 'Closed, smiling eyes'], ['line', 'E  Outline face', 'Solid eyes with sparkle'], ['lineplain', 'F  Outline, plain eyes', 'Solid eyes, no sparkle']];
     const bar = (bg, fg, v, t = true) => `<div class="mbar" style="background:${bg};color:${fg};margin-bottom:6px;justify-content:center;gap:10px"><span>${G.wifi.replace('class="g"', 'class="g" style="width:15px;height:15px"')}</span><span style="display:flex;align-items:center">${tmplV(15, fg, v)}</span>${t ? '<span>10:42</span>' : ''}</div>`;
     return `<h1>Mac menu bar: eye styles</h1><div class="sub">Each enlarged on light and dark, then at real size and twice real size.</div>` +

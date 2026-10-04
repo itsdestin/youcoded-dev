@@ -1,0 +1,96 @@
+{
+ "title": "YouCoded brand \u2014 round 30: menu bar, A and F combined",
+ "key": "brand-identity-v30",
+ "out": "brand-identity-v30.html",
+ "images": "images/brand-identity-v30",
+ "runs": {
+  "today": "runs/v30"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "xa": [
+   "brand",
+   "eyes-af",
+   "182x602+24+74"
+  ],
+  "xg": [
+   "brand",
+   "eyes-af",
+   "182x602+218+74"
+  ],
+  "xh": [
+   "brand",
+   "eyes-af",
+   "182x602+412+74"
+  ],
+  "xi": [
+   "brand",
+   "eyes-af",
+   "182x602+606+74"
+  ],
+  "xj": [
+   "brand",
+   "eyes-af",
+   "182x602+800+74"
+  ],
+  "xf": [
+   "brand",
+   "eyes-af",
+   "182x602+994+74"
+  ]
+ },
+ "steps": [
+  {
+   "id": "EYES",
+   "surface": "Mac menu bar icon",
+   "path": "Top-right of the Mac screen",
+   "headline": "Which blend of A and F?",
+   "notice": "Four ways to combine A and F, with both originals at the ends. Pick any you like.",
+   "pick": "several",
+   "variants": [
+    {
+     "id": "xa",
+     "label": "A (round 29)",
+     "crop": "xa",
+     "summary": "For comparison."
+    },
+    {
+     "id": "xg",
+     "label": "G Ringed eyes",
+     "crop": "xg",
+     "summary": "Outline face, eyes as rings with a sparkle."
+    },
+    {
+     "id": "xh",
+     "label": "H Frame line",
+     "crop": "xh",
+     "summary": "Solid face and cut-out eyes, thin inner frame."
+    },
+    {
+     "id": "xi",
+     "label": "I Big eyes",
+     "crop": "xi",
+     "summary": "Outline face, full-size solid eyes."
+    },
+    {
+     "id": "xj",
+     "label": "J Big eyes + sparkle",
+     "crop": "xj",
+     "summary": "I with a sparkle cut into each eye."
+    },
+    {
+     "id": "xf",
+     "label": "F (round 29)",
+     "crop": "xf",
+     "summary": "For comparison."
+    }
+   ]
+  }
+ ]
+}
