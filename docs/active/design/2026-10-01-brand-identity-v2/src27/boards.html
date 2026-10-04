@@ -77,7 +77,21 @@ const neighbours = (m, s = 52) => [0, 1, 2].map(j => `<div class="sq" style="pos
 // Round 28: one-colour menu-bar faces with different eye treatments (Destin: "a few more options with different eye fill styles").
 // v: 'spark' cut-out eyes + sparkle | 'line' outline face, solid eyes w/ cut sparkle | 'pupil' cut-out eyes with a solid pupil
 //    'happy' closed happy-arc eyes | 'dots' small round eyes | 'lineplain' outline face, plain solid eyes
+// Round 31: J with the eyes and smile raised a touch, and the sparkle dot moved around the eye (Destin: "try j, but
+// move eyes/mouth up just a smidge… the single dot in a few different positions"). v = 'j-<pos>'.
+const SPOT = { tr: [.55, -.9], tl: [-.55, -.9], r: [.78, 0], l: [-.78, 0], br: [.55, .95], bl: [-.55, .95], b: [0, 1.25] };
+function tmplJ(h, color, pos, lift = .35) {
+  const w = h * 14 / 12, id = `j${pos}${h}${color.slice(1)}`, [dx, dy] = SPOT[pos];
+  const E = [[4.3, 5.55 - lift], [9.7, 5.25 - lift]];
+  const M = 'M5.6 8.7 Q7 8.35 8.4 8.7 Q8.9 8.85 8.7 9.3 Q8 10.6 7 10.6 Q6 10.6 5.3 9.3 Q5.1 8.85 5.6 8.7Z';
+  return `<svg width="${w}" height="${h}" viewBox="0 0 14 12"><defs><mask id="${id}"><rect width="14" height="12" rx="4" fill="#fff"/><rect x="1.15" y="1.15" width="11.7" height="9.7" rx="2.95" fill="#000"/></mask>` +
+    `<mask id="${id}s"><rect width="14" height="12" fill="#fff"/>${E.map(([x, y]) => `<circle cx="${x + dx}" cy="${y + dy}" r=".62" fill="#000"/>`).join('')}</mask></defs>` +
+    `<rect width="14" height="12" rx="4" fill="${color}" mask="url(#${id})"/><g mask="url(#${id}s)">${E.map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1.6" ry="2.2" fill="${color}"/>`).join('')}</g>` +
+    `<path d="${M}" fill="${color}" transform="translate(0 ${-lift})"/></svg>`;
+}
 function tmplV(h, color, v) {
+  if (v.startsWith('j-')) return tmplJ(h, color, v.slice(2));
+  if (v === 'j0') return tmplJ(h, color, 'tr', 0);
   const w = h * 14 / 12, id = `t${v}${h}${color.slice(1)}`;
   const E = [[4.3, 5.55], [9.7, 5.25]], M = 'M5.6 8.7 Q7 8.35 8.4 8.7 Q8.9 8.85 8.7 9.3 Q8 10.6 7 10.6 Q6 10.6 5.3 9.3 Q5.1 8.85 5.6 8.7Z';
   // Round 30 blends of A (cut-out eyes + sparkle) and F (outline face, solid plain eyes) — Destin: "merge a/f".
@@ -118,19 +132,22 @@ function tmplV(h, color, v) {
 }
 const BOARDS = {
   eyes: () => {
-    const V = P.get('t') === 'af'
+    const V = P.get('t') === 'j'
+      ? [['j0', 'J  (round 30)', 'For comparison'], ['j-tr', 'J1  Top right', 'Raised; dot top right'], ['j-tl', 'J2  Top left', 'Raised; dot top left'], ['j-r', 'J3  Right', 'Raised; dot on the right'],
+         ['j-l', 'J4  Left', 'Raised; dot on the left'], ['j-br', 'J5  Bottom right', 'Raised; dot bottom right'], ['j-bl', 'J6  Bottom left', 'Raised; dot bottom left'], ['j-b', 'J7  Bottom', 'Raised; dot at the bottom']]
+      : P.get('t') === 'af'
       ? [['spark', 'A  (round 29)', 'For comparison'], ['ring', 'G  Outline + ringed eyes', 'F\'s outline, A\'s eyes as rings with a sparkle'], ['frame', 'H  Solid + frame line', 'A, with F\'s outline as a thin inner line'],
          ['big', 'I  Outline + big eyes', 'F\'s outline, A\'s full-size eyes'], ['bigspark', 'J  I, with sparkle', 'Big solid eyes, sparkle cut out'], ['lineplain', 'F  (round 29)', 'For comparison']]
       : [['spark', 'A  Last round', 'Cut-out eyes, sparkle'], ['pupil', 'B  Pupils', 'Cut-out eyes, solid pupil inside'], ['dots', 'C  Small dot eyes', 'Smaller round eyes, no sparkle'],
       ['happy', 'D  Happy eyes', 'Closed, smiling eyes'], ['line', 'E  Outline face', 'Solid eyes with sparkle'], ['lineplain', 'F  Outline, plain eyes', 'Solid eyes, no sparkle']];
     const bar = (bg, fg, v, t = true) => `<div class="mbar" style="background:${bg};color:${fg};margin-bottom:6px;justify-content:center;gap:10px"><span>${G.wifi.replace('class="g"', 'class="g" style="width:15px;height:15px"')}</span><span style="display:flex;align-items:center">${tmplV(15, fg, v)}</span>${t ? '<span>10:42</span>' : ''}</div>`;
     return `<h1>Mac menu bar: eye styles</h1><div class="sub">Each enlarged on light and dark, then at real size and twice real size.</div>` +
-      V.map(([v, l, d], i) => `<div class="card" style="left:${24 + i * 194}px;top:74px;width:182px;height:602px">` +
+      V.map(([v, l, d], i) => `<div class="card" style="left:${24 + i * (V.length > 6 ? 145 : 194)}px;top:74px;width:${V.length > 6 ? 137 : 182}px;height:602px;${V.length > 6 ? 'zoom:1' : ''}">` +
         `<div class="abs" style="left:14px;top:12px;width:160px"><div class="lab">${l}</div><div class="note">${d}</div></div>` +
-        `<div class="abs" style="left:14px;top:64px;background:#f4f2f6;padding:12px;border-radius:10px">${tmplV(110, '#111', v)}</div>` +
-        `<div class="abs" style="left:14px;top:210px;background:#1b1a1f;padding:12px;border-radius:10px">${tmplV(110, '#f2f2f2', v)}</div>` +
-        `<div class="abs" style="left:14px;top:362px;width:154px"><div class="note" style="margin-bottom:4px">Real size</div>${bar('linear-gradient(90deg,rgba(250,248,252,.72),rgba(250,248,252,.72)),url(walls/cotton-candy-sky.jpg) center/cover', '#111', v)}${bar('rgba(24,22,28,.86)', '#f2f2f2', v)}` +
-        `<div class="note" style="margin:8px 0 4px">Twice real size</div><div style="transform:scale(2);transform-origin:0 0;width:77px">${bar('linear-gradient(90deg,rgba(250,248,252,.72),rgba(250,248,252,.72)),url(walls/cotton-candy-sky.jpg) center/cover', '#111', v, false)}${bar('rgba(24,22,28,.86)', '#f2f2f2', v, false)}</div></div>` +
+        `<div class="abs" style="left:14px;top:64px;background:#f4f2f6;padding:12px;border-radius:10px">${tmplV(V.length > 6 ? 84 : 110, '#111', v)}</div>` +
+        `<div class="abs" style="left:14px;top:${V.length > 6 ? 180 : 210}px;background:#1b1a1f;padding:12px;border-radius:10px">${tmplV(V.length > 6 ? 84 : 110, '#f2f2f2', v)}</div>` +
+        `<div class="abs" style="left:${V.length > 6 ? 10 : 14}px;top:362px;width:${V.length > 6 ? 117 : 154}px"><div class="note" style="margin-bottom:4px">Real size</div>${bar('linear-gradient(90deg,rgba(250,248,252,.72),rgba(250,248,252,.72)),url(walls/cotton-candy-sky.jpg) center/cover', '#111', v)}${bar('rgba(24,22,28,.86)', '#f2f2f2', v)}` +
+        `<div class="note" style="margin:8px 0 4px">Twice real size</div><div style="transform:scale(2);transform-origin:0 0;width:${V.length > 6 ? 58 : 77}px">${bar('linear-gradient(90deg,rgba(250,248,252,.72),rgba(250,248,252,.72)),url(walls/cotton-candy-sky.jpg) center/cover', '#111', v, false)}${bar('rgba(24,22,28,.86)', '#f2f2f2', v, false)}</div></div>` +
         `</div>`).join('');
   },
   // ---------- round 28: the Dock "middle" ----------
