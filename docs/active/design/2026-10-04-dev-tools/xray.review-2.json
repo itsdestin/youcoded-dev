@@ -1,0 +1,99 @@
+{
+  "title": "X-ray view — round 2",
+  "key": "xray-review-2",
+  "out": "xray.review-2.html",
+  "images": "images/xray.review-2",
+  "runs": { "after": "runs2/after" },
+  "crops": {
+    "xray-start": ["xray", "start", "1440x900+0+0"],
+    "xray-opened": ["xray", "opened", "1440x900+0+0"]
+  },
+  "themes": ["meadow-mist", "halftone-dimension"],
+  "steps": [
+    {
+      "id": "R-1",
+      "surface": "Chat",
+      "path": "The X-ray button in the top bar",
+      "crop": "chat/xray",
+      "labels": { "after": "X-ray, redesigned" },
+      "headline": "X-ray now reads like the app: a summary at the top, then each of your messages as a card with what happened after it.",
+      "changed": "The flat table is gone. At the top: how many turns and tool uses, how many things chat left out, and the problems — failures, repeated requests, long pauses — each with a 'next' that jumps to it. Below: one card per message you sent, holding every step that followed, in order, in plain words ('Ran Bash — Failed', 'Assistant replied').",
+      "measured": "3 views instead of 5 filters: Everything, Hidden from chat, Problems",
+      "notice": "A tool request and its result are now ONE step, marked Worked, Failed or No result yet — so there is nothing to match up. Small arrows say which way each step went; the legend spells them out.",
+      "risk": "Still the made-up sample session; the real reader comes next."
+    },
+    {
+      "id": "R-2",
+      "surface": "Chat",
+      "path": "The top of a session in X-ray",
+      "crop": "xray-start",
+      "themes": ["meadow-mist"],
+      "highlight": { "box": [1, 23, 98, 64] },
+      "headline": "Things chat never shows are in their place, named for what they are, and marked 'Not in chat'.",
+      "changed": "Before your first message, this sample session had a hook (a script that runs on its own) and a reminder slipped to the model with your instruction files. Each says whether it was sent to the model (→), written by the model (←), or kept by the app and never sent (·).",
+      "notice": "'Before your first message' collects what happens when a session starts.",
+      "risk": "Some of Claude Code's own housekeeping lines have names I've translated into words; one I don't recognise shows as 'App note' with its original name."
+    },
+    {
+      "id": "R-3",
+      "surface": "Chat",
+      "path": "Click any step",
+      "crop": "xray-opened",
+      "themes": ["meadow-mist"],
+      "highlight": { "box": [2, 22, 96, 31] },
+      "headline": "Opening a step shows what the model asked for and what came back, in labelled parts — the raw saved text is one more click.",
+      "changed": "A tool step opens to 'What the model asked Bash to do' (each setting on its own line) and 'What came back — it failed'. Messages open to their full text. 'Exact saved text' underneath shows the file's own lines, with Copy, for a bug report or a fixing session.",
+      "notice": "Long outputs show their first 15 lines, with 'Show all'.",
+      "risk": "Copied text can include private content from the conversation."
+    },
+    {
+      "id": "Q-record",
+      "words": true,
+      "surface": "Chat",
+      "path": "X-ray on a session using the app's own assistant (not Claude Code)",
+      "headline": "Should the app start saving the instructions and tool list it sends the model, so X-ray can show them?",
+      "today": "Every request to the model carries two parts. The conversation — your messages, its replies, every tool request in full and every result exactly as the model received it — is saved, and X-ray shows all of it. The setup — the app's own instructions, your project instruction files (like CLAUDE.md), the folder and date, the list of tools with their descriptions, and project rules slipped in when a tool touches certain files — is rebuilt for every request and never saved. The 'What the assistant was given' panel shows the starting instructions, but only as they were when the session began.",
+      "problem": "When one of the app's sessions misbehaves, the cause is often in the setup — an instruction file, a rule that got added, a tool description — and today nothing records it, so X-ray can't show it. How others handle it: Claude Code saves its hidden reminders but not its instructions or tool list. Codex, OpenCode and Pi save the conversation only. Hermes saves the instructions once per session, plus the exact text sent whenever it differs. None of them saves every full request; people who need that put a recording tool between the app and the model.",
+      "proposal": "Three levels. The middle one is what Hermes does, a little further.",
+      "options": [
+        {
+          "id": "nothing",
+          "label": "Leave it",
+          "pros": [
+            "Nothing new is saved; X-ray arrives soonest.",
+            "Same as Codex, OpenCode and Pi."
+          ],
+          "cons": [
+            "A misbehaviour caused by the setup stays invisible."
+          ]
+        },
+        {
+          "id": "on-change",
+          "label": "Save the setup when it changes",
+          "summary": "Save the instructions and tool list once when the session starts, and again only when they change (a rule added, a tool swapped, a summary replacing old turns). X-ray shows each as a step: 'Setup sent to the model — what changed'.",
+          "pros": [
+            "Shows everything the model was given, at the moment it changed.",
+            "Small: a few saves per session, not one per message."
+          ],
+          "cons": [
+            "Each save is roughly the size of a long document, because the tool list is long.",
+            "More work before X-ray is finished for the app's sessions."
+          ],
+          "measured": "about 3–9 thousand words per save, more with big project files",
+          "recommended": true
+        },
+        {
+          "id": "every-request",
+          "label": "Save every request exactly",
+          "pros": [
+            "The complete, exact record — nothing left to guess."
+          ],
+          "cons": [
+            "Repeats the same large setup with every single message, so files grow fast.",
+            "No other app here does it, because of that size."
+          ]
+        }
+      ]
+    }
+  ]
+}
