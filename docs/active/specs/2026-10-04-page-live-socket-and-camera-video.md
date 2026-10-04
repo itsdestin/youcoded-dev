@@ -1,7 +1,7 @@
 ---
 status: draft
 date: 2026-10-04
-revision: 2 (after design review 1 — docs/active/reviews/2026-10-04-page-live-socket-design-review-1.md; numbers in [brackets] are its findings)
+revision: 3 (after design reviews 1 and 2 — docs/active/reviews/2026-10-04-page-live-socket-design-review-{1,2}.md; [n] = review 1, [R2-n] = review 2)
 source: home-page-next.questions (Q-speed "instant" + note "reusable tooling … part of the page platform, with appropriate guardrails"); camera decision in chat 2026-10-04 ("yes, a. event history recordings should also be able to play"); home-page-next-designs (C-camera "events")
 branch: youcoded session/ha-pages-connection
 builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)
@@ -34,15 +34,35 @@ and the approval card says what it allows):
 
 ```js
 // on the Home page's `ha` device connection
-socketHello: '{"type":"auth","access_token":"{{key}}"}',          // exists today
-socketDeny: ['auth/', 'config/auth'],    // message types a page may never send (minting keys)
-socketAuthFailed: 'auth_invalid',        // a reply containing this: closed, never retried
+socketHello: '{"type":"auth","access_token":"{{key}}"}',   // exists today
+socketReady: 'auth_ok',          // the reply TYPE that means "logged in" [R2-6]
+socketAuthFailed: 'auth_invalid',// the reply TYPE that means "wrong key": closed, never retried [R2-12]
+socketDeny: ['config/'],         // added to main's built-in floor (below)
 videoProfile: {
-  target: '^camera\\.[a-z0-9_]+$',       // what a page may ask to watch
-  send: '{"id":1,"type":"camera/webrtc/offer","entity_id":"{{target}}","offer":{{offer}}}',
+  targetPrefix: 'camera.',       // what a page may ask to watch [R2-4]
+  send: '{"id":1,"type":"camera/webrtc/offer","entity_id":{{target}},"offer":{{offer}}}',
   answer: 'event.answer', candidate: 'event.candidate', failed: 'event.message',
 }
 ```
+
+**Fingerprint [R2-5]:** one `|profile:` segment — the JSON of the cleaned profile (these fields
+only, types and lengths checked by `parseConnections`, keys sorted). `socketHello` moves inside
+it. Consequence Destin will see: the Home page asks for approval once more after this ships [R2-13].
+
+**Template filling [R2-1]:** one pass; each placeholder is replaced by `JSON.stringify(value)`
+(so templates write them unquoted); `offer` ≤ 32 KB; the result must parse as a JSON object or
+the video is refused. `target` = `targetPrefix` + 1–64 characters of `[a-z0-9_]`, checked in main
+— no page-authored pattern ever runs in main [R2-4].
+
+**Reading a message's type [R2-2]:** main `JSON.parse`s every page-written message on a device
+socket. Refused: not JSON, an array, not an object, a missing or non-string `type`, or raw text
+naming `"type"` more than once. The trimmed, lower-cased type is compared by prefix against the
+deny list. The filled video template passes the same check.
+
+**Built-in floor [R2-3]:** main always denies `auth/`, `config/auth` and `person/` on every
+device socket, whatever the manifest says; a manifest can only add. Threat covered: a page
+(or a later edit of it) minting a new key for itself or changing who may log in. Not covered:
+anything else an admin key can do, which the approval already grants (it is a full-control key).
 
 `socketDeny` is checked in main on **every** outgoing message, the one-shot exchange included
 (closing a hole that exists today: a full-access page could ask Home Assistant for a new
@@ -64,7 +84,9 @@ s.close();
 - **Every `'open'` is a fresh connection.** Main sends the greeting first; the page must wait
   for its device's own "logged in" reply (`auth_ok`) in `onMessages` before subscribing, and
   subscribe again after every `'open'` [15]. The page-builder skill carries the pattern.
-- `'paused'` means only that the window/browser tab is hidden (`document.visibilityState`).
+- `'paused'` means only that the window/browser tab is hidden (`document.visibilityState`):
+  the app closes the connection and reopens it when visible (one rate-gate slot), so the lease
+  runs only while visible and a throttled background tab cannot be mistaken for a dead one [R2-11].
   Leaving the page, switching pages or reloading it **destroys the frame**, and its sockets
   close with it [10].
 
@@ -101,9 +123,9 @@ batching [27], text frames only.
 
 | Rule | Value |
 |---|---|
-| Live sockets | 2 per page, 4 per window/client, 8 per app [6] |
+| Live sockets | 2 per page, 4 per window/client, 8 per app [6]. Videos counted apart: 2 per page, 4 per app; their sockets are main's own [R2-10] |
 | Rate | every open and reconnect takes a `PageRateGate` slot [25] |
-| Reconnect | 1, 2, 4 … 30 s; give up after 10 min down. A reply containing `socketAuthFailed`, or a close before any reply, ends it at once — never a burst of failed logins that could get the computer banned [13] |
+| Reconnect | 1, 2, 4 … 30 s; give up after 10 min down. Only a reply whose type equals `socketAuthFailed` ends it at once (no burst of failed logins that could get the computer banned [13]); a quick close otherwise backs off as usual, so a Home Assistant restart is survived [R2-12] |
 | State machine | generation-tagged; a timer is cancelled by show/close; a stale connection's messages are dropped; `send` refused unless `'open'` [14] |
 | Approval | `closeFor(page, connection)` from `removeConnection`, `approve`, `deleteSavedKey` and any page change [12] |
 | Out | ≤ 20 messages/s, ≤ 64 KB each, `socketDeny` checked |
@@ -136,11 +158,15 @@ network candidates.
    + the data channel Nest requires) and its offer.
 2. IPC `pages:video-start { page, connection, target, offer }` → main: the shared check chain,
    the connection must carry a `videoProfile`, `target` must match its pattern, rate gate.
-   Main opens **its own** socket to the device (not the page's), greets, sends `send` with the
-   target and the offer filled in, and reads the answer and candidates from the paths given.
-   Candidates are filtered against loopback, link-local and cloud-metadata ranges (the
-   `net-guard` tables) before they reach the renderer. Answers come from the approved device,
-   never from the page.
+   Main opens **its own** socket to the device (not the page's), greets, waits for a reply of
+   type `socketReady` [R2-6], sends the filled template, and reads the answer and candidates
+   from the paths given. Candidates naming a hostname are dropped; the rest, and the answer
+   SDP's `a=candidate` / `c=` lines, are filtered against loopback, link-local and
+   cloud-metadata ranges (the `net-guard` tables) [R2-7]. Answers come from the approved
+   device, never from the page. Videos use the socket machinery's owner ids, lease, events,
+   `closeFor` and channel lists (`pages:video-start|stop|ping`, Kotlin, `PHASE_2`) [R2-9].
+   In a remote browser the peer connection dials what the device answered from the phone's
+   own network — a stated decision [R2-8].
 3. Main keeps that socket open for the video's life; `pages:video-stop`, the page's frame
    going away, the lease, or 5 minutes close it (the card offers Play again).
 4. Frames: `requestVideoFrameCallback` on a muted, inline `<video>` in `PageHost` →
