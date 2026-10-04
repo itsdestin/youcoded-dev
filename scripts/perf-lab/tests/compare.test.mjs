@@ -2,6 +2,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { PRIMARY, ZERO_BASELINE_FLOOR, get, runsFor, spreadPct, verdict } from '../compare.mjs';
+import { MEASURES as HISTORY_MEASURES } from '../scenario-history.mjs';
+import { MEASURES as PROJECTS_MEASURES } from '../scenario-projects.mjs';
+import { MEASURES as WORKLOAD_MEASURES } from '../scenario-workload.mjs';
+import { MEASURES as STALL_MEASURES } from '../scenario-replay-stall.mjs';
+import { MEASURES as ARTIFACT_MEASURES } from '../scenario-artifacts.mjs';
+import { MEASURES as TERMINAL_MEASURES } from '../scenario-terminal.mjs';
+import { MEASURES as STREAM_MEASURES } from '../scenario-native-stream.mjs';
+import { MEASURES as RESUME_MEASURES } from '../scenario-native-resume.mjs';
+import { MEASURES as SCROLL_MEASURES } from '../scenario-scrollback.mjs';
 
 // A baseline report carrying EVERY path in PRIMARY, with at least two runs behind each.
 //
@@ -12,6 +21,17 @@ import { PRIMARY, ZERO_BASELINE_FLOOR, get, runsFor, spreadPct, verdict } from '
 // metrics was silently grading a change on the other half. A partial fixture here means
 // partial tests, and partial tests are how a gate quietly stops gating.
 const base = {
+  // WHY: a green fixture must carry the same provenance run.mjs writes, or a
+  // verdict test could pass without ever exercising the comparability gate.
+  machine: { cpu: 'Example CPU', ramGb: 32, kernel: '6.1.0', node: 'v26.0.0', renderer: {
+    source: 'SystemInfo', glRenderer: 'llvmpipe (LLVM 19.1.7)', accelerated: false,
+    featureStatus: { gpu_compositing: 'disabled_software' }, error: null,
+  } },
+  noise: { loadAvgBefore: 0.8, machineBusyPctBefore: 3, maxLoadAvgAccepted: 1.2, maxBusyPctAccepted: 5, discardedRuns: 0 },
+  measures: { history: HISTORY_MEASURES, workload: WORKLOAD_MEASURES, stall: STALL_MEASURES,
+    artifacts: ARTIFACT_MEASURES, projects: PROJECTS_MEASURES, terminal: TERMINAL_MEASURES,
+    nativeStream: STREAM_MEASURES, nativeResume: RESUME_MEASURES, scrollback: SCROLL_MEASURES },
+  aborted: null, incomplete: [],
   startup: {
     runs: [
       { sessionsListed: 1000, blankWindowMs: 200 },
@@ -159,6 +179,11 @@ test('a phase NEITHER report ran is out of scope, but a phase only one ran still
   // that were never measured. Refusing on those would print REJECT for reasons
   // that have nothing to do with the change, on every single-phase comparison.
   const onlyProjects = (stall, open) => ({
+    // A single-phase report still carries its runner's machine, noise and the
+    // descriptor of the phase it actually measured.
+    machine: clone().machine, noise: clone().noise,
+    measures: { projects: PROJECTS_MEASURES },
+    aborted: null, incomplete: [],
     projects: {
       runs: [
         { thrash: { ipcStallMs: stall, toConversations: { medianMs: 65 } }, open: { openMs: open }, conversations: { ms: 58 } },
@@ -197,7 +222,8 @@ test('a jittery workload metric does not veto inside its own spread', () => {
 test('a longer blank window rejects an otherwise-faster boot', () => {
   const c = clone(); c.startup.median.sessionsListed = 800; c.startup.median.blankWindowMs = 260;   // +30% blank box (E1 failure mode)
   const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} });
-  assert.equal(v.keep, false); assert.ok(v.regressions.some((r) => r.path === 'startup.median.blankWindowMs'));
+  assert.equal(v.keep, false); assert.equal(v.status, 'reject');
+  assert.ok(v.regressions.some((r) => r.path === 'startup.median.blankWindowMs'));
 });
 test('new error lines reject', () => {
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.coldStarts = [2, 0, 0];
@@ -227,10 +253,37 @@ test('error lines in the scrollback boot reject (was ignored until 2026-09-16)',
   const c = clone(); c.startup.median.sessionsListed = 800; c.errors.scrollbackBoot = 1;
   assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} }).keep, false);
 });
+test('a faster candidate on a different CPU is inconclusive, not KEEP', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800;
+  c.machine.cpu = 'Different CPU';
+  const v = verdict(base, c, { target: 'startup.median.sessionsListed' });
+  assert.equal(v.keep, false);
+  assert.equal(v.status, 'inconclusive');
+  assert.match(v.comparability.reasons.join(' '), /cpu/i);
+});
+
+test('an invalid or aborted input cannot issue KEEP', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800;
+  assert.equal(verdict(null, c, { target: 'startup.median.sessionsListed' }).status, 'inconclusive');
+  c.aborted = 'deadline';
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed' }).keep, false);
+  assert.equal(verdict(base, c, { target: 'startup.median.sessionsListed' }).status, 'inconclusive');
+});
+
+test('a renderer mismatch is inconclusive even when the target improves', () => {
+  const c = clone(); c.startup.median.sessionsListed = 800;
+  c.machine.renderer.glRenderer = 'SwiftShader';
+  const v = verdict(base, c, { target: 'startup.median.sessionsListed' });
+  assert.equal(v.keep, false);
+  assert.equal(v.status, 'inconclusive');
+  assert.match(v.comparability.reasons.join(' '), /renderer/i);
+});
+
 test('keeps a real win with no regressions', () => {
   const c = clone(); c.startup.median.sessionsListed = 850;
   const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: { welcome: { pass: true } } });
-  assert.equal(v.keep, true); assert.equal(v.target.deltaPct, -15);
+  assert.equal(v.keep, true); assert.equal(v.status, 'keep'); assert.equal(v.comparability.comparable, true);
+  assert.equal(v.target.deltaPct, -15);
 });
 test('rejects a win inside the baseline spread', () => {
   const c = clone(); c.startup.median.sessionsListed = 945;   // -5.5%, but spread is 7%
@@ -312,6 +365,7 @@ test('a PRIMARY metric absent from the candidate is refused, not read as unchang
   delete c.artifacts;
   const v = verdict(base, c, { target: 'startup.median.sessionsListed', screens: {} });
   assert.equal(v.keep, false, v.reasons.join('; '));
+  assert.equal(get(c, 'artifacts.median.open.mdLarge.openMs'), undefined, 'missing measurement is not zero');
   assert.ok(v.missing.some((m) => m.path === 'artifacts.median.open.mdLarge.openMs' && m.where === 'candidate'),
     JSON.stringify(v.missing));
 });
