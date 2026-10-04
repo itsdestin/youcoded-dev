@@ -255,6 +255,14 @@ shakedown. Fix what breaks, run it again, and only then record the result as a
 baseline. Ranking anything from a first run is how the rig ends up measuring itself
 (see *Reference numbers* → the retracted 3.3-second startup).
 
+Two more traps from 2026-10-04. **A fix can pass a timing leg without engaging at all**:
+the fence leg once reported a long-code-block fix as working while the fix was never used.
+Assert the mechanism (a non-zero count of the pieces the fix creates; the leg now fails on
+zero), not just the time. **A fake producer that does not behave like the real program
+produces false findings**: swallowed write errors, a blocking write loop that never reads
+stdin, and frames wider than the 80-column terminal gave three false findings in one night.
+When the app looks guilty, instrument the producer first.
+
 ---
 
 ## The two probes, and why there are two

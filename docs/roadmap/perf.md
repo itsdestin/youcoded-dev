@@ -1,8 +1,8 @@
 # perf — app responsiveness and honest performance measurement
 Filing test: is the primary question app responsiveness, resource cost, or whether a measurement reliably detects either? Yes — including platform-specific decisions and release blockers whose primary symptom is performance. Keep feature semantics and independent test-suite hygiene with their owning areas; link those rather than opening duplicate performance entries.
 
-- [ ] Opening a long conversation in the background can still interrupt typing in the chat you are using. Hidden first-page Markdown work was reproduced; experimental shared-highlighter, parser, physical-scroll and preparse candidates are paused, not accepted fixes. Preserve complete-page publication and immediate switch-to-content when investigating
-      `chat` `desktop` `confirmed` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-29-performance-status.md
+- [ ] Opening a long conversation in the background can still interrupt typing in the chat you are using. Hidden first-page Markdown work was reproduced; experimental shared-highlighter, parser, physical-scroll and preparse candidates are paused, not accepted fixes. Preserve complete-page publication and immediate switch-to-content when investigating. On 2026-10-04 one run on current master showed no freeze over 50 ms (September's runs showed 122–145 ms); that is one run, so this stays open until repeats say whether it is gone
+      `chat` `desktop` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-09-29-performance-status.md
 
 - [ ] Switching chats or resizing the window sometimes pauses much longer than an ordinary switch. Some observed switches reached 208 ms and a callback gap reached 422 ms, without universal cause attribution; matched short switches did not establish that every stall was fixed
       `chat` `desktop` `confirmed` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-29-performance-status.md
@@ -13,11 +13,11 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] The app still feels sluggish across sessions and over time. Historical paging, folding, list and hidden-tab work reduced specific measured costs, not a sustained all-surfaces smoothness guarantee; the loaded Find, chrome-measurement and bottom-shrink corrections shipped in youcoded#591 (`eebcdea314c5d6b42444d991789a2541c405dbb8`), while paused experiments did not ship
       `all` `confirmed` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
-- [ ] Session switching in terminal view may redraw more than necessary on a real graphics card. The software-rendered baseline saw ~137 ms terminal versus ~124 ms chat switching, inside its spread; actual hardware cost and a busy six-terminal feel check remain unmeasured
-      `terminal` `desktop` `needs-verify` `checked 2026-09-10` `performance`
+- [ ] Session switching in terminal view may redraw more than necessary on a real graphics card. The software-rendered baseline saw ~137 ms terminal versus ~124 ms chat switching, inside its spread; actual hardware cost and a busy six-terminal feel check remain unmeasured. On 2026-10-04 the same software-drawn rig put terminal-view switching near 0.55 s even with 8 sessions open (chat view ~31 ms); that is a software-drawing figure, not a prediction for a real card. Code reading says every open terminal re-draws its letters on a switch, not only the one shown
+      `terminal` `desktop` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
 
-- [ ] Sustained terminal output and typing remain unmeasured together. Private 200- and 2,000-line bursts verified exact raw output and visible suffix and found one 67 ms hardware task with unassigned cause; the older terminal-switch rig still measures switching after filling the terminal, not sustained burst drawing under typed input
-      `terminal` `desktop` `needs-verify` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-29-performance-status.md
+- [ ] Sustained terminal output and typing remain unmeasured together. Private 200- and 2,000-line bursts verified exact raw output and visible suffix and found one 67 ms hardware task with unassigned cause; the older terminal-switch rig still measures switching after filling the terminal, not sustained burst drawing under typed input. Measured 2026-10-04: a 200 MB flood lost output after about 50 MB, froze the whole app 0.15–0.9 s and delayed Ctrl+C 5 s or more; typing delay was fine (about 14 ms to the terminal). Flow control (the program is held back until the screen has drawn what it printed) is built on branch session/perf-zero-hitch-20261004, not merged; there a 200 MB flood shows whole in 6–7 s with no stalls and Ctrl+C takes 0.1 s. Still open here: typing under a flood on a real graphics card, and the Windows/macOS behaviour (see the entries below)
+      `terminal` `desktop` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
 
 - [ ] File-pane content changing while a different file is open remains unmeasured under streaming. Recent mixed runs exercised six long histories with Files open on selected sessions and verified their restoration; those did not also edit another file. The older separate drawer/editor phases missed that cross-file git-footer cost, so measure it directly
       `files-panel` `desktop` `needs-verify` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-29-performance-status.md
@@ -34,8 +34,8 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Identical-code native-chat screenshots can differ more than the comparator's threshold because a real model generates different replies (14.79% in one control). The rig names this screen nondeterministic but still scores it; require same-build noise controls and review the actual image
       `chat` `desktop` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
 
-- [ ] The artifacts rig sometimes shows an empty session-files drawer (roughly one run in nine in the historical sample), once delaying and once returning missing numbers. Investigate engagement and reject missing samples rather than swallowing them into a median
-      `files-panel` `desktop` `needs-verify` `checked 2026-08-28` `performance`
+- [ ] The artifacts rig sometimes shows an empty session-files drawer (roughly one run in nine in the historical sample), once delaying and once returning missing numbers. Investigate engagement and reject missing samples rather than swallowing them into a median. On 2026-10-04 the standard artifacts scenario could not open the drawer at all on current master: it waits for a button title and for `data-artifact-viewer`, and the app no longer has either, so it needs its selectors updated before it can produce any number
+      `files-panel` `desktop` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
 
 - [ ] Comparison controls are only partial: `compare.mjs` now rejects missing/changed machine identity, GPU lane, scenario descriptors and excessive pre-boot noise, but its own comparability check warns that it has not measured interference during a run. Quiet/busy repeats previously produced apparent 16–20% regressions on unchanged code. Keep those older reports inconclusive where mid-run load differed; measure external contention before claiming a candidate regression or win
       `n/a` `confirmed` `checked 2026-09-29` `performance` → docs/archive/investigations/2026-09-26-performance-history-audit.md
@@ -43,8 +43,8 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Software-rendered runs do not establish what happens on a real high-refresh screen: a controlled native-GPU welcome probe reversed the software-only blur attribution. Keep software and authorized hardware/compositor lanes distinct, and never call rAF callbacks presented frames
       `n/a` `confirmed` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md
 
-- [ ] The rig has no recurring same-machine startup-mark and idle-CPU trend, despite having diagnostic probes and manual real-history captures. Any future scheduled lane needs engaged scenarios, machine/noise identity and a sanity floor; frequency and host remain an operational decision
-      `n/a` `confirmed` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-16-simplification-audit.md
+- [ ] The rig has no recurring same-machine startup-mark and idle-CPU trend, despite having diagnostic probes and manual real-history captures. Any future scheduled lane needs engaged scenarios, machine/noise identity and a sanity floor; frequency and host remain an operational decision. The 2026-10-04 review ranks a nightly run with a trend chart, plus an automatic size limit on the app bundle (none exists; the main script is 3.19 MB), as part of the same gap
+      `n/a` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-09-16-simplification-audit.md
 
 - [ ] The repeatable performance suite does not yet cover long soak and retained-memory slopes, giant bodies, expensive repeated tool churn, private sync interference, effects-heavy native presentation or native drag/resize. Prior paging/folding cycles shipped; watcher bursts and mixed-history diagnostics have been measured, not these remaining combined/soak cases. Preserve raw samples, engagement checks and truthful bounds before treating a clean report as general smoothness. These are coverage gaps, not proven product bugs; terminal typing, Files under streaming, history-bearing streams, Find lifecycle and Android/remote motion have their own primary entries above/below
       `all` `needs-verify` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-29-performance-status.md
@@ -91,8 +91,8 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Community CSS may keep an always-visible theme animation running at full rate for people who never enable Reduced Effects. Limiting author-defined motion is a product decision; Reduced Effects already stops ordinary cases, while nested/layer-important selectors and visibility of fill-forwards fades require separate safety checks
       `all` `confirmed` `checked 2026-09-10` `performance` → docs/active/investigations/2026-09-01-theme-css-animation-unsanitized.md
 
-- [ ] After 73 minutes and ~15 helpers changing files, a dev instance's main process reached ~2.8 GB and ran out of memory; a later core-dump repair in youcoded#335 may already cover it, but this workload was not rechecked. Reproduce before treating it as a current leak
-      `desktop` `needs-verify` `checked 2026-09-01` `needs-repro` `performance`
+- [ ] After 73 minutes and ~15 helpers changing files, a dev instance's main process reached ~2.8 GB and ran out of memory; a later core-dump repair in youcoded#335 may already cover it, but this workload was not rechecked. Reproduce before treating it as a current leak. Added 2026-10-04 (read from code, not measured on the app): with phone access on, memory kept for a phone that may not be connected is capped by count, not size. Terminal text is ~4–8 MB per session; hook events are capped at 10,000 each holding whole tool results, roughly 80 MB per session for 8 KB results (order of magnitude only) and 10–150 MB for realistic long sessions. A plausible contributor for phone-access users, not a cause for everyone
+      `desktop` `needs-verify` `checked 2026-10-04` `needs-repro` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
 
 - [ ] Git refresh for a file can start up to three git processes per file/git change; profile under a changing project before expanding the Git surface to Android/multi-window. The five duplicate repo-containment checks remain parked feature maintenance in files, not this runtime-cost investigation
       `files-panel` `desktop` `parked` `checked 2026-09-01` `performance`
@@ -126,3 +126,39 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 
 - [ ] Animation frame budgets have not been checked on actual phones or remote browsers, where refresh rate and Reduced Effects differ. Measure those devices before applying desktop cost assumptions
       `all` `needs-verify` `checked 2026-08-07` `performance`
+
+- [ ] With 17 or more Claude Code sessions open, terminals fight over graphics. Every session builds a graphics-accelerated terminal at start even if you never leave chat view, and the system allows only 16. At 20 sessions (software-drawn rig, one run) 4 terminals ended with no working graphics, chat switching showed 12 freezes (worst 173 ms) and the churn kept going on every switch. Fine up to 16. Options: build the terminal only when first shown, or share one
+      `terminal` `desktop` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Launch takes about 1.3 s and the single 3.19 MB main script costs roughly 0.31 s of it to evaluate. Settings, Marketplace, chess and the QR code are still inside it rather than loaded on first use, and the window sits blank about 0.45 s. The housekeeping before the window (~80 ms) is not the problem. Splitting means a brief first-open pause for those screens
+      `window-chrome` `desktop` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Comparing two large, unrelated files in an edit card freezes the app: 0.65 s at 2,000 lines, 4.3 s at 5,000, 19 s at 10,000 (similar files: 0.09 s), with no time limit and even for collapsed cards. Rare, because both engines normally supply a ready-made comparison; mostly a pending or refused edit
+      `tool-cards` `desktop` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Ordinary reply streaming still keeps the window about 40–45% busy on the software-drawn rig, down from 44–48%; about two thirds of what remains is the browser's own drawing, so it needs a real graphics card to judge. Decision for Destin: streamed text redraws at most about every 17 ms (`STREAM_REDRAW_TARGET_HZ` = 60 in `transcript-batch.ts`); look at it on the 180 Hz screen and say whether to raise it to 120 (smoother, more work). Fix built on branch session/perf-zero-hitch-20261004, not merged
+      `chat` `desktop` `decision` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Decision: a terminal you are not looking at (window visible, another view shown) is fed at most ~0.5 MB/s after a 1 MB burst. A command printing a lot there is slowed hard (a 60 MB log takes about 2 minutes) in exchange for ~20% instead of 80–99% of the window; showing the terminal draws the backlog at once. Raising the rate costs the window more. Built on branch session/perf-zero-hitch-20261004, not merged
+      `terminal` `desktop` `decision` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] After a hidden window's un-drawn terminal text is trimmed, stale partial frames can remain above a program that redraws very fast: 2 of 3 rig runs at ~3 MB/s showed 2- and 4-line leftovers above the final frame. Claude Code's own animation is ~20 KB/s, far below the limit, so normal use does not reach it. Branch session/perf-zero-hitch-20261004, not merged
+      `terminal` `desktop` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] The terminal speed brake has been checked by reading only on Windows (ConPTY) and macOS, and a real minimise on those systems was never measured (Chromium may slow a minimised window's timers to ~1 per second, which could starve the drawing that confirms output). The change that lets scrolling happen without waiting for the app was verified on Linux only; a trackpad pinch on Windows and macOS must be checked before release to confirm it zooms the app and not the page. Branch session/perf-zero-hitch-20261004, not merged
+      `terminal` `all` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Opening a big Excel file still freezes the app about 0.23–0.29 s (target 0.1 s): that time is the Excel reading library, not the app's drawing, which was fixed on branch session/perf-zero-hitch-20261004 (not merged). Options are reading it in the background or accepting it
+      `files-panel` `desktop` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] On Android the phone app may be slow while a reply streams. Found by reading code, not measured: each session runs two terminals and rebuilds the whole 2,000-line scrollback as text on every screen update on the thread that handles touches, plus a once-a-second scan per session; output can be dropped silently when the screen falls behind and the last piece may sit unsent until more arrives; the phone is kept awake whenever any session exists and four polling loops per session never pause in the background. Feel: hitches, a terminal that looks frozen then jumps, battery drain, worse with each session
+      `android` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Phones get full glass blur by default and nothing turns it down; blur is the costliest effect on phone graphics chips, so mid-range phones may scroll choppily and themes would look flatter if reduced. Found by reading code, not measured
+      `themes-screen` `android` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] Themes may cost more graphics work than they should; all found by reading, none measured, and all need a real graphics card (not the software-drawn rig): particle themes make every glass chat bubble re-blur 30 times a second (6 of 8 registry themes have blurred bubbles); two registry wallpapers are 8K (about 132 MB each decoded) with no smaller copy made; theme fonts download from Google after the app is already showing, so text re-flows and offline gets the wrong font; and Reduce Visual Effects does not touch wallpaper size, blur written in a theme's own custom styling, or the buddy's breathing loop
+      `themes-screen` `all` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
+
+- [ ] There is no hitch recorder inside the real app, the single most valuable missing instrument. Proposed (review items M1–M3): one local file, never message text, noting each long screen freeze, slow keypress or click, main-process stall, memory and launch timings, so real stutters become a ranked list without poking at the live app. Today every hitch Destin feels leaves no trace and we can only try to recreate it in a lab
+      `n/a` `confirmed` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md

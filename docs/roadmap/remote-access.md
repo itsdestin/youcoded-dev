@@ -219,3 +219,6 @@ Filing test: reaching the app from another device — the protocol, the browser 
       paired Android app's terminal, removing a paired computer on Android and its error message,
       screens refilling after a reconnect, and files attached from the phone
       `remote` `needs-verify` `checked 2026-09-23`
+
+- [ ] The copy of terminal text kept for phones can be cut in the middle of a formatting code, so a phone that joins late may replay a garbled start. This predates the 2026-10-04 terminal work; fixing it changes the offsets phones replay against, so it needs a phone check. Filed here because the fix is the phone protocol; the memory cost of that buffer is in perf
+      `remote` `needs-verify` `checked 2026-10-04` `performance` → docs/active/investigations/2026-10-04-performance-gap-review.md
