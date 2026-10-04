@@ -9,7 +9,8 @@
 //              (software GL) for it, so the numbers are NOT a real GPU's.
 //   native   — D3: resume a LONG native (non-Claude) session; count transcript events the
 //              page receives (a whole-history replay would be thousands) and time it.
-//   sheet    — D14: open a 2000 x 100 CSV against a 200 x 10 control in the session drawer.
+//   sheet    — D14: open, click, scroll and close a 2000 x 100 CSV and XLSX against 200 x 10 controls in the
+//              session drawer (the XLSX pair and the scroll/close steps were added for Fix 2).
 //
 // Same limits as suspects.mjs: Xvfb software rendering, main-thread/IPC measures only,
 // one boot is a shakedown. Never touches the live app (own fixture HOME, own ports).
@@ -178,17 +179,32 @@ async function legNative(ctx) {
 // ── D14: big spreadsheet ────────────────────────────────────────────────────────
 const csv = (rows, cols) => Array.from({ length: rows }, (_, r) => Array.from({ length: cols }, (_, c) => ((r * 31 + c * 17) % 5 === 0 ? `item-${r}-${c}` : String((r * 7919 + c * 104729) % 100000 / 100))).join(',')).join('\n') + '\n';
 
+// WHY an XLSX fixture too (Fix 2, 2026-10-04): XlsxView has the same render-every-cell shape as CsvView
+// but a different parser, merge/comment machinery and column widths, so the CSV number cannot stand in for it.
+// Built with the checkout's own exceljs so it is a real workbook, not a hand-rolled zip.
+async function writeXlsx(checkout, abs, rows, cols) {
+  const { createRequire } = await import('node:module');
+  const ExcelJS = createRequire(join(checkout, 'desktop', 'package.json'))('exceljs');
+  const wb = new ExcelJS.Workbook(), ws = wb.addWorksheet('Data');
+  for (let r = 0; r < rows; r++) ws.addRow(Array.from({ length: cols }, (_, c) => ((r * 31 + c * 17) % 5 === 0 ? `item-${r}-${c}` : (r * 7919 + c * 104729) % 100000 / 100)));
+  await wb.xlsx.writeFile(abs);
+}
+
 async function legSheet(ctx) {
-  const { cdp, bound, fixture, app } = ctx, out = { opens: [] };
+  const { cdp, bound, fixture, app, checkout } = ctx, out = { opens: [] };
   await bound(installProbe(cdp), 'probe'); await bound(installPageHelpers(cdp), 'page helpers');
   await bound(installArtifactHelpers(cdp), 'artifact helpers');
   const dirName = 'perf-artifacts', dir = join(fixture.projects.alpha, dirName);
   mkdirSync(dir, { recursive: true });
   const files = {};
-  const put = (key, base, text) => { const abs = join(dir, base); writeFileSync(abs, text); files[key] = { key, name: base, rel: `${dirName}/${base}`, abs, bytes: statSync(abs).size }; };
-  put('control', 'perf-control.csv', csv(200, 10));
-  put('big', 'perf-big.csv', csv(2000, 100));
-  put('control2', 'perf-control2.csv', csv(200, 10));
+  // cols = the file's column count; the viewer pads to max(cols,26) (and caps at 100)
+  const put = (key, base, text, cols) => { const abs = join(dir, base); if (text != null) writeFileSync(abs, text); files[key] = { key, name: base, rel: `${dirName}/${base}`, abs, cols }; };
+  put('control', 'perf-control.csv', csv(200, 10), 10);
+  put('big', 'perf-big.csv', csv(2000, 100), 100);
+  put('control2', 'perf-control2.csv', csv(200, 10), 10);
+  await writeXlsx(checkout, join(dir, 'perf-control.xlsx'), 200, 10); put('xcontrol', 'perf-control.xlsx', null, 10);
+  await writeXlsx(checkout, join(dir, 'perf-big.xlsx'), 2000, 100); put('xbig', 'perf-big.xlsx', null, 100);
+  for (const f of Object.values(files)) f.bytes = statSync(f.abs).size;
   const t = fixture.transcripts?.small ?? null;
   const s = await bound(cdp.evaluate(`window.claude.session.create(${JSON.stringify({ name: 'sheet', cwd: fixture.projects.alpha, skipPermissions: true, ...(t ? { resumeSessionId: t.sessionId } : {}) })}).then(s => ({ id: s.id })).catch(e => ({ error: String(e && e.message || e) }))`), 'create session', 60000);
   if (!s?.id) throw Error(`session.create failed: ${s?.error}`);
@@ -199,27 +215,57 @@ async function legSheet(ctx) {
   const opened = await cdp.evaluate(`(async () => { const b = document.querySelector('button[aria-label="Session Files"]'); if (!b) return { ok: false, reason: 'no button[aria-label=Session Files]' }; b.click(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return { ok: true }; })()`);
   if (!opened.ok) throw Error(`drawer button: ${opened.reason}`);
   await waitFor(cdp, `window.__perfArt.drawerOpen()`, { timeoutMs: 15000, everyMs: 25 });
-  await waitFor(cdp, `(() => { const n = window.__perfArt.rowNames(); return !!(n && n.indexOf('perf-control.csv') >= 0); })()`, { timeoutMs: 20000, everyMs: 50 });
+  await waitFor(cdp, `(() => { const n = window.__perfArt.rowNames(); return !!(n && n.indexOf('perf-control.csv') >= 0 && n.indexOf('perf-big.xlsx') >= 0); })()`, { timeoutMs: 20000, everyMs: 50 });
   out.files = Object.fromEntries(Object.values(files).map(f => [f.name, f.bytes]));
+  // WHY these three, not a cell count: a full-grid build puts every cell in the DOM, a windowed one only
+  // the visible ones, so "all cells present" can no longer say the sheet opened. The column strip (<col>) is
+  // drawn in full by both and a cell with text proves content, so: the right number of columns AND a filled cell.
   const cells = `document.querySelectorAll('.drawer-pane table td').length`;
-  // control, big, control again (so a first-open warm-up cannot be mistaken for the sheet's size)
-  for (const key of ['control', 'big', 'control2']) {
+  const ready = cols => `(() => { const t = document.querySelector('.drawer-pane table'); if (!t) return false; const filled = [...t.querySelectorAll('td')].some(td => td.textContent.trim() !== ''); return filled && t.querySelectorAll('colgroup col').length === ${Math.max(cols, 26) + 1}; })()`;
+  const scroller = `(() => { const t = document.querySelector('.drawer-pane table'); let e = t && t.parentElement; while (e && !(e.scrollHeight > e.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(e).overflowY))) e = e.parentElement; return e; })()`;
+  for (const key of ['control', 'big', 'control2', 'xcontrol', 'xbig']) {
     const f = files[key];
-    await cdp.evaluate(`window.__perfArt.clickTitle('Show list')`).catch(() => {});
+    // closing the previous viewer is itself measured (a big sheet froze 6.8 s on the way out)
+    const closed = await step(cdp, `sheet:close-before-${key}`, async () => {
+      // WHY the settle wait: the click returns at once but React tears the old sheet down afterwards (before
+      // Fix 2 that was a 6 s task that landed in the NEXT open's window). Waiting here, and counting the
+      // page's own long tasks over it, puts the freeze on the close where it belongs.
+      const t0 = Date.now(); const c = await cdp.evaluate(`window.__perfArt.clickTitle('Show list')`).catch(() => ({ ok: false }));
+      await cdp.evaluate(`new Promise(r => setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(r)), 1500))`);
+      return { ok: true, closeMs: Date.now() - t0 - 1500, hadViewer: !!c?.ok };
+    }, { pingMs: 50 });
     const r = await step(cdp, `sheet:open-${key}`, async () => {
       const t0 = Date.now();
       const click = await cdp.evaluate(`window.__perfArt.clickListRow(${JSON.stringify(f.name)})`);
       if (!click.ok) throw Error(`could not open ${f.name}: ${click.reason}`);
-      // [data-artifact-viewer] is gone from the current build, so wait on the grid itself: the viewer pads to
-      // max(rows,50) x max(cols,26) cells (CsvView: MIN_ROWS 50, MIN_COLS 26, caps 2000 x 100).
-      await waitFor(cdp, `${cells} === ${key === 'big' ? 200000 : 5200}`, { timeoutMs: 120000, everyMs: 25 });
+      await waitFor(cdp, ready(f.cols), { timeoutMs: 120000, everyMs: 25 });
       return { ok: true, openMs: Date.now() - t0 };
     }, { pingMs: 50 });
     await sleep(1500);
     const dom = await bound(cdp.evaluate(`({ domNodes: document.querySelectorAll('*').length, cells: ${cells}, tables: document.querySelectorAll('.drawer-pane table').length })`), 'dom count');
     // The cost of ONE click on a cell (it only moves a selection outline).
     const click = await bound(cdp.evaluate(`(async () => { const td = document.querySelectorAll('.drawer-pane table td')[5]; if (!td) return null; const t0 = performance.now(); td.click(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return Math.round((performance.now() - t0) * 10) / 10; })()`), 'cell click', 60000);
-    out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, dom, cellClickToPaintMs: click, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
+    // Scrolling: 12 jumps of 1,500 px down, then to the very end, then back to the top. Each jump is timed to
+    // the second paint; the step's long-task probe says whether the page froze while doing it.
+    const scroll = await step(cdp, `sheet:scroll-${key}`, async () => {
+      const res = await cdp.evaluate(`(async () => {
+        const e = ${scroller}; if (!e) return { error: 'no scroller' };
+        const raf2 = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const jumps = [];
+        const go = async (top, left) => { const t0 = performance.now(); e.scrollTop = top; if (left != null) e.scrollLeft = left; await raf2(); jumps.push(Math.round((performance.now() - t0) * 10) / 10); };
+        for (let i = 1; i <= 12; i++) await go(i * 1500, i * 120);
+        await go(1e9, 1e9); const endCells = document.querySelectorAll('.drawer-pane table td').length;
+        // park mid-sheet and leave it there for a picture (taken after the step): are the sticky letters/numbers
+        // and the cells around the middle all drawn, with no blank holes?
+        await go(30000, 2400);
+        return { jumps, maxJumpMs: Math.max(...jumps), endCells, scrollHeight: e.scrollHeight, scrollWidth: e.scrollWidth };
+      })()`);
+      return { ok: !res.error, ...res };
+    }, { pingMs: 50 });
+    const mid = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
+    if (mid) writeFileSync(`${ctx.out}.sheet-${key}-scrolled.png`, Buffer.from(mid.data, 'base64'));
+    await cdp.evaluate(`(() => { const e = ${scroller}; if (e) { e.scrollTop = 0; e.scrollLeft = 0; } })()`);
+    out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, closePrev: closed, dom, cellClickToPaintMs: click, scroll, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
     const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
     if (shot) writeFileSync(`${ctx.out}.sheet-${key}.png`, Buffer.from(shot.data, 'base64'));
   }
@@ -249,7 +295,7 @@ export async function main(argv = process.argv.slice(2)) {
     const cdp = app.cdp;
     report.gpu = await bound(readRendererInfo(app.cdpPort, cdp), 'GPU info');
     const ids = [], names = [];
-    const ctx = { cdp, bound, fixture, app, ids, names, out: opts.out };
+    const ctx = { cdp, bound, fixture, app, ids, names, out: opts.out, checkout: opts.checkout };
     try {
       for (const leg of opts.only) {
         try { report.legs[leg] = leg === 'sessions' ? await legSessions(ctx, opts.counts) : leg === 'native' ? await legNative(ctx) : await legSheet(ctx); }

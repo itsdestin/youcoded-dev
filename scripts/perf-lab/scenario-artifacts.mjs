@@ -381,7 +381,10 @@ export async function installArtifactHelpers(cdp) {
       clickTitle: async (title, scopeSel) => {
         const root = scopeSel ? $(scopeSel) : document;
         if (!root) return { ok: false, reason: 'scope ' + scopeSel + ' is not in the DOM' };
-        const el = $('button[title=' + JSON.stringify(title) + ']', root);
+        // WHY the aria-label fallback (2026-10-04): HeaderBar's Session Files button (and others) now carry a Tooltip +
+        // aria-label and NO title attribute, so a title-only lookup silently found nothing and this whole scenario
+        // died at its first click. Title still wins where a button has one.
+        const el = $('button[title=' + JSON.stringify(title) + ']', root) || $('button[aria-label=' + JSON.stringify(title) + ']', root);
         if (!el) {
           const titles = all('button[title]', root).map((b) => b.getAttribute('title')).slice(0, 25);
           return { ok: false, reason: 'no button[title=' + JSON.stringify(title) + '] under ' + (scopeSel || 'document') + '; titles present: ' + JSON.stringify(titles) };
@@ -466,6 +469,8 @@ export async function installArtifactHelpers(cdp) {
        */
       viewerState: (withTail) => {
         const c = contentPane();
+        // NOTE (2026-10-04): [data-artifact-viewer] exists only on some viewers now (code editor, commentable documents);
+        // CSV/HTML have none, so steps that wait on it for those files are stale — suspects-b.mjs 'sheet' waits on the grid instead.
         const viewer = c ? $('[data-artifact-viewer]', c) : null;
         const cm = c ? $('.cm-content', c) : null;
         const frame = c ? $('iframe[title="HTML preview"]', c) : null;

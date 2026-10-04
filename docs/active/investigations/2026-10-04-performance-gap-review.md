@@ -350,3 +350,95 @@ machine, three runs each, and the result recorded. No number, no merge.
 - **T2** (smaller wallpapers): on a very large or zoomed screen an 8K wallpaper would look
   marginally softer.
 - **P2** (less glass on phones): themes look flatter on phones.
+
+## 4d. Fixes 2 and 3 — before/after (2026-10-04)
+
+Same private packaged build, invisible screen, no graphics card. Both fixes are on branch
+`session/perf-zero-hitch-20261004` of the app repo. Raw files: `scratch/perf-lab/suspects/fix2-*`
+(sheets) and `fix3-*` (scrolling), local only. **Load** on the machine is recorded per run; the
+"before" sheet runs were at load 14–54 and the "after" ones at 8–10 — the "before" runs were the more loaded, but a 50–100× effect is far larger than
+any load noise.
+
+### Fix 2 — big spreadsheets (CSV and XLSX)
+
+**What you felt:** opening a 2,000-row × 100-column sheet froze the whole app for 6–11 seconds
+(opening took 10–15 s), every click on a cell hung for half a second, scrolling jumped by whole
+seconds, and closing the sheet froze it again for ~6 s. **Now:** it opens in a fifth of a second
+(CSV) or two thirds of a second (Excel), clicks and scrolling are immediate, closing is immediate.
+
+**Cause:** both viewers drew every cell (200,000 of them, 205,000 page elements) even though a
+screen shows about 450. **Fix:** the page now holds only what is on screen plus a margin of about 20
+rows and 4 columns each side; blank space of the exact size stands in for the rest, so the scrollbar,
+the sticky column letters and row numbers, merged cells and every position are what they were.
+Excel cells are also built only when first drawn.
+
+| 2,000 × 100 sheet | Before (2 runs) | After (2 runs, final code) |
+|---|---|---|
+| CSV: time to open | 15.4 s, 10.0 s | 0.20 s, 0.17 s |
+| CSV: longest freeze while opening | 10.7 s, 6.7 s | 0.10 s, 0.07 s |
+| Excel: time to open | 11.1 s, 12.2 s | 0.66 s, 0.65 s |
+| Excel: longest freeze while opening | 6.0 s, 6.0 s | 0.29 s, 0.26 s (Excel's own file reader) |
+| Page elements | 205,051 | 1,512 |
+| One click on a cell | 0.48 s, 0.54 s (CSV); 0.70 s, 0.81 s (Excel) | 0.02–0.03 s |
+| Scrolling test (12 jumps, end, back): slowest jump | 2.2 s, 1.7 s (CSV); 2.4 s, 3.2 s (Excel) | 0.11–0.13 s (CSV); 0.11–0.15 s (Excel) |
+| Closing it (freeze) | ~6.3 s, 7.2 s (landed in the next open) | none (0.03 s) |
+
+The small 200 × 10 control sheets also got quicker (CSV 0.3–0.6 s → 0.1 s). Three more "after" runs
+of slightly earlier versions of the same code agree (CSV open 0.18–0.21 s; Excel 0.57–0.69 s).
+The 0.1 s freeze figures include the invisible screen's slow drawing; the Excel 0.26–0.29 s is
+mostly the file reader (ExcelJS) and is the one place the 100 ms goal is not met — it is not our
+code (a small Excel file already costs ~0.09 s there).
+
+**How sure:** high. Same-run comparisons, effect sizes of 50–100×, five "after" runs agree, and a
+picture taken mid-sheet shows sticky letters/numbers and no blank holes.
+
+**Could look or feel different (all small):**
+- Columns are sized up front from the text instead of growing as they draw: widths match the old
+  look to within a few pixels; text longer than 300 px (CSV) or 400 px (Excel) now ends in "…"
+  (Excel columns used to grow without limit).
+- Every row is now exactly 24 px (the old table alternated 24/25). A wrapped Excel row's height is
+  estimated from its text, so it can be a line too tall or short.
+- Dragging across cells to copy only reaches the cells drawn (about 20 rows beyond the window edge).
+  A very fast flick can show blank paper for an instant before cells fill in.
+- Ctrl+F still finds text anywhere in the sheet, but keeps only the first 300 matches reachable;
+  Excel cells shown with a number format ("50%", "1,234") are matched by their stored value when far
+  from view.
+- Cells with comments stay drawn wherever you scroll (the comment highlights depend on it).
+- There was no keyboard navigation, edit mode, or scroll restoration in either viewer; none added.
+
+### Fix 3 — scrolling no longer waits for the app
+
+**What you felt:** while the app was busy (a reply streaming, a terminal flood), every scroll
+stalled for as long as the busy moment lasted. **Cause:** the pinch-to-zoom listener was registered
+in a mode that makes the browser ask the page before scrolling *anything*. **Fix:** on the desktop
+app it is now registered in the mode that lets the browser scroll on its own; zoom still reads every
+pinch / Ctrl+wheel and zooms exactly as before. Remote browsers and the phone app keep the old
+mode on purpose (there, the browser's own page zoom must be cancelled, and the code cannot do that
+without it); they are unchanged.
+
+**How it was measured:** the page's main thread is blocked for 400 ms; a real mouse-wheel click is
+sent through the virtual display's input (not the debugging pipe: that held the wheel back in every
+case, so it cannot tell the cases apart — kept as `fix3-before-sameconnection-*`); the browser's own
+event log says when the scrolling engine moved the box. Instrument proof, after the fix: with an
+extra listener of the *old* kind added, the scroll waits until the block ends (401–411 ms, 0 of 8
+scrolled during the block); with none, it scrolls 1–3 ms after the wheel click (~216 ms, 8 of 8).
+
+| 8 trials per row, wheel at ~215 ms into a 400 ms block | Scroll applied at | Scrolled during the block |
+|---|---|---|
+| Before: app as shipped | 401–412 ms (the block's end) | 0 of 8 |
+| After: app as fixed | 216–218 ms (2 ms after the wheel) | 8 of 8 |
+| After + a listener of the old kind added (proof) | 401–411 ms | 0 of 8 |
+
+Zoom check, both builds: Ctrl+wheel up 100% → 110%, Ctrl+wheel down back to 100%, the box under the
+pointer did not move, a plain wheel click scrolled it 120 px. Load: before 9–10, after 26–42 (busy
+machine; the result is a yes/no, not a timing).
+
+**How sure:** high for Linux/Electron 41 on this display. **Not verified:** Windows and macOS (no
+machine here) — the claim that Electron has nothing to do with Ctrl+wheel besides firing an event
+nobody listens to, and that pinch zoom is already off (`setVisualZoomLevelLimits(1, 1)`), comes from
+Electron's documentation and one platform's behaviour. If a trackpad pinch there ever zoomed the page
+*and* the app, the fix is one line (set the listener back to cancelable). The unchanged live
+measure "wheel waits ~14–180 ms in the listener queue" stays what it was; this is a different thing.
+A guard now fails the build if any renderer file adds a wheel/touch listener that can make a scroll
+wait (touch events included), outside a two-entry allowlist (the zoom hook; the terminal's
+touch-drag, which only exists on touch devices).

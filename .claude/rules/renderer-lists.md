@@ -22,6 +22,7 @@ verify:
   - test: youcoded/desktop/tests/MarketplaceScreen.test.tsx
   - test: youcoded/desktop/tests/ModelPicker.test.tsx
   - test: youcoded/desktop/tests/CsvView.test.tsx
+  - test: youcoded/desktop/tests/sheet-grid-windowing.test.tsx
   - test: youcoded/desktop/tests/game-reducer.test.ts
   - test: youcoded/desktop/tests/unified-diff-fill.test.tsx
   - test: youcoded/desktop/tests/tool-body.test.tsx
@@ -39,3 +40,4 @@ Nothing the user cannot see is built. Pick the technique by shape. Numbers, reje
 - **A collapsed preview draws a real slice** — file boxes 15 lines collapsed, 200-line chunks in a capped scroller expanded. A host that already scrolls (conflict diff, context popup, git review) passes `fill` to `UnifiedDiff`, never a nested capped box. Guard: `unified-diff-fill.test.tsx`, `tool-body.test.tsx`.
 - **Data several surfaces read is one store** (`useTagRegistry`), never a fetch per mount — a late answer redraws the whole list and tags pop in. Guard: `useTagRegistry.shared.test.tsx`.
 - **`content-visibility: auto` only on glow-free self-contained blocks** (`.yc-code-block`); `hidden` for whole inactive views. Never on `.timeline-entry` or cards — its paint containment clips theme glows (`globals.css` `.timeline-entry`). `SubagentTimeline`'s is a recorded exception (render-cost plan, out of scope). Guard: none — candidate.
+- **Spreadsheet viewers (CSV, XLSX) draw only the visible rows and columns** — `SheetGrid` + `sheet-window.ts`: blank spacer space of exact size stands in for the rest, so sizes must be known without drawing (column widths fitted from the text, wrapped rows estimated). Cells with a comment or matching a Ctrl+F search are pinned into the page (`artifact-find-bridge.ts`). Why: a 2,000 × 100 sheet was 205k elements, 10 s to open, 7 s frozen. Guard: `sheet-grid-windowing.test.tsx` (200k cells in, ≤4,000 drawn, seen red with the window removed).

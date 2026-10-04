@@ -22,6 +22,8 @@ verify:
   - test: youcoded/desktop/tests/main-blocking-calls.test.ts
   - test: youcoded/desktop/tests/busy-app-render-budget.test.tsx
   - test: youcoded/desktop/tests/chat-state-paused.test.tsx
+  - test: youcoded/desktop/tests/wheel-scroll-stays-native.test.ts
+  - test: youcoded/desktop/tests/zoom-controls-guard.test.tsx
 ---
 # Performance — every new app element
 
@@ -81,5 +83,13 @@ main-process blocking-call ratchet** (`desktop/tests/main-blocking-calls.test.ts
    `animation-frame-budget`, `no-unstepped-infinite-animation`.
 
 7. **Lists of the user's things draw only what is visible** — `.claude/rules/renderer-lists.md`.
+
+8. **Scrolling never waits for the page: wheel/touch listeners are passive.** A non-passive `wheel`/`touchstart`/`touchmove`
+   listener anywhere above a scroller (window included) makes the browser ask the main thread before every scroll, so a
+   busy page (reply streaming, terminal flood) delays all scrolling by however long it is busy. **Why:** measured
+   2026-10-04, `scripts/perf-lab/scroll-deferral.mjs`: scroll applied at the end of a 400 ms block in 24/24 trials with
+   the app's pinch-zoom listener non-passive, ~2 ms after the wheel with it passive. Desktop's pinch-zoom listener is
+   passive (nothing to cancel there); remote browsers/Android keep it cancelable. **Guard:** `wheel-scroll-stays-native.test.ts`
+   (allowlist; touch events covered), `zoom-controls-guard.test.tsx`.
 
 Depth: `youcoded/docs/renderer-chrome.md` → "Lists and render cost"; perf lab `scripts/perf-lab/`.
