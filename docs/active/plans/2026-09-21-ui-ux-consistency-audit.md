@@ -1,7 +1,7 @@
 ---
 status: active
 date: 2026-09-21
-revised: 2026-09-24
+revised: 2026-10-04
 owner: Destin (taste and acceptance) / assistant (research, proposals and implementation)
 related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, decks, guide draft); docs/active/design/2026-08-25-ui-design-guide.md (old guide, to be archived)
 ---
@@ -35,72 +35,73 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
   may become guide rules. A rule carried over from how the app already works is shown to
   Destin marked as such.
 - Answers are saved only on Submit. Commit and push after every step.
+- **Build only from the guide's existing recipes**; when none fits, ask rather than invent
+  (round 10 of the tags work: "both violate the design guide as we've established it").
+- **Show options as pictures**, never a list of words ("let me see the different options.
+  hard to do with text"); a slide whose "options" are not real alternatives confuses —
+  use a keep/revert slide instead.
+- **Judge pixel detail at Destin's screen scale (1.5×):** `SHOOT_SCALE=1.5 node
+  scripts/shoot/shoot.mjs …`. A 1× picture hid a misalignment he saw; for anything his eyes
+  and the numbers disagree on, a live deck (real app panes in the page) settled it.
+- **No line across the full width of a card** — spotted instantly and rejects a whole slide.
+- **After three or four rejected rounds, stop and ask which direction** instead of guessing
+  a fifth layout (the Resume sheet: four rounds, then "popup" settled it in one).
 
-## Status (2026-09-24)
+## Status (2026-10-04)
+
+All work is on `session/ui-consistency-audit` (workspace and app), committed and pushed.
+Nothing is on master. **The app's master has moved ~335 commits since this branch last
+merged it** — merging master in is a required step before the final review.
 
 **Done**
-- Backup: all work from the previous session and this one committed and pushed on
-  `session/ui-consistency-audit` (workspace and app), merged with current master.
-- Element inventory — six groups (buttons/controls, headers/text, cards/rows/spacing,
-  menus/search/fields, notifications/status, popups/screens/icons): `inventory/`.
-- Decided by Destin (`decisions.md`): full-screen titles; popup titles and ✕; heading
-  ladder with no capitals and underlined reading-section labels; counts; way back to chat;
-  control shape follows the theme at the **Round** level; **raised** cards with a medium
-  shadow; boxed Settings rows and plain menu rows; tinted status pills; tinted warning
-  boxes; outlined secondary buttons.
-- Guide draft written from those decisions: `guide-draft.md` (not yet approved — its
-  approval page was paused because the second audit showed it is incomplete).
-- Second audit (`audit/`): contradictions between the app and the draft; every Settings
-  screen; button placement; spacing and text composition.
+- Element inventory, second audit and completeness check (`inventory/`, `audit/`).
+- Decisions for the guide (`decisions.md`, every row sourced to a deck answer): titles,
+  headings and labels (sentence case, no spaced capitals, 16px full-screen Large), control
+  roundness, buttons and their placement, Settings anatomy and switch rows, card levels and
+  one card outline per layer, popup spacing (16 between groups, 8 between boxes), "nothing
+  bare" and "a label first", status pills and notice boxes, short error boxes, card anatomy,
+  frame outline, model picker, account, Projects view, and the tags rebuild.
+- Guide draft kept in step: `guide-draft.md` (not yet approved as a whole).
+- App batches landed and approved: card levels, surface levels, popup spacing, nothing bare
+  (Sound, About, Performance, Shortcuts), Help merged with Development, last Settings
+  screens, labels batch (17 screens), quick fixes, sentence case (~150 screens), frame
+  outline, error lines/buttons/notices, status pills and provider notices, model picker,
+  account, Projects view, Appearance (theme editor removed; Particles in Additional
+  customizations), skills drawer (opens at 70%, draggable handle), Marketplace/Library
+  headings, skill editor deleted, specialist permission ask, status bar widgets menu, quick
+  chips two-shelf editor.
+- **Tags rebuilt (2026-10-02…04):** "Tags & note" is now **Session details** (name, quoted
+  note, one Tags card, Pin to top) and Resume, the side panel and the Projects preview open
+  the same popup; Priority became Pin to top; new tag pill look (level icon and word at any
+  screen scale, round ×/+ sized to the pill, 3+ tags collapse to a hover stack); status bar
+  element is icons only; the line across Resume cards removed. Redesign backlog 1–8, 14, 15
+  done (`redesign-backlog.md`).
+- **Bugs fixed along the way (tags work):** a slow tag/note read for the conversation just
+  left overwrote the one on screen (now only the newest read lands; pinned by a test); a
+  failed tag refresh is reported on both tag editors (tested); two load-sensitive tests
+  corrected (App import warmed in `beforeAll`; the random-replies budget named).
+- Tooling: `SHOOT_SCALE` for screenshots at a screen's pixel density.
 
-- Completeness check (`audit/completeness-components.md`, `audit/completeness-screens.md`):
-  every component and every capturable screen mapped against what is covered.
+**Earlier bug list (2026-09-24) — status not re-checked this session; verify in the final
+review:** Add a project / Import file close buttons; hovered vs selected rows; two
+Marketplace error colours; the unsaved-changes three dark buttons; destructive confirm side;
+skill vs theme Uninstall; Permissions doubled title; Remote Access "Keep awake" options.
 
-**Known gaps the guide does not yet cover** (from the second audit)
-- Button placement: order (Destin: dark button right, light directly left), single button
-  full width, when to stack, destructive placement; chat cards currently do the opposite.
-- Settings anatomy: one layout for label + hint + control; how choices are offered; no box
-  inside a box; one popup padding; no duplicate section labels.
-- Spacing: no set scale today (proposed 4 / 8 / 12 / 16 / 24 with named uses).
-- Card and text composition: one order for item cards; one date position; flat helper cards.
-- Smaller categories: menu containers, bottom sheets, full-screen content area, loading
-  spinners, toasts, icons, tooltips, exact status colours.
-- **Never reviewed at all** (completeness check): the message box (composer); the file
-  viewers (spreadsheet, document, PDF, image, code) and their table grids; the terminal
-  view; the code-change (diff) viewer and Git file review; the buddy floater windows and
-  mascot; the game boards; the guided-tour popups; drag-and-drop zones, thumbnails, share
-  sheets, charts (cleanup-level).
-- **Unwritten conventions to put in words:** animation timing, the keyboard focus outline,
-  and how button labels and titles are worded (Title Case vs sentence case, verbs).
-- **Screens never captured:** buddy window content (the capture tool skips it), Git file
-  review, the Android look, the phone-browser login, and the real built app (all review so
-  far used the test copy). About 15 Settings capture paths are stale since Settings was
-  reorganised and photograph the Settings menu instead of their screen; many "missed"
-  shots are stale checks, not missing pictures.
-
-**Bugs found (to fix in the app batches)**
-- Add a project and Import file popups have no close button.
-- Hovered and selected rows look identical (session drawer, project switcher, session list).
-- Two Marketplace error messages use a colour that does not exist (not red).
-- Unsaved-changes popup shows Cancel / Discard / Save as three identical dark buttons.
-- Destructive confirmations disagree on which side the red button sits.
-- Uninstall is outlined for skills but plain text for themes.
-- Permissions page shows its section title twice; Development popup has doubled padding;
-  Remote Access "Keep awake" has five options where the app's own rule says four.
-- Workbench-only change from the previous session to review: title weight, duplicated fade
-  code, test-file layout (see the code review in chat history; to be re-checked in the final
-  review).
+**Gaps still open in the guide** (from the second audit; re-run the completeness check to
+confirm what the batches above covered): the never-reviewed surfaces (message box, file
+viewers and their tables, terminal, diff/Git review, buddy windows, game boards, guided
+tour), smaller categories (bottom sheets, loading, toasts, icons, tooltips), unwritten
+conventions (motion timing, focus outline), and screens never captured (buddy content, Git
+review, Android, phone login).
 
 ## Remaining steps
 
-1. **Repair screen capture** so every screen above can be pictured: fix the stale Settings
-   paths, capture buddy windows, Git review, Android and phone-login views, and triage the
-   "missed" list. Nothing is judged from a missing or wrong picture.
-2. **Visual decision pages** for the gaps, each on real screens: button placement → Settings
-   anatomy → card and text composition (with the spacing scale shown as tidied screens) →
-   the never-reviewed surfaces (composer, file viewers, terminal, diff/Git review, buddy,
-   games, guided tour) → smaller categories and unwritten conventions. Pure cleanups (status colour values, icon sizes, spinner count) are
-   decided by the assistant and listed for Destin rather than asked.
+1. **Redesign backlog** (`redesign-backlog.md`), next up first: **16 first-run installer
+   screens** and **12 welcome / new session screen** (Destin, 2026-10-04); then 9 Marketplace
+   detail pages, 10 project switcher (rows, deleting projects), 11 games lobby/friends, 13
+   submit a ticket, 17 close session prompt's editor.
+2. **Close the guide's gaps** above with visual decision pages; re-run the completeness
+   check.
 3. **Complete the guide** from all decisions; Destin approves it section by section and as a
    whole.
 4. **Bring the Pages style kit in line** so the transfer test is fair.
@@ -109,11 +110,11 @@ related: docs/active/design/2026-09-23-ui-element-review/ (decisions, research, 
    judges each. A miss changes the guide (approved), and a fresh builder retries.
 6. **Publish:** replace the old guide at its path, archive the old one, update pointers
    (MAP, feature-flow rule, UI-review README, Pages builder).
-7. **App fix batches** — shared components first, then hand-built screens, then the bugs;
-   each batch shown before/after in light, dark, wallpaper and phone width, with tests and
-   `scripts/verify.sh`.
+7. **Merge current master into the branch** (~335 app commits behind on 2026-10-04) and
+   re-run everything.
 8. **Final review:** fresh code reviewer over the whole branch, full desktop suite, Android
-   tests if the SDK is present, a final screenshot sweep; then Destin decides on merging.
+   tests if the SDK is present, a final screenshot sweep, the 2026-09-24 bug list re-checked;
+   then Destin decides on merging.
 
 ## Completion gates
 
