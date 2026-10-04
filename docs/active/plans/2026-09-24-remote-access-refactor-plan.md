@@ -1003,8 +1003,13 @@ Destin tested the series in a dev instance.
 
 *Windows/macOS/Linux:* Desktop CI ran on sync-fix2 by `workflow_dispatch`: all three passed (run 37172839368).
 
+*sync-fix3 review fixes and fix4:*
+- sync-fix3 review fixes: da5618c32 … b9c941614. They cover the Reload bar for late screens, theme reconnect that never persists, the pill race, buddy ask-end routing, divider timestamps and the buddy refill.
+- `simplify-sync-fix4` e9ca4c0ac adds Discard/Dismiss on the phone's unsent-message note. Destin: "looks good so far" (2026-10-04).
+
 *Still open for Destin:*
 - whether the attention chime plays for a session first seen already red;
+- whether the buddy shows the live "Conversation cleared" line for Claude Code chats only (I recommend removing it, to match the ledger);
 - the real-phone pass.
 
 **Parked by Destin (2026-10-02):** the blue "reply ready" dot stays per screen, as designed in R5-3. A reply read on the computer still shows blue on the phone. The option of making "seen" shared through the record was offered, and he said "leave it for now".
