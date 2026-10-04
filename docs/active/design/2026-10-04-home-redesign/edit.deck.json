@@ -1,0 +1,60 @@
+{
+  "title": "Home page Edit mode \u2014 three ways to edit, try them",
+  "key": "home-edit-live",
+  "out": "edit.live.html",
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "live": {
+    "worktree": "sessions/ha-pages-connection/youcoded"
+  },
+  "steps": [
+    {
+      "id": "E-1",
+      "surface": "Home page",
+      "path": "Home > Edit",
+      "live": {
+        "app": "default"
+      },
+      "headline": "Which way of editing the Home page feels simplest to you?",
+      "notice": "Each one starts in Edit. Star a device, hide one, rename one, move one to another room, and set a TV's sound. The pretend Home Assistant saves renames and moves. Try the tick boxes in the middle one, and drag the grips in the last one.",
+      "risk": "All three change how Edit looks and works; the normal page outside Edit does not change.",
+      "variants": [
+        {
+          "id": "a",
+          "label": "Two buttons and More",
+          "summary": "Every card keeps its normal look, with just Favourite and Hide under it and a More button. More opens one tidy panel under that card: name, room, TV sound, earlier or later, details, and open in Home Assistant.",
+          "risk": "Changing many devices means opening More on each one. Rooms are still reordered with their small arrows.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-edit-a"
+          }
+        },
+        {
+          "id": "b",
+          "label": "Tick, then act",
+          "summary": "Each card gets a Select box, and each room a Select all. Ticked cards get a bar at the bottom: favourite, hide or move them all at once. Tick just one and the bar also lets you rename it, set TV sound, reorder it, and see details.",
+          "risk": "The bar can cover the bottom of the page while you work, and it takes a tap to tick before anything happens.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-edit-b"
+          }
+        },
+        {
+          "id": "c",
+          "label": "Organise board",
+          "summary": "Edit turns the page into slim rows, one line per device. Drag a row by its dots to reorder it, or into another room, or into a dashed box for a new room. Star and hide sit on each row; tap a name to open its settings.",
+          "risk": "You no longer see the lights and controls while editing, only names. Dragging needs a steady hand on a phone, so each row also has a Room list in its settings.",
+          "app": "default",
+          "params": {
+            "openPage": "page-home",
+            "pagesHome": "v-edit-c"
+          }
+        }
+      ]
+    }
+  ]
+}
