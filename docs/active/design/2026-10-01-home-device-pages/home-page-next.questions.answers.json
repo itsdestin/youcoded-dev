@@ -1,0 +1,58 @@
+{
+ "deck": "home-page-next-questions",
+ "started": "2026-10-04T07:45:58.017Z",
+ "submitted": "2026-10-04T07:50:11Z",
+ "cur": 0,
+ "answers": {
+  "Q-order": {
+   "v": "pick",
+   "t": 1791100210588,
+   "pick": "designs-first",
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  },
+  "Q-speed": {
+   "v": "pick",
+   "pick": "instant",
+   "t": 1791100210588,
+   "note": "if we're creating new page stuff, we should make it reusable tooling for any future similar pages. this should be part of the page platform, with appropriate guardrails",
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  },
+  "Q-bars": {
+   "v": "yes",
+   "t": 1791100210588,
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  },
+  "Q-hatheme": {
+   "v": "other",
+   "t": 1791100210588,
+   "note": "i want to look into also making them use youcoded's rounding/borders/etc. how difficult would this be?",
+   "dk": true,
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  },
+  "Q-camera": {
+   "v": "yes",
+   "t": 1791100210588,
+   "note": "they look like they're stuck in an unactionable error state, and the copy is just confusing.",
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  },
+  "Q-helper": {
+   "v": "pick",
+   "pick": "keep-branch-delete-folder",
+   "t": 1791100210588,
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  },
+  "Q-restart": {
+   "v": "yes",
+   "t": 1791100210588,
+   "note": "",
+   "seconds": 25,
+   "theme": "golden-sunbreak"
+  }
+ }
+}
