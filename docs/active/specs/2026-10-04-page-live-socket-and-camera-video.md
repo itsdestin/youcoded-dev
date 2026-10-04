@@ -1,7 +1,7 @@
 ---
-status: draft
+status: active
 date: 2026-10-04
-revision: 3 (after design reviews 1 and 2 — docs/active/reviews/2026-10-04-page-live-socket-design-review-{1,2}.md; [n] = review 1, [R2-n] = review 2)
+revision: 4 (after design reviews 1–3 — docs/active/reviews/2026-10-04-page-live-socket-design-review-{1,2,3}.md; [n] = review 1, [R2-n]/[R3-n] = reviews 2/3)
 source: home-page-next.questions (Q-speed "instant" + note "reusable tooling … part of the page platform, with appropriate guardrails"); camera decision in chat 2026-10-04 ("yes, a. event history recordings should also be able to play"); home-page-next-designs (C-camera "events")
 branch: youcoded session/ha-pages-connection
 builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)
@@ -49,8 +49,10 @@ videoProfile: {
 only, types and lengths checked by `parseConnections`, keys sorted). `socketHello` moves inside
 it. Consequence Destin will see: the Home page asks for approval once more after this ships [R2-13].
 
-**Template filling [R2-1]:** one pass; each placeholder is replaced by `JSON.stringify(value)`
-(so templates write them unquoted); `offer` ≤ 32 KB; the result must parse as a JSON object or
+**Template filling [R2-1, R3-1]:** one pass; `{{offer}}` and `{{target}}` are replaced by
+`JSON.stringify(value)` (so templates write them unquoted); `{{key}}` stays string content
+inside quotes, as today, and a `videoProfile.send` containing `{{key}}` is rejected; inserted
+text is never filled again; `offer` ≤ 32 KB; the result must parse as a JSON object or
 the video is refused. `target` = `targetPrefix` + 1–64 characters of `[a-z0-9_]`, checked in main
 — no page-authored pattern ever runs in main [R2-4].
 
@@ -186,6 +188,17 @@ frame, and the card's LIVE badge and Stop are drawn by the page) [28].
 Recent events (person / motion / doorbell, with times and thumbnails), **Watch live** → the
 picture becomes a canvas with a LIVE badge and Stop. "Watch live in Home Assistant" stays as the
 fallback when video cannot start.
+
+### Review 3 additions
+
+- **Waiting limits [R3-2]:** 10 s for `socketReady` (video) and for `'open'` (live socket);
+  then closed with a plain reason.
+- **Hidden [R3-3]:** a video stops deliberately when the page is hidden (`'stopped'`, "paused
+  while the page was hidden"); the card offers Play again. No automatic reopen.
+- **Redaction [R3-4]:** the answer, candidate and `failed` texts are redacted like every
+  received message before anything reaches the renderer.
+- **Hostnames [R3-5]:** an answer-SDP line naming a hostname is dropped; an answer left with no
+  usable candidate is refused.
 
 ## Part 3 — recorded events [8, 21]
 
