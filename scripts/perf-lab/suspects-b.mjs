@@ -265,7 +265,36 @@ async function legSheet(ctx) {
     const mid = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
     if (mid) writeFileSync(`${ctx.out}.sheet-${key}-scrolled.png`, Buffer.from(mid.data, 'base64'));
     await cdp.evaluate(`(() => { const e = ${scroller}; if (e) { e.scrollTop = 0; e.scrollLeft = 0; } })()`);
-    out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, closePrev: closed, dom, cellClickToPaintMs: click, scroll, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
+    // Select all + copy (Ctrl+A then a copy event), and the first Find. The scroller is back at the top first.
+    await cdp.evaluate(`(() => { const e = ${scroller}; if (e) { e.scrollTop = 0; e.scrollLeft = 0; } })()`);
+    const copy = await step(cdp, `sheet:copy-${key}`, async () => {
+      const r = await cdp.evaluate(`(async () => {
+        const e = ${scroller}; if (!e) return { error: 'no scroller' };
+        e.focus(); const t0 = performance.now();
+        e.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true, bubbles: true, cancelable: true }));
+        // the selection is state: let it land (a person's Ctrl+A and Ctrl+C are separate key presses)
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const t1 = performance.now(); const dt = new DataTransfer();
+        e.dispatchEvent(new ClipboardEvent('copy', { clipboardData: dt, bubbles: true, cancelable: true }));
+        const text = dt.getData('text/plain'); const ms = Math.round((performance.now() - t1) * 10) / 10; const selectMs = Math.round((t1 - t0) * 10) / 10;
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        return { copyMs: ms, selectAndPaintMs: selectMs, lines: text ? text.split('\\n').length : 0, fields: text ? text.split('\\n')[0].split('\\t').length : 0, chars: text.length };
+      })()`);
+      return { ok: !r.error, ...r };
+    }, { pingMs: 50 });
+    const find = await step(cdp, `sheet:find-${key}`, async () => {
+      const t0 = Date.now();
+      // the drawer only takes Ctrl+F while the pointer is over it; the rig has no pointer there, so say it is
+      await cdp.evaluate(`(() => { if (!Element.prototype.__m) { Element.prototype.__m = Element.prototype.matches; Element.prototype.matches = function (s) { return s === ':hover' ? true : this.__m(s); }; } })()`);
+      await cdp.evaluate(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true, cancelable: true }))`);
+      await waitFor(cdp, `!!document.querySelector('input[aria-label="Find in document"]')`, { timeoutMs: 8000, everyMs: 25 });
+      await cdp.evaluate(`(() => { const i = document.querySelector('input[aria-label="Find in document"]'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, 'item-1'); i.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+      await waitFor(cdp, `(() => { const i = document.querySelector('input[aria-label="Find in document"]'); const t = i && i.parentElement ? i.parentElement.textContent : ''; return /\\d+\\/\\d+/.test(t); })()`, { timeoutMs: 60000, everyMs: 25 });
+      const label = await cdp.evaluate(`document.querySelector('input[aria-label="Find in document"]').parentElement.textContent`);
+      await cdp.evaluate(`document.querySelector('input[aria-label="Find in document"]').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))`);
+      return { ok: true, firstFindMs: Date.now() - t0, counter: label };
+    }, { pingMs: 50 });
+    out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, closePrev: closed, copy, find, dom, cellClickToPaintMs: click, scroll, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
     const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
     if (shot) writeFileSync(`${ctx.out}.sheet-${key}.png`, Buffer.from(shot.data, 'base64'));
   }

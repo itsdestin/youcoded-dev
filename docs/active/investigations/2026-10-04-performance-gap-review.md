@@ -392,19 +392,44 @@ code (a small Excel file already costs ~0.09 s there).
 **How sure:** high. Same-run comparisons, effect sizes of 50–100×, five "after" runs agree, and a
 picture taken mid-sheet shows sticky letters/numbers and no blank holes.
 
-**Could look or feel different (all small):**
-- Columns are sized up front from the text instead of growing as they draw: widths match the old
-  look to within a few pixels; text longer than 300 px (CSV) or 400 px (Excel) now ends in "…"
-  (Excel columns used to grow without limit).
-- Every row is now exactly 24 px (the old table alternated 24/25). A wrapped Excel row's height is
-  estimated from its text, so it can be a line too tall or short.
-- Dragging across cells to copy only reaches the cells drawn (about 20 rows beyond the window edge).
-  A very fast flick can show blank paper for an instant before cells fill in.
-- Ctrl+F still finds text anywhere in the sheet, but keeps only the first 300 matches reachable;
-  Excel cells shown with a number format ("50%", "1,234") are matched by their stored value when far
-  from view.
+**Could look or feel different (final list, after the independent review fixes below):**
+- Columns are sized up front from the text each cell SHOWS (dates, "1,234.50", "50%", formula results),
+  measured with the page's font, wide and capital letters counted heavier. Widths come out within a few
+  pixels of the old look (the fixture's columns: 103 px before, ~108 px now). Text longer than 300 px (CSV)
+  or 400 px (Excel) still ends in "…" but carries its full text on hover, and Excel's formula bar now wraps
+  and shows the whole value. A right-aligned number is never cut. Old Excel columns grew without limit.
+- Every row is exactly 24 px (the old table alternated 24/25). A wrapped Excel row starts at an estimate and
+  is corrected to its real drawn height the moment it appears, so a wrapped row near the top can nudge the
+  scroll position once.
+- A selected block is now shown with a green wash (the old view showed the browser's blue text selection),
+  and drag-select, shift-click and Ctrl+A work on whole cells; selecting part of the text inside ONE cell
+  still works as before. Ctrl+C copies from the sheet's data: shown text, tab between cells, newline between
+  rows, no trailing newline (as the old table gave), only the cells that hold data (the blank padding is not
+  copied). Differences from the old copy: a cell hidden under a merged cell is an empty field so columns line
+  up when pasted (old: one field fewer in that row); text containing a tab or newline is not quoted (same as
+  old); with a single cell clicked, Ctrl+C now copies it (old: nothing). Ctrl+A inside the grid selects the
+  sheet, not the whole page.
+- A very fast flick can show blank paper for an instant before cells fill in.
+- Ctrl+F counts every matching cell in the data (true total; tested at 22,220) and Next/Previous reaches each
+  one in reading order by scrolling there; the count is per cell (a cell with the text twice counts once).
+  Results do not depend on scrolling. A search is answered from text lower-cased during the open.
+- A merged cell whose top-left corner is far off screen but whose lower part is drawn shows its pieces as
+  plain bordered blank cells (only for a sheet-sized merge, or a comment/search cell far from the window).
 - Cells with comments stay drawn wherever you scroll (the comment highlights depend on it).
+- Excel files now show "Loading spreadsheet…" about 0.5 s longer on a 2,000 × 100 sheet while the shown text is
+  prepared in 20 ms slices (this is what keeps the app from freezing); each other tab is prepared the first
+  time it is opened.
 - There was no keyboard navigation, edit mode, or scroll restoration in either viewer; none added.
+
+**Independent-review fixes (2026-10-04, same day).** A review found the first version could show the wrong
+value under a column letter next to a merged cell, copy ~1% of a selection, give an incomplete Find, and cut
+formatted text short. All fixed, each with a test seen failing first (`sheet-window-layout`,
+`sheet-grid-review`): the final "after" numbers above are from the first version; the final-code runs
+(`fix2r-after-1..4`) agree: CSV 2,000 × 100 opens in 0.21–0.28 s (longest freeze 0.09–0.16 s), Excel in
+0.86–0.96 s (longest freeze 0.24–0.37 s, ExcelJS's own file reading), click 0.02–0.03 s, slowest scroll jump
+0.09–0.14 s, closing 0.06 s with no freeze, 1,517 page elements. New measures on the 2,000 × 100 sheets:
+select-all + copy 2,000 lines × 100 fields in 10–14 ms (plus 55–86 ms to paint the selection); the first
+Find ("item-1": 22,220 matches) answered in 12–36 ms in both CSV and Excel with no freeze. Load 6–18.
 
 ### Fix 3 — scrolling no longer waits for the app
 
