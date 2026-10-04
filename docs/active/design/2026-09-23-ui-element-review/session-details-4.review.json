@@ -1,0 +1,68 @@
+{
+  "title": "Tag pills — words lined up with icons",
+  "key": "session-details-4",
+  "out": "session-details-4.review.html",
+  "images": "images/session-details-4",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "labels": {
+    "before": "Round 2",
+    "after": "Now"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "card": [
+      "x",
+      "tags",
+      "470x230+800+650"
+    ],
+    "list": [
+      "x",
+      "sessions",
+      "560x260+780+85"
+    ],
+    "caps": [
+      "x",
+      "chat",
+      "640x150+70+175"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SD4-1",
+      "surface": "Session details",
+      "path": "Click the tag element in the bottom status bar",
+      "crop": "card",
+      "headline": "The old diagonal tag icon is back, and each tag's word now sits level with the icon and the round ×/+.",
+      "changed": "These pictures are at your screen's 1.5× scale; my earlier ones were at 1×, which hid the problem. This font centres CAPITALS in the line, so lowercase words like \"work\" hung low. Words are now centred on their lowercase letters.",
+      "measured": "word was 1.5 screen px below the icon and ×; now within 0.5",
+      "notice": "Icon, word and × read as one line in every tag pill.",
+      "risk": "A tag with a capital letter still centres on its capitals, as before — only all-lowercase words moved."
+    },
+    {
+      "id": "SD4-2",
+      "surface": "Session list",
+      "path": "Click the session name at the top of the window",
+      "crop": "list",
+      "headline": "The same fix in the session list, beside the Working pill.",
+      "changed": "Every tag pill in the app uses it.",
+      "notice": "Tag pills and status pills line up the same way.",
+      "risk": ""
+    },
+    {
+      "id": "SD4-3",
+      "surface": "Chat",
+      "path": "Conversation cards Claude shows in a reply",
+      "crop": "caps",
+      "headline": "Tags with capitals (\"UI\", \"Follow-Up Needed\") keep their old centring, which already looked right.",
+      "changed": "Only all-lowercase words were moved; any word with a capital centres on its capitals as before.",
+      "notice": "Nothing changes for capitalised tags.",
+      "risk": ""
+    }
+  ]
+}

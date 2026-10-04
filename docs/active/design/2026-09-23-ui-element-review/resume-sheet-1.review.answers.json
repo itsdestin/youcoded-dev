@@ -1,0 +1,24 @@
+{
+ "deck": "resume-sheet-1",
+ "started": "2026-10-04T08:23:12.739Z",
+ "submitted": "2026-10-04T08:30:13Z",
+ "cur": 1,
+ "answers": {
+  "RS-1": {
+   "v": "yes",
+   "t": 1791102228740,
+   "note": "slightly to the right within the  pill for the plus/unselected pills",
+   "seconds": 36,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "RS-2": {
+   "note": "none of these. try again",
+   "t": 1791102612566,
+   "v": "other",
+   "seconds": 384,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

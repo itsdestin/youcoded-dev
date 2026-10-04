@@ -1,0 +1,31 @@
+{
+ "deck": "session-details-4",
+ "started": "2026-10-04T07:37:47.078Z",
+ "submitted": "2026-10-04T07:39:27Z",
+ "cur": 2,
+ "answers": {
+  "SD4-1": {
+   "note": "this styilng is still differnt. the outlines are darker on this tag now?",
+   "t": 1791099513121,
+   "v": "other",
+   "seconds": 46,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD4-2": {
+   "v": "other",
+   "t": 1791099558702,
+   "note": "the text still appears visibly lower than the tag in the work chip, despite seeming fine on the bug and idea chips below",
+   "seconds": 46,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD4-3": {
+   "v": "other",
+   "t": 1791099566543,
+   "seconds": 8,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

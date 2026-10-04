@@ -1,0 +1,24 @@
+{
+ "deck": "session-details-1",
+ "started": "2026-10-04T07:06:46.438Z",
+ "submitted": "2026-10-04T07:10:32Z",
+ "cur": 1,
+ "answers": {
+  "SD1-1": {
+   "note": "remove \"session\" above the title. we need to fix the text/icon alignement within the tag chips still, and make the plus/x buttons a bit more prominent/button-y. ",
+   "t": 1791097767653,
+   "v": "other",
+   "seconds": 161,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD1-2": {
+   "v": "other",
+   "t": 1791097831797,
+   "note": "i want to add qoutes and italics to the note, as we do for description in project view.",
+   "seconds": 64,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

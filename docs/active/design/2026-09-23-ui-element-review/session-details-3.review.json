@@ -1,0 +1,64 @@
+{
+  "title": "Tag pills — level icons",
+  "key": "session-details-3",
+  "out": "session-details-3.review.html",
+  "images": "images/session-details-3",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "card": [
+      "x",
+      "tags",
+      "300x150+535+440"
+    ],
+    "list": [
+      "x",
+      "sessions",
+      "370x170+530+60"
+    ],
+    "page": [
+      "x",
+      "tags",
+      "440x520+500+200"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SD3-1",
+      "surface": "Session details",
+      "path": "Click the tag element in the bottom status bar — layout A, as you picked",
+      "crop": "card",
+      "headline": "The tag icon now lies level and lines up with the word and the round ×/+.",
+      "changed": "The old icon stood on its corner with its weight top-left, so it looked high however it was centred. Now it's a level tag, point left, symmetric top to bottom — like the dot in the Working pill — with the dark outline gone.",
+      "measured": "icon, word and pill centres within 0.1 px of each other",
+      "notice": "Icon, word and × sit on one line in every tag pill.",
+      "risk": "The icon is a little smaller-looking than the old diagonal one."
+    },
+    {
+      "id": "SD3-2",
+      "surface": "Session list",
+      "path": "Click the session name at the top of the window",
+      "crop": "list",
+      "headline": "Same fix everywhere tags appear — here beside the Working pill for comparison.",
+      "changed": "Every tag pill in the app uses the new level icon.",
+      "notice": "Tag pills and status pills now look like one family.",
+      "risk": ""
+    },
+    {
+      "id": "SD3-3",
+      "surface": "Session details",
+      "path": "The whole page, layout A",
+      "crop": "page",
+      "headline": "The full Session details page as it will ship: name, quoted note, one Tags card, Pin to top.",
+      "changed": "Layout A with your round-2 fixes and today's icon fix.",
+      "notice": "After this I build it for real everywhere the old Tags & note editor was (status bar, Resume, side panel, Projects).",
+      "risk": "The close prompt keeps its current editor until the follow-up you asked for."
+    }
+  ]
+}

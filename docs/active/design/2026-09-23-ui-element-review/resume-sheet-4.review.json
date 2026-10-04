@@ -1,0 +1,66 @@
+{
+  "title": "Resume's sheet — one card, laid out by the guide",
+  "key": "resume-sheet-4",
+  "out": "resume-sheet-4.review.html",
+  "images": "images/resume-sheet-4",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "labels": {
+    "before": "Your pick (C)",
+    "after": "Now"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "sheet": [
+      "x",
+      "sheet",
+      "410x400+230+250"
+    ],
+    "edit": [
+      "x",
+      "edit",
+      "410x560+230+250"
+    ]
+  },
+  "steps": [
+    {
+      "id": "RS4-1",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "crop": "sheet",
+      "headline": "One card, now laid out like a Settings group: each part has its title first.",
+      "changed": "\"Note\" with its hint, then the note (or \"+ Add a note\") full width. \"Tags\", then the tag editor full width. \"Pin to top\" with its hint and the switch beside it. The card takes the nested look, since it sits inside the Resume card; 8 px between parts, 12 px inside the edge, no lines.",
+      "notice": "Every part says what it is before you reach its controls. The side panel and Projects preview get the same.",
+      "risk": "Titles make the card a little taller than your pick."
+    },
+    {
+      "id": "RS4-2",
+      "surface": "Resume",
+      "path": "Resume → the tag icon → click a tag (here \"work\")",
+      "crop": "edit",
+      "runs": [
+        "after"
+      ],
+      "labels": {
+        "after": "Now"
+      },
+      "highlight": {
+        "box": [
+          5,
+          50,
+          90,
+          48
+        ]
+      },
+      "headline": "A tag's edit box still opens in place, under the tags.",
+      "changed": "The same edit box as Session details: name, colour, archived, then Delete / Cancel / Save.",
+      "notice": "Nothing to learn twice.",
+      "risk": "With the edit box open the card gets tall and the next conversation moves down."
+    }
+  ]
+}

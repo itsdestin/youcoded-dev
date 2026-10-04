@@ -1,0 +1,91 @@
+{
+  "title": "Round buttons sized down · Resume's own sheet",
+  "key": "resume-sheet-1",
+  "out": "resume-sheet-1.review.html",
+  "images": "images/resume-sheet-1",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "labels": {
+    "before": "Last round",
+    "after": "Now"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "pills": [
+      "x",
+      "tags",
+      "510x240+790+640"
+    ],
+    "list": [
+      "x",
+      "sessions",
+      "600x330+780+50"
+    ],
+    "sA": [
+      "x",
+      "sheetA",
+      "410x560+230+250"
+    ],
+    "sB": [
+      "x",
+      "sheetB",
+      "410x560+230+250"
+    ],
+    "sC": [
+      "x",
+      "sheetC",
+      "410x560+230+250"
+    ]
+  },
+  "steps": [
+    {
+      "id": "RS-1",
+      "surface": "Tags everywhere",
+      "path": "Any tag with a round × or + (Session details, session list…)",
+      "crop": "pills",
+      "headline": "The round × and + are smaller, so each leaves a margin of pill above and below it.",
+      "changed": "Three sizes, one per pill size: 10 px in the small list pills, 12 px in Session details' other tags, 16 px on this session's tags.",
+      "measured": "2-4 px of pill now shows above and below each button",
+      "notice": "The buttons no longer crowd the pill's edge.",
+      "risk": "A smaller button is a slightly smaller target to click."
+    },
+    {
+      "id": "RS-2",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "headline": "Which sheet fits Resume's narrow panel best?",
+      "runs": [
+        "after"
+      ],
+      "notice": "All three drop the big cards-in-a-card of Session details. The note shows quoted, or \"+ Add a note\", without hanging into the margin. Same tags and Pin to top underneath. The side panel and Projects preview would get your pick too.",
+      "risk": "Session details itself (the status bar popup) is unchanged.",
+      "variants": [
+        {
+          "id": "A",
+          "label": "Flat",
+          "crop": "sA",
+          "summary": "No inner cards: \"Note\" and \"Tags\" labels, then everything laid flat in the Resume card."
+        },
+        {
+          "id": "B",
+          "label": "Add on demand",
+          "crop": "sB",
+          "summary": "The note, this session's tags and a \"+ Add tag\" pill; the search and other tags appear only when you press it. Shortest.",
+          "risk": "One more click to add a tag."
+        },
+        {
+          "id": "C",
+          "label": "One card",
+          "crop": "sC",
+          "summary": "Note, tags and Pin together in a single inset card.",
+          "risk": "Still a card inside the Resume card."
+        }
+      ]
+    }
+  ]
+}

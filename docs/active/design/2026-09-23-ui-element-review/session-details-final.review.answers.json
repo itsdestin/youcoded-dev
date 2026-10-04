@@ -1,0 +1,45 @@
+{
+ "deck": "session-details-final",
+ "started": "2026-10-04T08:16:16.127Z",
+ "submitted": "2026-10-04T08:18:31Z",
+ "cur": 4,
+ "answers": {
+  "SF-1": {
+   "note": "the outer container of the + button is a bit too big. overlaps almost with edge of the tag pill",
+   "t": 1791101815553,
+   "v": "other",
+   "seconds": 39,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SF-2": {
+   "note": "i think this needs to be a different surface than the session details page. we need to tune it to fit this panel. ",
+   "t": 1791101877541,
+   "v": "other",
+   "seconds": 62,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SF-3": {
+   "v": "yes",
+   "t": 1791101888549,
+   "seconds": 11,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SF-4": {
+   "v": "yes",
+   "t": 1791101902496,
+   "seconds": 14,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SF-5": {
+   "v": "yes",
+   "t": 1791101909690,
+   "seconds": 7,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

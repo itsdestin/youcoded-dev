@@ -1,0 +1,66 @@
+{
+ "deck": "tags-final",
+ "started": "2026-10-04T06:50:57.199Z",
+ "submitted": "2026-10-04T07:01:29Z",
+ "cur": 7,
+ "answers": {
+  "TF-1": {
+   "v": "other",
+   "t": 1791097173713,
+   "seconds": 371,
+   "theme": "dark",
+   "zoom": 1,
+   "note": "i think i want to refine further and make this to be a new \"session details\" page. i want the first card to kinda mirror the project card title/description, with the session name first and then a section with the current not in quote styling or the \"add note\" button. i think i want to change how the applied/not applied/archived styles look, and maybe make applied more prominent and possible put it in a new section. i want 3 updated renders of this page given my instructions."
+  },
+  "TF-2": {
+   "v": "yes",
+   "t": 1791097197393,
+   "seconds": 59,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "TF-3": {
+   "v": "yes",
+   "t": 1791097216115,
+   "seconds": 26,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "TF-4": {
+   "v": "other",
+   "t": 1791097239032,
+   "seconds": 86,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "TF-5": {
+   "v": "other",
+   "t": 1791097264671,
+   "seconds": 35,
+   "theme": "dark",
+   "zoom": 1,
+   "note": "want to work on this page more as another follow up"
+  },
+  "TF-6": {
+   "v": "yes",
+   "t": 1791097281833,
+   "seconds": 28,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "TF-7": {
+   "v": "yes",
+   "t": 1791097285864,
+   "seconds": 14,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "TF-8": {
+   "v": "yes",
+   "t": 1791097287422,
+   "seconds": 13,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

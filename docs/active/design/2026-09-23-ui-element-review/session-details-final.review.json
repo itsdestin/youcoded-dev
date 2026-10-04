@@ -1,0 +1,100 @@
+{
+  "title": "Session details — built for real",
+  "key": "session-details-final",
+  "out": "session-details-final.review.html",
+  "images": "images/session-details-final",
+  "runs": {
+    "before": "r/before",
+    "after": "r/after"
+  },
+  "labels": {
+    "before": "Before",
+    "after": "Now"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "popup": [
+      "x",
+      "tags",
+      "660x855+750+270"
+    ],
+    "resume": [
+      "x",
+      "resume",
+      "420x470+225+250"
+    ],
+    "list": [
+      "x",
+      "sessions",
+      "600x330+780+50"
+    ],
+    "close": [
+      "x",
+      "close-session",
+      "540x480+825+450"
+    ],
+    "bar": [
+      "x",
+      "chat",
+      "780x60+0+1297"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SF-1",
+      "surface": "Session details",
+      "path": "Click the tag element in the bottom status bar",
+      "crop": "popup",
+      "headline": "Tags & note is now Session details, as you approved it: name, note, one Tags card, Pin to top.",
+      "changed": "The name leads the top card (click to rename); the note shows in quotes and italics, or \"+ Add a note\". This session's tags come first, larger; the others below \"Add a tag\". Pictures at your 1.5× scale. \"Before\" is the main redesign branch, so this shows every tags change since then.",
+      "notice": "Everything about the session in one popup; nothing needs saving.",
+      "risk": "A long note makes the top card tall and pushes the tags down."
+    },
+    {
+      "id": "SF-2",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "crop": "resume",
+      "themes": [
+        "dark"
+      ],
+      "headline": "Resume's organize sheet is the same page, minus the name — the card right above already shows it.",
+      "changed": "The Note box became the note card (\"+ Add a note\" or the quoted note); tags and Pin to top as in the popup. The side panel and Projects preview get the same.",
+      "notice": "Organizing a conversation looks the same wherever you do it.",
+      "risk": "Without a name above it, the note card can look a little empty until a note is written."
+    },
+    {
+      "id": "SF-3",
+      "surface": "Session list",
+      "path": "Click the session name at the top of the window",
+      "crop": "list",
+      "headline": "Tag pills everywhere: the original icon, word and icon drawn as one line so they stay level.",
+      "changed": "The fix from the live comparison (\"As now\"), in every tag pill in the app.",
+      "notice": "Tags line up with their icons on your screen.",
+      "risk": ""
+    },
+    {
+      "id": "SF-4",
+      "surface": "Close session",
+      "path": "Close a session (the × on its tab)",
+      "crop": "close",
+      "headline": "The close prompt keeps its editor for now — only its tag pills changed, as you asked.",
+      "changed": "Its summary shows the new pills; its editor waits for the follow-up you asked for.",
+      "notice": "Nothing else moves here yet.",
+      "risk": ""
+    },
+    {
+      "id": "SF-5",
+      "surface": "Status bar",
+      "path": "The bottom strip of the window",
+      "crop": "bar",
+      "headline": "The status bar element as you approved it earlier: pin, stacked tag colours, note page.",
+      "changed": "Approved in the tags deck (\"Priority +1\" became icons); shown again because \"Before\" here is the main redesign branch, which doesn't have it yet.",
+      "notice": "Pinned, tagged and noted are told apart at a glance.",
+      "risk": ""
+    }
+  ]
+}

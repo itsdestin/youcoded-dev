@@ -1,0 +1,33 @@
+{
+ "deck": "session-details-2",
+ "started": "2026-10-04T07:20:14.387Z",
+ "submitted": "2026-10-04T07:22:45Z",
+ "cur": 2,
+ "answers": {
+  "SD2-1": {
+   "v": "pick",
+   "pick": "A",
+   "t": 1791098470851,
+   "note": "text/icon centering/alignment within the tag pill elements is still weird.",
+   "seconds": 56,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD2-2": {
+   "note": "looks good",
+   "t": 1791098491362,
+   "v": "other",
+   "seconds": 21,
+   "theme": "dark",
+   "zoom": 1
+  },
+  "SD2-3": {
+   "v": "other",
+   "t": 1791098564625,
+   "note": "confused. text/icon alignment still wonky. this is also just a weird deck page? it doesnt seem like the options are really optoins?",
+   "seconds": 73,
+   "theme": "dark",
+   "zoom": 1
+  }
+ }
+}

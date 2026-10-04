@@ -128,6 +128,10 @@ underline under its words. Labels over short settings groups stay plain.
   sentence.
 - Switching views or filters uses the shared tab strip and filter chips, following the same
   roundness.
+- **An edit button for a list is shaped like the things it edits** (the status bar's, quick
+  chips', tags'): a pill among pills, a chip among chips. A "+ New" button among tags is a tag-
+  shaped pill, dashed so it never reads as a tag. One deliberate exception: the New tag box's
+  Cancel is red.
 
 ### Settings
 - **Small controls (switches) sit beside** the setting's title and hint, on the right, **vertically centred**.

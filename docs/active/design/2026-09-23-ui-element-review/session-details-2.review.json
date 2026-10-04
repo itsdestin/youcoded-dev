@@ -1,0 +1,125 @@
+{
+  "title": "Session details — round 2",
+  "key": "session-details-2",
+  "out": "session-details-2.choice.html",
+  "images": "images/session-details-2",
+  "runs": {
+    "today": "r/today"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "A": [
+      "x",
+      "A",
+      "440x520+500+200"
+    ],
+    "B": [
+      "x",
+      "B",
+      "440x520+500+200"
+    ],
+    "C": [
+      "x",
+      "C",
+      "440x520+500+200"
+    ],
+    "note": [
+      "x",
+      "note",
+      "440x520+500+190"
+    ],
+    "chips": [
+      "x",
+      "A",
+      "400x170+520+440"
+    ],
+    "list": [
+      "x",
+      "sessions",
+      "400x200+525+55"
+    ]
+  },
+  "steps": [
+    {
+      "id": "SD2-1",
+      "surface": "Session details",
+      "path": "Click the tag element in the bottom status bar",
+      "headline": "Your three fixes are in. Which layout should Session details use?",
+      "notice": "All three now: no \"Session\" label — the name leads the card; × and + are small round buttons; tag icons sit level with the words.",
+      "risk": "The sample session has only one tag, so \"On this session\" looks emptier than it would with several.",
+      "variants": [
+        {
+          "id": "A",
+          "label": "One Tags card",
+          "crop": "A",
+          "summary": "This session's tags first, big; then \"Add a tag\" with the search and the rest, all in one card.",
+          "risk": "Applied and available share a card; the split is size and a small label."
+        },
+        {
+          "id": "B",
+          "label": "Two cards of pills",
+          "crop": "B",
+          "summary": "\"On this session\" in its own card of big pills; \"More tags\" holds the search, the rest and + New tag.",
+          "risk": "One more card, so a little taller."
+        },
+        {
+          "id": "C",
+          "label": "Applied as a list",
+          "crop": "C",
+          "summary": "\"On this session\" is one row per tag with a Remove button; \"More tags\" as in B.",
+          "risk": "Tallest when a session has many tags."
+        }
+      ]
+    },
+    {
+      "id": "SD2-2",
+      "surface": "Session details",
+      "path": "Session details → + Add a note, type, close and reopen",
+      "headline": "The note now reads like a project's description: in quotes and italics.",
+      "themes": [
+        "dark"
+      ],
+      "notice": "Click the note to edit it; the editing box is italic too, so nothing jumps.",
+      "risk": "A long note makes the top card tall and pushes the tags down.",
+      "variants": [
+        {
+          "id": "note",
+          "label": "Note written",
+          "crop": "note",
+          "summary": "“Quoted, italic” under the name."
+        },
+        {
+          "id": "empty",
+          "label": "No note yet",
+          "crop": "A",
+          "summary": "A small dashed \"+ Add a note\" under the name."
+        }
+      ]
+    },
+    {
+      "id": "SD2-3",
+      "surface": "Tags everywhere",
+      "path": "Any tag pill: Session details, the session list, Resume, the close prompt",
+      "headline": "Round × and + buttons and level icons apply to every tag in the app, not just this page.",
+      "notice": "The × and + are now small round buttons, easier to see and hit; the tag icon no longer rides above the word.",
+      "risk": "The round button makes each pill about 4 px wider.",
+      "variants": [
+        {
+          "id": "card",
+          "label": "In Session details",
+          "crop": "chips",
+          "summary": "Close-up of the tags card."
+        },
+        {
+          "id": "list",
+          "label": "In the session list",
+          "crop": "list",
+          "summary": "The same pills in the list under the session name."
+        }
+      ]
+    }
+  ]
+}

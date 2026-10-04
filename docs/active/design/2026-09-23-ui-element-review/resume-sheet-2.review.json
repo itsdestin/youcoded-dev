@@ -1,0 +1,74 @@
+{
+  "title": "Resume's sheet — try again",
+  "key": "resume-sheet-2",
+  "out": "resume-sheet-2.choice.html",
+  "images": "images/resume-sheet-2",
+  "runs": {
+    "today": "r/today"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "D": [
+      "x",
+      "D",
+      "410x560+230+250"
+    ],
+    "E": [
+      "x",
+      "E",
+      "410x560+230+250"
+    ],
+    "Eo": [
+      "x",
+      "Eo",
+      "410x560+230+250"
+    ],
+    "F": [
+      "x",
+      "F",
+      "410x560+230+250"
+    ]
+  },
+  "steps": [
+    {
+      "id": "RS2-1",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "headline": "Three new tries, each borrowing Resume's own panel instead of the popup. Which fits?",
+      "notice": "Resume's own expanded panel uses small grey captions over each control and plain switch rows with no boxes; D copies that exactly. Your pick also goes to the side panel and Projects preview. The + in the small pills now sits a pixel further right, as you asked.",
+      "risk": "Session details (the status bar popup) stays as approved.",
+      "variants": [
+        {
+          "id": "D",
+          "label": "Like the Resume panel",
+          "crop": "D",
+          "summary": "\"Note\" and \"Tags\" as grey captions with the controls under them, then a plain Pin to top switch — the same look as Model and Skip permissions below.",
+          "risk": "Tallest of the three, since everything shows at once."
+        },
+        {
+          "id": "E",
+          "label": "Fold-out rows",
+          "crop": "E",
+          "summary": "Note, Tags and Pin to top as three boxed rows, like Settings. Each row says what's set; click Note or Tags to open it in place.",
+          "risk": "One click to see or change anything."
+        },
+        {
+          "id": "E-open",
+          "label": "Fold-out rows, Tags opened",
+          "crop": "Eo",
+          "summary": "The same as E after clicking Tags: the tag editor opens right under the row."
+        },
+        {
+          "id": "F",
+          "label": "Tabs",
+          "crop": "F",
+          "summary": "A \"Tags | Note\" switch shows one at a time; Pin to top under it.",
+          "risk": "The note is hidden until you switch to it."
+        }
+      ]
+    }
+  ]
+}

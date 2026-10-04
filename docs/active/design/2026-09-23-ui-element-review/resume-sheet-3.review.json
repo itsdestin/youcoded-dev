@@ -1,0 +1,62 @@
+{
+  "title": "Resume's sheet — without the line",
+  "key": "resume-sheet-3",
+  "out": "resume-sheet-3.choice.html",
+  "images": "images/resume-sheet-3",
+  "runs": {
+    "today": "r/today"
+  },
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "crops": {
+    "A": [
+      "x",
+      "A",
+      "410x560+230+250"
+    ],
+    "B": [
+      "x",
+      "B",
+      "410x560+230+250"
+    ],
+    "C": [
+      "x",
+      "C",
+      "410x560+230+250"
+    ]
+  },
+  "steps": [
+    {
+      "id": "RS3-1",
+      "surface": "Resume",
+      "path": "Resume → the tag icon on a conversation",
+      "headline": "The line across the card is gone. With it gone, does one of the first three fit?",
+      "notice": "The line came from the Resume card itself, so it was in every version you saw — the first three included. It's removed here, and above the narrow-screen Resume panel too, which had the same line. Your pick also goes to the side panel and Projects preview.",
+      "risk": "If none fits, tell me what bothers you most and I'll aim the next round at that.",
+      "variants": [
+        {
+          "id": "A",
+          "label": "Flat",
+          "crop": "A",
+          "summary": "\"Note\" and \"Tags\" labels, then everything laid flat in the card."
+        },
+        {
+          "id": "B",
+          "label": "Add on demand",
+          "crop": "B",
+          "summary": "The note, this session's tags and \"+ Add tag\"; the search and other tags appear when you press it. Shortest.",
+          "risk": "One more click to add a tag."
+        },
+        {
+          "id": "C",
+          "label": "One card",
+          "crop": "C",
+          "summary": "Note, tags and Pin together in a single inset card.",
+          "risk": "A card inside the Resume card."
+        }
+      ]
+    }
+  ]
+}

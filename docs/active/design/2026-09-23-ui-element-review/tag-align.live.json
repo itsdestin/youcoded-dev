@@ -1,0 +1,23 @@
+{
+  "title": "Tag pills — which looks level on your screen?",
+  "key": "tag-align-live",
+  "out": "tag-align.live.html",
+  "themes": ["midnight"],
+  "live": { "worktree": "ui-session-details", "paneWidth": 440 },
+  "steps": [
+    {
+      "id": "TA-1",
+      "surface": "Tags everywhere",
+      "path": "Every tag pill — session list, Session details, Resume, chat cards",
+      "headline": "These are the real pills on your own screen. In which pane do the word and the tag icon look level?",
+      "notice": "Look at \"work\" first — that's the one that looked off. The old icon is back exactly as before; the word and icon are now drawn as one line, and every pill keeps its size. Only the icon moves between panes, one pixel each way.",
+      "risk": "A one-pixel move can't suit every word; pick the pane that looks right for most.",
+      "live": { "surface": "tag-pill-align", "round": 1 },
+      "variants": [
+        { "id": "now", "label": "As now", "candidate": "now", "summary": "No nudge." },
+        { "id": "word-up", "label": "Word 1 px higher", "candidate": "word-up", "summary": "The word sits a pixel higher against the icon." },
+        { "id": "word-down", "label": "Word 1 px lower", "candidate": "word-down", "summary": "The word sits a pixel lower against the icon." }
+      ]
+    }
+  ]
+}
