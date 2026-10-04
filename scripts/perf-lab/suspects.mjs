@@ -39,7 +39,7 @@ const LEGS = ['wheel', 'fence', 'flood'];
 // WHY opt-in 'mixed' (2026-10-04, fix 5): a realistic reply (headings, lists, table, short fences, links) streamed
 // the same way as the prose control, with commit/layout counts per delta. Not in the default run.
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'fence-noblank', 'fence-bare'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'notermcut', 'fence-noblank', 'fence-bare'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -476,13 +476,15 @@ async function legEcho(ctx) {
 // terminals the session has no desktop terminal at all — the same position as a phone-driven session with the
 // desktop closed. The brake must not apply: the producer should finish about as fast as it did before any brake existed
 // (~2 s for 200 MB), memory must stay bounded, and the newest output must still arrive once the page is back.
-async function legNoTerm(ctx, mb) {
+async function legNoTerm(ctx, mb, modes = false) {
   const { cdp, bound, fixtureHome, app } = ctx, out = { mb };
   const id = await toTerminalView(ctx);
-  const marker = `[perf-lab] flood complete: ${mb} MB`;
+  // modes: the producer ends with ~7 MB of Ink-style frames, so the buffer that waits for a terminal is CUT (cap 4 M) and the
+  // program is asked to repaint when the terminal mounts; the tail to look for is the final frame.
+  const marker = modes ? 'FRAME FINAL line 5' : `[perf-lab] flood complete: ${mb} MB`;
   const pssBefore = pssMb(classifyPids(app));
   const t0 = Date.now();
-  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}\r`)}); true`), 'send flood');
+  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood${modes ? '-modes' : ''} ${mb}\r`)}); true`), 'send flood');
   await sleep(300);
   // WHY about:blank and not a reload: after a plain reload the new page mounts the terminal again (hidden, behind the
   // chat view), so the hidden-terminal allowance — not "no terminal" — paced the rest (first attempt: 116 MB in 178 s).
@@ -505,6 +507,15 @@ async function legNoTerm(ctx, mb) {
   // The page comes back: does the newest output (marker + prompt) reach the new terminal?
   const shown = await bound(cdp.evaluate(`(async () => { const t = Date.now(); while (Date.now() - t < 60000) { const txt = window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 8) ?? ''; if (txt.includes(${JSON.stringify(marker)})) return { ok: true, ms: Date.now() - t, tail: txt.slice(-100) }; await new Promise(r => setTimeout(r, 100)); } return { ok: false, tail: (window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 4) ?? '').slice(-100) }; })()`), 'tail after reload', 90000).catch(e => ({ error: e.message }));
   out.tailAfterReload = shown;
+  if (modes) {
+    await sleep(1500);   // the repaint nudge (two SIGWINCH, 120 ms apart) has landed
+    const text = await bound(cdp.evaluate(`window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 60) ?? ''`), 'screen text').catch(() => '');
+    out.screenDump = text.split('\n').map((l, i) => `${i}:${l.slice(0, 50)}`).filter(l => !/^\d+:\s*$/.test(l)).slice(-12);
+    out.finalFrameCopies = (text.match(/FRAME FINAL line 1 /g) || []).length;
+    out.staleFrames = (text.match(/FRAME \d+ line/g) || []).length;
+    out.strayFragments = (text.match(/\[\d+(;\d+)*m|(^|\n)\d+(;\d+)*m/g) || []).slice(0, 5);
+    out.modesAfter = await bound(cdp.evaluate(`window.__terminalRegistry?.getTerminalModes(${JSON.stringify(id)})`), 'modes');
+  }
   await sleep(8000);
   out.pssAfterSettle = pssMb(classifyPids(app));
   out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
@@ -600,7 +611,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'notermcut' ? await legNoTerm(ctx, opts.floodMb, true) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));

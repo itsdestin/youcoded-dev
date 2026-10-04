@@ -740,3 +740,31 @@ screen (no graphics card), machine load 5-7 unless noted. "Before" figures are f
 - Windows and macOS: terminal brake and the hidden-window behaviour were reasoned/read there, not run (4f).
 - A phone: nothing here was measured on Android; the shared page code changed (fixes 1, 2, 5), the phone paths did not.
 - Prose busy time did not reach the 25% goal; see 4g for why it cannot on this rig.
+
+### 4f, round 4 (2026-10-04, after the third re-review) — app commit `d350ba371`
+
+**The blocking defect, and how it hid.** The pre-mount repaint nudge added in round 3 was never delivered: the router called
+`sessionManager.bounceSize?.()`, the real `SessionManager` had no such method (my edit to add it matched nothing and was not
+checked), the optional call did nothing silently, and the test double supplied the method. Fixed: the method exists, the router's
+dependency is required (a missing method now fails type-check), `terminal-flow-wiring.test.ts` pins the real class's surface, and
+`session-manager.test.ts` goes through the real class to the worker. **Audit of the series for the same pattern:** every other edit
+of mine was re-checked by text (23 anchors, all present); the only other optional calls on dependencies are `window.claude.session.ackOutput?.`
+and `requestRepaint?.` (the preload and the shim both define them, pinned by `ipc-channels.test.ts`) and the feeder's
+`onRepaintNeeded`/`isAlive` options (the real `TerminalView` supplies both, pinned by a source test). One dead method found and removed
+(`resetOutputCredit`: main now keeps per-window books, so nothing called it, yet a test asserted it was "not called").
+
+| # | Finding | Fix (red seen on the old code) |
+|---|---|---|
+| 2 | Overlapping nudges could leave the PTY one column narrow | The worker owns the nudge: a request during the 120 ms window is ignored; the restore returns to the ORIGINAL size unless a real resize arrived (flagged, not guessed from the size). |
+| 3 | The renderer's own two resizes could override a phone's size | The renderer no longer resizes: it asks main (`session:terminal-repaint`, desktop window only; shim no-op, host ignores it, Android has no branch — pinned) and the worker arbitrates. Test: a resize from another device between the halves keeps its size. |
+| 4 | Plain shells and line floods would be nudged needlessly | A nudge is requested only when the cut text repainted with relative cursor moves / line erases (`CSI nA`, `CSI nF`, `CSI 2K`) or the alternate screen was on. Plain line-oriented floods never get one (tested at the trim, feeder and router levels). |
+| 5 | Scroll-region replay homes the cursor | Replayed only when the alternate screen is on. |
+
+Rig, final build (producer frames shortened to 51 characters: the first version's 81-character lines wrapped in an 80-column
+terminal and produced stale copies that were the rig's, not the app's). **Pre-mount cut (page blanked, 200 MB ending in ~7 MB of
+Ink-style frames, page returns; `--only notermcut`): final frame exactly once, no stale fragments, no stray escape fragments, bracketed paste ON and
+cursor hidden in 3 of 3 runs** (the frame sits at the top: the cut kept only frames, as a terminal that only ever saw them would show).
+**Hidden-window cut (`--only cut`), 3 runs: final frame exactly once in 3 of 3, modes right, no stray fragments; stale partial frames
+(2 lines, 4 lines) above it in 2 of 3** — fragments from cuts made WHILE the window was still hidden and the animation running at ~3 MB/s,
+which the repaint nudge cannot clean (it repaints the frame, not the rows above). Claude Code's own animation is ~20 KB/s, far below the
+0.5 MB/s allowance, so this does not queue or cut in normal use.

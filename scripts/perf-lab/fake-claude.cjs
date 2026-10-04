@@ -216,7 +216,7 @@ process.stdin.on('data', (buf) => {
           // An Ink-style animation as the LAST output: a 5-line frame redrawn in place with RELATIVE cursor moves
           // (up 5, erase to end of screen), ~5 MB of frames, so the part of the backlog a cut keeps begins in the middle
           // of it. The final frame is redrawn on SIGWINCH (the app's repaint nudge) the way Ink does.
-          const frame = n => Array.from({ length: 5 }, (_, k) => `\x1b[36m| FRAME ${n === -1 ? 'FINAL' : n} line ${k + 1} ${'-'.repeat(60)}\x1b[0m\r\n`).join('');
+          const frame = n => Array.from({ length: 5 }, (_, k) => `\x1b[36m| FRAME ${n === -1 ? 'FINAL' : n} line ${k + 1} ${'-'.repeat(30)}\x1b[0m\r\n`).join('');
           let out = `\r\n[perf-lab] flood complete: ${mb} MB\r\n` + frame(0);
           const flushOut = () => { const b = Buffer.from(out); let o = 0; while (o < b.length) o += fs.writeSync(1, b, o, b.length - o); out = ''; };
           for (let n = 1; n <= 20000; n++) { out += '\x1b[5A\x1b[0J' + frame(n); if (out.length > 60000) flushOut(); }
