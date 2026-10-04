@@ -11,6 +11,7 @@ paths:
   - "**/desktop/src/renderer/components/outgoing-message.ts"
   - "**/desktop/test-conpty/**"
   - "**/desktop/src/renderer/components/TerminalView.tsx"
+  - "**/desktop/src/renderer/hooks/terminal-feeder.ts"
   # Menu drivers that type into CC's live menus (2026-09-24): digit / verified-arrow rules apply.
   - "**/desktop/src/renderer/state/ink-menu-driver.ts"
   - "**/desktop/src/renderer/state/plan-menu-driver.ts"
@@ -36,6 +37,8 @@ verify:
   - test: youcoded/desktop/tests/startup-dialogs.test.ts
   - test: youcoded/desktop/tests/plan-menu-driver.test.ts
   - test: youcoded/desktop/tests/menu-answer-lock.test.ts
+  - test: youcoded/desktop/tests/pty-worker-flow.test.ts
+  - test: youcoded/desktop/tests/terminal-feeder.test.ts
   - path: youcoded/desktop/src/main/menu-answer-lock.ts
     contains: "MENU_ANSWER_LEASE_MS"
 ---
@@ -50,6 +53,11 @@ verify:
 - **Paste classification is LENGTH-GATED at exactly 64 bytes for CC v2.1.119** (a `\r` in a ≥64-byte atomic write becomes paste content). Three paths: passthrough (no trailing `\r`), **atomic submit** (`\r` AND ≤`SAFE_ATOMIC_LEN`=56 bytes), **echo-driven submit** (`\r` AND >56 — chunk the body ≤56 bytes, then send `\r` separately).
 - **Desktop echo-driven: wait for the body tail to echo from CC stdout, then write `\r` as one byte** (no timing assumption). **On echo timeout (12s) SUPPRESS the CR** — no echo ⇒ a live Ink menu has focus; `useSubmitConfirmation` retries. **Never reintroduce** the blind fallback CR (youcoded#110), the 600ms enter-split, `>56`-byte atomic writes, or bracketed paste (ConPTY mangles it). Android keeps its 600ms gap.
 - **Optimistic bubble and PTY send derive from ONE sanitized string** (`outgoing-message.ts`) — the transcript confirms by content, and the send swaps newlines and tabs for spaces. Divergence leaves bubbles `pending` forever.
+
+## Output flow control (2026-10-04) — `pty-worker.js` flow block, `renderer/hooks/terminal-feeder.ts`, `session:terminal-ack`
+- **PTY output is braked end to end; never forward it unbounded.** The worker batches reads (first chunk after quiet goes out at once, the rest merge for ≤4 ms / 256 K chars) and counts characters main has not yet had acknowledged; above 1 M it `pause()`s the PTY (the kernel then blocks the program), below 256 K it resumes. The renderer's `terminal.write` callback → `session.ackOutput` → main (`TERMINAL_ACK`, believed only from the session's OWNER window) → worker `{type:'ack'}`. **Why:** xterm silently DISCARDS input past ~50 M pending characters — a 200 MB flood lost ~75% including the final lines and prompt, stalled main 150–580 ms and grew the worker 80 MB. **Guard:** `pty-worker-flow.test.ts` (fake PTY and real PTY), `terminal-feeder.test.ts`.
+- **A paused PTY must never be held through the child's exit:** Unix node-pty destroys the output socket 200 ms after the child exits and drops unread bytes (the final lines), so the worker polls the exit flags while paused and resumes; kill/handoff/exit disable the brake for good. A silent-ack stall (15 s) lets one more window through, so a lost ack degrades to a trickle, never a frozen session.
+- **Only the desktop's own window brakes the program.** Phones/remote browsers (`remote-shim` `ackOutput` is a no-op, host ignores `session:terminal-ack`) and buddy windows never ack, so a slow phone cannot stall the desktop; the phone app's own PTY runtime is unchanged. A hidden terminal is fed at a sustained 512 K chars/s (1 M burst) and writes its whole backlog the moment it is shown — never drop, only delay.
 
 ## Never write to the PTY during a pending interaction (`pty-input-gate.ts`)
 - **CC's Ink select menu is LIVE in the PTY while a hook permission card is up** — a bare `\r` auto-answers the highlighted option. Every automated writer MUST consult `hasPendingInteraction`/`canRetrySubmit` (or `HookRelay.hasPendingPermission`). Deliberate menu-drivers (the card drivers below, xterm keystrokes) bypass.

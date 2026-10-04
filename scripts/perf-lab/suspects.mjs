@@ -34,6 +34,8 @@ import { installTerminalHelpers } from './scenario-terminal.mjs';
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const LEGS = ['wheel', 'fence', 'flood'];
+// WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
+const EXTRA_LEGS = ['ctrlc', 'echo'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -48,7 +50,7 @@ export function parseOptions(argv, root = ROOT) {
   o.floodViews = String(o.floodViews).split(',');
   if (o.floodViews.some(v => !['visible', 'hidden'].includes(v))) throw Error('--flood-views takes visible,hidden');
   o.only = o.only.split(',');
-  if (o.only.some(l => !LEGS.includes(l))) throw Error(`--only takes ${LEGS.join(',')}`);
+  if (o.only.some(l => ![...LEGS, ...EXTRA_LEGS].includes(l))) throw Error(`--only takes ${[...LEGS, ...EXTRA_LEGS].join(',')}`);
   return o;
 }
 
@@ -277,6 +279,10 @@ async function legFlood(ctx, mb, rate = 0) {
     // Where did the bytes stop? Ask the renderer what it received and what xterm shows.
     const finalState = await bound(cdp.evaluate(`({ bytes: window.__flood.bytes, chunks: window.__flood.chunks, done: window.__flood.doneAt !== null, lastAtMsAgo: window.__flood.lastAt === null ? null : Math.round(performance.now() - window.__flood.lastAt), firstAtMs: window.__flood.firstAt === null ? null : Math.round(window.__flood.firstAt - window.__flood.t0), lastByteAtMs: window.__flood.lastAt === null ? null : Math.round(window.__flood.lastAt - window.__flood.t0), doneAtMs: window.__flood.doneAt === null ? null : Math.round(window.__flood.doneAt - window.__flood.t0), tail: window.__flood.tail, xtermTail: window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 4) ?? null })`), 'final state').catch(e => ({ error: e.message }));
     await stopIpcStallProbe(cdp).catch(() => {}); await stopProbe(cdp).catch(() => {});
+    // WHY (2026-10-04, terminal flow control): "the window RECEIVED the marker" is not "the terminal SHOWS it".
+    // With backpressure the terminal is still drawing when the last chunk arrives, and without it xterm throws
+    // the tail away; this waits (up to 60 s) for the marker AND the prompt to be on the xterm screen and says how long it took.
+    const xtermSettled = await bound(cdp.evaluate(`(async () => { const t = performance.now(); let txt = ''; while (performance.now() - t < 60000) { txt = window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 6) ?? ''; if (txt.includes(${JSON.stringify(marker)}) && /> *$/m.test(txt.trimEnd().split('\\n').pop() ?? '')) return { ok: true, ms: Math.round(performance.now() - t), tail: txt.slice(-160) }; await new Promise(r => setTimeout(r, 20)); } return { ok: false, ms: 60000, tail: txt.slice(-160) }; })()`), 'xterm settle', 70000).catch(e => ({ error: e.message }));
     await bound(cdp.evaluate('window.__flood?.off?.(); true'), 'flood counter off').catch(() => {});
     // Keep watching 12 s after the run: does memory come back, does anything wake up late?
     await sleep(12000);
@@ -293,7 +299,7 @@ async function legFlood(ctx, mb, rate = 0) {
       mainProcessIpc: ipc.error ? ipc : { medianMs: ipc.medianMs, p95Ms: ipc.p95Ms, maxMs: ipc.maxMs, over100ms: ipc.over100ms, over250ms: ipc.over250ms, over1000ms: ipc.over1000ms, totalStallMs: ipc.totalStallMs, pings: ipc.pings, missedTicks: ipc.missedTicks, openStallMs: ipc.openStallMs },
       stallsOver150ms: stalls,
       cpuSecondsAllProcesses: Math.round(ticks / hz * 10) / 10, cpuSecondsMainProcess: Math.round(mainTicks / hz * 10) / 10, input, mbByMs: timeline.filter((_, i) => i % Math.ceil(timeline.length / 40) === 0 || i === timeline.length - 1),
-      finalState, recovery, rate, rendererErrors: thrown,
+      finalState, xtermSettled, recovery, rate, rendererErrors: thrown,
       producer: { rows: emissions.length, first: emissions[0] ?? null, last: emissions.at(-1) ?? null, errors: emissions.filter(r => r.event === 'error'), writtenMbByMs: emissions.filter((_, i) => i % Math.ceil(emissions.length / 40) === 0).map(r => [r.sinceStartMs, Math.round(r.written / 104857.6) / 10, r.eagain]) },
       pipeline: { watch: hops.watch, ...summariseHops(hopRows, hz), timeline: undefined },
       pipelineTimeline: hopRows.filter((_, i) => i % Math.ceil(hopRows.length / 120) === 0),
@@ -323,6 +329,83 @@ async function legFlood(ctx, mb, rate = 0) {
     const keys = await bound(cdp.evaluate('window.__suspectInput.take().key'), 'key delays');
     return { wheel, keyQueueDelay: stats(keys) };
   });
+  return out;
+}
+
+
+// ── Ctrl+C during a flood, and keystroke echo at idle (terminal flow control, 2026-10-04) ─────────
+async function toTerminalView(ctx) {
+  const { cdp, sessions, switchTo } = ctx;
+  const emptyIdx = sessions.names.findIndex(n => sessions.sizeByName[n] === 'empty');
+  await switchTo(emptyIdx); await sleep(500);
+  await toggleTerminal(cdp);
+  for (let i = 0; i < 50; i++) { if (await cdp.evaluate(`document.documentElement.dataset.viewMode === 'terminal'`)) break; await sleep(100); }
+  return ctx.ids[emptyIdx];
+}
+
+// How long from pressing Ctrl+C in a flooding terminal until (a) the window has RECEIVED the interrupt
+// message, (b) the terminal on screen SHOWS it, (c) the producer actually stopped. Input must never queue behind output.
+async function legCtrlC(ctx, mb) {
+  const { cdp, bound, fixtureHome } = ctx, out = { mb };
+  const id = await toTerminalView(ctx);
+  out.viewMode = await cdp.evaluate('document.documentElement.dataset.viewMode');
+  const marker = '[perf-lab] flood interrupted';
+  const t0 = Date.now();
+  const r = await bound(cdp.evaluate(`(async () => {
+    const id = ${JSON.stringify(id)}, marker = ${JSON.stringify(marker)}, sleep = ms => new Promise(r => setTimeout(r, ms));
+    const st = { tail: '', ctrlAt: null, recvAt: null, bytesBefore: 0, bytesAfter: 0 };
+    const off = window.claude.on.ptyOutputForSession(id, d => { if (st.ctrlAt === null) st.bytesBefore += d.length; else st.bytesAfter += d.length; st.tail = (st.tail + d).slice(-300); if (st.ctrlAt !== null && st.recvAt === null && st.tail.includes(marker)) st.recvAt = performance.now(); });
+    window.claude.session.sendInput(id, ${JSON.stringify(`perf-lab-flood ${mb}\r`)});
+    // 400 ms in: an unbraked 200 MB flood is over in ~1.7 s, so a later Ctrl+C would hit a finished command.
+    await sleep(400);
+    st.tail = ''; st.ctrlAt = performance.now(); window.claude.session.sendInput(id, '\\x03');
+    let xtermAt = null;
+    while (performance.now() - st.ctrlAt < 90000) { const txt = window.__terminalRegistry?.getScreenText(id, 8) ?? ''; if (txt.includes(marker)) { xtermAt = performance.now(); break; } await sleep(10); }
+    off();
+    return { mbBeforeCtrlC: Math.round(st.bytesBefore / 104857.6) / 10, mbAfterCtrlC: Math.round(st.bytesAfter / 104857.6) / 10, receivedMarkerMs: st.recvAt === null ? null : Math.round(st.recvAt - st.ctrlAt), xtermShowsMarkerMs: xtermAt === null ? null : Math.round(xtermAt - st.ctrlAt), xtermTail: (window.__terminalRegistry?.getScreenText(id, 4) ?? '').slice(-120) };
+  })()`), 'ctrl-c leg', 120000).catch(e => ({ error: e.message }));
+  Object.assign(out, r);
+  await sleep(1500);
+  const em = readEmissions(fixtureHome).filter(x => x.t >= t0 - 1000);
+  const stopped = em.find(x => x.event === 'interrupted');
+  out.producerWrittenMbAtEnd = em.filter(x => x.flood === mb).at(-1) ? Math.round(em.filter(x => x.flood === mb).at(-1).written / 104857.6) / 10 : null;
+  out.producerInterrupted = !!stopped;
+  out.recovery = await bound(cdp.evaluate(`(async () => { let got = ''; const off = window.claude.on.ptyOutputForSession(${JSON.stringify(id)}, d => { got += d; }); window.claude.session.sendInput(${JSON.stringify(id)}, 'perf-lab-glyphs 20\\r'); const t = performance.now(); while (performance.now() - t < 20000 && !got.includes('glyph fill complete: 20 lines')) await new Promise(r => setTimeout(r, 20)); off(); return { arrived: got.includes('glyph fill complete: 20 lines'), ms: Math.round(performance.now() - t) }; })()`), 'recovery', 30000).catch(e => ({ error: e.message }));
+  out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
+  return out;
+}
+
+// Key press -> character visible in the xterm buffer, idle terminal. 36 distinct characters, 200 ms apart.
+async function legEcho(ctx) {
+  const { cdp, bound } = ctx, out = {};
+  const id = await toTerminalView(ctx);
+  await sleep(1500);
+  // The xterm's own hidden textarea is what takes keys in terminal view; focus it like a click would.
+  out.focused = await bound(cdp.evaluate(`(() => { const t = document.querySelector('.terminal-overlay-scroll:not(.terminal-hidden) textarea'); if (t) t.focus(); return !!t && document.activeElement === t; })()`), 'focus xterm');
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const recv = [], buf = [], failed = [];
+  for (const ch of chars) {
+    const armed = cdp.evaluate(`(async () => {
+      const id = ${JSON.stringify(id)}, ch = ${JSON.stringify(ch)}; let t0 = null, recvAt = null;
+      const onKey = e => { if (e.key === ch && t0 === null) t0 = e.timeStamp; };
+      window.addEventListener('keydown', onKey, { capture: true, passive: true });
+      const off = window.claude.on.ptyOutputForSession(id, d => { if (recvAt === null && t0 !== null && d.includes(ch)) recvAt = performance.now(); });
+      const mc = new MessageChannel(); let resolveTick; mc.port1.onmessage = () => resolveTick(); const tick = () => new Promise(r => { resolveTick = r; mc.port2.postMessage(0); });
+      const deadline = performance.now() + 4000; let bufAt = null;
+      while (performance.now() < deadline) { if (t0 !== null && (window.__terminalRegistry?.getScreenText(id, 60) ?? '').includes(ch)) { bufAt = performance.now(); break; } await tick(); }
+      window.removeEventListener('keydown', onKey, true); off();
+      return { recvMs: recvAt === null || t0 === null ? null : recvAt - t0, bufMs: bufAt === null || t0 === null ? null : bufAt - t0 };
+    })()`);
+    await sleep(40);
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: ch, code: ch >= '0' && ch <= '9' ? 'Digit' + ch : 'Key' + ch, windowsVirtualKeyCode: ch.charCodeAt(0), text: ch });
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: ch, code: ch >= '0' && ch <= '9' ? 'Digit' + ch : 'Key' + ch, windowsVirtualKeyCode: ch.charCodeAt(0) });
+    const r = await bound(armed, `echo ${ch}`, 10000).catch(e => ({ error: e.message }));
+    if (r.bufMs == null) failed.push(ch); else { buf.push(r.bufMs); if (r.recvMs != null) recv.push(r.recvMs); }
+    await sleep(160);
+  }
+  out.keys = chars.length; out.notSeen = failed;
+  out.keyToIpcReceived = stats(recv); out.keyToXtermBuffer = stats(buf);
+  out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
   return out;
 }
 
@@ -363,7 +446,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));

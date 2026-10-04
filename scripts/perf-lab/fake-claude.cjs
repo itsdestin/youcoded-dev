@@ -122,6 +122,7 @@ function glyphFill(n) {
   return `\r\n${lines.join('\r\n')}\r\n[perf-lab] glyph fill complete: ${n} lines\r\n> `;
 }
 let lineBuf = '';
+let activeFlood = null;
 
 process.stdin.resume();
 process.stdin.on('data', (buf) => {
@@ -182,7 +183,13 @@ process.stdin.on('data', (buf) => {
       try { fs.appendFileSync(marker, JSON.stringify({ flood: mb, t: Date.now(), sinceStartMs: Date.now() - t0, written: total - left, eagain, ...extra }) + '\n'); } catch { /* fixture may be gone */ }
     };
     log({ event: 'start' });
+    // WHY (2026-10-04, terminal flow control): Ctrl+C during a flood must stop THIS producer the way it
+    // stops `yes` or a build, and leave the session alive, so the rig can time "Ctrl+C to the prompt".
+    // Everywhere else SIGINT still exits (below). `activeFlood` is read by the SIGINT handler.
+    const state = { aborted: false, finished: false };
+    activeFlood = state;
     const pump = () => {
+      if (state.aborted) return;
       try {
         for (let i = 0; i < 64 && left > 0; i++) {
           if (rate > 0 && (total - left) > rate * 1048576 * ((Date.now() - t0) / 1000 + 0.02)) return void setTimeout(pump, 5);
@@ -192,6 +199,7 @@ process.stdin.on('data', (buf) => {
         }
         if (left > 0) return void setImmediate(pump);
         while (tailOff < tail.length) tailOff += fs.writeSync(1, tail, tailOff, tail.length - tailOff);
+        state.finished = true;
         log({ event: 'done' });
       } catch (e) {
         if (e && e.code === 'EAGAIN') {
@@ -209,5 +217,16 @@ process.stdin.on('data', (buf) => {
   // A line that never ends must not grow without bound.
   if (lineBuf.length > 4096) lineBuf = lineBuf.slice(-256);
 });
-for (const sig of ['SIGTERM', 'SIGHUP', 'SIGINT']) process.on(sig, () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
+process.on('SIGHUP', () => process.exit(0));
+process.on('SIGINT', () => {
+  if (activeFlood && !activeFlood.finished && !activeFlood.aborted) {
+    activeFlood.aborted = true;
+    // Queued write: if the pty is full of the flood just stopped it waits its turn instead of spinning.
+    try { process.stdout.write('^C\r\n[perf-lab] flood interrupted\r\n> '); } catch { /* pipe closed */ }
+    try { fs.appendFileSync(path.join(home, '.claude', 'perf-terminal-emissions.jsonl'), JSON.stringify({ event: 'interrupted', t: Date.now() }) + '\n'); } catch { /* fixture gone */ }
+    return;
+  }
+  process.exit(0);
+});
 setInterval(() => {}, 1 << 30);   // stay alive until killed

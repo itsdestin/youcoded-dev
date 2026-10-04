@@ -517,3 +517,78 @@ milliseconds); the code block is never rebuilt at the 40-line mark, at close, or
 finishing a reply redraws only the block still open; blank lines at piece edges; every fence shape;
 chats mounted mid-reply (with and without blank lines); Find across pieces; Copy and right-click
 copy; one shared colouring engine; the wall's CSS (it must keep sideways scrolling).
+
+## 4f. Fix 4 — terminal flow control, before/after (2026-10-04)
+
+**What a person felt before.** A command that prints a huge amount very fast (a `cat` of a giant
+file, a runaway log) showed the first part, then silently dropped most of the rest — including the
+last lines and the prompt that says it finished. For a second or two the whole app also froze
+(150–900 ms), and a hidden terminal running such a command kept the window busy as if you were
+watching it. Ctrl+C in that terminal did nothing visible for 5 seconds or more (once, not within 90 s),
+because the screen was still chewing through everything the program had already printed.
+
+**Cause (confirmed again, this time by the fix).** Nothing ever told the program to slow down. The
+terminal helper passed on every read instantly (10–35 thousand messages a second), the window handed
+all of it to the terminal widget, and the widget throws input away once ~50 million letters are
+waiting. Fix: the program is now held back until the window has actually drawn what it already
+printed — the same thing a slow real terminal does. Pieces: the helper process batches reads (the
+first bit after a quiet moment goes out at once, the rest merge for up to 4 ms) and stops reading
+the program's output once ~1 million letters are un-drawn (the operating system then blocks the
+program); the window tells main "drawn N letters" after the widget finishes each write; main passes
+that to the helper (only from the window that owns the session — never a phone or a buddy window);
+the helper lets the program continue below ~256 thousand. A terminal that is hidden behind a chat is
+fed at most ~512 thousand letters a second (after a 1 million burst); everything it was not yet fed is
+written the moment you show it.
+
+**Numbers.** Private packaged build on an invisible screen (software drawing). Before = `17a270d8`
+(clean checkout), after = `1604bf10` (+ one unrelated sheet-viewer review commit). Machine load 5–7
+at every run start (rig runs were serial). "Discarded" = the widget's "write data discarded" errors;
+"tail" = the terminal screen shows the final marker and prompt (waited up to 60 s).
+
+| | Before | After |
+|---|---|---|
+| 200 MB, terminal on screen (2 runs each) | received counter stopped at 48–49 MB; **22,202 / 32,196 discarded; tail never appears**; 7–9 k messages; main hiccups 227–291 ms (total 0.5–0.8 s) | **all 201.8 MB, 0 discarded, exact tail**; 1,001 / 1,060 messages (~72/s); worst main hiccup 37–38 ms, total 0; takes 13.6–15 s instead of "1.7 s then lost" |
+| 200 MB, terminal hidden (2 runs) | 55–61 k discarded; worst main hiccup 481–897 ms (total 1.9–2.4 s); scroll delay p95 161–190 ms | 0 discarded; worst hiccup 14–23 ms; scroll delay p95 33–35 ms (idle is ~14 ms); window busy **20–21%** vs 28–31% (but see below) |
+| 100 MB visible | 12 k discarded, tail missing | 0 discarded, exact tail, 7–8 s (2 runs) |
+| 40 MB visible | whole, 0.58 s, 94% busy, 18 k msgs/s | whole, 3.0–3.4 s, 95–99% busy, ~65 msgs/s. **2 of 4 runs showed a ~250 ms hiccup at the very start** (a 230 ms long task in the window, present in every after-run); 100–200 MB runs did not show it in the ping. Not explained; a 64 K batch cap did not remove it (still 1 long task of ~240 ms) |
+| Paced 20 MB/s, 200 MB | 148 k discarded, incomplete | 0 discarded, exact tail, 14.6 s (limited by drawing speed, not the program) |
+| Paced 10 MB/s, 60 MB, visible / hidden | complete; busy 99% / 98% | complete; busy 93% / **20%** (hidden takes 118 s instead of 7 s) |
+| Paced 5 MB/s, 60 MB, visible / hidden | complete; busy 90% / 83% | complete; busy 74% / **20%** (hidden 117 s) |
+| Ctrl+C in a flooding terminal | **5.7 s, never (>90 s), 4.9 s** (3 runs) until "interrupted" is on screen | **0.43 s, 0.46 s** (2 runs); program had printed only 4–5 MB before it stopped |
+| Typing: key → character reaches window / in terminal buffer | 2.4–2.5 ms / 14.0–14.1 ms (2 runs) | 2.4–2.5 ms / 13.8–14.1 ms (2 runs) — unchanged |
+| Typing in another chat while a hidden terminal floods | key delay median 0.5–2.6 ms | 0.5–1.1 ms |
+| Terminal helper memory after a 200 MB flood | +97 / +100 MB, not returned | +68 / +70 MB, not returned (smaller, **not** flat: it is the memory the engine keeps after handling large text, not a growing pile) |
+
+**What could look or feel different.**
+- **A flooding command now takes as long as the screen needs to draw it.** 200 MB visible: ~14 s
+  instead of ending in 1.7 s (with most of it lost). Short bursts (a few MB) feel identical; 40 MB is ~3 s
+  instead of 0.6 s. The window is as busy as before while a flood is on screen (99%) — the gain is that
+  it is one steady busy period with no freezes and no loss.
+- **A command printing a lot in a terminal you are NOT looking at is slowed hard:** ~0.5 MB/s sustained
+  (a 60 MB log takes ~2 minutes; 200 MB would take ~6 minutes), in exchange for ~20% instead of 80–99% of
+  the window. Anything ordinary (a Claude reply, a build log under ~0.5 MB/s, a redraw) is unaffected, as the
+  first 1 MB passes instantly. Show the terminal and the backlog (up to ~1.3 MB) is drawn at once.
+- A phone or remote browser sees the live stream at the speed the desktop window can draw; a slow phone never
+  slows the desktop. Phones' own terminals are not slowed when hidden.
+- Not changed: Android's own terminal runtime (see risks), keystroke echo, Claude Code redraws.
+
+**Risks and what was checked by reading only.** Windows ConPTY and macOS were not run: the brake uses
+node-pty's `pause()`/`resume()` on the output socket (ConPTY reads through a worker thread and a local
+pipe; backpressure there is by reading the code, not by running it). A paused terminal helper is let go
+when the program exits (Unix node-pty drops unread bytes 200 ms after exit — pinned by a fake-PTY test; the
+real-PTY version of that race never reproduced, so it is a regression guard, not proof), on kill/hand-off,
+and after 15 s with no acknowledgement at all, so a lost message degrades to a slow trickle, never a frozen
+session. If the owner window is reloaded the new terminal's "ready" signal resets the books. Android:
+`SessionService.kt` still drops output silently on `tryEmit` overflow and `PtyBridge` may leave a tail
+unflushed — not touched, not part of this fix.
+
+**How sure.** The loss and its fix are certain (error counts, exact tail, two runs each at 200 MB, plus 100,
+40 and paced). The main-process hiccup improvement at 100–200 MB is large (≥ 6x) in every run; the 40 MB start
+hiccup is an open question. Ctrl+C and typing figures are 2–3 runs each.
+
+**Guards added.** `tests/pty-worker-flow.test.ts` (fake PTY: batching, brake, resume, stalled/lost ack, reset,
+exit flush, kill; real node-pty: complete byte-exact 11 MB flood, program truly blocked without acks), 
+`tests/terminal-feeder.test.ts` (hidden allowance, order, surrogate pairs, dispose, no brake where none exists),
+`tests/session-manager.test.ts` (ack relay). The rig gained `--only ctrlc` / `--only echo` legs, a wait-for-the-
+terminal-to-show-the-tail check, and a Ctrl+C-aware fake producer. Raw files: `scratch/perf-lab/suspects/fb-*`
+(before), `fa-*` (after), `fx-*` (64 K batch experiment), summaries via `scratch/perf-lab/flow-summary.mjs`.
