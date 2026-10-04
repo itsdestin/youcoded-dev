@@ -156,11 +156,12 @@ process.stdin.on('data', (buf) => {
   // full, which is the case the app has no brake for. `perf-lab-flood <mb>` emits
   // that: 64 KB chunks, honouring stdout backpressure like a real program does.
   for (const line of parts) {
-    const f = /^perf-lab-flood (\d{1,3})(?: (\d{1,3}))?$/.exec(line.trim());
+    const f = /^perf-lab-flood(-modes)? (\d{1,3})(?: (\d{1,3}))?$/.exec(line.trim());
     if (!f) continue;
-    const mb = Number(f[1]);
+    const modesRun = !!f[1];
+    const mb = Number(f[2]);
     // Optional 2nd number = pace in MB/s (omitted = as fast as the pty accepts, the original behaviour).
-    const rate = f[2] ? Number(f[2]) : 0;
+    const rate = f[3] ? Number(f[3]) : 0;
     const row = `\x1b[32mbuild:\x1b[0m compiling module ${'x'.repeat(72)} ok\r\n`;
     const chunk = row.repeat(Math.ceil(65536 / row.length));
     // WHY writeSync and not stdout.write + 'drain': the first version stopped at
@@ -186,12 +187,18 @@ process.stdin.on('data', (buf) => {
     // WHY (2026-10-04, terminal flow control): Ctrl+C during a flood must stop THIS producer the way it
     // stops `yes` or a build, and leave the session alive, so the rig can time "Ctrl+C to the prompt".
     // Everywhere else SIGINT still exits (below). `activeFlood` is read by the SIGINT handler.
+    // `perf-lab-flood-modes`: the terminal starts with bracketed paste OFF and the cursor VISIBLE, and a quarter of the way
+    // through the flood the program turns paste ON and hides the cursor — a state set once and never repeated, deep inside
+    // the part of a backlog that a cut throws away. The perf rig then checks the terminal still has those modes.
+    let modesInjected = !modesRun;
+    if (modesRun) { try { fs.writeSync(1, Buffer.from('\x1b[?2004l\x1b[?25h')); } catch { /* pty full: the rig reads the result either way */ } }
     const state = { aborted: false, finished: false };
     activeFlood = state;
     const pump = () => {
       if (state.aborted) return;
       try {
         for (let i = 0; i < 64 && left > 0; i++) {
+          if (!modesInjected && (total - left) >= total / 4) { fs.writeSync(1, Buffer.from('\x1b[?2004h\x1b[?25l')); modesInjected = true; }
           if (rate > 0 && (total - left) > rate * 1048576 * ((Date.now() - t0) / 1000 + 0.02)) return void setTimeout(pump, 5);
           const w = fs.writeSync(1, buf, off, Math.min(buf.length - off, left));
           off = (off + w) % buf.length; left -= w;

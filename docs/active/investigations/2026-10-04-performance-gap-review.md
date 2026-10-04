@@ -721,3 +721,46 @@ word immediate, hand-fired frames unthrottled; red 4/9 with the gap removed), `f
 New rig tools: `suspects.mjs --only prose|mixed` (adds redraws per second, layouts, frames, code-block pieces on screen
 per window; `SUSPECTS_TRACE=1` writes an 8 s browser trace folded by activity via `trace-main.mjs`;
 `SUSPECTS_APP_ARGS` passes flags to the app, e.g. `--disable-frame-rate-limit --disable-gpu-vsync` to lift the limit).
+
+### 4f, final pass (2026-10-04, last) — final build `d23e44d97` on top of the streaming builder's commits
+
+**verify.sh on the combined tree: all nine checks PASS** (types, test types, related tests, knip, lint, design lint, ast-grep,
+screens open, journeys). Rig re-run on the final build, machine load 5–8 at starts (noterm/minimised legs 7–8; everything else 5–6).
+A first queue was thrown away (`BROKEN-producer-fz-*`): the rig's new producer command had a bug, so every flood errored at once.
+
+| Leg (final build) | Runs | Result |
+|---|---|---|
+| 200 MB, terminal on screen | 2 | all 201.8 MB, **0 discarded, exact tail**, 6.2 / 6.5 s, ~1,010 messages, worst main hiccup **21 / 22 ms**, 0 long tasks |
+| 200 MB, terminal hidden behind chat | 2 | 0 discarded, ~19% busy (as before), worst hiccup 9–10 ms, scroll delay p95 33 ms, typing delay p95 1.2–1.5 ms; 76.5 MB in 150 s (the 0.5 MB/s allowance) |
+| 200 MB paced 20 MB/s, on screen | 2 | 0 discarded, exact tail, 10.2 s, busy 83%, worst hiccup 23–28 ms |
+| 40 MB on screen (hiccup check) | 3 | 1.3–1.6 s (was 3.4 s before the thumb fix), **worst hiccup 14–22 ms, 0 long tasks** — the old 250 ms start hiccup is gone |
+| Ctrl+C in a 200 MB flood | **3** | "interrupted" visible after **87 / 83 / 112 ms** (received 69–91 ms); the program had printed only 4.9–6.3 MB; was 4.9 s–never before the brake |
+| Typing echo (36 keys) | 2 | key to window 2.5 / 2.6 ms, key to terminal buffer 13.8 / 13.9 ms — unchanged from before any of this work |
+| Blanked window mid-flood (no desktop terminal at all) | 2 | program finishes 200 MB in **2.1 s / 2.6 s**; exact tail on the new terminal 2.5 s / 1.8 s after the page returns |
+| Window hidden 12 s, then 100 MB | 2 | program finishes in **1.4 s / 1.3 s**; exact tail 0.1 s after show; 0 errors |
+| **(a) Hidden window, 200 MB (forces a cut of the >4 M backlog), then show** | 2 | program done in 2.3 s / 2.6 s; exact tail 0.11 s / 0.23 s after show; **no stray escape fragments in the 60 visible rows; bracketed paste ON and cursor hidden** — set by the program a quarter of the way in (the terminal started with paste off, cursor shown), i.e. inside the part the cut threw away |
+| (b) "ready" before a buddy/second window is subscribed | — | **Unit tests only** (`terminal-flow-wiring.test.ts`: ready-before-owner, ready-before-subscribe, vanished waiter); the rig cannot open a buddy window |
+
+One unexplained oddity: in the two 200 MB runs where the hidden-terminal leg follows the on-screen leg in the same launch, the
+"is the terminal still alive" probe (a short command typed while the hidden flood is still going) did not get its reply within 8 s
+(3.6–3.8 MB had passed); run alone it replies in 1.2 s, and earlier builds replied in 0.4–1.2 s in the combined order. No data is
+lost either way (the flood continues, 0 errors); not explained, left open.
+
+**Terminal modes that survive a backlog cut** (last value seen in the dropped text is replayed, after an SGR reset): application
+cursor keys (1), auto-wrap (7), cursor blink (12), cursor visible (25), alternate screen (47, 1047, 1049), mouse reporting
+(1000, 1002, 1003), focus reports (1004), mouse encodings (1005, 1006, 1015, 1016), bracketed paste (2004), and the kitty keyboard
+mode while it is pushed. Not restored: cursor position, scroll region, tab stops, charset shifts, colours other than the reset.
+The cut is placed after a newline outside any escape/OSC/DCS sequence; a stream with no newline at all is only cut past twice the cap.
+
+**Known leftover.** The phones' ring buffer (`remote-server.ts`, "trim whole chunks off the head") still cuts at an arbitrary
+chunk boundary, so a phone that joins after a very large flood can start mid-escape-sequence or without the modes the program
+set early on. This predates this work; fixing it would add text the stream offsets do not account for, so it needs its own change.
+Also open: hidden-window timer throttling on a real Windows/macOS minimise, the ConPTY/macOS brake (by reading only), the Android
+findings, and the 512 K/s hidden-terminal rate.
+
+**What a user could feel differently (final).**
+- A flood on screen takes as long as the screen needs: 200 MB about 6–7 s (40 MB 1.3–1.6 s), with no freezes and nothing lost, instead of ending in 1.7 s with most of it lost.
+- Ctrl+C in a flooding terminal works in about a tenth of a second.
+- A command printing a lot in a terminal you are not looking at (window visible) is slowed to ~0.5 MB/s — a 60 MB log takes ~2 minutes — in exchange for ~19% instead of 80–99% of the window; ordinary output is unaffected.
+- A hidden, minimised or tray window, a phone-driven session, or a window mid-reload runs at full speed and keeps the newest ~4 M characters; when you look, the terminal shows the exact tail with paste mode, cursor state, alternate screen and mouse modes as the program last set them.
+- Typing latency, Claude Code redraws and the visible look are unchanged; the terminal's scroll bar updates once per frame.

@@ -39,7 +39,7 @@ const LEGS = ['wheel', 'fence', 'flood'];
 // WHY opt-in 'mixed' (2026-10-04, fix 5): a realistic reply (headings, lists, table, short fences, links) streamed
 // the same way as the prose control, with commit/layout counts per delta. Not in the default run.
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -336,7 +336,7 @@ async function legFlood(ctx, mb, rate = 0) {
     // Keep watching 12 s after the run: does memory come back, does anything wake up late?
     await sleep(12000);
     // Is the terminal still alive after the flood? A short command must come back whole.
-    const recovery = await bound(cdp.evaluate(`(async () => { let got = ''; const off = window.claude.on.ptyOutputForSession(${JSON.stringify(id)}, d => { got += d; }); window.claude.session.sendInput(${JSON.stringify(id)}, 'perf-lab-glyphs 20\\r'); const t = performance.now(); while (performance.now() - t < 8000 && !got.includes('glyph fill complete: 20 lines')) await new Promise(r => setTimeout(r, 50)); off(); return { arrived: got.includes('glyph fill complete: 20 lines'), bytes: got.length, ms: Math.round(performance.now() - t) }; })()`), 'recovery check', 20000).catch(e => ({ error: e.message }));
+    const recovery = await bound(cdp.evaluate(`(async () => { let got = ''; const off = window.claude.on.ptyOutputForSession(${JSON.stringify(id)}, d => { got += d; }); window.claude.session.sendInput(${JSON.stringify(id)}, 'perf-lab-glyphs 20\\r'); const t = performance.now(); while (performance.now() - t < 60000 && !got.includes('glyph fill complete: 20 lines')) await new Promise(r => setTimeout(r, 50)); off(); return { arrived: got.includes('glyph fill complete: 20 lines'), bytes: got.length, ms: Math.round(performance.now() - t) }; })()`), 'recovery check', 70000).catch(e => ({ error: e.message }));
     const hopRows = hops.stop();
     const mainEnd = mainCounters ? await mainCounters.read().catch(e => ({ error: e.message })) : null;
     const pssAfter = pssMb(classifyPids(app));
@@ -501,7 +501,7 @@ async function legNoTerm(ctx, mb) {
 // minimized: hide the window (main process win.hide(): the page becomes document.hidden and its timers are throttled
 // to ~1 s, exactly as when minimised or in the tray) mid-flood, time the PRODUCER to completion, then show it and check
 // the terminal ends with the exact tail.
-async function legMinimized(ctx, mb) {
+async function legMinimized(ctx, mb, modes = false) {
   const { cdp, bound, fixtureHome, app } = ctx, out = { mb };
   if (!ctx.mainPort) throw Error('minimized needs --main-inspect 1');
   const id = await toTerminalView(ctx);
@@ -515,7 +515,7 @@ async function legMinimized(ctx, mb) {
   await sleep(12000);
   out.visibilityInPage = await bound(cdp.evaluate('document.visibilityState'), 'visibility').catch(e => e.message);
   const t0 = Date.now();
-  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}\r`)}); true`), 'send flood');
+  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood${modes ? '-modes' : ''} ${mb}\r`)}); true`), 'send flood');
   let done = null;
   while (Date.now() - t0 < 240000) {
     const em = readEmissions(fixtureHome).filter(r => r.flood === mb && r.t >= t0 - 1000);
@@ -531,6 +531,13 @@ async function legMinimized(ctx, mb) {
   await mainEval(`(() => { const { BrowserWindow } = process.mainModule.require('electron'); BrowserWindow.getAllWindows().filter(w => !w.isDestroyed()).forEach(w => w.show()); return true; })()`);
   const shown = await bound(cdp.evaluate(`(async () => { const t = Date.now(); while (Date.now() - t < 90000) { const txt = window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 8) ?? ''; if (txt.includes(${JSON.stringify(marker)})) return { ok: true, ms: Date.now() - t, tail: txt.slice(-100) }; await new Promise(r => setTimeout(r, 100)); } return { ok: false, tail: (window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 4) ?? '').slice(-100) }; })()`), 'tail after show', 120000).catch(e => ({ error: e.message }));
   out.tailAfterShow = shown;
+  if (modes) {
+    // After a backlog cut: no stray escape fragments in the visible text, and the modes the producer last set.
+    const text = await bound(cdp.evaluate(`window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 60) ?? ''`), 'screen text').catch(() => '');
+    out.strayFragments = (text.match(/\[\d+(;\d+)*m|(^|\n)\d+(;\d+)*m/g) || []).slice(0, 5);
+    out.screenRows = text.split('\n').length;
+    out.modesAfter = await bound(cdp.evaluate(`window.__terminalRegistry?.getTerminalModes(${JSON.stringify(id)})`), 'modes');
+  }
   out.rendererErrors = thrown;
   await sleep(5000);
   out.pssAfterSettle = pssMb(classifyPids(app));
@@ -575,7 +582,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));
