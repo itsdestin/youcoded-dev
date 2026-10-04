@@ -18,15 +18,8 @@ seen-on is always n/a here.
       when it opens (found 2026-09-27, the same on master)
       `n/a` `confirmed` `checked 2026-09-27`
 
-- [ ] The main-process blocking-call list (`desktop/tests/main-blocking-calls.allowlist.json`)
-      still holds ~650 "unreviewed" calls. The 2026-09-24 triage ranked them and six batches
-      shipped (transcript paging, naming, sync state, native-agent reads, local engine, theme
-      slider/download strip). Left: move the ~330 entries the triage marks harmless into
-      startup-only / user-rare (JSON lines ready in the report); batches B2 (native-home +
-      session-store), B4 (conversation-store — reads, listing and heal async since youcoded#573; the locked write/remove path is left), B5 (chat-search
-      index), B7 (git-transport / sync service), B10 (skill-provider catalog reads), B12
-      (project-watcher); custom-theme glass sliders still save on every tick (theme:write-file)
-      `n/a` `confirmed` `checked 2026-09-24` `performance` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
+- [ ] The main-process blocking-call test's classification still has ~330 startup-only/user-rare calls to move out of its unreviewed bucket (JSON lines in the triage). This is test allowlist maintenance; the separate B2/B4/B5/B7/B10/B12 runtime blocking work, including theme slider writes, has its primary open item in perf
+      `n/a` `confirmed` `checked 2026-09-24` → docs/active/investigations/2026-09-24-main-blocking-calls-triage.md
 
 - [ ] Finish Plan C (test files by feature) — `docs/active/plans/2026-09-16-ci-followups-C-test-consolidation.md`
       → "Progress and what waits on what" is the work list. Two parts. **Doable now, no dependency:**
@@ -73,39 +66,8 @@ seen-on is always n/a here.
       bigger budget
       `n/a` `confirmed` `checked 2026-09-16`
 
-- [ ] Two small tooling papercuts from the 2026-09-18 premium-motion session, each costing a
-      whole cycle (a third, line budgets only reported at the end of verify, was fixed
-      2026-09-27: verify checks them first): (1) `run-dev.sh --stop` lists the dev window's own `claude` children with no
-      sign they are its children — have it say so from the process's ancestry, instead of a doc
-      asking sessions to remember; (2) a fresh session worktree has no `scratch/perf-lab/assets`,
-      so `fixture.mjs --ensure-assets` re-downloads ~490 MB and a slow link times the whole run
-      out after the 3-minute build and the quiet-machine wait — copy or hardlink from the shared
-      checkout's `scratch/perf-lab/assets` when it is there
+- [ ] Stopping a dev instance lists its own `claude` children without marking them as children. Show their process ancestry in `run-dev.sh --stop`, so the developer can distinguish the dev instance from other sessions. The separate ~490 MB repeated perf-fixture download has its primary measurement-cost item in perf; the unrelated early line-budget check shipped 2026-09-27
       `n/a` `confirmed` `checked 2026-09-27`
-
-- [ ] The perf lab's new "blank on arrival" count has never been shown to FAIL. It was added
-      2026-09-18 (`scenario-workload.mjs` → `switchBlank`) because the painted clock counts entry
-      wrappers, which a blanked-out message keeps, so tab switches that arrived as empty columns
-      read as healthy. One run on the fixed build gave 0 of 40 switches blank
-      (`perf-reports/2026-09-18-0825-4aaa066-popin-after.json`, single repeat, so stamped
-      incomplete). The matching run on the code BEFORE the fix (youcoded `e5f8b2d8`) never
-      happened: other sessions kept the machine loaded all day and the lab refuses to measure a
-      busy machine. Until that run shows a non-zero count, a zero proves nothing — the detector
-      could simply be blind. Run `bg-run.sh --checkout <a worktree at e5f8b2d8> --only workload
-      --workload-repeats 1` on a quiet machine; expect blank frames on most switches
-      `n/a` `needs-verify` `checked 2026-09-18`
-
-- [ ] The perf rig cannot see the file pane during a streaming reply — the case Destin
-      actually reports. Its workload phase streams with the drawer CLOSED, and its artifacts
-      phase opens the drawer but types into an editor rather than receiving a reply, so a
-      change that removes per-token drawer redraws measures as flat in both (2026-09-09:
-      artifacts and workload before/after within run-to-run spread, while a render count
-      showed 40 avoided redraws per 40 tokens). Nor does any phase change one file while a
-      DIFFERENT file is open, which is what makes the git footer re-run three git
-      subprocesses. Fix: a step that opens the drawer on a file, streams a reply, and edits
-      other files meanwhile — then the drawer's cost during a reply is a rig number instead
-      of a unit-test count
-      `n/a` `confirmed` `checked 2026-09-09` `performance`
 
 - [ ] `step-guard-row.test.tsx` → "does not drop a newer intent when the in-flight write fails"
       failed once in a full suite run and passed on the two full runs after it, plus three
@@ -330,13 +292,6 @@ seen-on is always n/a here.
       can silently delete a real provider row
       `n/a` `needs-verify` `checked 2026-09-24`
 
-- [ ] The perf rig's native-stream phase streams into a brand-new chat, so it cannot see per-word
-      costs that grow with chat history (the 2026-09-24 visible-chat fix showed 0 in the rig);
-      add a variant that streams into a chat with prior history, markers and cards. Also
-      terminal switching measured 137 ms (09-11) vs ~580 ms (09-23) with a very tight spread —
-      a fixed wait or a scenario change; find which
-      `n/a` `confirmed` `checked 2026-09-24` `performance`
-
 - [ ] `review-cards.py preview` builds a deck whose What changed / You'll notice / Risk cards are
       cut off at smaller window sizes and says nothing; only reading the contact sheet by eye
       catches it. `deck/AUTHORING.md` already warns about it, and on 2026-09-17 it still took three
@@ -350,18 +305,6 @@ seen-on is always n/a here.
       before anything is added to the checks. React Doctor sends usage data unless turned off
       `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] Two numbers the workspace can measure but never records (2026-09-16 simplification audit
-      G6, G8): the idle-CPU probe has a pass/fail budget flag and nothing calls it, and the
-      app's startup marks are placed and tested but their values are written down nowhere —
-      a hundred hand-run perf reports instead of one nightly line. Both need a same-machine
-      runner (a CI box's software renderer says nothing about a 180 Hz panel): launch a dev
-      instance nightly, run the idle probe at three times its baseline, run the startup marks
-      and append one line per night, with a sanity floor because the rig has twice reported
-      clean while measuring nothing. 2026-09-26: `scripts/perf-lab/real-scale-startup.mjs` now
-      takes the startup marks (and the detached launch work, Resume scans, main-process stalls)
-      against a copy of the REAL history, by hand — the nightly line is still missing
-      `n/a` `confirmed` `checked 2026-09-26` → docs/active/investigations/2026-09-16-simplification-audit.md
-
 - [ ] `scripts/ci-red-vs-master.sh` listed seventeen Windows-only test names (installer icons,
       remote password) as "NEW" under the Linux job of youcoded#482, whose own log showed one
       failing file — the known remote-download inode test, also red on master's Linux run. It
@@ -373,56 +316,6 @@ seen-on is always n/a here.
       or on a phone connected to it, changes the theme the live app opens with next time.
       `--profile` does not separate it. Found during the remote access phone pass, 2026-09-11
       `desktop` `confirmed` `checked 2026-09-11`
-
-- [ ] The speed-test comparison judges two runs taken at very different machine load as if
-      they were alike. On 2026-09-10 two freeze-fix branches both read 16–20% slower than master
-      on long-conversation switches; it took a second master run and a second run of each branch
-      (~25 min of rig time) to show the gap tracked load — busy repeats at 750–900% CPU against
-      quiet ones at 300–400% — not code. Every report already records `cpuDuringPct`/load, so
-      `compare.mjs` could mark a pair "not comparable" when the runs' load differs by more than
-      a set factor, instead of printing REJECT
-      `n/a` `confirmed` `checked 2026-09-10` `performance`
-
-- [ ] **The blank-content instrument measures partly with its own weight, which is the exact
-      shape the perf-lab README now forbids.** `late-content.mjs`'s per-frame `sample()` runs
-      `querySelectorAll('.timeline-entry')` over the whole list and a `getBoundingClientRect()`
-      on every spacer — on the huge fixture that is ~7,000 rect reads a frame, ~2.4 M across a
-      pass — on the main thread, inside the same frame as the scroll it is judging. The README
-      (added 2026-09-10, after this shipped) states the general rule it breaks: anything a poll
-      touches must not force style, layout or text serialisation, and `getBoundingClientRect` is
-      named in it. The bias runs toward FALSE POSITIVES: the probe slows the renderer it is
-      asking to keep up. It did not manufacture one in the single clean run we have, but that is
-      luck, not design, and this instrument already had three artefacts corrected before it
-      shipped. Fix shape: an `IntersectionObserver` rooted on the pane maintains the in-view set
-      with no synchronous geometry, and the spacer test itself (`childElementCount`,
-      `textContent`) already forces nothing. RECURRENCE — `docs/wrap-ups.md` calls
-      "a check that reports for the wrong reason" its most-repeated lesson, and 2026-09-10
-      found the same class in the rig's artifact-open timing
-      `n/a` `confirmed` `checked 2026-09-10` `performance`
-
-- [ ] The terminal's DRAWING of a large burst of output has no speed measurement, and it is
-      where output volume is highest. Half-covered since 2026-09-10: perf-lab's `terminal`
-      scenario (`scripts/perf-lab/scenario-terminal.mjs`) measures session switches in terminal
-      view — painted time, long tasks, atlas clears per switch — but it fills each terminal
-      before measuring, so the cost of printing a great deal while you watch, and what that
-      costs the main process, is still unmeasured. Carried over from the cycle-3 handoff
-      (2026-09-03) when that document was archived
-      `n/a` `confirmed` `checked 2026-09-10` `performance`
-
-- [ ] Every perf number is taken software-rendered, and that is now MEASURED rather than
-      assumed — `report.machine.renderer` says llvmpipe with GPU compositing off (2026-09-06).
-      Measuring what Destin actually sees would need a real display with a compositor, which
-      means putting windows on his screen while he works. Deliberately not attempted; filed so
-      the gap is visible rather than forgotten. Any finding dismissed as "the rig can't see
-      GPU" should cite this. 2026-09-26 (Destin approved one 30 s window on his screen): the
-      software renderer MISATTRIBUTED an idle welcome screen's cost — on Xvfb the frosted blur
-      looked like all of it (99% -> 5% with blur off), on his real GPU the blur was a minority
-      and the mascot's full-refresh motion was most of it (36% -> 8% hidden). A question deck
-      framed on the Xvfb reading got the wrong answer and had to be reopened. Recipe that
-      worked: `launchApp({ display: process.env.DISPLAY })`, GPU busy from
-      `/sys/class/drm/card1/device/gpu_busy_percent`, CPU by process type from CDP
-      `SystemInfo.getProcessInfo` — nothing drawing a frame counter while measuring idle
-      `n/a` `confirmed` `checked 2026-09-26` `performance`
 
 - [ ] The deck builder accepts two specs in one feature folder with the same `key`, and only the
       contract check, hours later, refuses the later rounds' sources; a warning at build time
@@ -538,32 +431,6 @@ seen-on is always n/a here.
       real feature; the first small UI feature Destin asks for is the trial, and its handoff
       records rounds, Destin-seconds, reopens and rows that failed at acceptance
       `n/a` `in-flight` `checked 2026-09-02` → docs/active/plans/2026-09-01-feature-flow-plan.md
-
-- [ ] Perf rig: the native-chat parity screen photographs a real local model's reply, so two
-      identical-code baselines differ — re-measured 2026-09-03 at **14.79%**, well above the 6.9%
-      first recorded and larger than the 6.38% a real candidate change produced against the same
-      baseline, so the gate can reject an unchanged build. Now NAMED in code
-      (`screenshots.mjs` → `NONDETERMINISTIC_SCREENS`) with the rule in the perf-lab README:
-      compare baseline-against-itself before believing a diff on this screen, then read the
-      image — cycle 2's real duplicate-bubble bug showed here at 14.04%, which no percentage
-      rule separates from this noise. Remaining work is the gate itself, which still scores it
-      `n/a` `confirmed` `checked 2026-09-03` `performance` → docs/active/investigations/2026-09-01-perf-rig-native-chat-nondeterministic.md
-
-- [ ] Perf rig: the artifacts phase's session-files drawer lists nothing about 1 run in 9 —
-      once for 30 s aborting a 26-minute run, once returning undefined numbers that the median
-      silently swallowed; cause unknown
-      `n/a` `needs-verify` `checked 2026-08-28` `performance`
-
-- [ ] Perf lab: the rig is built and THREE measurement cycles have SHIPPED (2026-08-27/28 paged
-      history youcoded#349; 2026-09-03 folding youcoded#398), but
-      Destin's reframe — a repeatable stress suite that catches the daily freezes and app-wide
-      animation slowdowns on every surface — is the open half; the 2026-08-27 perf-lab handoffs
-      are the current truth, the 2026-08-23 plan is history. Cycle 3 added a `scrollback` phase
-      (the CEILING a conversation reaches once read back, not the paged floor) with three PRIMARY
-      metrics, a per-pane count proving the mechanism engaged, and a settle window before every
-      reading — the last two exist because three different bugs all presented as the same 6%.
-      What remains, ranked: docs/archive/handoffs/2026-09-03-perf-next-steps-handoff.md
-      `n/a` `needs-verify` `checked 2026-09-03` `performance`
 
 - [ ] Harness evaluator: no CI gate yet, and the four eval cases were hand-written rather than
       drawn from a failure taxonomy over the stored conversations — waiting on the step-1 triage

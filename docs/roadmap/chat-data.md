@@ -99,33 +99,15 @@ produced and the panel that shows them (files).
       branch review deferred (see `fix/project-slug-encoding` review notes in git history)
       `desktop` `needs-verify` `checked 2026-08-12`
 
-- [ ] Searching a long conversation says "no results" for text that is definitely there — since
-      paged history shipped (youcoded#349), only the most recent ~30 turns are in the DOM, and
-      `ContentFindBar.tsx` finds text by walking the DOM (`document.createTreeWalker`), so
-      everything older is unfindable and the counter reads `0/0`. Surfaced by the perf cycle-3
-      review 2026-08-28; nobody has reported it because it fails silently. Wants the match count
-      to say what was searched when `history.hasMore` — e.g. "searching recent messages, scroll
-      up to search older ones"
-      `desktop` `needs-verify` `checked 2026-09-03` `regression`
+- [ ] Searching a long conversation can say "no results" for older text that exists. The loaded
+      but folded-message fix is in unmerged youcoded#591 and still blocked on final visible
+      navigation; do not mark that portion shipped yet. Separately, never-loaded older pages
+      remain outside Find's scope, and the count needs to explain what was searched when
+      `history.hasMore`. Cold indexing cost belongs to perf, not this search-scope item
+      `desktop` `needs-verify` `checked 2026-10-03` `regression` → docs/active/investigations/2026-09-29-performance-status.md
 
-- [ ] **v1.3.1 release blocker.** Smaller reads left over from cycle 2 still do more work than
-      they need to: two reads take whole files where the tail would do, the catalog fetches the
-      same thing several times at once instead of once, per-session file tracking is never
-      cleaned up, a history-replay path that reads a whole conversation into memory (a 112 MB
-      file becomes a 224 MB string) is still wired up with nothing calling it (W5), and the
-      replayed-turn record's type is ambiguous (D11). 2026-09-26 (youcoded#573, Destin asked
-      for the Resume work ahead of phase 5): the Resume scan now remembers every conversation
-      file by size and date across restarts, native and Claude Code halves (W1), and a folder's
-      nickname lookup is remembered until the folder changes (W6) — settled open 1.7 s -> 0.3 s
-      on a 2,600-conversation history. The rest resumes with phase 5
-      `desktop` `blocked` `checked 2026-09-26` `performance` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
-
-- [ ] Starring, tagging or renaming a chat kicks off a full search-index rebuild three seconds
-      later that lists, stats and chunk-reads every conversation on the main thread
-      (`chatsearch-index`) — a stall with no visible cause. (The other half of this item, every
-      conversation record read and heal listing the whole directory synchronously, shipped in
-      youcoded#573, 2026-09-26: reads are async and heal shares one listing per second.)
-      `desktop` `confirmed` `checked 2026-09-26` `performance`
+- [ ] The replayed-turn record's type is ambiguous (D11 in the simplification plan), a **v1.3.1 release blocker**. The separately open smaller-read, catalog and cleanup costs belong to perf and remain blocked on phase 5; the 2026-09-26 Resume scan cache (youcoded#573) did ship and measured settled open 1.7 → 0.3 s, not closure of this remaining type issue
+      `desktop` `blocked` `checked 2026-09-26` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md
 
 - [ ] The first Resume open after launch "can seemingly load indefinitely" (Destin,
       2026-09-25). Never reproduced: on a copy of his 2,600-conversation history the worst was

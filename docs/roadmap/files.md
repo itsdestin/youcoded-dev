@@ -45,40 +45,11 @@ searched or resumed (chat-data).
       differently, are now recognised — fixed 2026-09-28.)
       `files-panel` `desktop` `needs-verify` `checked 2026-09-28`
 
-- [ ] A very large Markdown file still takes ~0.9 s to open — better than the ~1.5 s it was,
-      but still a visible pause. What is left is the sheer number of elements syntax
-      highlighting produces: the perf rig's 394 KB / 699-fence fixture renders as 108,576
-      elements against 7,056 unhighlighted, and building them is now the whole cost
-      (measured 2026-09-10 with `scripts/perf-lab/profile-open.mjs`). Skipping layout for
-      off-screen code blocks and short-circuiting the path detector already took 1,487 ms →
-      939 ms with nothing visibly changed. The remaining lever DOES change what the user
-      sees, so it is Destin's call: stop colouring code in very large documents (est.
-      ~300-400 ms, but a huge file's code reads as plain text while a normal file's stays
-      coloured), or colour each block only as it scrolls into view (keeps colour everywhere;
-      harder, because the filepath chips inside code blocks are added AFTER highlighting and
-      a naive lazy pass would destroy them). Shared with the chat transcript, so any change
-      has to be checked there too.
-      NOTE for whoever picks this up: the old "a small Markdown file costs 570 ms" claim was
-      WRONG and is withdrawn — that number was the rig's own probe forcing a layout on every
-      poll. An ordinary Markdown file opens in ~60 ms
-      `desktop` `confirmed` `checked 2026-09-10` `performance`
-
 - [ ] A file chip in chat for a file that exists but lives outside the project folder (Claude
       named a document in Destin's notes repo) fails with "Couldn't open README.md — the file
       wasn't found in this project", and the chip shows only the bare filename so two READMEs
       look identical; the same click on a project file works (Destin, 2026-09-03)
       `chat` `desktop` `needs-verify` `checked 2026-09-03`
-
-- [ ] Stutters when editing a file in the files pane, copying text out of a code block, or
-      moving around an HTML preview (Destin, 2026-08-27) — still unmeasured; the perf-lab
-      scenario for it now exists but has not been run against master
-      `files-panel` `desktop` `needs-verify` `checked 2026-09-01` `performance` → docs/active/investigations/2026-09-01-artifact-viewer-spikes.md
-
-- [ ] A dev instance's main process ran out of memory (~2.8 GB) after 73 minutes on 2026-08-26
-      while ~15 subagents were rewriting files in the project it was watching; cause never
-      determined. The same crash signature was diagnosed from a core dump the next day and
-      fixed in youcoded PR #335, which probably covers this — not re-checked under that load
-      `desktop` `needs-verify` `checked 2026-09-01` `needs-repro`
 
 - [ ] HTML preview: fonts and background images referenced by `url()` inside a linked
       stylesheet do not load (the stylesheet itself is inlined; what it points at is not — a
@@ -87,14 +58,11 @@ searched or resumed (chat-data).
 
 - [ ] Git surface phase 2 — branch operations, push and PR creation, repo-wide review,
       hunk-level staging, an error state when a review fails to refresh, and plain-English
-      text for raw error codes like `path-outside-project` (deferred from the per-file MVP)
-      `files-panel` `desktop` `parked` `checked 2026-09-01`
-
-- [ ] Git surface profiling checkpoint before it reaches Android or multi-window: a refresh
-      spawns up to three git processes and re-runs on every file change in the project and
-      every git change from any repo; plus fold the five copies of the "outside the project /
-      not a repo" check into one helper (still five as of 2026-09-01)
-      `files-panel` `desktop` `parked` `checked 2026-09-01` `performance`
+      text for raw error codes like `path-outside-project` (deferred from the per-file MVP).
+      On resuming, fold the five copies of the "outside the project / not a repo" check into
+      one helper and retain the Android/multi-window release checkpoint. Refresh cost has
+      its single primary performance item in perf
+      `files-panel` `desktop` `parked` `checked 2026-09-01` → docs/active/investigations/2026-09-29-perf-roadmap-consolidation.md
 
 - [ ] Go-to-definition / find-references in the code editor without a full language server
       (tree-sitter or ctags-grade indexing; runs in the Android WebView too, so desktop and
@@ -122,20 +90,6 @@ searched or resumed (chat-data).
 - [ ] Debugger / breakpoints — considered and declined (IDE table stakes, enormous effort, not this
       product's fight). On record only; revisit if the "open, personal Cowork" positioning is dropped
       `files-panel` `all` `parked` `checked 2026-07-20`
-
-- [ ] The app held roughly a quarter of a million file watches on its own (measured 2026-08-26); a
-      second instance ran the machine out of watches and file watching failed with a "no space
-      left" error that has nothing to do with disk. The project watcher stopped walking nested
-      repos and worktrees on 2026-09-10 (9,583 directories under this workspace alone). CAUSE
-      FOUND 2026-09-16 (smoothness sweep C9): the "Home" project a fresh install seeds when no
-      folder is saved watched the whole home folder six levels deep with no directory cap —
-      Documents, Downloads, Pictures, every non-repo tree. MERGED 2026-09-16 (youcoded#501):
-      the home folder itself is watched two levels deep (`watchDepthFor`); deeper files still
-      list and open, they just do not live-refresh while Home is the project. SECOND CAUSE
-      2026-09-29: sync's own watcher watched every file in folders that never sync (~249k on one
-      Python project) — MERGED 2026-09-29 (youcoded#590). Re-measure the watch count on a
-      fresh install (or with Home as the project) after both ship, then close
-      `desktop` `needs-verify` `checked 2026-09-29` `performance`
 
 - [ ] Spreadsheets in the files pane are look-only: an `.xlsx` or `.csv` opens as a grid you can
       click around, but no cell can be typed into, and "Edit" on a `.csv` drops you into the raw

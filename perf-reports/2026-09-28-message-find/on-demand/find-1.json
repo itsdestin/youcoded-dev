@@ -1,0 +1,133 @@
+{
+  "metricSnapshots": {
+    "before": {
+      "TaskDuration": 5.992199,
+      "ScriptDuration": 3.811893,
+      "LayoutDuration": 0.352836,
+      "Nodes": 134628
+    },
+    "afterOpen": {
+      "TaskDuration": 6.013634,
+      "ScriptDuration": 3.820537,
+      "LayoutDuration": 0.35336,
+      "Nodes": 134646
+    },
+    "afterTyping": {
+      "TaskDuration": 6.761588,
+      "ScriptDuration": 3.850198,
+      "LayoutDuration": 0.366257,
+      "Nodes": 136776
+    }
+  },
+  "navigation": {
+    "visibleStable": true,
+    "selectedText": "Turn 3250:",
+    "uncovered": true,
+    "hitTag": "SPAN",
+    "scrollTop": 176024.671875,
+    "rect": {
+      "top": 531.7083740234375,
+      "bottom": 550.375,
+      "left": 375.46875,
+      "right": 459.46875
+    }
+  },
+  "status": "measured",
+  "scope": "Packaged desktop, single huge Claude Code fixture session, paged history via sentinel; CDP DOM-ready + two rAF callbacks are NOT presented-frame time. Performance metrics are renderer-wide cumulative proxies; longtasks/rAF gaps are bounded samples, not GPU presentation or displayed FPS.",
+  "checkout": "/home/destin/youcoded-dev/worktrees/sessions/performance-history-audit/youcoded",
+  "display": ":0",
+  "entriesRequested": 1000,
+  "fixtureTurns": 3500,
+  "pages": 16,
+  "beforeState": {
+    "sessionId": "94ec7245-25f4-404e-ba31-839471a1e509",
+    "loaded": 1020,
+    "folded": 1015,
+    "hasMore": true,
+    "scrollTop": 352101.34375
+  },
+  "afterState": {
+    "sessionId": "94ec7245-25f4-404e-ba31-839471a1e509",
+    "loaded": 1020,
+    "folded": 1000,
+    "hasMore": true,
+    "scrollTop": 176024.671875
+  },
+  "gpu": {
+    "source": "SystemInfo",
+    "glRenderer": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+    "glVendor": "Google Inc. (AMD)",
+    "glVersion": "OpenGL ES 3.0 (ANGLE 2.1 git hash: e0cdcf9dcda5)",
+    "softwareRendering": false,
+    "accelerated": true,
+    "featureStatus": {
+      "gpu_compositing": "enabled",
+      "rasterization": "enabled",
+      "multiple_raster_threads": "enabled_on",
+      "opengl": "enabled_on",
+      "vulkan": "disabled_off",
+      "webgl": "enabled",
+      "video_decode": "enabled"
+    },
+    "devices": [
+      {
+        "vendorId": 4098,
+        "deviceId": 5510,
+        "deviceString": "ANGLE (AMD, AMD Radeon 8060S Graphics (radeonsi strix_halo ACO), OpenGL 4.6 (Core Profile) Mesa 26.2.0-devel (git-a982deee39))",
+        "active": null
+      }
+    ],
+    "error": null,
+    "attempts": []
+  },
+  "viewport": {
+    "width": 1707,
+    "height": 1016,
+    "scale": 1.5,
+    "screenWidth": 1707,
+    "screenHeight": 1067,
+    "visibility": "visible"
+  },
+  "open": {
+    "domReadyAfterTwoRafMs": 29,
+    "inputExists": true,
+    "focused": true,
+    "metricsDelta": {
+      "TaskDuration": 21.4,
+      "ScriptDuration": 8.6,
+      "LayoutDuration": 0.5,
+      "Nodes": 18
+    }
+  },
+  "typing": {
+    "query": "Turn 3250:",
+    "domResultReadyAfterTwoRafMs": 1024,
+    "ready": true,
+    "counter": "1/1",
+    "selectedText": "Turn 3250:",
+    "metricsDelta": {
+      "TaskDuration": 748,
+      "ScriptDuration": 29.7,
+      "LayoutDuration": 12.9,
+      "Nodes": 2130
+    }
+  },
+  "samples": {
+    "longtasks": [
+      {
+        "start": 7861,
+        "duration": 52
+      }
+    ],
+    "gaps": [
+      61
+    ]
+  },
+  "screenshot": "/home/destin/youcoded-dev/worktrees/sessions/performance-history-audit/scratch/perf-lab/find-on-demand-1.png",
+  "build": {
+    "sha": "bb939f917e3e64437825b24f3b86b02f14843825",
+    "dirty": "942374d2923c",
+    "builtAt": "2026-09-28T07:28:16.534Z"
+  },
+  "measuredAt": "2026-09-28T07:36:58.484Z"
+}
