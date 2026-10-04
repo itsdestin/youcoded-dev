@@ -205,10 +205,12 @@ seen-on is always n/a here.
 
 - [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) and
       since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
-      install of any build as a real download), but the open half is untested: a clean-winget Windows
-      snapshot, the deb/rpm/pacman installers in the guests, and the full first-run → setup → sign-in
-      pass itself
-      `n/a` `needs-verify` `checked 2026-10-01`
+      install of any build as a real download). The full first-run → setup → sign-in pass has now run
+      by hand on the Windows and macOS guests (2026-10-02/03: Git, Apple's tools, sign-in, Office).
+      Still untested: the same pass on the Ubuntu guest, the deb/rpm/pacman installers there, and
+      the winget-only flows that remain (Tailscale, rclone, `gh`) on a Windows guest without App
+      Installer
+      `n/a` `needs-verify` `checked 2026-10-03`
 
 - [ ] Nothing tests a new user's whole path — download from youcoded.ai, install, setup, sign-in,
       first chat — on every platform without Destin clicking through it. Destin (2026-10-01): "could
