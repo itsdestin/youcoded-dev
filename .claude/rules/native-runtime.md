@@ -72,7 +72,7 @@ verify:
 - **API keys: `safeStorage`-encrypted in `userData/native-secrets.json`, NEVER `~/.youcoded/`** (a `secretRef` only, no plaintext fallback); `~/.youcoded/` writes ride `NativeHome.mutateJson` (→ `mutateFileUnderLock`, THROWS on lock exhaustion).
 - **`SessionStore` coalesces same-`partId` deltas; display-only (`session-error`, payload-less `assistant-thinking`) is NEVER persisted.** Callers serialize per session; re-entrant `send()` throws.
 - **`send()` never throws — synchronous `NativeSendResult`** (`'sent'|'queued'` FIFO-10 `|'failed'`, real reason); the queue drains ONLY on settle; **interrupt aborts the current turn only — the queue still drains**; `destroy()` order is load-bearing (destroy → append-chain → dispose → delete).
-- **Queued messages belong to renderer state, not timeline**; `native:*` shapes match on all transports (interrupt/retry fire-and-forget).
+- **The native queue lives in the host (`native-session-host`), not timeline or any screen**: every screen draws it from `session:live` and cancels via `native:queue-remove`, phone included (a Claude Code queue is Claude Code's own); `native:*` shapes match on all transports (interrupt/retry fire-and-forget).
 - **Native sends bypass PTY** (`native-send.ts`); content equals `buildOutgoingMessage(...).content`.
 
 ## Tool loop (`harness-session.ts`) — guards: `harness-session-loop`/`harness-history-rebuild`/`harness-sdk-toolcall-contract`/`permission-engine`
