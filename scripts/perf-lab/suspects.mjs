@@ -63,7 +63,15 @@ export function stats(values) {
 export function fenceText(lines) {
   const body = Array.from({ length: lines }, (_, i) => `  const value${i} = compute(${i}, "row-${i}") ?? fallback[${i % 7}]; // step ${i}`).join('\n');
   const text = `Here is the whole file:\n\n\`\`\`ts\nexport function generated() {\n${body}\n}\n\`\`\`\n`;
-  return { text, deltas: (text.match(/\s*\S+|\s+$/g) ?? []).length };
+  // WHY the pieces are counted the way splitDeltas cuts them (tokens over 6 chars become 4-char slices):
+  // counting whitespace-separated tokens undercounted by ~45%, so the fake provider truncated the fence
+  // at ~277 of 500 lines. Fixed 2026-10-04 — numbers from before this are a DIFFERENT series.
+  let deltas = 0;
+  for (const m of text.matchAll(/\s*\S+|\s+$/g)) {
+    const word = m[0].trim();
+    deltas += m[0].length <= 6 ? 1 : Math.ceil(word.length / 4);
+  }
+  return { text, deltas };
 }
 
 export const bounded = maxMinutes => {
