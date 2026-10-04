@@ -1,6 +1,6 @@
 ---
 title: Native Wayland high-refresh presentation-feedback first pass
-status: active
+status: superseded
 date: 2026-09-29
 ---
 
@@ -45,7 +45,7 @@ Neither debug nor quiet workload recorded a renderer long task of50ms or more. P
 
 Final parent command: `node --test scripts/perf-lab/tests/presentation-capture.test.mjs scripts/perf-lab/tests/launch.test.mjs scripts/perf-lab/tests/gpu-theme.test.mjs`, syntax checks for capture/protocol/workload/launcher, and `git diff --check` all exited0 (`scratch/presentation-final-tests.log`;69 tests). Fresh scoped review resolved the marker blocker and found no further blocking issue. External process inspection found no remaining private package process.
 
-This establishes hardware-qualified presentation feedback capability and a first short workload—not whole-app smoothness acceptance. Subsequent higher-rate input and native long-history mixed/Files measurements are recorded separately in `2026-09-29-presentation-followup-results.md`; originals below are not rewritten by those results. Remaining work at the end of this first pass:
+This establishes hardware-qualified presentation feedback capability and a first short workload—not whole-app smoothness acceptance. Subsequent higher-rate input and native long-history mixed/Files measurements are recorded separately in `docs/archive/investigations/2026-09-29-presentation-followup-results.md`; originals below are not rewritten by those results. Remaining work at the end of this first pass:
 - stronger PID/connection-to-window attribution if certified per-window metrics are needed;
 - precise presentation-demand correlation to distinguish a genuine missed update from no requested change;
 - continuous-input pacing without controller round-trip drift, repeat runs and better overhead calibration;

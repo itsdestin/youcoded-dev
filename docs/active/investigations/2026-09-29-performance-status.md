@@ -6,13 +6,13 @@ date: 2026-09-29
 
 # Start here: performance status
 
-This is the current status map. Earlier dated reports are historical evidence, not a list of changes all accepted for shipping. Destin authorized documentation consolidation, cleanup and merge of the real fixes on 2026-09-29. Merge references and final integration verification will be recorded here after they exist; neither old benchmark success nor an ancestor-only close-out check means uncommitted work shipped.
+This is the current status map. Earlier dated reports are historical evidence, not a list of changes all accepted for shipping. Destin authorized documentation consolidation, cleanup and merge of the real fixes on 2026-09-29. The accepted app fixes merged in youcoded#591 (`eebcdea314c5d6b42444d991789a2541c405dbb8`, 2026-10-04T07:21:06Z). This is an app merge reference, not a claim of whole-app smoothness or workspace PR closure.
 
 ## Closeout resumed 2026-10-03 — final verification
 
-Latest acceptance evidence: `docs/active/investigations/2026-10-03-find-expiry-closeout.md`. The expiry repair passed a package-attributed delayed-frame check and an uninstrumented real-display check, with inspected screenshots and a stable uncovered match in each. Integrated Android unit XML contains 594 tests in each of debug/release/releaseTest with zero failures/errors/skips; Gradle executed all three app unit-test tasks, excluding `bundleWebUi`. The final eight-worker desktop full verification passed every gate, explicitly including screen-open checks and journeys. A prior superficially green rerun exposed a pipefail bug that omitted the screen gate; the gate is now fixed with an actual-planner red/green regression and CI coverage. Workspace script/hook tests passed 431/431, and the full CI-equivalent perf-tool suite passed 594/594 (fixture-download test excluded). App commit `6e355a828` is pushed to PR `youcoded#591`; fresh CI and actual merge remain pending. No merge is claimed yet.
+Latest acceptance evidence: `docs/archive/investigations/2026-10-03-find-expiry-closeout.md`. The expiry repair passed a package-attributed delayed-frame check and an uninstrumented real-display check, with inspected screenshots and a stable uncovered match in each. Integrated Android unit XML contains 594 tests in each of debug/release/releaseTest with zero failures/errors/skips; Gradle executed all three app unit-test tasks, excluding `bundleWebUi`. The final eight-worker desktop full verification passed every gate, explicitly including screen-open checks and journeys. A prior superficially green rerun exposed a pipefail bug that omitted the screen gate; the gate is now fixed with an actual-planner red/green regression and CI coverage. Workspace script/hook tests passed 431/431, and the full CI-equivalent perf-tool suite passed 594/594 (fixture-download test excluded). App PR `youcoded#591` merged at `eebcdea314c5d6b42444d991789a2541c405dbb8` on 2026-10-04; its prior branch tip `6e355a828` is an ancestor. The workspace PR remains separate.
 
-### Preserved diagnostic history
+### Preserved diagnostic history (pre-merge snapshot; superseded by final acceptance above)
 
 App PR `youcoded#591` remains open at `7855bc6ce`; its recorded Android and Linux desktop CI checks passed. The full desktop verification and Android unit runs from the previous closeout are historical results, not verification against the newer master. Startup preserved this session and reported 100 incoming workspace commits; the app has 170 incoming commits relative to its fetched master. Neither has been silently integrated.
 
@@ -22,17 +22,17 @@ App PR `youcoded#591` remains open at `7855bc6ce`; its recorded Android and Linu
 
 The paused-source archive remains byte-identical (SHA-256 `96be2238455ca155b954192c453c813f07d7f2716919419046770291c3b5bcad`); an archive-content scan on resume found no matches for the private-key, OpenRouter-key or GitHub-token patterns checked. This limited scan is not a comprehensive privacy clearance.
 
-Private raw evidence is now copied outside this worktree to `/home/destin/youcoded-perf-evidence/performance-history-audit-2026-10-03/scratch/`. All **109,485 regular files** matched SHA-256 between source and destination; the manifest is its sibling `sha256-manifest.json`. This is a private local recovery copy, not publication material. The original scratch tree has not been deleted.
+Private raw evidence is preserved outside this worktree. The original resume snapshot at `/home/destin/youcoded-perf-evidence/performance-history-audit-2026-10-03/scratch/` has 109,485 verified regular files. The newer `final-scratch/` sibling holds **116,217 verified regular files and 430 matching symlink targets, zero mismatches**, including final Find captures and the repaired package; see `final-sha256-manifest.json`. These are private local recovery copies, not publication material. Later shipping logs live under the same evidence root's `shipping-receipts/`. See the evidence index for recovery details.
 
-## Established app fixes awaiting final acceptance and merge
+## Established app fixes shipped in youcoded#591
 
 | Change | Evidence | Remaining boundary |
 |---|---|---|
 | Loaded-message Find, on-demand lifecycle and reliable reveal | `perf-reports/2026-09-28-message-find/README.md`: repeated 1,020-entry runs, open median41ms, first query988ms, exact visible/uncovered navigation. Controller unmounted while closed. | Does not search never-loaded pages; cold indexing remains slow. |
-| Preserve unchanged inherited chrome measurements on session switch | `2026-09-28-short-cycle-results.md`: matched full-content55–56ms switches /53–54ms tasks versus15–17ms/no long task; theme-position correction and regression. | Not a fix for every intermittent switch/resize stall. |
-| Re-pin stuck chat after content shrink as well as growth | `2026-09-29-long-history-mixed-files.md`: reproduced~289px gap, latest tool acknowledgment/card delivered visibly after repair. | Preserve user unstick/Find and existing tab-return policy. |
+| Preserve unchanged inherited chrome measurements on session switch | `docs/archive/investigations/2026-09-28-short-cycle-results.md`: matched full-content55–56ms switches /53–54ms tasks versus15–17ms/no long task; theme-position correction and regression. | Not a fix for every intermittent switch/resize stall. |
+| Re-pin stuck chat after content shrink as well as growth | `docs/archive/investigations/2026-09-29-long-history-mixed-files.md`: reproduced~289px gap, latest tool acknowledgment/card delivered visibly after repair. | Preserve user unstick/Find and existing tab-return policy. |
 
-These three passed pre-integration tests, review and runtime checks. Current-master integration must be reverified. Measurement tooling is separate: private fixtures, exact output/history checks, immutable finalized protocol receipts and fail-closed validity gates are infrastructure, not extra app speedups.
+These three passed integration verification and the loaded Find expiry repair passed delayed attributed and ordinary packaged acceptance before the app merge (`eebcdea314c5d6b42444d991789a2541c405dbb8`). This does not certify other Find cases or smoothness over hours. Measurement tooling is separate: private fixtures, exact output/history checks, immutable finalized protocol receipts and fail-closed validity gates are infrastructure, not extra app speedups.
 
 ## Paused experiments — NOT accepted app fixes
 
@@ -69,4 +69,4 @@ Coverage still needed: long soak; other-surface lifecycle; giant messages/histor
 3. Reprofile if assumptions changed. Measure both responsiveness and resume→complete visible content; exercise an immediate switch while loading, source/content equivalence, Find/scroll intent and cleanup/memory. Accept no missing content or relocated hitch.
 4. Keep timing runs serial and separate sampled diagnostics from clean baselines. Failed originals remain retained, with subsequent corrections in new reports.
 
-Evidence map: `2026-09-28-short-cycle-results.md`, `2026-09-29-long-history-mixed-files.md`, `2026-09-29-native-presentation-feedback.md`, `2026-09-29-presentation-followup-results.md`, plan `docs/active/plans/2026-09-29-history-rendering-and-stalls.md`. Older rejected experiments and their reports must not be resurrected as accepted wins.
+Evidence map: `docs/archive/investigations/2026-09-28-short-cycle-results.md`, `docs/archive/investigations/2026-09-29-long-history-mixed-files.md`, `docs/archive/investigations/2026-09-29-native-presentation-feedback.md`, `docs/archive/investigations/2026-09-29-presentation-followup-results.md`, plan `docs/active/plans/2026-09-29-history-rendering-and-stalls.md`. Older rejected experiments and their reports must not be resurrected as accepted wins.

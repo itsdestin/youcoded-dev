@@ -79,7 +79,7 @@ Target: `v1.3.1`
 | [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 26 | 5 | 1 | 4 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 7 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 23 | 9 | 7 | 4 |
-| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 8 | 2 | 2 |
+| [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 5 | 0 | 5 |
 | [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 14 | 4 | 1 | 5 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |

@@ -1,6 +1,6 @@
 ---
 title: Performance first batch — trustworthy comparisons and measured desktop fixes
-status: active
+status: superseded
 date: 2026-09-26
 ---
 
@@ -16,7 +16,7 @@ date: 2026-09-26
 
 ## Approval and constraints
 
-Destin approved the proposed first batch and repeated isolated real-display benchmark windows with “okay, proceed” after receiving `docs/active/investigations/2026-09-26-performance-history-audit.md`. That report is the design and evidence register for this batch. No appearance/behavior simplification, paid provider calls or scheduled service installation is included. Nothing is committed or pushed by this plan.
+Destin approved the proposed first batch and repeated isolated real-display benchmark windows with “okay, proceed” after receiving `docs/archive/investigations/2026-09-26-performance-history-audit.md`. That report is the design and evidence register for this batch. No appearance/behavior simplification, paid provider calls or scheduled service installation is included. Nothing is committed or pushed by this plan.
 
 Preserve existing functionality, data integrity and visuals. Software rendering and real-GPU results are different lanes. CPU work is not frame presentation; a callback count cannot be called displayed FPS. Product changes require a demonstrated bottleneck, a failing regression test, matched before/after measurements and verification.
 

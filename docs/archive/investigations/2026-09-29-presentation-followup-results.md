@@ -1,12 +1,12 @@
 ---
 title: Native presentation follow-up — higher-rate input and long mixed histories
-status: active
+status: superseded
 date: 2026-09-29
 ---
 
 # Results and limits
 
-This extends `2026-09-29-native-presentation-feedback.md`. Destin approved proceeding with driver pacing correction and native presentation during long-history concurrent streaming/tools, including Files panels. No product code changes, package rebuild, paid calls, installs, commits or shipping in this follow-up. All launches used the preserved private package, throwaway HOME/config/runtime, dead D-Bus and the explicit native socket; the production app was not attached to or modified. Measurements were serial, without this session's tests/builds overlapping.
+This extends `docs/archive/investigations/2026-09-29-native-presentation-feedback.md`. Destin approved proceeding with driver pacing correction and native presentation during long-history concurrent streaming/tools, including Files panels. No product code changes, package rebuild, paid calls, installs, commits or shipping in this follow-up. All launches used the preserved private package, throwaway HOME/config/runtime, dead D-Bus and the explicit native socket; the production app was not attached to or modified. Measurements were serial, without this session's tests/builds overlapping.
 
 ## Identity and method
 

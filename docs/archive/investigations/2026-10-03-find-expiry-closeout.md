@@ -1,7 +1,8 @@
 ---
 title: Find expiry race — closeout repair and runtime acceptance
-status: active
+status: shipped
 date: 2026-10-03
+shipped_ref: youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8
 ---
 
 # Bounded navigation repair
@@ -38,6 +39,10 @@ The wrapper remains a broad newly-created-RO diagnostic; package-callsite eviden
 
 ## Merge gate
 
-These runtime checks clear the reproduced pending-correction navigation gate for this package. The app integration and repair are committed and pushed as `6e355a828` on PR `youcoded#591`; CI and the actual merge reference remain pending. The final `VITEST_MAX_WORKERS=8 bash scripts/verify.sh <app-worktree> --full` passed types, tests, knip, lint/design lint, invariants, **screen-open checks**, and journeys (`scratch/perf-integrated-full-verify-oct03-3.log`). Android's three app unit-test tasks executed successfully, with XML totals of 594 tests each and zero failures/errors/skips; `bundleWebUi` was excluded.
+These runtime checks clear the reproduced pending-correction navigation gate for this package. The app integration and repair were committed and pushed as `6e355a828` on PR `youcoded#591`; at the time of this report CI and the actual merge reference were pending. The final `VITEST_MAX_WORKERS=8 bash scripts/verify.sh <app-worktree> --full` passed types, tests, knip, lint/design lint, invariants, **screen-open checks**, and journeys (`scratch/perf-integrated-full-verify-oct03-3.log`). Android's three app unit-test tasks executed successfully, with XML totals of 594 tests each and zero failures/errors/skips; `bundleWebUi` was excluded.
 
 The first integrated verify exposed old-workspace rule/screenshot mismatch and full-suite timeout failures; those originals remain recorded. The first green rerun was not sufficient: its missing screen gate led to a separately reproduced pipefail defect in `verify.sh`, fixed with a 4,096-file actual-planner regression and CI coverage. An initially occupied Office editor port was left untouched; the subsequent check safely started its own editor after the port became free. No desktop/Android motion parity or other unmeasured performance lane is implied.
+
+## Closeout — 2026-10-04
+
+App PR `youcoded#591` merged on GitHub at `eebcdea314c5d6b42444d991789a2541c405dbb8` (2026-10-04T07:21:06Z); its branch tip `6e355a828` is an ancestor of merged master. This changes the shipping status of the bounded Find repair, not any earlier failed diagnostic verdict or the limitations above. Never-loaded history and cold indexing remain open separately.

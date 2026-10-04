@@ -1,6 +1,6 @@
 ---
 title: Performance next phase — short cycles for interaction, lifecycle, bursts and GPU
-status: active
+status: superseded
 date: 2026-09-28
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Performance first batch — measured results and current execution state
-status: active
+status: superseded
 date: 2026-09-27
 ---
 
@@ -49,7 +49,7 @@ Mechanism: `ChatView.tsx` calls `useEntryFolding(!findOpen, ...)`; disabling the
 
 The first rendered-text index and optional folding capture/reveal support were built and passed full desktop verification (`scratch/find-groundwork-verify.log`). They were not wired to Find because disclosure state can reset on remount, making previously captured card text an unsafe source of definitive matches. Review's stale-detached-spacer finding was fixed with a coalesced removal publish and red/green key-reuse test; a real React Range-lifetime test was added.
 
-Destin has now resolved scope: **“no reasoning/tool details, just all message content including offscreen messages.”** User and assistant message bodies are the searchable corpus; reasoning, tool inputs/results and metadata/chrome are excluded. This supersedes the old generic rendered-row/non-row capture design. Revised implementation is running under `docs/active/plans/2026-09-27-folded-chat-find.md`'s scope amendment. The previously stated loaded-history boundary remains; older unloaded pages are not silently promised. Keep the Find bar layout unchanged and use targeted reveal/pinning rather than global unfolding.
+Destin has now resolved scope: **“no reasoning/tool details, just all message content including offscreen messages.”** User and assistant message bodies are the searchable corpus; reasoning, tool inputs/results and metadata/chrome are excluded. This supersedes the old generic rendered-row/non-row capture design. Revised implementation is running under `docs/archive/plans/2026-09-27-folded-chat-find.md`'s scope amendment. The previously stated loaded-history boundary remains; older unloaded pages are not silently promised. Keep the Find bar layout unchanged and use targeted reveal/pinning rather than global unfolding.
 
 The dedicated Find probe now rejects insufficient folding engagement (one old repeat had only110/1020 folded, so it is not an equivalent baseline). The unchanged pre-integration package is preserved under `scratch/perf-lab/find-baseline-app` with its build stamp; `find-diagnostic.mjs --app-dir` can select it without swapping source. Baselines with the tightened readiness criterion and matched after measurements are still required.
 

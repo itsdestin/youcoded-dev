@@ -99,12 +99,8 @@ produced and the panel that shows them (files).
       branch review deferred (see `fix/project-slug-encoding` review notes in git history)
       `desktop` `needs-verify` `checked 2026-08-12`
 
-- [ ] Searching a long conversation can say "no results" for older text that exists. The loaded
-      but folded-message fix is in unmerged youcoded#591 and still blocked on final visible
-      navigation; do not mark that portion shipped yet. Separately, never-loaded older pages
-      remain outside Find's scope, and the count needs to explain what was searched when
-      `history.hasMore`. Cold indexing cost belongs to perf, not this search-scope item
-      `desktop` `needs-verify` `checked 2026-10-03` `regression` → docs/active/investigations/2026-09-29-performance-status.md
+- [ ] Searching a long conversation still cannot find text on older pages that have never been loaded. The count needs to say what was searched when `history.hasMore`; searching folded messages that ARE loaded and navigating to them shipped in youcoded#591. Cold indexing cost belongs to perf, not this scope decision
+      `chat` `desktop` `confirmed` `checked 2026-10-04` → docs/active/investigations/2026-09-29-performance-status.md
 
 - [ ] The replayed-turn record's type is ambiguous (D11 in the simplification plan), a **v1.3.1 release blocker**. The separately open smaller-read, catalog and cleanup costs belong to perf and remain blocked on phase 5; the 2026-09-26 Resume scan cache (youcoded#573) did ship and measured settled open 1.7 → 0.3 s, not closure of this remaining type issue
       `desktop` `blocked` `checked 2026-09-26` `v1.3.1` → docs/active/plans/2026-09-16-simplification-phases.md

@@ -1,6 +1,6 @@
 ---
 title: Performance history, remaining risks, and measurement-first optimization
-status: active
+status: superseded
 date: 2026-09-26
 ---
 
@@ -19,7 +19,7 @@ This document distinguishes **historical measurements**, **current source-confir
 
 The history review screened 5,362 app commits and 3,296 workspace commits from April 1 through the audited HEAD (workspace history in that window begins April 10). Screening used commit subjects, bodies and changed hot-path filenames, not only `perf:` titles. A deeper pass inspected patches for 189 app commits, including all 110 `perf`-prefix commits; 155 selected implementation entries appear in the performance-intent inventory. Seven perf-prefix commits are instrumentation, baseline or comment-only changes, not independent product speedups. Other commits remain screened rather than deeply reviewed: this is not a claim that all potentially relevant diffs were exhaustively understood, nor that all intended improvements delivered measured gains. Merges are not counted again as independent fixes.
 
-The initial filename parser was found to mix commit-body text with paths. Its inventory was replaced using NUL-delimited parsing before delivery. Supporting records are in `2026-09-26-performance-history-audit/`: `full-log-screen.csv`, `confirmed-performance-intent.md`, `implementation-evidence-app.md`, and `implementation-evidence-workspace.md`. The intent inventory's grouping is heuristic; the taxonomy in this report is the reviewed synthesis. Patch excerpts alone are not performance measurements.
+The initial filename parser was found to mix commit-body text with paths. Its inventory was replaced using NUL-delimited parsing before delivery. Supporting records are in `docs/archive/investigations/2026-09-26-performance-history-audit/`: `full-log-screen.csv`, `confirmed-performance-intent.md`, `implementation-evidence-app.md`, and `implementation-evidence-workspace.md`. The intent inventory's grouping is heuristic; the taxonomy in this report is the reviewed synthesis. Patch excerpts alone are not performance measurements.
 
 The code review covers desktop renderer/main and selected Android runtime/bridge paths. Tooling review covers perf-lab, adjacent idle/resize/A-B tools, and workspace/app CI workflows. A separate reviewer checked the proposed measurement approach and source-risk distinctions; their corrections added Android byte-integrity testing and clarified that current Find searches loaded history, not unloaded pages. These scopes cannot establish that every possible issue has been found.
 

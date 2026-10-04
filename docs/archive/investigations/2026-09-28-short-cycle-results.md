@@ -1,6 +1,6 @@
 ---
 title: Short-cycle performance — lifecycle and interaction evidence
-status: active
+status: superseded
 date: 2026-09-28
 ---
 
@@ -10,7 +10,7 @@ User scope: streaming/input, memory/lifecycle, terminal/watcher/sync bursts and 
 
 ## Native presentation-feedback follow-up
 
-The first native-Wayland hardware-qualified compositor-feedback capture is documented in `2026-09-29-native-presentation-feedback.md`. It adds actual presented/discarded surface-commit evidence, not rAF-as-FPS, with explicit conditional surface attribution and input-pacing limits. This does not retroactively validate older Xwayland presentation metrics or resolve the intermittent 1Hz callback issue.
+The first native-Wayland hardware-qualified compositor-feedback capture is documented in `docs/archive/investigations/2026-09-29-native-presentation-feedback.md`. It adds actual presented/discarded surface-commit evidence, not rAF-as-FPS, with explicit conditional surface attribution and input-pacing limits. This does not retroactively validate older Xwayland presentation metrics or resolve the intermittent 1Hz callback issue.
 
 ## Hardware GPU/theme diagnostic — initial Midnight run
 
@@ -46,7 +46,7 @@ Parent verification: desktop `scripts/verify.sh` passed (`scratch/chrome-measure
 
 ## Follow-up: long histories and session Files
 
-Long-history mixed activity and Files-open/closed switching are now exercised separately in `2026-09-29-long-history-mixed-files.md`. That follow-up also records a retained correctness fix for bottom-stick after content shrinks, passing desktop verification and post-fix Find acceptance. Earlier low-rAF-cadence diagnostics remain unattributed and excluded from performance comparisons; bounded-body history coverage does not include the oversized million-character seeds.
+Long-history mixed activity and Files-open/closed switching are now exercised separately in `docs/archive/investigations/2026-09-29-long-history-mixed-files.md`. That follow-up also records a retained correctness fix for bottom-stick after content shrinks, passing desktop verification and post-fix Find acceptance. Earlier low-rAF-cadence diagnostics remain unattributed and excluded from performance comparisons; bounded-body history coverage does not include the oversized million-character seeds.
 
 ## Six-session mixed-activity coverage
 

@@ -10,7 +10,7 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] The first Find query in a long loaded chat can still take about a second; opening the Find bar got faster, but cold indexing and never-loaded pages remain different problems. Measure first query, streaming refresh and reopened-search retention separately
       `chat` `desktop` `confirmed` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-29-performance-status.md
 
-- [ ] The app still feels sluggish across sessions and over time. Historical paging, folding, list and hidden-tab work reduced specific measured costs, not a sustained all-surfaces smoothness guarantee; the three accepted Find/chrome/shrink fixes are awaiting integration refs, and paused experiments are not shipped
+- [ ] The app still feels sluggish across sessions and over time. Historical paging, folding, list and hidden-tab work reduced specific measured costs, not a sustained all-surfaces smoothness guarantee; the loaded Find, chrome-measurement and bottom-shrink corrections shipped in youcoded#591 (`eebcdea314c5d6b42444d991789a2541c405dbb8`), while paused experiments did not ship
       `all` `confirmed` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-01-ui-sluggishness-render-cost.md
 
 - [ ] Session switching in terminal view may redraw more than necessary on a real graphics card. The software-rendered baseline saw ~137 ms terminal versus ~124 ms chat switching, inside its spread; actual hardware cost and a busy six-terminal feel check remain unmeasured
@@ -38,7 +38,7 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
       `files-panel` `desktop` `needs-verify` `checked 2026-08-28` `performance`
 
 - [ ] Comparison controls are only partial: `compare.mjs` now rejects missing/changed machine identity, GPU lane, scenario descriptors and excessive pre-boot noise, but its own comparability check warns that it has not measured interference during a run. Quiet/busy repeats previously produced apparent 16–20% regressions on unchanged code. Keep those older reports inconclusive where mid-run load differed; measure external contention before claiming a candidate regression or win
-      `n/a` `confirmed` `checked 2026-09-29` `performance` → docs/active/investigations/2026-09-26-performance-history-audit.md
+      `n/a` `confirmed` `checked 2026-09-29` `performance` → docs/archive/investigations/2026-09-26-performance-history-audit.md
 
 - [ ] Software-rendered runs do not establish what happens on a real high-refresh screen: a controlled native-GPU welcome probe reversed the software-only blur attribution. Keep software and authorized hardware/compositor lanes distinct, and never call rAF callbacks presented frames
       `n/a` `confirmed` `checked 2026-09-26` `performance` → docs/active/investigations/2026-09-26-startup-resume-real-scale.md

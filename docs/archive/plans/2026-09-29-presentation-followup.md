@@ -1,6 +1,6 @@
 ---
 title: Presentation follow-up — paced input and mixed histories
-status: active
+status: superseded
 date: 2026-09-29
 ---
 
@@ -28,4 +28,4 @@ Destin approved proceeding after the proposed sequence: correct controller-limit
 - Pacing/adapter/shutdown corrections passed independent scoped reviews and123 final offline tests. Parent desktop verify passed; private package-process check found no remaining owned app.
 - Completed two valid paced debug repeats/two quiet controls and a valid native Files-open run with final drained receipt, plus quiet Files-open control. Actual wheel demand roughly6.2–6.5ms; conditional compositor intervals commonly5.556ms, not certified FPS.
 - Earlier mixed native verdicts withdrawn after final review caught a mutable late-error log receipt; raw originals preserved. Initial Files-closed attempts were incomplete: first invalid raw lifetimes (despite clean drained receipt), then all12 switches unfocused. After Destin approved an uninterrupted foreground window, closed-foreground-1 passed every gate with8–28ms switch proxies and no ≥50ms mixed-phase tasks. Valid closed/open captures now exist, but not repeated/interleaved causal A/B evidence. The earlier large stalls did not recur; no causal CPU profile or explanation was established.
-- Results and unresolved task stalls up to208ms switching proxies: `docs/active/investigations/2026-09-29-presentation-followup-results.md`. No new app fix inferred; no shipping. Evidence review caught and led to the shutdown repair, not a waived warning.
+- Results and unresolved task stalls up to208ms switching proxies: `docs/archive/investigations/2026-09-29-presentation-followup-results.md`. No new app fix inferred; no shipping. Evidence review caught and led to the shutdown repair, not a waived warning.

@@ -1,6 +1,6 @@
 ---
 title: Long histories, concurrent activity and session Files switching
-status: active
+status: superseded
 date: 2026-09-29
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Folded-chat Find — exact rendered-text index
-status: active
+status: superseded
 date: 2026-09-27
 ---
 

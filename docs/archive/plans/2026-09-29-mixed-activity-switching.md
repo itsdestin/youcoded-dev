@@ -1,6 +1,6 @@
 ---
 title: Six-session concurrent activity and switching
-status: active
+status: superseded
 date: 2026-09-29
 ---
 
@@ -10,7 +10,7 @@ date: 2026-09-29
 
 **Goal:** Measure and repair switching stalls while three sessions stream, two execute real local tools, and a sixth remains idle.
 
-**Approval:** Destin approved six sessions with those roles and continuing the measurement/fix program. This extends docs/active/plans/2026-09-28-performance-short-cycles.md.
+**Approval:** Destin approved six sessions with those roles and continuing the measurement/fix program. This extends docs/archive/plans/2026-09-28-performance-short-cycles.md.
 
 **Architecture:** A deterministic private OpenAI-compatible provider routes requests by explicit fixture markers, not request arrival order. Six actual native sessions exercise the existing app engine, tool executor and renderer. A narrow controller drives the real session switcher, correlates producer/tool intervals with each action, and verifies exact persisted output/results before reporting a measured leg.
 
