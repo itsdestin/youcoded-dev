@@ -442,3 +442,53 @@ measure "wheel waits ~14–180 ms in the listener queue" stays what it was; this
 A guard now fails the build if any renderer file adds a wheel/touch listener that can make a scroll
 wait (touch events included), outside a two-entry allowlist (the zoom hook; the terminal's
 touch-drag, which only exists on touch devices).
+
+## 4e. Fix 1 — long code blocks, before/after (2026-10-04)
+
+**What you would feel.** Before: while a model wrote one long file (500 lines), the app's drawing
+thread was 100% busy for the whole reply — about 570–640 frames arrived more than 40 ms late and
+there were ~380–390 freezes over 50 ms (worst ~110 ms). Scrolling, typing and clicking all waited
+behind it. After: on a calm machine, 1–4 late frames and 1–2 freezes in the whole reply, and the
+thread sits at roughly 55–65% (ordinary prose of the same length: ~40–45%).
+
+**What was wrong.** Every streamed word re-read, re-coloured and re-built the *entire* code block
+from its first line, so each word cost more than the last. Two smaller costs rode along: a new
+colouring engine was built for every redraw (also in plain prose), and once that was gone the
+page's own layout work still grew with the block.
+
+**What changed.** Finished lines of a still-open code block are now drawn once, in 20-line pieces;
+only the newest 20–39 lines are redrawn per word. One colouring engine is shared. Finished pieces
+are walled off so laying out a new line cannot disturb them. This applies only while the model is
+still writing, only to a block at the top level of the reply, and also to a chat opened or
+un-hidden mid-reply (including blocks with no blank line in them).
+
+**Numbers** (full 500-line series, 9,008 words at 150/s, private build on an invisible screen —
+main-thread measures, not presented frames; absolute times are rough, the machine was busy):
+
+| | runs | machine load at start | thread busy, last third | late frames | freezes >50 ms |
+|---|---|---|---|---|---|
+| Before (master `eebcdea`) | 2 | 14, 9 | 100%, 100% | 644, 571 | 393, 383 |
+| After (final build) | 2 clean | 10, 33 | 59%, 65% | 1, 4 | 2, 2 |
+
+Three other after-runs are kept but excluded: two started at load 24–37 (one ran on a build
+before the no-blank-line fix) and showed the old pattern; they are noise/an older build, but
+the honest summary is "clean on a calm machine, can still stutter when the machine is saturated".
+Prose control stayed 37–46% in every clean run. Raw files: `scratch/perf-lab/suspects/` (`new-before-*`, `final-*`).
+Page layout per 2 s stays flat (~100 ms; it grew 70 → 520 ms without the wall).
+
+**How sure.** The cause is shown by a CPU profile (colouring ~26%, re-reading ~9%, other passes ~10%,
+engine rebuild ~5% of the whole stream) and the effect repeats in every run on a calm machine. The
+phone was not measured.
+
+**What could look or feel different.**
+- While a long block is still being written, a multi-line comment or string that crosses a 20-line
+  edge can be coloured as if it started there; it corrects the moment the block closes or the
+  reply ends (a stopped or cut-off reply is drawn as one piece).
+- Selecting text across the finished part works the same; a long line in the finished part still scrolls sideways.
+- The right-click "Copy code block" returns exactly the code (fixed after review).
+
+**Guards added.** Tests pin: per-word work does not grow with block length (counts, not
+milliseconds); the code block is never rebuilt at the 40-line mark, at close, or at reply end;
+finishing a reply redraws only the block still open; blank lines at piece edges; every fence shape;
+chats mounted mid-reply (with and without blank lines); Find across pieces; Copy and right-click
+copy; one shared colouring engine; the wall's CSS (it must keep sideways scrolling).
