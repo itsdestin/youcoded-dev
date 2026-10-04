@@ -644,3 +644,80 @@ characters kept for when you look; a window reload no longer loses what the sess
 the scroll bar on the terminal updates once per frame (visually identical).
 **Left:** hidden-window throttling not measurable on this rig (Windows/macOS minimise); ConPTY/macOS brake by reading only;
 Android findings unchanged; the hidden-terminal rate (512 K/s) is still a judgement call.
+
+## 4g. Fix 5 — ordinary streaming cost, before/after (2026-10-04)
+
+**What you would feel.** Three things, in order of size.
+1. **A long code block was still stuttering (found while profiling prose).** Fix 1 (section 4e) was meant to make a
+   500-line file cheap to write, but on the current build it only worked for *some* ways the words happened to line up.
+   At the rig's 150 words a second it did not work at all: the app sat at 85-100% busy, 325-355 freezes over 50 ms and
+   ~540 late frames per reply. Now: 55-64% busy, 2 freezes, 2 late frames, in every run.
+2. **A fast screen (120/144/180 Hz) no longer redraws the chat ~150 times a second.** Words arrive at ~150/s; the chat
+   used to redraw once per screen frame, so a 180 Hz screen did far more work than a 60 Hz one for the same text. It now
+   redraws at most about every 12 ms (so 60 Hz screens are untouched; 120/144/180 Hz redraw every 2nd/2nd/3rd frame,
+   17/14/17 ms apart — never coarser than one 60 Hz frame).
+3. **Small:** the time under a message was formatted with a brand-new formatter on every redraw; now one is reused.
+
+**Plain-language verdict on the goal.** The goal was prose <= 25% busy. **Not reached, and the evidence says it cannot
+be reached by trimming the app's own code on this rig:** prose is ~43% busy before and ~41% after. About two thirds of
+the remaining time is the browser's own page drawing (layout, paint, hit-testing, compositing), which this
+software-drawn virtual screen makes slow and a real graphics card judges differently. The rig has no real GPU, so stop
+here rather than force changes that could alter what you see.
+
+**Where the time goes (prose, 60 Hz, CPU profile + browser trace, 60 redraws a second, 150 words a second).** Per redraw ~7.4 ms:
+
+| Share of one redraw | ms | What |
+|---|---|---|
+| Reading + building the live paragraph (react-markdown, 2.5 words per redraw) | ~1.0 | parse 0.5, tree passes 0.4; ~0.6 of it is fixed setup the library repeats every call |
+| Formatting the "2:34 PM" label | ~0.25 | **fixed** (now ~0) |
+| The rest of React (reconcile, commit, reducer) | ~1.1 | already narrow: shell 0 redraws per word, finished paragraphs skipped |
+| Layout + style recalculation | ~1.0 | already contained (`contain: layout style` on each message) |
+| Everything else the browser does per frame (paint, compositing, hit-test after layout, observers) | ~4 | native; not app code |
+
+Redraws really are one per frame: 59.9/s measured at 150 words/s (60 Hz); layouts 0.40 per word.
+
+**Numbers** (private build on the invisible screen; main-thread measures; each row 2 runs, load 5.4-6.9 at start;
+"busy" = last third of the stream; raw files `scratch/perf-lab/suspects/f5-*`):
+
+| | Before (`703ce3f51`) | After (`101e6720e`) |
+|---|---|---|
+| 500-line code block, busy | 97%, 97% | 62%, 64% |
+| ... freezes over 50 ms / late frames | 325, 355 / 551, 542 | 2, 2 / 2, 2 |
+| Prose, busy | 48%, 47% | 44%, 47% (first third 43, 42 -> 38, 39) |
+| Mixed reply (headings, lists, table, short fences, links, quote), busy | 52%, 51% | 48%, 51% (first third 43, 43 -> 41, 41) |
+| Redraws per second, 60 Hz | 59.9 | 59.9 (unchanged by design) |
+| Redraws per second, frame limit lifted (stand-in for a fast screen), prose | 146, 143 | 82, 82 |
+| Wheel waits, 60 Hz rig, while the visible chat streams (median) | 49.7, 49.9 ms (idle 31 ms) | 50.4, 50.3 ms (idle 31) |
+| Wheel waits, frame limit lifted, same case (median / p95) | 4.0 / 18.3, 6.2 / 18.9 ms | 1.7 / 7.3, 3.0 / 13.1 ms |
+| Typing while a reply streams (1 run each), to-screen p95 | 3.5 ms; 2 frames 38.2 ms | 3.4 ms; 37.6 ms |
+
+**How sure.**
+- *Code block:* sure. Cause shown by counting the code-block chunks on screen during the stream (0 in every unprofiled
+  run, 1-23 growing in the profiled one — the profiler slowed commits enough to change how words lined up) and
+  reproduced in a unit test with 8 of 9 word alignments failing before the fix.
+- *Fast screens:* sure that the number of redraws drops 146 -> 82/s (counted) and by the unit test at 120-240 Hz. **Not
+  measured as saved CPU**: the lifted-limit rig runs ~1,700 frames a second, so its busy % is dominated by the frame loop
+  and moved only 85-90% -> 82-85%; it is a count check, not a 180 Hz simulation. Extrapolating from the 60 Hz cost per
+  redraw (~7.5 ms), 150 redraws/s would cost >100% of a core on a 180 Hz screen and 83/s ~60% — a plausible reading, not
+  a measurement. A real 180 Hz screen with a GPU should be checked by Destin's own eyes and the app's own numbers.
+- *Prose and mixed:* a small real gain (~3 points) from the formatter; the table is within run-to-run spread, so call it "about 3 points, 2 runs".
+
+**What could look or feel different.**
+- 60 Hz screens: nothing intended. 120/144/180 Hz: text can appear in steps of up to ~17 ms instead of ~5-8 ms, never
+  coarser than a 60 Hz screen already shows. The first word after a pause still appears on the very next frame.
+- While a long code block is being written it is now drawn in 20-line pieces (as designed in 4e) in cases where it
+  previously was not: colouring of a comment or string crossing a 20-line edge can be briefly off until the block closes
+  (4e's list applies, now actually in effect).
+- Nothing else visible: same final text, no remounts, auto-scroll and Find/copy untouched, hidden chats catch up as before.
+
+**Rejected.** Reusing react-markdown's processor between redraws (needs three transitive packages as direct imports and
+a copy of the library's output step; ~0.25 ms of 7.4); splitting the live paragraph at sentences (changes the page's
+element structure, as the earlier archive found); flushing every second frame at 60 Hz (visible chunking); `contain:
+paint`/`content-visibility` on the streaming message (clips theme glows, see renderer-lists rules).
+
+**Guards added.** `markdown-blocks.test.ts` (open fence found at every 1-9 character alignment; red 8/9 before),
+`transcript-batch-frame-gap.test.ts` (flush count per second at 60/120/144/180/240 Hz, nothing lost or reordered, first
+word immediate, hand-fired frames unthrottled; red 4/9 with the gap removed), `format-bubble-time.test.ts` (red 1/3 before).
+New rig tools: `suspects.mjs --only prose|mixed` (adds redraws per second, layouts, frames, code-block pieces on screen
+per window; `SUSPECTS_TRACE=1` writes an 8 s browser trace folded by activity via `trace-main.mjs`;
+`SUSPECTS_APP_ARGS` passes flags to the app, e.g. `--disable-frame-rate-limit --disable-gpu-vsync` to lift the limit).

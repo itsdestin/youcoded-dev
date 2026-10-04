@@ -30,13 +30,16 @@ import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './pr
 import { cpuSnapshot, pssMb } from './procs.mjs';
 import { startHops, summariseHops, readEmissions, classify, attachMainCounters } from './hops.mjs';
 import { connect } from './cdp.mjs';
+import { traceMain, summariseTrace } from './trace-main.mjs';
 import { installTerminalHelpers } from './scenario-terminal.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const LEGS = ['wheel', 'fence', 'flood'];
+// WHY opt-in 'mixed' (2026-10-04, fix 5): a realistic reply (headings, lists, table, short fences, links) streamed
+// the same way as the prose control, with commit/layout counts per delta. Not in the default run.
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -69,12 +72,34 @@ export function fenceText(lines) {
   // WHY the pieces are counted the way splitDeltas cuts them (tokens over 6 chars become 4-char slices):
   // counting whitespace-separated tokens undercounted by ~45%, so the fake provider truncated the fence
   // at ~277 of 500 lines. Fixed 2026-10-04 — numbers from before this are a DIFFERENT series.
+  return { text, deltas: countDeltas(text) };
+}
+
+/** How many deltas the fake provider's splitDeltas cuts `text` into (tokens over 6 chars become 4-char slices). */
+export function countDeltas(text) {
   let deltas = 0;
   for (const m of text.matchAll(/\s*\S+|\s+$/g)) {
     const word = m[0].trim();
     deltas += m[0].length <= 6 ? 1 : Math.ceil(word.length / 4);
   }
-  return { text, deltas };
+  return deltas;
+}
+
+/** A realistic assistant reply, about `target` deltas long: headings, paragraphs with inline code and links,
+ *  bullet and numbered lists, a table, short code fences, a quote. Sections repeat with varying numbers. */
+export function mixedText(target = 9000) {
+  const parts = [];
+  for (let i = 1; countDeltas(parts.join('')) < target; i++) {
+    parts.push(`## Step ${i}: tightening the \`handler${i}\` path\n\n` +
+      `The slow part is the **retry loop** in \`src/net/client${i}.ts\`. Each attempt re-reads the *whole* config, so a flaky link makes the cost grow with every failure; see [the design note](https://example.com/notes/${i}) for the reasoning behind the backoff. In practice this means a request that should take 40 ms can stall for several seconds before it finally gives up and reports the error to the caller.\n\n` +
+      `- Cache the parsed config once per session (\`loadConfig()\`)\n- Cap retries at ${3 + i % 4} and add jitter\n- Log the **final** error only, not every attempt\n\n` +
+      `1. Measure the baseline with \`npm run bench\`\n2. Apply the change behind a flag\n3. Re-measure and compare the p95\n\n` +
+      `| Case | Before (ms) | After (ms) |\n|---|---|---|\n| cold start | ${900 + i} | ${410 + i} |\n| warm | ${220 + i} | ${95 + i} |\n| flaky link | ${5200 + i} | ${640 + i} |\n\n` +
+      `\`\`\`ts\nexport async function fetchWithRetry(url: string, attempt = 0): Promise<Response> {\n  const res = await fetch(url).catch(() => null);\n  if (res?.ok) return res;\n  if (attempt >= ${3 + i % 4}) throw new Error('giving up after ' + attempt);\n  await sleep(2 ** attempt * 50 + Math.random() * 25);\n  return fetchWithRetry(url, attempt + 1);\n}\n\`\`\`\n\n` +
+      `> Note: the jitter matters more than the cap; without it every client retries in lockstep and the server sees a thundering herd.\n\n` +
+      `That should bring the worst case down by roughly an order of magnitude, and the happy path is unchanged. If the numbers do not move, check \`logs/retry-${i}.log\` first, because a misconfigured proxy produces the same symptom.\n\n`);
+  }
+  return parts.join('');
 }
 
 export const bounded = maxMinutes => {
@@ -115,9 +140,10 @@ const VISIBLE_CHAT = `[...document.querySelectorAll('.chat-scroll')].find(e => !
 export async function metrics(cdp) {
   const { metrics: m } = await cdp.send('Performance.getMetrics');
   const g = n => (m.find(x => x.name === n)?.value ?? 0) * 1000;
-  return { at: Date.now(), taskMs: g('TaskDuration'), scriptMs: g('ScriptDuration'), layoutMs: g('LayoutDuration'), styleMs: g('RecalcStyleDuration') };
+  const c = n => m.find(x => x.name === n)?.value ?? 0;
+  return { at: Date.now(), taskMs: g('TaskDuration'), scriptMs: g('ScriptDuration'), layoutMs: g('LayoutDuration'), styleMs: g('RecalcStyleDuration'), layouts: c('LayoutCount'), styles: c('RecalcStyleCount') };
 }
-export const diff = (a, b) => ({ wallMs: b.at - a.at, taskMs: Math.round(b.taskMs - a.taskMs), scriptMs: Math.round(b.scriptMs - a.scriptMs), layoutMs: Math.round(b.layoutMs - a.layoutMs), styleMs: Math.round(b.styleMs - a.styleMs), busyPct: Math.round((b.taskMs - a.taskMs) / Math.max(1, b.at - a.at) * 100) });
+export const diff = (a, b) => ({ wallMs: b.at - a.at, taskMs: Math.round(b.taskMs - a.taskMs), scriptMs: Math.round(b.scriptMs - a.scriptMs), layoutMs: Math.round(b.layoutMs - a.layoutMs), styleMs: Math.round(b.styleMs - a.styleMs), layouts: b.layouts - a.layouts, styleRecalcs: b.styles - a.styles, busyPct: Math.round((b.taskMs - a.taskMs) / Math.max(1, b.at - a.at) * 100) });
 
 export async function readLongtasks(cdp) {
   return cdp.evaluate(`(() => { const p = window.__perfProbe; if (!p) return null; const lt = p.log.filter(r => r[0] === 'longtask').map(r => r[2]); const gaps = p.log.filter(r => r[0] === 'frame-gap').map(r => r[2]); return { supported: p.longtaskSupported, count: lt.length, totalMs: lt.reduce((a, b) => a + b, 0), maxMs: lt.length ? Math.max(...lt) : 0, frameGapsOver40: gaps.length, worstFrameGapMs: gaps.length ? Math.max(...gaps) : 0 }; })()`);
@@ -171,7 +197,7 @@ async function legWheel(ctx) {
   return out;
 }
 
-async function legFence(ctx, lines, profileBase) {
+async function legFence(ctx, lines, profileBase, which = 'fence') {
   // `lines` is also read by the completeness check below.
   const { cdp, fake, bound, sessions, ids, switchTo } = ctx;
   const natIdx = ids.indexOf(sessions.nat[1].id);
@@ -187,12 +213,20 @@ async function legFence(ctx, lines, profileBase) {
       await bound(cdp.send('Profiler.setSamplingInterval', { interval: 200 }), 'profiler interval');
       await bound(cdp.send('Profiler.start'), 'profiler start');
     }
-    const rows = []; let prev = await metrics(cdp), prevSent = s.rec.deltasSent;
+    // WHY a MutationObserver count: one callback per task that changed the page ~= one React commit,
+    // so callbacks per second against deltas per second says whether batching is really one commit per frame.
+    await bound(cdp.evaluate(`(() => { window.__mut = { cb: 0, rec: 0, frames: 0 }; if (!window.__rafLoop) { window.__rafLoop = true; const tick = () => { window.__mut.frames++; requestAnimationFrame(tick); }; requestAnimationFrame(tick); } window.__mutObs?.disconnect(); if (${process.env.SUSPECTS_NO_MUT === '1'}) return false; window.__mutObs = new MutationObserver(r => { window.__mut.cb++; window.__mut.rec += r.length; }); window.__mutObs.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true }); return true; })()`), 'mutation counter');
+    const mut = async () => bound(cdp.evaluate('({ ...window.__mut })'), 'mutation read', 5000);
+    // SUSPECTS_TRACE=1: an 8 s browser trace from 15 s into the stream, folded by activity (Layout, Paint, ...) — see trace-main.mjs.
+    let tracePromise = null;
+    if (process.env.SUSPECTS_TRACE === '1') tracePromise = (async () => { await sleep(15000); return summariseTrace(await traceMain(cdp, 8000)); })().catch(e => ({ error: e.message }));
+    const rows = []; let prev = await metrics(cdp), prevSent = s.rec.deltasSent, prevMut = await mut();
     while (s.rec.endedAt === null) {
       await sleep(2000);
-      const now = await bound(metrics(cdp), 'metrics', 5000);
-      rows.push({ deltasSoFar: s.rec.deltasSent, deltasInWindow: s.rec.deltasSent - prevSent, ...diff(prev, now) });
-      prev = now; prevSent = s.rec.deltasSent;
+      const now = await bound(metrics(cdp), 'metrics', 5000), mnow = await mut();
+      const fenceChunkEls = await bound(cdp.evaluate("document.querySelectorAll('.yc-fence-chunk').length"), 'chunk count', 5000).catch(() => null);
+      rows.push({ fenceChunkEls, framesPerSec: Math.round((mnow.frames - prevMut.frames) / ((now.at - prev.at) / 1000)), commitsApprox: mnow.cb - prevMut.cb, mutationRecords: mnow.rec - prevMut.rec, deltasSoFar: s.rec.deltasSent, deltasInWindow: s.rec.deltasSent - prevSent, ...diff(prev, now) });
+      prev = now; prevSent = s.rec.deltasSent; prevMut = mnow;
       if (rows.length > 60) throw Error(`${label} stream ran past 120 s`);
     }
     const rec = await bound(s.completion, `${label} completion`, 60000);
@@ -218,8 +252,16 @@ async function legFence(ctx, lines, profileBase) {
     const live = rows.filter(r => r.deltasInWindow > 0);
     const third = Math.max(1, Math.floor(live.length / 3));
     const avg = a => Math.round(a.reduce((x, r) => x + r.taskMs / Math.max(1, r.wallMs) * 100, 0) / Math.max(1, a.length));
-    return { status: rec.aborted || rec.deltasSent !== rec.plannedDeltas ? 'incomplete' : 'measured', deltas: rec.deltasSent, chars: rec.chars, streamMs: rec.streamMs, busyPctFirstThird: avg(live.slice(0, third)), busyPctLastThird: avg(live.slice(-third)), longtasks, doneCheck, windows: rows };
+    return { status: rec.aborted || rec.deltasSent !== rec.plannedDeltas ? 'incomplete' : 'measured', deltas: rec.deltasSent, chars: rec.chars, streamMs: rec.streamMs, busyPctFirstThird: avg(live.slice(0, third)), busyPctLastThird: avg(live.slice(-third)), trace: tracePromise ? await tracePromise : undefined, longtasks, doneCheck, windows: rows };
   };
+  if (which === 'mixed') {
+    const text = mixedText(9000);
+    return { mixed: await run({ deltas: countDeltas(text), perSec: 150, text }, 'mixed') };
+  }
+  if (which === 'prose') {
+    const fence = fenceText(lines);
+    return { prose: await run({ deltas: fence.deltas, perSec: 150, seed: 'suspects-prose', chars: fence.text.length, text: null }, 'prose') };
+  }
   const fence = fenceText(lines);
   const out = { lines, fence: await run({ deltas: fence.deltas, perSec: 150, text: fence.text }, 'fence') };
   // Control: ordinary prose, the same number of deltas at the same rate.
@@ -511,7 +553,7 @@ export async function main(argv = process.argv.slice(2)) {
     const fixture = buildFixture(mkdtempSync(join(ROOT, 'scratch/perf-lab/suspects-fixture-')), { fakeProvider: true, log: () => {} });
     fake = await bound(startFakeProvider({ port: fixture.fakeProvider.port }), 'fake provider');
     x = await bound(startXvfb(':99'), 'Xvfb');
-    app = await bound(launchApp({ binary: build.binary, appDir: build.appDir, fixture, display: x.display, cdpPort: 9577, refuseExisting: true, extraArgs: opts.mainInspect === '1' ? ['--inspect=9301'] : [] }), 'launch', 90000);
+    app = await bound(launchApp({ binary: build.binary, appDir: build.appDir, fixture, display: x.display, cdpPort: 9577, refuseExisting: true, extraArgs: [...(opts.mainInspect === '1' ? ['--inspect=9301'] : []), ...(process.env.SUSPECTS_APP_ARGS ? process.env.SUSPECTS_APP_ARGS.split(' ') : [])] }), 'launch', 90000);
     const cdp = app.cdp;
     report.gpu = await bound(readRendererInfo(app.cdpPort, cdp), 'GPU info');
     await bound(cdp.send('Performance.enable'), 'metrics domain');
@@ -533,7 +575,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));
