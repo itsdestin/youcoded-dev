@@ -648,134 +648,95 @@ Android findings unchanged; the hidden-terminal rate (512 K/s) is still a judgem
 ## 4g. Fix 5 — ordinary streaming cost, before/after (2026-10-04)
 
 **What you would feel.** Three things, in order of size.
-1. **A long code block was still stuttering (found while profiling prose).** Fix 1 (section 4e) was meant to make a
-   500-line file cheap to write, but on the current build it only worked for *some* ways the words happened to line up.
-   At the rig's 150 words a second it did not work at all: the app sat at 85-100% busy, 325-355 freezes over 50 ms and
-   ~540 late frames per reply. Now: 55-64% busy, 2 freezes, 2 late frames, in every run.
-2. **A fast screen (120/144/180 Hz) no longer redraws the chat ~150 times a second.** Words arrive at ~150/s; the chat
-   used to redraw once per screen frame, so a 180 Hz screen did far more work than a 60 Hz one for the same text. It now
-   redraws at most about every 12 ms (so 60 Hz screens are untouched; 120/144/180 Hz redraw every 2nd/2nd/3rd frame,
-   17/14/17 ms apart — never coarser than one 60 Hz frame).
-3. **Small:** the time under a message was formatted with a brand-new formatter on every redraw; now one is reused.
+1. **A long code block was still stuttering (found while profiling prose).** Fix 1 (4e) only worked for *some* ways the
+   words happened to line up; at the rig's 150 words a second it did not work at all and the app sat at 85-100% busy,
+   325-355 freezes over 50 ms and ~540 late frames per reply. A first fix closed one alignment; review found the same
+   miss when a fence follows a paragraph line with no blank line. Now closed for every shape tested. Result: 55-64% busy,
+   1-2 freezes, 1-3 late frames, in every run.
+2. **A fast screen (120/144/180 Hz) no longer redraws the chat ~150 times a second.** The app learns the screen's refresh
+   rate from the frames it sees and redraws streamed text every k-th frame so the step is never above one 60 Hz frame:
 
-**Plain-language verdict on the goal.** The goal was prose <= 25% busy. **Not reached, and the evidence says it cannot
-be reached by trimming the app's own code on this rig:** prose is ~43% busy before and ~41% after. About two thirds of
-the remaining time is the browser's own page drawing (layout, paint, hit-testing, compositing), which this
-software-drawn virtual screen makes slow and a real graphics card judges differently. The rig has no real GPU, so stop
-here rather than force changes that could alter what you see.
+   | Screen | 50 | 60 | 72 | 75 | 90 | 100 | 120 | 144 | 165 | 180 | 240 | 360 Hz |
+   |---|---|---|---|---|---|---|---|---|---|---|---|---|
+   | Step between redraws (ms) | 20 | 16.7 | 13.9 | 13.3 | 11.1 | 10 | 16.7 | 13.9 | 12.1 | 16.7 | 16.7 | 16.7 |
+   | Redraws per second | 50 | 60 | 72 | 75 | 90 | 100 | 61 | 73 | 83 | 61 | 61 | 61 |
 
-**Where the time goes (prose, 60 Hz, CPU profile + browser trace, 60 redraws a second, 150 words a second).** Per redraw ~7.4 ms:
+   (From the unit test, 150 words/s; also holds with +-1.5 ms timestamp jitter and across a 60 -> 180 -> 60 rate change.)
+   If the app cannot trust its estimate (variable refresh, a stalled frame) it redraws every frame, as before.
+   **The owner-tunable setting is `STREAM_REDRAW_TARGET_HZ` (currently 60) in `transcript-batch.ts`:** raise to 120 for
+   smoother text on fast screens at proportionally more work, or `Infinity` for one redraw per frame.
+3. **Small:** the time under a message used one new formatter per redraw; now one is reused (and rebuilt if the
+   computer's time zone changes).
 
-| Share of one redraw | ms | What |
+**Verdict on the goal.** The goal was prose <= 25% busy. **Not reached, and the evidence says it cannot be by trimming the
+app's own code on this rig:** prose is ~43% busy before and ~39-45% after. About two thirds of the remaining time is the
+browser's own drawing (layout, paint, hit-testing, compositing), which this software-drawn virtual screen makes slow and
+a real graphics card judges differently. Stopped there rather than force changes that could alter what you see.
+
+**Where the time goes (prose, 60 Hz, CPU profile + browser trace).** Per redraw ~7.4 ms: reading/building the live
+paragraph ~1.0, time label ~0.25 (now ~0), the rest of React ~1.1, layout + style ~1.0, everything else the browser
+does per frame ~4 (native). Redraws really are one per frame: 59.9/s measured at 150 words/s; layouts 0.40 per word.
+
+**Numbers** (private build on the invisible screen; main-thread measures; "busy" = last third of the stream; 2 runs each;
+raw files `scratch/perf-lab/suspects/f5-*`). Before = `703ce3f51` (load 5.4 at both starts); final = app HEAD `e9ba76e38`
+(load 5.9 and 6.1 at start; the first lifted-limit run started at load 16.9 and is marked noisy).
+
+| | Before | Final build |
 |---|---|---|
-| Reading + building the live paragraph (react-markdown, 2.5 words per redraw) | ~1.0 | parse 0.5, tree passes 0.4; ~0.6 of it is fixed setup the library repeats every call |
-| Formatting the "2:34 PM" label | ~0.25 | **fixed** (now ~0) |
-| The rest of React (reconcile, commit, reducer) | ~1.1 | already narrow: shell 0 redraws per word, finished paragraphs skipped |
-| Layout + style recalculation | ~1.0 | already contained (`contain: layout style` on each message) |
-| Everything else the browser does per frame (paint, compositing, hit-test after layout, observers) | ~4 | native; not app code |
-
-Redraws really are one per frame: 59.9/s measured at 150 words/s (60 Hz); layouts 0.40 per word.
-
-**Numbers** (private build on the invisible screen; main-thread measures; each row 2 runs, load 5.4-6.9 at start;
-"busy" = last third of the stream; raw files `scratch/perf-lab/suspects/f5-*`):
-
-| | Before (`703ce3f51`) | After (`101e6720e`) |
-|---|---|---|
-| 500-line code block, busy | 97%, 97% | 62%, 64% |
-| ... freezes over 50 ms / late frames | 325, 355 / 551, 542 | 2, 2 / 2, 2 |
-| Prose, busy | 48%, 47% | 44%, 47% (first third 43, 42 -> 38, 39) |
-| Mixed reply (headings, lists, table, short fences, links, quote), busy | 52%, 51% | 48%, 51% (first third 43, 43 -> 41, 41) |
+| 500-line code block (blank line before), busy | 97%, 97% | 61%, 62% |
+| ... freezes over 50 ms / late frames | 325, 355 / 551, 542 | 1, 1 / 1, 1 |
+| Fence directly after a paragraph line, no blank line | not measured before the fix | 63%, 64%; 2 freezes, 3 late frames |
+| Fence with no language and no blank line | not measured | 36%, 37%; 1 freeze, 1-2 late frames |
+| **Code-block pieces on screen mid-stream (loud check)** | 0 in every unprofiled run | **23 at the peak in all 6 fence runs** (the leg now fails if it is 0) |
+| Prose, busy | 48%, 47% | 44%, 45% (first third 43, 42 -> 38, 39) |
+| Mixed reply, busy | 52%, 51% | 47%, 47% (first third 43, 43 -> 39, 39) |
 | Redraws per second, 60 Hz | 59.9 | 59.9 (unchanged by design) |
-| Redraws per second, frame limit lifted (stand-in for a fast screen), prose | 146, 143 | 82, 82 |
-| Wheel waits, 60 Hz rig, while the visible chat streams (median) | 49.7, 49.9 ms (idle 31 ms) | 50.4, 50.3 ms (idle 31) |
-| Wheel waits, frame limit lifted, same case (median / p95) | 4.0 / 18.3, 6.2 / 18.9 ms | 1.7 / 7.3, 3.0 / 13.1 ms |
-| Typing while a reply streams (1 run each), to-screen p95 | 3.5 ms; 2 frames 38.2 ms | 3.4 ms; 37.6 ms |
+| Wheel waits, 60 Hz rig, visible stream (median; idle 31 ms) | 49.7, 49.9 ms | 49.9, 49.9 ms |
+| Typing while a reply streams, to-screen p95 (2 runs) | 3.5 ms (1 run) | 3.7, 4.0 ms |
 
-**How sure.**
-- *Code block:* sure. Cause shown by counting the code-block chunks on screen during the stream (0 in every unprofiled
-  run, 1-23 growing in the profiled one — the profiler slowed commits enough to change how words lined up) and
-  reproduced in a unit test with 8 of 9 word alignments failing before the fix.
-- *Fast screens:* sure that the number of redraws drops 146 -> 82/s (counted) and by the unit test at 120-240 Hz. **Not
-  measured as saved CPU**: the lifted-limit rig runs ~1,700 frames a second, so its busy % is dominated by the frame loop
-  and moved only 85-90% -> 82-85%; it is a count check, not a 180 Hz simulation. Extrapolating from the 60 Hz cost per
-  redraw (~7.5 ms), 150 redraws/s would cost >100% of a core on a 180 Hz screen and 83/s ~60% — a plausible reading, not
-  a measurement. A real 180 Hz screen with a GPU should be checked by Destin's own eyes and the app's own numbers.
-- *Prose and mixed:* a small real gain (~3 points) from the formatter; the table is within run-to-run spread, so call it "about 3 points, 2 runs".
+**Lifted-limit check (stand-in for a fast screen) — did NOT confirm the new rule.** With the frame limit lifted the rig
+renders 460-720 frames a second at wildly uneven spacing, so the new rule (correctly) sees no steady refresh rate and
+redraws every frame: 134-137 redraws/s, busy 85-92%, same as before any fix. The earlier fixed 12 ms gap showed 82/s there
+only because it ignored the display. The cadence rule is therefore verified by the unit test (13 refresh rates, jitter, rate
+change) and not by the rig; a real 180 Hz screen is the open check. Extrapolating the 60 Hz cost per redraw (~7.5 ms), 150
+redraws/s would cost >100% of a core and 61/s ~45%: a reading, not a measurement.
 
 **What could look or feel different.**
-- 60 Hz screens: nothing intended. 120/144/180 Hz: text can appear in steps of up to ~17 ms instead of ~5-8 ms, never
-  coarser than a 60 Hz screen already shows. The first word after a pause still appears on the very next frame.
-- While a long code block is being written it is now drawn in 20-line pieces (as designed in 4e) in cases where it
-  previously was not: colouring of a comment or string crossing a 20-line edge can be briefly off until the block closes
-  (4e's list applies, now actually in effect).
+- 60 Hz and slower screens: nothing intended. Faster screens: text can arrive in steps up to ~17 ms instead of ~5-8 ms,
+  never coarser than a 60 Hz screen shows. The first word after a pause appears on the very next frame.
+- While a long code block is being written it is drawn in 20-line pieces (as designed in 4e), now actually in effect:
+  colouring of a comment or string crossing a piece edge can be off until the block closes.
 - Nothing else visible: same final text, no remounts, auto-scroll and Find/copy untouched, hidden chats catch up as before.
 
-**Rejected.** Reusing react-markdown's processor between redraws (needs three transitive packages as direct imports and
-a copy of the library's output step; ~0.25 ms of 7.4); splitting the live paragraph at sentences (changes the page's
-element structure, as the earlier archive found); flushing every second frame at 60 Hz (visible chunking); `contain:
-paint`/`content-visibility` on the streaming message (clips theme glows, see renderer-lists rules).
+**Rejected.** Reusing react-markdown's processor between redraws (needs three transitive packages as direct imports;
+~0.25 ms of 7.4); splitting the live paragraph at sentences (changes the page's element structure); flushing every second
+frame at 60 Hz (visible chunking); `contain: paint` / `content-visibility` on the streaming message (clips theme glows).
 
-**Guards added.** `markdown-blocks.test.ts` (open fence found at every 1-9 character alignment; red 8/9 before),
-`transcript-batch-frame-gap.test.ts` (flush count per second at 60/120/144/180/240 Hz, nothing lost or reordered, first
-word immediate, hand-fired frames unthrottled; red 4/9 with the gap removed), `format-bubble-time.test.ts` (red 1/3 before).
-New rig tools: `suspects.mjs --only prose|mixed` (adds redraws per second, layouts, frames, code-block pieces on screen
-per window; `SUSPECTS_TRACE=1` writes an 8 s browser trace folded by activity via `trace-main.mjs`;
-`SUSPECTS_APP_ARGS` passes flags to the app, e.g. `--disable-frame-rate-limit --disable-gpu-vsync` to lift the limit).
+**Guards added.** `markdown-blocks.test.ts` (open fence recorded for 6 preludes x 4 fence shapes x 12 update sizes, split
+openers, a second fence, bounded parsing for 300 lines), `transcript-batch-frame-gap.test.ts` (13 refresh rates, jitter, rate
+change, slow words, nothing lost or reordered, hand-fired frames unthrottled), `format-bubble-time.test.ts` (one formatter,
+same text, follows a time-zone change). Rig: `suspects.mjs --only prose|mixed|fence-noblank|fence-bare` (redraws, layouts,
+frames and code-block pieces per window; fence legs fail loudly if no pieces appear), `SUSPECTS_TRACE=1` + `trace-main.mjs`,
+`SUSPECTS_APP_ARGS`.
 
-### 4f, final pass (2026-10-04, last) — final build `d23e44d97` on top of the streaming builder's commits
+## 5a. Where things stand (morning of 2026-10-04)
 
-**verify.sh on the combined tree: all nine checks PASS** (types, test types, related tests, knip, lint, design lint, ast-grep,
-screens open, journeys). Rig re-run on the final build, machine load 5–8 at starts (noterm/minimised legs 7–8; everything else 5–6).
-A first queue was thrown away (`BROKEN-producer-fz-*`): the rig's new producer command had a bug, so every flood errored at once.
+All five fixes are on branch `session/perf-zero-hitch-20261004` (app HEAD `e9ba76e38`), nothing merged. `verify.sh` on the
+combined tree: all 9 checks passed. Everything below was measured on one private build on an invisible, software-drawn
+screen (no graphics card), machine load 5-7 unless noted. "Before" figures are from earlier builds (4d-4g).
 
-| Leg (final build) | Runs | Result |
-|---|---|---|
-| 200 MB, terminal on screen | 2 | all 201.8 MB, **0 discarded, exact tail**, 6.2 / 6.5 s, ~1,010 messages, worst main hiccup **21 / 22 ms**, 0 long tasks |
-| 200 MB, terminal hidden behind chat | 2 | 0 discarded, ~19% busy (as before), worst hiccup 9–10 ms, scroll delay p95 33 ms, typing delay p95 1.2–1.5 ms; 76.5 MB in 150 s (the 0.5 MB/s allowance) |
-| 200 MB paced 20 MB/s, on screen | 2 | 0 discarded, exact tail, 10.2 s, busy 83%, worst hiccup 23–28 ms |
-| 40 MB on screen (hiccup check) | 3 | 1.3–1.6 s (was 3.4 s before the thumb fix), **worst hiccup 14–22 ms, 0 long tasks** — the old 250 ms start hiccup is gone |
-| Ctrl+C in a 200 MB flood | **3** | "interrupted" visible after **87 / 83 / 112 ms** (received 69–91 ms); the program had printed only 4.9–6.3 MB; was 4.9 s–never before the brake |
-| Typing echo (36 keys) | 2 | key to window 2.5 / 2.6 ms, key to terminal buffer 13.8 / 13.9 ms — unchanged from before any of this work |
-| Blanked window mid-flood (no desktop terminal at all) | 2 | program finishes 200 MB in **2.1 s / 2.6 s**; exact tail on the new terminal 2.5 s / 1.8 s after the page returns |
-| Window hidden 12 s, then 100 MB | 2 | program finishes in **1.4 s / 1.3 s**; exact tail 0.1 s after show; 0 errors |
-| **(a) Hidden window, 200 MB (forces a cut of the >4 M backlog), then show** | 2 | program done in 2.3 s / 2.6 s; exact tail 0.11 s / 0.23 s after show; **no stray escape fragments in the 60 visible rows; bracketed paste ON and cursor hidden** — set by the program a quarter of the way in (the terminal started with paste off, cursor shown), i.e. inside the part the cut threw away |
-| (b) "ready" before a buddy/second window is subscribed | — | **Unit tests only** (`terminal-flow-wiring.test.ts`: ready-before-owner, ready-before-subscribe, vanished waiter); the rig cannot open a buddy window |
-
-One unexplained oddity: in the two 200 MB runs where the hidden-terminal leg follows the on-screen leg in the same launch, the
-"is the terminal still alive" probe (a short command typed while the hidden flood is still going) did not get its reply within 8 s
-(3.6–3.8 MB had passed); run alone it replies in 1.2 s, and earlier builds replied in 0.4–1.2 s in the combined order. No data is
-lost either way (the flood continues, 0 errors); not explained, left open.
-
-**Terminal modes that survive a backlog cut** (last value seen in the dropped text is replayed, after an SGR reset): application
-cursor keys (1), auto-wrap (7), cursor blink (12), cursor visible (25), alternate screen (47, 1047, 1049), mouse reporting
-(1000, 1002, 1003), focus reports (1004), mouse encodings (1005, 1006, 1015, 1016), bracketed paste (2004), and the kitty keyboard
-mode while it is pushed. Not restored: cursor position, scroll region, tab stops, charset shifts, colours other than the reset.
-The cut is placed after a newline outside any escape/OSC/DCS sequence; a stream with no newline at all is only cut past twice the cap.
-
-**Known leftover.** The phones' ring buffer (`remote-server.ts`, "trim whole chunks off the head") still cuts at an arbitrary
-chunk boundary, so a phone that joins after a very large flood can start mid-escape-sequence or without the modes the program
-set early on. This predates this work; fixing it would add text the stream offsets do not account for, so it needs its own change.
-Also open: hidden-window timer throttling on a real Windows/macOS minimise, the ConPTY/macOS brake (by reading only), the Android
-findings, and the 512 K/s hidden-terminal rate.
-
-**What a user could feel differently (final).**
-- A flood on screen takes as long as the screen needs: 200 MB about 6–7 s (40 MB 1.3–1.6 s), with no freezes and nothing lost, instead of ending in 1.7 s with most of it lost.
-- Ctrl+C in a flooding terminal works in about a tenth of a second.
-- A command printing a lot in a terminal you are not looking at (window visible) is slowed to ~0.5 MB/s — a 60 MB log takes ~2 minutes — in exchange for ~19% instead of 80–99% of the window; ordinary output is unaffected.
-- A hidden, minimised or tray window, a phone-driven session, or a window mid-reload runs at full speed and keeps the newest ~4 M characters; when you look, the terminal shows the exact tail with paste mode, cursor state, alternate screen and mouse modes as the program last set them.
-- Typing latency, Claude Code redraws and the visible look are unchanged; the terminal's scroll bar updates once per frame.
-
-### 4f, round 3 (2026-10-04, after the second re-review) — app commit `e9ba76e38`
-
-| # | Finding | Real? | Fix |
+| Fix | Before -> after (headline) | How sure | What you might notice |
 |---|---|---|---|
-| 1 | Alt-screen exit replayed after a cut | **Yes, confirmed in xterm 6's source:** `CSI ? 1049 l` always runs a cursor RESTORE, even from the normal screen. | Alternate screen is one state: ON replays the mode that turned it on; OFF replays `CSI ? 1047 l` (leaves the alt screen if in it, no cursor restore, no-op otherwise). Tests: entered-and-left, entered-still-on, two successive cuts (red on the old code). Scroll region (DECSTBM) added to the restored set. |
-| 2 | Relative cursor moves after a cut | Real limit. | After any cut the program is asked to repaint once: the worker nudges the PTY one column narrower and back (pre-mount cut), or the window does (hidden-window cut, once the window is back and the backlog is written). Restores the terminal's CURRENT size, so a real resize in the 120 ms cannot be undone; skipped on Windows (ConPTY re-emits its buffer on resize); harmless to plain shells (prompt redraws in place). Rig `cut` leg now ends with ~7 MB of Ink-style frames (5 lines, redrawn with up-5/erase): **final frame present exactly once in 5 of 5 runs, modes right, 0 stray fragments; in 1 of 5 runs two stale partial frames from mid-stream cuts sat above it** — the nudge repaints the frame, not the rows above it. Cuts only happen when a hidden window receives more than ~0.5 MB/s, i.e. floods, not Claude Code animation (~20 KB/s). |
-| 3 | No-newline fallback | Yes | `\r` is a cut point; the fallback backs off before an unfinished sequence and never leaves a lone low surrogate; a no-boundary scan is remembered and repeats only after ~256 K more (a 10 M `\r` stream: ≤ 10 scans, was one per push); 8-bit C1 introducers recognised; strings up to 64 K are protected (longer are treated as finished — documented). |
-| 4 | Reload between ready and subscribe | Yes | The remembered ready is dropped when its page navigates (red test). |
-| 5 | Hidden-flood probe got no reply for 8 s | **Rig artifact, confirmed.** The fake producer wrote 64 blocking 64 KB writes per turn of its event loop; against a terminal draining at 0.5 MB/s that is ~8 s between stdin reads. Not the app (the PTY was not paused for stdin, input was not delayed, Ctrl+C is a signal). | Producer time-sliced to ~40 ms per turn. Same probe now replies in **0.55 s and 0.30 s** in the combined order (2 runs; was > 8 s). Interactive replies in a hidden busy terminal are therefore not slow: bounded by the ~1.3 M backlog at 0.5 MB/s, measured well under that. |
-| 6 | Feeder pump retry forever if the terminal vanishes | Yes (reasoned + red test) | `isAlive`: a pump whose terminal is gone stops, releases what it owed, no retry timer; the view clears its terminal reference on dispose. |
+| 1. Long code blocks | 97% busy, ~550 late frames -> 61%, 1; pieces confirmed on screen in 6 of 6 runs | Very (counted; 6 runs on the final build) | Colour of a comment crossing a 20-line edge may be off until the block closes |
+| 2. Big spreadsheets | opened in 10-15 s, 6-11 s freeze -> 0.27 s (CSV), 1.0 s (Excel); clicks 0.5 s -> 20-30 ms; scroll steps <= 124 ms | Very (1 run on the final build, 50-100x effect) | Only visible rows/columns exist in the page: Find across the sheet and copy behave as designed in 4d |
+| 3. Scrolling during busy moments | scroll waited for the whole busy spell -> compositor scrolled in 8 of 8 trials (a deliberately blocking control: 0 of 8) | Very (8 trials, instrument tells the two apart) | Pinch-zoom still works (110 -> 100 round trip) |
+| 4. Terminal floods | 200 MB: output dropped after ~50 MB, Ctrl+C 5 s -> all 201.8 MB shown, 0 stalls, 7.3 s, Ctrl+C 0.09 s, echo 7.6 ms | Very (1 run on the final build; earlier builds 2 runs) | A flooding command takes as long as the screen needs; a hidden terminal is fed more slowly |
+| 5. Ordinary streaming | prose ~44-48% -> ~39-45% busy; fence rows above; 60 Hz redraws unchanged | Prose gain small (~3 points, 2 runs); fence gain sure | Faster screens redraw text up to every ~17 ms (never coarser than 60 Hz) |
 
-Re-confirmation on `e9ba76e38` (load 4.4–5.8): 200 MB on screen 6.2 s / 6.5 s, 0 discarded, exact tail, worst hiccup 17 / 21 ms;
-Ctrl+C 26–44 ms to "interrupted" (1 run); typing echo 2.7 ms / 14.1 ms; `cut` leg x5 as above (producer 1.9–2.6 s while hidden, modes
-bracketed-paste ON and cursor hidden, no stray fragments). Raw: `scratch/perf-lab/suspects/fw-*`.
+**Still needs your eye or other hardware.**
+- A real graphics card: the remaining prose cost (~40% here) is mostly the browser's own drawing; a real card may differ either way.
+- A 120/144/180 Hz screen: the redraw cadence is proven by tests, not by this rig; check text still looks smooth. The one
+  setting to tune is `STREAM_REDRAW_TARGET_HZ` (60) in `transcript-batch.ts`.
+- Windows and macOS: terminal brake and the hidden-window behaviour were reasoned/read there, not run (4f).
+- A phone: nothing here was measured on Android; the shared page code changed (fixes 1, 2, 5), the phone paths did not.
+- Prose busy time did not reach the 25% goal; see 4g for why it cannot on this rig.

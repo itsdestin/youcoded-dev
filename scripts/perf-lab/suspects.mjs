@@ -39,7 +39,7 @@ const LEGS = ['wheel', 'fence', 'flood'];
 // WHY opt-in 'mixed' (2026-10-04, fix 5): a realistic reply (headings, lists, table, short fences, links) streamed
 // the same way as the prose control, with commit/layout counts per delta. Not in the default run.
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'fence-noblank', 'fence-bare'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -66,9 +66,12 @@ export function stats(values) {
 }
 
 /** One code fence of `lines` lines, and how many deltas splitDeltas will cut it into. */
-export function fenceText(lines) {
+export function fenceText(lines, style = 'blank') {
   const body = Array.from({ length: lines }, (_, i) => `  const value${i} = compute(${i}, "row-${i}") ?? fallback[${i % 7}]; // step ${i}`).join('\n');
-  const text = `Here is the whole file:\n\n\`\`\`ts\nexport function generated() {\n${body}\n}\n\`\`\`\n`;
+  // WHY styles (2026-10-04, fix 5 final): 'noblank' = the fence directly after a paragraph line, 'bare' = no language
+  // and no blank line (the opener's line ending then arrives with the first code word). Both were missed by the open-fence record.
+  const open = style === 'bare' ? '```' : '```ts', gap = style === 'blank' ? '\n\n' : '\n';
+  const text = `Here is the whole file:${gap}${open}\nexport function generated() {\n${body}\n}\n\`\`\`\n`;
   // WHY the pieces are counted the way splitDeltas cuts them (tokens over 6 chars become 4-char slices):
   // counting whitespace-separated tokens undercounted by ~45%, so the fake provider truncated the fence
   // at ~277 of 500 lines. Fixed 2026-10-04 — numbers from before this are a DIFFERENT series.
@@ -249,21 +252,31 @@ async function legFence(ctx, lines, profileBase, which = 'fence') {
     const doneCheck = lastSent === null ? null : await bound(cdp.evaluate(`(() => { const t = document.body.textContent || ''; return { lastSentLine: ${lastSent}, lastLinePresent: t.includes('value${lastSent} = '), firstLinePresent: t.includes('value0 = '), hljsSpans: document.querySelectorAll('.hljs-keyword').length }; })()`), 'completeness check').catch(() => null);
     const legShot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'leg screenshot').catch(() => null);
     if (legShot) writeFileSync(`${profileBase}.${label}-final.png`, Buffer.from(legShot.data, 'base64'));
+    // WHY (2026-10-04, fix 5 final): a fence leg whose code block was never drawn in pieces has MEASURED the old
+    // behaviour, not the fix. Fail loudly (raw windows saved next to --out) instead of reporting a number.
+    if (plan.expectChunks && !rows.some(r => r.fenceChunkEls > 0)) {
+      writeFileSync(`${profileBase}.${label}.rows.json`, JSON.stringify(rows));
+      throw Error(`${label}: .yc-fence-chunk was 0 in every window — open-fence chunking never engaged`);
+    }
     const live = rows.filter(r => r.deltasInWindow > 0);
     const third = Math.max(1, Math.floor(live.length / 3));
     const avg = a => Math.round(a.reduce((x, r) => x + r.taskMs / Math.max(1, r.wallMs) * 100, 0) / Math.max(1, a.length));
-    return { status: rec.aborted || rec.deltasSent !== rec.plannedDeltas ? 'incomplete' : 'measured', deltas: rec.deltasSent, chars: rec.chars, streamMs: rec.streamMs, busyPctFirstThird: avg(live.slice(0, third)), busyPctLastThird: avg(live.slice(-third)), trace: tracePromise ? await tracePromise : undefined, longtasks, doneCheck, windows: rows };
+    return { status: rec.aborted || rec.deltasSent !== rec.plannedDeltas ? 'incomplete' : 'measured', deltas: rec.deltasSent, chars: rec.chars, streamMs: rec.streamMs, busyPctFirstThird: avg(live.slice(0, third)), busyPctLastThird: avg(live.slice(-third)), maxFenceChunkEls: Math.max(0, ...rows.map(r => r.fenceChunkEls ?? 0)), trace: tracePromise ? await tracePromise : undefined, longtasks, doneCheck, windows: rows };
   };
   if (which === 'mixed') {
     const text = mixedText(9000);
     return { mixed: await run({ deltas: countDeltas(text), perSec: 150, text }, 'mixed') };
+  }
+  if (which === 'fence-noblank' || which === 'fence-bare') {
+    const f = fenceText(lines, which === 'fence-bare' ? 'bare' : 'noblank');
+    return { [which]: await run({ deltas: f.deltas, perSec: 150, text: f.text, expectChunks: true }, which) };
   }
   if (which === 'prose') {
     const fence = fenceText(lines);
     return { prose: await run({ deltas: fence.deltas, perSec: 150, seed: 'suspects-prose', chars: fence.text.length, text: null }, 'prose') };
   }
   const fence = fenceText(lines);
-  const out = { lines, fence: await run({ deltas: fence.deltas, perSec: 150, text: fence.text }, 'fence') };
+  const out = { lines, fence: await run({ deltas: fence.deltas, perSec: 150, text: fence.text, expectChunks: true }, 'fence') };
   // Control: ordinary prose, the same number of deltas at the same rate.
   out.prose = await run({ deltas: fence.deltas, perSec: 150, seed: 'suspects-prose', chars: fence.text.length, text: null }, 'prose');
   return out;
@@ -587,7 +600,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));
