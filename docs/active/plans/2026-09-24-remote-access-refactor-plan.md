@@ -977,6 +977,36 @@ workspace `3822d495`, `5cde146a`):
 - **Review:** "ship with fixes" for both halves, and all of them are fixed.
 - **Final verify:** `verify --full` passes all 9 checks.
 
+**Testing round (2026-10-02 to 10-04)**
+
+Destin tested the series in a dev instance.
+
+*Branches on top of r6-3:*
+- `simplify-r6-4-fix` (0aab13e37)
+- `simplify-sync-master`: app merge 381b74cdb of origin/master (26 commits, including the popups gate, which the series had branched before); workspace master merged too
+- `simplify-sync-fix1` (3e12ea930)
+- `simplify-sync-fix2` (3066982ab)
+- `simplify-sync-fix3` (173e4ee87…b2b9af33c)
+
+*What testing found:*
+- A send typed into Claude Code's "Switch model?" pop-up was lost. The series lacked master's gate, so the fix was the master merge plus one detector in main.
+- The "Model switched" divider retracted itself. The host scanned the whole screen for refusal words; only anchored signals count now.
+- The real "Switch model?" dialog has no footer. A real capture of it was added (`switch-model-confirm`).
+- After a reconnect, the phone showed live sessions as "Initializing". `started` now travels in the summary.
+- The phone terminal waited for the chat page. `session:open {ptyOnly}` fixes it.
+
+*One-shot state audit (`one-shot-audit.md`):* sync-fix3 fixed the gaps it found:
+- the buddy fills through `session:open`;
+- native model state is in the fill;
+- theme, pinned pages and session list catch up on reconnect;
+- dividers are kept in the fill tail.
+
+*Windows/macOS/Linux:* Desktop CI ran on sync-fix2 by `workflow_dispatch`: all three passed (run 37172839368).
+
+*Still open for Destin:*
+- whether the attention chime plays for a session first seen already red;
+- the real-phone pass.
+
 **Parked by Destin (2026-10-02):** the blue "reply ready" dot stays per screen, as designed in R5-3. A reply read on the computer still shows blue on the phone. The option of making "seen" shared through the record was offered, and he said "leave it for now".
 
 **R6 status:** R6-1, R6-2 and R6-3 are built. **The remote refactor R1–R6 is code-complete.**
