@@ -11,7 +11,7 @@ paths:
   - "**/desktop/src/renderer/components/outgoing-message.ts"
   - "**/desktop/test-conpty/**"
   - "**/desktop/src/renderer/components/TerminalView.tsx"
-  - "**/desktop/src/renderer/hooks/terminal-feeder.ts"
+  - "**/desktop/src/renderer/hooks/terminal-*.ts"   # terminal-feeder.ts (flow control) and terminal-registry.ts; a glob, because the shared checkout does not have the feeder until the branch merges
   # Menu drivers that type into CC's live menus (2026-09-24): digit / verified-arrow rules apply.
   - "**/desktop/src/renderer/state/ink-menu-driver.ts"
   - "**/desktop/src/renderer/state/plan-menu-driver.ts"

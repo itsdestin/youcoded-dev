@@ -768,3 +768,19 @@ cursor hidden in 3 of 3 runs** (the frame sits at the top: the cut kept only fra
 (2 lines, 4 lines) above it in 2 of 3** — fragments from cuts made WHILE the window was still hidden and the animation running at ~3 MB/s,
 which the repaint nudge cannot clean (it repaints the frame, not the rows above). Claude Code's own animation is ~20 KB/s, far below the
 0.5 MB/s allowance, so this does not queue or cut in normal use.
+
+### 4f, closing touches and what to try by hand (2026-10-04)
+
+Worker hardening (red seen): the repaint nudge and the plain resize no longer throw out of the worker when the PTY is closing (child
+exit, kill, hand-off): both resizes are caught, the in-progress flag is set only after the first half works, the timer is cancelled on
+exit/hand-off/disconnect. Dead `ack reset` branch removed. The repaint request is rate-limited to once a second per session in main and
+accepted from the windows the session is routed to.
+
+**What to try by hand** (none of these should show anything odd):
+- A long Claude Code session: minimise the window, or leave it on another workspace, for a few minutes, then bring it back — no leftover pieces of old frames, no lag when you type.
+- In a shell session, `cat` a huge file: the final lines and the prompt appear, and you can press Ctrl+C at any point.
+- Toggle chat to terminal while a reply is streaming: the terminal is up to date immediately.
+- Detach a session into a second window: it draws in both.
+- Reload the window while a session is printing: the terminal recovers and keeps going.
+- Quit a session while it is printing: the last lines are there.
+- On Windows: nothing resizes visibly at any point.
