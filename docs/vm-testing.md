@@ -23,6 +23,7 @@ scripts/vm/vm.sh win stop             # throw the session away; next start is pr
 | Windows 11 | `win` | ~5 s | SPICE viewer (`spicy`), close/reopen freely with `view` | QEMU agent (runs as SYSTEM) |
 | Ubuntu 24.04 | `ubuntu` | ~3 s | SPICE viewer | SSH `youcoded-testin@127.0.0.1:22221`, passwordless sudo |
 | macOS Sonoma | `mac` | ~6 s | QEMU's own GTK window (GL on); closing it stops the guest | SSH `destinmoss@127.0.0.1:22222`, **no sudo** |
+| macOS 26 Tahoe | `tahoe` | — | same as Sonoma | SSH port 22223. Added 2026-10-04 for Liquid Glass and the icon looks (Default/Dark/Clear/Tinted), which Sonoma lacks. Leave **Reduce transparency off** here, unlike Sonoma — the glass is what it tests |
 
 All SSH uses `~/vms/vm-key` (host-only keypair). `load` takes `release`, `beta`, a tag (`v1.3.0`),
 `run:<CI run id>` (test-build artifacts) or a local file; Linux defaults to the AppImage
@@ -317,6 +318,11 @@ for i in $(seq 1 40); do
 done
 # confirm "macOS Installer" is highlighted, then: sendkey ret
 ```
+
+**In Disk Utility, erase the ~137 GB disk only** (View → Show All Devices). The ~25 MB one is
+OpenCore, the boot loader: erasing it (2026-10-04, Tahoe) leaves every boot in the UEFI shell.
+Recovery: stop the VM, put a fresh `OpenCore.qcow2` back from `https://github.com/kholia/OSX-KVM/raw/<OSX_KVM_COMMIT>/OpenCore/OpenCore.qcow2`
+(the commit is in `/usr/bin/quickget`), start again.
 
 **Don't panic when the disk shrinks.** It went 28 GB → 16 GB here at the hand-off into the real
 install phase: that's APFS issuing TRIM as it prepares the target volume and qcow2 reclaiming the

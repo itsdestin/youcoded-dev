@@ -266,19 +266,22 @@ the installer rename). That reverts the *code* only — it does **not** un-migra
 before installing a beta that's far ahead of your release (there's precedent: the 776 MB
 `claude-snapshot.tar.gz` taken 2026-07-12 before the two-device dogfood).
 
-**Every app, installer and Android launcher icon is generated — never hand-edit one.** The
-source is `youcoded/desktop/assets/icon-mascot.svg` (the waving sticker mascot Destin picked
-2026-09-10); `node scripts/build-icons.mjs` from `youcoded/` writes the desktop SVG/PNG/ICO/ICNS
-files and the Android `mipmap-*` layers from it (needs `rsvg-convert`, `magick`, and Python with
-Pillow). The design rounds and the one-off generator that made the mascot drawing are in
-`docs/archive/design/2026-09-10-app-icon/`. `desktop/tests/app-icons.test.ts` pins which file each
+**Every app, installer, tray and Android launcher icon is generated — never hand-edit one.** The
+source is `youcoded/scripts/icons/brand-icons.html` (the glass icon from brand rounds 11–31,
+`docs/active/design/2026-10-01-brand-identity-v2/DECISIONS.md`); `node scripts/build-icons.mjs` from
+`youcoded/` screenshots it in headless Chrome and writes the desktop PNG/ICO/ICNS files, the Mac
+Liquid Glass package `desktop/assets/icon.icon/`, the tray icons (one-colour `-macTemplate` pair on
+macOS) and the Android `mipmap-*` layers (needs Chrome, `rsvg-convert`, `magick`, Python with
+Pillow). `--themes <wecoded-themes checkout>` also writes each marketplace theme's icon set into
+`themes/<slug>/assets/app-icon/`. Sizes up to 48px come from a separate drawing with bigger eyes.
+**The Mac build needs Xcode 26+**: electron-builder compiles `icon.icon` with `actool`
+(`mac.icon` in `electron-builder.yml`). `desktop/tests/app-icons.test.ts` pins which file each
 platform reads, because electron-builder and Android both fall back to a default icon silently.
-The RUNNING app resets its taskbar/Dock icon on every theme load, so `desktop/src/main/app-icon.ts`
-picks the same file per platform (`icon-mac.png` is the `.icns`'s PNG twin) and shrinks any
-edge-to-edge icon — a theme's included — onto Apple's grid before it reaches the Dock;
-`desktop/tests/app-icon-runtime.test.ts` pins that. Resetting to `icon.png` made the Mac Dock icon
-oversized until 2026-09-27.
-<!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "icon-mascot.svg"} -->
+The RUNNING app swaps window, taskbar, Dock and tray icons per theme (`desktop/src/main/theme-icon-swap.ts`):
+on macOS 26 the Dock follows the user's icon look (`app-icon.ts` → `chooseDockIcon`, the setting read
+in `mac-icon-look.ts`), and "no theme icon" hands the Dock back to the bundled Liquid Glass icon by
+passing `null` — never a flat file. `desktop/tests/app-icon-runtime.test.ts` pins that.
+<!-- verify: {"path": "youcoded/scripts/build-icons.mjs", "contains": "brand-icons.html"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/app-icons.test.ts"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/app-icon-runtime.test.ts"} -->
 
