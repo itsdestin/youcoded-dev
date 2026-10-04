@@ -1,10 +1,12 @@
 ---
 status: active
 ---
-# YouCoded brand identity — final decisions (rounds 5–18, 2026-10-01 → 10-02)
+# YouCoded brand identity — picks so far (rounds 5–18, 2026-10-01 → 10-02)
 
-Every line below is a submitted deck answer (`brand-identity-v<N>.answers.json` beside this file).
-Nothing here has been applied to the app or the website yet.
+**Not signed off.** Every line below is a per-round pick from a submitted deck answer
+(`brand-identity-v<N>.answers.json` beside this file). Destin has not yet seen the whole set together
+or given a final sign-off; the review deck `brand-identity-v19` exists for that. Nothing here has been
+applied to the app or the website.
 
 ## Name
 - Lowercase **youcoded** in the logo; **YouCoded** in sentences. (v10 L3)
