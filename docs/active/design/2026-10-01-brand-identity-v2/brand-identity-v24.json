@@ -1,0 +1,126 @@
+{
+ "title": "YouCoded brand \u2014 the tagline's spacing",
+ "key": "brand-identity-v24",
+ "out": "brand-identity-v24.html",
+ "images": "images/brand-identity-v24",
+ "runs": {
+  "today": "runs/v22"
+ },
+ "labels": {
+  "today": "Option"
+ },
+ "themes": [
+  "light"
+ ],
+ "theme": "fixed",
+ "crops": {
+  "ha": [
+   "brand",
+   "tagsp",
+   "277x303+24+58"
+  ],
+  "hb": [
+   "brand",
+   "tagsp",
+   "277x303+315+58"
+  ],
+  "hc": [
+   "brand",
+   "tagsp",
+   "277x303+606+58"
+  ],
+  "hd": [
+   "brand",
+   "tagsp",
+   "277x303+897+58"
+  ],
+  "sa": [
+   "brand",
+   "tagsp",
+   "277x303+24+375"
+  ],
+  "sb": [
+   "brand",
+   "tagsp",
+   "277x303+315+375"
+  ],
+  "sc": [
+   "brand",
+   "tagsp",
+   "277x303+606+375"
+  ],
+  "sd": [
+   "brand",
+   "tagsp",
+   "277x303+897+375"
+  ]
+ },
+ "steps": [
+  {
+   "id": "HORIZ",
+   "surface": "Icon + name + tagline, side by side",
+   "path": "Headers, footer",
+   "headline": "Which side-by-side spacing looks right?",
+   "notice": "Same tagline style; only its size and the gap above it change.",
+   "variants": [
+    {
+     "id": "ha",
+     "label": "A Before",
+     "crop": "ha",
+     "summary": "What you flagged."
+    },
+    {
+     "id": "hb",
+     "label": "B Tight gap",
+     "crop": "hb",
+     "summary": "Tagline tucked right under the name."
+    },
+    {
+     "id": "hc",
+     "label": "C Tight, smaller",
+     "crop": "hc",
+     "summary": "Tighter and smaller; the name leads."
+    },
+    {
+     "id": "hd",
+     "label": "D Same width as the name",
+     "crop": "hd",
+     "summary": "Tagline spread to line up with both ends of the name."
+    }
+   ]
+  },
+  {
+   "id": "STACK",
+   "surface": "Stacked lockup",
+   "path": "Setup screen, store, social",
+   "headline": "Which stacked spacing looks right?",
+   "notice": "The tagline is now never wider than the name.",
+   "variants": [
+    {
+     "id": "sa",
+     "label": "A Before",
+     "crop": "sa",
+     "summary": "Wider than the name."
+    },
+    {
+     "id": "sb",
+     "label": "B Smaller, tighter",
+     "crop": "sb",
+     "summary": "Sits close under the name."
+    },
+    {
+     "id": "sc",
+     "label": "C Same width as the name",
+     "crop": "sc",
+     "summary": "Spread to match the name exactly."
+    },
+    {
+     "id": "sd",
+     "label": "D Smaller still",
+     "crop": "sd",
+     "summary": "The quietest."
+    }
+   ]
+  }
+ ]
+}

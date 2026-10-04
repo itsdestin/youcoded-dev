@@ -381,6 +381,25 @@ function ba(before, after, title, note) {
   $(`<div class="tag">${title}</div><div class="lab" style="position:absolute;right:24px;top:24px">${note}</div>
     <div class="sheet" style="grid-template-columns:1fr 1fr">${col(before, 'Before (your pick)')}${col(after, 'After')}</div>`);
 }
+
+// ---- round 24: tagline spacing (Destin: "the spacing is too wide … stacked looks like it got wider") ----
+// Each option: tagline size as a share of the name's size, the gap above it, and whether its width is
+// stretched/shrunk to match the name exactly ("fit").
+const TG = (px, col = '#8a7b96') => `<span class="tgx" style="font:400 ${px}px 'Outfit';letter-spacing:-.005em;color:${col};white-space:nowrap;display:inline-block">agents for everyone</span>`;
+const HOPTS = [['A · Before', .40, 8, false], ['B · Tight gap', .36, 1, false], ['C · Tight, smaller', .30, 1, false], ['D · Tight, same width as the name', 0, 1, true]];
+const SOPTS = [['A · Before', .44, 10, false], ['B · Smaller, tighter', .34, 2, false], ['C · Same width as the name', 0, 2, true], ['D · Smaller still', .29, 2, false]];
+function tagSpacing() {
+  const H = 42, S = 36;
+  const hcell = ([n, k, gap, fit], i) => `<div class="c"><span class="cl">${n}</span><div style="display:flex;align-items:center;gap:${64 * .25}px">${ICON(64)}<div class="blk" style="display:inline-flex;flex-direction:column;align-items:flex-start;transform:translateY(-2px)">${WM(H)}<div style="margin-top:${gap}px" data-fit="${fit ? 1 : 0}">${TG(fit ? 14 : H * k)}</div></div></div></div>`;
+  const scell = ([n, k, gap, fit]) => `<div class="c"><span class="cl">${n}</span>${ICON(68)}<div class="blk" style="display:inline-flex;flex-direction:column;align-items:center;margin-top:2px">${WM(S)}<div style="margin-top:${gap}px" data-fit="${fit ? 1 : 0}">${TG(fit ? 12 : S * k)}</div></div></div>`;
+  $(`<div class="tag">Tagline spacing · side by side (top) and stacked (bottom)</div><div class="lab" style="position:absolute;right:24px;top:24px">Same tagline style you picked · only size and spacing change</div>
+    <div class="sheet" style="grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr">${HOPTS.map(hcell).join('')}${SOPTS.map(scell).join('')}</div>`);
+  // "fit": scale the tagline's letter-spacing so it is exactly as wide as the name above it.
+  document.querySelectorAll('[data-fit="1"]').forEach(d => {
+    const name = d.previousElementSibling.getBoundingClientRect().width, t = d.firstElementChild, w = t.getBoundingClientRect().width;
+    const n = t.textContent.length - 1; t.style.letterSpacing = ((name - w) / n) + 'px';
+  });
+}
 function logoBoard(id) { $(`<div class="tag">${LOGOS[id].t}</div><div class="lab" style="position:absolute;right:24px;top:24px">With every pick applied · not yet signed off</div>${LOGOS[id].build()}`); }
 
 const NEIGH = ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#6366f1', '#64748b'];
@@ -420,7 +439,7 @@ function installerBoard(k) {
     </div>`);
 }
 Promise.all(['600 20px "Outfit"','800 20px "Manrope"','700 20px "Figtree"','700 20px "Urbanist"','600 20px "Lexend"','600 20px "Outfit"','800 20px "M PLUS Rounded 1c"','800 20px "DM Sans"', '700 20px "DM Sans"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"'].map(f => document.fonts.load(f))).then(() => {
-  if (B === 'ycba') ba('../src21/out/w5', 'out/w6', 'Initials · E, letters raised', 'Gradient from A, centred higher on the tile'); else if (B === 'ipba') ba('../src21/out/if2', 'out/ip', 'Installer · the box polished', 'Box, flaps and outline now one drawing, one outline colour, one shadow'); else if (B === 'initials2') initials2(); else if (B === 'inst2') inst2(); else if (B === 'taglines') taglines(); else if (B === 'spacing') spacing(); else if (B === 'initials') initials(); else if (B === 'tcol') themeColours(); else if (B === 'inst') installers(); else if (B === 'all') overview(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
+  if (B === 'tagsp') tagSpacing(); else if (B === 'ycba') ba('../src21/out/w5', 'out/w6', 'Initials · E, letters raised', 'Gradient from A, centred higher on the tile'); else if (B === 'ipba') ba('../src21/out/if2', 'out/ip', 'Installer · the box polished', 'Box, flaps and outline now one drawing, one outline colour, one shadow'); else if (B === 'initials2') initials2(); else if (B === 'inst2') inst2(); else if (B === 'taglines') taglines(); else if (B === 'spacing') spacing(); else if (B === 'initials') initials(); else if (B === 'tcol') themeColours(); else if (B === 'inst') installers(); else if (B === 'all') overview(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
   document.body.dataset.ready = 1;
 });
 </script>
