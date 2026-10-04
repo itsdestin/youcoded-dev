@@ -43,6 +43,16 @@ applied to the app or the website.
   theme-colour fade; the box, flaps and outline drawn as one piece with one theme-coloured outline and shadow, a
   download symbol on the front, three short streaks (`ip` in `src22/icons.html`). (v20 id, v21 if2, v22 yes)
 
+## Theme icons, tray, Mac (round 27)
+- All eight marketplace themes get the app icon recipe; Cotton Candy Sky wears the default. Halftone Dimension and
+  Morning Rounds use the **same recipe** (not the night look, not the dog ears). Built-in themes keep the default. (v27 THEMES yes, HALFTONE ha, MORNING ma)
+- The main app icon (window, taskbar button, Dock) changes with the theme, as well as the tray icon. (v27 HALFTONE note)
+- Mac: build the icon as three Liquid Glass layers (background, face, eyes+smile); older Macs get the flat version. (v27 GLASS yes)
+- Mac Dock with a theme on: picked "never swap", but asked for a middle ground (theme face on glass, not white) — open in v28. (v27 DOCK da + note)
+- Tray icon: **the app icon, shrunk** (), switching with the theme; red "needs you" dot stays. (v27 TRAY tc)
+- Mac menu bar: **one colour** (Apple's template style), but the eye sparkles must stay — open in v28. (v27 MENUBAR ka + note)
+- Drawings:  (themes , , ; / layers; /), boards .
+
 ## Where the drawings live
 - Final icon renderer: `src17/icons.html` (`face2`, `frost`, `smoke`, `box3`), shot by `src17/shoot-icons.sh`.
 - The final icon with the chosen mouth is `?i=sm2` (add `&t=<theme>` for a theme, `&small=1` for the 16–48px drawing).

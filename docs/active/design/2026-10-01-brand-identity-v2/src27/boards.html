@@ -54,16 +54,46 @@ function strip(kind, icon, alert = false, size = 24, narrow = false) {
 }
 // macOS one-colour ("template") menu-bar icon: the face's outline with eyes and smile cut out.
 // WHY one colour: Apple asks menu-bar icons to be a single colour so macOS can flip them black/white with the bar.
-function tmpl(h, color) {
+function tmpl(h, color, spark = false) {
   const w = h * 14 / 12;
   return `<svg width="${w}" height="${h}" viewBox="0 0 14 12"><defs><mask id="m${h}${color.slice(1)}"><rect width="14" height="12" rx="4" fill="#fff"/>` +
     `<ellipse cx="4.3" cy="5.55" rx="1.6" ry="2.2" fill="#000"/><ellipse cx="9.7" cy="5.25" rx="1.6" ry="2.2" fill="#000"/>` +
     `<path d="M5.6 8.7 Q7 8.35 8.4 8.7 Q8.9 8.85 8.7 9.3 Q8 10.6 7 10.6 Q6 10.6 5.3 9.3 Q5.1 8.85 5.6 8.7Z" fill="#000"/></mask></defs>` +
-    `<rect width="14" height="12" rx="4" fill="${color}" mask="url(#m${h}${color.slice(1)})"/></svg>`;
+    `<rect width="14" height="12" rx="4" fill="${color}" mask="url(#m${h}${color.slice(1)})"/>` +
+    // WHY the sparkles stay: without the little highlight in each eye the cut-out face read as hollow and scary (round 27).
+    (spark ? `<circle cx="4.85" cy="4.65" r=".62" fill="${color}"/><circle cx="10.25" cy="4.35" r=".62" fill="${color}"/>` : '') + `</svg>`;
 }
 const TH = [['purple', 'Default'], ['golden', 'Golden Sunbreak'], ['kuromi', 'Kuromi Dreamer'], ['morning', 'Morning Rounds']];
 
+// The Mac's four icon looks, applied to our layered icon (approximate), for theme t.
+function glassIcon(s, mode, t = 'purple') {
+  const bg = { def: 'linear-gradient(165deg,#FBF6FD,#E9DCF2)', dark: 'linear-gradient(165deg,#2E2638,#141019)', clear: 'rgba(255,255,255,.16)', tint: 'linear-gradient(165deg,#1E2C44,#0F1726)' }[mode];
+  const pf = { def: '', dark: 'filter:brightness(.92)', clear: 'filter:grayscale(1) brightness(1.55) contrast(.8);opacity:.6', tint: 'filter:grayscale(1) sepia(1) hue-rotate(178deg) saturate(2.6) brightness(.95)' }[mode];
+  const ff = { def: '', dark: '', clear: 'filter:grayscale(1) brightness(.5);opacity:.55', tint: 'filter:grayscale(1) sepia(1) hue-rotate(178deg) saturate(3) brightness(.55)' }[mode];
+  return `<div class="sq" style="width:${s}px;height:${s}px;position:relative;background:${bg}">` +
+    `<img class="lay" src="out/lgPanel-${t}-256.png" style="${pf}"><img class="lay" src="out/lgFeat-${t}-256.png" style="${ff}"><div class="spec"></div></div>`;
+}
+const neighbours = (m, s = 52) => [0, 1, 2].map(j => `<div class="sq" style="position:relative;width:${s}px;height:${s}px;background:${m === 'clear' ? 'rgba(255,255,255,.22)' : m === 'tint' ? 'linear-gradient(165deg,#22324C,#111a2b)' : m === 'dark' ? 'linear-gradient(165deg,#3a3a40,#1c1c20)' : ['linear-gradient(165deg,#5BA8FF,#2D6BE0)', 'linear-gradient(165deg,#FFD15C,#F29A1F)', 'linear-gradient(165deg,#7BE08F,#2FA84F)'][j]}"><div class="spec"></div></div>`).join('');
 const BOARDS = {
+  // ---------- round 28: the Dock "middle" ----------
+  dockmid: () => {
+    const looks = [['def', 'Default', '#F2EEF6', false], ['dark', 'Dark', '#1A1520', true], ['clear', 'Clear', null, false], ['tint', 'Tinted', '#0D1420', true]];
+    const rows = [['A', 'As picked: never swap', m => glassIcon(56, m, 'golden')], ['B', 'Theme face on clear glass', () => img('mid1-golden-64.png', 56)], ['C', 'Theme face on lightly tinted glass', () => img('mid2-golden-64.png', 56)]];
+    return `<h1>Mac Dock with a theme on (Golden Sunbreak): meet in the middle?</h1><div class="sub">B and C keep the theme's face but swap the white tile for see-through glass we draw ourselves. Each row in the Mac's four looks. Approximate.</div>` +
+      rows.map(([k, l, ours], r) => `<div class="abs lab" style="left:24px;top:${84 + r * 204}px;width:150px;font-size:15px">${k}<br><span class="note" style="font-weight:400;font-size:12.5px">${l}</span>${r === 0 ? '<br><span class="note">(Golden face hidden in the Dock; default glass icon shown)</span>' : ''}</div>` +
+        looks.map(([m, n, bg, dk], c) => `<div class="desk" style="left:${180 + c * 252}px;top:${76 + r * 204}px;width:240px;height:192px;${bg ? `background:${bg}` : ''}">${bg ? '' : '<div class="wp"></div>'}` +
+          `<div class="abs note" style="left:12px;top:10px;color:${dk || !bg ? '#fff' : '#21152C'}">${n}</div>` +
+          `<div class="dock ${dk ? 'dk' : ''}" style="bottom:40px;gap:8px;padding:7px 8px">${neighbours(m, 38)}${r === 0 ? glassIcon(56, m, 'purple') : ours(m)}</div></div>`).join('')).join('');
+  },
+  menubar2: () => {
+    const bar = (bg, fg) => `<div class="mbar" style="background:${bg};color:${fg};margin-bottom:8px;width:420px"><span>${G.wifi.replace('class="g"', 'class="g" style="width:15px;height:15px"')}</span><span style="display:flex;align-items:center">${tmpl(15, fg, true)}</span><span>Sat Oct 4  10:42 AM</span></div>`;
+    return `<h1>Mac menu bar, one colour — with the eye sparkles kept</h1><div class="sub">Real size on a light and a dark menu bar, then enlarged. Left: last round's, for comparison.</div>` +
+      `<div class="card" style="left:24px;top:74px;width:1152px;height:602px">` +
+      `<div class="abs" style="left:30px;top:24px"><div class="lab">Last round (no sparkles)</div><div style="display:flex;gap:24px;margin-top:14px"><div style="background:#f4f2f6;padding:16px;border-radius:12px">${tmpl(110, '#111')}</div><div style="background:#1b1a1f;padding:16px;border-radius:12px">${tmpl(110, '#f2f2f2')}</div></div></div>` +
+      `<div class="abs" style="left:520px;top:24px"><div class="lab">Sparkles kept</div><div style="display:flex;gap:24px;margin-top:14px"><div style="background:#f4f2f6;padding:16px;border-radius:12px">${tmpl(110, '#111', true)}</div><div style="background:#1b1a1f;padding:16px;border-radius:12px">${tmpl(110, '#f2f2f2', true)}</div></div></div>` +
+      `<div class="abs" style="left:30px;top:300px"><div class="note" style="margin-bottom:8px">Real size</div>${bar('linear-gradient(90deg,rgba(250,248,252,.72),rgba(250,248,252,.72)),url(walls/cotton-candy-sky.jpg) center/cover', '#111')}${bar('rgba(24,22,28,.86)', '#f2f2f2')}` +
+      `<div class="note" style="margin:18px 0 8px">Twice real size</div><div style="transform:scale(2);transform-origin:0 0;width:420px">${bar('linear-gradient(90deg,rgba(250,248,252,.72),rgba(250,248,252,.72)),url(walls/cotton-candy-sky.jpg) center/cover', '#111')}${bar('rgba(24,22,28,.86)', '#f2f2f2')}</div></div></div>`;
+  },
   // ---------- every marketplace theme's app icon ----------
   themes: () => {
     const list = [['cotton', 'Cotton Candy Sky', 'the default icon'], ['golden', 'Golden Sunbreak', 'approved'], ['meadow', 'Meadow Mist', 'approved'], ['strawberry', 'Strawberry Kitty', 'approved'],

@@ -305,6 +305,11 @@ const ICONS = {
   trT: () => frost(face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'soft2' })),
   lgPanel: () => face2({ cy: 50, w: 76, blur: 'heavy', lift: .2, eye: 'theme', rim: true, mouth: 'soft2', only: 'panel' }),
   lgFeat: () => face2({ cy: 50, w: 76, blur: 'heavy', lift: .2, eye: 'theme', rim: true, mouth: 'soft2', only: 'features' }),
+  // ---- round 28: the Mac Dock's "middle" — the theme's face on see-through glass instead of the white tile ----
+  // WHY: a swapped Dock icon is a flat picture (the Mac can't add Liquid Glass to it), so we draw the glass ourselves,
+  // half see-through, so it sits closer to the Mac's Clear and Tinted looks (Destin, round 27).
+  mid1: () => `<div class="tile" style="background:linear-gradient(165deg,rgba(255,255,255,.42),rgba(255,255,255,.14));box-shadow:none">` + face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'soft2' }) + `<div class="edge" style="box-shadow:inset 0 calc(var(--S)*.006) 0 rgba(255,255,255,.9), inset 0 0 0 calc(var(--S)*.005) rgba(255,255,255,.5)"></div></div>`,
+  mid2: () => `<div class="tile" style="background:linear-gradient(165deg,${EYE[2]}88,${EYE[3]}44);box-shadow:none">` + face2({ cy: 50, w: 76, blur: 'heavy', around: true, lift: .2, eye: 'theme', rim: true, mouth: 'soft2' }) + `<div class="edge" style="box-shadow:inset 0 calc(var(--S)*.006) 0 rgba(255,255,255,.9), inset 0 0 0 calc(var(--S)*.005) rgba(255,255,255,.5)"></div></div>`,
   // ---- installers ----
   // H1 — the app icon (G2 shown) on a glass base, with a glass download badge. Apple-plain.
   h1: () => `<div style="left:${4 * u}px;top:${2 * u}px;width:${80 * u}px;height:${80 * u}px;--S:${80 * u}px">${tileIn(buddy, 0.8)}</div>` +
