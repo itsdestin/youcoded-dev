@@ -13,6 +13,11 @@ import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CHROME_FLAGS } from '../ui-review/cdp-helpers.mjs';
 
+// SHOOT_SCALE=1.5 photographs at a screen's pixel density instead of 1×. WHY: Destin's
+// laptop runs at 1.5×, where half-pixel offsets show that a 1× picture rounds away — a tag
+// icon measured centred at 1× still looked off to him (2026-10-04). Default stays 1.
+const SHOT_SCALE = Number(process.env.SHOOT_SCALE) > 0 ? Number(process.env.SHOOT_SCALE) : 1;
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WORKSPACE = resolve(HERE, '..', '..');
 const CACHE = join(tmpdir(), 'youcoded-shoot');
@@ -223,7 +228,7 @@ async function makeTab(b, targetId) {
     still: (cap) => evaluate(STILL(cap), cap + 5000).catch(() => -1),
     takeErrors: () => { const e = errors; errors = []; return [...new Set(e)].slice(0, 5); },
     async prepare({ theme, width: w, height: h }) {
-      if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); size = `${w}x${h}`; }
+      if (`${w}x${h}` !== size) { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: SHOT_SCALE, mobile: false }); size = `${w}x${h}`; }
       if (themeScript) await send('Page.removeScriptToEvaluateOnNewDocument', { identifier: themeScript });
       themeScript = (await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{localStorage.setItem('youcoded-theme',${JSON.stringify(theme)});}catch{}` })).identifier;
     },
