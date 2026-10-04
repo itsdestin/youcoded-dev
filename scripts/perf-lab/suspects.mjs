@@ -29,13 +29,14 @@ import { refusePackageProcesses } from './gpu-theme.mjs';
 import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
 import { cpuSnapshot, pssMb } from './procs.mjs';
 import { startHops, summariseHops, readEmissions, classify, attachMainCounters } from './hops.mjs';
+import { connect } from './cdp.mjs';
 import { installTerminalHelpers } from './scenario-terminal.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const LEGS = ['wheel', 'fence', 'flood'];
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -253,6 +254,12 @@ async function legFlood(ctx, mb, rate = 0) {
     if (mainCounters) await mainCounters.reset().catch(() => {});
     const mcTimeline = [];
     const t0 = Date.now();
+    // SUSPECTS_PROFILE=1: a renderer CPU profile of the first 1.5 s of the visible flood (written next to --out as .cpuprofile).
+    let profDone = null;
+    if (process.env.SUSPECTS_PROFILE && label === 'terminalVisible') {
+      await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start');
+      profDone = (async () => { await sleep(1500); const { profile } = await cdp.send('Profiler.stop'); await cdp.send('Profiler.disable'); writeFileSync(`${ctx.outPath}.cpuprofile`, JSON.stringify(profile)); })();
+    }
     await bound(cdp.evaluate(`window.__flood.t0 = performance.now(); window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}${rate ? ' ' + rate : ''}\r`)}); true`), 'send flood');
     const input = during ? await during() : null;
     // WHY a timeline: an average rate cannot tell a steady trickle from a burst
@@ -409,6 +416,86 @@ async function legEcho(ctx) {
   return out;
 }
 
+// ── A session with no desktop terminal that can answer, and a window nobody can see (flow-control review, 2026-10-04) ──
+// noterm: reload the window mid-flood. For the moment between the old page going and the new one mounting its
+// terminals the session has no desktop terminal at all — the same position as a phone-driven session with the
+// desktop closed. The brake must not apply: the producer should finish about as fast as it did before any brake existed
+// (~2 s for 200 MB), memory must stay bounded, and the newest output must still arrive once the page is back.
+async function legNoTerm(ctx, mb) {
+  const { cdp, bound, fixtureHome, app } = ctx, out = { mb };
+  const id = await toTerminalView(ctx);
+  const marker = `[perf-lab] flood complete: ${mb} MB`;
+  const pssBefore = pssMb(classifyPids(app));
+  const t0 = Date.now();
+  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}\r`)}); true`), 'send flood');
+  await sleep(300);
+  // WHY about:blank and not a reload: after a plain reload the new page mounts the terminal again (hidden, behind the
+  // chat view), so the hidden-terminal allowance — not "no terminal" — paced the rest (first attempt: 116 MB in 178 s).
+  // A blank page has no terminal at all for the whole flood, like a phone-driven session with the desktop closed.
+  const appUrl = await bound(cdp.evaluate('location.href'), 'url');
+  await cdp.send('Page.navigate', { url: 'about:blank' }).catch(e => { out.reloadError = e.message; });
+  let done = null;
+  while (Date.now() - t0 < 180000) {
+    const em = readEmissions(fixtureHome).filter(r => r.flood === mb && r.t >= t0 - 1000);
+    done = em.find(r => r.event === 'done');
+    if (done) break;
+    await sleep(100);
+  }
+  out.producerDoneMs = done ? done.t - t0 : null;
+  { const rows = readEmissions(fixtureHome).filter(r => r.flood === mb && r.t >= t0 - 1000); out.producerLastRow = rows.at(-1) ?? null; out.producerRows = rows.length; out.producerErrors = rows.filter(r => r.event === 'error').slice(0, 3); out.workersAlive = classify(app).ptyWorkers?.length ?? null; }
+  out.pssAfterDone = pssMb(classifyPids(app));
+  out.pssBefore = pssBefore;
+  await cdp.send('Page.navigate', { url: appUrl }).catch(e => { out.reloadError = e.message; });
+  await sleep(4000);
+  // The page comes back: does the newest output (marker + prompt) reach the new terminal?
+  const shown = await bound(cdp.evaluate(`(async () => { const t = Date.now(); while (Date.now() - t < 60000) { const txt = window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 8) ?? ''; if (txt.includes(${JSON.stringify(marker)})) return { ok: true, ms: Date.now() - t, tail: txt.slice(-100) }; await new Promise(r => setTimeout(r, 100)); } return { ok: false, tail: (window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 4) ?? '').slice(-100) }; })()`), 'tail after reload', 90000).catch(e => ({ error: e.message }));
+  out.tailAfterReload = shown;
+  await sleep(8000);
+  out.pssAfterSettle = pssMb(classifyPids(app));
+  out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
+  return out;
+}
+
+// minimized: hide the window (main process win.hide(): the page becomes document.hidden and its timers are throttled
+// to ~1 s, exactly as when minimised or in the tray) mid-flood, time the PRODUCER to completion, then show it and check
+// the terminal ends with the exact tail.
+async function legMinimized(ctx, mb) {
+  const { cdp, bound, fixtureHome, app } = ctx, out = { mb };
+  if (!ctx.mainPort) throw Error('minimized needs --main-inspect 1');
+  const id = await toTerminalView(ctx);
+  const marker = `[perf-lab] flood complete: ${mb} MB`;
+  const mainEval = async expr => { const targets = await (await fetch(`http://127.0.0.1:${ctx.mainPort}/json/list`)).json(); const m = await connect(targets.find(x => x.webSocketDebuggerUrl).webSocketDebuggerUrl); try { return await m.evaluate(expr); } finally { m.close?.(); } };
+  const thrown = {}; await cdp.send('Runtime.enable').catch(() => {}); cdp.on('Runtime.exceptionThrown', p => { const m = String(p?.exceptionDetails?.exception?.description || p?.exceptionDetails?.text || '').split('\n')[0].slice(0, 100); thrown[m] = (thrown[m] || 0) + 1; });
+  const pssBefore = pssMb(classifyPids(app));
+  // WHY hide FIRST and wait 12 s: Chromium only stretches a hidden page's timers after a ~10 s grace period, so a
+  // flood that starts at the moment of hiding finishes inside the grace period and shows nothing (first attempt, 100 MB in 7.8 s).
+  out.hide = await mainEval(`(() => { const { BrowserWindow } = process.mainModule.require('electron'); const w = BrowserWindow.getAllWindows().find(w => !w.isDestroyed()); w.hide(); return { visible: w.isVisible() }; })()`);
+  await sleep(12000);
+  out.visibilityInPage = await bound(cdp.evaluate('document.visibilityState'), 'visibility').catch(e => e.message);
+  const t0 = Date.now();
+  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}\r`)}); true`), 'send flood');
+  let done = null;
+  while (Date.now() - t0 < 240000) {
+    const em = readEmissions(fixtureHome).filter(r => r.flood === mb && r.t >= t0 - 1000);
+    done = em.find(r => r.event === 'done');
+    if (done) break;
+    await sleep(200);
+  }
+  out.producerDoneMsWhileHidden = done ? done.t - t0 : null;
+  const lastRow = readEmissions(fixtureHome).filter(r => r.flood === mb && r.t >= t0 - 1000).at(-1);
+  out.producerWrittenMbAtGiveUp = lastRow ? Math.round(lastRow.written / 104857.6) / 10 : null;
+  out.pssHidden = pssMb(classifyPids(app));
+  out.pssBefore = pssBefore;
+  await mainEval(`(() => { const { BrowserWindow } = process.mainModule.require('electron'); BrowserWindow.getAllWindows().filter(w => !w.isDestroyed()).forEach(w => w.show()); return true; })()`);
+  const shown = await bound(cdp.evaluate(`(async () => { const t = Date.now(); while (Date.now() - t < 90000) { const txt = window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 8) ?? ''; if (txt.includes(${JSON.stringify(marker)})) return { ok: true, ms: Date.now() - t, tail: txt.slice(-100) }; await new Promise(r => setTimeout(r, 100)); } return { ok: false, tail: (window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 4) ?? '').slice(-100) }; })()`), 'tail after show', 120000).catch(e => ({ error: e.message }));
+  out.tailAfterShow = shown;
+  out.rendererErrors = thrown;
+  await sleep(5000);
+  out.pssAfterSettle = pssMb(classifyPids(app));
+  out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
+  return out;
+}
+
 export async function main(argv = process.argv.slice(2)) {
   const opts = parseOptions(argv), bound = bounded(opts.maxMinutes);
   mkdirSync(dirname(opts.out), { recursive: true });
@@ -442,11 +529,11 @@ export async function main(argv = process.argv.slice(2)) {
         if (r.mode === 'none') throw Error(`switch failed: ${r.reason}`);
         return r;
       };
-      const ctx = { cdp, fake, bound, sessions, ids, switchTo, app, hz, fixtureHome: fixture.home, views: opts.floodViews, mainCounters };
+      const ctx = { cdp, fake, bound, sessions, ids, switchTo, app, hz, fixtureHome: fixture.home, views: opts.floodViews, mainCounters, outPath: opts.out, mainPort: opts.mainInspect === '1' ? 9301 : null };
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));

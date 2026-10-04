@@ -612,3 +612,35 @@ exit flush, kill; real node-pty: complete byte-exact 11 MB flood, program truly 
 `tests/session-manager.test.ts` (ack relay). The rig gained `--only ctrlc` / `--only echo` legs, a wait-for-the-
 terminal-to-show-the-tail check, and a Ctrl+C-aware fake producer. Raw files: `scratch/perf-lab/suspects/fb-*`
 (before), `fa-*` (after), `fx-*` (64 K batch experiment), summaries via `scratch/perf-lab/flow-summary.mjs`.
+
+### 4f, review round (2026-10-04, later) — what the independent review found, and what changed
+
+A reviewer found four edge cases in the first version; the work below fixes them (app commits `63301e815`,
+`1faff3097` and the follow-up that carries the final budgets/knip fixes). Same rig, same build method; "prior" =
+`06f094e47` (the first version), "now" = `1faff3097` or later. Load 5–7 at every run start.
+
+| # | Finding | Real? | Red test | Fix |
+|---|---|---|---|---|
+| 1 | A session with no desktop terminal that can answer (phone-driven, windows closed/reloading, ownership moved) was braked | **Yes, large.** Prior build, window blanked mid-flood: 13.7 MB written in 165 s, never finished (a 200 MB flood). | `terminal-flow-wiring.test.ts` (8 of 10 red on the old code) | Main now keeps a per-window "consumer" list (terminals that said ready); no consumer, window gone/reloading, ownership moved ⇒ credit released at once, output buffers (newest 4 M chars, was unbounded) until a terminal mounts. **Now: same blanked-window flood finishes in 1.7–2.2 s (3 runs), exact tail on the new terminal 2.1–2.3 s after the page returns.** Memory: main +80 MB, helper +54 MB high-water, flat afterwards. |
+| 2 | Hidden/minimised window: timers throttled to ~1 s would starve xterm's parse loop and with it the acks | **Not reproduced here.** Window hidden 12 s+ (page `hidden`), 100 MB: prior build 7.8–9.8 s (normal drawing speed, no collapse). Chromium's 1 Hz throttle may need a real minimise on Windows/macOS; unmeasurable on this rig. Kept as a cheap guard. | `terminal-feeder.test.ts` (4 new) | A hidden/minimised window confirms on receipt (program at full speed), keeps the newest 4 M un-drawn, writes the rest when shown. Now: 100 MB with the window hidden = **1.4–1.6 s** (3 runs), exact tail 0.2–0.5 s after show, 0 discards. |
+| 3 | A buddy/subscriber window mounting mid-flood zeroed the owner's in-flight count | Yes (read + test) | wiring test | Books are per window; a second window's ready only registers itself. |
+| 4 | Ack rule (`mainWindow` only) disagreed with the routing rule when a session has no owner | Yes (read + test) | wiring test | Acks are believed from any window that mounted a terminal for the session and receives its output. |
+| 5 | Can a subscriber's own xterm overrun? | Reasoned + tested: only windows that mounted a terminal count, and the program follows the slowest of them; one that goes quiet >5 s is dropped, so it cannot hold the owner hostage. A subscriber with no terminal has no xterm to overrun. | wiring tests | as above |
+| 6 | Hidden session: how late can the prompt reach buffer-only readers? | Buffer-only readers: prompt detector, plan-menu, startup/initialising cover, attention classifier. Permission cards, notifications and turn-complete come from hook/transcript events and do not touch the buffer. The un-drawn backlog is bounded (~1.3 M chars) so buffer readers are at most **~2.6 s** behind what the program wrote. The program itself is slowed by the hidden-terminal allowance (that is the cost, see above). | — | No change (a higher rate would raise the hidden-flood cost; reporting instead). |
+| 8 | The ~230 ms long task at the start of every flood | **Found by a CPU profile of the first 1.5 s of a 40 MB flood: 668 of 1,700 ms was the terminal's overlay scroll-bar updater**, run on every scrolled line, writing a style then reading layout each time. | `TerminalView-flow-and-thumb.test.tsx` (red without it) | One update per frame; a hidden terminal does none. **40 MB visible: 3.4 s → 1.75 s; 100 MB 8.3 s → 3.8 s; 200 MB 14.9–15.3 s → 6.4–7.2 s; long tasks 1–2 → 0; worst main hiccup 19–28 ms (was 30–260 ms).** Window busy 89–98% (was 95–99%). |
+
+Other rows re-measured on the final build (visible, 2 runs unless noted): 200 MB complete, 0 discarded, exact tail,
+~1,010 messages; hidden 200 MB 77 MB in 150 s at ~18% busy (as before); 10 MB/s visible busy 64% (was 90–93%);
+Ctrl+C **0.12 s** (was 0.43–0.46 s, before the brake 4.9 s–never); typing 2.8 ms to window / 13.9 ms to buffer (unchanged).
+Raw files: `scratch/perf-lab/suspects/fp-*` (prior commit), `fr-*` (first review build), `ft-*` (final), `ft-prof-40.json.cpuprofile`.
+New rig legs: `--only noterm` (blank the window mid-flood, producer time to done, tail after return) and
+`--only minimized` (needs `--main-inspect 1`; hides the window from main, waits 12 s, floods); `SUSPECTS_PROFILE=1` writes a renderer profile of a flood's first 1.5 s.
+
+**What a user could feel differently (final list).** A flooding command on screen takes as long as the screen needs
+(200 MB ≈ 6–7 s now; 40 MB ≈ 1.8 s) instead of ending early with most of it lost; a command in a terminal you are
+not looking at (but the window is visible) is slowed to ~0.5 MB/s in exchange for ~18% of the window; a window that is
+hidden, minimised or in the tray, or a session driven only from the phone, runs at full speed with the newest ~4 M
+characters kept for when you look; a window reload no longer loses what the session printed meanwhile (up to the newest 4 M);
+the scroll bar on the terminal updates once per frame (visually identical).
+**Left:** hidden-window throttling not measurable on this rig (Windows/macOS minimise); ConPTY/macOS brake by reading only;
+Android findings unchanged; the hidden-terminal rate (512 K/s) is still a judgement call.

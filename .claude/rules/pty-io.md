@@ -39,6 +39,8 @@ verify:
   - test: youcoded/desktop/tests/menu-answer-lock.test.ts
   - test: youcoded/desktop/tests/pty-worker-flow.test.ts
   - test: youcoded/desktop/tests/terminal-feeder.test.ts
+  - test: youcoded/desktop/tests/terminal-flow-wiring.test.ts
+  - test: youcoded/desktop/tests/TerminalView-flow-and-thumb.test.tsx
   - path: youcoded/desktop/src/main/menu-answer-lock.ts
     contains: "MENU_ANSWER_LEASE_MS"
 ---
@@ -57,6 +59,7 @@ verify:
 ## Output flow control (2026-10-04) — `pty-worker.js` flow block, `renderer/hooks/terminal-feeder.ts`, `session:terminal-ack`
 - **PTY output is braked end to end; never forward it unbounded.** The worker batches reads (first chunk after quiet goes out at once, the rest merge for ≤4 ms / 256 K chars) and counts characters main has not yet had acknowledged; above 1 M it `pause()`s the PTY (the kernel then blocks the program), below 256 K it resumes. The renderer's `terminal.write` callback → `session.ackOutput` → main (`TERMINAL_ACK`, believed only from the session's OWNER window) → worker `{type:'ack'}`. **Why:** xterm silently DISCARDS input past ~50 M pending characters — a 200 MB flood lost ~75% including the final lines and prompt, stalled main 150–580 ms and grew the worker 80 MB. **Guard:** `pty-worker-flow.test.ts` (fake PTY and real PTY), `terminal-feeder.test.ts`.
 - **A paused PTY must never be held through the child's exit:** Unix node-pty destroys the output socket 200 ms after the child exits and drops unread bytes (the final lines), so the worker polls the exit flags while paused and resumes; kill/handoff/exit disable the brake for good. A silent-ack stall (15 s) lets one more window through, so a lost ack degrades to a trickle, never a frozen session.
+- **The brake is driven ONLY by a desktop terminal that can answer** (`main/terminal-flow.ts`, `terminal-output-router.ts`): per-window "consumers" that sent `session:terminal-ready`; the program follows the slowest receiving one. No consumer (phone-driven session, tray, window closed or reloading, ownership moved) ⇒ credit is released at once and output buffers (newest 4 M chars) until a terminal mounts; a quiet non-owner consumer is dropped after 5 s; acks follow the routing rule, a second window's ready never zeroes the owner's books. A hidden/minimised WINDOW (`document.hidden`, timers throttled) confirms on receipt and keeps the newest 4 M un-drawn. xterm's scroll event must never do layout work per line (the scroll thumb updates once per frame). **Guard:** `terminal-flow-wiring.test.ts`, `TerminalView-flow-and-thumb.test.tsx`.
 - **Only the desktop's own window brakes the program.** Phones/remote browsers (`remote-shim` `ackOutput` is a no-op, host ignores `session:terminal-ack`) and buddy windows never ack, so a slow phone cannot stall the desktop; the phone app's own PTY runtime is unchanged. A hidden terminal is fed at a sustained 512 K chars/s (1 M burst) and writes its whole backlog the moment it is shown — never drop, only delay.
 
 ## Never write to the PTY during a pending interaction (`pty-input-gate.ts`)
