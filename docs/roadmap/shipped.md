@@ -100,6 +100,7 @@ decision either way.
 - [x] 2026-09-28 dev-workspace — Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56 references) (youcoded-admin#14; youcoded-dev#217)
 - [x] 2026-09-29 files — Document comments, like Google Docs or Word: highlight text in the file viewer, leave notes, reply, resolve them (you or the assistant) and see the history,… (itsdestin/youcoded#587, itsdestin/youcoded-dev#222)
 - [x] 2026-10-02 files — A full office suite inside the app (youcoded#598)
+- [x] 2026-10-04 other-features — Windows first-run setup installs Node and Git only through winget (App Installer), so a PC without it (youcoded 9884ec885)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the
