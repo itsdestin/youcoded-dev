@@ -3,7 +3,7 @@ language: tsx
 severity: error
 message: >-
   App.tsx's transcript listeners must hand every chat action to the frame batcher
-  (routeTranscriptEvent / routeTranscriptShrink in state/transcript-batch.ts) and
+  (attachTranscriptFeed in state/screen-feed.ts, which routes through routeTranscriptEvent; routeTranscriptShrink in state/transcript-batch.ts) and
   never dispatch to the store themselves. A direct dispatch can land AHEAD of
   actions still waiting for their frame: a /clear drawn above the message sent
   just before it, or a file-shrink compaction overtaking the queued summary.
@@ -11,7 +11,7 @@ note: |
   Invariant source: one-core R4-3 (Destin approved 2026-10-01); behaviour pinned by
   tests/transcript-routing.test.ts, which cannot mount App, so this rule pins the
   wiring. Fires if EITHER a `transcriptEvent` / `transcriptShrink` callback contains
-  a `dispatch(` / `dispatchMany(` call, OR App no longer calls both helpers.
+  a `dispatch(` / `dispatchMany(` call, OR App no longer calls both helpers (sync-fix6: the transcript half moved into the shared feed the buddy also uses).
   `dispatchArtifact(...)` (the artifact tracker's own store) is a different
   identifier and is not matched.
 files:
@@ -37,7 +37,7 @@ rule:
     - not:
         has:
           stopBy: end
-          pattern: routeTranscriptEvent($$$)
+          pattern: attachTranscriptFeed($$$)
     - not:
         has:
           stopBy: end
