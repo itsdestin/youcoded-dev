@@ -1,0 +1,67 @@
+{
+  "title": "The Home page, round 4 — three new chip directions, and the Climate page",
+  "key": "home-page-v3-r3-choice",
+  "out": "home-page-v3-r3.choice.html",
+  "images": "images/home-page-v3-r3.choice",
+  "runs": { "after": "runs/after" },
+  "labels": { "after": "Built (test app, pretend Home Assistant)" },
+  "themes": ["midnight", "golden-sunbreak", "meadow-mist"],
+  "steps": [
+    {
+      "id": "C-chips2",
+      "surface": "Pages",
+      "path": "Pages → Home, the top of the page",
+      "headline": "Which of these three new directions should the top of the Home page take?",
+      "notice": "These are three different shapes, not one card restyled. All open the same pages; Everything off is gone from the top, as you asked.",
+      "risk": "Whichever you pick can still be tuned; if none is right, say what is closest.",
+      "variants": [
+        {
+          "id": "pills",
+          "label": "Small pills",
+          "crop": "pages/page/page-home#chips-pills",
+          "highlight": { "box": [21.6, 12.0, 37.0, 4.2] },
+          "summary": "One quiet row of rounded pills, like Apple Home's status bar: an icon and a few words (\"5 on\", \"2 playing\", \"77° · 74° in\", \"4 to fix\"). A pill takes its colour when something is on: the lights' colour, the app's, the temperature's, red for problems.",
+          "risk": "The least room for detail: \"in 3 rooms\" and \"1 not responding\" only show when you hover."
+        },
+        {
+          "id": "sentence",
+          "label": "One sentence",
+          "crop": "pages/page/page-home#chips-sentence",
+          "highlight": { "box": [21.6, 11.4, 52.0, 5.0] },
+          "summary": "The house in one line of words: \"5 lights on in 3 rooms · 2 playing · 77° clear outside · 4 problems to fix\". Each part is underlined in its colour and opens its page.",
+          "risk": "Reads beautifully, but it is text: it looks less like something to press than the other two."
+        },
+        {
+          "id": "tiles",
+          "label": "Big tiles",
+          "crop": "pages/page/page-home#chips-tiles",
+          "highlight": { "box": [21.6, 12.0, 74.2, 14.8] },
+          "summary": "Four big squares, the number first (5, 3, 77°, 4) with what it means under it, an icon in the corner and a soft blob of its colour behind. Bars bounce on Media while something plays; Problems has a pulsing red dot when urgent.",
+          "risk": "Takes the most height, pushing the rooms further down."
+        }
+      ]
+    },
+    {
+      "id": "S-thermo-hero",
+      "surface": "Pages",
+      "path": "Pages → Home → Climate",
+      "crop": "pages/page/page-home#climate",
+      "highlight": { "box": [21.6, 24.5, 49.0, 28.0] },
+      "headline": "The thermostat leads the Climate page: a big dial filled to the setting in the mode's colour, big − and +, and the modes as one switch.",
+      "changed": "Your note: most homes have one thermostat, so it should be prominent. The dial shows the setting in the middle, \"Cooling to\" above it and \"Now 74°\" below; the dot on the ring is the room's temperature now. The weather sits beside it.",
+      "notice": "A second thermostat, if you ever add one, shows as a normal card under these.",
+      "risk": "Your real thermostat is Nest, so until Nest is signed in it shows as not responding, with that reason."
+    },
+    {
+      "id": "S-headers",
+      "surface": "Pages",
+      "path": "Pages → Home → any chip's page",
+      "crop": "pages/page/page-home#climate",
+      "highlight": { "box": [21.6, 17.8, 30.0, 5.2] },
+      "headline": "Chip pages now start with a round back button, the page's icon, a larger title, and what is happening under it.",
+      "changed": "Your note: the back button and headers needed restyling. The old small \"‹ Home\" text button is now a round button; the title is larger with its icon beside it.",
+      "notice": "The same header is used on every chip's page and on Page settings.",
+      "risk": "The round button has no word on it; hovering says \"Back to Home\"."
+    }
+  ]
+}

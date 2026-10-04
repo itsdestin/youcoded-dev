@@ -1,0 +1,39 @@
+{
+ "deck": "home-page-v3-r2-choice",
+ "started": "2026-10-04T03:04:27.618Z",
+ "submitted": "2026-10-04T03:07:45Z",
+ "cur": 3,
+ "answers": {
+  "C-chips": {
+   "note": "still don't love any of the proposed designs",
+   "t": 1791083147148,
+   "v": "other",
+   "seconds": 80,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-probs-grid": {
+   "v": "yes",
+   "t": 1791083162395,
+   "seconds": 15,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-weather": {
+   "v": "other",
+   "t": 1791083229562,
+   "note": "most most homes will only have a single thermostat, so i think that card should be much more prominent/restyled on this climate page. als want to change the back/home button styling and the headers.",
+   "seconds": 67,
+   "theme": "golden-sunbreak",
+   "zoom": 1
+  },
+  "S-settings-page": {
+   "v": "yes",
+   "t": 1791083264784,
+   "seconds": 35,
+   "theme": "golden-sunbreak",
+   "zoom": 1,
+   "note": "remove the \"everything off\" button at the top of the page for now"
+  }
+ }
+}
