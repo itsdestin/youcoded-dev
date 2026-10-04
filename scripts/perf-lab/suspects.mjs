@@ -27,22 +27,26 @@ import { openJourneySessions, installPageHelpers, installProbe, stopProbe } from
 import { readRendererInfo } from './gpu.mjs';
 import { refusePackageProcesses } from './gpu-theme.mjs';
 import { installIpcStallProbe, readIpcStallProbe, stopIpcStallProbe } from './probe-ipc.mjs';
-import { cpuSnapshot } from './procs.mjs';
+import { cpuSnapshot, pssMb } from './procs.mjs';
+import { startHops, summariseHops, readEmissions, classify, attachMainCounters } from './hops.mjs';
+import { installTerminalHelpers } from './scenario-terminal.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const LEGS = ['wheel', 'fence', 'flood'];
 
 export function parseOptions(argv, root = ROOT) {
-  const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, fenceLines: 500, only: LEGS.join(',') };
+  const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
   for (let i = 0; i < argv.length; i += 2) {
     const k = argv[i], v = argv[i + 1];
-    if (!['--checkout', '--out', '--max-minutes', '--flood-mb', '--fence-lines', '--only'].includes(k) || !v || v.startsWith('--')) throw Error(`Invalid option ${k}`);
+    if (!['--checkout', '--out', '--max-minutes', '--flood-mb', '--flood-rate', '--main-inspect', '--flood-views', '--fence-lines', '--only'].includes(k) || !v || v.startsWith('--')) throw Error(`Invalid option ${k}`);
     o[k.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = v;
   }
-  for (const k of ['maxMinutes', 'floodMb', 'fenceLines']) { o[k] = Number(o[k]); if (!Number.isInteger(o[k]) || o[k] < 1) throw Error(`--${k} must be a positive integer`); }
+  for (const k of ['maxMinutes', 'floodMb', 'fenceLines', 'floodRate']) { o[k] = Number(o[k]); if (!Number.isInteger(o[k]) || o[k] < (k === 'floodRate' ? 0 : 1)) throw Error(`--${k} must be a positive integer`); }
   if (o.maxMinutes > 20 || o.floodMb > 200) throw Error('--max-minutes <= 20 and --flood-mb <= 200');
   for (const k of ['checkout', 'out']) if (!isAbsolute(o[k])) throw Error(`--${k} must be absolute`);
+  o.floodViews = String(o.floodViews).split(',');
+  if (o.floodViews.some(v => !['visible', 'hidden'].includes(v))) throw Error('--flood-views takes visible,hidden');
   o.only = o.only.split(',');
   if (o.only.some(l => !LEGS.includes(l))) throw Error(`--only takes ${LEGS.join(',')}`);
   return o;
@@ -62,7 +66,7 @@ export function fenceText(lines) {
   return { text, deltas: (text.match(/\s*\S+|\s+$/g) ?? []).length };
 }
 
-const bounded = maxMinutes => {
+export const bounded = maxMinutes => {
   const end = Date.now() + maxMinutes * 60000 - 12000;
   return (promise, label, cap = 30000) => {
     const ms = Math.min(cap, end - Date.now());
@@ -72,7 +76,7 @@ const bounded = maxMinutes => {
   };
 };
 
-async function buildBounded(checkout, bound) {
+export async function buildBounded(checkout, bound) {
   const code = `import { buildApp } from ${JSON.stringify(new URL('./build.mjs', import.meta.url).href)}; console.log('SUSPECTS_BUILD='+JSON.stringify(await buildApp(${JSON.stringify(checkout)}, {skipIfFresh:true})));`;
   const child = spawn(process.execPath, ['--input-type=module', '-e', code], { detached: true, stdio: ['ignore', 'pipe', 'pipe'] });
   let out = '', err = ''; child.stdout.on('data', b => { out += b; }); child.stderr.on('data', b => { err += b; });
@@ -97,14 +101,14 @@ const INPUT_PROBE = `(() => {
 
 const VISIBLE_CHAT = `[...document.querySelectorAll('.chat-scroll')].find(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length)`;
 
-async function metrics(cdp) {
+export async function metrics(cdp) {
   const { metrics: m } = await cdp.send('Performance.getMetrics');
   const g = n => (m.find(x => x.name === n)?.value ?? 0) * 1000;
   return { at: Date.now(), taskMs: g('TaskDuration'), scriptMs: g('ScriptDuration'), layoutMs: g('LayoutDuration'), styleMs: g('RecalcStyleDuration') };
 }
-const diff = (a, b) => ({ wallMs: b.at - a.at, taskMs: Math.round(b.taskMs - a.taskMs), scriptMs: Math.round(b.scriptMs - a.scriptMs), layoutMs: Math.round(b.layoutMs - a.layoutMs), styleMs: Math.round(b.styleMs - a.styleMs), busyPct: Math.round((b.taskMs - a.taskMs) / Math.max(1, b.at - a.at) * 100) });
+export const diff = (a, b) => ({ wallMs: b.at - a.at, taskMs: Math.round(b.taskMs - a.taskMs), scriptMs: Math.round(b.scriptMs - a.scriptMs), layoutMs: Math.round(b.layoutMs - a.layoutMs), styleMs: Math.round(b.styleMs - a.styleMs), busyPct: Math.round((b.taskMs - a.taskMs) / Math.max(1, b.at - a.at) * 100) });
 
-async function readLongtasks(cdp) {
+export async function readLongtasks(cdp) {
   return cdp.evaluate(`(() => { const p = window.__perfProbe; if (!p) return null; const lt = p.log.filter(r => r[0] === 'longtask').map(r => r[2]); const gaps = p.log.filter(r => r[0] === 'frame-gap').map(r => r[2]); return { supported: p.longtaskSupported, count: lt.length, totalMs: lt.reduce((a, b) => a + b, 0), maxMs: lt.length ? Math.max(...lt) : 0, frameGapsOver40: gaps.length, worstFrameGapMs: gaps.length ? Math.max(...gaps) : 0 }; })()`);
 }
 
@@ -212,45 +216,81 @@ async function legFence(ctx, lines, profileBase) {
   return out;
 }
 
-async function toggleTerminal(cdp) {
+export async function toggleTerminal(cdp) {
   const ev = { modifiers: 2, key: '`', code: 'Backquote', windowsVirtualKeyCode: 192, nativeVirtualKeyCode: 192 };
   await cdp.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...ev });
   await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', ...ev });
 }
 
-async function legFlood(ctx, mb) {
-  const { cdp, bound, sessions, ids, switchTo, app, hz } = ctx, out = { mb };
+// Every process in the app's family that has memory worth reading (main, renderers, GPU, helpers, pty-workers).
+function classifyPids(app) { const c = classify(app); return [c.main, ...c.renderers, ...c.gpu, ...c.utility, ...c.ptyWorkers]; }
+
+async function legFlood(ctx, mb, rate = 0) {
+  const { cdp, bound, sessions, ids, switchTo, app, hz, fixtureHome, views, mainCounters } = ctx, out = { mb };
   const emptyIdx = sessions.names.findIndex(n => sessions.sizeByName[n] === 'empty'), hugeIdx = sessions.names.findIndex(n => sessions.sizeByName[n] === 'huge');
   const id = ids[emptyIdx], marker = `[perf-lab] flood complete: ${mb} MB`;
   const run = async (label, during) => {
     // Byte counter only — never keeps the flood in memory, never touches layout.
-    await bound(cdp.evaluate(`(() => { const p = { bytes: 0, chunks: 0, tail: '', doneAt: null, firstAt: null }; p.off = window.claude.on.ptyOutputForSession(${JSON.stringify(id)}, d => { if (p.firstAt === null) p.firstAt = performance.now(); p.bytes += d.length; p.chunks++; p.tail = (p.tail + d).slice(-200); if (p.doneAt === null && p.tail.includes(${JSON.stringify(marker)})) p.doneAt = performance.now(); }); window.__flood = p; return true; })()`), 'flood counter');
+    await bound(cdp.evaluate(`(() => { const p = { bytes: 0, chunks: 0, tail: '', doneAt: null, firstAt: null, lastAt: null }; p.off = window.claude.on.ptyOutputForSession(${JSON.stringify(id)}, d => { const n = performance.now(); if (p.firstAt === null) p.firstAt = n; p.lastAt = n; p.bytes += d.length; p.chunks++; p.tail = (p.tail + d).slice(-200); if (p.doneAt === null && p.tail.includes(${JSON.stringify(marker)})) p.doneAt = n; }); window.__flood = p; return true; })()`), 'flood counter');
     await bound(installProbe(cdp), 'longtask probe');
     await bound(installIpcStallProbe(cdp, { everyMs: 50 }), 'IPC probe');
-    const family = app.family(), cpu0 = cpuSnapshot(family), m0 = await metrics(cdp), t0 = Date.now();
-    await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}\r`)}); true`), 'send flood');
+    const family = app.family(), cpu0 = cpuSnapshot(family), m0 = await metrics(cdp);
+    // WHY pss before: the cost of a flood in memory is (peak - before) and (after settling - before).
+    const pssBefore = pssMb(classifyPids(app));
+    // WHY: counts the renderer's own uncaught errors by message — proves WHAT stopped the flood.
+    const thrown = {}; if (!ctx.exceptionsOn) { ctx.exceptionsOn = true; await cdp.send('Runtime.enable').catch(() => {}); cdp.on('Runtime.exceptionThrown', p => { const m = String(p?.exceptionDetails?.exception?.description || p?.exceptionDetails?.text || '').split('\n')[0].slice(0, 120); ctx.thrown[m] = (ctx.thrown[m] || 0) + 1; }); } ctx.thrown = thrown;
+    const hops = startHops(app, id, { everyMs: 250 });
+    if (mainCounters) await mainCounters.reset().catch(() => {});
+    const mcTimeline = [];
+    const t0 = Date.now();
+    await bound(cdp.evaluate(`window.__flood.t0 = performance.now(); window.claude.session.sendInput(${JSON.stringify(id)}, ${JSON.stringify(`perf-lab-flood ${mb}${rate ? ' ' + rate : ''}\r`)}); true`), 'send flood');
     const input = during ? await during() : null;
     // WHY a timeline: an average rate cannot tell a steady trickle from a burst
     // followed by a dead stop, and those are different bugs.
     let state = null; const timeline = [];
-    while (Date.now() - t0 < 120000) {
+    while (Date.now() - t0 < 150000) {
       state = await bound(cdp.evaluate(`({ bytes: window.__flood.bytes, chunks: window.__flood.chunks, done: window.__flood.doneAt !== null })`), 'flood state', 20000);
       timeline.push([Date.now() - t0, Math.round(state.bytes / 104857.6) / 10]);
+      if (mainCounters && timeline.length % 2 === 0) { const m = await mainCounters.read().catch(() => null); if (m) mcTimeline.push([Date.now() - t0, Math.round(m.send.chars / 104857.6) / 10, Object.values(m.worker).reduce((a, w) => a + w.chars, 0) / 1048576 | 0]); }
       if (state.done) break;
+      // A flood that has not moved for 20 s is a dead stop, not a slow run: stop waiting.
+      const recent = timeline.filter(r => r[0] > Date.now() - t0 - 20000);
+      if (timeline.length > 80 && recent.length > 10 && recent[0][1] === recent.at(-1)[1]) break;
       await sleep(250);
     }
     const wallMs = Date.now() - t0, m1 = await metrics(cdp), cpu1 = cpuSnapshot(family);
+    const pssPeakish = pssMb(classifyPids(app));
     let ticks = 0, mainTicks = 0;
     for (const [pid, a] of cpu0) if (cpu1.has(pid)) { const d = Math.max(0, cpu1.get(pid) - a); ticks += d; if (pid === app.pid) mainTicks = d; }
+    // The IPC samples with absolute times, so a stall can be lined up with the pipeline timeline.
+    const ipcRaw = await bound(cdp.evaluate(`(() => { const p = window.__ipcStall; return p ? { t0: performance.timeOrigin + p.t0, samples: p.samples } : null; })()`), 'IPC samples').catch(() => null);
     const ipc = await bound(readIpcStallProbe(cdp), 'IPC result').catch(e => ({ error: e.message }));
     const longtasks = await bound(readLongtasks(cdp), 'longtasks');
+    // Where did the bytes stop? Ask the renderer what it received and what xterm shows.
+    const finalState = await bound(cdp.evaluate(`({ bytes: window.__flood.bytes, chunks: window.__flood.chunks, done: window.__flood.doneAt !== null, lastAtMsAgo: window.__flood.lastAt === null ? null : Math.round(performance.now() - window.__flood.lastAt), firstAtMs: window.__flood.firstAt === null ? null : Math.round(window.__flood.firstAt - window.__flood.t0), lastByteAtMs: window.__flood.lastAt === null ? null : Math.round(window.__flood.lastAt - window.__flood.t0), doneAtMs: window.__flood.doneAt === null ? null : Math.round(window.__flood.doneAt - window.__flood.t0), tail: window.__flood.tail, xtermTail: window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 4) ?? null })`), 'final state').catch(e => ({ error: e.message }));
     await stopIpcStallProbe(cdp).catch(() => {}); await stopProbe(cdp).catch(() => {});
     await bound(cdp.evaluate('window.__flood?.off?.(); true'), 'flood counter off').catch(() => {});
+    // Keep watching 12 s after the run: does memory come back, does anything wake up late?
+    await sleep(12000);
+    // Is the terminal still alive after the flood? A short command must come back whole.
+    const recovery = await bound(cdp.evaluate(`(async () => { let got = ''; const off = window.claude.on.ptyOutputForSession(${JSON.stringify(id)}, d => { got += d; }); window.claude.session.sendInput(${JSON.stringify(id)}, 'perf-lab-glyphs 20\\r'); const t = performance.now(); while (performance.now() - t < 8000 && !got.includes('glyph fill complete: 20 lines')) await new Promise(r => setTimeout(r, 50)); off(); return { arrived: got.includes('glyph fill complete: 20 lines'), bytes: got.length, ms: Math.round(performance.now() - t) }; })()`), 'recovery check', 20000).catch(e => ({ error: e.message }));
+    const hopRows = hops.stop();
+    const mainEnd = mainCounters ? await mainCounters.read().catch(e => ({ error: e.message })) : null;
+    const pssAfter = pssMb(classifyPids(app));
+    const emissions = readEmissions(fixtureHome).filter(r => r.flood === mb && r.t >= t0 - 1000);
+    const stalls = ipcRaw ? ipcRaw.samples.filter(s => s[1] > 150).map(s => ({ atMs: Math.round(ipcRaw.t0 + s[0] - t0), stallMs: s[1] })) : [];
     out[label] = {
       status: state?.done ? 'measured' : 'incomplete', wallMs, mbReceived: Math.round(state.bytes / 1048576 * 10) / 10, ipcMessages: state.chunks,
       ipcMessagesPerSec: Math.round(state.chunks / (wallMs / 1000)), renderer: diff(m0, m1), longtasks,
-      mainProcessIpc: ipc.error ? ipc : { medianMs: ipc.medianMs, p95Ms: ipc.p95Ms, maxMs: ipc.maxMs, over100ms: ipc.over100ms, over250ms: ipc.over250ms, totalStallMs: ipc.totalStallMs, pings: ipc.pings, missedTicks: ipc.missedTicks },
+      mainProcessIpc: ipc.error ? ipc : { medianMs: ipc.medianMs, p95Ms: ipc.p95Ms, maxMs: ipc.maxMs, over100ms: ipc.over100ms, over250ms: ipc.over250ms, over1000ms: ipc.over1000ms, totalStallMs: ipc.totalStallMs, pings: ipc.pings, missedTicks: ipc.missedTicks, openStallMs: ipc.openStallMs },
+      stallsOver150ms: stalls,
       cpuSecondsAllProcesses: Math.round(ticks / hz * 10) / 10, cpuSecondsMainProcess: Math.round(mainTicks / hz * 10) / 10, input, mbByMs: timeline.filter((_, i) => i % Math.ceil(timeline.length / 40) === 0 || i === timeline.length - 1),
+      finalState, recovery, rate, rendererErrors: thrown,
+      producer: { rows: emissions.length, first: emissions[0] ?? null, last: emissions.at(-1) ?? null, errors: emissions.filter(r => r.event === 'error'), writtenMbByMs: emissions.filter((_, i) => i % Math.ceil(emissions.length / 40) === 0).map(r => [r.sinceStartMs, Math.round(r.written / 104857.6) / 10, r.eagain]) },
+      pipeline: { watch: hops.watch, ...summariseHops(hopRows, hz), timeline: undefined },
+      pipelineTimeline: hopRows.filter((_, i) => i % Math.ceil(hopRows.length / 120) === 0),
+      mainCounters: mainEnd && { end: mainEnd, mbSentToRendererAndWorkerMbByMs: mcTimeline.filter((_, i) => i % Math.ceil(mcTimeline.length / 30) === 0) },
+      pssMb: { before: pssBefore, afterRun: pssPeakish, after12sSettle: pssAfter },
     };
     await sleep(1500);
   };
@@ -259,12 +299,12 @@ async function legFlood(ctx, mb) {
   await toggleTerminal(cdp);
   for (let i = 0; i < 50; i++) { if (await cdp.evaluate(`document.documentElement.dataset.viewMode === 'terminal'`)) break; await sleep(100); }
   out.viewMode = await cdp.evaluate('document.documentElement.dataset.viewMode');
-  await run('terminalVisible', null);
+  if (views.includes('visible')) await run('terminalVisible', null);
   // 2. Back to chat view on a DIFFERENT, long chat: the flood is now a hidden terminal,
   //    and the reader is scrolling and typing somewhere else.
   await toggleTerminal(cdp); await sleep(400);
   await switchTo(hugeIdx); await sleep(1500);
-  await run('terminalHidden', async () => {
+  if (views.includes('hidden')) await run('terminalHidden', async () => {
     const wheel = await wheelBurst(cdp, bound, { count: 30, everyMs: 100 });
     await bound(cdp.evaluate(`(() => { const el = [...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length); el?.focus(); window.__suspectInput.take(); return !!el; })()`), 'focus composer');
     for (const ch of 'typingwhilefloodingterminal') {
@@ -293,11 +333,14 @@ export async function main(argv = process.argv.slice(2)) {
     const fixture = buildFixture(mkdtempSync(join(ROOT, 'scratch/perf-lab/suspects-fixture-')), { fakeProvider: true, log: () => {} });
     fake = await bound(startFakeProvider({ port: fixture.fakeProvider.port }), 'fake provider');
     x = await bound(startXvfb(':99'), 'Xvfb');
-    app = await bound(launchApp({ binary: build.binary, appDir: build.appDir, fixture, display: x.display, cdpPort: 9577, refuseExisting: true }), 'launch', 90000);
+    app = await bound(launchApp({ binary: build.binary, appDir: build.appDir, fixture, display: x.display, cdpPort: 9577, refuseExisting: true, extraArgs: opts.mainInspect === '1' ? ['--inspect=9301'] : [] }), 'launch', 90000);
     const cdp = app.cdp;
     report.gpu = await bound(readRendererInfo(app.cdpPort, cdp), 'GPU info');
     await bound(cdp.send('Performance.enable'), 'metrics domain');
     await bound(installPageHelpers(cdp), 'page helpers');
+    await bound(installTerminalHelpers(cdp), 'terminal helpers');
+    let mainCounters = null;
+    if (opts.mainInspect === '1') { try { mainCounters = await bound(attachMainCounters(9301), 'main inspector'); report.mainHook = mainCounters.hook; } catch (e) { report.mainHook = { error: String(e.message) }; } }
     const ids = [], warnings = [];
     try {
       const sessions = await bound(openJourneySessions(cdp, fixture, { ids, warnings, nativeBinding: { providerId: fixture.fakeProvider.id, modelId: fixture.fakeProvider.modelId } }), 'sessions', 90000);
@@ -308,11 +351,11 @@ export async function main(argv = process.argv.slice(2)) {
         if (r.mode === 'none') throw Error(`switch failed: ${r.reason}`);
         return r;
       };
-      const ctx = { cdp, fake, bound, sessions, ids, switchTo, app, hz };
+      const ctx = { cdp, fake, bound, sessions, ids, switchTo, app, hz, fixtureHome: fixture.home, views: opts.floodViews, mainCounters };
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : await legFlood(ctx, opts.floodMb);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));

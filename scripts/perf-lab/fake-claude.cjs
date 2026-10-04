@@ -155,9 +155,11 @@ process.stdin.on('data', (buf) => {
   // full, which is the case the app has no brake for. `perf-lab-flood <mb>` emits
   // that: 64 KB chunks, honouring stdout backpressure like a real program does.
   for (const line of parts) {
-    const f = /^perf-lab-flood (\d{1,3})$/.exec(line.trim());
+    const f = /^perf-lab-flood (\d{1,3})(?: (\d{1,3}))?$/.exec(line.trim());
     if (!f) continue;
     const mb = Number(f[1]);
+    // Optional 2nd number = pace in MB/s (omitted = as fast as the pty accepts, the original behaviour).
+    const rate = f[2] ? Number(f[2]) : 0;
     const row = `\x1b[32mbuild:\x1b[0m compiling module ${'x'.repeat(72)} ok\r\n`;
     const chunk = row.repeat(Math.ceil(65536 / row.length));
     // WHY writeSync and not stdout.write + 'drain': the first version stopped at
@@ -167,16 +169,39 @@ process.stdin.on('data', (buf) => {
     let left = mb * 1024 * 1024, off = 0;
     const buf = Buffer.from(chunk), tail = Buffer.from(`\r\n[perf-lab] flood complete: ${mb} MB\r\n> `);
     let tailOff = 0;
+    // WHY producer-side log (2026-10-04): a 200 MB flood once stopped arriving at ~48 MB and
+    // the rig could not tell "the app stopped reading" from "this producer died silently"
+    // (the catch below used to swallow every non-EAGAIN error). Now every ~250 ms the
+    // producer appends how many bytes it has WRITTEN, how many EAGAIN retries it needed and
+    // any other error code, to the same fixture-only file the glyph command uses. A line
+    // that stops appearing while the process is alive = it is blocked in write().
+    const total = mb * 1024 * 1024;
+    const marker = path.join(home, '.claude', 'perf-terminal-emissions.jsonl');
+    const t0 = Date.now(); let lastLog = 0, eagain = 0, otherErr = null;
+    const log = (extra) => {
+      try { fs.appendFileSync(marker, JSON.stringify({ flood: mb, t: Date.now(), sinceStartMs: Date.now() - t0, written: total - left, eagain, ...extra }) + '\n'); } catch { /* fixture may be gone */ }
+    };
+    log({ event: 'start' });
     const pump = () => {
       try {
         for (let i = 0; i < 64 && left > 0; i++) {
+          if (rate > 0 && (total - left) > rate * 1048576 * ((Date.now() - t0) / 1000 + 0.02)) return void setTimeout(pump, 5);
           const w = fs.writeSync(1, buf, off, Math.min(buf.length - off, left));
           off = (off + w) % buf.length; left -= w;
+          if (Date.now() - lastLog >= 250) { lastLog = Date.now(); log({ event: 'progress' }); }
         }
         if (left > 0) return void setImmediate(pump);
         while (tailOff < tail.length) tailOff += fs.writeSync(1, tail, tailOff, tail.length - tailOff);
+        log({ event: 'done' });
       } catch (e) {
-        if (e && e.code === 'EAGAIN') return void setTimeout(pump, 1);
+        if (e && e.code === 'EAGAIN') {
+          eagain++;
+          if (Date.now() - lastLog >= 250) { lastLog = Date.now(); log({ event: 'progress' }); }
+          return void setTimeout(pump, 1);
+        }
+        // Behaviour unchanged (the pump still stops), but it is no longer silent.
+        otherErr = e && (e.code || String(e));
+        log({ event: 'error', code: otherErr, message: String(e && e.message) });
       }
     };
     pump();
