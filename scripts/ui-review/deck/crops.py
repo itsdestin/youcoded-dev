@@ -25,9 +25,9 @@ def image_name(crop, theme, run):
     # A shoot screen name carries "/" ("settings/sound") — flattened here (shoot.mjs's own
     # `compare/` composite names do the same) so every cut/copied file stays directly under the
     # deck's flat `images/<deck>` folder; no crop name has ever needed a nested one.
-    # "#" too: a screen's state (`pages/page/page-home#key`) put a "#" in the file name, and a
-    # browser reads "#" in an <img src> as the start of a fragment, so the picture never loaded
-    # (found 2026-10-01, the first deck to show #state screens).
+    # "#" too (2026-10-02): a screen STATE (`first-run#authenticate`) kept its "#" in the file
+    # name, and in the page's <img src> a "#" starts a URL fragment, so the browser asked for a
+    # file that does not exist and the deck never finished laying out.
     return f'{crop.replace("/", "__").replace("#", "~")}--{theme}--{run}.png'
 
 

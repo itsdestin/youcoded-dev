@@ -1,0 +1,37 @@
+{
+  "title": "Setup \u2014 Git for everyone, Node.js only for Claude Code",
+  "key": "setup-simplify-review",
+  "out": "setup-simplify.review.html",
+  "images": "images/setup-simplify.review",
+  "runs": {
+    "before": "runs/before",
+    "after": "runs/after"
+  },
+  "steps": [
+    {
+      "id": "S-1",
+      "surface": "Setup",
+      "path": "The first screen after installing YouCoded, while it gets the computer ready",
+      "crop": "first-run#setup-installing",
+      "headline": "New users now wait only for Git during setup; Node.js no longer installs for everyone.",
+      "changed": "Node.js is gone from the setup checklist. It installs later, only when someone picks Claude Code (Log in with Claude, Install Claude Code in Settings) or opens a terminal. The line above the list now says what Git is actually for.",
+      "measured": "1 install instead of 2; on a clean Windows test machine Git took 8 s to download and 37 s to unpack",
+      "notice": "Setup is shorter. On Windows there is no admin pop-up and no dead end on PCs missing Microsoft's App Installer: Git comes from Git's own portable download into your user folder. On Linux a password window installs Git instead of a terminal command.",
+      "risk": "People who choose Claude Code now wait for Node.js at sign-in instead of during setup (about a minute, shown as 'Installing Claude Code\u2026'). The Linux password window has not been tried on a real desktop yet."
+    },
+    {
+      "id": "S-2",
+      "surface": "Setup",
+      "path": "The moment the installs finish, on a Windows PC without Developer Mode",
+      "crop": "first-run#setup-done",
+      "headline": "Once Git is in, setup goes straight to sign-in \u2014 no Developer Mode screen, no Node.js row.",
+      "changed": "The Windows Developer Mode step is removed (nothing in the app needs it since the old toolkit was retired), and the checklist shows only what this person actually needed.",
+      "notice": "Windows users skip a screen that asked them to change a system security setting through an admin prompt. Mac, Linux and people who already had Developer Mode on see no difference beyond the shorter list.",
+      "risk": "None known \u2014 the step's only job was the old toolkit's symbolic links, and a search of the app found nothing that still makes them."
+    }
+  ],
+  "themes": [
+    "golden-sunbreak",
+    "meadow-mist"
+  ]
+}

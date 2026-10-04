@@ -58,6 +58,10 @@ class SpecTests(unittest.TestCase):
         # screen (deck/crops.py resolves it for real against the run's own manifest.json).
         s = load_spec(write_spec(self.d)); s['steps'][0]['crop'] = 'settings/sound'
         self.assertFalse(any('unknown crop' in e for e in validate(s)[0]))
+    def test_a_screen_state_name_is_not_an_unknown_crop(self):
+        # "first-run#authenticate" has no "/" — the "#" state marker is what says shoot screen.
+        s = load_spec(write_spec(self.d)); s['steps'][0]['crop'] = 'first-run#authenticate'
+        self.assertFalse(any('unknown crop' in e for e in validate(s)[0]))
     def test_a_single_run_shoot_screen_needs_no_highlight(self):
         # A shoot picture defaults to its own panel as the highlight, so — unlike a legacy crop
         # — one picture and no highlight is not an error.

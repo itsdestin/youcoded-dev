@@ -29,7 +29,7 @@ background — Kuromi's worst case is `--brand-claude` at 3.19:1 on its `#D4C5E6
 `youcoded/desktop/tests/brand-colour-modes.test.ts` pins three things: every dark community
 theme clears 4.5:1, nothing anywhere drops below 3:1, and the light-theme residue may not
 exceed 25 combinations.
-<!-- claim: {"path": "youcoded/desktop/tests/brand-colour-modes.test.ts", "contains": "const KNOWN_LIGHT_THEME_GAP = 25"} -->
+<!-- claim: {"path": "youcoded/desktop/tests/brand-colour-modes.test.ts", "contains": "const KNOWN_LIGHT_THEME_GAP = new Set\\("} -->
 
 ## Candidate fixes (neither in scope when the mode fix shipped)
 

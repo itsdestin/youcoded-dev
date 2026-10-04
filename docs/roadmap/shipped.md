@@ -99,6 +99,8 @@ decision either way.
 - [x] 2026-09-27 native-harness — Admin commands work from chat: you type your computer password in a card (never saved, never shown to the assistant); every admin command stops for approval (youcoded#580)
 - [x] 2026-09-28 dev-workspace — Strip every youcoded-core step out of the release skill (`youcoded-admin` `skills/release/SKILL.md`, 56 references) (youcoded-admin#14; youcoded-dev#217)
 - [x] 2026-09-29 files — Document comments, like Google Docs or Word: highlight text in the file viewer, leave notes, reply, resolve them (you or the assistant) and see the history,… (itsdestin/youcoded#587, itsdestin/youcoded-dev#222)
+- [x] 2026-10-02 files — A full office suite inside the app (youcoded#598)
+- [x] 2026-10-04 other-features — Windows first-run setup installs Node and Git only through winget (App Installer), so a PC without it (youcoded 9884ec885)
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the
@@ -842,3 +844,4 @@ Every `[x]` item from the single-file roadmap as it stood at the migration base,
 - [x] 2026-09-23 native-harness — v1.3.1 blocker: local model forgot the request mid first turn; compaction now waits near the limit, keeps one durable summary + recent tail, restores on reopen (youcoded#559 `14782429`)
 - [x] 2026-09-26 themes — Minimalist layout, one set of Look choices over every theme, and a redesigned Appearance panel with real-screenshot theme cards (youcoded#569, wecoded-marketplace#104, wecoded-themes#35)
 - [x] 2026-09-26 native-harness — Full Auto explains stops before editing outside the working folder and lets the main assistant approve one edit or, after a separate confirmation, outside-file Write/Edit across folders for this live session only (youcoded#574, merge `c9615dca`). The grant resets on resume, does not bypass credential-path checks or Bash's secret/removal safety floors, and never reaches specialists; specialists' own risky-command stops now name the reason. Destin approved four review decks (`docs/archive/design/2026-09-22-outside-edit-consent/`): first-stage Approve / Deny / blue Allow for This Session, green second-stage confirmation; existing Full Auto stops use Deny. Full desktop verification on the integrated tree and GitHub Ubuntu CI passed; Android XML recorded 1,014 tests, 0 failures, and GitHub's APK build passed. Not exercised in a live dev session.
+- [x] 2026-10-03 other-features — Buddy can live as a taskbar/menu-bar icon (Settings → Buddy Floater → Show as); on Windows/macOS clicks beside the mascot pass through, Linux keeps the whole square (youcoded#601 `6d97f3dd`)

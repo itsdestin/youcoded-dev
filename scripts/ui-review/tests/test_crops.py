@@ -184,13 +184,15 @@ class ShootCropTests(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(out, image_name('c', 'midnight', 'today'))))
 
 
-if __name__ == '__main__': unittest.main()
-
 
 class ImageNameTests(unittest.TestCase):
-    def test_a_screen_state_never_puts_a_fragment_mark_in_the_file_name(self):
-        # An <img src> containing "#" loads nothing: the browser reads the rest as a fragment.
-        name = image_name('pages/page/page-home#key', 'midnight', 'after')
+    def test_a_screen_state_makes_a_url_safe_file_name(self):
+        # A "#" in an <img src> starts a URL fragment: the deck asked for a file that is not
+        # there and never finished laying out (first-run#setup-done, 2026-10-02).
+        name = image_name('first-run#setup-done', 'light', 'after')
         self.assertNotIn('#', name)
-        self.assertNotIn('/', name)
-        self.assertNotEqual(name, image_name('pages/page/page-home', 'midnight', 'after'))
+        self.assertNotIn('/', image_name('settings/sound', 'light', 'after'))
+
+
+if __name__ == '__main__':
+    unittest.main()

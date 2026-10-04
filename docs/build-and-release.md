@@ -17,6 +17,9 @@ CI extracts version from the `vX.Y.Z` tag and patches `package.json` before buil
 ### Android version is stamped in CI
 Since 2026-09-10 `android-release.yml` stamps `app/build.gradle.kts` before building: `versionName` is the tag without its `v` (or `<base>.<run_number>` for a dispatched beta) and `versionCode` is `100 + run_number`, monotonic across betas and releases because both come through that one workflow. The hand-set values in the file only matter for local builds. Outputs are named `YouCoded-<version>.apk` / `.aab`.
 
+### Office add-on is fetched per platform at build time
+`npm run build` starts with `node scripts/fetch-office.mjs --release --required`, which downloads every bundle `desktop/office-pin.json` pins for the build machine's OS into `desktop/office-build/<platform>-<arch>/` (the Mac runner gets both `darwin-x64` and `darwin-arm64`); `electron-builder.yml` packs `office-build/${platform}-${arch}` as the installer's `resources/office`. A platform with no pin (ARM Linux: upstream ships no converter) builds without Office and the app opens Office files with the default app. Bumping the add-on means: bump `version` in the add-on's own `PIN.json`, push a `vX.Y.Z` tag to `itsdestin/youcoded-office` (its CI builds all four platforms and smoke-tests each converter on its own OS before publishing the release with a `SHA256SUMS`), then set `version` and every platform's `url` and `sha256` in `desktop/office-pin.json` (all four: `linux-x64`, `darwin-x64`, `darwin-arm64`, `win32-x64`) and run `node scripts/fetch-office.mjs`. As of 2026-10-02 the pin is **v0.1.41**. The Windows bundle ships the Visual C++ runtime DLLs beside `x2t.exe` (a clean Windows PC lacks them; add-on v0.1.40) and its CI fails if any DLL is unshipped. On Mac, `electron-builder.yml` re-signs only the converter (`x2t` and its dylibs) and `scripts/office-packaged-smoke.mjs` runs the packaged x2t in the Mac CI jobs. `desktop/office-addon/` is only the dev copy for this machine. Depth: `youcoded/docs/office.md`.
+
 ### One tag, all platforms
 A single `vX.Y.Z` tag in youcoded triggers both `android-release.yml` and `desktop-release.yml`. Both upload artifacts (APK/AAB + Win/Mac/Linux installers) to the same GitHub Release.
 
@@ -323,6 +326,43 @@ Full postmortem: `docs/active/investigations/2026-09-03-macos-beta72-unopenable-
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-release.yml", "contains": "verify-mac-signature.sh"} -->
 <!-- verify: {"path": "youcoded/.github/workflows/desktop-test-build.yml", "contains": "verify-mac-signature.sh"} -->
 <!-- verify: {"test": "youcoded/desktop/tests/verify-mac-signature.test.ts"} -->
+
+### Windows signing
+
+Since 2026-10-01 the Windows installer of a `v*` release and of every **master** beta is
+signed with Azure Artifact Signing; every other Windows build (desktop-ci, local, other
+branches, forks) stays unsigned. The certificate is Destin's own (individual validation —
+Microsoft refuses organisations under three years old), so the publisher reads
+**"Destin Moss"**; the company can take over around 2029-09. Account facts and the
+decision live in the brain (`~/system/legal/playbooks.md` → Azure Artifact Signing).
+
+How it fits together (`desktop/electron-builder.win-sign.yml` explains each choice):
+
+- The base `electron-builder.yml` has no Windows signing. The overlay
+  `electron-builder.win-sign.yml` extends it, adds `win.azureSignOptions` (account
+  `destinmoss`, profile `youcoded-public`, endpoint `https://wus3.codesigning.azure.net`)
+  and `win.forceCodeSigning`. Workflows select it with
+  `npm run build -- --config electron-builder.win-sign.yml`.
+- GitHub signs in to Azure with **no stored password**: the Windows leg runs in the
+  `windows-signing` GitHub environment, and Azure's app registration
+  `youcoded-github-signing` trusts exactly the subject
+  `repo:itsdestin/youcoded:environment:windows-signing`. The environment's variables
+  `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` are IDs, not secrets.
+  Its deployment rule admits only `master` and `v*` tags.
+- After the build, Windows' own `Get-AuthenticodeSignature` must report **Valid** for the
+  installer and `win-unpacked/YouCoded.exe`, or the leg fails — and a failed leg withholds
+  the whole release, as with the Mac check.
+- The in-app updater is unaffected: it trusts the signed release manifest, whose hashes are
+  taken from the already-signed installers.
+
+Pinned by `desktop/tests/windows-signing-config.test.ts`. SmartScreen reputation builds per
+certificate with downloads, so the blue warning fades over weeks rather than vanishing.
+
+**What users see is checked in a clean guest, not here.** CI proves the signature is valid; only
+a real first launch shows the SmartScreen / Gatekeeper wall. After any signing change:
+`scripts/vm/vm.sh win start && scripts/vm/vm.sh win load beta` (and `mac` once Apple signing
+lands) puts the newest beta in the guest's Downloads with the internet mark — see
+`docs/vm-testing.md` → Quick loop.
 
 ## Local verification (typecheck + CI-style build)
 
