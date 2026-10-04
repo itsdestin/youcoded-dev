@@ -352,6 +352,10 @@ fi
 note "roadmap: close the item for this work in the SAME session — node scripts/roadmap-check.mjs --close <area>:<text> --ref '<commit or PR>' (deletes it, adds the shipped.md line, rewrites the index)"
 note "docs/MAP.md: does the merged subsystem have a row and a hot path? 'no rule' is an answer; 'no row' is not"
 note "archived docs: repoint cross-links that still point at docs/active/"
+# WHY (2026-10-03, Office close-out): the build plan's "Not in this plan" list (four designed
+# features) was about to be archived with nothing on the roadmap — a future session reading the
+# archived spec would assume they exist. Deferred work must land on the roadmap first.
+note "archiving a plan/spec: file every deferred item (\"Not in this plan\", \"later\", \"follow-up\") on the roadmap first"
 
 echo
 echo "Deploy"
