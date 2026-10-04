@@ -151,12 +151,157 @@ One or two runs each — a first reading, not a baseline. Raw files:
 | — | **D6 — message box re-measuring per key** | Key to visible text: 2–3 ms, with or without a reply streaming. No freezes | **Not felt.** Demoted |
 | — | **Typing stalls from background long chats** (the known backlog item) | Zero freezes over 50 ms in this run; September's runs showed 122–145 ms | **Did not reproduce on current master** in one run. Needs repeats before closing |
 
-**Not yet measured:** launch time and bundle size (D4, D5), long non-Claude history replay
-(D3), terminal switching (D10) — the standard rig refuses to run while the machine is busy;
-memory over hours (D8); many sessions (D9); big spreadsheets (D14). **Cannot be measured on
-the invisible screen:** particles, blur, wallpapers (T1–T3) — these need a real window on
-the real graphics card. **Cannot be measured here at all:** the phone items — no phone is
-attached to this computer.
+**Not yet measured (updated after 4c):** terminal switching on a real graphics card (D10) and
+memory over hours with a phone-sync turned on (D8 — see 4c: it only exists then, and the test
+copy cannot turn that on). Everything else that was listed here is now in 4c. **Cannot be
+measured on the invisible screen:** particles, blur, wallpapers (T1–T3) — these need a real
+window on the real graphics card. **Cannot be measured here at all:** the phone items — no
+phone is attached to this computer.
+
+## 4c. Second measurement round (2026-10-04)
+
+Same tool family (`scripts/perf-lab/suspects.mjs`, new `suspects-b.mjs`, `hops.mjs`), private
+packaged build, invisible screen, no graphics card. **Build:** app commit `ac478d5de` for
+everything below except the first 40 MB flood (`63ada079b`); neither commit touches terminals,
+spreadsheets or chat history. **Load on the machine** was 3–6 for most runs, and spiked to 20–80
+while another session worked, which made the standard launch test refuse to run its history
+half (see D3). Times are rough; counts and same-run comparisons are the solid part. Raw files:
+`scratch/perf-lab/suspects/r2-*` (local only). Each flood number is one run unless said.
+
+### D1 — terminal flood: settled. The app drops output after about 50 million letters
+
+What a person would feel: a command that prints a huge amount very fast (cat of a giant file,
+a runaway log) shows part of the output, then stops. The last lines — including the prompt
+telling you it finished — never appear. The session itself is fine afterwards.
+
+How we know where it stops (we counted at every hand-off, without touching app code):
+
+| Hand-off | 200 MB flood |
+|---|---|
+| The test program wrote | all 200 MB, in 1.5–1.8 s, no errors, never blocked |
+| The terminal helper process read | all of it |
+| The main process passed on to the window | all of it (211.6 M letters in 51,134 messages, counted inside the private app) |
+| The window's terminal widget accepted | only **48–54 M letters**, then threw **42,380 "write data discarded" errors** (one run, counted) |
+
+The cause is a built-in safety limit in the terminal widget (xterm): once about 50 million
+letters are waiting to be drawn it throws the rest away, and the app has no "slow down" signal
+to the producer. 40 MB (42 M letters) fits under the limit and arrives whole; 100 MB lost ~55%;
+200 MB lost ~75% (three runs: 51.0, 51.9, 48.5 M accepted). Right after, a short command
+worked normally in all runs (arrived in under 130 ms), so the terminal recovers.
+
+**Slower producers.** Even a *paced* flood of 200 MB at 20 MB/s still lost output (27,667
+errors) because the window cannot draw 20 MB/s. At 10 MB/s (60 MB total) and 5 MB/s nothing
+was lost. What it costs the window's main thread to draw terminal output (this is the
+renderer's share of time, software drawing, load ~5): **1 MB/s ≈ 27% busy; 5 MB/s ≈ 80–92%;
+10 MB/s and up ≈ 99% (saturated).** A terminal hidden behind chat costs almost the same as a
+visible one (26% vs 28% at 1 MB/s; 78% vs 92% at 5 MB/s). So a noisy build you are not even
+looking at still takes a quarter of the window's thinking time per MB/s.
+
+**Whole-app stalls.** During the unpaced 200 MB flood the main process stopped answering for
+**150–580 ms, four times in the first two seconds** (worst 578 ms; three runs). That is
+smaller than the 0.9–1.6 s in 4b, which was measured under heavier load (4–7), so the
+honest range is "0.3–1.6 s depending on how busy the machine is". Paced floods produced no
+stall over 150 ms.
+
+**Memory.** The helper process behind the terminal grew from 78 MB to ~160 MB after one 200 MB
+flood and **did not give it back** (a second flood took it to ~217 MB). The main process rose
+25–50 MB while flooding and came back. Nothing crashed, the session did not die.
+
+Verdict: **confirmed, with a sharper cause than guessed.** Confidence high for the loss and its
+cause (three runs, error counts). The ~27%-per-MB/s drawing cost is one run per rate.
+
+### D9 — many sessions: fine to 16, then churn (software drawing only — say so)
+
+We turned on software WebGL for this run only (the normal rig has none, so the problem could
+never appear). 24 session-switches per stage, chat view and terminal view.
+
+| Open sessions | Terminals with accelerated drawing at the end | Lost-context events | Chat switch (median) | Terminal-view switch (median) |
+|---|---|---|---|---|
+| 8 | 8 of 8 | 0 | 31 ms | 547 ms |
+| 16 | 16 of 16 | 0 | 33 ms | 581 ms |
+| 20 | **16 of 20 — 4 left with a lost context** | **12 right after creating the 17th–20th, 64 by the end of the run** | 33 ms (12 long freezes, worst 173 ms, 0.9 s total) | 614 ms (4 freezes, worst 94 ms) |
+
+So the cap is real and exactly at 16. Past it, each new session knocks out an old terminal, the
+app rebuilds that one, which knocks out another, and the churn keeps going on every switch
+(24 more losses while just clicking between chats; 28 more in terminal view). Four terminals
+ended with no working drawing. Not captured: renderer/graphics-process memory (the rig's
+process finder returned nothing for the window process; main stayed ~174 MB). A real graphics
+card may differ in speed, but Chromium's 16-context limit is the same code. Confidence: one
+run; the 8 → 16 → 20 step is clear. Relevant only to people with 17+ Claude sessions open.
+Terminal-view switching costing ~0.55 s even at 8 sessions is a software-drawing figure and is
+**not** a real-card prediction (D10 stays unmeasured).
+
+### D3 — long non-Claude chat replay: demoted, the path is not used
+
+Code search (whole app, tests excluded) found **no caller** of the "replay the whole history
+one message at a time" request: `requestTranscriptReplay` is only a no-op stub on the phone
+side and a comment in `transcript-watcher.ts` already says no window sends it. Opening,
+resuming and moving a native chat all load one page of history. Measured directly (resume
+event to messages on screen, same page of 60 entries each time): **400 turns (2.2 MB file):
+0.75 s; 2,000 turns (11.8 MB file): 0.86 s**, with **0** history messages streamed to the
+window in both. The longest freeze while resuming was 123–243 ms. So size barely matters. (The
+first of three resumes in that boot timed out waiting for a tab — a rig start-up race, not an
+app finding; the 400-turn figure is from the third.) The standard `native-resume` phase could not
+run: the machine never got quiet in 20 minutes (load 6–88) and the tool refuses numbers then.
+
+### D4, D5 — launch and bundle: real but modest
+
+Standard launch phase, 3 boots (load ~3, commit `ac478d5de`): window created at **906–914 ms**
+after process start (Electron's own start-up is ~830 ms of that, before any YouCoded code);
+the ~16 chores before the window add up to **~70–85 ms** (largest: hook install 15, remote
+server 20, log rotate 6, prelude 12–21); window blank for **445–461 ms**; first drawing
+~1.08 s; app code loading finished at ~1.26 s, i.e. **~310 ms spent just evaluating the
+bundle**; sessions listed at ~1.29 s; first useful paint ~1.36 s. Memory at idle ~506 MB.
+Bundle (built renderer, current `index.html`): main script **3.19 MB (950 KB compressed)** plus
+185 KB (29 KB) of styles. Already split off and loaded only on use: spreadsheet 941 KB, Word
+494 KB, PDF 430 KB, code editor 121 KB, two games, language packs. Settings, Marketplace,
+chess and QR code are still inside the main script (code search; the build keeps no map).
+Verdict: the chores (D5) are **not** the problem (~80 ms); bundle size (D4) costs ~310 ms of a
+~1.3 s launch — a quarter, worth trimming but not a freeze. Note: `dist/renderer/assets` keeps
+five old copies of every file (~16 MB of leftovers) — harmless, only `index.html`'s are loaded.
+
+### D14 — big spreadsheet: confirmed, the biggest single freeze found so far
+
+CSV 2,000 rows × 100 columns (1.6 MB) against a 200 × 10 control (15 KB), one run:
+
+| | Control | Big |
+|---|---|---|
+| Time to open | 0.28 s | **10.1 s** (one 7.3 s freeze, 10 s of freezing in all) |
+| Page elements afterwards | 6,480 | **205,030** |
+| One click on a cell | 27 ms | **547 ms** (every click redraws all 200,000 cells) |
+| Closing it (opening a small file next) | — | **6.8 s** freeze |
+
+During the 10 s open the window was frozen but the main process stayed responsive (worst
+484 ms), so it is the window's drawing, not the app as a whole. Excel files use the same
+2,000 × 100 limit and structure (code read); not separately measured. Confidence: one run;
+the 20× gap to the control is far outside noise.
+
+### D8 — memory kept for a phone that is not connected: bounded, and off by default
+
+Found while reading: both buffers only fill when **phone access is switched on and Tailscale is
+connected** (`remote-server.ts` subscribes to terminal output only inside `start()`, which
+refuses to run otherwise). The test copy cannot turn that on, so this is read, not measured on
+the app. Terminal text: capped at 4 million letters per session = **about 4–8 MB per session**,
+so six sessions ≤ ~50 MB — the 200 MB flood above did not move the main process's resident
+size beyond normal swings. Tool events: capped by *count* (10,000), **not by size**, and each
+stores the whole tool input and result Claude Code sends (not a summary), so the cost is
+(number of events) × (size of results). A rough check of that retention logic outside the app
+(8 KB results × 10,000 events ≈ 80 MB per session; my smaller sizes did not produce reliable
+readings — treat as an order of magnitude, not a measurement). With 5,000 results of 2–30 KB
+that is roughly 10–150 MB per long session, only with phone access on. The code comment saying
+"~10 MB max" assumes tiny events and is wrong for real results. Verdict: **a plausible
+contributor for phone-sync users with long sessions, not a cause for everyone's 2.8 GB.**
+
+### What the tooling itself turned up (new)
+
+- The standard **artifacts** test is stale: the Session Files button no longer has a `title`
+  (it uses a tooltip and `aria-label`) and the viewer lost `data-artifact-viewer`, so
+  `scenario-artifacts.mjs` cannot open the drawer on current master. My leg works around it.
+- The flood test's helper (`fake-claude.cjs`) now logs bytes written and any error; the
+  earlier "stops at 48 MB" was never the producer.
+- The xterm discard happens inside the app's own listener, so any *other* listener registered
+  after it on the same terminal channel is skipped for those messages (my byte counter counted
+  what the terminal accepted, not what arrived; the main-process counter is the arrival count).
 
 ## 5. What we cannot see today — and what to build
 

@@ -189,15 +189,19 @@ async function legSheet(ctx) {
   put('control', 'perf-control.csv', csv(200, 10));
   put('big', 'perf-big.csv', csv(2000, 100));
   put('control2', 'perf-control2.csv', csv(200, 10));
-  const s = await bound(cdp.evaluate(`window.claude.session.create(${JSON.stringify({ name: 'sheet', cwd: fixture.projects.alpha, skipPermissions: true })}).then(s => ({ id: s.id })).catch(e => ({ error: String(e && e.message || e) }))`), 'create session', 60000);
+  const t = fixture.transcripts?.small ?? null;
+  const s = await bound(cdp.evaluate(`window.claude.session.create(${JSON.stringify({ name: 'sheet', cwd: fixture.projects.alpha, skipPermissions: true, ...(t ? { resumeSessionId: t.sessionId } : {}) })}).then(s => ({ id: s.id })).catch(e => ({ error: String(e && e.message || e) }))`), 'create session', 60000);
   if (!s?.id) throw Error(`session.create failed: ${s?.error}`);
   await bound(waitForSessionReady(cdp), 'ready', 45000);
   await bound(registerArtifacts(cdp, fixture.projects.alpha, s.id, files), 'register', 60000);
-  await cdp.evaluate(`window.__perfArt.clickTitle('Session Files')`);
+  // WHY aria-label: HeaderBar's Session Files button now carries a Tooltip + aria-label and NO title attribute,
+  // so scenario-artifacts' clickTitle('Session Files') no longer finds it (stale selector in that scenario).
+  const opened = await cdp.evaluate(`(async () => { const b = document.querySelector('button[aria-label="Session Files"]'); if (!b) return { ok: false, reason: 'no button[aria-label=Session Files]' }; b.click(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return { ok: true }; })()`);
+  if (!opened.ok) throw Error(`drawer button: ${opened.reason}`);
   await waitFor(cdp, `window.__perfArt.drawerOpen()`, { timeoutMs: 15000, everyMs: 25 });
   await waitFor(cdp, `(() => { const n = window.__perfArt.rowNames(); return !!(n && n.indexOf('perf-control.csv') >= 0); })()`, { timeoutMs: 20000, everyMs: 50 });
   out.files = Object.fromEntries(Object.values(files).map(f => [f.name, f.bytes]));
-  const cells = `document.querySelectorAll('[data-artifact-viewer] td').length`;
+  const cells = `document.querySelectorAll('.drawer-pane table td').length`;
   // control, big, control again (so a first-open warm-up cannot be mistaken for the sheet's size)
   for (const key of ['control', 'big', 'control2']) {
     const f = files[key];
@@ -206,13 +210,15 @@ async function legSheet(ctx) {
       const t0 = Date.now();
       const click = await cdp.evaluate(`window.__perfArt.clickListRow(${JSON.stringify(f.name)})`);
       if (!click.ok) throw Error(`could not open ${f.name}: ${click.reason}`);
-      await waitFor(cdp, `(() => { const v = document.querySelector('[data-artifact-viewer]'); return !!v && v.getAttribute('data-doc-path') === ${JSON.stringify(f.rel)} && ${cells} > 100; })()`, { timeoutMs: 90000, everyMs: 25 });
+      // [data-artifact-viewer] is gone from the current build, so wait on the grid itself: the viewer pads to
+      // max(rows,50) x max(cols,26) cells (CsvView: MIN_ROWS 50, MIN_COLS 26, caps 2000 x 100).
+      await waitFor(cdp, `${cells} === ${key === 'big' ? 200000 : 5200}`, { timeoutMs: 120000, everyMs: 25 });
       return { ok: true, openMs: Date.now() - t0 };
     }, { pingMs: 50 });
     await sleep(1500);
-    const dom = await bound(cdp.evaluate(`({ domNodes: document.querySelectorAll('*').length, cells: ${cells}, tables: document.querySelectorAll('[data-artifact-viewer] table').length })`), 'dom count');
+    const dom = await bound(cdp.evaluate(`({ domNodes: document.querySelectorAll('*').length, cells: ${cells}, tables: document.querySelectorAll('.drawer-pane table').length })`), 'dom count');
     // The cost of ONE click on a cell (it only moves a selection outline).
-    const click = await bound(cdp.evaluate(`(async () => { const td = document.querySelectorAll('[data-artifact-viewer] td')[5]; if (!td) return null; const t0 = performance.now(); td.click(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return Math.round((performance.now() - t0) * 10) / 10; })()`), 'cell click', 60000);
+    const click = await bound(cdp.evaluate(`(async () => { const td = document.querySelectorAll('.drawer-pane table td')[5]; if (!td) return null; const t0 = performance.now(); td.click(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); return Math.round((performance.now() - t0) * 10) / 10; })()`), 'cell click', 60000);
     out.opens.push({ key, file: f.name, bytes: f.bytes, ...r, dom, cellClickToPaintMs: click, pss: rendererPss(app).renderers.totalMb, loadAvg: readFileSync('/proc/loadavg', 'utf8').trim() });
     const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
     if (shot) writeFileSync(`${ctx.out}.sheet-${key}.png`, Buffer.from(shot.data, 'base64'));
