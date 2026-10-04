@@ -400,6 +400,33 @@ function tagSpacing() {
     const n = t.textContent.length - 1; t.style.letterSpacing = ((name - w) / n) + 'px';
   });
 }
+
+// ---- round 25 ----
+// Side by side: the tagline tucked up beside the "y"'s tail (Destin, v24: "moves up a bit so it sits to the right of
+// the bottom stick on the y"). Its left edge starts just past the tail; its top sits at `lift` of the name size
+// below the name's baseline (0 = level with the baseline).
+const TUCK = [['A · Your pick (B)', null, .36], ['B · Tucked beside the "y" tail', .36, .34], ['C · Tucked higher', .44, .32], ['D · Tucked, smaller', .38, .28]];
+// Stacked: the gap between the icon and the name (Destin: "the vertical gap between the two is too big").
+const SGAP = [['A · Before', 10, .44, 10], ['B · Tighter', 2, .34, 2], ['C · Tighter still', -4, .34, 2], ['D · Tightest', -9, .34, 2]];
+function tuck() {
+  const H = 42, S = 36;
+  const hcell = ([n, lift, k]) => `<div class="c"><span class="cl">${n}</span><div style="display:flex;align-items:center;gap:16px">${ICON(64)}<div class="tk" data-lift="${lift}" style="position:relative;display:inline-block;transform:translateY(-2px)">${WM(H)}<div class="tl" style="margin-top:1px">${TG(H * k)}</div></div></div></div>`;
+  const scell = ([n, g, k, g2]) => `<div class="c" style="gap:0"><span class="cl">${n}</span>${ICON(68)}<div style="display:inline-flex;flex-direction:column;align-items:center;margin-top:${g}px">${WM(S)}<div style="margin-top:${g2}px">${TG(S * k)}</div></div></div>`;
+  $(`<div class="tag">Tagline beside the "y" (top) · icon-to-name gap when stacked (bottom)</div><div class="lab" style="position:absolute;right:24px;top:24px">Same tagline style you picked</div>
+    <div class="sheet" style="grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr">${TUCK.map(hcell).join('')}${SGAP.map(scell).join('')}</div>`);
+  const cv = document.createElement('canvas').getContext('2d');
+  document.querySelectorAll('.tk').forEach(b => {
+    const lift = b.dataset.lift; if (lift === 'null') return;
+    const name = b.firstElementChild, tl = b.querySelector('.tl'), fs = parseFloat(getComputedStyle(name).fontSize);
+    const h0 = b.getBoundingClientRect().height, nh = name.getBoundingClientRect().height;
+    cv.font = `600 ${fs}px Outfit`; const yw = cv.measureText('y').width;
+    // WHY nh - fs*(.22 - lift): the name's line box ends ~.22em below its baseline (the descender room);
+    // pulling the tagline up into that room puts it beside the "y" tail instead of under it.
+    tl.style.cssText = `position:absolute;left:${yw * .8}px;top:${nh - fs * lift}px;margin:0`;
+    // keep the block's height, so the name stays where it was in A
+    b.style.height = h0 + 'px';
+  });
+}
 function logoBoard(id) { $(`<div class="tag">${LOGOS[id].t}</div><div class="lab" style="position:absolute;right:24px;top:24px">With every pick applied · not yet signed off</div>${LOGOS[id].build()}`); }
 
 const NEIGH = ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#6366f1', '#64748b'];
@@ -439,7 +466,7 @@ function installerBoard(k) {
     </div>`);
 }
 Promise.all(['600 20px "Outfit"','800 20px "Manrope"','700 20px "Figtree"','700 20px "Urbanist"','600 20px "Lexend"','600 20px "Outfit"','800 20px "M PLUS Rounded 1c"','800 20px "DM Sans"', '700 20px "DM Sans"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"'].map(f => document.fonts.load(f))).then(() => {
-  if (B === 'tagsp') tagSpacing(); else if (B === 'ycba') ba('../src21/out/w5', 'out/w6', 'Initials · E, letters raised', 'Gradient from A, centred higher on the tile'); else if (B === 'ipba') ba('../src21/out/if2', 'out/ip', 'Installer · the box polished', 'Box, flaps and outline now one drawing, one outline colour, one shadow'); else if (B === 'initials2') initials2(); else if (B === 'inst2') inst2(); else if (B === 'taglines') taglines(); else if (B === 'spacing') spacing(); else if (B === 'initials') initials(); else if (B === 'tcol') themeColours(); else if (B === 'inst') installers(); else if (B === 'all') overview(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
+  if (B === 'tuck') tuck(); else if (B === 'tagsp') tagSpacing(); else if (B === 'ycba') ba('../src21/out/w5', 'out/w6', 'Initials · E, letters raised', 'Gradient from A, centred higher on the tile'); else if (B === 'ipba') ba('../src21/out/if2', 'out/ip', 'Installer · the box polished', 'Box, flaps and outline now one drawing, one outline colour, one shadow'); else if (B === 'initials2') initials2(); else if (B === 'inst2') inst2(); else if (B === 'taglines') taglines(); else if (B === 'spacing') spacing(); else if (B === 'initials') initials(); else if (B === 'tcol') themeColours(); else if (B === 'inst') installers(); else if (B === 'all') overview(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
   document.body.dataset.ready = 1;
 });
 </script>

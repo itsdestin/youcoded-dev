@@ -1,0 +1,25 @@
+{
+ "deck": "brand-identity-v24",
+ "started": "2026-10-04T05:52:53.921Z",
+ "submitted": "2026-10-04T05:55:06Z",
+ "cur": 1,
+ "answers": {
+  "HORIZ": {
+   "v": "pick",
+   "pick": "hb",
+   "t": 1791093254889,
+   "note": "could we possibly try a varian or two where the tagline moves up a bit so it sits to the right of the bottom stick on the y? ",
+   "seconds": 81,
+   "theme": "light",
+   "zoom": 1
+  },
+  "STACK": {
+   "note": "a or b. but that wasn't my issue. the vertical gap between the two is too big.",
+   "t": 1791093305525,
+   "v": "other",
+   "seconds": 51,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}
