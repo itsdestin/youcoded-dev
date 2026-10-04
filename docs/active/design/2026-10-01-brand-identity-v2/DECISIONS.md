@@ -3,9 +3,9 @@ status: active
 ---
 # YouCoded brand identity — picks so far (rounds 5–18, 2026-10-01 → 10-02)
 
-**Not fully signed off.** Every line below is a submitted deck answer (`brand-identity-v<N>.answers.json`
-beside this file). Icon, grey version, installer and initials are approved; the logo pages with every
-pick applied are on `brand-identity-v23`. Nothing here has been
+**Every piece approved, one deck at a time** (last answer: `brand-identity-v26`, 2026-10-04). Every line
+below is a submitted deck answer (`brand-identity-v<N>.answers.json` beside this file). Nothing here has
+been applied to the app or the website. Nothing here has been
 applied to the app or the website.
 
 ## Name
@@ -15,6 +15,12 @@ applied to the app or the website.
   sampled-from-icon alternatives were rejected as too dark.)
 - Tagline: "agents for everyone", Outfit 400, lowercase, soft grey. (v20 TAGLINE tc)
 - Icon + name: gap a quarter of the icon's height; name raised 3.5% of the icon's height. (v20 SPACING sd)
+- Side by side with the tagline: tagline at 0.33× the name's size, tucked up beside the "y"'s tail (its top 0.42× the
+  name's size above the bottom of the name's line, starting 0.8× the "y"'s width in), and the whole text block 2px
+  lower than the name-only lockup at a 64px icon. (v24 hb, v25, v26 HORIZ hc; drawn by `round26()` in `src22/boards.html`)
+- Stacked: today's icon-to-name gap; tagline at 0.34× the name's size, 6px tighter under the name than before
+  (−6px margin at a 36px name). (v25 STACK note, v26 STACK sc)
+- Logo pages (colour versions, rules, in use) approved with every pick applied. (v23 L2–L4)
 - In other themes, the name's colours come from that theme's mascot face, toned down. (v20 THEMECOL cc)
 - Initials: plain white glass tile, "yc" in Outfit, only the "y" in the purple-to-pink gradient, letters large and centred high (`w6` in `src22/icons.html`). (v21 w5, v22 yes)
 - Logo set: lockups, colour versions, rules (clear space = half the icon height; minimums icon 16px, lockup 96px,
