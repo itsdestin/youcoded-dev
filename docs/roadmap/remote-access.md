@@ -142,6 +142,30 @@ Filing test: reaching the app from another device — the protocol, the browser 
       Planned: A5 (phone-native work).
       `android` `confirmed` `checked 2026-09-09`
 
+- [ ] Destin's real-phone pass of the whole one-core work is owed before it ships to users. Cover:
+      first connect and how long the white screen lasts; a dropped connection catching up (and
+      sounding at most once however many chats are waiting); the instant buttons (Stop, a
+      permission answer, Close, Send, the mode chip) and the note when a send is lost; the phone,
+      the buddy and the computer's window agreeing on dividers, queued messages, the model name
+      and the "working" dots; a chat running on the computer driven from the phone; and the
+      abilities opened to phones (theme and marketplace browse, install, publish, rate; session
+      flags; clear; skill commands). Replaces the two older phone passes above once it is done.
+      Tests and a throwaway dev instance have covered everything else, never a real phone
+      `remote` `needs-verify` `checked 2026-10-04`
+
+- [ ] The blue "reply ready" dot is remembered per screen: a reply read on the computer still
+      shows blue on the phone, and the other way round. Making "seen" shared through the
+      computer's record was offered on 2026-10-02 and Destin parked it: "leave it for now"
+      `remote` `parked` `checked 2026-10-04`
+
+- [ ] Decided 2026-10-02, unchanged on purpose: a paired phone can still add any folder to the
+      computer's saved-folder list, which makes it browsable from the phone (the list of
+      protected places, such as password and key folders, still applies). Restricting it to
+      folders added on the computer was offered because Destin wants the phone to match the
+      computer; he kept it as it is. Revisit only if a phone is ever seen adding a folder the
+      owner did not expect
+      `remote` `parked` `checked 2026-10-04` `security`
+
 ## standalone
 
 - [ ] Destin 2026-09-09: "remote access just doesn't work sometimes without anything

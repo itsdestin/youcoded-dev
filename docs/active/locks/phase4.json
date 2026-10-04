@@ -1,15 +1,11 @@
 {
   "repo": "youcoded",
-  "phase": "R1–R2",
+  "phase": "R1–R6 (ended)",
   "since": "2026-09-29",
-  "reason": "The remote-access refactor is moving these files onto a new layout; an edit made now cannot be carried across by git and has to be redone by hand.",
-  "paths": [
-    "desktop/src/main/ipc-handlers.ts",
-    "desktop/src/main/remote-server.ts",
-    "desktop/src/main/preload.ts",
-    "desktop/src/renderer/remote-shim.ts"
-  ],
+  "ended": "2026-10-04",
+  "reason": "RETIRED: the one-core refactor (R0–R6) landed as feat/one-core in both repos, so the four door files no longer need freezing. `paths` is empty on purpose — an empty list means no lock. Kept as the schema example for the next refactor; the check in scripts/close-out.sh and its test stay (the test uses its own fixture).",
+  "paths": [],
   "exemptBranches": ["session/simplify-r*"],
   "handoff": "docs/active/handoffs/2026-09-24-one-core-START-HERE.md",
-  "howToEdit": "R1-R2: the four door files. From R3, replace `paths` with the one family being moved (per run). A `paths` array that is empty, or no file at all, means no lock. A path ending in / locks a whole folder."
+  "howToEdit": "To lock again, list the files in `paths` (a path ending in / locks a whole folder). A `paths` array that is empty, or no file at all, means no lock."
 }

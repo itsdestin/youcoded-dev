@@ -104,6 +104,7 @@ decision either way.
 - [x] 2026-10-04 chat-data — Find reports no results for message text loaded but folded offscreen (youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8)
 - [x] 2026-10-04 perf — Switching tabs unnecessarily recalculates unchanged inherited chrome heights, causing a measured full-content switch to take 55–56 ms rather than 15–17 ms (youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8)
 - [x] 2026-10-04 perf — A chat still marked at bottom can leave its latest tool card hidden after content shrinks, even though it correctly repins on growth (youcoded#591 eebcdea314c5d6b42444d991789a2541c405dbb8)
+- [x] 2026-10-04 dev-workspace — The renderer's own copy of the bridge type can drift from the real bridge with every check green: `renderer/hooks/useIpc.ts` hand-writes… (one-core R2: window.claude typed from shared/backend-contract.ts; useIpc.ts hand copy deleted (feat/one-core))
 ## Shipped before 2026-09-01 (old format)
 - `step-guard-row.test.tsx` load flake fixed 2026-09-10: four cases waited for the row to be
   ENABLED and then typed, but React could commit the loaded value into the field after the

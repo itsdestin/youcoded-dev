@@ -12,7 +12,7 @@ topic: Remote access refactor — one assistant core with one feature list that 
 > every phase, remote and Android together. This plan **is** the run list for simplification
 > Phase 4 (`docs/active/plans/2026-09-16-simplification-phases.md`): Phase 4 = R1–R4. It also
 > covers what follows (R5–R6). Held 2026-09-18; **Destin lifted the hold 2026-09-29** ("i want
-> to do the remote stuff"). Still a v1.3.1 blocker. The decisions table at the end is still open. Companion:
+> to do the remote stuff"). **2026-10-04: R0–R6 complete, ready to merge as `feat/one-core` in both repos.** Still a v1.3.1 blocker until merged. The decisions table at the end is still open. Companion:
 > `docs/active/plans/2026-09-24-android-rebuild-plan.md` (phases A0–A6).
 >
 > **Evidence.** Six read-only investigations (I1–I6) on 2026-09-24 against app master `ab15a5858`.
@@ -1021,11 +1021,14 @@ Destin tested the series in a dev instance.
 
 **Parked by Destin (2026-10-02):** the blue "reply ready" dot stays per screen, as designed in R5-3. A reply read on the computer still shows blue on the phone. The option of making "seen" shared through the record was offered, and he said "leave it for now".
 
-**R6 status:** R6-1, R6-2 and R6-3 are built. **The remote refactor R1–R6 is code-complete.**
-What remains:
-- merge prep (rebase onto master, rewrite in-flight branches, the doc sweep);
-- Destin's real-phone pass;
-- Android and desktop shipping together.
+**R6 status (2026-10-04):** R6-1, R6-2 and R6-3 are built. **R0–R6 are complete and ready to merge together as `feat/one-core` in both repos** (stacked from the `session/simplify-*` branches through `simplify-sync-fix6`, with master merged in). Nothing is merged until Destin says so.
+What remains after the merge:
+- Destin's real-phone pass and a real Android device check;
+- re-recording the Claude Code capture corpus on the current version;
+- the Phase 5 tidy-up sync-fix6 listed;
+- archive this plan.
+
+All four are filed in `docs/roadmap/` (remote-access, android-only, claude-code-integration, dev-workspace). The shared blue "seen" dot is parked there too, and `folders:add` is recorded as decided-unchanged. The R0 edit lock (`docs/active/locks/phase4.json`) was retired on 2026-10-04: its `paths` list is empty, which means no lock.
 
 ## What this plan deliberately does not touch
 

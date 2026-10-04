@@ -34,7 +34,7 @@ Rows with the same **When** can run side by side; **Needs first** is the hard de
 | **Now** | A0 | Phone experiments: Node + harness from inside the app; `nodejs-mobile` compared; app size | — | — |
 | **Now** | A1 | Play packaging: every program inside the app, no first-run download, consent screen, `specialUse` property | — | Play |
 | **Now** | — | Skill-settings wipe fix on Android (destroys data; not worth waiting for A3) | — | — |
-| **Now** | R0 | Edit-lock check in `close-out.sh`; owed real-phone passes (Destin's phone, before R3). Branches editing the door files do NOT block — they are rewritten onto the new layout after R2 (Destin, 2026-09-29) | — | — |
+| Done | R0 | Edit-lock check in `close-out.sh` (lock retired 2026-10-04); the owed real-phone pass moved to after the merge (roadmap, remote-access). Branches editing the door files did NOT block — they are rewritten onto the new layout after the merge | — | — |
 | Now, any time | A5 (design only) | Phone default-UI mockup round and other A5 design decks | — | — |
 | After A1 | A6 | Google Play listing (Android decision 6: list right after A1, or wait for A4) | A1 | v1.3.1 roadmap item |
 | 1 | R1 | Hoist the runtime out of the desktop door; `Platform` interface; runtime loads with no Electron | R0 | v1.3.1 |
@@ -45,19 +45,24 @@ Rows with the same **When** can run side by side; **Needs first** is the hard de
 | 6 | R6 · A4 | R6: native sessions from the phone, instant buttons, more features over remote. A4: Node owns the phone's socket | R5 (R6); A3 + R5 (A4) | — |
 | 7 | A5 (build) | Phone-native features, each after its design round | A4 | — |
 
-**The edit lock.** During R1–R2 nothing merges into
-`desktop/src/main/ipc-handlers.ts` or `desktop/src/main/remote-server.ts`. From R3 the lock
-covers only the family being moved; once a family is in `main/ipc/<family>.ts`, feature work
-edits that file instead. Branches already open when R1 starts are rewritten onto the new
-layout after R2 (Destin, 2026-09-29). R0 makes the lock a check rather than a promise: `docs/active/locks/phase4.json`, read by `scripts/close-out.sh`.
+**The edit lock (retired 2026-10-04).** It froze the two door files during R1–R2 and then one
+family at a time during R3. R0–R6 are complete and land together, so `docs/active/locks/phase4.json`
+now has an empty `paths` list (an empty list means no lock; the file is kept as the schema example,
+and the check in `scripts/close-out.sh` stays). Branches that still edit the old door files are
+rewritten onto the new layout (`main/ipc/<family>.ts` and `shared/backend-contract.ts`) after the merge.
 
-**Status (2026-10-01).** Destin lifted the Phase 4 hold on 2026-09-29.
-- **Built:** R0 to R5 and R3-SEC, as stacked app branches `session/simplify-r1` …
-  `session/simplify-r5-4b`. **None of them is merged; merging waits for Destin.** Each run's
-  log is in the plan's R3/R4/R5 sections.
-- **Next:** R6.
-- **Release:** Phase 4 (R1–R4) and Phase 5 stay v1.3.1 blockers. Phase 5 still waits on the
-  native-session-host test split.
+**Status (2026-10-04).** **R0–R6 are complete and ready to merge together as `feat/one-core` in
+both repos** (app `itsdestin/youcoded`, workspace `youcoded-dev`), stacked from the `session/simplify-*`
+branches through `simplify-sync-fix6`, with master merged in. **Nothing is merged until Destin says
+so.** Each run's log is in the plan's R3/R4/R5/R6 sections.
+- **Owed after the merge, not before:** Destin's real-phone pass; a real Android device check;
+  re-recording the Claude Code capture corpus on the current version; the Phase 5 tidy-up the last
+  run listed (all four are filed in `docs/roadmap/`). Parked by Destin: the shared blue "seen" dot;
+  `folders:add` stays as it is.
+- **Next:** archive the plan after the merge, then the Android rebuild's A-phases (A0 and A1 can
+  start any time; A2 needs R3's last group, which is done).
+- **Release:** Phase 4 (R1–R4) is part of this merge. Phase 5 stays a v1.3.1 blocker and still
+  waits on the native-session-host test split.
 
 ## Open decisions
 

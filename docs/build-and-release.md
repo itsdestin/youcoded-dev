@@ -148,7 +148,7 @@ what an official release is for, and 1.3.0 (2026-09-20) is the one that moves v1
 and those testers forward.** Betas run on the `1.3.1-beta` line from here: the beta line is
 always one patch AHEAD of the last release, so a beta is never offered a downgrade and the
 next release ends the run.
-<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "releases/latest"} -->
+<!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "releases/latest"} -->
 
 **Wait on the artifact, not on the run's status.** `gh run view --json status` was observed
 returning `completed/success` for a run still `in_progress` (2026-09-03), and acting on it
@@ -215,7 +215,7 @@ computer's installer, because one tag starts the Android and desktop workflows s
 release can exist for a while with only some of its files. v1.2.4 IS offered 1.3.0, but its Update
 button predates the allow-listed download host, fails, and offers "Open in browser instead".
 <!-- verify: {"test": "youcoded/desktop/tests/update-release-status.test.ts"} -->
-<!-- verify: {"path": "youcoded/desktop/src/main/ipc-handlers.ts", "contains": "readReleaseStatus"} -->
+<!-- verify: {"path": "youcoded/desktop/src/main/update-release-status.ts", "contains": "readReleaseStatus"} -->
 
 **Which releases the check can SEE is a separate question from how it orders them (2026-09-13).**
 GitHub's `/releases/latest` returns the newest *stable* release and omits pre-releases entirely, so

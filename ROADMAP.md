@@ -76,17 +76,17 @@ Target: `v1.3.1`
 | [perf](docs/roadmap/perf.md) — app responsiveness and honest performance measurement | 42 | 19 | 3 | 1 |
 | [files](docs/roadmap/files.md) — documents the user opens, edits or organises | 38 | 10 | 1 | 9 |
 | [user-interface](docs/roadmap/user-interface.md) — shared primitives, chrome, layout, copy | 35 | 13 | 2 | 5 |
-| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 26 | 5 | 1 | 3 |
+| [remote-access](docs/roadmap/remote-access.md) — reaching the app from another device | 29 | 6 | 1 | 5 |
 | [other-features](docs/roadmap/other-features.md) — real features too small for their own area | 24 | 5 | 6 | 7 |
 | [sync](docs/roadmap/sync.md) — moving your stuff between devices | 23 | 9 | 7 | 4 |
 | [chat-data](docs/roadmap/chat-data.md) — everything kept about a chat | 22 | 7 | 2 | 2 |
 | [marketplace](docs/roadmap/marketplace.md) — finding, installing and rating plugins and themes | 18 | 5 | 0 | 5 |
-| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 14 | 4 | 1 | 5 |
+| [claude-code-integration](docs/roadmap/claude-code-integration.md) — the app steering Claude Code's terminal | 15 | 5 | 1 | 5 |
 | [local-models](docs/roadmap/local-models.md) — getting a model onto this machine and serving it | 11 | 1 | 3 | 2 |
 | [operations](docs/roadmap/operations.md) — running YouCoded the project: website, marketing, legal and community | 10 | 2 | 3 | 1 |
 | [themes](docs/roadmap/themes.md) — how the app looks under a theme | 8 | 3 | 0 | 3 |
+| [android-only](docs/roadmap/android-only.md) — the Android app | 2 | 1 | 0 | 0 |
 | [games](docs/roadmap/games.md) — the arcade | 2 | 1 | 0 | 1 |
-| [android-only](docs/roadmap/android-only.md) — the Android app | 1 | 0 | 0 | 0 |
 
 ## Filing an item
 Pick the file under `docs/roadmap/` whose `Filing test:` line says yes. Write what you saw,

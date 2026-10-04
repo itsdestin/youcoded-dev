@@ -91,3 +91,11 @@ chat-data).
       pass along what the protection needs. It switches on by itself once Android's Claude Code
       is updated (found 2026-09-23)
       `android` `confirmed` `checked 2026-09-23`
+
+- [ ] The recorded Claude Code screens the app's tests replay (the stuck banner, setup and
+      usage-limit cards, the "Switch model?" pop-up, the mode footer, "Conversation cleared")
+      were captured on Claude Code 2.1.281 and have not been re-recorded since. The app now reads
+      these screens once on the computer for every device, so a reworded prompt in a newer
+      Claude Code would pass the tests and still break the real thing. Re-record the set on the
+      current version and note the version beside it
+      `desktop` `needs-verify` `checked 2026-10-04` `regression`
