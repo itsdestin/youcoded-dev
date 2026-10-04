@@ -146,6 +146,21 @@ changed_files() {
 
 mapfile -t CHANGED < <(changed_files | sort -u | grep '^desktop/' || true)
 
+# ---------- someone else changing the same files ----------
+#
+# WHY (2026-10-03 wrap-up): two sessions built the same Windows setup change in parallel; one
+# merged first and the other found out only at merge time — hours of duplicate work and a
+# rebuilt branch. Warn as soon as master has new commits touching files this branch changed.
+# Advisory only: it never fails the run, and a failed fetch (offline) just skips it.
+if [[ "$BASE" == "origin/master" && ${#CHANGED[@]} -gt 0 && -n "${CHANGED[0]}" ]]; then
+  timeout 15 git -C "$CHECKOUT" fetch -q origin master 2>/dev/null || true
+  OVERLAP="$(git -C "$CHECKOUT" log --oneline --no-merges "HEAD..origin/master" -- "${CHANGED[@]}" 2>/dev/null | head -8)"
+  if [[ -n "$OVERLAP" ]]; then
+    echo "NOTE  master has new commits touching files this branch changed — merge it in and check for duplicate work:"
+    sed 's/^/        /' <<<"$OVERLAP"
+  fi
+fi
+
 # Files whose change invalidates the affected-test mapping itself. `vitest
 # related` walks the import graph from a source file; it cannot know that
 # editing vitest.config.ts or a shared mock changes the meaning of every test.
