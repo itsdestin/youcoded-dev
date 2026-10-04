@@ -16,6 +16,14 @@ note: |
 files:
   - "**/src/renderer/**/*.tsx"
   - "**/fixtures/iframe-sandbox.tsx"
+# Reviewed exception (Office design stage, 2026-09-28): the Office editor frame's
+# src is the editor add-on's OWN origin (office:// packaged, 127.0.0.1:4717 in the
+# workbench) — never the app's and never srcDoc — so allow-same-origin grants the
+# editor its own storage and workers, not the app's. Previews of arbitrary files
+# stay sealed. Flagged for the Office code review; revisit if EditorFrame ever
+# loads app-origin content.
+ignores:
+  - "**/src/renderer/components/office/EditorFrame.tsx"
 rule:
   kind: jsx_attribute
   has:

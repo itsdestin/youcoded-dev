@@ -1,0 +1,47 @@
+{
+  "title": "Office — which editors to build on, after the Euro-Office test",
+  "key": "office-base",
+  "out": "office-base.questions.html",
+  "stage": "ask",
+  "steps": [
+    {
+      "id": "Q-base-final",
+      "words": true,
+      "surface": "Office",
+      "path": "The editors inside the Office download",
+      "headline": "After the test, which editors should Office be built on?",
+      "today": "You asked to test Euro-Office first. Your six files came back from Euro-Office's and OnlyOffice's file translators identically, with nothing lost in either.",
+      "problem": "The difference is not quality: OnlyOffice requires its logo inside the editor and is a large, current team; Euro-Office drops the logo rule but is smaller, one version behind, and OnlyOffice disputes its right to drop it.",
+      "proposal": "Pick the base. Both use the same settings and add-on system, so switching later means a re-test, not a rebuild.",
+      "options": [
+        {
+          "id": "euro",
+          "label": "Euro-Office",
+          "pros": [
+            "No outside logo: the editor can look fully like YouCoded.",
+            "An offline Euro-Office app built the way ours would be already exists to learn from.",
+            "Backed by Nextcloud, IONOS and other European companies."
+          ],
+          "cons": [
+            "About a dozen active people, versus OnlyOffice's much larger team.",
+            "One version behind; new OnlyOffice features may arrive months later, or not at all.",
+            "OnlyOffice says the logo removal breaks its licence; the licence's own stewards disagree. Worth the lawyer check before launch."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "onlyoffice",
+          "label": "OnlyOffice",
+          "pros": [
+            "The newest version, from the team that wrote nearly all of the code.",
+            "No licence dispute hanging over it."
+          ],
+          "cons": [
+            "A small OnlyOffice logo must stay visible in every open document.",
+            "The company has been hostile to projects that change its branding."
+          ]
+        }
+      ]
+    }
+  ]
+}

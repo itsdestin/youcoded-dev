@@ -1,0 +1,542 @@
+[
+  {
+    "name": "office/first-run",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/first-run/midnight.png",
+    "ms": 849,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/first-run",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/first-run/creme.png",
+    "ms": 856,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/first-run",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/first-run/dark.png",
+    "ms": 868,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/first-run",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/first-run/light.png",
+    "ms": 909,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/first-run",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/first-run/meadow-mist.png",
+    "ms": 1534,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/home",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/home/dark.png",
+    "ms": 1598,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/home",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/home/light.png",
+    "ms": 1616,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/home",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/home/creme.png",
+    "ms": 1685,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/first-run",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/first-run/halftone-dimension.png",
+    "ms": 2053,
+    "errors": [],
+    "panel": {
+      "x": 257,
+      "y": 99,
+      "w": 1174,
+      "h": 792
+    }
+  },
+  {
+    "name": "office/home",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/home/midnight.png",
+    "ms": 2260,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/home",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/home/halftone-dimension.png",
+    "ms": 2582,
+    "errors": [],
+    "panel": {
+      "x": 257,
+      "y": 99,
+      "w": 1174,
+      "h": 792
+    }
+  },
+  {
+    "name": "office/home",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/home/meadow-mist.png",
+    "ms": 2653,
+    "errors": [],
+    "panel": {
+      "x": 260,
+      "y": 84,
+      "w": 1170,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/versions",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/versions/midnight.png",
+    "ms": 1324,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 252,
+      "w": 420,
+      "h": 396
+    }
+  },
+  {
+    "name": "office/versions",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/versions/light.png",
+    "ms": 1198,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 252,
+      "w": 420,
+      "h": 396
+    }
+  },
+  {
+    "name": "office/versions",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/versions/creme.png",
+    "ms": 1091,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 252,
+      "w": 420,
+      "h": 396
+    }
+  },
+  {
+    "name": "office/versions",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/versions/dark.png",
+    "ms": 1276,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 252,
+      "w": 420,
+      "h": 396
+    }
+  },
+  {
+    "name": "office/document",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/document/midnight.png",
+    "ms": 5539,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/versions",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/versions/halftone-dimension.png",
+    "ms": 3007,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 252,
+      "w": 420,
+      "h": 396
+    }
+  },
+  {
+    "name": "office/spreadsheet",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/spreadsheet/dark.png",
+    "ms": 4608,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/spreadsheet",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/spreadsheet/creme.png",
+    "ms": 4903,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/versions",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/versions/meadow-mist.png",
+    "ms": 4310,
+    "errors": [],
+    "panel": {
+      "x": 510,
+      "y": 260,
+      "w": 420,
+      "h": 380
+    }
+  },
+  {
+    "name": "office/spreadsheet",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/spreadsheet/midnight.png",
+    "ms": 6301,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/spreadsheet",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/spreadsheet/light.png",
+    "ms": 6708,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/spreadsheet",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/spreadsheet/halftone-dimension.png",
+    "ms": 6739,
+    "errors": [],
+    "panel": {
+      "x": 9,
+      "y": 99,
+      "w": 1422,
+      "h": 792
+    }
+  },
+  {
+    "name": "office/document",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/document/light.png",
+    "ms": 8360,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/document",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/document/halftone-dimension.png",
+    "ms": 8688,
+    "errors": [],
+    "panel": {
+      "x": 9,
+      "y": 99,
+      "w": 1422,
+      "h": 792
+    }
+  },
+  {
+    "name": "office/document",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/document/meadow-mist.png",
+    "ms": 8708,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/spreadsheet",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/spreadsheet/meadow-mist.png",
+    "ms": 8105,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/document",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/document/dark.png",
+    "ms": 9186,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "office/document",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/office/document/creme.png",
+    "ms": 9824,
+    "errors": [],
+    "panel": {
+      "x": 10,
+      "y": 84,
+      "w": 1420,
+      "h": 806
+    }
+  },
+  {
+    "name": "chat/files/edit/a-sent-plan",
+    "theme": "midnight",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/chat/files/edit/a-sent-plan/midnight.png",
+    "ms": 6508,
+    "errors": [],
+    "panel": {
+      "x": 950,
+      "y": 121,
+      "w": 480,
+      "h": 643
+    }
+  },
+  {
+    "name": "chat/files/edit/a-sent-plan",
+    "theme": "light",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/chat/files/edit/a-sent-plan/light.png",
+    "ms": 6327,
+    "errors": [],
+    "panel": {
+      "x": 950,
+      "y": 121,
+      "w": 480,
+      "h": 643
+    }
+  },
+  {
+    "name": "chat/files/edit/a-sent-plan",
+    "theme": "halftone-dimension",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/chat/files/edit/a-sent-plan/halftone-dimension.png",
+    "ms": 6433,
+    "errors": [],
+    "panel": {
+      "x": 953,
+      "y": 134,
+      "w": 480,
+      "h": 607
+    }
+  },
+  {
+    "name": "chat/files/edit/a-sent-plan",
+    "theme": "dark",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/chat/files/edit/a-sent-plan/dark.png",
+    "ms": 5698,
+    "errors": [],
+    "panel": {
+      "x": 950,
+      "y": 121,
+      "w": 480,
+      "h": 643
+    }
+  },
+  {
+    "name": "chat/files/edit/a-sent-plan",
+    "theme": "creme",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/chat/files/edit/a-sent-plan/creme.png",
+    "ms": 5946,
+    "errors": [],
+    "panel": {
+      "x": 950,
+      "y": 121,
+      "w": 480,
+      "h": 643
+    }
+  },
+  {
+    "name": "chat/files/edit/a-sent-plan",
+    "theme": "meadow-mist",
+    "ok": true,
+    "reason": "",
+    "file": "/home/destin/youcoded-dev/worktrees/sessions/office-suite-investigation/docs/active/design/2026-09-27-office/runs/after/chat/files/edit/a-sent-plan/meadow-mist.png",
+    "ms": 7174,
+    "errors": [],
+    "panel": {
+      "x": 950,
+      "y": 121,
+      "w": 480,
+      "h": 643
+    }
+  }
+]

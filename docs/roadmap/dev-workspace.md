@@ -5,6 +5,12 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] The Office add-on's early editor script (the one that silences external-link checks and
+      peer-to-peer connections) is only tested for what it blocks, never for leaving the
+      editor's ordinary features working (the add-on's test file for it was read 2026-10-02 and
+      still has no test of that kind)
+      `n/a` `needs-verify` `checked 2026-10-02`
+
 - [ ] The review-page before-and-after check (`review-cards.py selfie`) renders a fixed sample
       deck that has no live step shown on its own, so a change to how those steps look shows
       "nothing moved" on every page (2026-09-27: 18 empty pages sent to Destin for the Meadow Mist
@@ -340,6 +346,25 @@ seen-on is always n/a here.
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
 ## rigs
+
+- [ ] A dev instance writes its pinned-pages list (Office is one of the pages) into the real
+      ~/YouCoded/Personal folder, under the dev profile's own device id, so a stray pin file for
+      a device that is not real can sync to the other devices. The real app's own pin file was
+      not touched (checked 2026-10-02). Office's Recent list and kept versions do follow the dev
+      profile's own folder, so they are not part of this
+      `desktop` `confirmed` `checked 2026-10-02`
+
+- [ ] Two screenshot runs of Office screens from the same checkout at the same time share the
+      one Office editor server: the second run reuses it and never stops it, the first stops it
+      when it finishes, so the second run's pictures can fail (read in the shoot script
+      2026-10-02)
+      `n/a` `confirmed` `checked 2026-10-02`
+
+- [ ] The VM helper's `load` step is rough for Mac: `mac load run:<id>` answered "nothing
+      matched" even though the build's artifact held an x64 installer (it only keeps files named
+      like `YouCoded-Installer-*-x64.dmg`), and `mac load` fails on a file name with spaces
+      (the download address is not escaped). Found 2026-10-02 loading build 36958200637
+      `n/a` `needs-verify` `checked 2026-10-02`
 
 - [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
       ChatGPT sign-in that never renews, so the real app is never signed out). Destin
@@ -867,6 +892,14 @@ seen-on is always n/a here.
       `n/a` `confirmed` `checked 2026-09-03`
 
 ## release
+
+- [ ] The public Office add-on repo (itsdestin/youcoded-office) once held a personal budget memo
+      of Destin's as a test file. Its history was rewritten and the current files and the
+      v0.1.0 tag now hold a neutral "Test memo" (checked 2026-10-02), but GitHub can keep
+      serving the old commit by its address, and anyone who cloned early still has it, until
+      GitHub support purges it. A support request is not recorded as made, and whether the old
+      address still loads was not tested
+      `n/a` `needs-verify` `checked 2026-10-02` `security`
 
 - [ ] A scheduled check that every id in the model switcher's recommended list
       (`desktop/src/shared/recommended-models.ts`, added 2026-09-20) is still live on its
