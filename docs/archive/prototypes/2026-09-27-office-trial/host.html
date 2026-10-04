@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Stand-in YouCoded host</title>
+<style>
+  html,body{margin:0;height:100%;background:#111;font-family:sans-serif}
+  #bar{height:36px;display:flex;align-items:center;padding:0 12px;color:#ccc;font-size:13px;background:#1b1b1f}
+  iframe{display:block;width:100%;height:calc(100% - 36px);border:0}
+</style>
+</head>
+<body>
+<div id="bar">Stand-in host (different origin from the editor, like the app's sealed frame)</div>
+<iframe id="ed"></iframe>
+<script>
+  // The editor lives on another origin; everything crosses by postMessage only.
+  const EDITOR = new URL(location.href).searchParams.get('editor') || 'http://127.0.0.1:4717';
+  const frame = document.getElementById('ed');
+  window.__events = [];
+  window.__pending = {};
+  window.addEventListener('message', (e) => {
+    if (e.origin !== EDITOR) return;
+    const d = e.data || {};
+    if (!d.type || !String(d.type).startsWith('document:')) return;
+    window.__events.push({ t: performance.now(), type: d.type, id: d.id, msg: d.payload && d.payload.message });
+    if (d.id && window.__pending[d.id]) { window.__pending[d.id](d); delete window.__pending[d.id]; }
+  });
+  window.send = (type, payload) => new Promise((resolve) => {
+    const id = Math.random().toString(16).slice(2);
+    window.__pending[id] = resolve;
+    frame.contentWindow.postMessage({ id, type, payload }, EDITOR);
+  });
+  window.__t0 = performance.now();
+  frame.src = EDITOR + '/editor?embed=1&embedOrigin=' + encodeURIComponent(location.origin) + (location.search.includes('lang=') ? '' : '&lang=en');
+</script>
+</body>
+</html>

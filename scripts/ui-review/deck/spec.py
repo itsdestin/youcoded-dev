@@ -21,8 +21,10 @@ def is_shoot_crop_name(name):
     unrecognized name containing "/" is presumed to be one. Real existence is checked later,
     against the run's own manifest (deck/crops.py, which cannot be imported here — it imports
     FROM this module); this is only the fast, structural check that still catches a plain typo
-    of a legacy crop name at validate() time, same as before shoot existed."""
-    return '/' in (name or '')
+    of a legacy crop name at validate() time, same as before shoot existed.
+    A "#" marks one too (2026-10-02): a STATE of a screen (`first-run#authenticate`) needs no
+    "/", and every first-run screen was refused as an unknown crop before this."""
+    return '/' in (name or '') or '#' in (name or '')
 # Whole-word, case-insensitive. "px" and numbers are fine — measurements are wanted.
 # The marker a GENERATOR leaves where a session has to write the copy. Any field still
 # carrying it blocks the build (validate) — `selfie` writes the pictures, but only the session

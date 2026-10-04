@@ -109,6 +109,18 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
 - [ ] Fresh perf worktrees re-download ~490 MB of fixture assets when a shared copy is already present, costing the run before quiet-machine measurement begins. Reuse a copy or hardlink without mutating shared dependencies; the unrelated dev-stop child-process labeling remains in dev-workspace
       `n/a` `confirmed` `checked 2026-09-27` `performance`
 
+- [ ] Restoring a kept version of an open Office document copies all its pictures even when nobody kept typing in the old version, slowing picture-heavy restores. This is the cost question; missing-picture and concurrent-save correctness remain in files
+      `files-panel` `desktop` `confirmed` `checked 2026-10-02` `performance`
+
+- [ ] If one project's file list hangs on the Office page, pressing New can occupy both file-list slots, blocking the next project's list until the first finishes
+      `files-panel` `desktop` `needs-verify` `checked 2026-10-02` `performance`
+
+- [ ] On a big Excel workbook (a 20 MB test sheet), typing freezes for about 2 seconds at each automatic save. Big documents delay autosave 3–20 seconds to reduce typing stutter while showing Edited; the existing recovery journal is intended to replay changes after a crash. Recheck the remaining freeze without trading away recovery
+      `files-panel` `desktop` `needs-verify` `checked 2026-10-02` `performance`
+
+- [ ] Every open Office document keeps its editor loaded, so memory grows with each tab left open. The designed 20-minute sleeping policy (R8) was deferred and never built; the asleep flag is currently only set by screenshots
+      `files-panel` `desktop` `confirmed` `checked 2026-10-02` `performance`
+
 - [ ] Other card grids may repeat the per-tile blur cost previously found in the command drawer; the files grid's backdrop has not been checked, so this is a measurement question, not a confirmed GPU defect
       `all` `needs-verify` `checked 2026-07-31` `performance`
 

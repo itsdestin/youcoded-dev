@@ -1,0 +1,202 @@
+{
+  "title": "Office — what to finish before it merges",
+  "key": "office-next-questions",
+  "out": "office-next.questions.html",
+  "stage": "ask",
+  "themes": ["midnight", "light"],
+  "steps": [
+    {
+      "id": "S-1",
+      "words": true,
+      "surface": "Office",
+      "path": "The Office work as a whole",
+      "headline": "First step: bring the Office work up to date with today's app, before fixing anything else.",
+      "changed": "The Office work was built on an older copy of the app. The app has since gained 142 changes, including your comments work. Nine spots were changed on both sides (mostly where Office's Edit/Done buttons and your Comments button sit next to each other) and have to be joined by hand.",
+      "notice": "Nothing visible changes yet. Every fix after this is built and tested on the app as it is today, so nothing has to be redone later.",
+      "yes": "Do this first",
+      "no": "Not first"
+    },
+    {
+      "id": "Q-1",
+      "words": true,
+      "surface": "Comments in Word and Excel files",
+      "path": "A .docx or .xlsx file, open in reading view or in Office",
+      "headline": "How should comments work on a Word or Excel file that is open in Office?",
+      "today": "Two separate comment systems now exist for the same files. Your new app comments show in reading view, write real Word/Excel comments into the file, and the assistant can read and answer them. The Office editor has its own comments panel, in its own style, that reads and writes those same comments.",
+      "problem": "You would see two different-looking comment panels for one file. Worse: if the assistant answers a comment while you are typing in Office, Office's next autosave writes the file from its own copy and can wipe out the assistant's answer.",
+      "proposal": "Three ways to make it one consistent, safe experience. Each one also stops the wipe-out.",
+      "options": [
+        {
+          "id": "restyle-office-panel",
+          "label": "Restyle Office's panel",
+          "summary": "Office keeps its own comments panel while you edit, restyled to match the app's comments (same cards, colors, fonts, buttons). While a file is open in Office, anything the assistant writes waits and is added when you close it.",
+          "pros": [
+            "Comments keep working while you edit — add, reply, resolve, all in place.",
+            "Looks like the rest of the app, in every theme.",
+            "Moderate work, and it doesn't touch your new comments feature."
+          ],
+          "cons": [
+            "It is a close match, not the identical panel — small differences may remain.",
+            "The assistant's replies show up only after you close the file in Office."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "app-panel-in-office",
+          "label": "Use the app's panel",
+          "summary": "Hide Office's panel and show the app's own comments panel beside the Office editor, passing each comment into the editor directly instead of writing the file.",
+          "pros": [
+            "Exactly the same comments everywhere — one look, one set of buttons.",
+            "The assistant's replies appear right away, even while you type."
+          ],
+          "cons": [
+            "The most work by far, and the riskiest: the app's panel places comments by the text it shows in reading view, and Office tracks text its own way. Mismatches could put a comment on the wrong words.",
+            "Would delay merging noticeably."
+          ]
+        },
+        {
+          "id": "reading-view-only",
+          "label": "Comments in reading view only",
+          "summary": "Hide comments while editing in Office. You see and write comments in reading view; Office only edits the text.",
+          "pros": [
+            "Simplest and safest; one comments look, ever.",
+            "Quickest to finish."
+          ],
+          "cons": [
+            "You can't see or add comments while editing — you'd switch back to reading view for that.",
+            "Comments you already had in the file are invisible while you edit around them."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-2",
+      "words": true,
+      "pick": "several",
+      "surface": "Office editor",
+      "path": "The editor's menus: Insert, File, and the rest",
+      "headline": "Which broken or missing editor features should be fixed before this merges?",
+      "today": "Typing, formatting, tables, styles and saving work. Several features do nothing when pressed, and some were hidden in the last polish round rather than fixed.",
+      "problem": "A button that silently does nothing feels broken and makes the whole editor feel unreliable.",
+      "proposal": "Pick every one to fix before merging. I'd suggest all of them — each is a feature people expect from Word or Excel. Anything you leave unpicked stays hidden and goes on the roadmap.",
+      "options": [
+        {
+          "id": "pictures",
+          "label": "Insert pictures",
+          "summary": "Picture from a file (today pressing it does nothing) and picture from a web address or folder (today it never appears).",
+          "pros": ["The most-used Insert item; this is what you ran into."],
+          "cons": ["None beyond the work — about the size of one normal task."]
+        },
+        {
+          "id": "save-as",
+          "label": "Save As / Export / PDF",
+          "summary": "Save a copy under a new name or type, including PDF. Today these are hidden, and the keyboard shortcut for Save As fails silently.",
+          "pros": ["Turning a document into a PDF is a very common need."],
+          "cons": ["Needs the app's own save window; about one task of work."]
+        },
+        {
+          "id": "print",
+          "label": "Print",
+          "summary": "Today hidden. Would open your computer's normal print window.",
+          "pros": ["Expected in any document editor."],
+          "cons": ["Depends on Save As / PDF above, so it comes after it."]
+        },
+        {
+          "id": "insert-document",
+          "label": "Insert another file",
+          "summary": "Pull the contents of another document or spreadsheet into this one. Today it does nothing.",
+          "pros": ["Completes the Insert menu."],
+          "cons": ["Rarely used; could reasonably wait."]
+        },
+        {
+          "id": "remember-settings",
+          "label": "Remember editor settings",
+          "summary": "File → Advanced Settings choices (units, spell check, etc.) are forgotten when the file closes.",
+          "pros": ["Your choices stick, like every other app setting."],
+          "cons": ["Small, low-risk work."]
+        },
+        {
+          "id": "menu-walk",
+          "label": "Check every button",
+          "summary": "Press every item on every tab in all three editors, in a dev window, and fix or hide whatever doesn't work.",
+          "pros": ["The only way to be sure nothing else is silently broken."],
+          "cons": ["Takes time; may turn up more to fix."]
+        }
+      ]
+    },
+    {
+      "id": "Q-3",
+      "words": true,
+      "surface": "Closing and quitting the app",
+      "path": "Closing a window, quitting, or restarting YouCoded",
+      "headline": "What should happen to the new close-and-quit safety work, which now affects the whole app?",
+      "today": "To make sure no Office typing is ever lost, the build added a lot of safety around closing and quitting: an \"unsaved files\" prompt at quit (for Office and the app's text editor), an escape for a frozen window, and a forced exit if quitting hangs. It took 15 fix rounds and every review came back clean.",
+      "problem": "It is large, and it changes how closing and quitting work for everyone — even people who never open Office. Big, tangled code is where future bugs hide.",
+      "proposal": "Three ways forward.",
+      "options": [
+        {
+          "id": "review-then-trim",
+          "label": "Review, then trim",
+          "summary": "I read it through, then show you what I'd cut and what each cut would change for you, before touching it.",
+          "pros": [
+            "You decide with real facts, not guesses.",
+            "Keeps the protection that matters; removes what doesn't earn its place."
+          ],
+          "cons": ["Takes a review pass before the merge."],
+          "recommended": true
+        },
+        {
+          "id": "keep",
+          "label": "Keep as is",
+          "pros": ["Tested and reviewed; no risk of breaking something that works now."],
+          "cons": ["More code to maintain; harder for future fixes to get right."]
+        },
+        {
+          "id": "office-only",
+          "label": "Cut back to Office only",
+          "pros": ["The smallest change to the rest of the app."],
+          "cons": [
+            "Loses the new protection for the app's text editor and frozen windows.",
+            "Re-opening 15 rounds of tested work risks new bugs."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Q-4",
+      "words": true,
+      "surface": "Office on Mac and Windows",
+      "path": "The app's installers for Mac, Windows and Linux",
+      "headline": "Should Office work on Mac and Windows before this merges?",
+      "today": "The Office editor has only been built for Linux on normal (Intel/AMD) computers. Building the Mac or Windows app with Office included fails today.",
+      "problem": "Merging as is would break the next release for everyone not on that kind of Linux.",
+      "proposal": "Two ways to keep releases working.",
+      "options": [
+        {
+          "id": "build-all",
+          "label": "Build all platforms first",
+          "summary": "Add Mac, Windows and ARM Linux editor builds before merging.",
+          "pros": [
+            "Office ships to everyone at once.",
+            "No temporary \"not on your computer yet\" state to explain."
+          ],
+          "cons": [
+            "More time before merging.",
+            "I can only test Linux here; Mac and Windows would be checked by the automatic builds, and ideally by you on a Windows or Mac machine."
+          ],
+          "recommended": true
+        },
+        {
+          "id": "linux-first",
+          "label": "Merge, Linux only for now",
+          "summary": "Releases on Mac and Windows build without Office; Office files there open with the default app, as today.",
+          "pros": ["Merges sooner."],
+          "cons": [
+            "Mac and Windows users don't get Office yet.",
+            "A second round of work later to add them."
+          ]
+        }
+      ]
+    }
+  ]
+}

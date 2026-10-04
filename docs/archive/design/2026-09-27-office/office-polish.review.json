@@ -1,0 +1,60 @@
+{
+  "title": "Office — look fixes from your try-out",
+  "key": "office-polish",
+  "out": "office-polish.review.html",
+  "images": "images/office-polish.review",
+  "runs": { "before": "polish-runs/before", "after": "polish-runs/after" },
+  "themes": ["midnight", "meadow-mist"],
+  "steps": [
+    {
+      "id": "P-styles",
+      "surface": "Office",
+      "path": "A spreadsheet → Home → the cell styles gallery, opened",
+      "crop": "polish/sheet-cell-styles-open",
+      "headline": "Cell styles are clean single shapes: no more rounded pills overlapping square outlines.",
+      "changed": "Rounded corners now go only on controls (buttons, fields, menus, dialogs). Style and colour swatches keep one shape, with outline and fill together.",
+      "notice": "The gallery reads like a neat grid instead of doubled borders.",
+      "risk": "Swatches are squarer than the rest of your rounded theme, on purpose."
+    },
+    {
+      "id": "P-file",
+      "surface": "Office",
+      "path": "A document → the File tab",
+      "crop": "polish/doc-file",
+      "headline": "The File tab shows only what works here (Back, Save, Info, Advanced Settings), styled like YouCoded.",
+      "changed": "Items that need the internet, that YouCoded already does elsewhere (open, recent, versions, close), or that the app can't carry out (Save as, Export, Print) are hidden in all three editors.",
+      "notice": "No more options that do nothing when clicked.",
+      "risk": "Save as / Export to PDF aren't available yet; Ctrl+Shift+S still does nothing. Changes in Advanced Settings last only while that document is open."
+    },
+    {
+      "id": "P-menus",
+      "surface": "Office",
+      "path": "A document → right-click in the text",
+      "crop": "polish/doc-context-menu",
+      "headline": "Menus stand out from the page and toolbars, with a visible edge and shadow.",
+      "changed": "Toolbars, side panels, menus and the area behind the page now use YouCoded's separate surface shades, with thin borders between them.",
+      "notice": "It's easier to tell where the toolbar ends and the document area starts.",
+      "risk": ""
+    },
+    {
+      "id": "P-scroll",
+      "surface": "Office",
+      "path": "A long document, scrolled",
+      "crop": "polish/doc-scrolled",
+      "headline": "Scrollbars are slim and themed, like the rest of YouCoded.",
+      "changed": "Every scrollbar in the editor uses your theme's scrollbar colours, including the ones the editor draws itself.",
+      "notice": "The scrollbars match the app instead of looking like plain grey defaults.",
+      "risk": "The document scrollbars no longer have little arrow buttons at the ends."
+    },
+    {
+      "id": "P-sheet",
+      "surface": "Office",
+      "path": "The Office page with a spreadsheet open",
+      "crop": "polish/shoot-office-spreadsheet",
+      "headline": "The spreadsheet as a whole, before and after all these fixes.",
+      "changed": "The same four fixes together: rounding, File tab, separation and scrollbars.",
+      "notice": "Overall it should feel more like part of YouCoded.",
+      "risk": ""
+    }
+  ]
+}

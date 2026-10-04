@@ -8,7 +8,11 @@ date: 2026-09-29
 
 This is the current status map. Earlier dated reports are historical evidence, not a list of changes all accepted for shipping. Destin authorized documentation consolidation, cleanup and merge of the real fixes on 2026-09-29. Merge references and final integration verification will be recorded here after they exist; neither old benchmark success nor an ancestor-only close-out check means uncommitted work shipped.
 
-## Closeout resumed 2026-10-03 — merge held
+## Closeout resumed 2026-10-03 — final verification
+
+Latest acceptance evidence: `docs/active/investigations/2026-10-03-find-expiry-closeout.md`. The expiry repair passed a package-attributed delayed-frame check and an uninstrumented real-display check, with inspected screenshots and a stable uncovered match in each. Integrated Android unit XML contains 594 tests in each of debug/release/releaseTest with zero failures/errors/skips; Gradle executed all three app unit-test tasks, excluding `bundleWebUi`. The final eight-worker desktop full verification passed every gate, explicitly including screen-open checks and journeys. A prior superficially green rerun exposed a pipefail bug that omitted the screen gate; the gate is now fixed with an actual-planner red/green regression and CI coverage. Workspace script/hook tests passed 431/431, and the full CI-equivalent perf-tool suite passed 594/594 (fixture-download test excluded). App commit `6e355a828` is pushed to PR `youcoded#591`; fresh CI and actual merge remain pending. No merge is claimed yet.
+
+### Preserved diagnostic history
 
 App PR `youcoded#591` remains open at `7855bc6ce`; its recorded Android and Linux desktop CI checks passed. The full desktop verification and Android unit runs from the previous closeout are historical results, not verification against the newer master. Startup preserved this session and reported 100 incoming workspace commits; the app has 170 incoming commits relative to its fetched master. Neither has been silently integrated.
 

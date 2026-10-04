@@ -1,0 +1,46 @@
+{
+ "deck": "office-polish",
+ "started": "2026-09-29T08:36:00.302Z",
+ "submitted": "2026-09-29T08:39:07Z",
+ "cur": 4,
+ "answers": {
+  "P-styles": {
+   "v": "yes",
+   "t": 1790670965622,
+   "seconds": 5,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-file": {
+   "v": "other",
+   "t": 1790671060552,
+   "note": "no thumbail styling. make this match youcoded's card styling.this still doesn't blend well into or properly separate from the file/home/insert/etc buttons, or the focused/selected side pane. should all me rounded and such while also separating from the youcoded theme frame. ",
+   "seconds": 95,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-menus": {
+   "note": "header and sidebars still dont connect properly to frame the edit area",
+   "t": 1790671085917,
+   "v": "other",
+   "seconds": 25,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-scroll": {
+   "v": "yes",
+   "t": 1790671106191,
+   "seconds": 20,
+   "theme": "meadow-mist",
+   "zoom": 1
+  },
+  "P-sheet": {
+   "v": "yes",
+   "t": 1790671146514,
+   "note": "we also need to make sure we are making similar fixes across powerpoint/docs",
+   "seconds": 40,
+   "theme": "meadow-mist",
+   "zoom": 1
+  }
+ }
+}

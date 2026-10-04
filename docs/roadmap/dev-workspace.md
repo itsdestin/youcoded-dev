@@ -5,6 +5,12 @@ seen-on is always n/a here.
 
 ## tests
 
+- [ ] The Office add-on's early editor script (the one that silences external-link checks and
+      peer-to-peer connections) is only tested for what it blocks, never for leaving the
+      editor's ordinary features working (the add-on's test file for it was read 2026-10-02 and
+      still has no test of that kind)
+      `n/a` `needs-verify` `checked 2026-10-02`
+
 - [ ] The review-page before-and-after check (`review-cards.py selfie`) renders a fixed sample
       deck that has no live step shown on its own, so a change to how those steps look shows
       "nothing moved" on every page (2026-09-27: 18 empty pages sent to Destin for the Meadow Mist
@@ -197,10 +203,35 @@ seen-on is always n/a here.
       highest-value set: stale-closure bugs) are unguarded
       `n/a` `needs-verify` `checked 2026-09-01`
 
-- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) but
-      the open half is untested: a clean-winget Windows snapshot, the deb/rpm/pacman installers in
-      the guests, and the full first-run → setup → sign-in pass itself
-      `n/a` `needs-verify` `checked 2026-09-01`
+- [ ] VM first-run testing is provisioned (Windows 11, Ubuntu 24.04, macOS Sonoma on quickemu) and
+      since 2026-10-01 fast to use (`scripts/vm/vm.sh`: seconds-long reset to a ready desktop, one-step
+      install of any build as a real download), but the open half is untested: a clean-winget Windows
+      snapshot, the deb/rpm/pacman installers in the guests, and the full first-run → setup → sign-in
+      pass itself
+      `n/a` `needs-verify` `checked 2026-10-01`
+
+- [ ] Nothing tests a new user's whole path — download from youcoded.ai, install, setup, sign-in,
+      first chat — on every platform without Destin clicking through it. Destin (2026-10-01): "could
+      be interesting to set up". Proposed shape: on-demand GitHub Actions runs on real Windows, Apple
+      Silicon Mac and Linux machines (free for the public repo), driving the installed app with the
+      existing click-path tooling, OpenRouter key sign-in, screenshot report per step; dev tools
+      hidden so the prerequisite installer still runs. Local VMs stay for the SmartScreen /
+      Gatekeeper wall and home-edition Windows, which runners don't show
+      `n/a` `parked` `checked 2026-10-01`
+
+- [ ] YouCoded's page in the Linux app catalog (appimage.github.io, request #8053, found by their
+      robot) would show an auto-captured setup screen; our own pictures ship in the next release's
+      Linux builds (youcoded#596, served from youcoded.ai/screenshots). After that release: comment
+      `/retest` on #8053 and reply that Destin is the author (their bot wants 15+ words and none of
+      "community build"/"repackaged") — both public, in Destin's name, so ask him first
+      `n/a` `blocked` `checked 2026-10-01`
+
+- [ ] Linux downloads: the AppImage needs libfuse2, which stock Ubuntu 22.04+ lacks, so it won't
+      open until the user installs it (the deb avoids this); electron-builder's newer AppImage
+      runtime likely removes the need — untested. The Linux build also warns that taskbars may not
+      tie the running window to YouCoded's icon (a missing window-class setting). Both seen
+      2026-10-01, neither touched
+      `desktop` `needs-verify` `checked 2026-10-01`
 
 - [ ] Visual-regression harness for the renderer's chrome invariants (single-backdrop chrome-glass,
       framed-shell insets, overlay layers) — they are guarded only by eyeballing; the UI review sweep
@@ -277,6 +308,25 @@ seen-on is always n/a here.
       `desktop` `needs-verify` `checked 2026-09-03` `regression`
 
 ## rigs
+
+- [ ] A dev instance writes its pinned-pages list (Office is one of the pages) into the real
+      ~/YouCoded/Personal folder, under the dev profile's own device id, so a stray pin file for
+      a device that is not real can sync to the other devices. The real app's own pin file was
+      not touched (checked 2026-10-02). Office's Recent list and kept versions do follow the dev
+      profile's own folder, so they are not part of this
+      `desktop` `confirmed` `checked 2026-10-02`
+
+- [ ] Two screenshot runs of Office screens from the same checkout at the same time share the
+      one Office editor server: the second run reuses it and never stops it, the first stops it
+      when it finishes, so the second run's pictures can fail (read in the shoot script
+      2026-10-02)
+      `n/a` `confirmed` `checked 2026-10-02`
+
+- [ ] The VM helper's `load` step is rough for Mac: `mac load run:<id>` answered "nothing
+      matched" even though the build's artifact held an x64 installer (it only keeps files named
+      like `YouCoded-Installer-*-x64.dmg`), and `mac load` fails on a file name with spaces
+      (the download address is not escaped). Found 2026-10-02 loading build 36958200637
+      `n/a` `needs-verify` `checked 2026-10-02`
 
 - [ ] Let a dev instance start already signed in with the real app's API keys (and a "borrowed"
       ChatGPT sign-in that never renews, so the real app is never signed out). Destin
@@ -710,6 +760,14 @@ seen-on is always n/a here.
 
 ## release
 
+- [ ] The public Office add-on repo (itsdestin/youcoded-office) once held a personal budget memo
+      of Destin's as a test file. Its history was rewritten and the current files and the
+      v0.1.0 tag now hold a neutral "Test memo" (checked 2026-10-02), but GitHub can keep
+      serving the old commit by its address, and anyone who cloned early still has it, until
+      GitHub support purges it. A support request is not recorded as made, and whether the old
+      address still loads was not tested
+      `n/a` `needs-verify` `checked 2026-10-02` `security`
+
 - [ ] A scheduled check that every id in the model switcher's recommended list
       (`desktop/src/shared/recommended-models.ts`, added 2026-09-20) is still live on its
       provider, feeding the release skill recommendations for what to change. OpenRouter's own
@@ -794,17 +852,17 @@ seen-on is always n/a here.
       re-run them together now that the Kotlin half is in
       `n/a` `needs-verify` `checked 2026-09-16`
 
-- [ ] Windows and macOS installers still hit the security wall — nothing is signed or notarized.
-      The LLC exists (2026-09-03); blocked until the Apple / Azure signing accounts are opened in its name;
-      after that it is CI wiring. Mac's wall disappears at once, Windows' fades with downloads.
-      Windows needs a decision first (2026-09-23): Microsoft will not validate a company under
-      3 years old, so sign as Destin personally, buy a commercial certificate, or stay unsigned
-      — options in the report's Status block
-      `n/a` `blocked` `checked 2026-09-23` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+- [ ] macOS installers still hit the security wall — nothing is signed or notarized. Windows is
+      done: releases and master betas are signed as "Destin Moss" (Azure Artifact Signing,
+      individual validation, youcoded#594), and its warning fades with downloads. Mac is blocked on
+      the Apple Developer account in the LLC's name: Apple's account creation refused
+      destin@youcoded.ai on 2026-10-01 ("cannot be created at this time"); retry from an Apple
+      device or via Apple Support, then it is CI wiring and the wall disappears at once
+      `n/a` `blocked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
 
 - [ ] No Google Play listing — Android installs only from a GitHub APK, and from 2027 Google requires
       a verified developer even for sideloads. The LLC's D-U-N-S number arrived 2026-09-10, so this is
       unblocked: next the Play developer account in the LLC's name, then the bundle upload,
-      data-safety form, content rating and account-deletion link. Destin 2026-09-10: Play is the
-      priority for the rebuilt app (deck Q-3)
-      `android` `confirmed` `checked 2026-09-10` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md
+      data-safety form, content rating and account-deletion link. Destin 2026-10-01: "google play
+      isnt priority" — Apple and Windows signing first (reverses 2026-09-10's deck Q-3)
+      `android` `parked` `checked 2026-10-01` `v1.3.1` → docs/active/investigations/2026-09-03-formalization-costs-and-risks.md

@@ -6,6 +6,7 @@ import { buildApp } from './build.mjs';
 import { assetsReady, buildFixture, transcriptBody, SIZES } from './fixture.mjs';
 import { launchApp, startXvfb } from './launch.mjs';
 import { readRendererInfo } from './gpu.mjs';
+import { validateOutputPath } from './gpu-theme.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const LIMIT_MS = 300_000;
@@ -29,6 +30,15 @@ export function parseOptions(argv, root = ROOT) {
   if (opts.traceFind !== undefined && opts.traceFind !== 'on') throw Error('--trace-find must be on');
   if (opts.traceFrameDelay !== undefined && (opts.traceFind !== 'on' || !/^(1000)$/.test(opts.traceFrameDelay))) throw Error('--trace-frame-delay requires --trace-find on and 1000 ms');
   return opts;
+}
+
+export function validateFindOutput(out, root = ROOT) {
+  const screenshot = out.replace(/\.json$/i, '') + '.png';
+  // WHY: reject occupied/symlinked reports AND the differently named screenshot
+  // before fixture creation. Exclusive writes below retain the original evidence.
+  validateOutputPath(out, root);
+  validateOutputPath(screenshot, root);
+  return screenshot;
 }
 
 export function matchVisible(rect, viewport, uncovered = true) {
@@ -308,13 +318,14 @@ async function run(app, fixture, opts, bound, context) {
   // Screenshot is deliberately outside both clocks.
   const png = opts.out.replace(/\.json$/i, '') + '.png';
   const shot = await bound(cdp.send('Page.captureScreenshot', {format:'png'}), 'screenshot');
-  writeFileSync(png, Buffer.from(shot.data, 'base64'));
+  writeFileSync(png, Buffer.from(shot.data, 'base64'), { flag: 'wx' });
   report.screenshot = png;
   return report;
 }
 
 export async function main(argv = process.argv.slice(2)) {
   const opts = parseOptions(argv);
+  validateFindOutput(opts.out);
   const bound = deadline(LIMIT_MS);
   mkdirSync(dirname(opts.out), {recursive:true});
   let x, app;
@@ -348,17 +359,15 @@ export async function main(argv = process.argv.slice(2)) {
     // candidate. Keep the exact packaged-build fingerprint beside each result.
     report.build = { sha: build.sha, dirty: build.dirty, builtAt: build.builtAt };
     report.measuredAt = new Date().toISOString();
-    writeFileSync(opts.out, JSON.stringify(report,null,2)+'\n');
+    context.report = report;
+    if (report.status !== 'measured') throw new Error(`Diagnostic incomplete: ${report.status}`);
+    writeFileSync(opts.out, JSON.stringify(report,null,2)+'\n', { flag: 'wx' });
     console.log(`${report.status}: ${opts.out} (${report.beforeState.loaded} entries, ${report.beforeState.folded} folded)`);
-    if (report.status !== 'measured') {
-      context.report = report;
-      throw new Error(`Diagnostic incomplete: ${report.status}`);
-    }
   } catch (e) {
     // Preserve partial evidence on any failure, not just a successful screenshot.
     const { report: partial, ...progress } = context;
     const lifecycle = partial?.lifecycle ?? (opts.traceFind === 'on' && app?.cdp ? await collectFindTrace(app.cdp) : null);
-    writeFileSync(opts.out, JSON.stringify({ ...partial, ...progress, lifecycle, status: partial?.status ?? progress.status ?? 'error', error: String(e?.message ?? e) }, null, 2) + '\n');
+    writeFileSync(opts.out, JSON.stringify({ ...partial, ...progress, lifecycle, status: partial?.status ?? progress.status ?? 'error', error: String(e?.message ?? e) }, null, 2) + '\n', { flag: 'wx' });
     throw e;
   } finally {
     // Only owned processes: launchApp owns its app family; Xvfb is stopped only if WE created it.

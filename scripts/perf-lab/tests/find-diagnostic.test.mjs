@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
-import { parseOptions, metricDelta, reportStatus, historyDecision, launchOwned, fixtureFindQuery, matchVisible, collectFindTrace, installFindTrace } from '../find-diagnostic.mjs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { parseOptions, metricDelta, reportStatus, historyDecision, launchOwned, fixtureFindQuery, matchVisible, collectFindTrace, installFindTrace, validateFindOutput } from '../find-diagnostic.mjs';
 
 test('search target is a unique user-message prefix inside the loaded tail', () => {
   assert.equal(fixtureFindQuery(3500, 1000), 'Turn 3250:');
@@ -28,6 +31,18 @@ test('options default to an isolated checkout, virtual display and scratch outpu
   assert.equal(parseOptions(['--trace-find','on','--trace-frame-delay','1000']).traceFrameDelay, '1000');
   assert.throws(() => parseOptions(['--trace-frame-delay','1000']), /trace-frame-delay/);
   for (const args of [['--entries','0'],['--entries','12001'],['--entries','1.5'],['--entries','NaN'],['--display','foo'],['--out'],['--bogus','x']]) assert.throws(() => parseOptions(args));
+});
+
+test('Find output admission refuses existing screenshot and paths outside private scratch', () => {
+  const root = mkdtempSync(join(tmpdir(), 'find-output-'));
+  const dir = join(root, 'scratch', 'perf-lab'); mkdirSync(dir, { recursive: true });
+  const out = join(dir, 'find.json');
+  try {
+    assert.equal(validateFindOutput(out, root), out.slice(0, -5) + '.png');
+    assert.throws(() => validateFindOutput(join(root, 'outside.json'), root), /scratch/);
+    writeFileSync(out.slice(0, -5) + '.png', 'original');
+    assert.throws(() => validateFindOutput(out, root), /already exists/);
+  } finally { rmSync(root, { recursive: true, force: true, maxRetries: 3 }); }
 });
 
 test('missing metrics remain unmeasured rather than zero', () => {
