@@ -49,8 +49,11 @@ applied to the app or the website.
 - The main app icon (window, taskbar button, Dock) changes with the theme, as well as the tray icon. (v27 HALFTONE note)
 - Mac: build the icon as three Liquid Glass layers (background, face, eyes+smile); older Macs get the flat version. (v27 GLASS yes)
 - Mac Dock with a theme on: picked "never swap", but asked for a middle ground (theme face on glass, not white) — open in v28. (v27 DOCK da + note)
+- Mac Dock with a theme on, by the Mac's icon look: **Default** → the theme's normal icon (white tile, theme face);
+  **Dark and Clear** → the theme face on see-through clear glass (`mid1`); **Tinted** → no swap, the Liquid Glass icon stays.
+  Needs the app to read which look the Mac uses — still to be confirmed on a real Mac. (v28 DOCK note)
 - Tray icon: **the app icon, shrunk** (`trT`), switching with the theme; red "needs you" dot stays. (v27 TRAY tc)
-- Mac menu bar: **one colour** (Apple's template style), but the eye sparkles must stay — open in v28. (v27 MENUBAR ka + note)
+- Mac menu bar: **one colour** (Apple's template style), but the eye sparkles must stay; v28's sparkle version "looks a little odd still" — eye styles open in v29. (v27 MENUBAR ka + note)
 - Drawings: `src27/icons.html` (themes `cotton`, `halftone`, `morning`; `lgPanel`/`lgFeat` layers; `mid1`/`mid2`), boards `src27/boards.html`.
 
 ## Where the drawings live
