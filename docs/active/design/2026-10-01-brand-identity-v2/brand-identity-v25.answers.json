@@ -1,0 +1,24 @@
+{
+ "deck": "brand-identity-v25",
+ "started": "2026-10-04T05:59:34.799Z",
+ "submitted": "2026-10-04T06:01:05Z",
+ "cur": 1,
+ "answers": {
+  "HORIZ": {
+   "note": "maybe between b/c but closer to c? and we may need to move the text down just a bit again to look aligned with the icon",
+   "t": 1791093641360,
+   "v": "other",
+   "seconds": 67,
+   "theme": "light",
+   "zoom": 1
+  },
+  "STACK": {
+   "v": "other",
+   "t": 1791093664378,
+   "note": "sorry, not the issue. a is fine. it's the gap between the brand name and the tagline",
+   "seconds": 23,
+   "theme": "light",
+   "zoom": 1
+  }
+ }
+}

@@ -427,6 +427,27 @@ function tuck() {
     b.style.height = h0 + 'px';
   });
 }
+
+// ---- round 26 ----
+// Side by side: tuck .42 (between B .36 and C .44, closer to C), text block lowered by `down` px vs the icon.
+const T2 = [['A · Text level as before', .42, -2], ['B · Text 2px lower', .42, 0], ['C · Text 4px lower', .42, 2], ['D · Text 6px lower', .42, 4]];
+// Stacked: A's icon gap; the gap between the name and the tagline tightens.
+const NG = [['A · Before', 2], ['B · Tighter', -3], ['C · Tighter still', -6], ['D · Tightest', -9]];
+function round26() {
+  const H = 42, S = 36;
+  const hcell = ([n, lift, down]) => `<div class="c"><span class="cl">${n}</span><div style="display:flex;align-items:center;gap:16px">${ICON(64)}<div class="tk" data-lift="${lift}" style="position:relative;display:inline-block;transform:translateY(${down}px)">${WM(H)}<div class="tl" style="margin-top:1px">${TG(H * .33)}</div></div></div></div>`;
+  const scell = ([n, g]) => `<div class="c" style="gap:0"><span class="cl">${n}</span>${ICON(68)}<div style="display:inline-flex;flex-direction:column;align-items:center;margin-top:10px">${WM(S)}<div style="margin-top:${g}px">${TG(S * .34)}</div></div></div>`;
+  $(`<div class="tag">Side by side: tucked between B and C, text lowered (top) · stacked: name-to-tagline gap (bottom)</div>
+    <div class="sheet" style="grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr">${T2.map(hcell).join('')}${NG.map(scell).join('')}</div>`);
+  const cv = document.createElement('canvas').getContext('2d');
+  document.querySelectorAll('.tk').forEach(b => {
+    const lift = +b.dataset.lift, name = b.firstElementChild, tl = b.querySelector('.tl'), fs = parseFloat(getComputedStyle(name).fontSize);
+    const h0 = b.getBoundingClientRect().height, nh = name.getBoundingClientRect().height;
+    cv.font = `600 ${fs}px Outfit`; const yw = cv.measureText('y').width;
+    tl.style.cssText = `position:absolute;left:${yw * .8}px;top:${nh - fs * lift}px;margin:0`;
+    b.style.height = h0 + 'px';
+  });
+}
 function logoBoard(id) { $(`<div class="tag">${LOGOS[id].t}</div><div class="lab" style="position:absolute;right:24px;top:24px">With every pick applied · not yet signed off</div>${LOGOS[id].build()}`); }
 
 const NEIGH = ['#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#6366f1', '#64748b'];
@@ -466,7 +487,7 @@ function installerBoard(k) {
     </div>`);
 }
 Promise.all(['600 20px "Outfit"','800 20px "Manrope"','700 20px "Figtree"','700 20px "Urbanist"','600 20px "Lexend"','600 20px "Outfit"','800 20px "M PLUS Rounded 1c"','800 20px "DM Sans"', '700 20px "DM Sans"', '500 20px "JetBrains Mono"', '700 20px "JetBrains Mono"'].map(f => document.fonts.load(f))).then(() => {
-  if (B === 'tuck') tuck(); else if (B === 'tagsp') tagSpacing(); else if (B === 'ycba') ba('../src21/out/w5', 'out/w6', 'Initials · E, letters raised', 'Gradient from A, centred higher on the tile'); else if (B === 'ipba') ba('../src21/out/if2', 'out/ip', 'Installer · the box polished', 'Box, flaps and outline now one drawing, one outline colour, one shadow'); else if (B === 'initials2') initials2(); else if (B === 'inst2') inst2(); else if (B === 'taglines') taglines(); else if (B === 'spacing') spacing(); else if (B === 'initials') initials(); else if (B === 'tcol') themeColours(); else if (B === 'inst') installers(); else if (B === 'all') overview(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
+  if (B === 'r26') round26(); else if (B === 'tuck') tuck(); else if (B === 'tagsp') tagSpacing(); else if (B === 'ycba') ba('../src21/out/w5', 'out/w6', 'Initials · E, letters raised', 'Gradient from A, centred higher on the tile'); else if (B === 'ipba') ba('../src21/out/if2', 'out/ip', 'Installer · the box polished', 'Box, flaps and outline now one drawing, one outline colour, one shadow'); else if (B === 'initials2') initials2(); else if (B === 'inst2') inst2(); else if (B === 'taglines') taglines(); else if (B === 'spacing') spacing(); else if (B === 'initials') initials(); else if (B === 'tcol') themeColours(); else if (B === 'inst') installers(); else if (B === 'all') overview(); else if (B === 'mouths') mouthBoard(); else if (B === 'colour') colourBoard(); else if (LOGOS[B]) logoBoard(B); else if (FONTS[B]) fontBoard(B); else if (ICONS[B]) iconBoard(B); else if (INST[B]) installerBoard(B);
   document.body.dataset.ready = 1;
 });
 </script>
