@@ -1,6 +1,7 @@
 ---
 status: draft
 date: 2026-10-04
+revision: 2 (after design review 1 — docs/active/reviews/2026-10-04-page-live-socket-design-review-1.md; numbers in [brackets] are its findings)
 source: home-page-next.questions (Q-speed "instant" + note "reusable tooling … part of the page platform, with appropriate guardrails"); camera decision in chat 2026-10-04 ("yes, a. event history recordings should also be able to play"); home-page-next-designs (C-camera "events")
 branch: youcoded session/ha-pages-connection
 builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)
@@ -10,25 +11,42 @@ builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)
 
 ## What Destin asked for
 
-1. **Instant updates** (Q-speed): a card changes the moment the device does, instead of
-   within 5 seconds. As **platform tooling** any future page can use, with guardrails.
-2. **Live camera video in the page** — option A in chat: *the app plays the video and
-   hands the page only the picture*, so a page never gets a line out of its sandbox.
-3. **Recorded events play** (person, motion, doorbell clips), on the camera card he picked
-   (C-camera "events").
+1. **Instant updates** (Q-speed): a card changes the moment the device does. As **platform
+   tooling** any future page can use, with guardrails.
+2. **Live camera video in the page**, option A: *the app plays the video and hands the page
+   only the picture*, so a page never gets a line out of its sandbox.
+3. **Recorded events play** (person, motion, doorbell clips) on the camera card (C-camera "events").
 
 ## What was measured (2026-10-04, his real Home Assistant)
 
-- His Nest cameras offer **only WebRTC** (`camera/capabilities` → `["web_rtc"]`); the Pi
-  Zero camera offers WebRTC and HLS.
-- In a browser, offer → `camera/webrtc/offer` over the websocket → answer: **video plays
-  (640×360, ~6 fps) while the websocket stays open**. Closing the websocket right after
-  the answer: connected, **0 frames**, then disconnected — Home Assistant stops the stream
-  when the subscription ends. So live video needs a socket that stays open.
-- The page frame's CSP ends in `webrtc 'block'` (page-theme.ts `pageCsp`) on purpose:
-  WebRTC is a way out of the frame that `connect-src 'none'` does not close.
-- No Nest event clip has been saved since 2026-06-10 (`.storage/nest.event_media`), so
-  recordings also need his Google Cloud Pub/Sub delivery fixed (his action, in progress).
+- His Nest cameras offer **only WebRTC** (`camera/capabilities` → `["web_rtc"]`).
+- Offer → `camera/webrtc/offer` → answer: **video plays (640×360, ~6 fps) while the websocket
+  stays open**; closing it right after the answer gives 0 frames — Home Assistant stops the
+  stream when the subscription ends.
+- The frame's CSP ends in `webrtc 'block'` on purpose; that stays.
+- No Nest clip saved since 2026-06-10: recordings also need his Google Pub/Sub fixed (his action).
+
+## The device's profile (approved, never page-chosen) [3, 13, 30, 1, 2]
+
+Main stays protocol-neutral by reading what it must know about the device from the page's
+**approved manifest**, which rides the approval fingerprint (changing any of it asks again,
+and the approval card says what it allows):
+
+```js
+// on the Home page's `ha` device connection
+socketHello: '{"type":"auth","access_token":"{{key}}"}',          // exists today
+socketDeny: ['auth/', 'config/auth'],    // message types a page may never send (minting keys)
+socketAuthFailed: 'auth_invalid',        // a reply containing this: closed, never retried
+videoProfile: {
+  target: '^camera\\.[a-z0-9_]+$',       // what a page may ask to watch
+  send: '{"id":1,"type":"camera/webrtc/offer","entity_id":"{{target}}","offer":{{offer}}}',
+  answer: 'event.answer', candidate: 'event.candidate', failed: 'event.message',
+}
+```
+
+`socketDeny` is checked in main on **every** outgoing message, the one-shot exchange included
+(closing a hole that exists today: a full-access page could ask Home Assistant for a new
+long-lived key, which redaction cannot recognise) [3].
 
 ## Part 1 — the live socket (platform)
 
@@ -36,124 +54,136 @@ builds on: 2026-10-01-device-live-connection.md (the one-shot socket exchange)
 
 ```js
 var s = youcoded.socket(base + '/api/websocket', {
-  onState: function (state) {},   // 'connecting' | 'open' | 'reconnecting' | 'paused' | 'closed'
-  onMessages: function (texts) {} // an array of text messages, in order (batched)
+  onState: function (state, why) {}, // 'connecting' | 'open' | 'reconnecting' | 'paused' | 'closed'
+  onMessages: function (texts) {}    // text messages, in order, batched
 });
-s.send(text);   // only while 'open'
+s.send(text);   // refused unless 'open'
 s.close();
 ```
 
-- **Every `'open'` is a fresh connection.** The app greets (the key) before `'open'`; the
-  page then sends its subscriptions again. A page that subscribes once and never again is
-  wrong after the first reconnect — the doc and the page-builder skill say so.
-- `'paused'`: the page is hidden; the app has closed the connection and will reopen it,
-  and say `'open'` again, when the page is shown. `'closed'`: for good (the page called
-  `close()`, its approval was removed, or the device refused the key — `onState` carries a
-  short reason as a second argument).
+- **Every `'open'` is a fresh connection.** Main sends the greeting first; the page must wait
+  for its device's own "logged in" reply (`auth_ok`) in `onMessages` before subscribing, and
+  subscribe again after every `'open'` [15]. The page-builder skill carries the pattern.
+- `'paused'` means only that the window/browser tab is hidden (`document.visibilityState`).
+  Leaving the page, switching pages or reloading it **destroys the frame**, and its sockets
+  close with it [10].
 
-### Path
+### Path and ownership [4, 5, 10, 11, 16, 24]
 
-page `postMessage` → `PageHost` (shape check, as the fetch door) → IPC
-`pages:socket-open | -send | -close` → main `page-live-socket.ts`. Main pushes
-`pages:socket-event { socketId, kind: 'state'|'messages', … }` to **the window (or remote
-client) that opened it**, never broadcast. `PageHost` forwards to its own frame only.
-Remote browsers: `remote-server.ts` relays the three calls and pushes the event to that
-client; `remote-shim.ts` exposes the same shape (parity test extended). Android native has
-no Pages host today; nothing to mirror (verify before claiming in the commit).
+page `postMessage` (new constants beside `PAGE_FETCH_MESSAGE`; events accepted only when
+`e.source === parent`) → `PageHost` (shape checks: strings only, ≤ 64 KB; page-local ids,
+mapped to main's ids, so a frame can never name a main id) → IPC
+`pages:socket-open | -send | -close | -ping` → main `page-live-socket.ts`.
 
-### Guardrails (all in main; a renderer bug cannot widen them)
+- Main **generates** the socket id (unguessable) and records its owner (window or remote
+  client, and page). Send/close/ping from anyone else are refused.
+- Events go **only to the owner**: `webContents.send` for a window; a new `sendToClient` for a
+  remote browser, **not** `broadcast`, **not** the restore queue. A socket whose remote client
+  is backed up is closed (never the client's connection).
+- Socket state in `PageHost` is keyed to the **frame instance**; unmount or `srcDoc` change closes
+  them.
+- **Lease** [11]: `PageHost` pings each socket every 20 s; main closes any socket silent for
+  60 s. Also closed on `webContents` `did-start-navigation` / `render-process-gone` /
+  `destroyed` and on the remote client's `drop()`. A crash or Ctrl+R cannot leak sockets.
+- Remote shim: when its own connection to the computer drops, every live socket reports
+  `'closed'` ("lost the connection to your computer") [16].
+- Android native: `SessionService.kt` lists every `pages:*` channel and answers
+  not-implemented; the new channels are added to that list [22]. Parity test `PHASE_2`, the
+  preload event subscription, the shim dispatch and the workbench mock are extended [23].
 
-Everything the one-shot exchange checks, unchanged: a `device` connection, `covers` host
-AND port, approved at the current fingerprint, `access: 'full'`, `assertHomeHttpUrl`,
-no redirects, the key only inside the approved `socketHello` substituted in main, every
-received message redacted, text frames only. Added for a socket that stays open:
+### Guardrails (all in main)
 
-| Rule | Value | Why |
-|---|---|---|
-| Live sockets per page | 2 | one for updates, one spare (video signalling may share the first) |
-| Per app | 8 | a page opened in several windows cannot pile them up |
-| Hidden page | host closes it (`'paused'`), reopens on show | performance rule 2: hidden means idle |
-| Page closed / frame reloaded / window closed | closed | nothing outlives its page |
-| Approval removed or fingerprint changes | closed with reason | the person withdrew permission |
-| Reconnect | 1, 2, 4 … 30 s, give up after 10 min down (`'closed'`, reason) | a Pi reboot is survived; a dead device is not hammered |
-| Out: messages | ≤ 20/s, ≤ 64 KB each | same per-message cap as the exchange |
-| In: batching | coalesced to one push per 100 ms | per-event cost must not grow with chatter (perf rule 4) |
-| In: volume | > 2 MB in 10 s → closed, reason "too much data" | a page subscribing to everything cannot flood the app |
-| Device refuses the key (`auth_invalid`, close before `auth_ok`-shaped reply) | `'closed'`, no retry | retrying a wrong key is pointless |
+One shared check function serves the one-shot exchange and every live (re)connect, so they
+cannot drift [12]: a `device` connection, `covers` host AND port, approved at the current
+fingerprint, `access: 'full'`, a saved key, `assertHomeHttpUrl` (re-resolved each time [9]),
+no redirects, key only inside `socketHello`, every received message redacted **before**
+batching [27], text frames only.
 
-How main knows "greeted OK" without knowing Home Assistant: it doesn't. It reports
-`'open'` once the greeting is sent; the page reads `auth_ok` / `auth_invalid` itself.
-Main only stops retrying when the device closes the socket within 2 s of the greeting
-three times running.
+| Rule | Value |
+|---|---|
+| Live sockets | 2 per page, 4 per window/client, 8 per app [6] |
+| Rate | every open and reconnect takes a `PageRateGate` slot [25] |
+| Reconnect | 1, 2, 4 … 30 s; give up after 10 min down. A reply containing `socketAuthFailed`, or a close before any reply, ends it at once — never a burst of failed logins that could get the computer banned [13] |
+| State machine | generation-tagged; a timer is cancelled by show/close; a stale connection's messages are dropped; `send` refused unless `'open'` [14] |
+| Approval | `closeFor(page, connection)` from `removeConnection`, `approve`, `deleteSavedKey` and any page change [12] |
+| Out | ≤ 20 messages/s, ≤ 64 KB each, `socketDeny` checked |
+| In | ≤ 1 MB per message (a whole house's first `subscribe_entities` answer is large — measured before fixing the number); pushed in batches every 100 ms, ≤ 256 KB per push; > 2 MB in 10 s closes the socket [20]; 20 binary frames close it [27] |
+| Freshness | live traffic never marks the page "fresh" [17] |
 
 ### Instant updates on the Home page
 
-On `'open'`: `subscribe_entities` with the page's entity ids (Home Assistant sends only
-those, and only what changed). Each batch patches `rooms` and redraws once
-(`requestAnimationFrame`). The 5-second template check becomes **60 seconds** while the
-socket is open (it still catches renames, room moves and new devices), and goes back to
-5 seconds whenever it is not. A small "Reconnecting…" line shows only after 5 s in
-`'reconnecting'`.
+After `auth_ok`: `subscribe_entities` with the page's entity ids. Each batch patches `rooms`
+and redraws once per animation frame. The template check drops to **60 s** while live (it still
+catches renames, rooms and new devices) and returns to **5 s** when not. "Reconnecting…" shows
+only after 5 s in `'reconnecting'`.
 
-## Part 2 — camera video played by the app
+## Part 2 — camera video played by the app [1, 2, 7, 18, 19, 26]
 
 ### For a page
 
 ```js
-var v = youcoded.video({
-  onOffer: function (sdp) {},          // send it to the device; reply with v.answer(sdp)
-  onFrame: function (bitmap) {},       // an ImageBitmap; draw it on a <canvas>
-  onState: function (state, why) {}    // 'starting' | 'playing' | 'stopped'
+var v = youcoded.video('ha', 'camera.living_room_camera', {
+  onFrame: function (bitmap, ack) {},   // draw on a <canvas>, then call ack()
+  onState: function (state, why) {}     // 'starting' | 'playing' | 'stopped'
 });
-v.answer(sdp); v.candidate(candidateJson); v.stop();
+v.stop();
 ```
 
-The **app** owns the `RTCPeerConnection` and a hidden `<video>` in `PageHost` (outside
-the frame, so the frame's `webrtc 'block'` stays). The page only does the signalling over
-its own live socket (it knows its device's protocol; the app does not) and receives
-**pixels**: each frame (`requestVideoFrameCallback` → `createImageBitmap`, ≤ 15 fps,
-≤ 1280 px wide) is transferred to the frame by `postMessage`. A page cannot send anything
-through the video, and the frame's CSP is unchanged.
+The page names **a connection and a target**, nothing else. It never sees or supplies SDP or
+network candidates.
 
-- The offer is receive-only (audio + video, plus the data channel Nest requires).
-- Sound off in v1; the app could play audio itself later (not exposed to the page).
-- Limits: 2 videos per page; stops when the page is hidden, when the page calls `stop()`,
-  or after 5 minutes (the card offers Play again). Nest streams expire at 5 minutes anyway.
-- What the page learns: the SDP, which carries this computer's network candidates
-  (home/Tailscale addresses). It can only send them to the device it is already allowed
-  to reach. Stated here so it is a decision, not an accident.
-- Remote browser: `PageHost` runs in that browser, so the peer connection is there too —
-  the video goes straight from the camera service to the phone. Same code.
+1. `PageHost` (outside the frame) creates the receive-only `RTCPeerConnection` (audio + video
+   + the data channel Nest requires) and its offer.
+2. IPC `pages:video-start { page, connection, target, offer }` → main: the shared check chain,
+   the connection must carry a `videoProfile`, `target` must match its pattern, rate gate.
+   Main opens **its own** socket to the device (not the page's), greets, sends `send` with the
+   target and the offer filled in, and reads the answer and candidates from the paths given.
+   Candidates are filtered against loopback, link-local and cloud-metadata ranges (the
+   `net-guard` tables) before they reach the renderer. Answers come from the approved device,
+   never from the page.
+3. Main keeps that socket open for the video's life; `pages:video-stop`, the page's frame
+   going away, the lease, or 5 minutes close it (the card offers Play again).
+4. Frames: `requestVideoFrameCallback` on a muted, inline `<video>` in `PageHost` →
+   `createImageBitmap` at the source's size (his Nest: 640×360) → transferred to the frame.
+   **The next frame is sent only after the page acks**; bitmaps never sent are closed [18].
+   Measured in the dev window minimised / scrolled; `MediaStreamTrackProcessor` where the
+   callback stalls [19].
+5. Limits: 2 videos per page. Video signalling is main's socket, so a page needs only its one
+   live socket for updates [26].
+
+Decision, stated [7]: the page can read the pixels of a camera its approval already lets it
+control. Rejected: a host-drawn overlay over the frame (fragile positioning inside a scrolling
+frame, and the card's LIVE badge and Stop are drawn by the page) [28].
 
 ### The camera card (C-camera "events")
 
-Living, recent events (person / motion / doorbell, with times and thumbnails), and
-**Watch live** → the card's picture becomes the canvas with a LIVE badge and Stop.
-"Watch live in Home Assistant" stays as the fallback when video cannot start.
+Recent events (person / motion / doorbell, with times and thumbnails), **Watch live** → the
+picture becomes a canvas with a LIVE badge and Stop. "Watch live in Home Assistant" stays as the
+fallback when video cannot start.
 
-## Part 3 — recorded events
+## Part 3 — recorded events [8, 21]
 
-Through doors that already exist, plus one CSP line:
-
-- List: one-shot exchange `media_source/browse_media` on `media-source://nest/<device_id>`
-  → events with titles, times, thumbnails.
+- List: one-shot exchange `media_source/browse_media` on `media-source://nest/<device_id>`.
 - Play: `media_source/resolve_media` → a short-lived signed URL on the same device;
-  `youcoded.fetch(url, { as: 'video' })` → main fetches it (≤ 8 MB, `video/mp4` or
-  `image/gif` only) and returns a `data:` URL, the same way `as: 'picture'` does.
-- The page's CSP gains `media-src data:` **only when the page has a device connection**
-  (the bytes came through the checked door; nothing new is reachable).
+  `youcoded.fetch(url, { as: 'video' })` → main fetches it (`video/mp4` only, `ftyp` checked,
+  ≤ 4 MB with `content-length` checked first, one at a time per page) → `data:` URL.
+- The frame's CSP gains `media-src data:` **only when the page has a device connection**.
 
 ## Tests
 
-- `tests/page-live-socket.test.ts` (main, real `ws` stand-in, as the exchange test):
-  greeting with key substituted only there; redaction; caps (out rate, in volume, per-page,
-  per-app); reconnect schedule and give-up; close on approval removed; no redirect.
-- `PageHost` test: hidden → `'paused'` + socket closed; shown → reopened; frame unload
-  closes; a frame cannot address another page's socket id.
-- Video: unit test of the frame pump's throttle and stop rules with a fake video element;
-  real playback is checked by hand against his camera (measured path above).
-- Home page (jsdom, pretend Home Assistant gains `subscribe_entities`): a state change
-  arrives → card updates with no template request; socket down → 5-second checks resume.
+- `tests/page-live-socket.test.ts` (main, real `ws` stand-in): greeting substitution; deny
+  list (live and one-shot); redaction before batching; every cap; owner checks; reconnect
+  schedule; `socketAuthFailed` and quick-close give-up; each race in the state machine; lease;
+  `closeFor` from each service method; re-check on reconnect.
+- `pages:video-start`: refused with no device connection, no `videoProfile`, or a target off
+  the pattern; candidate filtering; the socket closes on stop / lease / 5 minutes.
+- `PageHost`: frame unmount and `srcDoc` change close sockets; `visibilityState` hidden →
+  `'paused'`; a forged event (wrong source, unknown local id) resolves nothing; frame-pump ack
+  and bitmap close.
+- Parity: `ipc-channels` `PHASE_2`, Kotlin list.
+- Home page (jsdom, pretend Home Assistant gains `subscribe_entities` and the camera offer): a
+  state change updates the card with no template request; socket down → 5-second checks resume.
+- By hand: live video from his Living Room camera in the dev window.
 
 ## Not in this
 
