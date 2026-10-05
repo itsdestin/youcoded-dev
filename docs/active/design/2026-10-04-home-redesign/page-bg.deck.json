@@ -1,0 +1,52 @@
+{
+  "title": "Home page background: three kinds of glass",
+  "key": "home-page-bg",
+  "out": "page-bg.choice.html",
+  "images": "images/page-bg.deck",
+  "runs": {
+    "after": "page-bg-runs"
+  },
+  "themes": [
+    "golden-sunbreak",
+    "creme"
+  ],
+  "steps": [
+    {
+      "id": "PB-1",
+      "surface": "Home page",
+      "path": "Home > whole page",
+      "headline": "Which page background should the Home page use?",
+      "notice": "The room and device cards are see-through glass in all three, so the background shows through them a little. Cards stay readable in both the dark and the light theme.",
+      "risk": "Only the background changes. Nothing moves or works differently. The wallpaper in the first option is a stand-in (see its note).",
+      "variants": [
+        {
+          "id": "today",
+          "label": "Today",
+          "crop": "pages/page/page-home#v-page-bg-today",
+          "summary": "A plain flat background in the theme's colour, with solid cards on top."
+        },
+        {
+          "id": "a",
+          "label": "See-through",
+          "crop": "pages/page/page-home#v-page-bg-a",
+          "summary": "The page has no background of its own, so the app's own wallpaper would show through the glass cards. Here a stand-in wallpaper (soft light from the top left, faint diagonal sheen) is drawn to show the idea.",
+          "risk": "Needs a change in the app itself: today the app paints a solid background behind every page. It only helps themes that have a wallpaper; in a plain theme like Cr\u00e8me it looks like a flat colour. The wallpaper stays sharp, so the cards must stay fairly solid to keep text readable."
+        },
+        {
+          "id": "b",
+          "label": "Frosted canvas",
+          "crop": "pages/page/page-home#v-page-bg-b",
+          "summary": "A soft, blurry-looking glow of the theme's colours behind everything, with glass cards over it. Drawn by the page itself, so it works in every theme. In the live pane it drifts very slowly.",
+          "risk": "The glow is mostly seen around the edges and between cards, so the change is gentle. Dark themes show it more than light ones."
+        },
+        {
+          "id": "c",
+          "label": "Colours of the house",
+          "crop": "pages/page/page-home#v-page-bg-c",
+          "summary": "The same soft glow, tinted by what is on: the colours of up to three lights that are on, and the colour of the app that is playing. It changes when the house does.",
+          "risk": "The page's colour changes through the day as lights go on and off, which some people find lively and others distracting. A bright blue or red light tints the whole page."
+        }
+      ]
+    }
+  ]
+}
