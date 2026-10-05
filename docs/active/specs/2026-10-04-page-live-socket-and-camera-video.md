@@ -125,7 +125,7 @@ batching [27], text frames only.
 
 | Rule | Value |
 |---|---|
-| Live sockets | 2 per page, 4 per window/client, 8 per app [6]. Videos counted apart: 2 per page, 4 per app; their sockets are main's own [R2-10] |
+| Live sockets | 2 per page, 4 per window/client, 8 per app [6]. Videos counted apart: 4 per page, 6 per app (raised from 2 and 4 for the Home page's Cameras tab, which runs every camera at once; the frame pump's per-video ack, 15 fps and 1280 px limits are unchanged); their sockets are main's own [R2-10] |
 | Rate | every open and reconnect takes a `PageRateGate` slot [25] |
 | Reconnect | 1, 2, 4 … 30 s; give up after 10 min down. Only a reply whose type equals `socketAuthFailed` ends it at once (no burst of failed logins that could get the computer banned [13]); a quick close otherwise backs off as usual, so a Home Assistant restart is survived [R2-12] |
 | State machine | generation-tagged; a timer is cancelled by show/close; a stale connection's messages are dropped; `send` refused unless `'open'` [14] |
@@ -176,7 +176,7 @@ network candidates.
    **The next frame is sent only after the page acks**; bitmaps never sent are closed [18].
    Measured in the dev window minimised / scrolled; `MediaStreamTrackProcessor` where the
    callback stalls [19].
-5. Limits: 2 videos per page. Video signalling is main's socket, so a page needs only its one
+5. Limits: 4 videos per page (6 per app). Video signalling is main's socket, so a page needs only its one
    live socket for updates [26].
 
 Decision, stated [7]: the page can read the pixels of a camera its approval already lets it
