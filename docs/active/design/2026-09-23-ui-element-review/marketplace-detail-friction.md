@@ -158,3 +158,32 @@ SVGs and no shared icon set. Candidate.
 - verify's first run failed one behaviour test because the comment button's visible word
   changed ("Post comment" → "Post"); fixed with an accessible name rather than editing the
   test. Fine — it caught a real screen-reader regression.
+
+## Round 3 (2026-10-05) — after Destin's marketplace-detail-2 answers
+
+App commit `3884e2fad`; deck `marketplace-detail-3.json` (before `runs/mkd2-after`, after
+`runs/mkd3-after`).
+
+| # | What I did | Driven by |
+|---|---|---|
+| R3-1 | Feedback is two cards (Feedback = votes, Comments = thread + box) everywhere; the other looks and `?feedbackLook=` removed. | M2-2 "split". |
+| R3-2 | Theme page: picture beside, only layout; `?themeLayout=` removed. **No label above the picture card.** | M2-3/M2-4 "side" + "dont need the text 'preview'". **Destin-approved exception to the guide's "a label comes first / once one card has a label every card does"**: a card that is a picture OF the item needs no label (like the top card). The page now has an unlabelled picture card beside a labelled "Colours" card — the guide should name this exception. |
+| R3-3 | In the narrow right column, the heart/star/share move from beside the name to beside the chips. | Found in the round-3 pictures: "Meadow Mist" broke mid-word ("Meado / w Mist"). **Guide gap:** "quick actions at the top right" assumes a card wide enough for name + actions on one line. Cost: the chips there are cut short by the fade. |
+| R3-4 | Four like-button drafts, all the shared `Button` (ghost / secondary / primary-when-liked / icon-only + "88 likes" chip). | M2-3 note. The `chip` draft's count does not move the instant you like (the chip reads page stats, the button owns the live count) — said on the slide. |
+| R3-5 | Three integration drafts: big tile (round 2), small badge beside the name, no icon; the latter two use a `compact` top card where description and buttons share one line. | M2-10. **Guide silent** on item icons (only `ProviderIcon` for providers); the 20px badge copies the provider-logo size. In the compact card a lone button hugs the right instead of going full width — the "text and buttons on one line" rule (NB-2) outranks "one button: full width" there; the guide doesn't say which wins. |
+
+### Tooling friction this round
+- **`shoot --check` flagged two real variants as LOOK-ALIKE** (outline vs ghost heart, heart-only
+  vs heart+count): the difference is a few pixels, below the check's thumbnail resolution, so
+  verify failed until I declared `sameAs` with a reason — which records two different screens
+  as "expected identical". A finer comparison (or comparing the marked panel's crop at full
+  size) would avoid a false declaration.
+- **Choice slides cannot crop a shoot screen.** The like-button drafts differ in a 40px button
+  on a full 1440×900 picture; a `crops` region only works for old-style `shots-<plan>` folders,
+  so I cut close-ups by hand (`runs/mkd3-after/shots-like/`). A per-slide `region` on a shoot
+  screen name would remove that step.
+- **Liked states can't be photographed**: the fake backend never starts a theme as liked, so the
+  "filled when liked" draft can only be shown un-liked. A `?liked=1`-style switch is missing.
+- **The `preview/` folder is shared by every deck in this folder**: `p2-midnight` for this deck
+  was another deck's stale picture (a provider-cards deck), because preview only rendered the
+  sizes/themes asked and left older files in place. Easy to read the wrong picture.

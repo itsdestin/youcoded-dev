@@ -1,0 +1,97 @@
+{
+ "deck": "marketplace-detail-2",
+ "started": "2026-10-05T06:21:13.662Z",
+ "submitted": "2026-10-05T06:26:08Z",
+ "cur": 11,
+ "answers": {
+  "M2-1": {
+   "v": "yes",
+   "t": 1791181288150,
+   "seconds": 14,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-2": {
+   "v": "pick",
+   "pick": "split",
+   "t": 1791181336281,
+   "seconds": 48,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-3": {
+   "v": "pick",
+   "pick": "side",
+   "t": 1791181444603,
+   "note": "dont need the text \"preview\". want to try restyling the like button a few different ways. ",
+   "seconds": 108,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-4": {
+   "v": "pick",
+   "pick": "side",
+   "t": 1791181462239,
+   "seconds": 18,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-5": {
+   "v": "yes",
+   "t": 1791181469240,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-6": {
+   "v": "yes",
+   "t": 1791181479943,
+   "seconds": 11,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-7": {
+   "v": "yes",
+   "t": 1791181485113,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-8": {
+   "v": "yes",
+   "t": 1791181489863,
+   "seconds": 5,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-9": {
+   "v": "yes",
+   "t": 1791181531758,
+   "seconds": 22,
+   "theme": "youcoded",
+   "zoom": 1
+  },
+  "M2-10": {
+   "v": "other",
+   "seconds": 41,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791181555327,
+   "note": "not sure i like the g tile. i think we could compact this a little"
+  },
+  "M2-11": {
+   "v": "yes",
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1,
+   "t": 1791181560200
+  },
+  "M2-12": {
+   "v": "yes",
+   "t": 1791181567036,
+   "seconds": 7,
+   "theme": "youcoded",
+   "zoom": 1
+  }
+ }
+}
