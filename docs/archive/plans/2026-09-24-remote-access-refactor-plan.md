@@ -1,6 +1,6 @@
 ---
 date: 2026-09-24
-status: active
+status: shipped
 type: plan
 topic: Remote access refactor — one assistant core with one feature list that the desktop window, a phone browser and (later) the Android app all reach through the same doors; extends simplification Phase 4 with a computer-owned session record, per-session delivery and resume
 ---

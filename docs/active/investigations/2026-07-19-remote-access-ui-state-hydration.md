@@ -19,7 +19,7 @@ kind: investigation
 
 # Remote-access UI state: hydration jank + drift investigation
 
-> **2026-09-24 — where this goes now:** Findings 3–4 (live state the phone never receives) are closed by R5's session record in `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`. Re-verify against R5's gate once it lands, not against this report.
+> **2026-09-24 — where this goes now:** Findings 3–4 (live state the phone never receives) are closed by R5's session record in `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md`. Re-verify against R5's gate once it lands, not against this report.
 
 **Reported symptom:** "The UI state in remote access mode is often buggy and rarely correctly matches the desktop UI. Initial chat hydration on connect feels odd/janky."
 

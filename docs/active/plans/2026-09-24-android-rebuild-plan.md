@@ -13,7 +13,7 @@ topic: Android rebuild — the phone runs the same assistant core and socket doo
 > `docs/active/investigations/2026-09-10-android-parity-audit.md` §8 (still the record of
 > findings and the bug appendix). This plan replaces the audit's §7 step list and the
 > 2026-09-10 Android handoff (archived). It depends on R1–R5 of
-> `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`. The decisions table at the end
+> `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md`. The decisions table at the end
 > is still open.
 >
 > **Evidence.** Read-only investigations I1–I6 on 2026-09-24 against app master `ab15a5858`,

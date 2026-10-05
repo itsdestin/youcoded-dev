@@ -8,7 +8,7 @@ topic: Where the app does work nobody asked for, does the same job twice, or car
 # Simplification audit — less code, less work, same app
 
 > **2026-09-24:** D1, D2, D3 and M5 are scheduled as R1–R4 of
-> `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`, and D9 as A3 of
+> `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md`, and D9 as A3 of
 > `docs/active/plans/2026-09-24-android-rebuild-plan.md`. D10 is reopened there as a decision
 > (remote plan, decision 2). This report stays their evidence. Order of everything:
 > `docs/active/handoffs/2026-09-24-one-core-START-HERE.md`.

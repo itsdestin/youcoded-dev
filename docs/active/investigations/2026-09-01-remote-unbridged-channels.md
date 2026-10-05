@@ -7,7 +7,7 @@ topic: most window.claude channels are not bridged over remote access — and wh
 
 # Remote access: the unbridged channels
 
-> **2026-09-24 — where this goes now:** Which of these channels to open is decided in R6 of `docs/active/plans/2026-09-24-remote-access-refactor-plan.md`. After R3 each one is a one-line policy change in the channel table.
+> **2026-09-24 — where this goes now:** Which of these channels to open is decided in R6 of `docs/archive/plans/2026-09-24-remote-access-refactor-plan.md`. After R3 each one is a one-line policy change in the channel table.
 
 **Symptom.** Over remote access, whole features are visibly missing or fail with an
 "X isn't available via remote access yet" notice: the artifact pane cannot open ANY file
