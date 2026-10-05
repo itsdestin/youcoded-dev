@@ -13,6 +13,8 @@
 //              long tasks, CPU, and key/wheel input delay while it runs — once with
 //              the terminal on screen, once with it hidden behind a chat.
 //
+//   reload   — (opt-in, --only reload) page reload with a fake Claude Code screen up: repaint time, repaint count, chat send after reload/resize; fails loudly.
+//
 // LIMITS (say them in any write-up): Xvfb software rendering; rAF/long tasks are
 // main-thread measures, not presented frames; input delay starts at the browser's
 // event timestamp for a CDP-injected event; one boot = a shakedown, not a baseline.
@@ -39,7 +41,7 @@ const LEGS = ['wheel', 'fence', 'flood'];
 // WHY opt-in 'mixed' (2026-10-04, fix 5): a realistic reply (headings, lists, table, short fences, links) streamed
 // the same way as the prose control, with commit/layout counts per delta. Not in the default run.
 // WHY a separate list (2026-10-04, terminal flow control): these two are opt-in, so the default run is unchanged.
-const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'notermcut', 'fence-noblank', 'fence-bare'];
+const EXTRA_LEGS = ['ctrlc', 'echo', 'noterm', 'minimized', 'mixed', 'prose', 'cut', 'notermcut', 'fence-noblank', 'fence-bare', 'reload'];
 
 export function parseOptions(argv, root = ROOT) {
   const o = { checkout: join(root, 'youcoded'), out: join(root, 'scratch/perf-lab/suspects.json'), maxMinutes: 12, floodMb: 40, floodRate: 0, mainInspect: '0', floodViews: 'visible,hidden', fenceLines: 500, only: LEGS.join(',') };
@@ -522,6 +524,142 @@ async function legNoTerm(ctx, mb, modes = false) {
   return out;
 }
 
+
+// ── Page reload with a Claude Code session on screen (integration branch, 2026-10-05) ───────────────────────────
+// WHY: a reload leaves the new page's terminal EMPTY and nothing makes the program redraw by itself, so the app nudges the PTY size
+// (two window-size signals, ~120 ms apart) to make it repaint; the chat send gate meanwhile reads the computer-side copy of the screen.
+// The owner's hand test of an earlier build showed a blank terminal and a refused send after a reload. This leg uses the fake
+// producer's `perf-lab-screen` mode (a full Claude-Code-like screen with a message box, redrawn on every size signal, every size
+// signal and typed line logged) and measures, with the real page reload (CDP Page.reload):
+//   - time until the terminal's buffer again holds the whole screen (first and last line, box, footer),
+//   - how many repaint NUDGES arrived (size-signal clusters >500 ms apart; one nudge = a narrow and a restore signal) and that the size ended restored,
+//   - whether a chat message typed as soon as the composer exists reaches the program (no refusal toast),
+//   - the same after two reloads 300 ms apart (the trailing repaint must leave the terminal painted).
+// Any blank terminal or refused/lost send makes the leg throw (loud), with the numbers in the message.
+async function legReload(ctx) {
+  const { cdp, bound, fixtureHome, switchTo } = ctx, out = { scenarios: {} };
+  const emptyIdx = ctx.sessions.names.findIndex(n => ctx.sessions.sizeByName[n] === 'empty');
+  await switchTo(emptyIdx); await sleep(500);
+  const id = ctx.ids[emptyIdx];
+  const FULL = `(() => { const t = window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 60) ?? ''; return t.includes('SCREEN LINE 01 ') && t.includes('SCREEN LINE 18 ') && t.includes('? for shortcuts') && t.includes('❯'); })()`;
+  const COMPOSER = `[...document.querySelectorAll('.input-bar-container textarea')].filter(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length).length === 1`;
+  await bound(cdp.evaluate(`window.claude.session.sendInput(${JSON.stringify(id)}, 'perf-lab-screen\\r'); true`), 'start screen mode');
+  for (let i = 0; i < 100 && !(await cdp.evaluate(FULL).catch(() => false)); i++) await sleep(100);
+  if (!(await cdp.evaluate(FULL))) throw Error('reload leg: the program\'s screen never appeared before the reload');
+  const painted = readEmissions(fixtureHome).find(r => r.event === 'screen-painted');
+  out.baseCols = painted?.cols ?? null; out.baseRows = painted?.rows ?? null;
+  const trySend = async tag => {
+    const focused = await cdp.evaluate(`(() => { const e = [...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length); if (!e) return false; e.focus(); return document.activeElement === e; })()`).catch(() => false);
+    if (!focused) return { focused: false, reached: false };
+    const t = Date.now();
+    await cdp.send('Input.insertText', { text: tag });
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' });
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+    let reached = false;
+    for (let i = 0; i < 50 && !reached; i++) { reached = readEmissions(fixtureHome).some(e => e.event === 'stdin' && e.t >= t - 50 && String(e.text).includes(tag)); if (!reached) await sleep(100); }
+    const toast = await cdp.evaluate(`(document.body.innerText || '').includes('waiting on something')`).catch(() => null);
+    const bodyTail = toast ? await cdp.evaluate(`(document.body.innerText || '').slice(-400)`).catch(() => null) : null;
+    return { focused: true, reached, refusalToast: toast, bodyTail };
+  };
+  out.baseline = await trySend('baseline-' + (Date.now() % 100000));   // before any reload: a refusal here is the fixture's, not the reload's
+  await sleep(2500);
+  out.viewModeBefore = await cdp.evaluate(`document.documentElement.dataset.viewMode`).catch(() => null);
+  // Diagnosis aid (needs --main-inspect 1): which `session:live` pushes the computer sends to the window, with times, so a refused send can be
+  // told apart as "the computer said a pop-up holds the keyboard" (input-block) or "a card is open" (prompt-show).
+  const mainEval = async expr => { const targets = await (await fetch(`http://127.0.0.1:${ctx.mainPort}/json/list`)).json(); const m = await connect(targets.find(x => x.webSocketDebuggerUrl).webSocketDebuggerUrl); try { return await m.evaluate(expr); } finally { m.close?.(); } };
+  if (ctx.mainPort) await mainEval(`(() => { const { webContents } = process.mainModule.require('electron'); globalThis.__liveLog = []; for (const wc of webContents.getAllWebContents()) { if (wc.__liveHook) continue; wc.__liveHook = true; const orig = wc.send; wc.send = function (ch, ...a) { if (typeof ch === 'string' && !ch.startsWith('pty:output') && globalThis.__liveLog.length < 600) { const p = a[0]?.payload ?? a[0]; globalThis.__liveLog.push({ t: Date.now(), ch, kind: p?.kind, block: p?.block === undefined ? undefined : (p.block ? p.block.kind + ':' + (p.block.heading ?? p.block.view ?? '') : null) }); } return orig.apply(this, [ch, ...a]); }; } return true; })()`).catch(e => { out.liveHookError = e.message; });
+  const failures = [];
+  if (!out.baseline.reached || out.baseline.refusalToast) failures.push(`BASELINE (no reload, no resize): chat send refused or lost ${JSON.stringify(out.baseline)}`);
+  const scenario = async (name, reloads) => {
+    const r = { reloads }, tag = `probe-${name}-${Date.now() % 100000}`;
+    const t0 = Date.now(); r.t0 = t0; r.loadAvgStart = readFileSync('/proc/loadavg', 'utf8').trim();
+    await cdp.send('Page.reload');
+    for (let k = 1; k < reloads; k++) { await sleep(300); await cdp.send('Page.reload'); }
+    let paintedMs = null, composerMs = null, sentAt = null;
+    while (Date.now() - t0 < 30000 && (paintedMs === null || (sentAt === null))) {
+      if (composerMs === null && await cdp.evaluate(COMPOSER).catch(() => false)) {
+        composerMs = Date.now() - t0;
+        // Send as soon as the composer exists: the moment the owner's hand test hit. Real keystrokes into the real composer.
+        const ok = await cdp.evaluate(`(() => { const e = [...document.querySelectorAll('.input-bar-container textarea')].find(e => !e.closest('[aria-hidden="true"]') && e.getClientRects().length); if (!e) return false; e.focus(); return document.activeElement === e; })()`).catch(() => false);
+        if (ok) {
+          sentAt = Date.now();
+          await cdp.send('Input.insertText', { text: tag });
+          await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r' });
+          await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+        } else composerMs = null;
+      }
+      if (paintedMs === null && await cdp.evaluate(FULL).catch(() => false)) paintedMs = Date.now() - t0;
+      await sleep(50);
+    }
+    r.composerVisibleMs = composerMs; r.screenFullMs = paintedMs; r.sentAfterReloadMs = sentAt === null ? null : sentAt - t0;
+    // Did the typed line reach the program? (typed text is logged by the producer; the chat bubble alone proves nothing.)
+    let reached = false;
+    for (let i = 0; i < 60 && !reached; i++) { reached = readEmissions(fixtureHome).some(e => e.event === 'stdin' && e.t >= t0 && String(e.text).includes(tag)); if (!reached) await sleep(100); }
+    r.sendReachedProgram = reached;
+    r.refusalToastShown = await cdp.evaluate(`(document.body.innerText || '').includes('waiting on something')`).catch(() => null);
+    if (r.refusalToastShown && !out.refusedShot) {
+      // Evidence for a refused send: a picture, the chat's own text (is a card waiting?), and what the page's terminal holds.
+      out.refusedShot = true;
+      const shot = await cdp.send('Page.captureScreenshot', { format: 'png' }).catch(() => null);
+      if (shot) writeFileSync(`${ctx.outPath}.reload-refused.png`, Buffer.from(shot.data, 'base64'));
+      out.refusedChatText = await cdp.evaluate(`(document.querySelector('.chat-scroll')?.innerText ?? '').slice(-700)`).catch(() => null);
+      out.refusedTermText = await cdp.evaluate(`(window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 60) ?? '').slice(-500)`).catch(() => null);
+      // What the computer would replay to a page that opens this session now (not played back: just read).
+      // What the computer hands a page that opens this session now (`after` = the live facts, input-block included when it has one). Read, then PLAYED
+      // into the page, then a send is tried again: if the refusal goes away the page was simply missing the verdict; if not, the computer says blocked.
+      out.refusedOpenAnswer = await cdp.evaluate(`(async () => { const r = await window.claude.session.open({ sessionId: ${JSON.stringify(id)}, fresh: true }); const kinds = l => (l ?? []).filter(p => p.type === 'session:live').map(p => p.payload?.kind + (p.payload?.block !== undefined ? ':' + JSON.stringify(p.payload.block) : '')); window.__rigOpen = r; return { keys: Object.keys(r || {}), before: kinds(r?.before), after: kinds(r?.after), afterTypes: (r?.after ?? []).map(p => p.type), afterDetail: (r?.after ?? []).filter(p => p.type !== 'session:live').map(p => ({ type: p.type, p: JSON.stringify(p.payload).slice(0, 400) })), facts: JSON.stringify(r?.facts ?? null).slice(0, 400) }; })()`).catch(e => ({ error: e.message }));
+      out.refusedTryBeforePlay = await trySend('post-open-' + (Date.now() % 100000));
+      await cdp.evaluate(`window.claude.session.play(window.__rigOpen?.after ?? []); true`).catch(() => {});
+      await sleep(300);
+      out.refusedTryAfterPlay = await trySend('post-play-' + (Date.now() % 100000));
+      out.refusedCards = await cdp.evaluate(`[...document.querySelectorAll('[class*="prompt"],[class*="permission"],[class*="approval"]')].slice(0, 6).map(e => (e.className + '|' + (e.innerText || '').slice(0, 80)))`).catch(() => null);
+    }
+    await sleep(2500);   // let any trailing repaint land
+    r.screenFullAtEnd = await cdp.evaluate(FULL).catch(() => false);
+    const winch = readEmissions(fixtureHome).filter(e => e.event === 'winch' && e.t >= t0 - 200);
+    const nudges = []; for (const w of winch) { const last = nudges.at(-1); if (last && w.t - last.at(-1).t < 500) last.push(w); else nudges.push([w]); }
+    r.sizeSignals = winch.length; r.nudges = nudges.length;
+    r.signalsPerNudge = nudges.map(n => n.length); r.signalColumns = winch.map(w => w.cols);
+    r.sizeRestored = winch.length ? winch.at(-1).cols === out.baseCols : null;
+    r.rowsSample = (await cdp.evaluate(`(window.__terminalRegistry?.getScreenText(${JSON.stringify(id)}, 60) ?? '').split('\\n').filter(l => l.trim()).slice(0, 3).concat(['...']).map(l => l.slice(0, 40))`).catch(() => null));
+    r.loadAvgEnd = readFileSync('/proc/loadavg', 'utf8').trim();
+    if (paintedMs === null || !r.screenFullAtEnd) failures.push(`${name}: terminal stayed blank/incomplete (first full ${paintedMs}, at end ${r.screenFullAtEnd})`);
+    if (sentAt === null) failures.push(`${name}: composer never appeared`);
+    else if (!reached || r.refusalToastShown) failures.push(`${name}: chat send refused or lost (reached program ${reached}, refusal toast ${r.refusalToastShown})`);
+    if (reloads === 1 && r.nudges !== 1) failures.push(`${name}: expected exactly 1 repaint nudge, saw ${r.nudges}`);
+    if (r.sizeRestored === false) failures.push(`${name}: terminal size not restored after the nudge`);
+    out.scenarios[name] = r;
+    await sleep(2500);   // clear the router's 1 s repaint window before the next scenario
+  };
+  await scenario('single', 1);
+  await scenario('double300ms', 2);
+  // A real PTY resize (what the terminal's fit sends), then a chat send at once and another 500 ms later: neither may be refused,
+  // because the computer-side screen copy must read the input box at the NEW width (coordinator request, b050cd00d).
+  {
+    const r = { }, newCols = out.baseCols > 60 ? out.baseCols - 10 : out.baseCols + 10;
+    const tR = Date.now();
+    await cdp.evaluate(`window.claude.session.resize(${JSON.stringify(id)}, ${newCols}, ${out.baseRows}); true`);
+    r.newCols = newCols;
+    r.immediate = await trySend(`rsz-now-${tR % 100000}`);
+    await sleep(500);
+    r.after500ms = await trySend(`rsz-500-${tR % 100000}`);
+    await sleep(1500);
+    r.winchColumns = readEmissions(fixtureHome).filter(e => e.event === 'winch' && e.t >= tR - 200).map(w => w.cols);
+    r.screenFullAtEnd = await cdp.evaluate(FULL).catch(() => false);
+    await cdp.evaluate(`window.claude.session.resize(${JSON.stringify(id)}, ${out.baseCols}, ${out.baseRows}); true`).catch(() => {});
+    out.scenarios.resize = r;
+    for (const k of ['immediate', 'after500ms']) if (!r[k].focused || !r[k].reached || r[k].refusalToast) failures.push(`resize ${k}: chat send refused or lost (${JSON.stringify(r[k])})`);
+    if (!r.winchColumns.includes(newCols)) failures.push(`resize: program never saw the new width ${newCols} (saw ${r.winchColumns})`);
+    await sleep(1500);
+  }
+  out.loadAvg = readFileSync('/proc/loadavg', 'utf8').trim();
+  if (ctx.mainPort) out.liveLog = await mainEval('globalThis.__liveLog').catch(e => ({ error: e.message }));
+  out.scenarioStartTimes = Object.fromEntries(Object.entries(out.scenarios).map(([k, v]) => [k, v.t0]));
+  out.failures = failures;
+  if (failures.length) throw Error('reload leg FAILED: ' + failures.join(' | ') + ' :: ' + JSON.stringify(out));
+  return out;
+}
+
 // minimized: hide the window (main process win.hide(): the page becomes document.hidden and its timers are throttled
 // to ~1 s, exactly as when minimised or in the tray) mid-flood, time the PRODUCER to completion, then show it and check
 // the terminal ends with the exact tail.
@@ -611,7 +749,7 @@ export async function main(argv = process.argv.slice(2)) {
       // Each leg fails alone: a broken selector in one must not cost the others' numbers.
       for (const leg of opts.only) {
         try {
-          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'notermcut' ? await legNoTerm(ctx, opts.floodMb, true) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
+          report.legs[leg] = leg === 'wheel' ? await legWheel(ctx) : leg === 'fence' ? await legFence(ctx, opts.fenceLines, opts.out) : leg === 'mixed' || leg === 'prose' || leg === 'fence-noblank' || leg === 'fence-bare' ? await legFence(ctx, opts.fenceLines, opts.out, leg) : leg === 'ctrlc' ? await legCtrlC(ctx, opts.floodMb) : leg === 'echo' ? await legEcho(ctx) : leg === 'noterm' ? await legNoTerm(ctx, opts.floodMb) : leg === 'notermcut' ? await legNoTerm(ctx, opts.floodMb, true) : leg === 'reload' ? await legReload(ctx) : leg === 'minimized' ? await legMinimized(ctx, opts.floodMb) : leg === 'cut' ? await legMinimized(ctx, opts.floodMb, true) : await legFlood(ctx, opts.floodMb, opts.floodRate);
         } catch (e) { report.legs[leg] = { status: 'incomplete', error: String(e?.message ?? e) }; }
         const shot = await bound(cdp.send('Page.captureScreenshot', { format: 'png' }), 'screenshot').catch(() => null);
         if (shot) writeFileSync(`${opts.out}.${leg}.png`, Buffer.from(shot.data, 'base64'));

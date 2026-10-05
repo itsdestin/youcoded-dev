@@ -124,6 +124,18 @@ function glyphFill(n) {
 let lineBuf = '';
 let activeFlood = null;
 let inkFinal = null;      // set once the Ink-style animation finished (perf-lab-flood-modes)
+// WHY (2026-10-05, reload leg): `perf-lab-screen` makes this process behave like Claude Code at rest: a full screen of text with a
+// message box (column-0 rules, a "❯" row) that it REDRAWS whenever the terminal size changes, as Ink does. Every size change is
+// logged (time, columns, rows) so the rig can count how many repaint nudges the app asked for after a page reload, and every typed
+// line is logged so the rig can see whether a chat send reached the message box. Off until the command is typed: no other leg changes.
+let screenMode = false;
+const paintScreen = () => {
+  const rows = Array.from({ length: 18 }, (_, i) => `SCREEN LINE ${String(i + 1).padStart(2, '0')} reload-probe ${'.'.repeat(40)}`);
+  const rule = '─'.repeat(40);
+  try { fs.writeSync(1, Buffer.from('\x1b[2J\x1b[H' + rows.join('\r\n') + `\r\n${rule}\r\n❯ \r\n${rule}\r\n  ? for shortcuts`)); } catch { /* pty full */ }
+};
+const logEv = (o) => { try { fs.appendFileSync(path.join(home, '.claude', 'perf-terminal-emissions.jsonl'), JSON.stringify({ t: Date.now(), ...o }) + '\n'); } catch { /* fixture gone */ } };
+process.on('SIGWINCH', () => { if (screenMode) { logEv({ event: 'winch', cols: process.stdout.columns, rows: process.stdout.rows }); paintScreen(); } });
 process.on('SIGWINCH', () => { if (inkFinal) { try { fs.writeSync(1, Buffer.from('\x1b[5A\x1b[0J' + inkFinal(-1))); } catch { /* pty full */ } } });
 
 process.stdin.resume();
@@ -132,9 +144,11 @@ process.stdin.on('data', (buf) => {
   try { process.stdout.write(text); } catch { /* pipe closed */ }
   // The PTY runs in canonical mode, so a submitted line arrives ending in \n
   // (the tty maps the typed \r); split on either so raw mode would work too.
+  if (screenMode) logEv({ event: 'stdin', text });
   lineBuf += text;
   const parts = lineBuf.split(/\r\n|\r|\n/);
   lineBuf = parts.pop();
+  for (const line of parts) { if (line.trim() === 'perf-lab-screen') { screenMode = true; paintScreen(); logEv({ event: 'screen-painted', cols: process.stdout.columns, rows: process.stdout.rows }); } }
   for (const line of parts) {
     const m = GLYPH_CMD.exec(line.trim());
     if (m) {
