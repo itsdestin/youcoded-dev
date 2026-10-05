@@ -56,6 +56,8 @@ ignores:
   - "**/components/ProvidersSection.tsx"
   - "**/components/SyncSetupWizard.tsx"
   - "**/components/ResumeBrowser.tsx"
+  # a one-switch control in the Pages band (a folder inScopeFiles() does not cover), not a settings row
+  - "**/components/pages/PageSeeThrough.tsx"
   - "**/components/ResumeOptions.tsx"
   - "**/components/CloseSessionPrompt.tsx"
   - "**/components/QuitSessionsPrompt.tsx"
