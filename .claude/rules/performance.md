@@ -21,6 +21,7 @@ verify:
   - test: youcoded/desktop/tests/animation-frame-budget.test.ts
   - test: youcoded/desktop/tests/main-blocking-calls.test.ts
   - test: youcoded/desktop/tests/busy-app-render-budget.test.tsx
+  - test: youcoded/desktop/tests/memo-while-closed.test.tsx
   - test: youcoded/desktop/tests/chat-state-paused.test.tsx
   - test: youcoded/desktop/tests/wheel-scroll-stays-native.test.ts
   - test: youcoded/desktop/tests/zoom-controls-guard.test.tsx
@@ -46,7 +47,11 @@ main-process blocking-call ratchet** (`desktop/tests/main-blocking-calls.test.ts
    (`useChatState(id, { paused: !visible })`, which catches up once a second — freezing
    outright moves all the drawing into the click that shows the tab). A kept-mounted tab is
    `hidden` prop AND `React.memo` AND stable props AND no context read of its own — memo cannot
-   stop a context reader, so the parent passes the one value down (FilesTab). **Why:** ten
+   stop a context reader, so the parent passes the one value down (FilesTab). A surface mounted
+   always but shown only while `open` (Settings, the command drawer, popups, warnings) is wrapped in
+   `memoWhileClosed`: the shell's fresh callbacks cannot defeat a plain memo, and a session switch
+   rebuilt all of them. A session switch also never reads layout in the strip (room cached from its
+   ResizeObserver). **Why:** ten
    background sessions were ~40 React updates/s into invisible trees; hidden terminals kept
    uploading glyphs. **Guard:** `filestab-*` ast-grep + `project-view-files-tab-stays-mounted`;
    `mascot-rig-pauses-when-hidden`; the busy-app test.
