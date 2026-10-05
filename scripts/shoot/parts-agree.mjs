@@ -12,23 +12,21 @@
 //     top and bottom. Touching the edge exactly is the M5-3 bug: fine at 1×, cut at 1.5×,
 //     where the border rounds to the next device pixel.
 //
-// A row opts in with `data-parts-agree` (any value names it in the report). The rows the
-// renderer already marks for other reasons are read too: `[data-detail-chips]` and
-// `[data-detail-actions]` (Marketplace detail pages). It is opt-in on purpose: "siblings are
-// one height" is a rule for chip and button rows, not for a list of differently sized cards.
-//
-// NOT yet read: a Marketplace card's chip row (`[data-trust]`). Its first run (2026-10-05)
-// found the safety chip 18px beside a 22.5px author chip on every phone-width card — a real
-// defect outside the detail pages, reported for Destin rather than fixed here. Add
-// `[data-trust]` back to this selector when that row is fixed.
+// A row opts in with `data-parts-agree` (any value names it in the report; the shared notice's
+// button rows carry it). The rows the renderer already marks for other reasons are read too:
+// `[data-detail-chips]` and `[data-detail-actions]` (Marketplace detail pages) and `[data-trust]`
+// (a Marketplace card's chip row — its icon-only safety chip was 18px beside 22.5px chips on every
+// phone-width card until the fact chip got its strut, 2026-10-05). It is opt-in on purpose:
+// "siblings are one height" is a rule for chip and button rows, not for a list of differently
+// sized cards.
 
-export const PARTS_SELECTOR = '[data-parts-agree], [data-detail-chips], [data-detail-actions]';
+export const PARTS_SELECTOR = '[data-parts-agree], [data-detail-chips], [data-detail-actions], [data-trust]';
 
 /** Runs in the page: measures every marked row. Pure data out, so the rules below can be tested
  *  without a browser. Hidden rows and rows with fewer than one visible child are skipped. */
 export const MEASURE_PARTS = `(() => {
   const name = (el) => el.getAttribute('data-parts-agree') || (el.hasAttribute('data-detail-chips') ? 'detail chips'
-    : el.hasAttribute('data-detail-actions') ? 'detail buttons' : el.tagName.toLowerCase());
+    : el.hasAttribute('data-detail-actions') ? 'detail buttons' : el.hasAttribute('data-trust') ? 'card chips' : el.tagName.toLowerCase());
   const label = (el) => (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 30) || el.tagName.toLowerCase();
   const seen = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width >= 1 && r.height >= 1 && cs.visibility !== 'hidden' && cs.display !== 'none'; };
   const rows = [];

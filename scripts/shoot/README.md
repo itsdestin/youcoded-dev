@@ -52,8 +52,9 @@ screen's panel box, page errors), and a contact sheet per theme.
 - **The screen is showing** — its mark is on screen and not covered (above).
 - **Look-alikes** — two screens whose 480px thumbnails match are compared again at full size
   (more than 50 pixels differ → different). Declare `sameAs` only for screens that truly look the same.
-- **Parts agree** (`parts-agree.mjs`) — on marked rows (`data-parts-agree`, and the Marketplace detail
-  pages' `[data-detail-chips]` / `[data-detail-actions]`): every child is one height (within 1px), and in
+- **Parts agree** (`parts-agree.mjs`) — on marked rows (`data-parts-agree` — the shared notice's button
+  rows carry it — the Marketplace detail pages' `[data-detail-chips]` / `[data-detail-actions]`, and a
+  Marketplace card's `[data-trust]` chip row): every child is one height (within 1px), and in
   a row that clips (a sideways scroller), every child keeps room inside the clip edge. A finding prints
   `PARTS` and fails `--check`. Mark a chip or button row with `data-parts-agree="<name>"` to opt in.
 - **The Office editor** — Office screens need its server. Port 4717 is used when free or already this

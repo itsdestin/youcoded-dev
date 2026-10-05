@@ -197,6 +197,9 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     }
     if (!why?.panel) throw new Error(`not showing: ${why}`);
     r.panel = why.panel;
+    // `waitMs` (screen list): a state that changes by itself is photographed LATER, on purpose —
+    // e.g. proving a failed-install notice is still there after its old 6-second timer.
+    if (screen.waitMs) await new Promise((res) => setTimeout(res, screen.waitMs));
     // WHY wait on the theme's font (2026-10-02): a before/after of an UNCHANGED screen came
     // back with the theme's font on one side and the fallback on the other, at random. A
     // theme font (meadow-mist's Nunito) is a Google Fonts stylesheet fetched over the network,
@@ -227,7 +230,11 @@ async function shootOne(tab, base, { screen, theme }, outDir) {
     // the panel under it, not two at once. WHY (2026-09-26): ten dialogs got this wrong
     // before the shell took it over, and nothing noticed until a sweep like this one.
     if (opt.check) {
-      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip').map((l) => `${l.kind} "${l.name}"`);
+      // Tooltips and live status strips are not layers Escape closes. WHY status too (2026-10-05):
+      // the Marketplace footer strip ("Couldn't install …", role=status) reports the same failure
+      // the detail page shows, and closing the page puts that failure away (marketplace-context),
+      // so the strip rightly goes with it — that is the page closing, not a second layer.
+      const layersNow = async () => (await tab.evaluate(inPage(listLayers), 10_000)).layers.filter((l) => l.kind !== 'tooltip' && l.kind !== 'status').map((l) => `${l.kind} "${l.name}"`);
       const before = await layersNow();
       if (before.length) {
         await tab.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
