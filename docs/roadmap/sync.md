@@ -16,6 +16,16 @@ Filing test: moving your stuff between devices, and the GitHub transport under i
       Destin 2026-10-05 triage (roadmap-triage-2026-10-05#23): postponed until after 1.3.1
       `settings/sync` `all` `decision` `P2` `checked 2026-09-16`
 
+- [ ] Personal sync history only grows, and a first download of it shows nothing (2 things).
+      (a) Sync keeps every old version of every conversation forever: 2.6 GB online and 8 GB on the Z13
+      on 2026-10-05, more than the 5.6 GB of actual files (it was 1.7 GB and 2.5 GB in September). A new
+      device, or a repair that has to start over, must download all of it first. Needs a choice of how
+      much old history to keep, without losing any device's copy (report:
+      docs/active/investigations/2026-09-01-transcript-storage-long-term.md). (b) While that first
+      download runs, the Sync panel shows nothing about it; it can take an hour with no sign anything
+      is happening.
+      `settings/sync` `all` `confirmed` `P2` `checked 2026-10-05` `performance`
+
 - [ ] Sync security gaps: three things that could expose secrets or let one device pose as another.
       (a) A project where an older app version uploaded a password file (like `.env`) keeps that copy online and
       in history; new edits stay on the device, but removing it means rewriting the project's history on every

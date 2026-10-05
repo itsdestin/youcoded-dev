@@ -50,13 +50,11 @@ Filing test: is the primary question app responsiveness, resource cost, or wheth
       (h) fresh perf worktrees re-download ~490 MB of fixture files.
       `all` `confirmed` `P3` `checked 2026-08-28` `performance`
 
-- [ ] Sync: growth and duplication decisions (4 things).
+- [ ] Sync: growth and duplication decisions (3 things; the history-size decision moved to sync).
       (a) Large synced projects use more file watches than needed; one watch per project risks missed
       edits and needs Linux, Mac and Windows tests; (b) synced code projects that keep Git history
-      get a second hidden history; (c) personal sync history keeps growing (1.7 GB on GitHub, 2.5 GB
-      on the Z13) and needs a way to prune without losing any device's copy (report:
-      docs/active/investigations/2026-09-01-transcript-storage-long-term.md); (d) a far-behind device on
-      a slow connection may keep timing out its upload, not reproduced.
+      get a second hidden history; (c) a far-behind device on a slow connection may keep timing out
+      its upload, not reproduced.
       `settings/sync` `all` `needs-verify` `P3` `checked 2026-09-16` `performance`
 
 - [ ] Phone and remote: wasted work and slow starts (6 things).
