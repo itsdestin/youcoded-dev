@@ -15,6 +15,7 @@
 //   node scripts/roadmap-check.mjs --close <area>:<line or text> --ref "<commit or PR>" [--headline "<text>"]
 //                                                      close one item: delete it, append its shipped.md line, rewrite the index
 //   node scripts/roadmap-check.mjs --vocab             print every closed token list, then exit
+//   node scripts/roadmap-check.mjs --budget            exit 1 and say so when the roadmap holds more than ROADMAP_MAX entries (the edit hook)
 //   node scripts/roadmap-check.mjs --quiet             print only structure errors (CI)
 //   node scripts/roadmap-check.mjs --root <dir>        workspace root; defaults to the git checkout you are IN
 //   node scripts/roadmap-check.mjs --today YYYY-MM-DD  "today" for the 60-day rule (tests)
@@ -416,6 +417,14 @@ export function checkStructure(rm) {
   return errors;
 }
 
+// The size budget in one place: the run prints it, and `--budget` lets the edit hook hand it
+// back to the session that just added the entry — the only moment someone can still fold it in.
+export function overBudget(rm) {
+  const total = rm.areas.reduce((n, a) => n + a.entries.length, 0);
+  if (total <= ROADMAP_MAX) return null;
+  return `over budget: ${total} entries (budget ${ROADMAP_MAX}) — fold small related items into one bundled entry before filing more`;
+}
+
 // ---------- job 2: claims (spec §4, §5) ----------
 
 // How many places the anchor's `contains` matches in its file. The spec's own example
@@ -632,8 +641,8 @@ export function run({ root, fix = false, fixClaims = false, quiet = false, struc
 
   // The size budget. Printed, never an error: a session filing one item must not be blocked
   // by a backlog it did not grow — but it is told, where Destin reads.
-  const total = rm.areas.reduce((n, a) => n + a.entries.length, 0);
-  if (total > ROADMAP_MAX) say(`- over budget: ${total} entries (budget ${ROADMAP_MAX}) — fold small related items into one bundled entry before filing more`);
+  const budget = overBudget(rm);
+  if (budget) say(`- ${budget}`);
 
   // 4. index
   let drift = diffIndex(rm);
@@ -667,6 +676,12 @@ function main() {
   };
   const rootArg = value('--root');
   const root = rootArg ? path.resolve(rootArg) : defaultRoot();
+  if (flag('--budget')) {
+    const rm = loadRoadmap(root);
+    const msg = rm ? overBudget(rm) : null;
+    if (msg) process.stdout.write(`roadmap-check: ${msg}\n`);
+    process.exit(msg ? 1 : 0);
+  }
   const today = value('--today') ?? new Date().toISOString().slice(0, 10);
   if (!isRealDate(today)) { console.error(`roadmap-check: --today must be YYYY-MM-DD, got "${today}"`); process.exit(1); }
   // --close: remove one entry, append its shipped line, then fall through to a --fix run so

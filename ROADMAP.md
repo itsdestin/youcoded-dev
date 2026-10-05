@@ -112,9 +112,14 @@ budgeted at 150 entries and `roadmap-check` says when it is over. Write what you
 in one or two lines, no file paths and no mechanism. If you investigated, put that in a
 report under `docs/active/investigations/` with a `<!-- claim: … -->` anchor and link it with
 `→ <path>`. New items start `needs-verify` unless you reproduced it or your report anchors
-the cause. To close an item: `node scripts/roadmap-check.mjs --close <area>:<text from the
+the cause. **Priority: a new item is `P3` unless you can say why not** — `P1` only for
+something app-breaking, a blocker of the `Target:` release, or a feature Destin named as next;
+`P2` for a major idea or something he has hit more than once. Only Destin moves an item up a
+tier; say so in the entry when he does. To close an item: `node scripts/roadmap-check.mjs --close <area>:<text from the
 entry> --ref "<commit or PR>"` deletes it, adds its one line to `docs/roadmap/shipped.md` and
-rewrites this index; then archive its report. After any other edit run
+rewrites this index; then archive its report. To close ONE point of a bundled entry, delete
+its lettered clause (re-letter the rest, fix the count in the headline) and add its line to
+`shipped.md` by hand — `--close` removes a whole entry. After any other edit run
 `node scripts/roadmap-check.mjs --fix` before committing.
 
 The last line of an entry is its tokens, in this order. **Every one is a closed list — a
